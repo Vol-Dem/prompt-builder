@@ -1,0 +1,29 @@
+.container {
+  display: flex;
+  position: relative;
+  align-items: center;
+  height: 100%;
+  width: 30rem;
+  & img {
+    max-width: 100%;
+  }
+}
+
+.image {
+  max-width: 100%;
+  transition: all 1.3s;
+  &--hidden {
+    opacity: 0;
+  }
+}
+
+.placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.2;
+  background-color: #ab9db7;
+  z-index: -1;
+}
