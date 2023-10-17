@@ -1,10 +1,31 @@
+.container {
+  // width: 30rem;
+}
+
+.wrap {
+  display: grid;
+  grid-template-columns: 30rem 1fr;
+  gap: 2rem;
+  position: static;
+  z-index: 2222;
+  justify-content: space-between;
+  width: 100%;
+
+  &--open {
+    background-color: rgb(47, 45, 45);
+    box-shadow: 1rem 1rem 1rem rgba(0, 0, 0, 0.23);
+    position: absolute;
+    left: 0;
+    animation: open 0.4s ease-in forwards;
+  }
+}
+
 .carousel {
   position: relative;
   overflow: hidden;
   height: 45rem;
   transition: all 0.3s;
-  // width: 92rem;
-  // transition: all 0.3s;
+
   &__visible--1 {
     width: 30rem;
   }
@@ -39,14 +60,30 @@
   transform: translateY(-50%);
   background-color: #fff;
   padding: 1rem;
+  height: 4.6rem;
+  width: 4.6rem;
+  border: none;
+  opacity: 0.8;
+  border-radius: 50%;
   cursor: pointer;
 
   &__left {
     left: 0;
+
+    &::before {
+      content: "<";
+      color: #636363;
+      font-size: 2.4rem;
+    }
   }
 
   &__right {
     right: 0;
+    &::before {
+      content: ">";
+      color: #636363;
+      font-size: 2.4rem;
+    }
   }
 }
 
@@ -59,4 +96,48 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.test {
+  width: 30rem;
+}
+
+.pagination {
+  display: flex;
+  position: absolute;
+  bottom: 2%;
+  left: 50%;
+  transform: translate(-50%);
+  width: 70%;
+  align-items: center;
+  align-self: center;
+  justify-self: center;
+  justify-content: center;
+  list-style: none;
+  gap: 1rem;
+
+  // z-index: 5555;
+  &__item {
+    // padding: 1rem 2rem;
+    width: 100%;
+    height: 1rem;
+    width: 100%;
+    background-color: #4a4a4a;
+    opacity: 0.8;
+    border-radius: 1rem;
+    cursor: pointer;
+
+    &--active {
+      background-color: #372ac7;
+    }
+  }
+}
+
+@keyframes open {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

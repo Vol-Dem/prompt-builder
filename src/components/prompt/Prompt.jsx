@@ -20,18 +20,36 @@ const Prompt = () => {
   return (
     <div className={classes.container}>
       <label htmlFor="prompt">Prompt</label>
-      <textarea
-        id="prompt"
-        name="prompt"
-        rows="5"
-        cols="70"
-        placeholder="Enter your prompt"
-        onChange={promptHandler}
-        value={curPrompt}
-      ></textarea>
-      <button type="button" onClick={copyToClipboardHandler}>
-        Copy
-      </button>
+      <div className={classes.field}>
+        <textarea
+          id="prompt"
+          name="prompt"
+          rows="5"
+          cols="70"
+          placeholder="Enter your prompt"
+          onChange={promptHandler}
+          value={curPrompt}
+          className={classes.prompt}
+        ></textarea>
+        <button type="button" onClick={copyToClipboardHandler}>
+          Copy
+        </button>
+      </div>
+      <div className={classes.field}>
+        <textarea
+          id="neg-prompt"
+          name="neg-prompt"
+          rows="3"
+          cols="70"
+          placeholder="Enter your negative prompt"
+          onChange={promptHandler}
+          value={curPrompt}
+          className={classes.prompt}
+        ></textarea>
+        <button type="button" onClick={copyToClipboardHandler}>
+          Copy
+        </button>
+      </div>
     </div>
   );
 };

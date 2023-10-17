@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import classes from "./Tabs.module.scss";
 import Categories from "../categories/Categories";
 import { useDispatch, useSelector } from "react-redux";

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, version } from "react";
 import classes from "./Model.module.scss";
 import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../../firebase-config";
@@ -8,51 +8,13 @@ import ImageCard from "../image-card/ImageCard";
 import TagList from "../tag-list/TagList";
 import Tag from "../tag/Tag";
 import Carousel from "../carousel/Carousel";
+import Tab from "../ui/tab/Tab";
 
 const Model = () => {
   const [model, setModel] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [curVersion, setCurVersion] = useState(null);
   const { modelId } = useParams();
-  const currCategory = useSelector((state) => state.tabs.currCategory);
-  // console.log(currCategory);
-
-  // useEffect(() => {
-  //   const getData = async () => {
-  //     try {
-  //       setIsLoading(true);
-  //       const response = await fetch(
-  //         "https://civitai.com/api/v1/models/126026"
-  //       );
-  //       const data = await response.json();
-  //       console.log(data);
-  //       setModelData(data);
-  //       setIsLoading(false);
-  //       // console.log(modelData.modelVersions[0].images[0].url);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-
-  //   getData();
-  // }, []);
-
-  // useEffect(() => {
-  //   const getData = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         "https://civitai.com/api/v1/images?postId=351636"
-  //       );
-  //       const data = await response.json();
-  //       console.log(data);
-
-  //       // console.log(modelData.modelVersions[0].images[0].url);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-
-  //   getData();
-  // }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -62,6 +24,7 @@ const Model = () => {
       const data = snapshot.val();
       console.log(data);
       setModel(data);
+      setCurVersion(data?.data?.modelVersions[0]);
       setIsLoading(false);
     });
   }, [modelId]);
@@ -71,19 +34,39 @@ const Model = () => {
     navigate("/");
   };
 
-  const modelImagesHtml = model?.data?.modelVersions.map((version, i) => {
-    return <Carousel key={i} images={version.images} />;
-  });
+  const openVersionHandler = (e) => {
+    const id = +e.target.id;
+    console.log(id);
+    const curVer = model?.data?.modelVersions.find(
+      (version) => version.id === id
+    );
+
+    setCurVersion(curVer);
+  };
+
+  const modelImagesHtml = (
+    <div id={curVersion?.name}>
+      <Carousel images={curVersion?.images} />
+    </div>
+  );
 
   const examplesHtml = model?.examplesData?.map((item, i) => {
-    return <Carousel key={i} images={item.items} visibleAmount="1" />;
-    // return item.items.map((example, i) => {
-    //   return <ImageCard key={i} imageData={example} />;
-    // });
+    return <Carousel key={i} images={item.items} visibleAmount={1} />;
   });
 
   const modelVersionsHrml = model?.data?.modelVersions.map((version, i) => {
-    return <div key={i}>{version.name}</div>;
+    return (
+      <div
+        key={i}
+        id={version.id}
+        onClick={openVersionHandler}
+        className={`${classes.version} ${
+          curVersion.id === version.id ? classes["version--active"] : ""
+        }`}
+      >
+        {version.name}
+      </div>
+    );
   });
 
   return (
@@ -92,15 +75,15 @@ const Model = () => {
         <>
           <button onClick={backHandler}>Back</button>
           <div className={classes.title}> {model?.data.name}</div>
-          {modelVersionsHrml}
+          <ul className={classes.versions}>{modelVersionsHrml}</ul>
           {!isLoading && modelImagesHtml}
           <div className={classes["info-container"]}>
             <div className={classes.info}>
               <div>{model?.data.type}</div>
-              <div>Base model: {model?.data.modelVersions[0].baseModel}</div>
+              <div>Base model: {curVersion.baseModel}</div>
               <div>Size: {model?.size}</div>
               <div>Weight: {model?.weight}</div>
-              <div>Version: {model?.data.modelVersions[0].name}</div>
+              <div>Version: {curVersion.name}</div>
               {model?.clipSkip && <div>Clip Skip: {model?.clipSkip}</div>}
             </div>
             <div className={classes["tags"]}>
@@ -108,30 +91,36 @@ const Model = () => {
               <ul className={classes["main-tag"]}>
                 <Tag tag={model?.mainTag} />
               </ul>
-              {model?.data.modelVersions[0].trainedWords && (
+              {curVersion.trainedWords && (
                 <>
                   <div>Trigger Words:</div>
-                  <TagList subcat={model?.data.modelVersions[0].trainedWords} />
+                  <TagList tags={curVersion.trainedWords} />
                 </>
               )}
               {model?.helperTags && (
                 <>
                   <div>Helper Words:</div>
-                  <TagList subcat={model?.helperTags} />
+                  <TagList tags={model?.helperTags} />
                 </>
               )}
               {model?.negativeTags && (
                 <>
                   <div>Negative Words:</div>
-                  <TagList subcat={model?.negativeTags} />
+                  <TagList tags={model?.negativeTags} />
                 </>
               )}
             </div>
           </div>
-
+          <h3>Version description:</h3>
+          <div>{curVersion.description?.replace(/(<([^>]+)>)/gi, "")}</div>
+          <h3>Description:</h3>
           <div>{model?.data.description?.replace(/(<([^>]+)>)/gi, "")}</div>
-          <div>Exapmles:</div>
-          <div className={classes.images}>{examplesHtml}</div>
+          {model?.examplesData && (
+            <>
+              <div>Exapmles:</div>
+              <div className={classes.images}>{examplesHtml}</div>
+            </>
+          )}
         </>
       )}
     </div>

@@ -62,7 +62,7 @@ const Subcategories = () => {
     // setSubcats(subcats);
     setIsLora(isLora);
     dispatch(tabActions.setSubcategories(subcats));
-  }, [subcategories]);
+  }, [subcategories, currTab, dispatch]);
 
   const subcategoriesHtml = subcats?.map((category) => {
     return (
