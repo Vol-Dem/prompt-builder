@@ -6,8 +6,9 @@ import { useEffect } from "react";
 import CarouselImage from "./carousel-image/CarouselImage";
 import useIntersection from "../../hooks/use-intersection";
 
-const Carousel = ({ images, visibleAmount = 3 }) => {
+const Carousel = ({ images, visibleImgAmount }) => {
   // const [currImg, setCurrImg] = useState(null);
+  const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount);
   const [imgIsOpen, setImgIsOpen] = useState(false);
   const [currImgNum, setCurrImgNum] = useState(0);
   const [translate, setTranslate] = useState(0);
@@ -17,11 +18,27 @@ const Carousel = ({ images, visibleAmount = 3 }) => {
   const [carouselHeight, setCarouselHeight] = useState(null);
   const [visibleImages, setVisibleImages] = useState([]);
   const [prevVisibleImages, setPrevVisibleImages] = useState([]);
-  const [curVisibleAmount, setCurVisibleAmount] = useState(visibleAmount);
+  const [curVisibleAmount, setCurVisibleAmount] = useState(visibleImgAmount);
   const carouselRef = useRef();
   const imagesRef = useRef();
+  const wrapRef = useRef();
   const transitionDuration = 300;
   const caruselIsVisible = useIntersection(carouselRef);
+
+  useEffect(() => {
+    const gap = parseInt(getComputedStyle(imagesRef.current).gap);
+    const imgWidth = imagesRef.current.children[0].clientWidth + gap;
+    const visAmount = Math.floor(wrapRef.current.clientWidth / imgWidth);
+    console.log(visAmount);
+    if (!visibleImgAmount && visAmount <= images.length) {
+      setVisibleAmount(visAmount);
+      setCurVisibleAmount(visAmount);
+    }
+    if (!visibleImgAmount && visAmount > images.length) {
+      setVisibleAmount(images.length);
+      setCurVisibleAmount(images.length);
+    }
+  }, [imagesRef, wrapRef, visibleImgAmount, images.length]);
 
   useEffect(() => {
     const visibleImg = Array.from(
@@ -88,7 +105,7 @@ const Carousel = ({ images, visibleAmount = 3 }) => {
     let imagesleft = [];
     let imagesRight = [];
 
-    if (imagesFiltered.length > +visibleAmount) {
+    if (imagesFiltered.length >= +visibleAmount) {
       imagesRight = imagesFiltered.slice(0, visibleAmount).map((image, i) => {
         const src =
           visibleImages.includes(i + visibleAmount) && caruselIsVisible
@@ -270,6 +287,7 @@ const Carousel = ({ images, visibleAmount = 3 }) => {
       style={carouselHeight ? { height: `${carouselHeight}px` } : {}}
     >
       <div
+        ref={wrapRef}
         className={`${classes.wrap} ${imgIsOpen ? classes["wrap--open"] : ""}`}
       >
         <div

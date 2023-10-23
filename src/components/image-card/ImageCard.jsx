@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+// import React, { useState } from "react";
 import classes from "./ImageCard.module.scss";
 import TagList from "../tag-list/TagList";
+import { useDispatch } from "react-redux";
+import { promptActions } from "../../store/prompt";
 
 const ImageCard = ({ imageData, imgIsOpen, openImg, currImgId, closeImg }) => {
-  const [infoIsOpen, setInfoIsOpen] = useState(false);
+  // const [infoIsOpen, setInfoIsOpen] = useState(false);
+  const dispatch = useDispatch();
 
   //   const openInfoHandler = (e) => {
   //     setInfoIsOpen((prevState) => !prevState);
@@ -18,6 +21,20 @@ const ImageCard = ({ imageData, imgIsOpen, openImg, currImgId, closeImg }) => {
   const copyAllPromptHandler = (e) => {
     const promt = imageData.meta[e.target.id];
     navigator.clipboard.writeText(promt);
+  };
+
+  const addAllPromptHandler = (e) => {
+    const promt = imageData.meta[e.target.id];
+    if (e.target.dataset.type === "positive") {
+      dispatch(
+        promptActions.addAllTagToPrompt({ type: "positive", value: promt })
+      );
+    }
+    if (e.target.dataset.type === "negative") {
+      dispatch(
+        promptActions.addAllTagToPrompt({ type: "negative", value: promt })
+      );
+    }
   };
 
   const copyHandler = (e) => {
@@ -44,9 +61,21 @@ const ImageCard = ({ imageData, imgIsOpen, openImg, currImgId, closeImg }) => {
                 >
                   Copy all
                 </button>
+                <button
+                  id="prompt"
+                  onClick={addAllPromptHandler}
+                  className={classes["btn-copy"]}
+                  data-type="positive"
+                >
+                  Add all
+                </button>
               </div>
               {/* <div>{imageData.meta?.prompt || ""}</div> */}
-              <TagList tags={positiveHtml} />
+              <TagList
+                tags={positiveHtml}
+                promptType="positive"
+                className={classes["tags__list"]}
+              />
               <div>
                 Negative prompt:
                 <button
@@ -56,9 +85,21 @@ const ImageCard = ({ imageData, imgIsOpen, openImg, currImgId, closeImg }) => {
                 >
                   Copy all
                 </button>
+                <button
+                  id="negativePrompt"
+                  data-type="negative"
+                  onClick={addAllPromptHandler}
+                  className={classes["btn-copy"]}
+                >
+                  Add all
+                </button>
               </div>
               {/* <div>{imageData.meta?.negativePrompt || ""}</div> */}
-              <TagList tags={negativeHtml} />
+              <TagList
+                tags={negativeHtml}
+                promptType="negative"
+                className={classes["tags__list"]}
+              />
             </div>
             <div className={classes["example__config"]}>
               <button onClick={closeImg}>Close</button>
@@ -68,8 +109,7 @@ const ImageCard = ({ imageData, imgIsOpen, openImg, currImgId, closeImg }) => {
               <div>
                 Seed :
                 <span className={classes.seed} onClick={copyHandler}>
-                  {" "}
-                  {imageData.meta?.seed}{" "}
+                  {imageData.meta?.seed}
                 </span>
               </div>
               <div className={classes["config__name"]}>

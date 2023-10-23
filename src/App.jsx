@@ -1,5 +1,5 @@
-import classes from "./App.module.css";
-import Lora from "./components/lora/ModelsList";
+// import classes from "./App.module.css";
+// import Lora from "./components/lora/ModelsList";
 import Home from "./components/pages/Home";
 import {
   createBrowserRouter,

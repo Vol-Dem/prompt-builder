@@ -2,9 +2,9 @@ import classes from "./Tabs.module.scss";
 import Categories from "../categories/Categories";
 import { useDispatch, useSelector } from "react-redux";
 import { tabActions } from "../../store/tabs";
-import LoraForm from "../forms/lora/LoraForm";
-import GeneralForm from "../forms/general/GeneralForm";
-import EmbeddingsForm from "../forms/embeddings/EmbeddingsForm";
+// import LoraForm from "../forms/lora/LoraForm";
+// import GeneralForm from "../forms/general/GeneralForm";
+// import EmbeddingsForm from "../forms/embeddings/EmbeddingsForm";
 
 const Tabs = () => {
   const activeCategory = useSelector((state) => state.tabs.currTab);
@@ -49,14 +49,6 @@ const Tabs = () => {
           </div>
         </div>
         <div>{activeCategory && <Categories category={activeCategory} />}</div>
-      </div>
-      <div className={classes.forms}>
-        <h3>Lora</h3>
-        <LoraForm />
-        <h3>General</h3>
-        <GeneralForm />
-        <h3>Embeddings</h3>
-        <EmbeddingsForm />
       </div>
     </>
   );

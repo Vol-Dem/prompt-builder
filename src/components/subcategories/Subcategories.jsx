@@ -88,7 +88,7 @@ const Subcategories = () => {
   return (
     <div className={classes.category}>
       <div className={classes["subcategories"]}>{subcategoriesHtml}</div>
-      {!isLora && <TagList subcat={subcategories[activeSubcategory]} />}
+      {!isLora && <TagList tags={subcategories[activeSubcategory]} />}
       {activeSubcategory && isLora && (
         <ModelsList loraItems={loraSubcategories} />
       )}

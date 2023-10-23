@@ -1,10 +1,10 @@
 import React from "react";
-import { useEffect, useState } from "react";
-import Category from "../subcategories/Subcategories";
+// import { useEffect, useState } from "react";
+// import Category from "../subcategories/Subcategories";
 import classes from "./ModelsList.module.scss";
-import { db } from "../../firebase-config";
-import { onValue, ref, set } from "firebase/database";
-import Tag from "../tag/Tag";
+// import { db } from "../../firebase-config";
+// import { onValue, ref, set } from "firebase/database";
+// import Tag from "../tag/Tag";
 import PreviewCard from "../previewCard/PreviewCard";
 // import Subcategory from "../subcategory/Subcategory";
 

@@ -10,7 +10,7 @@ export const useIntersection = (ref) => {
         setIsIntersecting(entry.isIntersecting);
         if (entry.isIntersecting) observerRef.current.disconnect();
       },
-      { rootMargin: "-300px" }
+      { rootMargin: "-30px" }
     );
   }, []);
 

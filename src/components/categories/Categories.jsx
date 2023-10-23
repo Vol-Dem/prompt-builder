@@ -1,9 +1,9 @@
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Subcategories from "../subcategories/Subcategories";
 import classes from "./Categories.module.scss";
 import { db } from "../../firebase-config";
-import { onValue, ref, set } from "firebase/database";
+import { onValue, ref } from "firebase/database";
 import TagList from "../tag-list/TagList";
 import { useDispatch, useSelector } from "react-redux";
 import { tabActions } from "../../store/tabs";
@@ -33,7 +33,7 @@ const Categories = () => {
       // setCategories(data);
       dispatch(tabActions.setCategories(data));
     });
-  }, [activeTab]);
+  }, [activeTab, dispatch]);
 
   const categorySwitchHandler = (e) => {
     dispatch(tabActions.setCurrentCategory(e.target.id));
@@ -103,7 +103,7 @@ const Categories = () => {
         />
       )}
       {activeCategory && isArr && !isLora && (
-        <TagList subcat={categories[activeCategory]} />
+        <TagList tags={categories[activeCategory]} />
       )}
     </div>
   );

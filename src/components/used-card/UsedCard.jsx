@@ -1,33 +1,29 @@
 import React, { useEffect, useRef, useState } from "react";
-import classes from "./PreviewCard.module.scss";
+import classes from "./UsedCard.module.scss";
 import Tag from "../tag/Tag";
 import { ReactComponent as StarImg } from "../../assets/star.svg";
 import { useNavigate } from "react-router-dom";
 import TagList from "../tag-list/TagList";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { usedModelsActions } from "../../store/usedModels";
+import { promptActions } from "../../store/prompt";
 
-const PreviewCard = ({ previewData }) => {
+const UsedCard = ({ previewData }) => {
   const [tagsIsOpen, setTagsIsOpen] = useState(false);
   const [tagsHeight, setTagsHeight] = useState(null);
-  const [taglistHeight, setTaglistHeight] = useState(null);
   const [helperTagsIsOpen, setHelperTagsIsOpen] = useState(false);
   const [helpertagsHeight, setHelperTagsHeight] = useState(null);
   const [imgIsLoading, setImgIsLoading] = useState(false);
-  const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
   // const [taglistItemHeight, setTaglistItemHeight] = useState(null);
   // const [taglistHeight, setTaglistHeight] = useState(null);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const tagsRef = useRef();
   const tagsListRef = useRef();
   const helperTagsRef = useRef();
-  const imgRef = useRef();
   // const taglistItemHeight = tagsListRef?.current?.offsetHeight;
   const taglistItemHeight = 34;
-  useEffect(() => {
-    const taglistHeight = tagsRef?.current?.clientHeight;
-    if (taglistHeight) setTaglistHeight(taglistHeight);
-  }, [tagsRef, panelIsOpen, previewData]);
-
+  const taglistHeight = tagsRef?.current?.clientHeight;
   // console.log(taglistItemHeight, taglistHeight);
   // console.log(
   //   previewData.title,
@@ -53,25 +49,12 @@ const PreviewCard = ({ previewData }) => {
   // };
 
   useEffect(() => {
-    console.log("CARD");
-    console.log(imgRef.current.complete);
-    console.log(imgRef.current.complete);
-    if (!imgRef.current.complete) setImgIsLoading(true);
+    setImgIsLoading(true);
   }, []);
 
   useEffect(() => {
     if (taglistHeight === taglistItemHeight) setTagsHeight(taglistItemHeight);
-    if (tagsIsOpen) setTagsHeight(taglistHeight);
-    if (helperTagsIsOpen)
-      setHelperTagsHeight(helperTagsRef.current.clientHeight);
-  }, [
-    previewData,
-    taglistHeight,
-    taglistItemHeight,
-    panelIsOpen,
-    tagsIsOpen,
-    helperTagsIsOpen,
-  ]);
+  }, [previewData, taglistHeight, taglistItemHeight]);
 
   const openHelperTagsHandler = () => {
     // setHelperTagsIsOpen((prev) => !prev);
@@ -79,10 +62,6 @@ const PreviewCard = ({ previewData }) => {
     setHelperTagsIsOpen((prev) => {
       if (prev) {
         setHelperTagsHeight(0);
-        if (tagsHeight > 300)
-          imgRef.current.scrollIntoView({
-            behavior: "smooth",
-          });
       } else {
         setHelperTagsHeight(helperTagsRef.current.clientHeight);
       }
@@ -97,10 +76,6 @@ const PreviewCard = ({ previewData }) => {
     setTagsIsOpen((prev) => {
       if (prev) {
         setTagsHeight(null);
-        if (tagsHeight > 300)
-          imgRef.current.scrollIntoView({
-            behavior: "smooth",
-          });
       } else {
         setTagsHeight(taglistHeight);
       }
@@ -115,52 +90,48 @@ const PreviewCard = ({ previewData }) => {
   };
 
   const imgLoadingHandler = () => {
-    console.log("LOAD");
     setImgIsLoading(false);
   };
 
-  const imgErrorHandler = () => {
-    console.log("ERR");
-    // setImgIsLoading(false);
+  const closeCardHandler = () => {
+    dispatch(usedModelsActions.removeModel(previewData.id));
+    dispatch(promptActions.removeTag(previewData.mainTag));
   };
 
   return (
     <div id={previewData.id} className={`${classes.card} card`}>
-      <div className={classes.img} onClick={openLoraHandler}>
-        <span className={classes.type}>{previewData.type}</span>
+      <div className={classes.head}>
+        <div className={classes.img} onClick={openLoraHandler}>
+          <img
+            src={previewData.imgUrl}
+            alt="Preview"
+            onLoad={imgLoadingHandler}
+            className={`${imgIsLoading ? classes["img--hidden"] : ""}`}
+          />
 
-        <img
-          ref={imgRef}
-          src={previewData.imgUrl}
-          alt="Preview"
-          onLoad={imgLoadingHandler}
-          onError={imgErrorHandler}
-          className={`${imgIsLoading ? classes["img--hidden"] : ""}`}
-        />
+          {/* {previewData.imgUrl && <img src="#" alt="Preview image" />} */}
 
-        {/* {previewData.imgUrl && <img src="#" alt="Preview image" />} */}
-
-        {imgIsLoading && (
-          <div className={classes.preloader}>
-            <StarImg />
-          </div>
-        )}
-      </div>
-      <div
-        className={`${classes.content} ${
-          helperTagsIsOpen ? classes["content--open"] : ""
-        } `}
-      >
+          {imgIsLoading && (
+            <div className={classes.preloader}>
+              <StarImg />
+            </div>
+          )}
+        </div>
         <h4 className={classes.title} onClick={openLoraHandler}>
           {previewData.title}
         </h4>
+        <button className={classes["btn__close"]} onClick={closeCardHandler}>
+          X
+        </button>
+      </div>
+      <div className={`${classes.content}`}>
         <div className={classes.info}>
-          <span>M: {previewData.baseModel}</span>
+          <span className={classes.type}>{previewData.type}</span>
           <span>W: {previewData.weight}</span>
           <span>S: {previewData.size}</span>
         </div>
         <ul className={classes["main-tag"]}>
-          Triger:
+          Triger:{" "}
           <Tag
             tag={previewData.mainTag}
             promptType="positive"
@@ -172,7 +143,9 @@ const PreviewCard = ({ previewData }) => {
             <>
               <span>Tags: </span>
               <div
-                className={`${classes.tags}`}
+                className={`${classes.tags} ${
+                  tagsIsOpen ? classes["tags--open"] : ""
+                }`}
                 style={tagsHeight ? { height: `${tagsHeight}px` } : {}}
               >
                 <div
@@ -190,12 +163,10 @@ const PreviewCard = ({ previewData }) => {
               </div>
               {taglistHeight > taglistItemHeight && (
                 <button
-                  className={`${classes["tags__btn"]} ${
-                    !tagsIsOpen ? classes["tags__btn--closed"] : ""
-                  }`}
+                  className={classes["tags__btn"]}
                   onClick={openTagsHandler}
                 >
-                  {tagsIsOpen ? "A" : "V"}
+                  v
                 </button>
               )}
             </>
@@ -231,4 +202,4 @@ const PreviewCard = ({ previewData }) => {
   );
 };
 
-export default PreviewCard;
+export default UsedCard;

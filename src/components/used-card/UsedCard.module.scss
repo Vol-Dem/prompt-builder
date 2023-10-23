@@ -1,17 +1,55 @@
 .card {
-  display: grid;
-  grid-template-columns: 2fr 3fr;
+  display: flex;
+  flex-direction: column;
+  //   grid-template-columns: 2fr 3fr;
   border: 1px solid #fff;
   border-radius: 1rem;
   overflow: hidden;
   transition: all 0.3s;
 }
 
+.head {
+  display: grid;
+  //   align-items: center;
+  position: relative;
+  gap: 1rem;
+  grid-template-columns: 8rem 1fr;
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    width: 2.6rem;
+    height: 100%;
+    top: 0;
+    right: 0;
+    background: linear-gradient(to left, rgb(48, 40, 56) 30%, transparent 110%);
+    // z-index: 2;
+  }
+}
+
+.btn__close {
+  position: absolute;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 2.4rem;
+  height: 2.4rem;
+  right: 0;
+  top: 0;
+  z-index: 2;
+  transition: all 0.3s;
+
+  &:hover {
+    color: #5966a1;
+  }
+}
+
 .img {
   display: flex;
   // width: 12rem;
   // height: 100%;
-  min-height: 14rem;
+  min-height: 9rem;
   position: relative;
   align-items: center;
   justify-content: center;
@@ -52,23 +90,28 @@
 }
 
 .type {
-  position: absolute;
-  top: 0.8rem;
-  left: 0.8rem;
+  //   position: absolute;
+  //   top: 0.8rem;
+  //   left: 0.8rem;
   background-color: blueviolet;
   padding: 0.4rem 0.8rem;
   border-radius: 1rem;
   text-transform: uppercase;
-  font-size: 1.6rem;
-  z-index: 2;
+  //   font-size: 1.6rem;
+  //   z-index: 2;
 }
 
 .title {
+  font-size: 2rem;
+  margin-top: 1.2rem;
+  margin-bottom: 1.2rem;
+  align-self: center;
   cursor: pointer;
 }
 
 .content {
   display: grid;
+  font-size: 1.8rem;
   // flex-direction: column;
   grid-template-rows: auto auto auto auto auto 1fr;
   align-items: flex-start;
@@ -83,6 +126,7 @@
 
 .info {
   display: flex;
+  align-items: center;
   gap: 1rem;
   font-size: 1.6rem;
 }
@@ -117,24 +161,11 @@
   }
 
   &__btn {
-    position: relative;
     color: #fff;
     width: 100%;
     background-color: #3e445e;
     border: none;
     cursor: pointer;
-
-    &--closed::after {
-      content: "";
-      position: absolute;
-      top: -2rem;
-      left: 0;
-      opacity: 1;
-      height: 2rem;
-      width: 100%;
-      background: linear-gradient(to top, #3e445e, transparent);
-      animation: showGradient 1s ease forwards;
-    }
   }
 
   &--open {
@@ -144,20 +175,20 @@
   }
 }
 
-// .shadow {
-//   opacity: 1;
-// }
+.shadow {
+  opacity: 1;
+}
 
-// .tags:not(.tags--open) .shadow::after {
-//   content: "";
-//   position: absolute;
-//   top: 4.6rem;
-//   opacity: 1;
-//   height: 2rem;
-//   width: 100%;
-//   background: linear-gradient(to top, #3e445e, transparent);
-//   animation: showGradient 1s ease forwards;
-// }
+.tags:not(.tags--open) .shadow::after {
+  content: "";
+  position: absolute;
+  top: 4.6rem;
+  opacity: 1;
+  height: 2rem;
+  width: 100%;
+  background: linear-gradient(to top, #3e445e, transparent);
+  animation: showGradient 1s ease forwards;
+}
 
 .btn {
   color: #fff;

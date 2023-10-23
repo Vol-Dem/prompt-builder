@@ -1,20 +1,47 @@
-import React from "react";
-import { useDispatch } from "react-redux";
+import React, { forwardRef, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { promptActions } from "../../store/prompt";
 import classes from "./Tag.module.scss";
+import { usedModelsActions } from "../../store/usedModels";
 
-const Tag = ({ tag }) => {
+const Tag = forwardRef((props, ref) => {
+  const [isInPrompt, setIsInPrompt] = useState(false);
   const dispatch = useDispatch();
+  const curPromt = useSelector((state) => state.prompt.curPrompt);
+  const curNegPromt = useSelector((state) => state.prompt.curNegPrompt);
+
+  useEffect(() => {
+    let isActive;
+    if (props.promptType === "positive") {
+      isActive = curPromt.includes(props.tag.trim());
+    } else {
+      isActive = curNegPromt.includes(props.tag.trim());
+    }
+    setIsInPrompt(isActive);
+  }, [props.promptType, curPromt, curNegPromt, props.tag]);
 
   const addTagHandler = (e) => {
-    // console.log(e);
-    dispatch(promptActions.addTagToPrompt(e.target.innerText));
+    dispatch(
+      promptActions.addTagToPrompt({
+        type: props.promptType,
+        value: props.tag,
+      })
+    );
+    if (props.modelData) {
+      dispatch(usedModelsActions.addModelToPanel(props.modelData));
+    }
   };
+
   return (
-    <li onClick={addTagHandler} className={classes.tag}>
-      {tag}
+    <li
+      ref={ref}
+      onClick={addTagHandler}
+      data-type={props?.promptType}
+      className={`${classes.tag} ${isInPrompt && classes.active}`}
+    >
+      {props.tag}
     </li>
   );
-};
+});
 
 export default Tag;
