@@ -42,7 +42,8 @@ const Subcategories = () => {
   };
 
   useEffect(() => {
-    const isLora = currTab === "models preview";
+    const isLora =
+      currTab === "models preview" || currTab === "checkpoint preview";
     // console.log(isLora);
     // console.log(catigories);
     // console.log(subcategories);

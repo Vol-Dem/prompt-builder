@@ -10,11 +10,21 @@ import { Outlet } from "react-router-dom";
 // import { push, ref, set, get } from "firebase/database";
 // import { db } from "../../firebase-config";
 import UsedModelsPanel from "../used-models-panel/UsedModelsPanel";
+import { useDispatch, useSelector } from "react-redux";
+import { modelActions } from "../../store/model";
 
 function Home() {
+  const isNsfwMode = useSelector((state) => state.model.nsfwMode);
+  const distpatch = useDispatch();
+  const nsfwSwitchHandler = () => {
+    distpatch(modelActions.setNsfwMode(!isNsfwMode));
+  };
   return (
     <div className={classes["wrap"]}>
       <header className="Home-header"></header>
+      <button onClick={nsfwSwitchHandler}>{`H: ${
+        isNsfwMode ? "ON" : "OFF"
+      }`}</button>
       <Prompt />
       <div className={classes["config"]}>
         <Outlet />

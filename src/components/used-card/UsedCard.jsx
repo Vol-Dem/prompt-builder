@@ -4,7 +4,7 @@ import Tag from "../tag/Tag";
 import { ReactComponent as StarImg } from "../../assets/star.svg";
 import { useNavigate } from "react-router-dom";
 import TagList from "../tag-list/TagList";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { usedModelsActions } from "../../store/usedModels";
 import { promptActions } from "../../store/prompt";
 
@@ -14,6 +14,7 @@ const UsedCard = ({ previewData }) => {
   const [helperTagsIsOpen, setHelperTagsIsOpen] = useState(false);
   const [helpertagsHeight, setHelperTagsHeight] = useState(null);
   const [imgIsLoading, setImgIsLoading] = useState(false);
+  const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   // const [taglistItemHeight, setTaglistItemHeight] = useState(null);
   // const [taglistHeight, setTaglistHeight] = useState(null);
   const dispatch = useDispatch();
@@ -85,7 +86,7 @@ const UsedCard = ({ previewData }) => {
 
   const openLoraHandler = (e) => {
     const modelId = e.target.closest(`.card`).id;
-    navigate(`model/${modelId}`);
+    navigate(`model/${modelId}`, { state: { type: previewData.type } });
     // console.log(modelId);
   };
 
@@ -103,7 +104,13 @@ const UsedCard = ({ previewData }) => {
       <div className={classes.head}>
         <div className={classes.img} onClick={openLoraHandler}>
           <img
-            src={previewData.imgUrl}
+            src={
+              isNsfwMode
+                ? previewData.nsfwPreviewImgUrl ||
+                  previewData.customPreviewImgUrl ||
+                  previewData.imgUrl
+                : previewData.customPreviewImgUrl || previewData.imgUrl
+            }
             alt="Preview"
             onLoad={imgLoadingHandler}
             className={`${imgIsLoading ? classes["img--hidden"] : ""}`}

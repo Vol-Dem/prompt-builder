@@ -28,6 +28,20 @@
   z-index: -1;
 }
 
+.btn__set {
+  position: absolute;
+
+  cursor: pointer;
+  &--previw {
+    right: 2rem;
+    bottom: 3rem;
+  }
+  &--nsfw-previw {
+    left: 2rem;
+    bottom: 3rem;
+  }
+}
+
 .loading {
   position: absolute;
   top: 0;

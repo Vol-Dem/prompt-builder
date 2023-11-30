@@ -14,6 +14,7 @@ const PreviewCard = ({ previewData }) => {
   const [helpertagsHeight, setHelperTagsHeight] = useState(null);
   const [imgIsLoading, setImgIsLoading] = useState(false);
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
+  const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   // const [taglistItemHeight, setTaglistItemHeight] = useState(null);
   // const [taglistHeight, setTaglistHeight] = useState(null);
   const navigate = useNavigate();
@@ -23,6 +24,8 @@ const PreviewCard = ({ previewData }) => {
   const imgRef = useRef();
   // const taglistItemHeight = tagsListRef?.current?.offsetHeight;
   const taglistItemHeight = 34;
+  // console.log(previewData);
+
   useEffect(() => {
     const taglistHeight = tagsRef?.current?.clientHeight;
     if (taglistHeight) setTaglistHeight(taglistHeight);
@@ -53,9 +56,9 @@ const PreviewCard = ({ previewData }) => {
   // };
 
   useEffect(() => {
-    console.log("CARD");
-    console.log(imgRef.current.complete);
-    console.log(imgRef.current.complete);
+    // console.log("CARD");
+    // console.log(imgRef.current.complete);
+    // console.log(imgRef.current.complete);
     if (!imgRef.current.complete) setImgIsLoading(true);
   }, []);
 
@@ -110,7 +113,8 @@ const PreviewCard = ({ previewData }) => {
 
   const openLoraHandler = (e) => {
     const modelId = e.target.closest(`.card`).id;
-    navigate(`model/${modelId}`);
+    navigate(`model/${modelId}`, { state: { type: previewData.type } });
+    console.log(previewData);
     // console.log(modelId);
   };
 
@@ -131,7 +135,13 @@ const PreviewCard = ({ previewData }) => {
 
         <img
           ref={imgRef}
-          src={previewData.imgUrl}
+          src={
+            isNsfwMode
+              ? previewData.nsfwPreviewImgUrl ||
+                previewData.customPreviewImgUrl ||
+                previewData.imgUrl
+              : previewData.customPreviewImgUrl || previewData.imgUrl
+          }
           alt="Preview"
           onLoad={imgLoadingHandler}
           onError={imgErrorHandler}

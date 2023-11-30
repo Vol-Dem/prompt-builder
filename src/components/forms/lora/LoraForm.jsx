@@ -36,16 +36,17 @@ const LoraForm = () => {
     //   .filter(Boolean)
     //   .map((tag) => tag.trim());
 
+    const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
     const helperTags = formdata
       .get("helper-tags")
       .trim()
-      .split(",")
+      .split(splitRegEx)
       .filter(Boolean)
       .map((tag) => tag.trim());
     const negativeTags = formdata
       .get("negative-tags")
       .trim()
-      .split(",")
+      .split(splitRegEx)
       .filter(Boolean)
       .map((tag) => tag.trim());
     const exemplePromts = formdata.getAll("example").filter(Boolean);
@@ -188,13 +189,14 @@ const LoraForm = () => {
             // curData[main] = tags;
             set(modelsPrevRef, [...curData, loraPrevData]);
           } else {
+            console.log("prev", loraPrevData);
             set(modelsPrevRef, [loraPrevData]);
           }
         });
         set(modelsRef, loraData);
         // push(modelsRef, loraData);
       } catch (err) {
-        console.log(err);
+        console.log(err.message);
       }
     };
 

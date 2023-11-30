@@ -87,3 +87,24 @@
   padding: 1rem;
   border-radius: 1rem;
 }
+
+.resource {
+  border: 1px solid #fff;
+  border-radius: 1rem;
+  padding: 0.4rem;
+
+  &__name {
+    font-size: 1.6rem;
+    color: #7278f0;
+    text-decoration: none;
+  }
+
+  &__info {
+    display: flex;
+    gap: 1rem;
+  }
+
+  &__type {
+    color: #49ab6b;
+  }
+}

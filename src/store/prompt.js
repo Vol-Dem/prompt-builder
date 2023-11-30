@@ -17,9 +17,57 @@ const promptSlice = createSlice({
         const isInPrompt = prompt.includes(`${actions.payload.value}`);
         console.log(isInPrompt);
         if (isInPrompt) {
-          let newPromt = prompt.replace(`${actions.payload.value}, `, "");
-          newPromt = newPromt.replace(`${actions.payload.value},`, "");
-          newPromt = newPromt.replace(`${actions.payload.value}`, "");
+          console.log(actions.payload.value);
+          // const replaceWord = new RegExp(
+          //   `/\b${actions.payload.value}\b|[<\[\{]([^>\]]*\b${actions.payload.value}\b[^>\]]*)[>\]\}]/i`
+          // );
+          // const replaceWord = new RegExp(`/${actions.payload.value}/`);
+          // const replaceWord = new RegExp(
+          //   `\\b${actions.payload.value}\\b`,
+          //   "gi"
+          // );
+          // const replaceWord = new RegExp(
+          //   `\\b(${actions.payload.value}(,)?\\b)|[<\\[\\{\\(]([^>\\]\\)]*${actions.payload.value}(,)?\\b[^>\\]\\)]*)[>\\]\\}\\)]`,
+          //   "gi"
+          // );
+
+          // const text =
+          //   "This is a <word:2> example with <word:2> some <word:2> words.";
+          // const tag = "<word:2>";
+
+          // Escape special characters in the tag
+          // const escapedTag = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+          // Check if the tag contains word characters, and add word boundaries accordingly
+          // const pattern = new RegExp(
+          //   new RegExp(`\\b${escapedTag}\\b`).test(escapedTag)
+          //     ? `\\b${escapedTag}\\b`
+          //     : escapedTag,
+          //   "gi"
+          // );
+
+          // const newText = text.replace(pattern, "");
+
+          // console.log(newText);
+
+          const tag = actions.payload.value.replace(
+            /[.*+?^${}()<>|[\]\\]/g,
+            "\\$&"
+          );
+
+          const replaceWord = new RegExp(
+            new RegExp(`\\b${tag}\\b`).test(tag)
+              ? `\\b${tag}\\b.?`
+              : `${tag}.?`,
+            "gi"
+          );
+
+          // const replaceWord = new RegExp(
+          //   `${tag}.?|[<\\[\\{\\(]([^>\\]\\)\\}]*${actions.payload.value}[^>\\]\\)\\}]*)[>\\]\\}\\)],?`,
+          //   "gi"
+          // );
+
+          let newPromt = prompt.replace(replaceWord, "");
           state.curPrompt = newPromt;
         } else {
           state.curPrompt =

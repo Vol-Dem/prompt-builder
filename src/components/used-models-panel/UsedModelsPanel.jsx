@@ -6,6 +6,8 @@ import LoraForm from "../forms/lora/LoraForm";
 import GeneralForm from "../forms/general/GeneralForm";
 import EmbeddingsForm from "../forms/embeddings/EmbeddingsForm";
 import { usedModelsActions } from "../../store/usedModels";
+import CheckpointForm from "../forms/checkpoint/CheckpointForm";
+import UpdateModelForm from "../forms/update-model-form/UpdateModelForm";
 
 const UsedModelsPanel = () => {
   const [panelIsOpen, setPanelIsOpen] = useState(true);
@@ -36,7 +38,7 @@ const UsedModelsPanel = () => {
 
   return (
     // <div className={classes.wrap}>
-    <div
+    <aside
       className={`${classes.container} ${
         panelIsOpen ? classes["container--open"] : ""
       }`}
@@ -56,8 +58,11 @@ const UsedModelsPanel = () => {
         )}
         {formIsOpen && (
           <div className={classes.forms}>
+            <h3>Checkpoint</h3>
+            <CheckpointForm />
             <h3>Lora</h3>
-            <LoraForm />
+            {/* <LoraForm /> */}
+            <UpdateModelForm />
             <h3>General</h3>
             <GeneralForm />
             <h3>Embeddings</h3>
@@ -71,7 +76,7 @@ const UsedModelsPanel = () => {
           </>
         )}
       </div>
-    </div>
+    </aside>
     // </div>
   );
 };

@@ -59,7 +59,7 @@ const ModelsList = ({ loraItems }) => {
   // }, []);
 
   const loraHtml = loraItems.map((item, i) => {
-    return <PreviewCard previewData={item} key={i} />;
+    return <PreviewCard previewData={item} key={item.id} />;
   });
 
   return (

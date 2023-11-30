@@ -75,23 +75,27 @@ const Categories = () => {
   //   });
   // }, []);
 
-  const catHtml = Object.keys(categories).map((key) => {
-    return (
-      <div
-        id={key}
-        onClick={categorySwitchHandler}
-        key={key}
-        className={`${classes[`category__link`]} ${
-          activeCategory === key ? classes.active : ""
-        }`}
-      >
-        {key}
-      </div>
-    );
-  });
+  const catHtml = categories
+    ? Object.keys(categories).map((key) => {
+        return (
+          <div
+            id={key}
+            onClick={categorySwitchHandler}
+            key={key}
+            className={`${classes[`category__link`]} ${
+              activeCategory === key ? classes.active : ""
+            }`}
+          >
+            {key}
+          </div>
+        );
+      })
+    : [];
 
-  const isArr = Array.isArray(categories[activeCategory]);
-  const isLora = isArr && activeTab === "models preview";
+  const isArr = categories ? Array.isArray(categories[activeCategory]) : false;
+  const isLora =
+    (isArr && activeTab === "models preview") ||
+    activeTab === "checkpoint preview";
 
   return (
     <div className={classes["container"]}>
@@ -105,6 +109,7 @@ const Categories = () => {
       {activeCategory && isArr && !isLora && (
         <TagList tags={categories[activeCategory]} />
       )}
+      {!categories && <div>Nothing is here...</div>}
     </div>
   );
 };

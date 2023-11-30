@@ -12,15 +12,23 @@ const Tag = forwardRef((props, ref) => {
 
   useEffect(() => {
     let isActive;
+    const escTag = props?.tag?.replace(/[.*+?^${}()<>|[\]\\]/g, "\\$&");
+    const word = new RegExp(
+      new RegExp(`\\b${escTag}\\b`).test(escTag)
+        ? `\\b${escTag}\\b.?`
+        : `${escTag}.?`,
+      "gi"
+    );
     if (props.promptType === "positive") {
-      isActive = curPromt.includes(props.tag.trim());
+      isActive = curPromt.match(word);
     } else {
-      isActive = curNegPromt.includes(props.tag.trim());
+      isActive = curNegPromt.match(word);
     }
     setIsInPrompt(isActive);
   }, [props.promptType, curPromt, curNegPromt, props.tag]);
 
   const addTagHandler = (e) => {
+    console.log(props.tag);
     dispatch(
       promptActions.addTagToPrompt({
         type: props.promptType,

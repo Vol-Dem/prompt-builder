@@ -11,12 +11,40 @@ const ImageCard = ({ imageData, imgIsOpen, openImg, currImgId, closeImg }) => {
   //   const openInfoHandler = (e) => {
   //     setInfoIsOpen((prevState) => !prevState);
   //   };
+  const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
   const positiveHtml = imageData.meta?.prompt
-    ?.split(",")
+    ?.split(splitRegEx)
     ?.flatMap((tag) => tag.trim() || []);
   const negativeHtml = imageData.meta?.negativePrompt
-    ?.split(",")
+    ?.split(splitRegEx)
     ?.flatMap((tag) => tag.trim() || []);
+
+  const imageResources =
+    imageData.meta?.civitaiResources || imageData.meta?.resources;
+
+  const resourcesHtml = imageResources?.map((resource) => (
+    <div className={classes["resource"]}>
+      {resource?.modelId && (
+        <a
+          href={`https://civitai.com/models/${resource?.modelId}${
+            resource?.versionId ? `?modelVersionId=${resource?.versionId}` : ""
+          }`}
+          target="blank"
+          className={classes["resource__name"]}
+        >
+          {resource?.name || resource.modelVersionId}
+        </a>
+      )}
+      {!resource?.modelId && (
+        <div>{resource?.name || resource.modelVersionId}</div>
+      )}
+      <div>{resource?.versionName}</div>
+      <div className={classes["resource__info"]}>
+        <div className={classes["resource__type"]}>{resource.type}</div>
+        {resource?.weight && <div>weight: {resource?.weight || ""}</div>}
+      </div>
+    </div>
+  ));
 
   const copyAllPromptHandler = (e) => {
     const promt = imageData.meta[e.target.id];
@@ -113,10 +141,26 @@ const ImageCard = ({ imageData, imgIsOpen, openImg, currImgId, closeImg }) => {
                 </span>
               </div>
               <div className={classes["config__name"]}>
-                Model : {imageData.meta?.Model}
+                Model : {!imageData.meta?.modelId && imageData.meta?.Model}
+                {imageData.meta?.modelId && (
+                  <a
+                    href={`https://civitai.com/models/${
+                      imageData.meta?.modelId
+                    }${
+                      imageData.meta?.versionId
+                        ? `?modelVersionId=${imageData.meta?.versionId}`
+                        : ""
+                    }`}
+                    target="blank"
+                    className={classes["resource__name"]}
+                  >
+                    {imageData.meta?.modelName || imageData.meta.modelVersionId}
+                  </a>
+                )}
               </div>
               <div>Size: {imageData.meta?.Size}</div>
               <div>Clip Skip: {imageData.meta?.clipSkip}</div>
+              {resourcesHtml}
             </div>
           </>
         </div>

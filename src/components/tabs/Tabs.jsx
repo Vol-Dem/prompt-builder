@@ -47,6 +47,15 @@ const Tabs = () => {
           >
             Embeddings
           </div>
+          <div
+            id="checkpoint preview"
+            onClick={categorySwitchHandler}
+            className={`${classes[`category__link`]} ${
+              activeCategory === "checkpoint preview" ? classes.active : ""
+            }`}
+          >
+            Checkpoint
+          </div>
         </div>
         <div>{activeCategory && <Categories category={activeCategory} />}</div>
       </div>
