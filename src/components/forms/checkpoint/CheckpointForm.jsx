@@ -21,7 +21,6 @@ const CheckpointForm = ({ modelData }) => {
   );
   const [cfgScaleInput, setCfgScaleInput] = useState(modelData?.cfgScale || "");
   const [samplerInput, setSamplerInput] = useState(modelData?.sampler || "");
-  // const [subDataInput, setSubDataInput] = useState("");
   const [stepsInput, setStepsInput] = useState(modelData?.steps || "");
   const [weightInput, setWeightInput] = useState(modelData?.weight || "");
   const [sizetInput, setSizeInput] = useState(modelData?.size || "");
@@ -191,7 +190,8 @@ const CheckpointForm = ({ modelData }) => {
           )[0]?.url || "";
 
         const modelExemplePromts = modelData?.exemplePromts || [];
-        const modelExamplesData = modelData?.examplesData.filter(Boolean) || [];
+        const modelExamplesData =
+          modelData?.examplesData?.filter(Boolean) || [];
         console.log(modelExemplePromts);
         console.log(modelExamplesData);
         const loraData = {
@@ -235,37 +235,67 @@ const CheckpointForm = ({ modelData }) => {
           updatedAt: new Date().toISOString(),
         };
 
-        // const id = modelData?.id || modelId;
-        // const category = modelData?.main || main;
-        const modelsRef = ref(db, "checkpoint/" + modelId);
+        const modelsRef = ref(db, "models/" + modelId);
         const modelsPrevRef = ref(db, "checkpoint preview/" + main);
 
-        get(modelsPrevRef).then((snapshot) => {
-          if (snapshot.exists()) {
-            const curData = snapshot.val();
+        // get(modelsPrevRef).then((snapshot) => {
+        //   if (snapshot.exists()) {
+        //     const curData = snapshot.val();
 
-            const curPrevIndex = curData.findIndex(
-              (prev) => prev?.id === modelData?.id
-            );
-            console.log(curPrevIndex);
-            console.log(loraPrevData);
-            if (curPrevIndex !== -1) {
-              curData[curPrevIndex] = loraPrevData;
-              set(modelsPrevRef, [...curData]);
-            } else {
-              set(modelsPrevRef, [...curData, loraPrevData]);
-            }
+        //     const curPrevIndex = curData.findIndex(
+        //       (prev) => prev?.id === modelData?.id
+        //     );
+        //     console.log(curPrevIndex);
+        //     console.log(loraPrevData);
+        //     if (curPrevIndex !== -1) {
+        //       curData[curPrevIndex] = loraPrevData;
+        //       set(modelsPrevRef, [...curData]);
+        //     } else {
+        //       set(modelsPrevRef, [...curData, loraPrevData]);
+        //     }
+        //   } else {
+        //     set(modelsPrevRef, [loraPrevData]);
+        //   }
+        // });
+        // set(modelsRef, loraData);
+
+        get(modelsRef).then((snapshot) => {
+          if (snapshot.exists()) {
+            if (!modelData) return;
+            set(modelsRef, loraData);
+            savePreview(modelsPrevRef, loraPrevData, modelId);
           } else {
-            set(modelsPrevRef, [loraPrevData]);
+            set(modelsRef, loraData);
+            savePreview(modelsPrevRef, loraPrevData, modelId);
           }
         });
-        set(modelsRef, loraData);
       } catch (err) {
         console.log(err);
       }
     };
 
     getModelData();
+  };
+
+  const savePreview = (modelsPrevRef, loraPrevData, modelId) => {
+    get(modelsPrevRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        const curData = snapshot.val();
+        const curPrevIndex = curData.findIndex((prev) => prev.id === modelId);
+        console.log(curPrevIndex);
+        console.log(loraPrevData);
+        console.log(curData[curPrevIndex]);
+
+        if (curPrevIndex !== -1) {
+          curData[curPrevIndex] = { ...curData[curPrevIndex], ...loraPrevData };
+          set(modelsPrevRef, [...curData]);
+        } else {
+          set(modelsPrevRef, [...curData, loraPrevData]);
+        }
+      } else {
+        set(modelsPrevRef, [loraPrevData]);
+      }
+    });
   };
 
   const addSubHandler = (e) => {

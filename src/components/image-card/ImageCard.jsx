@@ -22,8 +22,8 @@ const ImageCard = ({ imageData, imgIsOpen, openImg, currImgId, closeImg }) => {
   const imageResources =
     imageData.meta?.civitaiResources || imageData.meta?.resources;
 
-  const resourcesHtml = imageResources?.map((resource) => (
-    <div className={classes["resource"]}>
+  const resourcesHtml = imageResources?.map((resource, i) => (
+    <div key={i} className={classes["resource"]}>
       {resource?.modelId && (
         <a
           href={`https://civitai.com/models/${resource?.modelId}${
@@ -131,6 +131,7 @@ const ImageCard = ({ imageData, imgIsOpen, openImg, currImgId, closeImg }) => {
             </div>
             <div className={classes["example__config"]}>
               <button onClick={closeImg}>Close</button>
+              <a href={`https://civitai.com/images/${imageData.id}`}>Link</a>
               <div>CFG scale: {imageData.meta?.cfgScale}</div>
               <div>Steps : {imageData.meta?.steps}</div>
               <div>Sampler : {imageData.meta?.sampler}</div>

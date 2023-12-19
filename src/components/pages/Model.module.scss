@@ -79,13 +79,26 @@
   display: flex;
   gap: 2rem;
   list-style: none;
+  flex-wrap: wrap;
 }
 
 .version {
   transition: all 0.3s;
+  border-radius: 0.5rem;
+  padding: 0.4rem;
+  cursor: pointer;
   &--active {
+    border: 1px solid blueviolet;
+    background-color: rgb(34, 34, 34);
+  }
+  &--downloaded {
     color: blueviolet;
   }
+}
+
+.image-versions {
+  display: flex;
+  gap: 1rem;
 }
 
 .panel {

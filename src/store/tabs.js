@@ -24,6 +24,7 @@ const tabsSlice = createSlice({
       state.categoriesData = actions.payload;
     },
     setModelsData(state, actions) {
+      console.log(actions.payload);
       state.modelsData = actions.payload;
     },
     setSubcategories(state, actions) {

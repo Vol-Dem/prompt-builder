@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import classes from "./CarouselImage.module.scss";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setPreviewImg } from "../../../store/model";
 
 const CarouselImage = ({ id, src, alt, onClick, dataset }) => {
   const [imgIsLoading, setImgIsLoading] = useState(true);
   const [imgSrc, setImgSrc] = useState("#");
   const dispatch = useDispatch();
+  const model = useSelector((state) => state.model.model);
 
   useEffect(() => {
     if (src) setImgSrc(src);
@@ -17,10 +18,11 @@ const CarouselImage = ({ id, src, alt, onClick, dataset }) => {
   };
 
   const setPreviwImgHandler = (e) => {
-    dispatch(setPreviewImg(src));
+    dispatch(setPreviewImg(src, false, model.data.type));
   };
   const setNsfwPreviwImgHandler = (e) => {
-    dispatch(setPreviewImg(src, true));
+    console.log(model.data.type);
+    dispatch(setPreviewImg(src, true, model.data.type));
   };
 
   return (

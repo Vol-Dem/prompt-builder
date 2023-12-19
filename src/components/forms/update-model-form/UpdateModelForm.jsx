@@ -4,7 +4,7 @@ import { ref, set, get } from "firebase/database";
 import { db } from "../../../firebase-config";
 import { addResourcesInfo, getModelInfo } from "../../../utils/fetchUtils";
 
-const UpdateModelForm = ({ modelData }) => {
+const UpdateModelForm = ({ modelData, formType = "model" }) => {
   const [updateInput, setUpdateInput] = useState(false);
   const [filterDisabledInput, setFilterDisabledInput] = useState(false);
   const [singleImageIdSwitch, setSingleImageIdSwitch] = useState(false);
@@ -13,8 +13,23 @@ const UpdateModelForm = ({ modelData }) => {
   const [idInput, setIdInput] = useState(modelData?.id || "");
   const [mainInput, setMainInput] = useState(modelData?.main || "");
   const [mainTagInput, setMainTagInput] = useState(modelData?.mainTag || "");
+  const [fileNameInput, setFileNameInput] = useState(modelData?.fileName || "");
   const [weightInput, setWeightInput] = useState(modelData?.weight || "");
   const [sizetInput, setSizeInput] = useState(modelData?.size || "");
+  const [versionsDownloadStatus, setVersionsDownloadStatus] = useState([]);
+  const [vaeInput, setVaeInput] = useState(modelData?.vae || "");
+  const [denoisingStrengthtInput, setDenoisingStrengthInput] = useState(
+    modelData?.denoisingStrength || ""
+  );
+  const [hiresUpscaleInput, setHiresUpscaleInput] = useState(
+    modelData?.hiresUpscale || ""
+  );
+  const [hiresUpscalerInput, setHiresUpscalerInput] = useState(
+    modelData?.hiresUpscaler || ""
+  );
+  const [cfgScaleInput, setCfgScaleInput] = useState(modelData?.cfgScale || "");
+  const [samplerInput, setSamplerInput] = useState(modelData?.sampler || "");
+  const [stepsInput, setStepsInput] = useState(modelData?.steps || "");
   const [helperTagsInput, setHelperTagsInput] = useState(
     modelData?.helperTags || []
   );
@@ -73,6 +88,34 @@ const UpdateModelForm = ({ modelData }) => {
 
   useEffect(() => {
     if (!modelData) return;
+    let versionStatusInputData;
+    if (modelData.modelVersionsCustomData) {
+      versionStatusInputData = modelData.modelVersionsCustomData?.map(
+        (version, i) => {
+          return {
+            type: "checkbox",
+            id: version.versionId + "in",
+            name: version.versionName,
+            label: version.versionName,
+            value: version.downloadStatus,
+          };
+        }
+      );
+    } else {
+      versionStatusInputData = modelData.data.modelVersions?.map(
+        (version, i) => {
+          return {
+            type: "checkbox",
+            id: version.id + "in",
+            name: version.id,
+            label: version.name,
+            value: false,
+          };
+        }
+      );
+    }
+
+    setVersionsDownloadStatus(versionStatusInputData || []);
     console.log(modelData);
     const subCats = modelData.sub.map((sub, i) => {
       return {
@@ -120,9 +163,14 @@ const UpdateModelForm = ({ modelData }) => {
     e.preventDefault();
 
     const formdata = new FormData(e.target);
+
+    const formObj = {};
+    for (const [key, value] of formdata) {
+      formObj[key] = value;
+    }
+    console.log(formObj);
+    // return;
     const src = formdata.get("src").trim().toLowerCase();
-    // const modelId = +formdata.get("id").trim().toLowerCase();
-    // const main = formdata.get("main").trim().toLowerCase();
     const modelId = +formdata.get("id").trim().toLowerCase().trim();
     const main = formdata.get("main").trim().toLowerCase().trim();
     const subData = formdata.getAll("sub").filter(Boolean);
@@ -130,8 +178,19 @@ const UpdateModelForm = ({ modelData }) => {
     const mainTag = formdata.get("main-tag").trim();
     const weight = formdata.get("weight").trim();
     const size = formdata.get("size").trim();
+    const fileName = formdata.get("file-name").trim();
     const tagSetNames = formdata.getAll("set-name");
     const tagSetsValues = formdata.getAll("set-value");
+    const sampler = formdata.get("sampler")?.trim().toLowerCase();
+    const cfgScale = formdata.get("cfgScale")?.trim().toLowerCase();
+    const hiresUpscaler = formdata.get("hiresUpscaler")?.trim().toLowerCase();
+    const hiresUpscale = formdata.get("hiresUpscale")?.trim().toLowerCase();
+    const denoisingStrength = formdata
+      .get("denoisingStrength")
+      ?.trim()
+      .toLowerCase();
+    const vae = formdata.get("vae")?.trim().toLowerCase();
+    const steps = formdata.get("steps")?.trim();
 
     const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
 
@@ -207,6 +266,7 @@ const UpdateModelForm = ({ modelData }) => {
     const getModelData = async () => {
       try {
         let data = {};
+        let versionsStatus = [];
 
         if (!modelData || updateInput) {
           const response = await fetch(
@@ -216,6 +276,10 @@ const UpdateModelForm = ({ modelData }) => {
           data = await response.json();
           console.log(response);
           console.log(data);
+
+          // versionsStatus = data.data.modelVersions.map((version) => {
+          //   return { versionId: version.id, downloadStatus: false };
+          // });
 
           data.modelVersions.forEach((version) => {
             version.images.forEach((image) => {
@@ -229,7 +293,7 @@ const UpdateModelForm = ({ modelData }) => {
 
           const examplesDataWithRes = await Promise.all(
             data.modelVersions.map(async (image) => {
-              return await Promise.all(
+              const updImg = await Promise.all(
                 image.images.map(async (item) => {
                   const updatedImgData = { ...item };
                   if (item.meta?.hasOwnProperty("Model hash")) {
@@ -245,13 +309,19 @@ const UpdateModelForm = ({ modelData }) => {
                     updatedImgData.meta.civitaiResources =
                       await addResourcesInfo(item.meta.civitaiResources);
                   }
-                  console.log(updatedImgData);
+                  // console.log(updatedImgData);
                   return await updatedImgData;
                 })
               );
+
+              image.images = updImg;
+
+              return updImg;
             })
           );
+
           console.log(data);
+          console.log(examplesDataWithRes);
         } else {
           data = modelData.data;
         }
@@ -333,19 +403,100 @@ const UpdateModelForm = ({ modelData }) => {
         );
         console.log(examplesDataWithRes);
 
-        const previewImg = data.modelVersions[0].images.filter(
-          (img) => img.type === "image"
+        let modelVersionsCustomData;
+
+        if (!modelData?.modelVersionsCustomData) {
+          modelVersionsCustomData = data.modelVersions.map((version, i) => {
+            const isSingle = data.modelVersions.length === 1;
+            const dlStatus = versionsDownloadStatus.length
+              ? !!versionsDownloadStatus[i]?.value
+              : false;
+            return {
+              versionId: version.id,
+              versionName: version.name,
+              versionImageUrl: version.images.filter(
+                (img, i) => img.type === "image"
+              )[0].url,
+              downloadStatus: versionsDownloadStatus.length
+                ? dlStatus
+                : isSingle,
+            };
+          });
+        } else if (modelData?.modelVersionsCustomData && updateInput) {
+          const newVersions = data.modelVersions.filter(
+            (version) =>
+              !modelData.modelVersionsCustomData.find(
+                (custVer) => custVer.versionId === version.id
+              )
+          );
+          const newVersionCustomData = newVersions.map((version, i) => {
+            // const dlStatus =
+            //   versionsDownloadStatus?.find((ver) => {
+            //     console.log(ver.id, version.id);
+            //     return ver.id === version.id;
+            //   })?.value || false;
+            // const dlStatus = versionsDownloadStatus.length
+            //   ? !!versionsDownloadStatus[i]?.value
+            //   : false;
+            return {
+              versionId: version.id,
+              versionName: version.name,
+              versionImageUrl: version.images.filter(
+                (img, i) => img.type === "image"
+              )[0].url,
+              downloadStatus: false,
+            };
+          });
+          console.log("NEW", newVersions);
+          const curVersions = modelData.modelVersionsCustomData.map(
+            (version, i) => {
+              return {
+                ...version,
+                downloadStatus: versionsDownloadStatus[i].value,
+              };
+            }
+          );
+          modelVersionsCustomData = [...newVersionCustomData, ...curVersions];
+        } else {
+          console.log("WTF", modelData.modelVersionsCustomData);
+          modelVersionsCustomData = modelData.modelVersionsCustomData.map(
+            (version, i) => {
+              return {
+                ...version,
+                downloadStatus: versionsDownloadStatus[i].value,
+              };
+            }
+          );
+        }
+
+        const activePreviewId = modelVersionsCustomData?.find(
+          (version) => version.downloadStatus === true
+        )?.versionId;
+        console.log(activePreviewId);
+        const activePreviewImg =
+          activePreviewId &&
+          data.modelVersions
+            ?.find((version) => version.id === activePreviewId)
+            .images.filter((img, i) => img.type === "image")[0].url;
+
+        const previewImgDefault = data.modelVersions[0].images.filter(
+          (img, i) => img.type === "image"
         )[0].url;
+
+        const previewImg = activePreviewImg || previewImgDefault;
+        console.log(previewImg);
 
         const modelExemplePromts = modelData?.exemplePromts || [];
         const modelExamplesData = modelData?.examplesData || [];
 
-        const loraData = {
+        let modelInfo = {
+          ...modelData,
           id: modelData?.id || modelId,
           src,
           main: modelData?.main || main,
           sub: sub,
           mainTag,
+          fileName,
           tagSetsData,
           weight,
           size,
@@ -354,10 +505,26 @@ const UpdateModelForm = ({ modelData }) => {
           exemplePromts: [...exemplePromts, ...modelExemplePromts],
           data,
           examplesData: [...examplesDataWithRes, ...modelExamplesData],
+          modelVersionsCustomData,
           updatedAt: new Date().toISOString(),
         };
-        console.log(filterDisabledInput);
-        console.log(loraData);
+
+        if (formType === "Checkpoint") {
+          modelInfo = {
+            ...modelInfo,
+            steps,
+            sampler,
+            cfgScale,
+            hiresUpscaler,
+            hiresUpscale,
+            denoisingStrength,
+            vae,
+          };
+        }
+
+        // console.log(filterDisabledInput);
+        console.log(modelInfo);
+        // console.log("CUSTDATA", modelData.modelVersionsCustomData);
 
         const loraPrevData = {
           id: modelData?.id || modelId,
@@ -369,27 +536,34 @@ const UpdateModelForm = ({ modelData }) => {
           type: data.type,
           baseModel: data.modelVersions[0].baseModel,
           mainTag,
+          fileName,
           weight,
           size,
           tags: data.modelVersions[0].trainedWords || "",
           tagSetsData,
           helperTags,
+          modelVersionsCustomData,
           updatedAt: new Date().toISOString(),
         };
 
         const modelsRef = ref(db, "models/" + (modelData?.id || modelId));
-        const modelsPrevRef = ref(
-          db,
-          "models preview/" + (modelData?.main || main)
-        );
+        let modelsPrevRef;
+        if (formType === "Checkpoint") {
+          modelsPrevRef = ref(db, "checkpoint preview/" + main);
+        } else {
+          modelsPrevRef = ref(
+            db,
+            "models preview/" + (modelData?.main || main)
+          );
+        }
 
         get(modelsRef).then((snapshot) => {
           if (snapshot.exists()) {
             if (!modelData) return;
-            set(modelsRef, loraData);
+            set(modelsRef, modelInfo);
             savePreview(modelsPrevRef, loraPrevData, modelId);
           } else {
-            set(modelsRef, loraData);
+            set(modelsRef, modelInfo);
             savePreview(modelsPrevRef, loraPrevData, modelId);
           }
         });
@@ -402,23 +576,32 @@ const UpdateModelForm = ({ modelData }) => {
   };
 
   const savePreview = (modelsPrevRef, loraPrevData, modelId) => {
-    get(modelsPrevRef).then((snapshot) => {
-      if (snapshot.exists()) {
-        const curData = snapshot.val();
-        const curPrevIndex = curData.findIndex((prev) => prev.id === modelId);
-        console.log(curPrevIndex);
-        console.log(loraPrevData);
+    try {
+      get(modelsPrevRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const curData = snapshot.val();
+          const curPrevIndex = curData.findIndex((prev) => prev.id === modelId);
+          // console.log(curPrevIndex);
+          // console.log(loraPrevData);
+          // console.log(curData[curPrevIndex]);
 
-        if (curPrevIndex !== -1) {
-          curData[curPrevIndex] = { ...curData[curPrevIndex], loraPrevData };
-          set(modelsPrevRef, [...curData]);
+          if (curPrevIndex !== -1) {
+            curData[curPrevIndex] = {
+              ...curData[curPrevIndex],
+              ...loraPrevData,
+            };
+            // console.log(curData[curPrevIndex]);
+            set(modelsPrevRef, [...curData]);
+          } else {
+            set(modelsPrevRef, [...curData, loraPrevData]);
+          }
         } else {
-          set(modelsPrevRef, [...curData, loraPrevData]);
+          set(modelsPrevRef, [loraPrevData]);
         }
-      } else {
-        set(modelsPrevRef, [loraPrevData]);
-      }
-    });
+      });
+    } catch (err) {
+      console.log(err.message);
+    }
   };
 
   const addSubHandler = () => {
@@ -529,6 +712,37 @@ const UpdateModelForm = ({ modelData }) => {
     );
   });
 
+  const versionStatusChangeHandler = (e) => {
+    setVersionsDownloadStatus((prevState) => {
+      const newState = [...prevState];
+      const curIndex = newState.findIndex(
+        (version) => version.id === e.target.id
+      );
+      console.log(e.target.checked);
+
+      newState[curIndex].value = e.target.checked;
+      console.log(newState);
+      return newState;
+    });
+  };
+
+  let versionStatusHtml = versionsDownloadStatus?.map((version) => {
+    return (
+      <div className={classes["example-field"]} key={version.id}>
+        <input
+          id={version.id}
+          name={version.name}
+          type={version.type}
+          // defaultChecked={version.value}
+          checked={version.value}
+          onChange={versionStatusChangeHandler}
+          // placeholder={version.placeholder}
+        ></input>
+        <label htmlFor={version.id}>{version.label}</label>
+      </div>
+    );
+  });
+
   //   const srcHandler = (e) => {
   //     setSrcInput(e.target.value);
   //   };
@@ -591,6 +805,15 @@ const UpdateModelForm = ({ modelData }) => {
         }}
       />
       <input
+        name="file-name"
+        type="text"
+        placeholder="file name"
+        value={fileNameInput}
+        onChange={(e) => {
+          setFileNameInput(e.target.value);
+        }}
+      />
+      <input
         name="weight"
         type="text"
         placeholder="weight"
@@ -608,10 +831,78 @@ const UpdateModelForm = ({ modelData }) => {
           setSizeInput(e.target.value);
         }}
       />
+      {formType === "Checkpoint" && (
+        <>
+          <input
+            name="steps"
+            type="text"
+            placeholder="steps"
+            value={stepsInput}
+            onChange={(e) => {
+              setStepsInput(e.target.value);
+            }}
+          />
+          <input
+            name="sampler"
+            type="text"
+            placeholder="sampler"
+            value={samplerInput}
+            onChange={(e) => {
+              setSamplerInput(e.target.value);
+            }}
+          />
+          <input
+            name="cfgScale"
+            type="text"
+            placeholder="CFGScale"
+            value={cfgScaleInput}
+            onChange={(e) => {
+              setCfgScaleInput(e.target.value);
+            }}
+          />
+          <input
+            name="hiresUpscaler"
+            type="text"
+            placeholder="Hires upscaler"
+            value={hiresUpscalerInput}
+            onChange={(e) => {
+              setHiresUpscalerInput(e.target.value);
+            }}
+          />
+          <input
+            name="hiresUpscale"
+            type="text"
+            placeholder="Hires upscale"
+            value={hiresUpscaleInput}
+            onChange={(e) => {
+              setHiresUpscaleInput(e.target.value);
+            }}
+          />
+          <input
+            name="denoisingStrength"
+            type="text"
+            placeholder="Denoising strength"
+            value={denoisingStrengthtInput}
+            onChange={(e) => {
+              setDenoisingStrengthInput(e.target.value);
+            }}
+          />
+          <input
+            name="vae"
+            type="text"
+            placeholder="VAE"
+            value={vaeInput}
+            onChange={(e) => {
+              setVaeInput(e.target.value);
+            }}
+          />
+        </>
+      )}
       {tagSetsHtml}
       <button type="button" onClick={addtagSetHandler}>
         Add tag set
       </button>
+      {versionStatusHtml}
       <textarea
         name="helper-tags"
         id=""

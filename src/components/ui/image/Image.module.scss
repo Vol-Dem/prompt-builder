@@ -1,0 +1,56 @@
+.img {
+  display: flex;
+  // width: 12rem;
+  // height: 100%;
+  min-height: 14rem;
+  min-width: 16rem;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  background-color: #383838;
+  cursor: pointer;
+  overflow: hidden;
+
+  & img {
+    position: absolute;
+    min-height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    transition: all 0.3s;
+  }
+
+  &--hidden {
+    opacity: 0;
+  }
+}
+
+.preloader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(69, 64, 86);
+  // opacity: 0.4;
+  position: absolute;
+  top: 0;
+  left: 0;
+  // z-index: 222;
+  & svg {
+    width: 5rem;
+    height: 5rem;
+    animation: rotate 1s linear infinite;
+  }
+}
+
+.type {
+  position: absolute;
+  top: 0.8rem;
+  left: 0.8rem;
+  background-color: blueviolet;
+  padding: 0.4rem 0.8rem;
+  border-radius: 1rem;
+  text-transform: uppercase;
+  font-size: 1.6rem;
+  z-index: 2;
+}

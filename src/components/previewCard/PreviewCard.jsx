@@ -5,6 +5,7 @@ import { ReactComponent as StarImg } from "../../assets/star.svg";
 import { useNavigate } from "react-router-dom";
 import TagList from "../tag-list/TagList";
 import { useSelector } from "react-redux";
+import Image from "../ui/image/Image";
 
 const PreviewCard = ({ previewData }) => {
   const [tagsIsOpen, setTagsIsOpen] = useState(false);
@@ -130,7 +131,20 @@ const PreviewCard = ({ previewData }) => {
 
   return (
     <div id={previewData.id} className={`${classes.card} card`}>
-      <div className={classes.img} onClick={openLoraHandler}>
+      <Image
+        onClick={openLoraHandler}
+        type={previewData.type}
+        ref={imgRef}
+        src={
+          isNsfwMode
+            ? previewData.nsfwPreviewImgUrl ||
+              previewData.customPreviewImgUrl ||
+              previewData.imgUrl
+            : previewData.customPreviewImgUrl || previewData.imgUrl
+        }
+        alt="Preview"
+      />
+      {/* <div className={classes.img} onClick={openLoraHandler}>
         <span className={classes.type}>{previewData.type}</span>
 
         <img
@@ -148,14 +162,13 @@ const PreviewCard = ({ previewData }) => {
           className={`${imgIsLoading ? classes["img--hidden"] : ""}`}
         />
 
-        {/* {previewData.imgUrl && <img src="#" alt="Preview image" />} */}
 
         {imgIsLoading && (
           <div className={classes.preloader}>
             <StarImg />
           </div>
         )}
-      </div>
+      </div> */}
       <div
         className={`${classes.content} ${
           helperTagsIsOpen ? classes["content--open"] : ""
