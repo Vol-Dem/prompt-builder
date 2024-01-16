@@ -5,11 +5,24 @@ import { useRef } from "react";
 import { useEffect } from "react";
 import CarouselImage from "./carousel-image/CarouselImage";
 import useIntersection from "../../hooks/use-intersection";
+import { db } from "../../firebase-config";
+import { get, onValue, ref, set } from "firebase/database";
+import { clearObjectKeys } from "../../utils/generalUtils";
+import { getModelInfo, addResourcesInfo } from "../../utils/fetchUtils";
 
-const Carousel = ({ images, visibleImgAmount, postId, onSave, onUpdate }) => {
+const Carousel = ({
+  images,
+  visibleImgAmount,
+  postId,
+  onSave,
+  onUpdate,
+  modelId,
+  versionId,
+}) => {
   // const [currImg, setCurrImg] = useState(null);
   const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount);
   const [imgIsOpen, setImgIsOpen] = useState(false);
+  const [savingImages, setSavingImages] = useState(false);
   const [currImgNum, setCurrImgNum] = useState(0);
   const [translate, setTranslate] = useState(0);
   const [curTransitionDur, setCurTransitionDur] = useState("0ms");
@@ -169,8 +182,10 @@ const Carousel = ({ images, visibleImgAmount, postId, onSave, onUpdate }) => {
 
   useEffect(() => {
     if (images?.length <= curVisibleAmount) return;
+    setTransitionEnd(true);
     const transitionEnd = () => {
       setTransitionEnd(true);
+      if (!imagesRef?.current) return;
       const gap = parseInt(getComputedStyle(imagesRef.current).gap);
       const imgWidth = imagesRef.current.children[0].clientWidth + gap;
 
@@ -262,9 +277,13 @@ const Carousel = ({ images, visibleImgAmount, postId, onSave, onUpdate }) => {
         onClick={() => {
           setCurTransitionDur(`${transitionDuration}ms`);
           setCurrImgNum(i);
-          setVisibleImages((prevState) =>
-            prevState.map((el, j) => i + j + visibleAmount)
-          );
+          setVisibleImages((prevState) => {
+            const newVisibleImages = prevState.map(
+              (el, j) => i + j + visibleAmount
+            );
+            setPrevVisibleImages(newVisibleImages);
+            return newVisibleImages;
+          });
         }}
       ></li>
       // <li
@@ -275,8 +294,132 @@ const Carousel = ({ images, visibleImgAmount, postId, onSave, onUpdate }) => {
     );
   });
 
-  const saveExampleHandler = () => {
-    onSave(postId);
+  const saveExampleHandler = async () => {
+    try {
+      if (savingImages) return;
+      setSavingImages(true);
+      const imgExampleResponse = await fetch(
+        `https://civitai.com/api/v1/images?postId=${postId}&modelId=${modelId}&modelVersionId=${versionId}`
+      );
+      const data = await imgExampleResponse.json();
+      console.log(data);
+      if (!data.items.length) {
+        throw new Error("0 items");
+      }
+      data.items.forEach((image) => {
+        if (image.meta) {
+          image.meta.comfy = "";
+          image.meta = clearObjectKeys(image.meta);
+          if (image.meta.hashes)
+            image.meta.hashes = clearObjectKeys(image.meta.hashes);
+        }
+      });
+
+      // console.log(data);
+      // setSavingImages(false);
+      // return;
+
+      const examplesDataWithRes = {
+        items: await Promise.all(
+          data.items.map(async (item) => {
+            const updatedImgData = { ...item };
+
+            const newMeta = await getModelInfo(item.meta);
+            if (newMeta) updatedImgData.meta = newMeta;
+
+            if (item.meta?.resources) {
+              const updatedRes = await addResourcesInfo(item.meta.resources);
+              console.log(updatedRes);
+              if (!updatedRes) {
+                throw new Error("failed to update res");
+              }
+              updatedImgData.meta.resources = updatedRes;
+            }
+            if (item.meta?.civitaiResources) {
+              const updatedCivRes = await addResourcesInfo(
+                item.meta.civitaiResources
+              );
+              console.log(updatedCivRes);
+              if (!updatedCivRes) {
+                throw new Error("failed to update res");
+              }
+              updatedImgData.meta.civitaiResources = updatedCivRes;
+            }
+
+            return await updatedImgData;
+          })
+        ),
+      };
+      console.log(examplesDataWithRes);
+      examplesDataWithRes.versionId = versionId;
+
+      const savedImagesRef = ref(db, `savedImages/` + modelId);
+      const modelsRef = ref(db, "models/" + modelId);
+
+      get(savedImagesRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const curData = snapshot.val();
+
+          const exapleIndex = curData[versionId]
+            ?.filter(Boolean)
+            .findIndex(
+              (example) =>
+                example.items[0].postId === examplesDataWithRes.items[0].postId
+            );
+
+          if (exapleIndex && exapleIndex !== -1) {
+            const newExamples = examplesDataWithRes.items.filter((item) => {
+              const isExists = curData[versionId]
+                .filter(Boolean)
+                .find((example) => example.items[0].id === item.id);
+              return !isExists;
+            });
+            curData[versionId][exapleIndex].items = [
+              ...newExamples,
+              ...curData[versionId][exapleIndex].items,
+            ];
+            // curData.examplesData[exapleIndex].versionId = versionId
+          } else {
+            curData[versionId] = curData[versionId]
+              ? [examplesDataWithRes, ...curData[versionId]]
+              : [examplesDataWithRes];
+          }
+          console.log(curData);
+          set(savedImagesRef, curData);
+        } else {
+          const images = { [versionId]: [examplesDataWithRes] };
+          set(savedImagesRef, images);
+        }
+      });
+
+      get(modelsRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const curData = snapshot.val();
+          console.log(versionId);
+          if (curData?.savedImages?.hasOwnProperty(`${versionId}`)) {
+            curData.savedImages[`${versionId}`].unshift({
+              postId: +postId,
+              amount: data.items.length,
+            });
+          } else {
+            curData.savedImages = {
+              ...curData?.savedImages,
+              [`${versionId}`]: [
+                { postId: +postId, amount: data.items.length },
+              ],
+            };
+          }
+
+          set(modelsRef, curData);
+        } else {
+        }
+      });
+      setSavingImages(false);
+    } catch (err) {
+      setSavingImages(false);
+      console.log(err.message);
+    }
+    // onSave(postId);
   };
   const updateExampleHandler = () => {
     onUpdate(images[0].postId);
@@ -331,8 +474,13 @@ const Carousel = ({ images, visibleImgAmount, postId, onSave, onUpdate }) => {
             <ul className={classes.pagination}>{paginationHtml}</ul>
           )}
           {postId && (
-            <span className={classes["post-id"]} onClick={saveExampleHandler}>
-              +
+            <span
+              className={`${classes["post-id"]} ${
+                savingImages ? classes["post-id--saving"] : ""
+              }`}
+              onClick={saveExampleHandler}
+            >
+              {!savingImages ? "+" : "S..."}
             </span>
           )}
           {onUpdate && (

@@ -1,7 +1,15 @@
 export const getModelInfo = async (resourcesData) => {
   try {
+    let modelHash;
+    if (resourcesData.hasOwnProperty("Model hash")) {
+      modelHash = resourcesData["Model hash"];
+    } else if (resourcesData.hasOwnProperty("Modelhash")) {
+      modelHash = resourcesData["Modelhash"];
+    } else {
+      return;
+    }
     const response = await fetch(
-      `https://civitai.com/api/v1/model-versions/by-hash/${resourcesData["Model hash"]}`
+      `https://civitai.com/api/v1/model-versions/by-hash/${modelHash}`
     );
     const data = await response.json();
 
@@ -44,7 +52,7 @@ export const addResourcesInfo = async (resourcesData) => {
         return await response.json();
       })
     );
-    // console.log(modelsData);
+    console.log(modelsData);
 
     const updatedResources = resourcesData.map((resource, i) => {
       return {

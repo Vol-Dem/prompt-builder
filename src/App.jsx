@@ -10,14 +10,17 @@ import {
 import Model from "./components/pages/Model";
 import Tabs from "./components/tabs/Tabs";
 import Test from "./components/pages/Test";
+import Layout from "./components/layout/layout/Layout";
 
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route path="/" element={<Home />}>
-        <Route path="/" element={<Tabs />}></Route>
-        <Route path="model/:modelId" element={<Model />}></Route>
-        <Route path="test" element={<Test />}></Route>
+      <Route path="/" element={<Layout />}>
+        <Route path="/" element={<Home />}>
+          <Route path="/" element={<Tabs />}></Route>
+          <Route path="model/:modelId" element={<Model />}></Route>
+          <Route path="test" element={<Test />}></Route>
+        </Route>
       </Route>
     )
   );

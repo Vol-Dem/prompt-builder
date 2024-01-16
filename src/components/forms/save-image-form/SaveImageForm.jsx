@@ -6,6 +6,9 @@ import { addResourcesInfo, getModelInfo } from "../../../utils/fetchUtils";
 
 const SaveImageForm = ({ modelData }) => {
   const [filterDisabledInput, setFilterDisabledInput] = useState(false);
+  const [imageIsSaving, setImageIsSaving] = useState(false);
+  const [errorMessage, seteErrorMessage] = useState("");
+  const [successMessage, seteSuccessMessage] = useState("");
   const [postIdInput, setPostIdInput] = useState("");
 
   const [examplePromtsAmount, setExamplePromtsAmount] = useState([
@@ -22,7 +25,9 @@ const SaveImageForm = ({ modelData }) => {
 
   const addGeneralTagsHandler = (e) => {
     e.preventDefault();
-
+    setImageIsSaving(true);
+    seteErrorMessage("");
+    seteSuccessMessage("");
     const formdata = new FormData(e.target);
     const curVersionId = +formdata.get("versionId").trim().toLowerCase().trim();
     const postId = +formdata.get("post-id").trim().toLowerCase().trim();
@@ -40,6 +45,9 @@ const SaveImageForm = ({ modelData }) => {
 
     const getModelData = async () => {
       try {
+        if (!postId) {
+          throw new Error("Empty post id");
+        }
         const imgExampleResponse = await fetch(
           `https://civitai.com/api/v1/images?postId=${postId}${
             !filterDisabledInput ? `&modelId=${modelData?.id}` : ""
@@ -72,10 +80,10 @@ const SaveImageForm = ({ modelData }) => {
           items: await Promise.all(
             dataFiltered.items.map(async (item) => {
               const updatedImgData = { ...item };
-              if (item.meta?.hasOwnProperty("Model hash")) {
-                const newMeta = await getModelInfo(item.meta);
-                if (newMeta) updatedImgData.meta = newMeta;
-              }
+
+              const newMeta = await getModelInfo(item.meta);
+              if (newMeta) updatedImgData.meta = newMeta;
+
               if (item.meta?.resources) {
                 updatedImgData.meta.resources = await addResourcesInfo(
                   item.meta.resources
@@ -159,7 +167,11 @@ const SaveImageForm = ({ modelData }) => {
             set(savedImagesRef, images);
           }
         });
+        setImageIsSaving(false);
+        seteSuccessMessage("Saved");
       } catch (err) {
+        setImageIsSaving(false);
+        seteErrorMessage(err.message);
         console.log(err.message);
       }
     };
@@ -238,7 +250,11 @@ const SaveImageForm = ({ modelData }) => {
         />
         <label htmlFor="filter">disable filter</label>
       </div>
-      <button type="submit">Add</button>
+      <button type="submit" disabled={imageIsSaving}>
+        Add
+      </button>
+      {successMessage && <div>{successMessage}</div>}
+      {errorMessage && <div>{errorMessage}</div>}
     </form>
   );
 };

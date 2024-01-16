@@ -1,15 +1,24 @@
 import React from "react";
 import classes from "./ModelInfo.module.scss";
+import { useSelector } from "react-redux";
 
-const ModelInfo = ({ infoData }) => {
+const ModelInfo = ({ customData }) => {
+  const model = useSelector((state) => state.model.model);
+  const curVersion = useSelector((state) => state.model.curVersion);
+  const viersionVAE = curVersion?.files?.find(
+    (file) => file.type === "VAE"
+  )?.name;
   return (
-    <div className={classes.info}>
-      <div>{infoData?.data.type}</div>
-      <div>Base infoData: {infoData?.data.modelVersions[0].baseModel}</div>
-      <div>Size: {infoData?.size}</div>
-      <div>Weight: {infoData?.weight}</div>
-      <div>Version: {infoData?.data.modelVersions[0].name}</div>
-      {infoData?.clipSkip && <div>Clip Skip: {infoData?.clipSkip}</div>}
+    <div className={classes?.info}>
+      <div>{model?.data?.type}</div>
+      <div>Base model: {curVersion?.baseModel}</div>
+      <div>Size: {customData?.size || model?.size}</div>
+      <div>Weight: {customData?.weight || model?.weight}</div>
+      <div>Version: {curVersion?.name}</div>
+      <div>File: {customData?.fileName || model?.fileName}</div>
+      {viersionVAE && <div>VAE: {viersionVAE}</div>}
+      {model?.clipSkip && <div>Clip Skip: {model?.clipSkip}</div>}
+      <a href={`https://${model?.src}/models/${model?.id}`}>Link</a>
     </div>
   );
 };

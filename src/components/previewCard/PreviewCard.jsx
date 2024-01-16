@@ -10,6 +10,7 @@ import Image from "../ui/image/Image";
 const PreviewCard = ({ previewData }) => {
   const [tagsIsOpen, setTagsIsOpen] = useState(false);
   const [tagsHeight, setTagsHeight] = useState(null);
+  const [currVersion, setCurrVersion] = useState({});
   const [taglistHeight, setTaglistHeight] = useState(null);
   const [helperTagsIsOpen, setHelperTagsIsOpen] = useState(false);
   const [helpertagsHeight, setHelperTagsHeight] = useState(null);
@@ -26,6 +27,14 @@ const PreviewCard = ({ previewData }) => {
   // const taglistItemHeight = tagsListRef?.current?.offsetHeight;
   const taglistItemHeight = 34;
   // console.log(previewData);
+
+  useEffect(() => {
+    const currVersionData = previewData?.modelVersionsCustomData?.filter(
+      (data) => data.downloadStatus
+    );
+    console.log(currVersionData);
+    if (currVersionData?.length) setCurrVersion(currVersionData[0]);
+  }, []);
 
   useEffect(() => {
     const taglistHeight = tagsRef?.current?.clientHeight;
@@ -182,14 +191,20 @@ const PreviewCard = ({ previewData }) => {
           <span>W: {previewData.weight}</span>
           <span>S: {previewData.size}</span>
         </div>
-        <ul className={classes["main-tag"]}>
-          Triger:
-          <Tag
-            tag={previewData.mainTag}
-            promptType="positive"
-            modelData={previewData}
-          />
-        </ul>
+        <div className={classes["main-tag"]}>
+          Version: {currVersion.versionName}
+        </div>
+        <div className={classes["main-tag"]}>File: {currVersion.fileName}</div>
+        {previewData.mainTag && (
+          <ul className={classes["main-tag"]}>
+            Triger:
+            <Tag
+              tag={previewData.mainTag}
+              promptType="positive"
+              modelData={previewData}
+            />
+          </ul>
+        )}
         <div className={classes["tags-container"]}>
           {previewData.tags && (
             <>

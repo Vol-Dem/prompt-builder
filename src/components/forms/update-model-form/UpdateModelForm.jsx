@@ -3,11 +3,15 @@ import classes from "./UpdateModelForm.module.scss";
 import { ref, set, get } from "firebase/database";
 import { db } from "../../../firebase-config";
 import { addResourcesInfo, getModelInfo } from "../../../utils/fetchUtils";
+import { clearObjectKeys } from "../../../utils/generalUtils";
 
 const UpdateModelForm = ({ modelData, formType = "model" }) => {
   const [updateInput, setUpdateInput] = useState(false);
   const [filterDisabledInput, setFilterDisabledInput] = useState(false);
   const [singleImageIdSwitch, setSingleImageIdSwitch] = useState(false);
+  const [modelIsSaving, setModelIsSaving] = useState(false);
+  const [errorMessage, seteErrorMessage] = useState("");
+  const [successMessage, seteSuccessMessage] = useState("");
   const [srcInput, setSrcInput] = useState("civitai.com");
   // const [subDataInput, setSubDataInput] = useState("");
   const [idInput, setIdInput] = useState(modelData?.id || "");
@@ -161,7 +165,9 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
 
   const addGeneralTagsHandler = (e) => {
     e.preventDefault();
-
+    setModelIsSaving(true);
+    seteErrorMessage("");
+    seteSuccessMessage("");
     const formdata = new FormData(e.target);
 
     const formObj = {};
@@ -220,15 +226,15 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
       return [{ postId: postId, imageId: exemplePromtsImageId[i] }];
     });
 
-    const clearObjectKeys = (obj) => {
-      const convertedMetaArr = Object.entries(obj).map((entry, i) => {
-        const newKey = entry[0]
-          ? entry[0].replace(/[^\w\s]/gi, " ")
-          : `key${i}`;
-        return [newKey, entry[1]];
-      });
-      return Object.fromEntries(convertedMetaArr);
-    };
+    // const clearObjectKeys = (obj) => {
+    //   const convertedMetaArr = Object.entries(obj).map((entry, i) => {
+    //     const newKey = entry[0]
+    //       ? entry[0].replace(/[^\w\s]/gi, " ")
+    //       : `key${i}`;
+    //     return [newKey, entry[1]];
+    //   });
+    //   return Object.fromEntries(convertedMetaArr);
+    // };
 
     // const addResourcesInfo = async (resourcesData) => {
     //   const modelsData = await Promise.all(
@@ -275,15 +281,20 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
 
           data = await response.json();
           console.log(response);
+
+          if (!response.ok) {
+            throw new Error(`Error status (${response.status})`);
+          }
           console.log(data);
 
           // versionsStatus = data.data.modelVersions.map((version) => {
           //   return { versionId: version.id, downloadStatus: false };
           // });
 
-          data.modelVersions.forEach((version) => {
+          data?.modelVersions?.forEach((version) => {
             version.images.forEach((image) => {
               if (image.meta) {
+                // image.meta.comfy = "";
                 image.meta = clearObjectKeys(image.meta);
                 if (image.meta.hashes)
                   image.meta.hashes = clearObjectKeys(image.meta.hashes);
@@ -296,10 +307,10 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
               const updImg = await Promise.all(
                 image.images.map(async (item) => {
                   const updatedImgData = { ...item };
-                  if (item.meta?.hasOwnProperty("Model hash")) {
-                    const newMeta = await getModelInfo(item.meta);
-                    if (newMeta) updatedImgData.meta = newMeta;
-                  }
+
+                  const newMeta = await getModelInfo(item.meta);
+                  if (newMeta) updatedImgData.meta = newMeta;
+
                   if (item.meta?.resources) {
                     updatedImgData.meta.resources = await addResourcesInfo(
                       item.meta.resources
@@ -320,8 +331,8 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
             })
           );
 
-          console.log(data);
-          console.log(examplesDataWithRes);
+          // console.log(data);
+          // console.log(examplesDataWithRes);
         } else {
           data = modelData.data;
         }
@@ -381,10 +392,10 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
               items: await Promise.all(
                 image.map(async (item) => {
                   const updatedImgData = { ...item };
-                  if (item.meta?.hasOwnProperty("Model hash")) {
-                    const newMeta = await getModelInfo(item.meta);
-                    if (newMeta) updatedImgData.meta = newMeta;
-                  }
+
+                  const newMeta = await getModelInfo(item.meta);
+                  if (newMeta) updatedImgData.meta = newMeta;
+
                   if (item.meta?.resources) {
                     updatedImgData.meta.resources = await addResourcesInfo(
                       item.meta.resources
@@ -414,9 +425,9 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
             return {
               versionId: version.id,
               versionName: version.name,
-              versionImageUrl: version.images.filter(
-                (img, i) => img.type === "image"
-              )[0].url,
+              versionImageUrl:
+                version.images?.filter((img, i) => img.type === "image")[0]
+                  ?.url || "",
               downloadStatus: versionsDownloadStatus.length
                 ? dlStatus
                 : isSingle,
@@ -441,9 +452,9 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
             return {
               versionId: version.id,
               versionName: version.name,
-              versionImageUrl: version.images.filter(
-                (img, i) => img.type === "image"
-              )[0].url,
+              versionImageUrl:
+                version.images.filter((img, i) => img.type === "image")[0]
+                  ?.url || "",
               downloadStatus: false,
             };
           });
@@ -474,14 +485,16 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
         )?.versionId;
         console.log(activePreviewId);
         const activePreviewImg =
-          activePreviewId &&
-          data.modelVersions
-            ?.find((version) => version.id === activePreviewId)
-            .images.filter((img, i) => img.type === "image")[0].url;
+          (activePreviewId &&
+            data.modelVersions
+              ?.find((version) => version.id === activePreviewId)
+              .images?.filter((img, i) => img.type === "image")[0]?.url) ||
+          "";
 
-        const previewImgDefault = data.modelVersions[0].images.filter(
-          (img, i) => img.type === "image"
-        )[0].url;
+        const previewImgDefault =
+          data.modelVersions[0].images?.filter(
+            (img, i) => img.type === "image"
+          )[0]?.url || "";
 
         const previewImg = activePreviewImg || previewImgDefault;
         console.log(previewImg);
@@ -504,7 +517,7 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           negativeTags,
           exemplePromts: [...exemplePromts, ...modelExemplePromts],
           data,
-          examplesData: [...examplesDataWithRes, ...modelExamplesData],
+          examplesData: [...modelExamplesData]?.filter(Boolean),
           modelVersionsCustomData,
           updatedAt: new Date().toISOString(),
         };
@@ -532,7 +545,7 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           main: modelData?.main || main,
           sub: sub,
           title: data.name,
-          imgUrl: previewImg,
+          imgUrl: previewImg || "",
           type: data.type,
           baseModel: data.modelVersions[0].baseModel,
           mainTag,
@@ -559,7 +572,10 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
 
         get(modelsRef).then((snapshot) => {
           if (snapshot.exists()) {
-            if (!modelData) return;
+            if (!modelData) {
+              seteSuccessMessage("Exists");
+              return;
+            }
             set(modelsRef, modelInfo);
             savePreview(modelsPrevRef, loraPrevData, modelId);
           } else {
@@ -567,8 +583,12 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
             savePreview(modelsPrevRef, loraPrevData, modelId);
           }
         });
+        setModelIsSaving(false);
+        seteSuccessMessage("Saved");
       } catch (err) {
+        setModelIsSaving(false);
         console.log(err);
+        seteErrorMessage(err.message);
       }
     };
 
@@ -598,8 +618,11 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
         } else {
           set(modelsPrevRef, [loraPrevData]);
         }
+        setModelIsSaving(false);
       });
     } catch (err) {
+      // setModelIsSaving(false);
+      seteErrorMessage(err.message);
       console.log(err.message);
     }
   };
@@ -899,7 +922,7 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
         </>
       )}
       {tagSetsHtml}
-      <button type="button" onClick={addtagSetHandler}>
+      <button type="button" onClick={addtagSetHandler} disabled={modelIsSaving}>
         Add tag set
       </button>
       {versionStatusHtml}
@@ -925,7 +948,7 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           setNegativeTagsInput(e.target.value);
         }}
       ></textarea>
-      {exemplePromtsHtml}
+      {/* {exemplePromtsHtml}
       <div className={classes.filter}>
         <input
           id="filter"
@@ -946,10 +969,19 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
         />
         <label htmlFor="filter">single image</label>
       </div>
-      <button type="button" id="example" onClick={addExampleInputHandler}>
+      <button
+        type="button"
+        id="example"
+        onClick={addExampleInputHandler}
+        disabled={modelIsSaving}
+      >
         Add example
+      </button> */}
+      <button type="submit" disabled={modelIsSaving}>
+        {!modelIsSaving ? "Add" : "Saving..."}
       </button>
-      <button type="submit">Add</button>
+      <div>{errorMessage}</div>
+      {successMessage && <div>{successMessage}</div>}
     </form>
   );
 };

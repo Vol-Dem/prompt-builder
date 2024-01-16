@@ -1,0 +1,72 @@
+.img {
+  width: 30rem;
+  // height: 100%;
+}
+
+.images {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.versions {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  flex-wrap: wrap;
+}
+
+.version {
+  transition: all 0.3s;
+  border-radius: 0.5rem;
+  padding: 0.4rem;
+  cursor: pointer;
+
+  &--active {
+    border: 1px solid blueviolet;
+    background-color: rgb(34, 34, 34);
+  }
+  &--downloaded {
+    color: blueviolet;
+  }
+}
+
+.image-versions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.panel {
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn-back {
+  padding: 0.4rem 2rem;
+  border: none;
+  border-radius: 1rem;
+  // position: absolute;
+  // top: 1rem;
+  // left: 1rem;
+}
+
+.btn-edit {
+  padding: 0.4rem 2rem;
+  border: none;
+  border-radius: 1rem;
+  // position: absolute;
+  // top: 1rem;
+  // right: 1rem;
+}
+
+.btn-examples {
+  font-size: 2.6rem;
+  cursor: pointer;
+  background-color: rgb(82, 87, 87);
+  border-radius: 1rem;
+  padding: 0.2rem 0.6rem;
+  &--active {
+    color: blueviolet;
+  }
+}

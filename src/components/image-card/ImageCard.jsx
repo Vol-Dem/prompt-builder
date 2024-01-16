@@ -132,6 +132,8 @@ const ImageCard = ({ imageData, imgIsOpen, openImg, currImgId, closeImg }) => {
             <div className={classes["example__config"]}>
               <button onClick={closeImg}>Close</button>
               <a href={`https://civitai.com/images/${imageData.id}`}>Link</a>
+              <div>Post ID: {imageData?.postId}</div>
+              <div>Image ID: {imageData?.id}</div>
               <div>CFG scale: {imageData.meta?.cfgScale}</div>
               <div>Steps : {imageData.meta?.steps}</div>
               <div>Sampler : {imageData.meta?.sampler}</div>

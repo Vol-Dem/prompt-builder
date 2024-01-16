@@ -7,7 +7,7 @@ import { addResourcesInfo, getModelInfo } from "../../../utils/fetchUtils";
 const VersionForm = ({ versionData, modelId, mainCat }) => {
   const [mainTagInput, setMainTagInput] = useState(versionData?.mainTag || "");
   const [trigerInput, setTrigerInput] = useState(
-    versionData?.trainedWords.join(", ") || []
+    versionData?.trainedWords?.join(", ") || []
   );
   const [fileNameInput, setFileNameInput] = useState(
     versionData?.fileName || ""
@@ -129,7 +129,6 @@ const VersionForm = ({ versionData, modelId, mainCat }) => {
         console.log(updatedVersionData);
 
         const modelsRef = ref(db, "models/" + modelId);
-        const modelsPrevRef = ref(db, "models preview/" + mainCat);
 
         get(modelsRef).then((snapshot) => {
           if (snapshot.exists()) {
@@ -144,7 +143,7 @@ const VersionForm = ({ versionData, modelId, mainCat }) => {
             }
             console.log(curData);
             set(modelsRef, curData);
-            savePreview(modelsPrevRef, curData.modelVersionsCustomData);
+            savePreview(curData.data.type, curData.modelVersionsCustomData);
           }
         });
       } catch (err) {
@@ -155,8 +154,11 @@ const VersionForm = ({ versionData, modelId, mainCat }) => {
     getModelData();
   };
 
-  const savePreview = (modelsPrevRef, versionData) => {
+  const savePreview = (type, versionData) => {
     try {
+      const prevRefLink =
+        type === "Checkpoint" ? "checkpoint preview/" : "models preview/";
+      const modelsPrevRef = ref(db, prevRefLink + mainCat);
       get(modelsPrevRef).then((snapshot) => {
         if (snapshot.exists()) {
           const curData = snapshot.val();
