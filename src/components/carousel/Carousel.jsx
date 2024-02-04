@@ -9,6 +9,17 @@ import { db } from "../../firebase-config";
 import { get, onValue, ref, set } from "firebase/database";
 import { clearObjectKeys } from "../../utils/generalUtils";
 import { getModelInfo, addResourcesInfo } from "../../utils/fetchUtils";
+import firebaseApp from "../../firebase-config";
+import {
+  arrayUnion,
+  doc,
+  getFirestore,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { useSelector } from "react-redux";
+
+const firestore = getFirestore(firebaseApp);
 
 const Carousel = ({
   images,
@@ -37,6 +48,8 @@ const Carousel = ({
   const wrapRef = useRef();
   const transitionDuration = 300;
   const caruselIsVisible = useIntersection(carouselRef);
+  const uid = useSelector((state) => state.auth.user.uid);
+  const model = useSelector((state) => state.model.model);
 
   useEffect(() => {
     const gap = parseInt(getComputedStyle(imagesRef.current).gap);
@@ -353,67 +366,116 @@ const Carousel = ({
       console.log(examplesDataWithRes);
       examplesDataWithRes.versionId = versionId;
 
-      const savedImagesRef = ref(db, `savedImages/` + modelId);
-      const modelsRef = ref(db, "models/" + modelId);
+      const modelRef = doc(firestore, "users", uid, "models", modelId + "");
+      const modelImagesRef = doc(
+        firestore,
+        "users",
+        uid,
+        "models",
+        modelId + "",
+        "images",
+        versionId + ""
+      );
 
-      get(savedImagesRef).then((snapshot) => {
-        if (snapshot.exists()) {
-          const curData = snapshot.val();
+      // const modelSnap = await getDoc(modelRef);
+      // const modelImagesSnap = await getDoc(modelImagesRef);
 
-          const exapleIndex = curData[versionId]
-            ?.filter(Boolean)
-            .findIndex(
-              (example) =>
-                example.items[0].postId === examplesDataWithRes.items[0].postId
-            );
+      //Throw error if user try to add existing model using new model form
 
-          if (exapleIndex && exapleIndex !== -1) {
-            const newExamples = examplesDataWithRes.items.filter((item) => {
-              const isExists = curData[versionId]
-                .filter(Boolean)
-                .find((example) => example.items[0].id === item.id);
-              return !isExists;
-            });
-            curData[versionId][exapleIndex].items = [
-              ...newExamples,
-              ...curData[versionId][exapleIndex].items,
-            ];
-            // curData.examplesData[exapleIndex].versionId = versionId
-          } else {
-            curData[versionId] = curData[versionId]
-              ? [examplesDataWithRes, ...curData[versionId]]
-              : [examplesDataWithRes];
-          }
-          console.log(curData);
-          set(savedImagesRef, curData);
-        } else {
-          const images = { [versionId]: [examplesDataWithRes] };
-          set(savedImagesRef, images);
-        }
-      });
+      // await updateDoc(modelRef, {
+      //   savedImages: arrayUnion({
+      //     postId: +postId,
+      //     amount: data.items.length,
+      //   }),
+      // });
+      // const versionIdStr = `savedImages.${versionId}`;
 
-      get(modelsRef).then((snapshot) => {
-        if (snapshot.exists()) {
-          const curData = snapshot.val();
-          console.log(versionId);
-          if (curData?.savedImages?.hasOwnProperty(`${versionId}`)) {
-            curData.savedImages[`${versionId}`].unshift({
-              postId: +postId,
-              amount: data.items.length,
-            });
-          } else {
-            curData.savedImages = {
-              ...curData?.savedImages,
-              [`${versionId}`]: [
-                { postId: +postId, amount: data.items.length },
-              ],
-            };
-          }
+      const newImgData = { postId: +postId, amount: data.items.length };
+      let newSavedImages;
+      if (model?.savedImages?.hasOwnProperty(`${versionId}`)) {
+        newSavedImages = [...model?.savedImages[`${versionId}`], newImgData];
+      } else {
+        newSavedImages = [newImgData];
+      }
 
-          set(modelsRef, curData);
-        } else {
-        }
-      });
+      await setDoc(
+        modelRef,
+        {
+          savedImages: {
+            [`${versionId}`]: newSavedImages,
+          },
+        },
+        { merge: true }
+      );
+      await setDoc(
+        modelImagesRef,
+        {
+          [`${postId}`]: examplesDataWithRes,
+        },
+        { merge: true }
+      );
+
+      // const savedImagesRef = ref(db, `savedImages/` + modelId);
+      // const modelsRef = ref(db, "models/" + modelId);
+
+      // get(savedImagesRef).then((snapshot) => {
+      //   if (snapshot.exists()) {
+      //     const curData = snapshot.val();
+
+      //     const exapleIndex = curData[versionId]
+      //       ?.filter(Boolean)
+      //       .findIndex(
+      //         (example) =>
+      //           example.items[0].postId === examplesDataWithRes.items[0].postId
+      //       );
+
+      //     if (exapleIndex && exapleIndex !== -1) {
+      //       const newExamples = examplesDataWithRes.items.filter((item) => {
+      //         const isExists = curData[versionId]
+      //           .filter(Boolean)
+      //           .find((example) => example.items[0].id === item.id);
+      //         return !isExists;
+      //       });
+      //       curData[versionId][exapleIndex].items = [
+      //         ...newExamples,
+      //         ...curData[versionId][exapleIndex].items,
+      //       ];
+      //       // curData.examplesData[exapleIndex].versionId = versionId
+      //     } else {
+      //       curData[versionId] = curData[versionId]
+      //         ? [examplesDataWithRes, ...curData[versionId]]
+      //         : [examplesDataWithRes];
+      //     }
+      //     console.log(curData);
+      //     set(savedImagesRef, curData);
+      //   } else {
+      //     const images = { [versionId]: [examplesDataWithRes] };
+      //     set(savedImagesRef, images);
+      //   }
+      // });
+
+      // get(modelsRef).then((snapshot) => {
+      //   if (snapshot.exists()) {
+      //     const curData = snapshot.val();
+      //     console.log(versionId);
+      //     if (curData?.savedImages?.hasOwnProperty(`${versionId}`)) {
+      //       curData.savedImages[`${versionId}`].unshift({
+      //         postId: +postId,
+      //         amount: data.items.length,
+      //       });
+      //     } else {
+      //       curData.savedImages = {
+      //         ...curData?.savedImages,
+      //         [`${versionId}`]: [
+      //           { postId: +postId, amount: data.items.length },
+      //         ],
+      //       };
+      //     }
+
+      //     set(modelsRef, curData);
+      //   } else {
+      //   }
+      // });
       setSavingImages(false);
     } catch (err) {
       setSavingImages(false);

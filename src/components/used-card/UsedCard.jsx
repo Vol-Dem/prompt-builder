@@ -138,7 +138,7 @@ const UsedCard = ({ previewData }) => {
           <span>S: {previewData.size}</span>
         </div>
         <ul className={classes["main-tag"]}>
-          Triger:{" "}
+          Triger:
           <Tag
             tag={previewData.mainTag}
             promptType="positive"
@@ -146,7 +146,7 @@ const UsedCard = ({ previewData }) => {
           />
         </ul>
         <div className={classes["tags-container"]}>
-          {previewData.tags && (
+          {previewData.tags.length !== 0 && (
             <>
               <span>Tags: </span>
               <div
@@ -179,7 +179,7 @@ const UsedCard = ({ previewData }) => {
             </>
           )}
         </div>
-        {previewData.helperTags && (
+        {previewData.helperTags.length !== 0 && (
           <>
             <div
               className={`${classes[["helper-tags"]]} ${

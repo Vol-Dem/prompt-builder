@@ -7,6 +7,7 @@ import { onValue, ref } from "firebase/database";
 import TagList from "../tag-list/TagList";
 import { useDispatch, useSelector } from "react-redux";
 import { tabActions } from "../../store/tabs";
+import { getDoc } from "firebase/firestore";
 
 // const generalRef = ref(db, "general/body");
 
@@ -19,21 +20,23 @@ const Categories = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const categoryRef = ref(db, activeTab);
-    //     const tagsByCategory = {};
-    //    tags.forEach((el) => {
-    //       tagsByCategory.hasOwnProperty(el.mainCategory)
-    //         ? tagsByCategory[el.mainCategory].push(el)
-    //         : (tagsByCategory[el.mainCategory] = [el]);
-    //     });
-
-    onValue(categoryRef, (snapshot) => {
-      const data = snapshot.val();
-      // console.log(data);
-      // setCategories(data);
-      dispatch(tabActions.setCategories(data));
-    });
-  }, [activeTab, dispatch]);
+    console.log(categories);
+    // const userRef = doc(firestore, "users", uid);
+    // const getCategories = async () => {
+    //   const userSnap = await getDoc(userRef);
+    //   if (userSnap.exists()) {
+    //     const data = modelSnap.data();
+    //     console.log(data);
+    //     dispatch(tabActions.setCategories(data));
+    //   }
+    // };
+    // getCategories();
+    // const categoryRef = ref(db, activeTab);
+    // onValue(categoryRef, (snapshot) => {
+    //   const data = snapshot.val();
+    //   dispatch(tabActions.setCategories(data));
+    // });
+  }, [activeTab, dispatch, categories]);
 
   const categorySwitchHandler = (e) => {
     dispatch(tabActions.setCurrentCategory(e.target.id));
@@ -75,8 +78,8 @@ const Categories = () => {
   //   });
   // }, []);
 
-  const catHtml = categories
-    ? Object.keys(categories).map((key) => {
+  const catHtml = categories?.hasOwnProperty(activeTab)
+    ? Object.keys(categories[activeTab]).map((key) => {
         return (
           <div
             id={key}
@@ -102,7 +105,7 @@ const Categories = () => {
       <div className={classes["category"]}>{catHtml}</div>
       {activeCategory && (isLora || !isArr) && (
         <Subcategories
-          subcategories={categories[activeCategory]}
+          subcategories={categories[activeTab][activeCategory]}
           activeCategory={activeCategory}
         />
       )}

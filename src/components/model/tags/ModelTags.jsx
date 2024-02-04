@@ -20,7 +20,7 @@ const ModelTags = ({ customData, modelPreview }) => {
       {<TagList tags={splitTags(tagSet.value)} promptType="positive" />}
     </li>
   ));
-
+  console.log(customData?.trainedWords?.length || "WTF");
   return (
     <div className={classes["tags"]}>
       <div>Main tag:</div>
@@ -35,31 +35,45 @@ const ModelTags = ({ customData, modelPreview }) => {
         <>
           <div>Trigger Words:</div>
           <TagList
-            tags={customData?.trainedWords || curVersion?.trainedWords}
+            tags={
+              customData?.trainedWords?.length
+                ? customData?.trainedWords
+                : curVersion?.trainedWords
+            }
             promptType="positive"
           />
         </>
       )}
-      {(model?.helperTags || customData?.helperTags) && (
+      {(model?.helperTags?.length || customData?.helperTags?.length) && (
         <>
           <div>Helper Words:</div>
           <TagList
-            tags={customData?.helperTags || model?.helperTags}
+            tags={
+              customData?.helperTags?.length
+                ? customData?.helperTags
+                : model?.helperTags
+            }
             promptType="positive"
           />
         </>
       )}
-      {(model?.tagSetsData || customData?.tagSetsData) && (
+      {(model?.tagSetsData?.length ||
+        customData?.tagSetsData?.length !== 0) && (
         <>
           <div>Tag sets:</div>
           <ul className={classes["tag-sets__list"]}>{tagSetsHtml}</ul>
         </>
       )}
-      {(model?.negativeTags || customData?.negativeTags) && (
+      {(model?.negativeTags?.length ||
+        customData?.negativeTags?.length !== 0) && (
         <>
           <div>Negative Words:</div>
           <TagList
-            tags={customData?.negativeTags || model?.negativeTags}
+            tags={
+              customData?.negativeTags?.length
+                ? customData?.negativeTags
+                : model?.negativeTags
+            }
             promptType="negative"
           />
         </>

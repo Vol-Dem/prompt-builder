@@ -12,8 +12,9 @@ const Tabs = () => {
 
   const categorySwitchHandler = (e) => {
     console.log("RESET");
-    dispatch(tabActions.reset());
+    // dispatch(tabActions.reset());
     dispatch(tabActions.setCurrentTab(e.target.id));
+    dispatch(tabActions.setCurrentSubcategory(""));
   };
 
   return (
@@ -30,10 +31,10 @@ const Tabs = () => {
             General tags
           </div>
           <div
-            id="models preview"
+            id="models"
             onClick={categorySwitchHandler}
             className={`${classes[`category__link`]} ${
-              activeCategory === "models preview" ? classes.active : ""
+              activeCategory === "models" ? classes.active : ""
             }`}
           >
             Lora
@@ -48,10 +49,10 @@ const Tabs = () => {
             Embeddings
           </div>
           <div
-            id="checkpoint preview"
+            id="checkpoints"
             onClick={categorySwitchHandler}
             className={`${classes[`category__link`]} ${
-              activeCategory === "checkpoint preview" ? classes.active : ""
+              activeCategory === "checkpoints" ? classes.active : ""
             }`}
           >
             Checkpoint

@@ -35,6 +35,7 @@ const CarouselImage = ({ id, src, alt, onClick, dataset }) => {
         }`}
         onClick={onClick}
         onLoad={imgLoadHandler}
+        onError={imgLoadHandler}
         data-position={dataset}
         id={id}
         src={imgSrc}

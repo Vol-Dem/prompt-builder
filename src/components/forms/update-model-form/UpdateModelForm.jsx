@@ -4,6 +4,18 @@ import { ref, set, get } from "firebase/database";
 import { db } from "../../../firebase-config";
 import { addResourcesInfo, getModelInfo } from "../../../utils/fetchUtils";
 import { clearObjectKeys } from "../../../utils/generalUtils";
+import {
+  arrayUnion,
+  doc,
+  getDoc,
+  getFirestore,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import firebaseApp from "../../../firebase-config";
+import { useSelector } from "react-redux";
+
+const firestore = getFirestore(firebaseApp);
 
 const UpdateModelForm = ({ modelData, formType = "model" }) => {
   const [updateInput, setUpdateInput] = useState(false);
@@ -90,12 +102,16 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
     },
   ]);
 
+  const uid = useSelector((state) => state.auth.user.uid);
+  const categories = useSelector((state) => state.tabs.categoriesData);
+
   useEffect(() => {
     if (!modelData) return;
     let versionStatusInputData;
     if (modelData.modelVersionsCustomData) {
-      versionStatusInputData = modelData.modelVersionsCustomData?.map(
-        (version, i) => {
+      versionStatusInputData = Object.values(modelData.modelVersionsCustomData)
+        .sort((a, b) => b.versionId - a.versionId)
+        .map((version, i) => {
           return {
             type: "checkbox",
             id: version.versionId + "in",
@@ -103,8 +119,7 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
             label: version.versionName,
             value: version.downloadStatus,
           };
-        }
-      );
+        });
     } else {
       versionStatusInputData = modelData.data.modelVersions?.map(
         (version, i) => {
@@ -405,6 +420,9 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
                     updatedImgData.meta.civitaiResources =
                       await addResourcesInfo(item.meta.civitaiResources);
                   }
+                  if (item.meta?.comfy?.workflow?.links) {
+                    updatedImgData.meta.comfy.workflow.links = "";
+                  }
                   console.log(updatedImgData);
                   return await updatedImgData;
                 })
@@ -414,73 +432,115 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
         );
         console.log(examplesDataWithRes);
 
-        let modelVersionsCustomData;
+        let modelVersionsCustomData = modelData?.modelVersionsCustomData || {};
 
-        if (!modelData?.modelVersionsCustomData) {
-          modelVersionsCustomData = data.modelVersions.map((version, i) => {
+        if (true) {
+          data.modelVersions.forEach((version, i) => {
             const isSingle = data.modelVersions.length === 1;
             const dlStatus = versionsDownloadStatus.length
               ? !!versionsDownloadStatus[i]?.value
               : false;
-            return {
-              versionId: version.id,
-              versionName: version.name,
-              versionImageUrl:
-                version.images?.filter((img, i) => img.type === "image")[0]
-                  ?.url || "",
-              downloadStatus: versionsDownloadStatus.length
-                ? dlStatus
-                : isSingle,
+            const currVersionData = modelVersionsCustomData.hasOwnProperty(
+              version.id
+            )
+              ? modelVersionsCustomData[version.id]
+              : {};
+            console.log(
+              modelVersionsCustomData.hasOwnProperty(version.id),
+              currVersionData
+            );
+            modelVersionsCustomData = {
+              [version.id]: {
+                versionId: version.id,
+                versionName: version.name,
+                versionImageUrl:
+                  version.images?.filter((img, i) => img.type === "image")[0]
+                    ?.url || "",
+                ...currVersionData,
+                downloadStatus: versionsDownloadStatus.length
+                  ? dlStatus
+                  : isSingle,
+              },
+              ...modelVersionsCustomData,
             };
           });
-        } else if (modelData?.modelVersionsCustomData && updateInput) {
-          const newVersions = data.modelVersions.filter(
-            (version) =>
-              !modelData.modelVersionsCustomData.find(
-                (custVer) => custVer.versionId === version.id
-              )
-          );
-          const newVersionCustomData = newVersions.map((version, i) => {
-            // const dlStatus =
-            //   versionsDownloadStatus?.find((ver) => {
-            //     console.log(ver.id, version.id);
-            //     return ver.id === version.id;
-            //   })?.value || false;
-            // const dlStatus = versionsDownloadStatus.length
-            //   ? !!versionsDownloadStatus[i]?.value
-            //   : false;
-            return {
-              versionId: version.id,
-              versionName: version.name,
-              versionImageUrl:
-                version.images.filter((img, i) => img.type === "image")[0]
-                  ?.url || "",
-              downloadStatus: false,
-            };
-          });
-          console.log("NEW", newVersions);
-          const curVersions = modelData.modelVersionsCustomData.map(
-            (version, i) => {
-              return {
-                ...version,
-                downloadStatus: versionsDownloadStatus[i].value,
-              };
-            }
-          );
-          modelVersionsCustomData = [...newVersionCustomData, ...curVersions];
         } else {
-          console.log("WTF", modelData.modelVersionsCustomData);
-          modelVersionsCustomData = modelData.modelVersionsCustomData.map(
-            (version, i) => {
-              return {
-                ...version,
-                downloadStatus: versionsDownloadStatus[i].value,
-              };
-            }
-          );
+          // data.modelVersions.forEach((version, i) => {
+          //   const isSingle = data.modelVersions.length === 1;
+          //   const dlStatus = versionsDownloadStatus.length
+          //     ? !!versionsDownloadStatus[i]?.value
+          //     : false;
+          //   modelVersionsCustomData[version.id] = {
+          //     ...modelVersionsCustomData[version.id],
+          //     versionId: version.id,
+          //     versionName: version.name,
+          //     versionImageUrl:
+          //       version.images?.filter((img, i) => img.type === "image")[0]
+          //         ?.url || "",
+          //     downloadStatus: versionsDownloadStatus.length
+          //       ? dlStatus
+          //       : isSingle,
+          //   };
+          // });
         }
 
-        const activePreviewId = modelVersionsCustomData?.find(
+        // if (!modelData?.modelVersionsCustomData) {
+        //   modelVersionsCustomData = data.modelVersions.map((version, i) => {
+        //     const isSingle = data.modelVersions.length === 1;
+        //     const dlStatus = versionsDownloadStatus.length
+        //       ? !!versionsDownloadStatus[i]?.value
+        //       : false;
+        //     return {
+        //       versionId: version.id,
+        //       versionName: version.name,
+        //       versionImageUrl:
+        //         version.images?.filter((img, i) => img.type === "image")[0]
+        //           ?.url || "",
+        //       downloadStatus: versionsDownloadStatus.length
+        //         ? dlStatus
+        //         : isSingle,
+        //     };
+        //   });
+        // } else if (modelData?.modelVersionsCustomData && updateInput) {
+        //   const newVersions = data.modelVersions.filter(
+        //     (version) =>
+        //       !modelData.modelVersionsCustomData.find(
+        //         (custVer) => custVer.versionId === version.id
+        //       )
+        //   );
+        //   const newVersionCustomData = newVersions.map((version, i) => {
+        //     return {
+        //       versionId: version.id,
+        //       versionName: version.name,
+        //       versionImageUrl:
+        //         version.images.filter((img, i) => img.type === "image")[0]
+        //           ?.url || "",
+        //       downloadStatus: false,
+        //     };
+        //   });
+        //   console.log("NEW", newVersions);
+        //   const curVersions = modelData.modelVersionsCustomData.map(
+        //     (version, i) => {
+        //       return {
+        //         ...version,
+        //         downloadStatus: versionsDownloadStatus[i].value,
+        //       };
+        //     }
+        //   );
+        //   modelVersionsCustomData = [...newVersionCustomData, ...curVersions];
+        // } else {
+        //   console.log("WTF", modelData.modelVersionsCustomData);
+        //   modelVersionsCustomData = modelData.modelVersionsCustomData.map(
+        //     (version, i) => {
+        //       return {
+        //         ...version,
+        //         downloadStatus: versionsDownloadStatus[i].value,
+        //       };
+        //     }
+        //   );
+        // }
+
+        const activePreviewId = Object.values(modelVersionsCustomData).find(
           (version) => version.downloadStatus === true
         )?.versionId;
         console.log(activePreviewId);
@@ -557,32 +617,188 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           helperTags,
           modelVersionsCustomData,
           updatedAt: new Date().toISOString(),
+          createdAt: modelData?.downloadedAt || Date.now(),
         };
 
-        const modelsRef = ref(db, "models/" + (modelData?.id || modelId));
+        const mdID = modelData?.id || modelId;
+
+        const modelsRef = doc(firestore, "users", uid, "models", mdID + "");
+        const userRef = doc(firestore, "users", uid);
         let modelsPrevRef;
+        let modelType;
+
         if (formType === "Checkpoint") {
-          modelsPrevRef = ref(db, "checkpoint preview/" + main);
+          modelsPrevRef = doc(
+            firestore,
+            "users",
+            uid,
+            "checkpoints preview",
+            mdID + ""
+          );
+          modelType = "checkpoints";
         } else {
-          modelsPrevRef = ref(
-            db,
-            "models preview/" + (modelData?.main || main)
+          modelsPrevRef = doc(
+            firestore,
+            "users",
+            uid,
+            "models preview",
+            mdID + ""
+          );
+          modelType = "models";
+        }
+
+        const modelSnap = await getDoc(modelsRef);
+        const modelsPrevRefSnap = await getDoc(modelsPrevRef);
+        let updatedCat;
+        if (categories && categories[modelType]?.hasOwnProperty(`${main}`)) {
+          const newCat = new Set([...categories[modelType][`${main}`], ...sub]);
+          updatedCat = {
+            ...categories[modelType],
+            [`${main}`]: [...newCat],
+          };
+          console.log("TEST", updatedCat);
+        } else if (categories) {
+          updatedCat = {
+            ...categories[modelType],
+            [`${modelData?.main || main}`]: sub,
+          };
+        } else {
+          updatedCat = { [`${modelData?.main || main}`]: sub };
+        }
+        console.log("TEST2", updatedCat);
+
+        // Throw error if user try to add existing model using new model form
+        // if (modelSnap.exists() && modelsPrevRefSnap.exists() && !modelData) {
+        //   throw new Error("Exists");
+        // } else {
+        //   await setDoc(modelsRef, modelInfo);
+        //   const categoryField = `categories.${modelType}`;
+
+        //   await updateDoc(
+        //     userRef,
+        //     {
+        //       [categoryField]: updatedCat,
+        //     },
+        //     { merge: true }
+        //   );
+        //   await setDoc(modelsPrevRef, loraPrevData);
+        // }
+
+        // const modelsRef = ref(db, "models/" + (modelData?.id || modelId));
+        // let modelsPrevRef;
+        // if (formType === "Checkpoint") {
+        //   modelsPrevRef = ref(db, "checkpoint preview/" + main);
+        // } else {
+        //   modelsPrevRef = ref(
+        //     db,
+        //     "models preview/" + (modelData?.main || main)
+        //   );
+        // }
+
+        // get(modelsRef).then((snapshot) => {
+        //   if (snapshot.exists()) {
+        //     if (!modelData) {
+        //       seteSuccessMessage("Exists");
+        //       return;
+        //     }
+        //     set(modelsRef, modelInfo);
+        //     savePreview(modelsPrevRef, loraPrevData, modelId);
+        //   } else {
+        //     set(modelsRef, modelInfo);
+        //     savePreview(modelsPrevRef, loraPrevData, modelId);
+        //   }
+        // });
+
+        const modelsRDRef = ref(db, "models");
+        const snapshot = await get(modelsRDRef);
+
+        if (snapshot.exists()) {
+          const curData = await snapshot.val();
+          // console.log(curDataR);
+          // const curData = { name: curDataR };
+
+          await Promise.all(
+            Object.values(curData).map((model) => {
+              const modelsFrRef = doc(
+                firestore,
+                "users",
+                uid,
+                "models",
+                model.id + ""
+              );
+
+              const modelVersions = model.data.modelVersions.map((version) => {
+                const images =
+                  version?.images?.map((img) => {
+                    const meta = img?.meta || {};
+                    meta.comfy = null;
+                    return {
+                      ...img,
+                      meta,
+                    };
+                  }) || [];
+                return {
+                  baseModel: version.baseModel || "",
+                  baseModelType: version.baseModelType || "",
+                  createdAt: version.createdAt || "",
+                  description: version.description || "",
+                  id: version.id,
+                  modelId: version.modelId,
+                  name: version.name,
+                  trainedWords: version.trainedWords || null,
+                  updatedAt: version.updatedAt || "",
+                  vaeId: version.vaeId || null,
+                  images,
+                };
+              });
+              const cleanedModelData = {
+                id: model.data.id,
+                description: model.data?.description || "",
+                nsfw: model.data?.nsfw || "",
+                poi: model.data?.poi || "",
+                tags: model.data?.tags || "",
+                type: model.data?.type || "",
+                modelVersions,
+              };
+              const modelVersionsCustomDataConverted = {};
+              model?.modelVersionsCustomData?.forEach((mvcd) => {
+                modelVersionsCustomDataConverted[mvcd.versionId] = mvcd;
+              });
+              const cleanedData = {
+                id: model.id,
+                data: cleanedModelData,
+                main: model.main,
+                mainTag: model?.mainTag || "",
+                sampler: model?.sampler || "",
+                cfgScale: model?.cfgScale || "",
+                denoisingStrength: model?.denoisingStrength || "",
+                fileName: model?.fileName || "",
+                hiresUpscale: model?.hiresUpscale || "",
+                hiresUpscaler: model?.hiresUpscaler || "",
+                modelVersionsCustomData: modelVersionsCustomDataConverted || {},
+                negativeTags: model?.negativeTags || [],
+                savedImages: model?.savedImages || {},
+                size: model?.size || "",
+                src: model.src,
+                steps: model?.steps || "",
+                sub: model.sub,
+                updatedAt: model.updatedAt,
+                vae: model?.vae || "",
+                weight: model?.weight || "",
+                title: model?.title || "",
+                imgUrl: model?.imgUrl || "",
+                type: model?.type || "",
+                baseModel: model?.baseModel || "",
+                tags: model?.tags || [],
+                tagSetsData: model?.tagSetsData || [],
+                helperTags: model?.helperTags || [],
+              };
+              console.log(cleanedData);
+              return setDoc(modelsFrRef, cleanedData);
+            })
           );
         }
 
-        get(modelsRef).then((snapshot) => {
-          if (snapshot.exists()) {
-            if (!modelData) {
-              seteSuccessMessage("Exists");
-              return;
-            }
-            set(modelsRef, modelInfo);
-            savePreview(modelsPrevRef, loraPrevData, modelId);
-          } else {
-            set(modelsRef, modelInfo);
-            savePreview(modelsPrevRef, loraPrevData, modelId);
-          }
-        });
         setModelIsSaving(false);
         seteSuccessMessage("Saved");
       } catch (err) {
@@ -595,37 +811,37 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
     getModelData();
   };
 
-  const savePreview = (modelsPrevRef, loraPrevData, modelId) => {
-    try {
-      get(modelsPrevRef).then((snapshot) => {
-        if (snapshot.exists()) {
-          const curData = snapshot.val();
-          const curPrevIndex = curData.findIndex((prev) => prev.id === modelId);
-          // console.log(curPrevIndex);
-          // console.log(loraPrevData);
-          // console.log(curData[curPrevIndex]);
+  // const savePreview = (modelsPrevRef, loraPrevData, modelId) => {
+  //   try {
+  //     get(modelsPrevRef).then((snapshot) => {
+  //       if (snapshot.exists()) {
+  //         const curData = snapshot.val();
+  //         const curPrevIndex = curData.findIndex((prev) => prev.id === modelId);
+  //         // console.log(curPrevIndex);
+  //         // console.log(loraPrevData);
+  //         // console.log(curData[curPrevIndex]);
 
-          if (curPrevIndex !== -1) {
-            curData[curPrevIndex] = {
-              ...curData[curPrevIndex],
-              ...loraPrevData,
-            };
-            // console.log(curData[curPrevIndex]);
-            set(modelsPrevRef, [...curData]);
-          } else {
-            set(modelsPrevRef, [...curData, loraPrevData]);
-          }
-        } else {
-          set(modelsPrevRef, [loraPrevData]);
-        }
-        setModelIsSaving(false);
-      });
-    } catch (err) {
-      // setModelIsSaving(false);
-      seteErrorMessage(err.message);
-      console.log(err.message);
-    }
-  };
+  //         if (curPrevIndex !== -1) {
+  //           curData[curPrevIndex] = {
+  //             ...curData[curPrevIndex],
+  //             ...loraPrevData,
+  //           };
+  //           // console.log(curData[curPrevIndex]);
+  //           set(modelsPrevRef, [...curData]);
+  //         } else {
+  //           set(modelsPrevRef, [...curData, loraPrevData]);
+  //         }
+  //       } else {
+  //         set(modelsPrevRef, [loraPrevData]);
+  //       }
+  //       setModelIsSaving(false);
+  //     });
+  //   } catch (err) {
+  //     // setModelIsSaving(false);
+  //     seteErrorMessage(err.message);
+  //     console.log(err.message);
+  //   }
+  // };
 
   const addSubHandler = () => {
     const newFields = [...subCatAmount];

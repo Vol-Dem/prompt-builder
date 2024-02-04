@@ -4,6 +4,16 @@ import classes from "./Subcategories.module.scss";
 import ModelsList from "../lora/ModelsList";
 import { useDispatch, useSelector } from "react-redux";
 import { tabActions } from "../../store/tabs";
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  query,
+  where,
+} from "firebase/firestore";
+import firebaseApp from "../../firebase-config";
+
+const firestore = getFirestore(firebaseApp);
 
 const Subcategories = () => {
   // const [activeSubcategory, setActiveSubategory] = useState("");
@@ -18,67 +28,84 @@ const Subcategories = () => {
   const subcats = useSelector((state) => state.tabs.subcategories);
   const loraSubcategories = useSelector((state) => state.tabs.modelsData);
   const subcategories = catigories[activeCategory];
+  const uid = useSelector((state) => state.auth.user.uid);
   // console.log(catigories);
   // console.log(subcats);
 
   // console.log(currTab);
   const dispatch = useDispatch();
 
-  // console.log(subcats);
-  // console.log(catigories);
   const categorySwitchHandler = (e) => {
+    // console.log("open");
     dispatch(tabActions.setCurrentSubcategory(e.target.id));
-    // setActiveSubategory(e.target.id);
-
-    if (isLora) {
-      const loraCat = subcategories.filter((item) => {
-        // console.log(item.sub);
-        return item.sub.includes(e.target.id);
-      });
-      // console.log(loraCat);
-      dispatch(tabActions.setModelsData(loraCat));
-      // setLoraSubcategories(loraCat);
-    }
+    // const getModelsPreview = async () => {
+    //   const q = query(
+    //     collection(firestore, "users", uid, "models preview"),
+    //     where("main", "==", activeCategory),
+    //     where("sub", "array-contains", e.target.id)
+    //   );
+    //   const querySnapshot = await getDocs(q);
+    //   const modelsData = querySnapshot.docs.map((doc) => {
+    //     // doc.data() is never undefined for query doc snapshots
+    //     return doc.data();
+    //   });
+    //   console.log(activeCategory, activeSubcategory);
+    //   console.log(modelsData);
+    //   dispatch(tabActions.setModelsData(modelsData));
+    // };
+    // getModelsPreview();
+    // // setActiveSubategory(e.target.id);
+    // if (isLora) {
+    //   const loraCat = subcategories.filter((item) => {
+    //     // console.log(item.sub);
+    //     return item.sub.includes(e.target.id);
+    //   });
+    //   // console.log(loraCat);
+    //   dispatch(tabActions.setModelsData(loraCat));
+    //   // setLoraSubcategories(loraCat);
+    // }
   };
 
-  useEffect(() => {
-    const isLora =
-      currTab === "models preview" || currTab === "checkpoint preview";
-    // console.log(isLora);
-    // console.log(catigories);
-    // console.log(subcategories);
+  // useEffect(() => {
+  //   const isLora =
+  //     currTab === "models preview" || currTab === "checkpoint preview";
+  //   // console.log(isLora);
+  //   // console.log(catigories);
+  //   // console.log(subcategories);
 
-    const loraSubcatigoriesHtml = isLora && [
-      ...new Set(
-        subcategories?.flatMap((el) => {
-          return el.sub;
-        })
-      ),
-    ];
+  //   const loraSubcatigoriesHtml = isLora && [
+  //     ...new Set(
+  //       subcategories?.flatMap((el) => {
+  //         return el.sub;
+  //       })
+  //     ),
+  //   ];
 
-    const subcats = isLora
-      ? loraSubcatigoriesHtml
-      : Object.keys(subcategories || {});
+  //   const subcats = isLora
+  //     ? loraSubcatigoriesHtml
+  //     : Object.keys(subcategories || {});
 
-    // setSubcats(subcats);
-    setIsLora(isLora);
-    dispatch(tabActions.setSubcategories(subcats));
-  }, [subcategories, currTab, dispatch]);
+  //   // setSubcats(subcats);
+  //   setIsLora(isLora);
+  //   dispatch(tabActions.setSubcategories(subcats));
+  // }, [subcategories, currTab, dispatch]);
 
-  const subcategoriesHtml = subcats?.map((category) => {
-    return (
-      <div
-        id={category}
-        onClick={categorySwitchHandler}
-        key={category}
-        className={`${classes[`subcategory__link`]} ${
-          activeSubcategory === category ? classes.active : ""
-        }`}
-      >
-        {category}
-      </div>
-    );
-  });
+  const subcategoriesHtml = catigories[currTab][activeCategory]?.map(
+    (category) => {
+      return (
+        <div
+          id={category}
+          onClick={categorySwitchHandler}
+          key={category}
+          className={`${classes[`subcategory__link`]} ${
+            activeSubcategory === category ? classes.active : ""
+          }`}
+        >
+          {category}
+        </div>
+      );
+    }
+  );
 
   // const subcategoryHtml = (
   //   <TagList subcat={subcategories[activeSubcategory]} />
@@ -89,10 +116,8 @@ const Subcategories = () => {
   return (
     <div className={classes.category}>
       <div className={classes["subcategories"]}>{subcategoriesHtml}</div>
-      {!isLora && <TagList tags={subcategories[activeSubcategory]} />}
-      {activeSubcategory && isLora && (
-        <ModelsList loraItems={loraSubcategories} />
-      )}
+      {/* {!isLora && <TagList tags={subcategories[activeSubcategory]} />} */}
+      {activeSubcategory && <ModelsList loraItems={loraSubcategories} />}
     </div>
   );
 };

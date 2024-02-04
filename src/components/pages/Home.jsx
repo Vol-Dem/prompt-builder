@@ -15,6 +15,7 @@ import { modelActions } from "../../store/model";
 
 function Home() {
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
+  const userId = useSelector((state) => state.auth.user.uid);
   const distpatch = useDispatch();
   const nsfwSwitchHandler = () => {
     distpatch(modelActions.setNsfwMode(!isNsfwMode));

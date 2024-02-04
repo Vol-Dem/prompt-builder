@@ -1,6 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { db } from "../firebase-config";
 import { get, onValue, ref, set } from "firebase/database";
+import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
+import firebaseApp from "../firebase-config";
+
+const firestore = getFirestore(firebaseApp);
 
 const initialModelState = {
   model: {},
@@ -36,38 +40,74 @@ const modelSlice = createSlice({
   },
 });
 
-export const getModel = (modelId, type) => {
+export const getModel = (modelId) => {
   return async (dispatch, getState) => {
     dispatch(modelActions.setIsLoading(true));
-    const id = getState().model.curVersion;
+    const uid = getState().auth.user.uid;
 
-    const modelRef = ref(db, `models/` + modelId);
-    // if (type === "Checkpoint") {
-    //   modelRef = ref(db, `checkpoint/` + modelId);
-    // } else {
-    //   ;
+    // const modelRef = doc(firestore, "users", uid, "models", modelId);
+    // const modelSnap = await getDoc(modelRef);
+
+    const unsub = onSnapshot(
+      doc(firestore, "users", uid, "models", modelId),
+      (doc) => {
+        const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+        console.log(source);
+        const data = doc.data();
+        console.log(data);
+        if (!data) return;
+        dispatch(modelActions.setModelData(data));
+
+        const curVersionId = Object.values(data?.modelVersionsCustomData).find(
+          (version) => version.downloadStatus === true
+        )?.versionId;
+        const curVersionData = curVersionId
+          ? data.data.modelVersions.find(
+              (version) => version.id === curVersionId
+            )
+          : data.data.modelVersions[0];
+        dispatch(modelActions.setModelPreview({}));
+        dispatch(modelActions.setIsLoading(false));
+        dispatch(modelActions.setCurVersion(curVersionData));
+      }
+    );
+
+    // if (modelSnap.exists()) {
+    //   const data = modelSnap.data();
+    //   console.log(data);
+
+    //   dispatch(modelActions.setModelData(data));
+
+    //   const curVersionId = data.modelVersionsCustomData?.find(
+    //     (version) => version.downloadStatus === true
+    //   )?.versionId;
+    //   const curVersionData = curVersionId
+    //     ? data.data.modelVersions.find((version) => version.id === curVersionId)
+    //     : data.data.modelVersions[0];
+    //   dispatch(modelActions.setModelPreview({}));
+    //   dispatch(modelActions.setIsLoading(false));
+    //   dispatch(modelActions.setCurVersion(curVersionData));
     // }
 
-    onValue(modelRef, (snapshot) => {
-      const data = snapshot.val();
-      console.log(data);
-      console.log("CUR", id);
+    // const modelRef = ref(db, `models/` + modelId);
 
-      dispatch(modelActions.setModelData(data));
-      console.log(id, data.id);
-      // if (id !== data.id) {
-      //   dispatch(modelActions.setCurVersion(data?.data?.modelVersions[0]));
-      // }
-      const curVersionId = data.modelVersionsCustomData?.find(
-        (version) => version.downloadStatus === true
-      )?.versionId;
-      const curVersionData = curVersionId
-        ? data.data.modelVersions.find((version) => version.id === curVersionId)
-        : data.data.modelVersions[0];
-      dispatch(modelActions.setModelPreview({}));
-      dispatch(modelActions.setIsLoading(false));
-      dispatch(modelActions.setCurVersion(curVersionData));
-    });
+    // onValue(modelRef, (snapshot) => {
+    //   const data = snapshot.val();
+    //   console.log(data);
+    //   console.log("CUR", id);
+
+    //   dispatch(modelActions.setModelData(data));
+    //   console.log(id, data.id);
+    //   const curVersionId = data.modelVersionsCustomData?.find(
+    //     (version) => version.downloadStatus === true
+    //   )?.versionId;
+    //   const curVersionData = curVersionId
+    //     ? data.data.modelVersions.find((version) => version.id === curVersionId)
+    //     : data.data.modelVersions[0];
+    //   dispatch(modelActions.setModelPreview({}));
+    //   dispatch(modelActions.setIsLoading(false));
+    //   dispatch(modelActions.setCurVersion(curVersionData));
+    // });
   };
 };
 

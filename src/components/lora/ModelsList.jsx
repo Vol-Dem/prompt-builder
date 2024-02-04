@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 // import { useEffect, useState } from "react";
 // import Category from "../subcategories/Subcategories";
 import classes from "./ModelsList.module.scss";
@@ -6,57 +6,48 @@ import classes from "./ModelsList.module.scss";
 // import { onValue, ref, set } from "firebase/database";
 // import Tag from "../tag/Tag";
 import PreviewCard from "../previewCard/PreviewCard";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  collection,
+  getDoc,
+  getDocs,
+  getFirestore,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 // import Subcategory from "../subcategory/Subcategory";
+import firebaseApp from "../../firebase-config";
+import { tabActions } from "../../store/tabs";
+
+const firestore = getFirestore(firebaseApp);
 
 const ModelsList = ({ loraItems }) => {
-  // useEffect(() => {
-  //   const loraPrevRef = ref(db, "lora preview");
-  //   const figureRef = ref(db, "lora");
-  //   onValue(figureRef, (snapshot) => {
-  //     const data = snapshot.val();
-  //     const lorasPreview = {};
-  //     Object.keys(data).forEach((id) => {
-  //       lorasPreview[data[id].main] = {
-  //         id,
-  //         main: data[id].main,
-  //         sub: data[id].sub,
-  //         title: data[id].title,
-  //         mainTag: data[id].mainTag,
-  //         baseModel: data[id].baseModel,
-  //         tags: data[id].tags || [],
-  //         helperTags: data[id].helperTags || [],
-  //         negativeTags: data[id].negativeTags || [],
-  //         type: data[id].type,
-  //         weight: data[id].weight,
-  //         clipSkip: data[id].clipSkip || "",
-  //         size: data[id].size || "",
-  //       };
-  //     });
+  const activeTab = useSelector((state) => state.tabs.currTab);
+  const activeSubcategory = useSelector((state) => state.tabs.currSubcategory);
+  const activeCategory = useSelector((state) => state.tabs.currCategory);
+  const uid = useSelector((state) => state.auth.user.uid);
 
-  //     // Object.keys(data).forEach((cat) => {
+  const dispatch = useDispatch();
 
-  //     //   lorasPreview[cat] = Object.keys(data[cat]).map((id) => {
+  useEffect(() => {
+    const getModelsPreview = async () => {
+      const q = query(
+        collection(firestore, "users", uid, `${activeTab} preview`),
+        where("main", "==", activeCategory),
+        where("sub", "array-contains", activeSubcategory)
+        // orderBy("id", "desc")
+      );
+      const querySnapshot = await getDocs(q);
+      const modelsData = querySnapshot.docs.map((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        return doc.data();
+      });
 
-  //     //     return {
-  //     //       id,
-  //     //       sub: data[cat][id].sub,
-  //     //       title: data[cat][id].title,
-  //     //       mainTag: data[cat][id].mainTag,
-  //     //       tags: data[cat][id].tags || [],
-  //     //       baseModel: data[cat][id].baseModel,
-  //     //       helperTags: data[cat][id].helperTags || [],
-  //     //       negativeTags: data[cat][id].negativeTags || [],
-  //     //       type: data[cat][id].type,
-  //     //       weight: data[cat][id].weight,
-  //     //       clipSkip: data[cat][id].clipSkip || "",
-  //     //       size: data[cat][id].size || "",
-  //     //     };
-  //     //   });
-  //     // });
-  //     console.log(lorasPreview);
-  //     set(loraPrevRef, lorasPreview);
-  //   });
-  // }, []);
+      dispatch(tabActions.setModelsData(modelsData));
+    };
+    getModelsPreview();
+  }, [uid, activeCategory, activeSubcategory, firestore]);
 
   const loraHtml = loraItems.map((item, i) => {
     return <PreviewCard previewData={item} key={item.id} />;

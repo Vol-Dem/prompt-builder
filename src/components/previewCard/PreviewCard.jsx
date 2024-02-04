@@ -29,9 +29,9 @@ const PreviewCard = ({ previewData }) => {
   // console.log(previewData);
 
   useEffect(() => {
-    const currVersionData = previewData?.modelVersionsCustomData?.filter(
-      (data) => data.downloadStatus
-    );
+    const currVersionData = Object.values(
+      previewData.modelVersionsCustomData
+    ).filter((data) => data.downloadStatus);
     console.log(currVersionData);
     if (currVersionData?.length) setCurrVersion(currVersionData[0]);
   }, []);
@@ -206,7 +206,7 @@ const PreviewCard = ({ previewData }) => {
           </ul>
         )}
         <div className={classes["tags-container"]}>
-          {previewData.tags && (
+          {previewData.tags.length !== 0 && (
             <>
               <span>Tags: </span>
               <div
@@ -239,7 +239,7 @@ const PreviewCard = ({ previewData }) => {
             </>
           )}
         </div>
-        {previewData.helperTags && (
+        {previewData.helperTags.length !== 0 && (
           <>
             <div
               className={`${classes[["helper-tags"]]} ${

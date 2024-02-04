@@ -1,0 +1,180 @@
+import { createSlice } from "@reduxjs/toolkit";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  updatePassword,
+  updateProfile,
+} from "firebase/auth";
+import firebaseApp from "../firebase-config";
+import { getDoc } from "firebase/firestore";
+import { getCategories } from "./tabs";
+// import { loadFav } from "./fav";
+
+const auth = getAuth(firebaseApp);
+
+const authInitialState = {
+  isLoggedIn: false,
+  authFormIsOpen: false,
+  isLoading: false,
+  errorMessage: "",
+  categories: [],
+  user: {
+    idToken: "",
+    refreshToken: "",
+    uid: "",
+    email: "",
+    userName: "",
+  },
+};
+
+const authSlice = createSlice({
+  name: "auth",
+  initialState: authInitialState,
+  reducers: {
+    login(state, actions) {
+      state.isLoggedIn = true;
+      state.user = {
+        idToken: actions.payload.accessToken,
+        uid: actions.payload.uid,
+        email: actions.payload.email,
+        userName: actions.payload.displayName,
+      };
+    },
+    logout(state) {
+      state.isLoggedIn = false;
+      state.user = Object.fromEntries(
+        Object.keys(state.user).map((key) => [key, ""])
+      );
+
+      signOut(auth);
+    },
+    openAuthForm(state) {
+      state.authFormIsOpen = true;
+    },
+    closeAuthForm(state) {
+      state.authFormIsOpen = false;
+    },
+    setErrorMessage(state, actions) {
+      state.errorMessage = actions.payload;
+    },
+    setIsLoading(state, actions) {
+      state.isLoading = actions.payload;
+    },
+  },
+});
+
+/**
+ *Automatically authorizes the user and load related favlist if user object is exists.
+ * @returns
+ */
+export const initAuth = () => {
+  return (dispatch) => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        dispatch(
+          authActions.login({
+            accessToken: user.accessToken,
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+          })
+        );
+        dispatch(getCategories(user.uid));
+        // dispatch(loadFav(user.uid));
+      }
+    });
+  };
+};
+
+/**
+ *Makes a firebase authentication request and authorizes the user.
+ * @param {boolean} isLogin - Type of request. If false, create new user. If true, authorizes the user.
+ * @param {string} email - User email
+ * @param {string} password - User password
+ * @returns
+ */
+export const authRequest = (isLogin, email, password) => {
+  return async (dispatch) => {
+    dispatch(authActions.setIsLoading(true));
+    try {
+      let userCredential = {};
+      if (isLogin) {
+        userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+      } else {
+        userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+      }
+
+      const user = userCredential.user;
+      dispatch(
+        authActions.login({
+          accessToken: user.accessToken,
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+        })
+      );
+      dispatch(authActions.closeAuthForm());
+      console.log("AUTH");
+      dispatch(getCategories(user.uid));
+    } catch (error) {
+      dispatch(authActions.setErrorMessage(error.message));
+    }
+    dispatch(authActions.setIsLoading(false));
+  };
+};
+
+/**
+ * Change user password
+ * @param {string} password - User password
+ * @returns
+ */
+export const changeUserPassword = (password) => {
+  return async (dispatch) => {
+    try {
+      const user = auth.currentUser;
+      await updatePassword(user, password);
+    } catch (error) {
+      dispatch(authActions.setErrorMessage(error.message));
+    }
+  };
+};
+
+/**
+ * Change user name
+ * @param {string} name - User name
+ * @returns
+ */
+export const changeUserName = (name) => {
+  return async (dispatch) => {
+    try {
+      const user = auth.currentUser;
+      await updateProfile(user, { displayName: name });
+      dispatch(
+        authActions.login({
+          accessToken: user.accessToken,
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+        })
+      );
+      console.log(user);
+    } catch (error) {
+      dispatch(authActions.setErrorMessage(error.message));
+    }
+  };
+};
+
+export const authActions = authSlice.actions;
+
+export default authSlice;

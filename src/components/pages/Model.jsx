@@ -49,8 +49,9 @@ const Model = () => {
   const model = useSelector((state) => state.model.model);
   const isLoading = useSelector((state) => state.model.isLoading);
   const curVersion = useSelector((state) => state.model.curVersion);
+  const isAuth = useSelector((state) => state.auth.user.uid);
   const dispatch = useDispatch();
-
+  console.log(curVersion);
   // const resetExamples = () => {
   //   console.log("RESET");
   //   setCurrCursor(null);
@@ -59,13 +60,15 @@ const Model = () => {
 
   useEffect(() => {
     // resetExamples();
+    if (!isAuth) return;
     dispatch(getModel(modelId));
+    setCurCustomVersionData({});
     return () => {
       // resetExamples();
       dispatch(modelActions.setCurVersion({}));
       dispatch(modelActions.setModelData({}));
     };
-  }, [modelId, dispatch]);
+  }, [modelId, isAuth, dispatch]);
 
   // useEffect(() => {
   //   console.log("CHECK", model, !model);
@@ -95,10 +98,11 @@ const Model = () => {
     };
     setModelPreview(modelPreviewData);
 
-    const curCustomVersion = model.modelVersionsCustomData?.find(
-      (version) => version.versionId === curVersion.id
-    );
-    // console.log(curCustomVersion);
+    // const curCustomVersion = model.modelVersionsCustomData?.find(
+    //   (version) => version.versionId === curVersion.id
+    // );
+    const curCustomVersion = model.modelVersionsCustomData[curVersion.id];
+    console.log(curCustomVersion);
     setCurCustomVersionData(curCustomVersion);
 
     if (!curImagesModelVersionId)
@@ -441,7 +445,11 @@ const Model = () => {
   //   setExamplesHtml(examples);
   // };
 
-  const modelVersionsHrml = model?.data?.modelVersions.map((version, i) => {
+  const modelVersionsHtml = model?.data?.modelVersions.map((version, i) => {
+    // const isSaved = model.modelVersionsCustomData?.find(
+    //   (customData) => customData.versionId === version.id
+    // ).downloadStatus;
+    const isSaved = model.modelVersionsCustomData[version.id]?.downloadStatus;
     return (
       <div
         key={i}
@@ -451,12 +459,7 @@ const Model = () => {
         className={`${classes.version} ${
           curVersion?.id === version.id ? classes["version--active"] : ""
         }
-        ${
-          model?.modelVersionsCustomData &&
-          model?.modelVersionsCustomData[i]?.downloadStatus
-            ? classes["version--downloaded"]
-            : ""
-        }`}
+        ${isSaved ? classes["version--downloaded"] : ""}`}
       >
         {version.name}
       </div>
@@ -588,8 +591,9 @@ const Model = () => {
   //   (file) => file.type === "VAE"
   // )?.name;
 
-  const versionFormsHtml = model?.modelVersionsCustomData?.flatMap(
-    (version, i) => {
+  const versionFormsHtml =
+    model?.modelVersionsCustomData &&
+    Object.values(model.modelVersionsCustomData).flatMap((version, i) => {
       if (!version.downloadStatus) return [];
       return (
         <div key={i}>
@@ -597,12 +601,12 @@ const Model = () => {
           <VersionForm
             versionData={version}
             modelId={model.id}
-            mainCat={model.main}
+            // mainCat={model.main}
+            modelType={model.data.type}
           />
         </div>
       );
-    }
-  );
+    });
 
   // const mergeHandler = () => {
   //   const modelsChRef = ref(db, `checkpoint`);
@@ -653,7 +657,7 @@ const Model = () => {
           {editIsOpen && <SaveImageForm modelData={model} />}
 
           <div className={classes.title}> {model?.data?.name}</div>
-          <ul className={classes.versions}>{modelVersionsHrml}</ul>
+          <ul className={classes.versions}>{modelVersionsHtml}</ul>
           {!isLoading && modelImagesHtml}
           <div className={classes["info-container"]}>
             {/* <div className={classes?.info}>
@@ -734,109 +738,7 @@ const Model = () => {
           <div>{model?.data?.description?.replace(/(<([^>]+)>)/gi, "")}</div>
 
           <div>Exapmles:</div>
-          <GeneratedImages
-            customData={curCustomVersionData}
-            // curImagesModelVersionId={curImagesModelVersionId}
-            // onOpen={openSavedVersionImagesHandler}
-          />
-          {/* <div>
-            {(model?.examplesData || model?.savedImages) && (
-              <span
-                className={`${classes["btn-examples"]} ${
-                  curExampleImgsType === "saved"
-                    ? classes["btn-examples--active"]
-                    : ""
-                }`}
-                data-example="saved"
-                onClick={switchCurExamples}
-              >
-                Saved
-              </span>
-            )}{" "}
-            <span
-              className={`${classes["btn-examples"]} ${
-                curExampleImgsType === "all"
-                  ? classes["btn-examples--active"]
-                  : ""
-              }`}
-              data-example="all"
-              onClick={switchCurExamples}
-            >
-              All
-            </span>
-            <select
-              name="sort"
-              id="sort"
-              value={imagesSortValue}
-              onChange={(e) => {
-                resetExamples();
-                setImagesSortValue(e.target.value);
-              }}
-            >
-              <option value="">-</option>
-              <option value="Newest">Newest</option>
-              <option value="Most Comments">Most Comments</option>
-              <option value="Most Reactions">Most Reactions</option>
-            </select>
-            <select
-              name="amount-per-page"
-              id="amount-per-page"
-              value={amountPerPage}
-              onChange={(e) => {
-                resetExamples();
-                setAmountPerPage(e.target.value);
-              }}
-            >
-              <option value="">-</option>
-              <option value="20">20</option>
-              <option value="30">30</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-          </div>
-
-          <div className={classes["image-versions"]}>
-            {curExampleImgsType === "saved" && model?.examplesData?.length && (
-              <div
-                className={`${classes.version} ${
-                  curImagesModelVersionId === "unsorted"
-                    ? classes["version--active"]
-                    : ""
-                }
-        `}
-                id="unsorted"
-                onClick={openSavedVersionImagesHandler}
-              >
-                Unsorted
-              </div>
-            )}
-            <div
-              className={`${classes.version} ${
-                curImagesModelVersionId === "all-versions"
-                  ? classes["version--active"]
-                  : ""
-              }
-        `}
-              id="all-versions"
-              onClick={openSavedVersionImagesHandler}
-            >
-              All
-            </div>
-            {modelImageVersionsHtml}
-          </div>
-          <div className={classes.images}>{examplesHtml}</div>
-          {examplesIsLoading && <div>Loading...</div>}
-          {errorMessage && <div>{errorMessage}</div>}
-          <div>
-            {nextCursor && curExampleImgsType === "all" && (
-              <button onClick={nextPageHandler}>next</button>
-            )}
-            {errorMessage && !nextCursor && (
-              <button on onClick={retryImageLoadingHandler}>
-                Retry
-              </button>
-            )}
-          </div> */}
+          <GeneratedImages customData={curCustomVersionData} />
         </>
       )}
       {/* <div className={classes.test}>

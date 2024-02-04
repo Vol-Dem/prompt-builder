@@ -5,28 +5,34 @@ import { get, ref, set } from "firebase/database";
 import { db } from "../../../firebase-config";
 import { addResourcesInfo, getModelInfo } from "../../../utils/fetchUtils";
 import Carousel from "../../carousel/Carousel";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
+import firebaseApp from "../../../firebase-config";
+
+const firestore = getFirestore(firebaseApp);
 
 const GeneratedImages = ({ customData }) => {
-  const [modelPreview, setModelPreview] = useState({});
+  // const [modelPreview, setModelPreview] = useState({});
   // const [isLoading, setIsLoading] = useState(true);
-  const [editIsOpen, setEditIsOpen] = useState(false);
-  const [currVersionIndex, setCurrVersionIndex] = useState(null);
+  // const [editIsOpen, setEditIsOpen] = useState(false);
+  // const [currVersionIndex, setCurrVersionIndex] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   // const [curVersion, setCurVersion] = useState(null);
   const [curExampleImgsType, setCurExampleImgsType] = useState("saved");
-  const [examplesPage, setExamplesPage] = useState(1);
+  // const [examplesPage, setExamplesPage] = useState(1);
   const [examplesIsLoading, setExamplesIsLoading] = useState(false);
   const [examplesImages, setExamplesImages] = useState([]);
-  const [allModelexamplesImages, setAllModelexamplesImages] = useState({});
+  // const [allModelexamplesImages, setAllModelexamplesImages] = useState({});
   const [currCursor, setCurrCursor] = useState(null);
   const [nextCursor, setNextCursor] = useState(null);
   const [examplesHtml, setExamplesHtml] = useState([]);
-  const [curCustomVersionData, setCurCustomVersionData] = useState({});
+  // const [curCustomVersionData, setCurCustomVersionData] = useState({});
   const [curImagesModelVersionId, setCurImagesModelVersionId] = useState();
   const [imagesSortValue, setImagesSortValue] = useState("Newest");
   const [amountPerPage, setAmountPerPage] = useState("20");
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
+  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const uid = useSelector((state) => state.auth.user.uid);
 
   const resetExamples = () => {
     console.log("RESET");
@@ -44,10 +50,17 @@ const GeneratedImages = ({ customData }) => {
 
   useEffect(() => {
     if (!curVersion?.baseModel) return;
-    console.log("WTF", curImagesModelVersionId, curVersion.id);
-    if (!curImagesModelVersionId)
+    console.log(
+      "WTF",
+      curImagesModelVersionId,
+      curVersion.id,
+      customData?.versionId
+    );
+    if (!curImagesModelVersionId) {
+      console.log("Hmmm", customData?.versionId);
       setCurImagesModelVersionId(customData?.versionId || curVersion.id);
-  }, [model, curVersion, customData]);
+    }
+  }, [model, curVersion, customData, curImagesModelVersionId]);
 
   useEffect(() => {
     if (curImagesModelVersionId !== curVersion.id)
@@ -75,7 +88,7 @@ const GeneratedImages = ({ customData }) => {
     setCurImagesModelVersionId(+e.target.id);
   };
   const switchCurExamples = (e) => {
-    setExamplesPage(1);
+    // setExamplesPage(1);
     resetExamples();
     setErrorMessage("");
     setCurExampleImgsType(e.target.dataset.example);
@@ -136,7 +149,7 @@ const GeneratedImages = ({ customData }) => {
         versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
       }${amountPerPage ? `&limit=${amountPerPage}` : ""}${
         imagesSortValue ? `&sort=${imagesSortValue}` : ""
-      }${cursor ? `&cursor=${cursor}` : ""}`;
+      }${cursor ? `&cursor=${cursor}` : ""}${!true ? `&nsfw=None` : ""}`;
       console.log(url);
       console.log(versionId);
       const imgExampleResponse = await fetch(url);
@@ -177,18 +190,28 @@ const GeneratedImages = ({ customData }) => {
       setExamplesHtml(examples);
       return;
     }
+    if (!model.savedImages[curImagesModelVersionId]) {
+      const latestVersion = Object.keys(model.savedImages)[0];
+      if (latestVersion) setCurImagesModelVersionId(+latestVersion);
+    }
 
-    const modelsRef = ref(
-      db,
-      `savedImages/${model.id}/` + curImagesModelVersionId
-    );
+    const getImages = async () => {
+      const modelImagesRef = doc(
+        firestore,
+        "users",
+        uid,
+        "models",
+        model.id + "",
+        "images",
+        curImagesModelVersionId + ""
+      );
+      const modelImagesSnap = await getDoc(modelImagesRef);
 
-    get(modelsRef).then((snapshot) => {
-      if (snapshot.exists()) {
-        const curData = snapshot.val();
-        console.log(curData);
-        // setExamplesImages(curData);
-        const examples = curData.map((item, i) => {
+      if (modelImagesSnap.exists()) {
+        const data = modelImagesSnap.data();
+        console.log(data);
+        console.log(Object.values(data));
+        const examples = Object.values(data).map((item, i) => {
           return (
             <Carousel
               key={i}
@@ -202,7 +225,35 @@ const GeneratedImages = ({ customData }) => {
       } else {
         setExamplesHtml([]);
       }
-    });
+    };
+
+    getImages();
+
+    // const modelsRef = ref(
+    //   db,
+    //   `savedImages/${model.id}/` + curImagesModelVersionId
+    // );
+
+    // get(modelsRef).then((snapshot) => {
+    //   if (snapshot.exists()) {
+    //     const curData = snapshot.val();
+    //     console.log(curData);
+    //     // setExamplesImages(curData);
+    //     const examples = curData.map((item, i) => {
+    //       return (
+    //         <Carousel
+    //           key={i}
+    //           images={item.items}
+    //           visibleImgAmount={1}
+    //           onUpdate={updateImgResData}
+    //         />
+    //       );
+    //     });
+    //     setExamplesHtml(examples);
+    //   } else {
+    //     setExamplesHtml([]);
+    //   }
+    // });
   }, [curImagesModelVersionId, curExampleImgsType, model]);
 
   useEffect(() => {
@@ -217,7 +268,13 @@ const GeneratedImages = ({ customData }) => {
     console.log(curImagesModelVersionId);
     if (!currCursor)
       getallExamples(model.id, curImagesModelVersionId, currCursor);
-  }, [model, curExampleImgsType, curImagesModelVersionId, currCursor]);
+  }, [
+    model,
+    curExampleImgsType,
+    curImagesModelVersionId,
+    currCursor,
+    nsfwMode,
+  ]);
 
   const sortExampleImages = () => {
     if (curExampleImgsType === "saved") return;
@@ -288,6 +345,12 @@ const GeneratedImages = ({ customData }) => {
       const isSaved =
         model?.savedImages &&
         Object.keys(model.savedImages).includes(`${version.id}`);
+      // const versionIsSaved = model.modelVersionsCustomData?.find(
+      //   (customData) => customData.versionId === version.id
+      // ).downloadStatus;
+      const versionIsSaved =
+        model.modelVersionsCustomData[version.id]?.downloadStatus;
+      // console.log(model.savedImages, version.id);
       if (curExampleImgsType === "saved" && !isSaved) {
         return [];
       }
@@ -308,12 +371,7 @@ const GeneratedImages = ({ customData }) => {
               ? classes["version--active"]
               : ""
           }
-        ${
-          model?.modelVersionsCustomData &&
-          model?.modelVersionsCustomData[i]?.downloadStatus
-            ? classes["version--downloaded"]
-            : ""
-        }`}
+        ${versionIsSaved ? classes["version--downloaded"] : ""}`}
         >
           {version.name}
         </div>
@@ -324,7 +382,7 @@ const GeneratedImages = ({ customData }) => {
   return (
     <>
       <div>
-        {(model?.examplesData || model?.savedImages) && (
+        {(model?.examplesData?.length || model?.savedImages) && (
           <span
             className={`${classes["btn-examples"]} ${
               curExampleImgsType === "saved"
@@ -378,32 +436,35 @@ const GeneratedImages = ({ customData }) => {
       </div>
 
       <div className={classes["image-versions"]}>
-        {curExampleImgsType === "saved" && model?.examplesData?.length && (
+        {curExampleImgsType === "saved" &&
+          model?.examplesData?.length !== 0 && (
+            <div
+              className={`${classes.version} ${
+                curImagesModelVersionId === "unsorted"
+                  ? classes["version--active"]
+                  : ""
+              }
+        `}
+              id="unsorted"
+              onClick={openSavedVersionImagesHandler}
+            >
+              Unsorted
+            </div>
+          )}
+        {curExampleImgsType !== "saved" && (
           <div
             className={`${classes.version} ${
-              curImagesModelVersionId === "unsorted"
+              curImagesModelVersionId === "all-versions"
                 ? classes["version--active"]
                 : ""
             }
         `}
-            id="unsorted"
+            id="all-versions"
             onClick={openSavedVersionImagesHandler}
           >
-            Unsorted
+            All
           </div>
         )}
-        <div
-          className={`${classes.version} ${
-            curImagesModelVersionId === "all-versions"
-              ? classes["version--active"]
-              : ""
-          }
-        `}
-          id="all-versions"
-          onClick={openSavedVersionImagesHandler}
-        >
-          All
-        </div>
         {modelImageVersionsHtml}
       </div>
       <div className={classes.images}>{examplesHtml}</div>

@@ -14,11 +14,17 @@ const ModelInfo = ({ customData }) => {
       <div>Base model: {curVersion?.baseModel}</div>
       <div>Size: {customData?.size || model?.size}</div>
       <div>Weight: {customData?.weight || model?.weight}</div>
-      <div>Version: {curVersion?.name}</div>
-      <div>File: {customData?.fileName || model?.fileName}</div>
+      <div>
+        Version:{" "}
+        <a href={`https://${model?.src}/models/${model?.id}`}>
+          {curVersion?.name}
+        </a>
+      </div>
+      {customData?.fileName && (
+        <div>File: {customData?.fileName || model?.fileName}</div>
+      )}
       {viersionVAE && <div>VAE: {viersionVAE}</div>}
       {model?.clipSkip && <div>Clip Skip: {model?.clipSkip}</div>}
-      <a href={`https://${model?.src}/models/${model?.id}`}>Link</a>
     </div>
   );
 };
