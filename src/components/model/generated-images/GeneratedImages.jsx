@@ -5,7 +5,16 @@ import { get, ref, set } from "firebase/database";
 import { db } from "../../../firebase-config";
 import { addResourcesInfo, getModelInfo } from "../../../utils/fetchUtils";
 import Carousel from "../../carousel/Carousel";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  getFirestore,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
 
 const firestore = getFirestore(firebaseApp);
@@ -196,22 +205,35 @@ const GeneratedImages = ({ customData }) => {
     }
 
     const getImages = async () => {
-      const modelImagesRef = doc(
-        firestore,
-        "users",
-        uid,
-        "models",
-        model.id + "",
-        "images",
-        curImagesModelVersionId + ""
+      // const modelImagesRef = doc(
+      //   firestore,
+      //   "users",
+      //   uid,
+      //   "models",
+      //   model.id + "",
+      //   "images",
+      //   curImagesModelVersionId + ""
+      // );
+      const q = query(
+        collection(firestore, "users", uid, "models", model.id + "", "images"),
+        where("versionId", "==", curImagesModelVersionId),
+        orderBy("versionId", "desc")
+        // orderBy("savedAt", "desc")
       );
-      const modelImagesSnap = await getDoc(modelImagesRef);
+      const modelImagesSnap = await getDocs(q);
 
-      if (modelImagesSnap.exists()) {
-        const data = modelImagesSnap.data();
+      // const modelImagesSnap = await getDoc(modelImagesRef);
+
+      if (true) {
+        // const data = modelImagesSnap.data();
+        const data = modelImagesSnap.docs.map((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          return doc.data();
+        });
+        // console.log(modelsData);
         console.log(data);
-        console.log(Object.values(data));
-        const examples = Object.values(data).map((item, i) => {
+        // console.log(Object.values(data));
+        const examples = data.map((item, i) => {
           return (
             <Carousel
               key={i}
@@ -436,7 +458,7 @@ const GeneratedImages = ({ customData }) => {
       </div>
 
       <div className={classes["image-versions"]}>
-        {curExampleImgsType === "saved" &&
+        {/* {curExampleImgsType === "saved" &&
           model?.examplesData?.length !== 0 && (
             <div
               className={`${classes.version} ${
@@ -450,7 +472,7 @@ const GeneratedImages = ({ customData }) => {
             >
               Unsorted
             </div>
-          )}
+          )} */}
         {curExampleImgsType !== "saved" && (
           <div
             className={`${classes.version} ${

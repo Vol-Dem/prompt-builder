@@ -23,14 +23,18 @@ const ModelTags = ({ customData, modelPreview }) => {
   console.log(customData?.trainedWords?.length || "WTF");
   return (
     <div className={classes["tags"]}>
-      <div>Main tag:</div>
-      <ul className={classes["main-tag"]}>
-        <Tag
-          tag={customData?.mainTag || model?.mainTag}
-          promptType="positive"
-          modelData={modelPreview}
-        />
-      </ul>
+      {(customData?.mainTag || model?.mainTag) && (
+        <>
+          <div>Main tag:</div>
+          <ul className={classes["main-tag"]}>
+            <Tag
+              tag={customData?.mainTag || model?.mainTag}
+              promptType="positive"
+              modelData={modelPreview}
+            />
+          </ul>
+        </>
+      )}
       {(curVersion?.trainedWords || customData?.trainedWords) && (
         <>
           <div>Trigger Words:</div>
@@ -44,7 +48,7 @@ const ModelTags = ({ customData, modelPreview }) => {
           />
         </>
       )}
-      {(model?.helperTags?.length || customData?.helperTags?.length) && (
+      {(!!model?.helperTags?.length || !!customData?.helperTags?.length) && (
         <>
           <div>Helper Words:</div>
           <TagList
@@ -57,15 +61,14 @@ const ModelTags = ({ customData, modelPreview }) => {
           />
         </>
       )}
-      {(model?.tagSetsData?.length ||
-        customData?.tagSetsData?.length !== 0) && (
+      {(!!model?.tagSetsData?.length || !!customData?.tagSetsData?.length) && (
         <>
           <div>Tag sets:</div>
           <ul className={classes["tag-sets__list"]}>{tagSetsHtml}</ul>
         </>
       )}
-      {(model?.negativeTags?.length ||
-        customData?.negativeTags?.length !== 0) && (
+      {(!!model?.negativeTags?.length ||
+        !!customData?.negativeTags?.length) && (
         <>
           <div>Negative Words:</div>
           <TagList

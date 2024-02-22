@@ -332,37 +332,35 @@ const Carousel = ({
       // setSavingImages(false);
       // return;
 
-      const examplesDataWithRes = {
-        items: await Promise.all(
-          data.items.map(async (item) => {
-            const updatedImgData = { ...item };
+      const examplesDataWithRes = await Promise.all(
+        data.items.map(async (item) => {
+          const updatedImgData = { ...item };
 
-            const newMeta = await getModelInfo(item.meta);
-            if (newMeta) updatedImgData.meta = newMeta;
+          const newMeta = await getModelInfo(item.meta);
+          if (newMeta) updatedImgData.meta = newMeta;
 
-            if (item.meta?.resources) {
-              const updatedRes = await addResourcesInfo(item.meta.resources);
-              console.log(updatedRes);
-              if (!updatedRes) {
-                throw new Error("failed to update res");
-              }
-              updatedImgData.meta.resources = updatedRes;
+          if (item.meta?.resources) {
+            const updatedRes = await addResourcesInfo(item.meta.resources);
+            console.log(updatedRes);
+            if (!updatedRes) {
+              throw new Error("failed to update res");
             }
-            if (item.meta?.civitaiResources) {
-              const updatedCivRes = await addResourcesInfo(
-                item.meta.civitaiResources
-              );
-              console.log(updatedCivRes);
-              if (!updatedCivRes) {
-                throw new Error("failed to update res");
-              }
-              updatedImgData.meta.civitaiResources = updatedCivRes;
+            updatedImgData.meta.resources = updatedRes;
+          }
+          if (item.meta?.civitaiResources) {
+            const updatedCivRes = await addResourcesInfo(
+              item.meta.civitaiResources
+            );
+            console.log(updatedCivRes);
+            if (!updatedCivRes) {
+              throw new Error("failed to update res");
             }
+            updatedImgData.meta.civitaiResources = updatedCivRes;
+          }
 
-            return await updatedImgData;
-          })
-        ),
-      };
+          return await updatedImgData;
+        })
+      );
       console.log(examplesDataWithRes);
       examplesDataWithRes.versionId = versionId;
 
@@ -374,21 +372,8 @@ const Carousel = ({
         "models",
         modelId + "",
         "images",
-        versionId + ""
+        postId + ""
       );
-
-      // const modelSnap = await getDoc(modelRef);
-      // const modelImagesSnap = await getDoc(modelImagesRef);
-
-      //Throw error if user try to add existing model using new model form
-
-      // await updateDoc(modelRef, {
-      //   savedImages: arrayUnion({
-      //     postId: +postId,
-      //     amount: data.items.length,
-      //   }),
-      // });
-      // const versionIdStr = `savedImages.${versionId}`;
 
       const newImgData = { postId: +postId, amount: data.items.length };
       let newSavedImages;
@@ -399,18 +384,24 @@ const Carousel = ({
       }
 
       await setDoc(
+        modelImagesRef,
+        {
+          items: examplesDataWithRes,
+          versionId,
+          createdAt: examplesDataWithRes[0].createdAt,
+          savedAt: new Date().toISOString(),
+          nsfw: examplesDataWithRes[0].nsfw,
+          nsfwLevel: examplesDataWithRes[0]?.nsfwLevel || "",
+        },
+        { merge: true }
+      );
+
+      await setDoc(
         modelRef,
         {
           savedImages: {
             [`${versionId}`]: newSavedImages,
           },
-        },
-        { merge: true }
-      );
-      await setDoc(
-        modelImagesRef,
-        {
-          [`${postId}`]: examplesDataWithRes,
         },
         { merge: true }
       );

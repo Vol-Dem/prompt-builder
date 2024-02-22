@@ -1,9 +1,18 @@
 export const clearObjectKeys = (obj) => {
   const convertedMetaArr = Object.entries(obj).map((entry, i) => {
-    const newKey = entry[0]
+    let newKey;
+    newKey = entry[0]
       ? entry[0].replace(/[^\w\s]/gi, "X").replace(/[^\\x00-\\xFF]*/giu, "")
       : `key${i}`;
-    return [newKey, entry[1]];
+    newKey = newKey.replaceAll("__", "");
+    if (newKey === "" || newKey === undefined) {
+      newKey = `key${i}`;
+    }
+    let newValue = entry[1];
+    if (!newValue) {
+      newValue = null;
+    }
+    return [newKey, newValue];
   });
   return Object.fromEntries(convertedMetaArr);
 };

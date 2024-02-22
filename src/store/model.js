@@ -1,7 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { db } from "../firebase-config";
 import { get, onValue, ref, set } from "firebase/database";
-import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  getFirestore,
+  onSnapshot,
+  setDoc,
+} from "firebase/firestore";
 import firebaseApp from "../firebase-config";
 
 const firestore = getFirestore(firebaseApp);
@@ -113,35 +119,53 @@ export const getModel = (modelId) => {
 
 export const setPreviewImg = (url, isNsfw = false, type = "model") => {
   return async (dispatch, getState) => {
-    console.log(url);
+    const uid = getState().auth.user.uid;
     const id = getState().model.model.id;
-    const category = getState().model.model.main;
+    const modelType =
+      type === "Checkpoint" ? "checkpoints preview" : "models preview";
+    const urlField = isNsfw ? "nsfwPreviewImgUrl" : "customPreviewImgUrl";
+
+    const modelsPrevRef = doc(firestore, "users", uid, modelType, id + "");
+    await setDoc(
+      modelsPrevRef,
+      {
+        [`${urlField}`]: url,
+      },
+      { merge: true }
+    );
+
+    console.log(url);
+    console.log(modelType);
     console.log(id);
-    let modelsPrevRef;
-    if (type === "Checkpoint") {
-      modelsPrevRef = ref(db, "checkpoint preview/" + category);
-    } else {
-      modelsPrevRef = ref(db, "models preview/" + category);
-    }
+    console.log(type);
+    // const id = getState().model.model.id;
+    // const category = getState().model.model.main;
+    // console.log(id);
+    // let modelsPrevRef;
+    // if (type === "Checkpoint") {
+    //   modelsPrevRef = ref(db, "checkpoint preview/" + category);
+    // } else {
+    //   modelsPrevRef = ref(db, "models preview/" + category);
+    // }
 
-    get(modelsPrevRef).then((snapshot) => {
-      console.log(snapshot.val());
-      if (snapshot.exists()) {
-        const curData = snapshot.val();
-        const curPrevIndex = curData.findIndex((prev) => prev.id === id);
-        console.log(curPrevIndex);
-        if (isNsfw) {
-          curData[curPrevIndex].nsfwPreviewImgUrl = url;
-        } else {
-          curData[curPrevIndex].customPreviewImgUrl = url;
-        }
+    // get(modelsPrevRef).then((snapshot) => {
+    //   console.log(snapshot.val());
+    //   if (snapshot.exists()) {
+    //     const curData = snapshot.val();
+    //     const curPrevIndex = curData.findIndex((prev) => prev.id === id);
+    //     console.log(curPrevIndex);
+    //     if (isNsfw) {
+    //       curData[curPrevIndex].nsfwPreviewImgUrl = url;
+    //     } else {
+    //       curData[curPrevIndex].customPreviewImgUrl = url;
+    //     }
 
-        console.log(curData[curPrevIndex]);
-        set(modelsPrevRef, [...curData]);
-      } else {
-        // set(modelsPrevRef, [loraPrevData]);
-      }
-    });
+    //     console.log(curData[curPrevIndex]);
+    //     set(modelsPrevRef, [...curData]);
+    //   } else {
+    //     // set(modelsPrevRef, [loraPrevData]);
+    //   }
+    // });
   };
 };
 

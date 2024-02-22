@@ -31,6 +31,7 @@ const ModelsList = ({ loraItems }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (!activeSubcategory) return;
     const getModelsPreview = async () => {
       const q = query(
         collection(firestore, "users", uid, `${activeTab} preview`),
@@ -43,6 +44,7 @@ const ModelsList = ({ loraItems }) => {
         // doc.data() is never undefined for query doc snapshots
         return doc.data();
       });
+      console.log(modelsData);
 
       dispatch(tabActions.setModelsData(modelsData));
     };

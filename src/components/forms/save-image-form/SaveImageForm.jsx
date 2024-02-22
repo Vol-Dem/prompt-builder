@@ -42,7 +42,11 @@ const SaveImageForm = ({ modelData }) => {
     seteErrorMessage("");
     seteSuccessMessage("");
     const formdata = new FormData(e.target);
-    const curVersionId = +formdata.get("versionId").trim().toLowerCase().trim();
+    const curVersionId = +formdata
+      .get("curVersionId")
+      .trim()
+      .toLowerCase()
+      .trim();
     const postId = +formdata.get("post-id").trim().toLowerCase().trim();
     const exemplePromtsImageId = formdata.getAll("image-id").filter(Boolean);
 
@@ -61,6 +65,16 @@ const SaveImageForm = ({ modelData }) => {
         if (!postId) {
           throw new Error("Empty post id");
         }
+
+        if (
+          modelData?.savedImages?.hasOwnProperty(`${curVersionId}`) &&
+          modelData?.savedImages[`${curVersionId}`].some(
+            (post) => post.postId === postId
+          )
+        ) {
+          throw new Error("Exists");
+        }
+
         const imgExampleResponse = await fetch(
           `https://civitai.com/api/v1/images?postId=${postId}${
             !filterDisabledInput ? `&modelId=${modelData?.id}` : ""
@@ -89,31 +103,29 @@ const SaveImageForm = ({ modelData }) => {
           dataFiltered = { items: images };
         }
 
-        const examplesDataWithRes = {
-          items: await Promise.all(
-            dataFiltered.items.map(async (item) => {
-              const updatedImgData = { ...item };
+        const examplesDataWithRes = await Promise.all(
+          dataFiltered.items.map(async (item) => {
+            const updatedImgData = { ...item };
 
-              const newMeta = await getModelInfo(item.meta);
-              if (newMeta) updatedImgData.meta = newMeta;
+            const newMeta = await getModelInfo(item.meta);
+            if (newMeta) updatedImgData.meta = newMeta;
 
-              if (item.meta?.resources) {
-                updatedImgData.meta.resources = await addResourcesInfo(
-                  item.meta.resources
-                );
-              }
-              if (item.meta?.civitaiResources) {
-                updatedImgData.meta.civitaiResources = await addResourcesInfo(
-                  item.meta.civitaiResources
-                );
-              }
+            if (item.meta?.resources) {
+              updatedImgData.meta.resources = await addResourcesInfo(
+                item.meta.resources
+              );
+            }
+            if (item.meta?.civitaiResources) {
+              updatedImgData.meta.civitaiResources = await addResourcesInfo(
+                item.meta.civitaiResources
+              );
+            }
 
-              return await updatedImgData;
-            })
-          ),
-        };
+            return await updatedImgData;
+          })
+        );
 
-        examplesDataWithRes.versionId = curVersionId;
+        examplesDataWithRes.curVersionId = curVersionId;
 
         console.log(examplesDataWithRes);
 
@@ -131,7 +143,7 @@ const SaveImageForm = ({ modelData }) => {
           "models",
           modelData.id + "",
           "images",
-          curVersionId + ""
+          postId + ""
         );
 
         // const modelSnap = await getDoc(modelRef);
@@ -139,16 +151,54 @@ const SaveImageForm = ({ modelData }) => {
 
         //Throw error if user try to add existing model using new model form
 
-        await updateDoc(modelRef, {
-          savedImages: arrayUnion({
-            postId: +postId,
-            amount: dataFiltered.items.length,
-          }),
-        });
+        // await updateDoc(modelRef, {
+        //   savedImages: arrayUnion({
+        //     postId: +postId,
+        //     amount: dataFiltered.items.length,
+        //   }),
+        // });
+        // await setDoc(
+        //   modelImagesRef,
+        //   {
+        //     [`${postId}`]: examplesDataWithRes,
+        //   },
+        //   { merge: true }
+        // );
+
+        const newImgData = {
+          postId: +postId,
+          amount: dataFiltered.items.length,
+        };
+
+        let newSavedImages;
+        if (modelData?.savedImages?.hasOwnProperty(`${curVersionId}`)) {
+          newSavedImages = [
+            ...modelData?.savedImages[`${curVersionId}`],
+            newImgData,
+          ];
+        } else {
+          newSavedImages = [newImgData];
+        }
+
         await setDoc(
           modelImagesRef,
           {
-            [`${postId}`]: examplesDataWithRes,
+            items: examplesDataWithRes,
+            versionId: curVersionId,
+            createdAt: examplesDataWithRes[0].createdAt,
+            savedAt: new Date().toISOString(),
+            nsfw: examplesDataWithRes[0].nsfw,
+            nsfwLevel: examplesDataWithRes[0]?.nsfwLevel || "",
+          },
+          { merge: true }
+        );
+
+        await setDoc(
+          modelRef,
+          {
+            savedImages: {
+              [`${curVersionId}`]: newSavedImages,
+            },
           },
           { merge: true }
         );
@@ -203,7 +253,7 @@ const SaveImageForm = ({ modelData }) => {
         //         ...newExamples,
         //         ...curData[curVersionId][exapleIndex].items,
         //       ];
-        //       // curData.examplesData[exapleIndex].versionId = curVersionId
+        //       // curData.examplesData[exapleIndex].curVersionId = curVersionId
         //     } else {
         //       curData[curVersionId] = curData[curVersionId]
         //         ? [examplesDataWithRes, ...curData[curVersionId]]
@@ -272,7 +322,7 @@ const SaveImageForm = ({ modelData }) => {
   return (
     <form onSubmit={addGeneralTagsHandler} className={classes["form"]}>
       <label htmlFor="version-select">Select version:</label>
-      <select name="versionId" id="version-select">
+      <select name="curVersionId" id="version-select">
         {versionSelectOptionHtml}
       </select>
       <input

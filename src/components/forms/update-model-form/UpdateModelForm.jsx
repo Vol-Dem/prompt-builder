@@ -6,8 +6,10 @@ import { addResourcesInfo, getModelInfo } from "../../../utils/fetchUtils";
 import { clearObjectKeys } from "../../../utils/generalUtils";
 import {
   arrayUnion,
+  collection,
   doc,
   getDoc,
+  getDocs,
   getFirestore,
   setDoc,
   updateDoc,
@@ -232,57 +234,6 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
       .split(splitRegEx)
       .filter(Boolean)
       .map((tag) => tag.trim());
-    const exemplePromts = formdata.getAll("example").filter(Boolean);
-    // const exemplePromts = formdata.getAll("example");
-    const exemplePromtsImageId = formdata.getAll("image-id").filter(Boolean);
-
-    const exampleInputData = exemplePromts.flatMap((postId, i) => {
-      if (!postId && !exemplePromtsImageId[i]) return [];
-      return [{ postId: postId, imageId: exemplePromtsImageId[i] }];
-    });
-
-    // const clearObjectKeys = (obj) => {
-    //   const convertedMetaArr = Object.entries(obj).map((entry, i) => {
-    //     const newKey = entry[0]
-    //       ? entry[0].replace(/[^\w\s]/gi, " ")
-    //       : `key${i}`;
-    //     return [newKey, entry[1]];
-    //   });
-    //   return Object.fromEntries(convertedMetaArr);
-    // };
-
-    // const addResourcesInfo = async (resourcesData) => {
-    //   const modelsData = await Promise.all(
-    //     resourcesData.map(async (resource) => {
-    //       let url;
-    //       if (resource.modelVersionId) {
-    //         url = `https://civitai.com/api/v1/model-versions/${resource.modelVersionId}`;
-    //       } else if (resource.hash) {
-    //         url = `https://civitai.com/api/v1/model-versions/by-hash/${resource.hash}`;
-    //       } else {
-    //         return new Promise((resolve) => {
-    //           resolve({});
-    //         });
-    //       }
-
-    //       const response = await fetch(url);
-    //       return await response.json();
-    //     })
-    //   );
-    //   console.log(modelsData);
-
-    //   const updatedResources = resourcesData.map((resource, i) => {
-    //     return {
-    //       ...resource,
-    //       ...(modelsData[i].model?.name && { name: modelsData[i].model?.name }),
-    //       ...(modelsData[i]?.modelId && { modelId: modelsData[i]?.modelId }),
-    //       ...(modelsData[i]?.name && { versionName: modelsData[i]?.name }),
-    //       ...(modelsData[i]?.id && { versionId: modelsData[i]?.id }),
-    //     };
-    //   });
-    //   console.log(updatedResources);
-    //   return updatedResources;
-    // };
 
     const getModelData = async () => {
       try {
@@ -301,10 +252,6 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
             throw new Error(`Error status (${response.status})`);
           }
           console.log(data);
-
-          // versionsStatus = data.data.modelVersions.map((version) => {
-          //   return { versionId: version.id, downloadStatus: false };
-          // });
 
           data?.modelVersions?.forEach((version) => {
             version.images.forEach((image) => {
@@ -352,104 +299,44 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           data = modelData.data;
         }
 
-        if (!data.id) return;
-
-        let examplesData = [];
-        if (exemplePromts.length) {
-          examplesData = await Promise.all(
-            exemplePromts.map(async (example) => {
-              const imgExampleResponse = await fetch(
-                `https://civitai.com/api/v1/images?postId=${example}${
-                  !filterDisabledInput
-                    ? `&modelId=${modelData?.id || modelId}`
-                    : ""
-                }`
-              );
-              return await imgExampleResponse.json();
-            })
+        if (modelData && updateInput) {
+          console.log(modelData, data);
+          const newVerison = data.modelVersions.filter(
+            (version) =>
+              !modelData.data.modelVersions.some(
+                (oldVersions) => version.id === oldVersions.id
+              )
           );
-          console.log(examplesData);
-          examplesData.forEach((post) => {
-            post.items.forEach((image) => {
-              if (image.meta) {
-                image.meta = clearObjectKeys(image.meta);
-                if (image.meta.hashes)
-                  image.meta.hashes = clearObjectKeys(image.meta.hashes);
-              }
-            });
-          });
+          data.modelVersions = [...newVerison, ...modelData.data.modelVersions];
+          console.log(data.modelVersions);
         }
-
-        const examplesDataFiltered = examplesData.map((images, i) => {
-          const hasSingleImg = !!exemplePromtsImageId.length;
-          return !hasSingleImg
-            ? images
-            : {
-                items: images.items.filter((image) => {
-                  // return image.id === +exampleInputData[i].imageId;
-                  return exemplePromtsImageId.some((img) => +img === image.id);
-                }),
-              };
-        });
-        console.log(examplesDataFiltered);
-
-        const examplesDataCleaned = examplesDataFiltered.filter(
-          (images, i) => images.items.length
-        );
-
-        const examplesTransformed = examplesDataCleaned.map(
-          (image) => image.items
-        );
-
-        const examplesDataWithRes = await Promise.all(
-          examplesTransformed.map(async (image) => {
-            return {
-              items: await Promise.all(
-                image.map(async (item) => {
-                  const updatedImgData = { ...item };
-
-                  const newMeta = await getModelInfo(item.meta);
-                  if (newMeta) updatedImgData.meta = newMeta;
-
-                  if (item.meta?.resources) {
-                    updatedImgData.meta.resources = await addResourcesInfo(
-                      item.meta.resources
-                    );
-                  }
-                  if (item.meta?.civitaiResources) {
-                    updatedImgData.meta.civitaiResources =
-                      await addResourcesInfo(item.meta.civitaiResources);
-                  }
-                  if (item.meta?.comfy?.workflow?.links) {
-                    updatedImgData.meta.comfy.workflow.links = "";
-                  }
-                  console.log(updatedImgData);
-                  return await updatedImgData;
-                })
-              ),
-            };
-          })
-        );
-        console.log(examplesDataWithRes);
+        // return;
+        if (!data.id) return;
 
         let modelVersionsCustomData = modelData?.modelVersionsCustomData || {};
 
         if (true) {
+          console.log(versionsDownloadStatus);
           data.modelVersions.forEach((version, i) => {
             const isSingle = data.modelVersions.length === 1;
+            const curVersionDlStatus = versionsDownloadStatus.find(
+              (dlData) => Number.parseInt(dlData.id) === version.id
+            )?.value;
             const dlStatus = versionsDownloadStatus.length
-              ? !!versionsDownloadStatus[i]?.value
+              ? !!curVersionDlStatus
               : false;
             const currVersionData = modelVersionsCustomData.hasOwnProperty(
               version.id
             )
               ? modelVersionsCustomData[version.id]
               : {};
-            console.log(
-              modelVersionsCustomData.hasOwnProperty(version.id),
-              currVersionData
-            );
+            // console.log(
+            //   modelVersionsCustomData.hasOwnProperty(version.id),
+            //   currVersionData
+            // );
+            console.log(version.id, dlStatus, isSingle);
             modelVersionsCustomData = {
+              ...modelVersionsCustomData,
               [version.id]: {
                 versionId: version.id,
                 versionName: version.name,
@@ -457,11 +344,8 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
                   version.images?.filter((img, i) => img.type === "image")[0]
                     ?.url || "",
                 ...currVersionData,
-                downloadStatus: versionsDownloadStatus.length
-                  ? dlStatus
-                  : isSingle,
+                downloadStatus: isSingle ? true : dlStatus,
               },
-              ...modelVersionsCustomData,
             };
           });
         } else {
@@ -483,62 +367,7 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           //   };
           // });
         }
-
-        // if (!modelData?.modelVersionsCustomData) {
-        //   modelVersionsCustomData = data.modelVersions.map((version, i) => {
-        //     const isSingle = data.modelVersions.length === 1;
-        //     const dlStatus = versionsDownloadStatus.length
-        //       ? !!versionsDownloadStatus[i]?.value
-        //       : false;
-        //     return {
-        //       versionId: version.id,
-        //       versionName: version.name,
-        //       versionImageUrl:
-        //         version.images?.filter((img, i) => img.type === "image")[0]
-        //           ?.url || "",
-        //       downloadStatus: versionsDownloadStatus.length
-        //         ? dlStatus
-        //         : isSingle,
-        //     };
-        //   });
-        // } else if (modelData?.modelVersionsCustomData && updateInput) {
-        //   const newVersions = data.modelVersions.filter(
-        //     (version) =>
-        //       !modelData.modelVersionsCustomData.find(
-        //         (custVer) => custVer.versionId === version.id
-        //       )
-        //   );
-        //   const newVersionCustomData = newVersions.map((version, i) => {
-        //     return {
-        //       versionId: version.id,
-        //       versionName: version.name,
-        //       versionImageUrl:
-        //         version.images.filter((img, i) => img.type === "image")[0]
-        //           ?.url || "",
-        //       downloadStatus: false,
-        //     };
-        //   });
-        //   console.log("NEW", newVersions);
-        //   const curVersions = modelData.modelVersionsCustomData.map(
-        //     (version, i) => {
-        //       return {
-        //         ...version,
-        //         downloadStatus: versionsDownloadStatus[i].value,
-        //       };
-        //     }
-        //   );
-        //   modelVersionsCustomData = [...newVersionCustomData, ...curVersions];
-        // } else {
-        //   console.log("WTF", modelData.modelVersionsCustomData);
-        //   modelVersionsCustomData = modelData.modelVersionsCustomData.map(
-        //     (version, i) => {
-        //       return {
-        //         ...version,
-        //         downloadStatus: versionsDownloadStatus[i].value,
-        //       };
-        //     }
-        //   );
-        // }
+        console.log(modelVersionsCustomData);
 
         const activePreviewId = Object.values(modelVersionsCustomData).find(
           (version) => version.downloadStatus === true
@@ -557,10 +386,7 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           )[0]?.url || "";
 
         const previewImg = activePreviewImg || previewImgDefault;
-        console.log(previewImg);
-
-        const modelExemplePromts = modelData?.exemplePromts || [];
-        const modelExamplesData = modelData?.examplesData || [];
+        // console.log(previewImg);
 
         let modelInfo = {
           ...modelData,
@@ -575,9 +401,7 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           size,
           helperTags,
           negativeTags,
-          exemplePromts: [...exemplePromts, ...modelExemplePromts],
           data,
-          examplesData: [...modelExamplesData]?.filter(Boolean),
           modelVersionsCustomData,
           updatedAt: new Date().toISOString(),
         };
@@ -668,22 +492,25 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
         console.log("TEST2", updatedCat);
 
         // Throw error if user try to add existing model using new model form
-        // if (modelSnap.exists() && modelsPrevRefSnap.exists() && !modelData) {
-        //   throw new Error("Exists");
-        // } else {
-        //   await setDoc(modelsRef, modelInfo);
-        //   const categoryField = `categories.${modelType}`;
+        if (modelSnap.exists() && modelsPrevRefSnap.exists() && !modelData) {
+          throw new Error("Exists");
+        } else {
+          await setDoc(modelsRef, modelInfo);
+          const categoryField = `categories.${modelType}`;
 
-        //   await updateDoc(
-        //     userRef,
-        //     {
-        //       [categoryField]: updatedCat,
-        //     },
-        //     { merge: true }
-        //   );
-        //   await setDoc(modelsPrevRef, loraPrevData);
-        // }
+          await updateDoc(
+            userRef,
+            {
+              [categoryField]: updatedCat,
+            },
+            { merge: true }
+          );
+          const curPrevData = modelsPrevRefSnap.data();
+          console.log(curPrevData);
+          await setDoc(modelsPrevRef, { ...curPrevData, ...loraPrevData });
+        }
 
+        ///////////////////
         // const modelsRef = ref(db, "models/" + (modelData?.id || modelId));
         // let modelsPrevRef;
         // if (formType === "Checkpoint") {
@@ -709,95 +536,162 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
         //   }
         // });
 
-        const modelsRDRef = ref(db, "models");
-        const snapshot = await get(modelsRDRef);
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        // const modelDlsRef = collection(firestore, "users", uid, "models");
+        // const modelDlSnap = await getDocs(modelDlsRef);
+        // console.log(modelDlSnap);
+        // modelDlSnap.forEach((doc) => {
+        //   // doc.data() is never undefined for query doc snapshots
+        //   console.log(doc.id);
+        // });
 
-        if (snapshot.exists()) {
-          const curData = await snapshot.val();
-          // console.log(curDataR);
-          // const curData = { name: curDataR };
+        /////////////////////////////////////////////////////////////////////
+        //MODELS PORT
+        /////////////////////////////////////////////
 
-          await Promise.all(
-            Object.values(curData).map((model) => {
-              const modelsFrRef = doc(
-                firestore,
-                "users",
-                uid,
-                "models",
-                model.id + ""
-              );
+        // // const modelsRDRef = ref(db, "models/" + "134016");
+        // const modelsRDRef = ref(db, "models");
+        // const snapshot = await get(modelsRDRef);
 
-              const modelVersions = model.data.modelVersions.map((version) => {
-                const images =
-                  version?.images?.map((img) => {
-                    const meta = img?.meta || {};
-                    meta.comfy = null;
-                    return {
-                      ...img,
-                      meta,
-                    };
-                  }) || [];
-                return {
-                  baseModel: version.baseModel || "",
-                  baseModelType: version.baseModelType || "",
-                  createdAt: version.createdAt || "",
-                  description: version.description || "",
-                  id: version.id,
-                  modelId: version.modelId,
-                  name: version.name,
-                  trainedWords: version.trainedWords || null,
-                  updatedAt: version.updatedAt || "",
-                  vaeId: version.vaeId || null,
-                  images,
-                };
-              });
-              const cleanedModelData = {
-                id: model.data.id,
-                description: model.data?.description || "",
-                nsfw: model.data?.nsfw || "",
-                poi: model.data?.poi || "",
-                tags: model.data?.tags || "",
-                type: model.data?.type || "",
-                modelVersions,
-              };
-              const modelVersionsCustomDataConverted = {};
-              model?.modelVersionsCustomData?.forEach((mvcd) => {
-                modelVersionsCustomDataConverted[mvcd.versionId] = mvcd;
-              });
-              const cleanedData = {
-                id: model.id,
-                data: cleanedModelData,
-                main: model.main,
-                mainTag: model?.mainTag || "",
-                sampler: model?.sampler || "",
-                cfgScale: model?.cfgScale || "",
-                denoisingStrength: model?.denoisingStrength || "",
-                fileName: model?.fileName || "",
-                hiresUpscale: model?.hiresUpscale || "",
-                hiresUpscaler: model?.hiresUpscaler || "",
-                modelVersionsCustomData: modelVersionsCustomDataConverted || {},
-                negativeTags: model?.negativeTags || [],
-                savedImages: model?.savedImages || {},
-                size: model?.size || "",
-                src: model.src,
-                steps: model?.steps || "",
-                sub: model.sub,
-                updatedAt: model.updatedAt,
-                vae: model?.vae || "",
-                weight: model?.weight || "",
-                title: model?.title || "",
-                imgUrl: model?.imgUrl || "",
-                type: model?.type || "",
-                baseModel: model?.baseModel || "",
-                tags: model?.tags || [],
-                tagSetsData: model?.tagSetsData || [],
-                helperTags: model?.helperTags || [],
-              };
-              console.log(cleanedData);
-              return setDoc(modelsFrRef, cleanedData);
-            })
-          );
-        }
+        // if (snapshot.exists()) {
+        //   const curData = await snapshot.val();
+        //   // const curDataR = await snapshot.val();
+        //   // console.log(curDataR);
+        //   // const curData = { name: curDataR };
+
+        //   await Promise.all(
+        //     Object.values(curData).map((model) => {
+        //       const modelsFrRef = doc(
+        //         firestore,
+        //         "users",
+        //         uid,
+        //         "models",
+        //         model.id + ""
+        //       );
+
+        //       const modelVersions = model.data.modelVersions.map((version) => {
+        //         const images =
+        //           version?.images?.map((img) => {
+        //             const nImg = { ...img };
+        //             nImg.meta = nImg?.meta ? clearObjectKeys(nImg.meta) : {};
+        //             nImg.meta.comfy = null;
+        //             return nImg;
+        //           }) || [];
+        //         return {
+        //           baseModel: version.baseModel || "",
+        //           baseModelType: version.baseModelType || "",
+        //           createdAt: version.createdAt || "",
+        //           description: version.description || "",
+        //           id: version.id,
+        //           modelId: version.modelId,
+        //           name: version.name,
+        //           trainedWords: version.trainedWords || null,
+        //           updatedAt: version.updatedAt || "",
+        //           vaeId: version.vaeId || null,
+        //           images,
+        //         };
+        //       });
+        //       const cleanedModelData = {
+        //         id: model.data.id,
+        //         name: model.data.name,
+        //         description: model.data?.description || "",
+        //         nsfw: model.data?.nsfw,
+        //         poi: model.data?.poi,
+        //         tags: model.data?.tags || "",
+        //         type: model.data?.type || "",
+        //         modelVersions,
+        //       };
+        //       const modelVersionsCustomDataConverted = {};
+        //       model?.modelVersionsCustomData?.forEach((mvcd) => {
+        //         modelVersionsCustomDataConverted[mvcd.versionId] = mvcd;
+        //       });
+        //       let cleanedSavedImages = {};
+        //       if (model?.savedImages)
+        //         Object.keys(model?.savedImages).forEach((key) => {
+        //           cleanedSavedImages[key] =
+        //             model?.savedImages[key].filter(Boolean);
+        //         });
+        //       const cleanedData = {
+        //         id: model.id,
+        //         data: cleanedModelData,
+        //         main: model.main,
+        //         mainTag: model?.mainTag || "",
+        //         sampler: model?.sampler || "",
+        //         cfgScale: model?.cfgScale || "",
+        //         denoisingStrength: model?.denoisingStrength || "",
+        //         fileName: model?.fileName || "",
+        //         hiresUpscale: model?.hiresUpscale || "",
+        //         hiresUpscaler: model?.hiresUpscaler || "",
+        //         modelVersionsCustomData: modelVersionsCustomDataConverted || {},
+        //         negativeTags: model?.negativeTags || [],
+        //         savedImages: cleanedSavedImages || {},
+        //         size: model?.size || "",
+        //         src: model.src,
+        //         steps: model?.steps || "",
+        //         sub: model.sub,
+        //         updatedAt: model.updatedAt,
+        //         vae: model?.vae || "",
+        //         weight: model?.weight || "",
+        //         title: model?.title || "",
+        //         imgUrl: model?.imgUrl || "",
+        //         type: model?.type || "",
+        //         baseModel: model?.baseModel || "",
+        //         tags: model?.tags || [],
+        //         tagSetsData: model?.tagSetsData || [],
+        //         helperTags: model?.helperTags || [],
+        //       };
+        //       console.log(cleanedData);
+        //       return setDoc(modelsFrRef, cleanedData);
+        //     })
+        //   );
+        // }
+
+        //////////////////////////////////////////////////////
+        // PREV PORT
+        //////////////////////////////////
+
+        // const modelsRDRef = ref(db, "models preview");
+        // const snapshot = await get(modelsRDRef);
+
+        // if (snapshot.exists()) {
+        //   const curData = await snapshot.val();
+        //   const allprev = Object.values(curData).flat();
+        //   let categories = {};
+        //   allprev.forEach((prev) => {
+        //     if (categories.hasOwnProperty(prev.main)) {
+        //       categories[prev.main] = [
+        //         ...new Set([...categories[prev.main], ...prev.sub]),
+        //       ];
+        //     } else {
+        //       categories[prev.main] = prev.sub;
+        //     }
+        //   });
+        //   console.log(categories);
+        //   const categoryField = `categories.models`;
+        //   await updateDoc(
+        //     userRef,
+        //     {
+        //       [categoryField]: categories,
+        //     },
+        //     { merge: true }
+        //   );
+
+        //   await Promise.all(
+        //     allprev.map((model) => {
+        //       const modelsFrRef = doc(
+        //         firestore,
+        //         "users",
+        //         uid,
+        //         "models preview",
+        //         model.id + ""
+        //       );
+
+        //       return setDoc(modelsFrRef, model);
+        //     })
+        //   );
+        // }
+
+        /////////////////////////////////////
 
         setModelIsSaving(false);
         seteSuccessMessage("Saved");
@@ -810,38 +704,6 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
 
     getModelData();
   };
-
-  // const savePreview = (modelsPrevRef, loraPrevData, modelId) => {
-  //   try {
-  //     get(modelsPrevRef).then((snapshot) => {
-  //       if (snapshot.exists()) {
-  //         const curData = snapshot.val();
-  //         const curPrevIndex = curData.findIndex((prev) => prev.id === modelId);
-  //         // console.log(curPrevIndex);
-  //         // console.log(loraPrevData);
-  //         // console.log(curData[curPrevIndex]);
-
-  //         if (curPrevIndex !== -1) {
-  //           curData[curPrevIndex] = {
-  //             ...curData[curPrevIndex],
-  //             ...loraPrevData,
-  //           };
-  //           // console.log(curData[curPrevIndex]);
-  //           set(modelsPrevRef, [...curData]);
-  //         } else {
-  //           set(modelsPrevRef, [...curData, loraPrevData]);
-  //         }
-  //       } else {
-  //         set(modelsPrevRef, [loraPrevData]);
-  //       }
-  //       setModelIsSaving(false);
-  //     });
-  //   } catch (err) {
-  //     // setModelIsSaving(false);
-  //     seteErrorMessage(err.message);
-  //     console.log(err.message);
-  //   }
-  // };
 
   const addSubHandler = () => {
     const newFields = [...subCatAmount];
@@ -877,28 +739,6 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
     setTagSetsAmount(newFields);
   };
 
-  const addExampleInputHandler = () => {
-    const newFields = [...examplePromtsAmount];
-    newFields.push([
-      {
-        id: Date.now(),
-        name: "example",
-        placeholder: "example",
-        cols: "30",
-        rows: "10",
-      },
-      {
-        id: `${Date.now() + "imid"}`,
-        name: "image-id",
-        placeholder: "image id",
-        cols: "30",
-        rows: "10",
-      },
-    ]);
-
-    setExamplePromtsAmount(newFields);
-  };
-
   const subCatHtml = subCatAmount.map((sub) => {
     return (
       <input
@@ -930,23 +770,6 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           //   setHelperTagsInput(e.target.value);
           // }}
         ></textarea>
-      </div>
-    );
-  });
-
-  let exemplePromtsHtml = examplePromtsAmount.map((example) => {
-    return (
-      <div className={classes["example-field"]} key={example[0].id}>
-        <input
-          name={example[0].name}
-          type={example[0].type}
-          placeholder={example[0].placeholder}
-        ></input>
-        <input
-          name={example[1].name}
-          type={example[1].type}
-          placeholder={example[1].placeholder}
-        ></input>
       </div>
     );
   });
@@ -1164,35 +987,6 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           setNegativeTagsInput(e.target.value);
         }}
       ></textarea>
-      {/* {exemplePromtsHtml}
-      <div className={classes.filter}>
-        <input
-          id="filter"
-          type="checkbox"
-          onChange={(e) => {
-            setFilterDisabledInput(e.target.checked);
-          }}
-        />
-        <label htmlFor="filter">disable filter</label>
-      </div>
-      <div className={classes.filter}>
-        <input
-          id="single"
-          type="checkbox"
-          onChange={(e) => {
-            setSingleImageIdSwitch(e.target.checked);
-          }}
-        />
-        <label htmlFor="filter">single image</label>
-      </div>
-      <button
-        type="button"
-        id="example"
-        onClick={addExampleInputHandler}
-        disabled={modelIsSaving}
-      >
-        Add example
-      </button> */}
       <button type="submit" disabled={modelIsSaving}>
         {!modelIsSaving ? "Add" : "Saving..."}
       </button>

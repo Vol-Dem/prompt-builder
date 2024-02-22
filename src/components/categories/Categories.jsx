@@ -95,22 +95,14 @@ const Categories = () => {
       })
     : [];
 
-  const isArr = categories ? Array.isArray(categories[activeCategory]) : false;
-  const isLora =
-    (isArr && activeTab === "models preview") ||
-    activeTab === "checkpoint preview";
-
   return (
     <div className={classes["container"]}>
       <div className={classes["category"]}>{catHtml}</div>
-      {activeCategory && (isLora || !isArr) && (
+      {activeCategory && (
         <Subcategories
           subcategories={categories[activeTab][activeCategory]}
           activeCategory={activeCategory}
         />
-      )}
-      {activeCategory && isArr && !isLora && (
-        <TagList tags={categories[activeCategory]} />
       )}
       {!categories && <div>Nothing is here...</div>}
     </div>
