@@ -122,15 +122,15 @@ const Model = () => {
 
   const versionFormsHtml =
     model?.modelVersionsCustomData &&
-    Object.values(model.modelVersionsCustomData).flatMap((version, i) => {
-      if (!version.downloadStatus) return [];
+    model.data.modelVersions.flatMap((version, i) => {
+      const customData = model.modelVersionsCustomData[version.id];
+      if (!customData?.downloadStatus) return [];
       return (
         <div key={i}>
-          <div>{version.versionName}</div>
+          <div>{customData.versionName}</div>
           <VersionForm
-            versionData={version}
+            versionData={customData}
             modelId={model.id}
-            // mainCat={model.main}
             modelType={model.data.type}
           />
         </div>

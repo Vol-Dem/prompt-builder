@@ -114,22 +114,19 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
 
   useEffect(() => {
     if (!modelData) return;
-    let versionStatusInputData;
-    if (modelData.modelVersionsCustomData) {
-      versionStatusInputData = Object.values(modelData.modelVersionsCustomData)
-        .sort((a, b) => b.versionId - a.versionId)
-        .map((version, i) => {
+    const versionStatusInputData = modelData.data.modelVersions.map(
+      (version, i) => {
+        if (modelData?.modelVersionsCustomData.hasOwnProperty(version.id)) {
+          const versionsCustomData =
+            modelData?.modelVersionsCustomData[version.id];
           return {
             type: "checkbox",
-            id: version.versionId + "in",
-            name: version.versionName,
-            label: version.versionName,
-            value: version.downloadStatus,
+            id: versionsCustomData.versionId + "in",
+            name: versionsCustomData.versionName,
+            label: versionsCustomData.versionName,
+            value: versionsCustomData.downloadStatus,
           };
-        });
-    } else {
-      versionStatusInputData = modelData.data.modelVersions?.map(
-        (version, i) => {
+        } else {
           return {
             type: "checkbox",
             id: version.id + "in",
@@ -138,8 +135,8 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
             value: false,
           };
         }
-      );
-    }
+      }
+    );
 
     setVersionsDownloadStatus(versionStatusInputData || []);
     console.log(modelData);
