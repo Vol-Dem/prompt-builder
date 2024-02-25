@@ -8,7 +8,12 @@ import useIntersection from "../../hooks/use-intersection";
 import { db } from "../../firebase-config";
 import { get, onValue, ref, set } from "firebase/database";
 import { clearObjectKeys } from "../../utils/generalUtils";
-import { getModelInfo, addResourcesInfo } from "../../utils/fetchUtils";
+import {
+  getModelInfo,
+  addResourcesInfo,
+  getImagesInfo,
+  makeBatchRequest,
+} from "../../utils/fetchUtils";
 import firebaseApp from "../../firebase-config";
 import {
   arrayUnion,
@@ -332,36 +337,40 @@ const Carousel = ({
       // setSavingImages(false);
       // return;
 
-      const examplesDataWithRes = await Promise.all(
-        data.items.map(async (item) => {
-          const updatedImgData = { ...item };
+      // const examplesDataWithRes = await Promise.all(
+      //   data.items.map(async (item) => {
+      //     const updatedImgData = { ...item };
 
-          const newMeta = await getModelInfo(item.meta);
-          if (newMeta) updatedImgData.meta = newMeta;
+      //     const newMeta = await getModelInfo(item.meta);
+      //     if (newMeta) updatedImgData.meta = newMeta;
 
-          if (item.meta?.resources) {
-            const updatedRes = await addResourcesInfo(item.meta.resources);
-            console.log(updatedRes);
-            if (!updatedRes) {
-              throw new Error("failed to update res");
-            }
-            updatedImgData.meta.resources = updatedRes;
-          }
-          if (item.meta?.civitaiResources) {
-            const updatedCivRes = await addResourcesInfo(
-              item.meta.civitaiResources
-            );
-            console.log(updatedCivRes);
-            if (!updatedCivRes) {
-              throw new Error("failed to update res");
-            }
-            updatedImgData.meta.civitaiResources = updatedCivRes;
-          }
+      //     if (item.meta?.resources) {
+      //       const updatedRes = await addResourcesInfo(item.meta.resources);
+      //       console.log(updatedRes);
+      //       if (!updatedRes) {
+      //         throw new Error("failed to update res");
+      //       }
+      //       updatedImgData.meta.resources = updatedRes;
+      //     }
+      //     if (item.meta?.civitaiResources) {
+      //       const updatedCivRes = await addResourcesInfo(
+      //         item.meta.civitaiResources
+      //       );
+      //       console.log(updatedCivRes);
+      //       if (!updatedCivRes) {
+      //         throw new Error("failed to update res");
+      //       }
+      //       updatedImgData.meta.civitaiResources = updatedCivRes;
+      //     }
 
-          return await updatedImgData;
-        })
-      );
+      //     return await updatedImgData;
+      //   })
+      // );
+      const examplesDataWithRes = await makeBatchRequest(data.items);
+      // const examplesDataWithRes = await getImagesInfo(data.items);
+      // return;
       console.log(examplesDataWithRes);
+      console.log(data);
       examplesDataWithRes.versionId = versionId;
 
       const modelRef = doc(firestore, "users", uid, "models", modelId + "");

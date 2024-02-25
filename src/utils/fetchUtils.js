@@ -1,3 +1,66 @@
+export const makeBatchRequest = async (data) => {
+  let result = [];
+  const queue = data.slice();
+  const concurrencyLimit = 5;
+  console.log(queue);
+  const processQueue = async () => {
+    while (queue.length > 0) {
+      const curBatch = [];
+      for (let i = 0; i < concurrencyLimit && queue.length > 0; i++) {
+        const curElement = queue.shift();
+        curBatch.push(curElement);
+      }
+
+      const batchResults = await getImagesInfo(curBatch);
+      console.log(curBatch);
+      // console.log(queue);
+      result = [...result, ...batchResults];
+    }
+  };
+  console.log("END");
+  await processQueue();
+  return result;
+};
+
+export const getImagesInfo = async (images) => {
+  const examplesDataWithRes = await Promise.all(
+    images.map(async (item) => {
+      const updatedImgData = { ...item };
+      const newMeta = await getModelInfo(item.meta);
+      console.log(newMeta);
+      if (newMeta) updatedImgData.meta = newMeta;
+
+      if (item.meta?.resources) {
+        const updatedRes = await addResourcesInfo(item.meta.resources);
+        console.log(updatedRes);
+        if (!updatedRes) {
+          throw new Error("failed to update res");
+        }
+        updatedImgData.meta = {
+          ...updatedImgData.meta,
+          resources: updatedRes,
+        };
+      }
+      if (item.meta?.civitaiResources) {
+        const updatedCivRes = await addResourcesInfo(
+          item.meta.civitaiResources
+        );
+        console.log(updatedCivRes);
+        if (!updatedCivRes) {
+          throw new Error("failed to update res");
+        }
+        updatedImgData.meta = {
+          ...updatedImgData.meta,
+          civitaiResources: updatedCivRes,
+        };
+      }
+      // console.log(updatedImgData);
+      return await updatedImgData;
+    })
+  );
+  return examplesDataWithRes;
+};
+
 export const getModelInfo = async (resourcesData) => {
   try {
     let modelHash;

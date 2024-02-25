@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import classes from "./SaveImageForm.module.scss";
 import { ref, set, get } from "firebase/database";
 import { db } from "../../../firebase-config";
-import { addResourcesInfo, getModelInfo } from "../../../utils/fetchUtils";
+import {
+  addResourcesInfo,
+  getImagesInfo,
+  getModelInfo,
+} from "../../../utils/fetchUtils";
 import firebaseApp from "../../../firebase-config";
 import {
   arrayUnion,
@@ -102,28 +106,7 @@ const SaveImageForm = ({ modelData }) => {
 
           dataFiltered = { items: images };
         }
-
-        const examplesDataWithRes = await Promise.all(
-          dataFiltered.items.map(async (item) => {
-            const updatedImgData = { ...item };
-
-            const newMeta = await getModelInfo(item.meta);
-            if (newMeta) updatedImgData.meta = newMeta;
-
-            if (item.meta?.resources) {
-              updatedImgData.meta.resources = await addResourcesInfo(
-                item.meta.resources
-              );
-            }
-            if (item.meta?.civitaiResources) {
-              updatedImgData.meta.civitaiResources = await addResourcesInfo(
-                item.meta.civitaiResources
-              );
-            }
-
-            return await updatedImgData;
-          })
-        );
+        const examplesDataWithRes = await getImagesInfo(dataFiltered.items);
 
         examplesDataWithRes.curVersionId = curVersionId;
 
