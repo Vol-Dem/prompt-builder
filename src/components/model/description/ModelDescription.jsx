@@ -17,7 +17,7 @@ const ModelDescription = ({ mainTag, versionData }) => {
         <ul className={classes["main-tag"]}>
           <Tag tag={mainTag} />
         </ul>
-        {versionData.trainedWords && (
+        {!!versionData.trainedWords.length && (
           <>
             <div>Trigger Words:</div>
             <TagList subcat={versionData.trainedWords} />

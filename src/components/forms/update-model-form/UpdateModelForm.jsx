@@ -184,7 +184,7 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
 
   const addGeneralTagsHandler = (e) => {
     e.preventDefault();
-    // setModelIsSaving(true);
+    setModelIsSaving(true);
     seteErrorMessage("");
     seteSuccessMessage("");
     const formdata = new FormData(e.target);
@@ -257,7 +257,7 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           responseData?.modelVersions?.forEach((version) => {
             version.images.forEach((image) => {
               if (image.meta) {
-                // image.meta.comfy = "";
+                image.meta.comfy = "";
                 image.meta = clearObjectKeys(image.meta);
                 if (image.meta.hashes)
                   image.meta.hashes = clearObjectKeys(image.meta.hashes);
@@ -293,7 +293,7 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           data.modelVersions = [...newVerison, ...modelData.data.modelVersions];
           console.log(data.modelVersions);
         }
-        // return;
+
         if (!data.id) return;
 
         let modelVersionsCustomData = modelData?.modelVersionsCustomData || {};

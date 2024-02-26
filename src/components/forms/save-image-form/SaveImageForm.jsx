@@ -91,6 +91,7 @@ const SaveImageForm = ({ modelData }) => {
         }
         data.items.forEach((image) => {
           if (image.meta) {
+            image.meta.comfy = "";
             image.meta = clearObjectKeys(image.meta);
             if (image.meta.hashes)
               image.meta.hashes = clearObjectKeys(image.meta.hashes);
@@ -129,39 +130,10 @@ const SaveImageForm = ({ modelData }) => {
           postId + ""
         );
 
-        // const modelSnap = await getDoc(modelRef);
-        // const modelImagesSnap = await getDoc(modelImagesRef);
-
-        //Throw error if user try to add existing model using new model form
-
-        // await updateDoc(modelRef, {
-        //   savedImages: arrayUnion({
-        //     postId: +postId,
-        //     amount: dataFiltered.items.length,
-        //   }),
-        // });
-        // await setDoc(
-        //   modelImagesRef,
-        //   {
-        //     [`${postId}`]: examplesDataWithRes,
-        //   },
-        //   { merge: true }
-        // );
-
         const newImgData = {
           postId: +postId,
           amount: dataFiltered.items.length,
         };
-
-        let newSavedImages;
-        if (modelData?.savedImages?.hasOwnProperty(`${curVersionId}`)) {
-          newSavedImages = [
-            ...modelData?.savedImages[`${curVersionId}`],
-            newImgData,
-          ];
-        } else {
-          newSavedImages = [newImgData];
-        }
 
         await setDoc(
           modelImagesRef,
@@ -180,75 +152,12 @@ const SaveImageForm = ({ modelData }) => {
           modelRef,
           {
             savedImages: {
-              [`${curVersionId}`]: newSavedImages,
+              [`${curVersionId}`]: arrayUnion(newImgData),
             },
           },
           { merge: true }
         );
 
-        // const modelsRef = ref(db, "models/" + modelData.id);
-
-        // get(modelsRef).then((snapshot) => {
-        //   if (snapshot.exists()) {
-        //     const curData = snapshot.val();
-        //     console.log(curVersionId);
-        //     if (curData?.savedImages?.hasOwnProperty(`${curVersionId}`)) {
-        //       curData.savedImages[`${curVersionId}`].unshift({
-        //         postId: +postId,
-        //         amount: dataFiltered.items.length,
-        //       });
-        //     } else {
-        //       curData.savedImages = {
-        //         ...curData?.savedImages,
-        //         [`${curVersionId}`]: [
-        //           { postId: +postId, amount: dataFiltered.items.length },
-        //         ],
-        //       };
-        //     }
-
-        //     set(modelsRef, curData);
-        //   } else {
-        //   }
-        // });
-
-        // const savedImagesRef = ref(db, `savedImages/` + modelData.id);
-
-        // get(savedImagesRef).then((snapshot) => {
-        //   if (snapshot.exists()) {
-        //     const curData = snapshot.val();
-
-        //     const exapleIndex = curData[curVersionId]
-        //       ?.filter(Boolean)
-        //       .findIndex(
-        //         (example) =>
-        //           example.items[0].postId ===
-        //           examplesDataWithRes.items[0].postId
-        //       );
-
-        //     if (exapleIndex && exapleIndex !== -1) {
-        //       const newExamples = examplesDataWithRes.items.filter((item) => {
-        //         const isExists = curData[curVersionId]
-        //           .filter(Boolean)
-        //           .find((example) => example.items[0].id === item.id);
-        //         return !isExists;
-        //       });
-        //       curData[curVersionId][exapleIndex].items = [
-        //         ...newExamples,
-        //         ...curData[curVersionId][exapleIndex].items,
-        //       ];
-        //       // curData.examplesData[exapleIndex].curVersionId = curVersionId
-        //     } else {
-        //       curData[curVersionId] = curData[curVersionId]
-        //         ? [examplesDataWithRes, ...curData[curVersionId]]
-        //         : [examplesDataWithRes];
-        //     }
-        //     console.log(curData);
-        //     set(savedImagesRef, curData);
-        //   } else {
-        //     const images = { [curVersionId]: [examplesDataWithRes] };
-        //     set(savedImagesRef, images);
-        //   }
-        // });
         setImageIsSaving(false);
         seteSuccessMessage("Saved");
       } catch (err) {

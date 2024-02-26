@@ -35,7 +35,8 @@ const ModelTags = ({ customData, modelPreview }) => {
           </ul>
         </>
       )}
-      {(curVersion?.trainedWords || customData?.trainedWords) && (
+      {(!!curVersion?.trainedWords?.length ||
+        !!customData?.trainedWords?.length) && (
         <>
           <div>Trigger Words:</div>
           <TagList

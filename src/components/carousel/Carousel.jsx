@@ -409,7 +409,7 @@ const Carousel = ({
         modelRef,
         {
           savedImages: {
-            [`${versionId}`]: newSavedImages,
+            [`${versionId}`]: arrayUnion(newImgData),
           },
         },
         { merge: true }

@@ -64,8 +64,13 @@ export const getModel = (modelId) => {
         if (!data) return;
         dispatch(modelActions.setModelData(data));
 
-        const curVersionId = Object.values(data?.modelVersionsCustomData).find(
-          (version) => version.downloadStatus === true
+        // const curVersionId = Object.values(data?.modelVersionsCustomData).find(
+        //   (version) => version.downloadStatus === true
+        // )?.versionId;
+        const curVersionId = data.data.modelVersions.find(
+          (version) =>
+            data?.modelVersionsCustomData.hasOwnProperty(version.id) &&
+            data?.modelVersionsCustomData[version.id].downloadStatus
         )?.versionId;
         const curVersionData = curVersionId
           ? data.data.modelVersions.find(
