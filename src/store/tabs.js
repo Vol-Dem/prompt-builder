@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { get, onValue, ref, set } from "firebase/database";
-import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
+import { doc, getFirestore, onSnapshot } from "firebase/firestore";
 import firebaseApp from "../firebase-config";
 
 const firestore = getFirestore(firebaseApp);
@@ -37,11 +36,7 @@ const tabsSlice = createSlice({
     setSubcategories(state, actions) {
       state.subcategories = actions.payload;
     },
-    // setAllCategories(state, actions) {
-    //   state.allCategories = actions.payload;
-    // },
     reset(state, actions) {
-      //   state.currTab = "";
       state.currCategory = "";
       state.currSubcategory = "";
       state.categoriesData = [];

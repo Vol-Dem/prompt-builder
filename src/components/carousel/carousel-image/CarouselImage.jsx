@@ -5,15 +5,23 @@ import { setPreviewImg } from "../../../store/model";
 
 const CarouselImage = ({ id, src, alt, onClick, dataset }) => {
   const [imgIsLoading, setImgIsLoading] = useState(true);
+  const [imgError, setImgError] = useState(true);
   const [imgSrc, setImgSrc] = useState("#");
   const dispatch = useDispatch();
   const model = useSelector((state) => state.model.model);
 
   useEffect(() => {
+    if (imgError) setImgIsLoading(true);
     if (src) setImgSrc(src);
   }, [src]);
 
   const imgLoadHandler = () => {
+    setImgIsLoading(false);
+    setImgError(false);
+  };
+
+  const imgErrorHandler = () => {
+    setImgError(true);
     setImgIsLoading(false);
   };
 
@@ -35,7 +43,7 @@ const CarouselImage = ({ id, src, alt, onClick, dataset }) => {
         }`}
         onClick={onClick}
         onLoad={imgLoadHandler}
-        onError={imgLoadHandler}
+        onError={imgErrorHandler}
         data-position={dataset}
         id={id}
         src={imgSrc}

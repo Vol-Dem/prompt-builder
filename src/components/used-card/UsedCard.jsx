@@ -146,7 +146,7 @@ const UsedCard = ({ previewData }) => {
           />
         </ul>
         <div className={classes["tags-container"]}>
-          {previewData.tags.length !== 0 && (
+          {!!previewData.tags?.length && (
             <>
               <span>Tags: </span>
               <div
@@ -179,7 +179,7 @@ const UsedCard = ({ previewData }) => {
             </>
           )}
         </div>
-        {previewData.helperTags.length !== 0 && (
+        {!!previewData.helperTags?.length && (
           <>
             <div
               className={`${classes[["helper-tags"]]} ${
