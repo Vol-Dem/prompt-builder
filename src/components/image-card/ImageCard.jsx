@@ -1,16 +1,10 @@
-// import React, { useState } from "react";
 import classes from "./ImageCard.module.scss";
 import TagList from "../tag-list/TagList";
 import { useDispatch } from "react-redux";
 import { promptActions } from "../../store/prompt";
 
-const ImageCard = ({ imageData, imgIsOpen, openImg, currImgId, closeImg }) => {
-  // const [infoIsOpen, setInfoIsOpen] = useState(false);
+const ImageCard = ({ imageData, closeImg }) => {
   const dispatch = useDispatch();
-
-  //   const openInfoHandler = (e) => {
-  //     setInfoIsOpen((prevState) => !prevState);
-  //   };
   const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
   const positiveHtml = imageData.meta?.prompt
     ?.split(splitRegEx)
@@ -71,13 +65,8 @@ const ImageCard = ({ imageData, imgIsOpen, openImg, currImgId, closeImg }) => {
 
   return (
     <>
-      {/* {(!imgIsOpen || currImgId === imageData.hash) && ( */}
       <div className={classes.example}>
         <div className={classes["example__info"]}>
-          {/* <div className={classes["example__img"]} onClick={closeImg}>
-            <img id={imageData.hash} src={imageData.url} alt="" />
-          </div> */}
-
           <>
             <div className={classes["example__prompt"]}>
               <div>
@@ -98,7 +87,6 @@ const ImageCard = ({ imageData, imgIsOpen, openImg, currImgId, closeImg }) => {
                   Add all
                 </button>
               </div>
-              {/* <div>{imageData.meta?.prompt || ""}</div> */}
               <TagList
                 tags={positiveHtml}
                 promptType="positive"
@@ -122,7 +110,6 @@ const ImageCard = ({ imageData, imgIsOpen, openImg, currImgId, closeImg }) => {
                   Add all
                 </button>
               </div>
-              {/* <div>{imageData.meta?.negativePrompt || ""}</div> */}
               <TagList
                 tags={negativeHtml}
                 promptType="negative"
@@ -173,7 +160,6 @@ const ImageCard = ({ imageData, imgIsOpen, openImg, currImgId, closeImg }) => {
           </>
         </div>
       </div>
-      {/* )} */}
     </>
   );
 };

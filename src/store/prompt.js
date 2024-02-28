@@ -18,38 +18,6 @@ const promptSlice = createSlice({
         console.log(isInPrompt);
         if (isInPrompt) {
           console.log(actions.payload.value);
-          // const replaceWord = new RegExp(
-          //   `/\b${actions.payload.value}\b|[<\[\{]([^>\]]*\b${actions.payload.value}\b[^>\]]*)[>\]\}]/i`
-          // );
-          // const replaceWord = new RegExp(`/${actions.payload.value}/`);
-          // const replaceWord = new RegExp(
-          //   `\\b${actions.payload.value}\\b`,
-          //   "gi"
-          // );
-          // const replaceWord = new RegExp(
-          //   `\\b(${actions.payload.value}(,)?\\b)|[<\\[\\{\\(]([^>\\]\\)]*${actions.payload.value}(,)?\\b[^>\\]\\)]*)[>\\]\\}\\)]`,
-          //   "gi"
-          // );
-
-          // const text =
-          //   "This is a <word:2> example with <word:2> some <word:2> words.";
-          // const tag = "<word:2>";
-
-          // Escape special characters in the tag
-          // const escapedTag = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-          // Check if the tag contains word characters, and add word boundaries accordingly
-          // const pattern = new RegExp(
-          //   new RegExp(`\\b${escapedTag}\\b`).test(escapedTag)
-          //     ? `\\b${escapedTag}\\b`
-          //     : escapedTag,
-          //   "gi"
-          // );
-
-          // const newText = text.replace(pattern, "");
-
-          // console.log(newText);
-
           const tag = actions.payload.value.replace(
             /[.*+?^${}()<>|[\]\\]/g,
             "\\$&"
@@ -61,12 +29,6 @@ const promptSlice = createSlice({
               : `${tag}.?`,
             "gi"
           );
-
-          // const replaceWord = new RegExp(
-          //   `${tag}.?|[<\\[\\{\\(]([^>\\]\\)\\}]*${actions.payload.value}[^>\\]\\)\\}]*)[>\\]\\}\\)],?`,
-          //   "gi"
-          // );
-
           let newPromt = prompt.replace(replaceWord, "");
           state.curPrompt = newPromt;
         } else {
@@ -102,7 +64,6 @@ const promptSlice = createSlice({
           .split(",")
           .flatMap((el) => (el.trim() ? el.trim() : []));
         const inPrompt = tagsArr.reduce((acc, cur) => {
-          // console.log(cur, acc);
           return prompt.includes(`${cur.trim()}`) ? acc + 1 : acc;
         }, 0);
         const isAllInPrompt = inPrompt === tagsArr.length;
@@ -128,23 +89,6 @@ const promptSlice = createSlice({
           });
           state.curPrompt = newPromt;
         }
-        // tagsArr.forEach((tagEl) => {
-        //   const prompt = state.curPrompt.trim();
-        //   const lastSimbol = prompt.slice(-1);
-        //   const tag = tagEl.trim();
-        //   const isInPrompt = prompt.includes(`${tag}`);
-        //   if (isInPrompt) {
-        //     let newPromt = prompt.replace(`${tag}, `, "");
-        //     newPromt = newPromt.replace(`${tag},`, "");
-        //     newPromt = newPromt.replace(`${tag}`, "");
-        //     state.curPrompt = newPromt;
-        //   } else {
-        //     state.curPrompt =
-        //       lastSimbol === "," || !prompt.length
-        //         ? `${prompt} ${tag},`
-        //         : `${prompt}, ${tag},`;
-        //   }
-        // });
       }
       if (actions.payload.type === "negative") {
         const prompt = state.curNegPrompt.trim();

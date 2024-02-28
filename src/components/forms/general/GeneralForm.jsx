@@ -7,7 +7,6 @@ const GeneralForm = () => {
   const addGeneralTagsHandler = (e) => {
     e.preventDefault();
 
-    // const formdata = [...new FormData(e.target).values()];
     const formdata = new FormData(e.target);
     const main = formdata.get("main").trim();
     const sub = formdata.get("sub").trim();

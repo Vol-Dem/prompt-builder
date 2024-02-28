@@ -1,25 +1,40 @@
-// import { useEffect, useState } from "react";
-// import GeneralTags from "../categories/Categories";
 import classes from "./Home.module.scss";
-// import GeneralForm from "../../components/forms/general/GeneralForm";
-// import EmbeddingsForm from "../../components/forms/embeddings/EmbeddingsForm";
-// import LoraForm from "../../components/forms/lora/LoraForm";
 import Prompt from "../../components/prompt/Prompt";
 import { Outlet } from "react-router-dom";
-// import Tabs from "../tabs/Tabs";
-// import { push, ref, set, get } from "firebase/database";
-// import { db } from "../../firebase-config";
 import UsedModelsPanel from "../used-models-panel/UsedModelsPanel";
 import { useDispatch, useSelector } from "react-redux";
 import { modelActions } from "../../store/model";
+import { useEffect } from "react";
+import { tabActions } from "../../store/tabs";
+import { doc, getFirestore, onSnapshot } from "firebase/firestore";
+import firebaseApp from "../../firebase-config";
+
+const firestore = getFirestore(firebaseApp);
 
 function Home() {
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
-  const userId = useSelector((state) => state.auth.user.uid);
-  const distpatch = useDispatch();
+  const uid = useSelector((state) => state.auth.user.uid);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!uid) return;
+    const unsub = onSnapshot(doc(firestore, "users", uid), (doc) => {
+      const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+      console.log(source);
+      const data = doc.data();
+      console.log(data?.categories);
+      dispatch(tabActions.setCategories(data?.categories));
+    });
+
+    return () => {
+      unsub();
+    };
+  }, [uid, dispatch]);
+
   const nsfwSwitchHandler = () => {
-    distpatch(modelActions.setNsfwMode(!isNsfwMode));
+    dispatch(modelActions.setNsfwMode(!isNsfwMode));
   };
+
   return (
     <div className={classes["wrap"]}>
       <header className="Home-header"></header>

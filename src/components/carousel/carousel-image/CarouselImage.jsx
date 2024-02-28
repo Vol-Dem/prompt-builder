@@ -5,19 +5,18 @@ import { setPreviewImg } from "../../../store/model";
 
 const CarouselImage = ({ id, src, alt, onClick, dataset }) => {
   const [imgIsLoading, setImgIsLoading] = useState(true);
-  const [imgError, setImgError] = useState(true);
+  const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState("#");
   const dispatch = useDispatch();
   const model = useSelector((state) => state.model.model);
 
   useEffect(() => {
-    if (imgError) setImgIsLoading(true);
+    // if (imgError) setImgIsLoading(true);
     if (src) setImgSrc(src);
   }, [src]);
 
   const imgLoadHandler = () => {
     setImgIsLoading(false);
-    setImgError(false);
   };
 
   const imgErrorHandler = () => {
@@ -36,31 +35,41 @@ const CarouselImage = ({ id, src, alt, onClick, dataset }) => {
   return (
     <div className={classes.container}>
       {imgIsLoading && <div className={classes.loading}>Loading...</div>}
-      <div className={classes.placeholder}></div>
-      <img
-        className={`${classes.image} ${
-          imgIsLoading ? classes["image--hidden"] : ""
-        }`}
-        onClick={onClick}
-        onLoad={imgLoadHandler}
-        onError={imgErrorHandler}
-        data-position={dataset}
-        id={id}
-        src={imgSrc}
-        alt={alt}
-      />
-      <span
-        className={`${classes["btn__set"]} ${classes["btn__set--previw"]}`}
-        onClick={setPreviwImgHandler}
-      >
-        Set
-      </span>
-      <span
-        className={`${classes["btn__set"]} ${classes["btn__set--nsfw-previw"]}`}
-        onClick={setNsfwPreviwImgHandler}
-      >
-        Set H
-      </span>
+      {imgError && (
+        <div
+          className={classes.placeholder}
+          onClick={onClick}
+          data-position={dataset}
+        ></div>
+      )}
+      {!imgError && imgSrc !== "#" && (
+        <>
+          <img
+            className={`${classes.image} ${
+              imgIsLoading ? classes["image--hidden"] : ""
+            }`}
+            onClick={onClick}
+            onLoad={imgLoadHandler}
+            onError={imgErrorHandler}
+            data-position={dataset}
+            id={id}
+            src={imgSrc}
+            alt={alt}
+          />
+          <span
+            className={`${classes["btn__set"]} ${classes["btn__set--previw"]}`}
+            onClick={setPreviwImgHandler}
+          >
+            Set
+          </span>
+          <span
+            className={`${classes["btn__set"]} ${classes["btn__set--nsfw-previw"]}`}
+            onClick={setNsfwPreviwImgHandler}
+          >
+            Set H
+          </span>
+        </>
+      )}
     </div>
   );
 };

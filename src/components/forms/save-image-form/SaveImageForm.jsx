@@ -1,21 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import classes from "./SaveImageForm.module.scss";
-import { ref, set, get } from "firebase/database";
-import { db } from "../../../firebase-config";
-import {
-  addResourcesInfo,
-  getImagesInfo,
-  getModelInfo,
-} from "../../../utils/fetchUtils";
+import { getImagesInfo } from "../../../utils/fetchUtils";
 import firebaseApp from "../../../firebase-config";
-import {
-  arrayUnion,
-  doc,
-  getDoc,
-  getFirestore,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { arrayUnion, doc, getFirestore, setDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
 
 const firestore = getFirestore(firebaseApp);
@@ -206,10 +193,6 @@ const SaveImageForm = ({ modelData }) => {
       );
     }
   );
-
-  //   const srcHandler = (e) => {
-  //     setSrcInput(e.target.value);
-  //   };
 
   return (
     <form onSubmit={addGeneralTagsHandler} className={classes["form"]}>

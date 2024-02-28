@@ -1,20 +1,10 @@
 import React, { useEffect, useState } from "react";
 import classes from "./UpdateModelForm.module.scss";
-import { ref, set, get } from "firebase/database";
-import { db } from "../../../firebase-config";
-import {
-  addResourcesInfo,
-  getImagesInfo,
-  getModelInfo,
-  makeBatchRequest,
-} from "../../../utils/fetchUtils";
+import { makeBatchRequest } from "../../../utils/fetchUtils";
 import { clearObjectKeys } from "../../../utils/generalUtils";
 import {
-  arrayUnion,
-  collection,
   doc,
   getDoc,
-  getDocs,
   getFirestore,
   setDoc,
   updateDoc,
@@ -26,13 +16,10 @@ const firestore = getFirestore(firebaseApp);
 
 const UpdateModelForm = ({ modelData, formType = "model" }) => {
   const [updateInput, setUpdateInput] = useState(false);
-  const [filterDisabledInput, setFilterDisabledInput] = useState(false);
-  const [singleImageIdSwitch, setSingleImageIdSwitch] = useState(false);
   const [modelIsSaving, setModelIsSaving] = useState(false);
   const [errorMessage, seteErrorMessage] = useState("");
   const [successMessage, seteSuccessMessage] = useState("");
   const [srcInput, setSrcInput] = useState("civitai.com");
-  // const [subDataInput, setSubDataInput] = useState("");
   const [idInput, setIdInput] = useState(modelData?.id || "");
   const [mainInput, setMainInput] = useState(modelData?.main || "");
   const [mainTagInput, setMainTagInput] = useState(modelData?.mainTag || "");
@@ -80,34 +67,6 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
       },
     ],
   ]);
-  const [examplePromtsAmount, setExamplePromtsAmount] = useState([
-    [
-      {
-        type: "text",
-        id: "exmpl-post-id",
-        name: "example",
-        placeholder: "example: post id",
-        value: "",
-      },
-      {
-        type: "text",
-        id: "exmpl-image-id",
-        name: "image-id",
-        placeholder: "image id",
-        value: "",
-      },
-    ],
-  ]);
-
-  const [versionTagAmount, setVersionTagAmount] = useState([
-    {
-      type: "text",
-      id: "version-1",
-      name: "version",
-      placeholder: "version tag",
-      value: "",
-    },
-  ]);
 
   const uid = useSelector((state) => state.auth.user.uid);
   const categories = useSelector((state) => state.tabs.categoriesData);
@@ -150,16 +109,6 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
       };
     });
     setSubCatAmount(subCats);
-    const versionTag = modelData.sub.map((version, i) => {
-      return {
-        type: "text",
-        id: version.id,
-        name: "version-main-tag",
-        placeholder: version.name,
-        value: version.mainTag,
-      };
-    });
-    setVersionTagAmount(versionTag);
     if (!modelData.tagSetsData) return;
     const tagSets = modelData.tagSetsData.map((tagSet, i) => {
       console.log(tagSet);
@@ -194,7 +143,6 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
       formObj[key] = value;
     }
     console.log(formObj);
-    // return;
     const src = formdata.get("src").trim().toLowerCase();
     const modelId = +formdata.get("id").trim().toLowerCase().trim();
     const main = formdata.get("main").trim().toLowerCase().trim();
@@ -240,7 +188,6 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
     const getModelData = async () => {
       try {
         let data = {};
-        let versionsStatus = [];
 
         if (!modelData || updateInput) {
           const response = await fetch(
@@ -267,7 +214,6 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
 
           const imagesDataWithRes = await Promise.all(
             responseData.modelVersions.map(async (image) => {
-              // const updImg = await getImagesInfo(image.images);
               const updImg = await makeBatchRequest(image.images);
               //Temp
               image.images = updImg;
@@ -298,58 +244,36 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
 
         let modelVersionsCustomData = modelData?.modelVersionsCustomData || {};
 
-        if (true) {
-          console.log(versionsDownloadStatus);
-          data.modelVersions.forEach((version, i) => {
-            const isSingle = data.modelVersions.length === 1;
-            const curVersionDlStatus = versionsDownloadStatus.find(
-              (dlData) => Number.parseInt(dlData.id) === version.id
-            )?.value;
-            const dlStatus = versionsDownloadStatus.length
-              ? !!curVersionDlStatus
-              : false;
-            const currVersionData = modelVersionsCustomData.hasOwnProperty(
-              version.id
-            )
-              ? modelVersionsCustomData[version.id]
-              : {};
-            // console.log(
-            //   modelVersionsCustomData.hasOwnProperty(version.id),
-            //   currVersionData
-            // );
-            console.log(version.id, dlStatus, isSingle);
-            modelVersionsCustomData = {
-              ...modelVersionsCustomData,
-              [version.id]: {
-                versionId: version.id,
-                versionName: version.name,
-                versionImageUrl:
-                  version.images?.filter((img, i) => img.type === "image")[0]
-                    ?.url || "",
-                ...currVersionData,
-                downloadStatus: isSingle ? true : dlStatus,
-              },
-            };
-          });
-        } else {
-          // data.modelVersions.forEach((version, i) => {
-          //   const isSingle = data.modelVersions.length === 1;
-          //   const dlStatus = versionsDownloadStatus.length
-          //     ? !!versionsDownloadStatus[i]?.value
-          //     : false;
-          //   modelVersionsCustomData[version.id] = {
-          //     ...modelVersionsCustomData[version.id],
-          //     versionId: version.id,
-          //     versionName: version.name,
-          //     versionImageUrl:
-          //       version.images?.filter((img, i) => img.type === "image")[0]
-          //         ?.url || "",
-          //     downloadStatus: versionsDownloadStatus.length
-          //       ? dlStatus
-          //       : isSingle,
-          //   };
-          // });
-        }
+        console.log(versionsDownloadStatus);
+        data.modelVersions.forEach((version, i) => {
+          const isSingle = data.modelVersions.length === 1;
+          const curVersionDlStatus = versionsDownloadStatus.find(
+            (dlData) => Number.parseInt(dlData.id) === version.id
+          )?.value;
+          const dlStatus = versionsDownloadStatus.length
+            ? !!curVersionDlStatus
+            : false;
+          const currVersionData = modelVersionsCustomData.hasOwnProperty(
+            version.id
+          )
+            ? modelVersionsCustomData[version.id]
+            : {};
+
+          console.log(version.id, dlStatus, isSingle);
+          modelVersionsCustomData = {
+            ...modelVersionsCustomData,
+            [version.id]: {
+              versionId: version.id,
+              versionName: version.name,
+              versionImageUrl:
+                version.images?.filter((img, i) => img.type === "image")[0]
+                  ?.url || "",
+              ...currVersionData,
+              downloadStatus: isSingle ? true : dlStatus,
+            },
+          };
+        });
+
         console.log(modelVersionsCustomData);
 
         const activePreviewId = Object.values(modelVersionsCustomData).find(
@@ -369,7 +293,6 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           )[0]?.url || "";
 
         const previewImg = activePreviewImg || previewImgDefault;
-        // console.log(previewImg);
 
         let modelInfo = {
           ...modelData,
@@ -402,9 +325,7 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           };
         }
 
-        // console.log(filterDisabledInput);
         console.log(modelInfo);
-        // console.log("CUSTDATA", modelData.modelVersionsCustomData);
 
         const loraPrevData = {
           id: modelData?.id || modelId,
@@ -778,19 +699,13 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           id={version.id}
           name={version.name}
           type={version.type}
-          // defaultChecked={version.value}
           checked={version.value}
           onChange={versionStatusChangeHandler}
-          // placeholder={version.placeholder}
         ></input>
         <label htmlFor={version.id}>{version.label}</label>
       </div>
     );
   });
-
-  //   const srcHandler = (e) => {
-  //     setSrcInput(e.target.value);
-  //   };
 
   return (
     <form onSubmit={addGeneralTagsHandler} className={classes["form"]}>
@@ -809,12 +724,10 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
         name="src"
         type="text"
         placeholder="src"
-        // value="civitai.com"
         value={srcInput}
         onChange={(e) => {
           setSrcInput(e.target.value);
         }}
-        // readOnly
       />
       <input
         name="id"

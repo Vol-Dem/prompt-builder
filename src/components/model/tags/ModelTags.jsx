@@ -20,7 +20,7 @@ const ModelTags = ({ customData, modelPreview }) => {
       {<TagList tags={splitTags(tagSet.value)} promptType="positive" />}
     </li>
   ));
-  console.log(customData?.trainedWords?.length || "WTF");
+
   return (
     <div className={classes["tags"]}>
       {(customData?.mainTag || model?.mainTag) && (

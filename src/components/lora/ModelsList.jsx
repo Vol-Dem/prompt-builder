@@ -1,22 +1,14 @@
 import React, { useEffect } from "react";
-// import { useEffect, useState } from "react";
-// import Category from "../subcategories/Subcategories";
 import classes from "./ModelsList.module.scss";
-// import { db } from "../../firebase-config";
-// import { onValue, ref, set } from "firebase/database";
-// import Tag from "../tag/Tag";
 import PreviewCard from "../previewCard/PreviewCard";
 import { useDispatch, useSelector } from "react-redux";
 import {
   collection,
-  getDoc,
   getDocs,
   getFirestore,
-  orderBy,
   query,
   where,
 } from "firebase/firestore";
-// import Subcategory from "../subcategory/Subcategory";
 import firebaseApp from "../../firebase-config";
 import { tabActions } from "../../store/tabs";
 
@@ -49,7 +41,7 @@ const ModelsList = ({ loraItems }) => {
       dispatch(tabActions.setModelsData(modelsData));
     };
     getModelsPreview();
-  }, [uid, activeCategory, activeSubcategory, firestore]);
+  }, [uid, activeCategory, activeSubcategory, activeTab, dispatch]);
 
   const loraHtml = loraItems.map((item, i) => {
     return <PreviewCard previewData={item} key={item.id} />;

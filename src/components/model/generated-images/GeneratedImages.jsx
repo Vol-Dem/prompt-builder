@@ -1,14 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import classes from "./GeneratedImages.module.scss";
 import { useSelector } from "react-redux";
-import { get, ref, set } from "firebase/database";
-import { db } from "../../../firebase-config";
-import { addResourcesInfo, getModelInfo } from "../../../utils/fetchUtils";
 import Carousel from "../../carousel/Carousel";
 import {
   collection,
-  doc,
-  getDoc,
   getDocs,
   getFirestore,
   orderBy,
@@ -20,21 +15,13 @@ import firebaseApp from "../../../firebase-config";
 const firestore = getFirestore(firebaseApp);
 
 const GeneratedImages = ({ customData }) => {
-  // const [modelPreview, setModelPreview] = useState({});
-  // const [isLoading, setIsLoading] = useState(true);
-  // const [editIsOpen, setEditIsOpen] = useState(false);
-  // const [currVersionIndex, setCurrVersionIndex] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-  // const [curVersion, setCurVersion] = useState(null);
   const [curExampleImgsType, setCurExampleImgsType] = useState("saved");
-  // const [examplesPage, setExamplesPage] = useState(1);
   const [examplesIsLoading, setExamplesIsLoading] = useState(false);
   const [examplesImages, setExamplesImages] = useState([]);
-  // const [allModelexamplesImages, setAllModelexamplesImages] = useState({});
   const [currCursor, setCurrCursor] = useState(null);
   const [nextCursor, setNextCursor] = useState(null);
   const [examplesHtml, setExamplesHtml] = useState([]);
-  // const [curCustomVersionData, setCurCustomVersionData] = useState({});
   const [curImagesModelVersionId, setCurImagesModelVersionId] = useState();
   const [imagesSortValue, setImagesSortValue] = useState("Newest");
   const [amountPerPage, setAmountPerPage] = useState("20");
@@ -47,40 +34,32 @@ const GeneratedImages = ({ customData }) => {
     console.log("RESET");
     setCurrCursor(null);
     setExamplesImages([]);
+    // setCurImagesModelVersionId(null);
   };
 
   useEffect(() => {
-    if (Object.keys(model).length === 0) return;
-    if (!model.savedImages) setCurExampleImgsType("all");
+    // if (Object.keys(model).length === 0) return;
+    // if (!model.savedImages) setCurExampleImgsType("all");
     return () => {
       resetExamples();
+      setCurImagesModelVersionId(null);
     };
   }, [model.id]);
 
-  useEffect(() => {
-    if (!curVersion?.baseModel) return;
-    console.log(
-      "WTF",
-      curImagesModelVersionId,
-      curVersion.id,
-      customData?.versionId
-    );
-    if (!curImagesModelVersionId) {
-      console.log("Hmmm", customData?.versionId);
-      setCurImagesModelVersionId(customData?.versionId || curVersion.id);
-    }
-  }, [model, curVersion, customData, curImagesModelVersionId]);
+  // useEffect(() => {
+  //   if (!curVersion?.baseModel) return;
+  //   if (!curImagesModelVersionId) {
+  //     setCurImagesModelVersionId(customData?.versionId || curVersion.id);
+  //   }
+  // }, [model, curVersion, customData, curImagesModelVersionId]);
 
   useEffect(() => {
-    if (curImagesModelVersionId !== curVersion.id)
-      setCurImagesModelVersionId(customData?.versionId || curVersion.id);
-  }, []);
+    if (curImagesModelVersionId) return;
+    if (curImagesModelVersionId === curVersion?.id) return;
+    // setCurImagesModelVersionId(customData?.versionId || curVersion.id);
 
-  //   useEffect(() => {
-  //     if (!curVersion?.baseModel) return;
-  //     if (curImagesModelVersionId === curVersion.id) return;
-  //     setCurImagesModelVersionId(curVersion.id);
-  //   }, [curVersion]);
+    setCurImagesModelVersionId(curVersion.id);
+  }, [curImagesModelVersionId, curVersion, customData]);
 
   const openSavedVersionImagesHandler = (e) => {
     resetExamples();
@@ -97,92 +76,101 @@ const GeneratedImages = ({ customData }) => {
     setCurImagesModelVersionId(+e.target.id);
   };
   const switchCurExamples = (e) => {
-    // setExamplesPage(1);
     resetExamples();
     setErrorMessage("");
     setCurExampleImgsType(e.target.dataset.example);
-    // setCurImagesModelVersionId(curVersion.id);
   };
 
   //Temp
-  const updateImgResData = async (postId) => {
-    try {
-      const modelsRef = ref(db, `models/` + model.id);
+  // const updateImgResData = async (postId) => {
+  //   try {
+  //     const modelsRef = ref(db, `models/` + model.id);
 
-      const data = await get(modelsRef);
-      const curData = data.val();
+  //     const data = await get(modelsRef);
+  //     const curData = data.val();
 
-      const exapleIndex = curData.examplesData
-        ?.filter(Boolean)
-        .findIndex((example) => example.items[0].postId === postId);
+  //     const exapleIndex = curData.examplesData
+  //       ?.filter(Boolean)
+  //       .findIndex((example) => example.items[0].postId === postId);
 
-      const examplesDataWithRes = {
-        items: await Promise.all(
-          curData.examplesData[exapleIndex].items.map(async (item) => {
-            const updatedImgData = { ...item };
-            if (item.meta?.hasOwnProperty("Model hash")) {
-              const newMeta = await getModelInfo(item.meta);
-              if (newMeta) updatedImgData.meta = newMeta;
-            }
-            if (item.meta?.resources) {
-              updatedImgData.meta.resources = await addResourcesInfo(
-                item.meta.resources
-              );
-            }
-            if (item.meta?.civitaiResources) {
-              updatedImgData.meta.civitaiResources = await addResourcesInfo(
-                item.meta.civitaiResources
-              );
-            }
+  //     const examplesDataWithRes = {
+  //       items: await Promise.all(
+  //         curData.examplesData[exapleIndex].items.map(async (item) => {
+  //           const updatedImgData = { ...item };
+  //           if (item.meta?.hasOwnProperty("Model hash")) {
+  //             const newMeta = await getModelInfo(item.meta);
+  //             if (newMeta) updatedImgData.meta = newMeta;
+  //           }
+  //           if (item.meta?.resources) {
+  //             updatedImgData.meta.resources = await addResourcesInfo(
+  //               item.meta.resources
+  //             );
+  //           }
+  //           if (item.meta?.civitaiResources) {
+  //             updatedImgData.meta.civitaiResources = await addResourcesInfo(
+  //               item.meta.civitaiResources
+  //             );
+  //           }
 
-            return await updatedImgData;
-          })
-        ),
-      };
+  //           return await updatedImgData;
+  //         })
+  //       ),
+  //     };
 
-      curData.examplesData[exapleIndex] = examplesDataWithRes;
-      set(modelsRef, curData);
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
+  //     curData.examplesData[exapleIndex] = examplesDataWithRes;
+  //     set(modelsRef, curData);
+  //   } catch (err) {
+  //     console.log(err.message);
+  //   }
+  // };
 
-  const getallExamples = async (modelId, versionId, cursor) => {
-    try {
-      setExamplesIsLoading(true);
-      setErrorMessage("");
-      // const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
-      //   versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
-      // }&limit=${amountPerPage}&sort=Newest${cursor ? `&cursor=${cursor}` : ""}`;
-      const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
-        versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
-      }${amountPerPage ? `&limit=${amountPerPage}` : ""}${
-        imagesSortValue ? `&sort=${imagesSortValue}` : ""
-      }${cursor ? `&cursor=${cursor}` : ""}${!true ? `&nsfw=None` : ""}`;
-      console.log(url);
-      console.log(versionId);
-      const imgExampleResponse = await fetch(url);
-      const data = await imgExampleResponse.json();
-      console.log(data);
-      setExamplesIsLoading(false);
-      if (!data?.items) return;
-      setCurrCursor(nextCursor || true);
-      setNextCursor(data.metadata.nextCursor);
-      // setExamplesImages(data?.items);
-      setExamplesImages((prevState) => {
-        return [...data?.items, ...prevState];
-      });
-    } catch (err) {
-      console.log(err.message);
-      setErrorMessage(err.message);
-      setExamplesIsLoading(false);
-    }
-  };
+  const getallExamples = useCallback(
+    async (modelId, versionId, cursor) => {
+      try {
+        setExamplesIsLoading(true);
+        setErrorMessage("");
+        // const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
+        //   versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
+        // }&limit=${amountPerPage}&sort=Newest${cursor ? `&cursor=${cursor}` : ""}`;
+        const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
+          versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
+        }${amountPerPage ? `&limit=${amountPerPage}` : ""}${
+          imagesSortValue ? `&sort=${imagesSortValue}` : ""
+        }${cursor ? `&cursor=${cursor}` : ""}${!true ? `&nsfw=None` : ""}`;
+
+        const imgExampleResponse = await fetch(url);
+        const data = await imgExampleResponse.json();
+        console.log(data);
+        setExamplesIsLoading(false);
+        if (!data?.items) return;
+        setCurrCursor(nextCursor || true);
+        setNextCursor(data.metadata.nextCursor);
+        setExamplesImages((prevState) => {
+          return [...data?.items, ...prevState];
+        });
+      } catch (err) {
+        console.log(err.message);
+        setErrorMessage(err.message);
+        setExamplesIsLoading(false);
+      }
+    },
+    [amountPerPage, imagesSortValue, nextCursor]
+  );
 
   useEffect(() => {
     if (curExampleImgsType === "all") return;
-    console.log(curImagesModelVersionId);
+    if (!model?.savedImages || !Object.values(model.savedImages).length) {
+      setCurExampleImgsType("all");
+      return;
+    }
+
     if (!curImagesModelVersionId) return;
+    if (!model.savedImages.hasOwnProperty(curImagesModelVersionId)) {
+      const latesVersionId = model.data.modelVersions.find((version) =>
+        model.savedImages.hasOwnProperty(version.id)
+      ).id;
+      setCurImagesModelVersionId(latesVersionId);
+    }
 
     //Temp
     if (curImagesModelVersionId === "unsorted") {
@@ -192,28 +180,19 @@ const GeneratedImages = ({ customData }) => {
             key={i}
             images={item.items}
             visibleImgAmount={1}
-            onUpdate={updateImgResData}
+            // onUpdate={updateImgResData}
           />
         );
       });
       setExamplesHtml(examples);
       return;
     }
-    if (!model.savedImages[curImagesModelVersionId]) {
-      const latestVersion = Object.keys(model.savedImages)[0];
-      if (latestVersion) setCurImagesModelVersionId(+latestVersion);
-    }
+    // if (!model.savedImages[curImagesModelVersionId]) {
+    //   const latestVersion = Object.keys(model.savedImages)[0];
+    //   if (latestVersion) setCurImagesModelVersionId(+latestVersion);
+    // }
 
     const getImages = async () => {
-      // const modelImagesRef = doc(
-      //   firestore,
-      //   "users",
-      //   uid,
-      //   "models",
-      //   model.id + "",
-      //   "images",
-      //   curImagesModelVersionId + ""
-      // );
       const q = query(
         collection(firestore, "users", uid, "models", model.id + "", "images"),
         where("versionId", "==", curImagesModelVersionId),
@@ -222,72 +201,35 @@ const GeneratedImages = ({ customData }) => {
       );
       const modelImagesSnap = await getDocs(q);
 
-      // const modelImagesSnap = await getDoc(modelImagesRef);
-
-      if (true) {
-        // const data = modelImagesSnap.data();
-        const data = modelImagesSnap.docs.map((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          return doc.data();
-        });
-        // console.log(modelsData);
-        console.log(data);
-        // console.log(Object.values(data));
-        const examples = data.map((item, i) => {
-          return (
-            <Carousel
-              key={i}
-              images={item.items}
-              visibleImgAmount={1}
-              onUpdate={updateImgResData}
-            />
-          );
-        });
-        setExamplesHtml(examples);
-      } else {
-        setExamplesHtml([]);
-      }
+      const data = modelImagesSnap.docs.map((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        return doc.data();
+      });
+      console.log(data);
+      const examples = data.map((item, i) => {
+        return (
+          <Carousel
+            key={i}
+            images={item.items}
+            visibleImgAmount={1}
+            // onUpdate={updateImgResData}
+          />
+        );
+      });
+      setExamplesHtml(examples);
     };
 
     getImages();
-
-    // const modelsRef = ref(
-    //   db,
-    //   `savedImages/${model.id}/` + curImagesModelVersionId
-    // );
-
-    // get(modelsRef).then((snapshot) => {
-    //   if (snapshot.exists()) {
-    //     const curData = snapshot.val();
-    //     console.log(curData);
-    //     // setExamplesImages(curData);
-    //     const examples = curData.map((item, i) => {
-    //       return (
-    //         <Carousel
-    //           key={i}
-    //           images={item.items}
-    //           visibleImgAmount={1}
-    //           onUpdate={updateImgResData}
-    //         />
-    //       );
-    //     });
-    //     setExamplesHtml(examples);
-    //   } else {
-    //     setExamplesHtml([]);
-    //   }
-    // });
-  }, [curImagesModelVersionId, curExampleImgsType, model]);
+  }, [curImagesModelVersionId, curExampleImgsType, model, uid]);
 
   useEffect(() => {
     if (curExampleImgsType === "saved") return;
     if (Object.keys(model).length === 0) return;
-    console.log("ALL");
+
     //Temp
     if (curImagesModelVersionId === "unsorted") return;
     if (!curImagesModelVersionId) return;
     // if (examplesImages.length) return;
-    console.log(model.id);
-    console.log(curImagesModelVersionId);
     if (!currCursor)
       getallExamples(model.id, curImagesModelVersionId, currCursor);
   }, [
@@ -296,6 +238,7 @@ const GeneratedImages = ({ customData }) => {
     curImagesModelVersionId,
     currCursor,
     nsfwMode,
+    getallExamples,
   ]);
 
   const sortExampleImages = () => {
@@ -326,8 +269,7 @@ const GeneratedImages = ({ customData }) => {
         existedExample && existedExample.amount >= sortedExamples[key].length
           ? ""
           : key;
-      // console.log(existedExample, sortedExamples[key]);
-      // console.log(model?.savedImages[`${curImagesModelVersionId}`]);
+
       return (
         <div key={i}>
           <Carousel
@@ -336,12 +278,10 @@ const GeneratedImages = ({ customData }) => {
             postId={postId}
             modelId={model.id}
             versionId={curImagesModelVersionId}
-            // onSave={saveExampleHandler}
           />
         </div>
       );
     });
-    // const examples = <Carousel images={data?.items} visibleImgAmount={3} />;
 
     setExamplesHtml(examples);
   };
@@ -355,7 +295,6 @@ const GeneratedImages = ({ customData }) => {
 
   const nextPageHandler = () => {
     getallExamples(model.id, curImagesModelVersionId, nextCursor);
-    // setExamplesPage((prev) => prev + 1);
   };
   const retryImageLoadingHandler = () => {
     setErrorMessage("");
@@ -367,12 +306,9 @@ const GeneratedImages = ({ customData }) => {
       const isSaved =
         model?.savedImages &&
         Object.keys(model.savedImages).includes(`${version.id}`);
-      // const versionIsSaved = model.modelVersionsCustomData?.find(
-      //   (customData) => customData.versionId === version.id
-      // ).downloadStatus;
       const versionIsSaved =
         model.modelVersionsCustomData[version.id]?.downloadStatus;
-      // console.log(model.savedImages, version.id);
+
       if (curExampleImgsType === "saved" && !isSaved) {
         return [];
       }
@@ -382,12 +318,6 @@ const GeneratedImages = ({ customData }) => {
           id={version.id}
           data-version={i}
           onClick={openSavedVersionImagesHandler}
-          //   className={`${classes.version} ${
-          //     curImagesModelVersionId === version.id
-          //       ? classes["version--active"]
-          //       : ""
-          //   }
-          // `}
           className={`${classes.version} ${
             curImagesModelVersionId === version.id
               ? classes["version--active"]
@@ -404,7 +334,8 @@ const GeneratedImages = ({ customData }) => {
   return (
     <>
       <div>
-        {(model?.examplesData?.length || model?.savedImages) && (
+        {(model?.examplesData?.length ||
+          (model?.savedImages && !!Object.keys(model?.savedImages).length)) && (
           <span
             className={`${classes["btn-examples"]} ${
               curExampleImgsType === "saved"
@@ -458,21 +389,6 @@ const GeneratedImages = ({ customData }) => {
       </div>
 
       <div className={classes["image-versions"]}>
-        {/* {curExampleImgsType === "saved" &&
-          model?.examplesData?.length !== 0 && (
-            <div
-              className={`${classes.version} ${
-                curImagesModelVersionId === "unsorted"
-                  ? classes["version--active"]
-                  : ""
-              }
-        `}
-              id="unsorted"
-              onClick={openSavedVersionImagesHandler}
-            >
-              Unsorted
-            </div>
-          )} */}
         {curExampleImgsType !== "saved" && (
           <div
             className={`${classes.version} ${
@@ -493,9 +409,6 @@ const GeneratedImages = ({ customData }) => {
       {examplesIsLoading && <div>Loading...</div>}
       {errorMessage && <div>{errorMessage}</div>}
       <div>
-        {/* {examplesPage > 1 && (
-              <button onClick={prevPageHandler}>prev</button>
-            )} */}
         {nextCursor && curExampleImgsType === "all" && (
           <button onClick={nextPageHandler}>next</button>
         )}

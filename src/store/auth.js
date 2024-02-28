@@ -9,9 +9,6 @@ import {
   updateProfile,
 } from "firebase/auth";
 import firebaseApp from "../firebase-config";
-import { getDoc } from "firebase/firestore";
-import { getCategories } from "./tabs";
-// import { loadFav } from "./fav";
 
 const auth = getAuth(firebaseApp);
 
@@ -82,8 +79,6 @@ export const initAuth = () => {
             displayName: user.displayName,
           })
         );
-        dispatch(getCategories(user.uid));
-        // dispatch(loadFav(user.uid));
       }
     });
   };
@@ -125,8 +120,6 @@ export const authRequest = (isLogin, email, password) => {
         })
       );
       dispatch(authActions.closeAuthForm());
-      console.log("AUTH");
-      dispatch(getCategories(user.uid));
     } catch (error) {
       dispatch(authActions.setErrorMessage(error.message));
     }

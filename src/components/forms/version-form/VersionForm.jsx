@@ -1,16 +1,6 @@
 import React, { useEffect, useState } from "react";
 import classes from "./VersionForm.module.scss";
-import { ref, set, get } from "firebase/database";
-import { db } from "../../../firebase-config";
-import { addResourcesInfo, getModelInfo } from "../../../utils/fetchUtils";
-import {
-  arrayUnion,
-  doc,
-  getDoc,
-  getFirestore,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
 import { useSelector } from "react-redux";
 
@@ -116,16 +106,6 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
       .filter(Boolean)
       .map((tag) => tag.trim());
 
-    const clearObjectKeys = (obj) => {
-      const convertedMetaArr = Object.entries(obj).map((entry, i) => {
-        const newKey = entry[0]
-          ? entry[0].replace(/[^\w\s]/gi, " ")
-          : `key${i}`;
-        return [newKey, entry[1]];
-      });
-      return Object.fromEntries(convertedMetaArr);
-    };
-
     const getModelData = async () => {
       try {
         const updatedVersionData = {
@@ -142,30 +122,27 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
 
         console.log(updatedVersionData);
 
-        // const modelsRef = ref(db, "models/" + modelId);
         const modelsRef = doc(firestore, "users", uid, "models", modelId + "");
-        let modelsPrevRef;
+        // let modelsPrevRef;
 
-        if (modelType === "Checkpoint") {
-          modelsPrevRef = doc(
-            firestore,
-            "users",
-            uid,
-            "checkpoints preview",
-            modelId + ""
-          );
-        } else {
-          modelsPrevRef = doc(
-            firestore,
-            "users",
-            uid,
-            "models preview",
-            modelId + ""
-          );
-        }
+        // if (modelType === "Checkpoint") {
+        //   modelsPrevRef = doc(
+        //     firestore,
+        //     "users",
+        //     uid,
+        //     "checkpoints preview",
+        //     modelId + ""
+        //   );
+        // } else {
+        //   modelsPrevRef = doc(
+        //     firestore,
+        //     "users",
+        //     uid,
+        //     "models preview",
+        //     modelId + ""
+        //   );
+        // }
 
-        const modelSnap = await getDoc(modelsRef);
-        const modelsPrevRefSnap = await getDoc(modelsPrevRef);
         console.log(updatedVersionData);
         const versionPath = `modelVersionsCustomData.${versionData.versionId}`;
         console.log(versionPath);
@@ -176,23 +153,6 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
           },
           { merge: true }
         );
-
-        // get(modelsRef).then((snapshot) => {
-        //   if (snapshot.exists()) {
-        //     const curData = snapshot.val();
-        //     const curPrevIndex = curData.modelVersionsCustomData.findIndex(
-        //       (ver) => ver.versionId === versionData.versionId
-        //     );
-        //     console.log(curPrevIndex);
-        //     if (curPrevIndex !== -1) {
-        //       curData.modelVersionsCustomData[curPrevIndex] =
-        //         updatedVersionData;
-        //     }
-        //     console.log(curData);
-        //     set(modelsRef, curData);
-        //     savePreview(curData.data.type, curData.modelVersionsCustomData);
-        //   }
-        // });
       } catch (err) {
         console.log(err);
       }
@@ -200,33 +160,6 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
 
     getModelData();
   };
-
-  // const savePreview = (type, versionData) => {
-  //   try {
-  //     const prevRefLink =
-  //       type === "Checkpoint" ? "checkpoint preview/" : "models preview/";
-  //     const modelsPrevRef = ref(db, prevRefLink + mainCat);
-  //     get(modelsPrevRef).then((snapshot) => {
-  //       if (snapshot.exists()) {
-  //         const curData = snapshot.val();
-  //         const curPrevIndex = curData.findIndex((prev) => prev.id === modelId);
-  //         console.log(curPrevIndex);
-  //         console.log(versionData);
-
-  //         if (curPrevIndex !== -1) {
-  //           curData[curPrevIndex] = {
-  //             ...curData[curPrevIndex],
-  //             modelVersionsCustomData: versionData,
-  //           };
-  //           set(modelsPrevRef, [...curData]);
-  //         }
-  //         console.log(curData[curPrevIndex]);
-  //       }
-  //     });
-  //   } catch (err) {
-  //     console.log(err.message);
-  //   }
-  // };
 
   const addtagSetHandler = () => {
     const newFields = [...tagSetsAmount];

@@ -27,14 +27,6 @@ function MainNavigation() {
                   Profile
                 </NavLink>
               </li>
-              {/* <li>
-                <NavLink
-                  to="favorites"
-                  className={(nav) => (nav.isActive ? classes.active : "")}
-                >
-                  Favorites
-                </NavLink>
-              </li> */}
             </>
           )}
           <li>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import classes from "./PreviewCard.module.scss";
 import Tag from "../tag/Tag";
-import { ReactComponent as StarImg } from "../../assets/star.svg";
+// import { ReactComponent as StarImg } from "../../assets/star.svg";
 import { useNavigate } from "react-router-dom";
 import TagList from "../tag-list/TagList";
 import { useSelector } from "react-redux";
@@ -14,11 +14,8 @@ const PreviewCard = ({ previewData }) => {
   const [taglistHeight, setTaglistHeight] = useState(null);
   const [helperTagsIsOpen, setHelperTagsIsOpen] = useState(false);
   const [helpertagsHeight, setHelperTagsHeight] = useState(null);
-  const [imgIsLoading, setImgIsLoading] = useState(false);
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
-  // const [taglistItemHeight, setTaglistItemHeight] = useState(null);
-  // const [taglistHeight, setTaglistHeight] = useState(null);
   const navigate = useNavigate();
   const tagsRef = useRef();
   const tagsListRef = useRef();
@@ -26,7 +23,6 @@ const PreviewCard = ({ previewData }) => {
   const imgRef = useRef();
   // const taglistItemHeight = tagsListRef?.current?.offsetHeight;
   const taglistItemHeight = 34;
-  // console.log(previewData);
 
   useEffect(() => {
     const currVersionData =
@@ -34,45 +30,13 @@ const PreviewCard = ({ previewData }) => {
       Object.values(previewData.modelVersionsCustomData).filter(
         (data) => data.downloadStatus
       );
-    console.log(currVersionData);
     if (currVersionData?.length) setCurrVersion(currVersionData[0]);
-  }, []);
+  }, [previewData]);
 
   useEffect(() => {
     const taglistHeight = tagsRef?.current?.clientHeight;
     if (taglistHeight) setTaglistHeight(taglistHeight);
   }, [tagsRef, panelIsOpen, previewData]);
-
-  // console.log(taglistItemHeight, taglistHeight);
-  // console.log(
-  //   previewData.title,
-  //   tagsRef?.current?.clientHeight > tagsListRef?.current?.offsetHeight,
-  //   tagsRef?.current?.clientHeight,
-  //   tagsListRef?.current?.offsetHeight
-  // );
-  // useEffect(() => {
-  //   setTaglistItemHeight(tagsListRef?.current?.offsetHeight);
-  //   setTaglistHeight(tagsRef?.current?.clientHeight);
-  // }, [tagsListRef, tagsRef]);
-
-  // const test = () => {
-  //   console.log(
-  //     previewData.title,
-  //     tagsRef?.current?.clientHeight > tagsListRef?.current?.offsetHeight,
-  //     tagsRef?.current?.clientHeight,
-  //     tagsListRef?.current?.offsetHeight,
-  //     tagsRef,
-  //     tagsListRef,
-  //     tagsRef?.current?.clientHeight === tagsListRef?.current?.offsetHeight
-  //   );
-  // };
-
-  useEffect(() => {
-    // console.log("CARD");
-    // console.log(imgRef.current.complete);
-    // console.log(imgRef.current.complete);
-    if (!imgRef.current.complete) setImgIsLoading(true);
-  }, []);
 
   useEffect(() => {
     if (taglistHeight === taglistItemHeight) setTagsHeight(taglistItemHeight);
@@ -89,8 +53,6 @@ const PreviewCard = ({ previewData }) => {
   ]);
 
   const openHelperTagsHandler = () => {
-    // setHelperTagsIsOpen((prev) => !prev);
-
     setHelperTagsIsOpen((prev) => {
       if (prev) {
         setHelperTagsHeight(0);
@@ -106,9 +68,6 @@ const PreviewCard = ({ previewData }) => {
   };
 
   const openTagsHandler = () => {
-    // console.log(tagsRef.current.clientHeight, tagsListRef.current.offsetHeight);
-    // console.log(tagsRef.current, tagsListRef);
-
     setTagsIsOpen((prev) => {
       if (prev) {
         setTagsHeight(null);
@@ -125,19 +84,7 @@ const PreviewCard = ({ previewData }) => {
 
   const openLoraHandler = (e) => {
     const modelId = e.target.closest(`.card`).id;
-    navigate(`model/${modelId}`, { state: { type: previewData.type } });
-    console.log(previewData);
-    // console.log(modelId);
-  };
-
-  const imgLoadingHandler = () => {
-    console.log("LOAD");
-    setImgIsLoading(false);
-  };
-
-  const imgErrorHandler = () => {
-    console.log("ERR");
-    // setImgIsLoading(false);
+    navigate(`model/${modelId}`);
   };
 
   return (
@@ -155,31 +102,6 @@ const PreviewCard = ({ previewData }) => {
         }
         alt="Preview"
       />
-      {/* <div className={classes.img} onClick={openLoraHandler}>
-        <span className={classes.type}>{previewData.type}</span>
-
-        <img
-          ref={imgRef}
-          src={
-            isNsfwMode
-              ? previewData.nsfwPreviewImgUrl ||
-                previewData.customPreviewImgUrl ||
-                previewData.imgUrl
-              : previewData.customPreviewImgUrl || previewData.imgUrl
-          }
-          alt="Preview"
-          onLoad={imgLoadingHandler}
-          onError={imgErrorHandler}
-          className={`${imgIsLoading ? classes["img--hidden"] : ""}`}
-        />
-
-
-        {imgIsLoading && (
-          <div className={classes.preloader}>
-            <StarImg />
-          </div>
-        )}
-      </div> */}
       <div
         className={`${classes.content} ${
           helperTagsIsOpen ? classes["content--open"] : ""
@@ -266,7 +188,6 @@ const PreviewCard = ({ previewData }) => {
           </>
         )}
       </div>
-      {/* <button onClick={test}>test</button> */}
     </div>
   );
 };

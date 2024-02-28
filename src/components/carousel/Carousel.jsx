@@ -5,23 +5,10 @@ import { useRef } from "react";
 import { useEffect } from "react";
 import CarouselImage from "./carousel-image/CarouselImage";
 import useIntersection from "../../hooks/use-intersection";
-import { db } from "../../firebase-config";
-import { get, onValue, ref, set } from "firebase/database";
 import { clearObjectKeys } from "../../utils/generalUtils";
-import {
-  getModelInfo,
-  addResourcesInfo,
-  getImagesInfo,
-  makeBatchRequest,
-} from "../../utils/fetchUtils";
+import { makeBatchRequest } from "../../utils/fetchUtils";
 import firebaseApp from "../../firebase-config";
-import {
-  arrayUnion,
-  doc,
-  getFirestore,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { arrayUnion, doc, getFirestore, setDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
 
 const firestore = getFirestore(firebaseApp);
@@ -35,7 +22,6 @@ const Carousel = ({
   modelId,
   versionId,
 }) => {
-  // const [currImg, setCurrImg] = useState(null);
   const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount);
   const [imgIsOpen, setImgIsOpen] = useState(false);
   const [savingImages, setSavingImages] = useState(false);
@@ -54,13 +40,13 @@ const Carousel = ({
   const transitionDuration = 300;
   const caruselIsVisible = useIntersection(carouselRef);
   const uid = useSelector((state) => state.auth.user.uid);
-  const model = useSelector((state) => state.model.model);
+  // const model = useSelector((state) => state.model.model);
 
   useEffect(() => {
     const gap = parseInt(getComputedStyle(imagesRef.current).gap);
     const imgWidth = imagesRef.current.children[0].clientWidth + gap;
     const visAmount = Math.floor(wrapRef.current.clientWidth / imgWidth);
-    console.log(visAmount);
+
     if (!visibleImgAmount && visAmount <= images?.length) {
       setVisibleAmount(visAmount);
       setCurVisibleAmount(visAmount);
@@ -84,7 +70,6 @@ const Carousel = ({
   const openImgHandler = useCallback(
     (e) => {
       // setCurTransitionDur("0ms");
-      console.log(e.target.dataset.position);
       setImgIsOpen((prevState) => !prevState);
       const imgNum = e.target.dataset.position - visibleAmount;
       setCurrImgNum(imgNum >= 0 ? imgNum : images?.length + imgNum);
@@ -144,7 +129,7 @@ const Carousel = ({
             : "";
         return (
           <CarouselImage
-            key={image.hash + "r"}
+            key={image.hash + "r" + i}
             onClick={openImgHandler}
             id={image.hash}
             dataset={i + visibleAmount}
@@ -162,7 +147,7 @@ const Carousel = ({
             : "";
         return (
           <CarouselImage
-            key={image.hash + "l"}
+            key={image.hash + "l" + i}
             onClick={openImgHandler}
             id={image.hash}
             dataset={i}
@@ -193,7 +178,6 @@ const Carousel = ({
     if (images?.length > curVisibleAmount) {
       const gap = parseInt(getComputedStyle(imagesRef.current).gap);
       const imgWidth = imagesRef.current.children[0].clientWidth + gap;
-      // console.log(-imgWidth, visibleImages[0], -imgWidth * visibleImages[0]);
       setTranslate(-imgWidth * visibleImages[0]);
     }
   }, [imagesRef, curVisibleAmount, visibleImages, images]);
@@ -222,9 +206,6 @@ const Carousel = ({
         setVisibleImages((prevState) =>
           prevState.map((el, i) => curVisibleAmount + i)
         );
-        // setPrevVisibleImages((prevState) =>
-        //   prevState.map((el, i) => curVisibleAmount + i)
-        // );
         setTranslate(-imgWidth * curVisibleAmount);
       }
       if (visibleImages[0] > images?.length + curVisibleAmount) {
@@ -232,10 +213,6 @@ const Carousel = ({
         setVisibleImages((prevState) =>
           prevState.map((el, i) => visibleImages[0] - images?.length)
         );
-        // setPrevVisibleImages((prevState) =>
-        //   prevState.map((el, i) => curVisibleAmount + i)
-        // );
-        // setTranslate(-imgWidth * curVisibleAmount);
       }
     };
 
@@ -260,7 +237,6 @@ const Carousel = ({
     const imgWidth = imagesRef.current.children[0].clientWidth + gap;
     setTranslate(-imgWidth * curImg);
     setPrevVisibleImages(visibleImages.map((el) => el + 1));
-    // if(curImg) setCurrImg()
     let imgNum = visibleImages[0] + 1 - visibleAmount;
     if (imgNum > images?.length - 1) imgNum = 0;
     setCurrImgNum(imgNum >= 0 ? imgNum : images?.length + imgNum);
@@ -278,8 +254,6 @@ const Carousel = ({
     const imgNum = visibleImages[0] - 1 - visibleAmount;
     setCurrImgNum(imgNum >= 0 ? imgNum : images?.length + imgNum);
   };
-
-  // const goToSlide = () => {};
 
   const paginationHtml = images?.map((_, i) => {
     const isActive =
@@ -304,11 +278,6 @@ const Carousel = ({
           });
         }}
       ></li>
-      // <li
-      //   className={`${classes["pagination__item"]} ${
-      //     currImgNum === i ? classes["pagination__item--active"] : ""
-      //   }`}
-      // ></li>
     );
   });
 
@@ -333,44 +302,8 @@ const Carousel = ({
         }
       });
 
-      // console.log(data);
-      // setSavingImages(false);
-      // return;
-
-      // const examplesDataWithRes = await Promise.all(
-      //   data.items.map(async (item) => {
-      //     const updatedImgData = { ...item };
-
-      //     const newMeta = await getModelInfo(item.meta);
-      //     if (newMeta) updatedImgData.meta = newMeta;
-
-      //     if (item.meta?.resources) {
-      //       const updatedRes = await addResourcesInfo(item.meta.resources);
-      //       console.log(updatedRes);
-      //       if (!updatedRes) {
-      //         throw new Error("failed to update res");
-      //       }
-      //       updatedImgData.meta.resources = updatedRes;
-      //     }
-      //     if (item.meta?.civitaiResources) {
-      //       const updatedCivRes = await addResourcesInfo(
-      //         item.meta.civitaiResources
-      //       );
-      //       console.log(updatedCivRes);
-      //       if (!updatedCivRes) {
-      //         throw new Error("failed to update res");
-      //       }
-      //       updatedImgData.meta.civitaiResources = updatedCivRes;
-      //     }
-
-      //     return await updatedImgData;
-      //   })
-      // );
       const examplesDataWithRes = await makeBatchRequest(data.items);
-      // const examplesDataWithRes = await getImagesInfo(data.items);
-      // return;
       console.log(examplesDataWithRes);
-      console.log(data);
       examplesDataWithRes.versionId = versionId;
 
       const modelRef = doc(firestore, "users", uid, "models", modelId + "");
@@ -385,12 +318,6 @@ const Carousel = ({
       );
 
       const newImgData = { postId: +postId, amount: data.items.length };
-      let newSavedImages;
-      if (model?.savedImages?.hasOwnProperty(`${versionId}`)) {
-        newSavedImages = [...model?.savedImages[`${versionId}`], newImgData];
-      } else {
-        newSavedImages = [newImgData];
-      }
 
       await setDoc(
         modelImagesRef,
@@ -415,73 +342,11 @@ const Carousel = ({
         { merge: true }
       );
 
-      // const savedImagesRef = ref(db, `savedImages/` + modelId);
-      // const modelsRef = ref(db, "models/" + modelId);
-
-      // get(savedImagesRef).then((snapshot) => {
-      //   if (snapshot.exists()) {
-      //     const curData = snapshot.val();
-
-      //     const exapleIndex = curData[versionId]
-      //       ?.filter(Boolean)
-      //       .findIndex(
-      //         (example) =>
-      //           example.items[0].postId === examplesDataWithRes.items[0].postId
-      //       );
-
-      //     if (exapleIndex && exapleIndex !== -1) {
-      //       const newExamples = examplesDataWithRes.items.filter((item) => {
-      //         const isExists = curData[versionId]
-      //           .filter(Boolean)
-      //           .find((example) => example.items[0].id === item.id);
-      //         return !isExists;
-      //       });
-      //       curData[versionId][exapleIndex].items = [
-      //         ...newExamples,
-      //         ...curData[versionId][exapleIndex].items,
-      //       ];
-      //       // curData.examplesData[exapleIndex].versionId = versionId
-      //     } else {
-      //       curData[versionId] = curData[versionId]
-      //         ? [examplesDataWithRes, ...curData[versionId]]
-      //         : [examplesDataWithRes];
-      //     }
-      //     console.log(curData);
-      //     set(savedImagesRef, curData);
-      //   } else {
-      //     const images = { [versionId]: [examplesDataWithRes] };
-      //     set(savedImagesRef, images);
-      //   }
-      // });
-
-      // get(modelsRef).then((snapshot) => {
-      //   if (snapshot.exists()) {
-      //     const curData = snapshot.val();
-      //     console.log(versionId);
-      //     if (curData?.savedImages?.hasOwnProperty(`${versionId}`)) {
-      //       curData.savedImages[`${versionId}`].unshift({
-      //         postId: +postId,
-      //         amount: data.items.length,
-      //       });
-      //     } else {
-      //       curData.savedImages = {
-      //         ...curData?.savedImages,
-      //         [`${versionId}`]: [
-      //           { postId: +postId, amount: data.items.length },
-      //         ],
-      //       };
-      //     }
-
-      //     set(modelsRef, curData);
-      //   } else {
-      //   }
-      // });
       setSavingImages(false);
     } catch (err) {
       setSavingImages(false);
       console.log(err.message);
     }
-    // onSave(postId);
   };
   const updateExampleHandler = () => {
     onUpdate(images[0].postId);

@@ -15,39 +15,13 @@ const UsedCard = ({ previewData }) => {
   const [helpertagsHeight, setHelperTagsHeight] = useState(null);
   const [imgIsLoading, setImgIsLoading] = useState(false);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
-  // const [taglistItemHeight, setTaglistItemHeight] = useState(null);
-  // const [taglistHeight, setTaglistHeight] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const tagsRef = useRef();
   const tagsListRef = useRef();
   const helperTagsRef = useRef();
-  // const taglistItemHeight = tagsListRef?.current?.offsetHeight;
   const taglistItemHeight = 34;
   const taglistHeight = tagsRef?.current?.clientHeight;
-  // console.log(taglistItemHeight, taglistHeight);
-  // console.log(
-  //   previewData.title,
-  //   tagsRef?.current?.clientHeight > tagsListRef?.current?.offsetHeight,
-  //   tagsRef?.current?.clientHeight,
-  //   tagsListRef?.current?.offsetHeight
-  // );
-  // useEffect(() => {
-  //   setTaglistItemHeight(tagsListRef?.current?.offsetHeight);
-  //   setTaglistHeight(tagsRef?.current?.clientHeight);
-  // }, [tagsListRef, tagsRef]);
-
-  // const test = () => {
-  //   console.log(
-  //     previewData.title,
-  //     tagsRef?.current?.clientHeight > tagsListRef?.current?.offsetHeight,
-  //     tagsRef?.current?.clientHeight,
-  //     tagsListRef?.current?.offsetHeight,
-  //     tagsRef,
-  //     tagsListRef,
-  //     tagsRef?.current?.clientHeight === tagsListRef?.current?.offsetHeight
-  //   );
-  // };
 
   useEffect(() => {
     setImgIsLoading(true);
@@ -58,8 +32,6 @@ const UsedCard = ({ previewData }) => {
   }, [previewData, taglistHeight, taglistItemHeight]);
 
   const openHelperTagsHandler = () => {
-    // setHelperTagsIsOpen((prev) => !prev);
-
     setHelperTagsIsOpen((prev) => {
       if (prev) {
         setHelperTagsHeight(0);
@@ -71,9 +43,6 @@ const UsedCard = ({ previewData }) => {
   };
 
   const openTagsHandler = () => {
-    // console.log(tagsRef.current.clientHeight, tagsListRef.current.offsetHeight);
-    // console.log(tagsRef.current, tagsListRef);
-
     setTagsIsOpen((prev) => {
       if (prev) {
         setTagsHeight(null);
@@ -87,7 +56,6 @@ const UsedCard = ({ previewData }) => {
   const openLoraHandler = (e) => {
     const modelId = e.target.closest(`.card`).id;
     navigate(`model/${modelId}`, { state: { type: previewData.type } });
-    // console.log(modelId);
   };
 
   const imgLoadingHandler = () => {
@@ -115,9 +83,6 @@ const UsedCard = ({ previewData }) => {
             onLoad={imgLoadingHandler}
             className={`${imgIsLoading ? classes["img--hidden"] : ""}`}
           />
-
-          {/* {previewData.imgUrl && <img src="#" alt="Preview image" />} */}
-
           {imgIsLoading && (
             <div className={classes.preloader}>
               <StarImg />
@@ -204,7 +169,6 @@ const UsedCard = ({ previewData }) => {
           </>
         )}
       </div>
-      {/* <button onClick={test}>test</button> */}
     </div>
   );
 };

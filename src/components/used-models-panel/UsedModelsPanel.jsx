@@ -2,11 +2,7 @@ import React, { useEffect, useState } from "react";
 import classes from "./UsedModelsPanel.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import UsedCard from "../used-card/UsedCard";
-import LoraForm from "../forms/lora/LoraForm";
-import GeneralForm from "../forms/general/GeneralForm";
-import EmbeddingsForm from "../forms/embeddings/EmbeddingsForm";
 import { usedModelsActions } from "../../store/usedModels";
-import CheckpointForm from "../forms/checkpoint/CheckpointForm";
 import UpdateModelForm from "../forms/update-model-form/UpdateModelForm";
 
 const UsedModelsPanel = () => {
@@ -37,7 +33,6 @@ const UsedModelsPanel = () => {
   });
 
   return (
-    // <div className={classes.wrap}>
     <aside
       className={`${classes.container} ${
         panelIsOpen ? classes["container--open"] : ""
@@ -61,12 +56,7 @@ const UsedModelsPanel = () => {
             <h3>Checkpoint</h3>
             <UpdateModelForm formType="Checkpoint" />
             <h3>Lora</h3>
-            {/* <LoraForm /> */}
             <UpdateModelForm />
-            <h3>General</h3>
-            <GeneralForm />
-            <h3>Embeddings</h3>
-            <EmbeddingsForm />
           </div>
         )}
         {!formIsOpen && (
@@ -77,7 +67,6 @@ const UsedModelsPanel = () => {
         )}
       </div>
     </aside>
-    // </div>
   );
 };
 

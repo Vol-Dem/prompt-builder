@@ -1,94 +1,23 @@
-import React, { useEffect, useState } from "react";
-import TagList from "../tag-list/TagList";
 import classes from "./Subcategories.module.scss";
 import ModelsList from "../lora/ModelsList";
 import { useDispatch, useSelector } from "react-redux";
 import { tabActions } from "../../store/tabs";
-import {
-  collection,
-  getDocs,
-  getFirestore,
-  query,
-  where,
-} from "firebase/firestore";
-import firebaseApp from "../../firebase-config";
-
-const firestore = getFirestore(firebaseApp);
 
 const Subcategories = () => {
-  // const [activeSubcategory, setActiveSubategory] = useState("");
-  // const [subcats, setSubcats] = useState([]);
-
-  const [isLora, setIsLora] = useState(false);
-  // const [loraSubcategories, setLoraSubcategories] = useState([]);
   const activeSubcategory = useSelector((state) => state.tabs.currSubcategory);
   const activeCategory = useSelector((state) => state.tabs.currCategory);
   const currTab = useSelector((state) => state.tabs.currTab);
   const catigories = useSelector((state) => state.tabs.categoriesData);
-  const subcats = useSelector((state) => state.tabs.subcategories);
+  // const subcats = useSelector((state) => state.tabs.subcategories);
   const loraSubcategories = useSelector((state) => state.tabs.modelsData);
-  const subcategories = catigories[activeCategory];
-  const uid = useSelector((state) => state.auth.user.uid);
-  // console.log(catigories);
-  // console.log(subcats);
+  // const subcategories = catigories[activeCategory];
+  // const uid = useSelector((state) => state.auth.user.uid);
 
-  // console.log(currTab);
   const dispatch = useDispatch();
 
   const categorySwitchHandler = (e) => {
-    // console.log("open");
     dispatch(tabActions.setCurrentSubcategory(e.target.id));
-    // const getModelsPreview = async () => {
-    //   const q = query(
-    //     collection(firestore, "users", uid, "models preview"),
-    //     where("main", "==", activeCategory),
-    //     where("sub", "array-contains", e.target.id)
-    //   );
-    //   const querySnapshot = await getDocs(q);
-    //   const modelsData = querySnapshot.docs.map((doc) => {
-    //     // doc.data() is never undefined for query doc snapshots
-    //     return doc.data();
-    //   });
-    //   console.log(activeCategory, activeSubcategory);
-    //   console.log(modelsData);
-    //   dispatch(tabActions.setModelsData(modelsData));
-    // };
-    // getModelsPreview();
-    // // setActiveSubategory(e.target.id);
-    // if (isLora) {
-    //   const loraCat = subcategories.filter((item) => {
-    //     // console.log(item.sub);
-    //     return item.sub.includes(e.target.id);
-    //   });
-    //   // console.log(loraCat);
-    //   dispatch(tabActions.setModelsData(loraCat));
-    //   // setLoraSubcategories(loraCat);
-    // }
   };
-
-  // useEffect(() => {
-  //   const isLora =
-  //     currTab === "models preview" || currTab === "checkpoint preview";
-  //   // console.log(isLora);
-  //   // console.log(catigories);
-  //   // console.log(subcategories);
-
-  //   const loraSubcatigoriesHtml = isLora && [
-  //     ...new Set(
-  //       subcategories?.flatMap((el) => {
-  //         return el.sub;
-  //       })
-  //     ),
-  //   ];
-
-  //   const subcats = isLora
-  //     ? loraSubcatigoriesHtml
-  //     : Object.keys(subcategories || {});
-
-  //   // setSubcats(subcats);
-  //   setIsLora(isLora);
-  //   dispatch(tabActions.setSubcategories(subcats));
-  // }, [subcategories, currTab, dispatch]);
 
   const subcategoriesHtml = catigories[currTab][activeCategory]?.map(
     (category) => {
@@ -107,16 +36,9 @@ const Subcategories = () => {
     }
   );
 
-  // const subcategoryHtml = (
-  //   <TagList subcat={subcategories[activeSubcategory]} />
-  // );
-
-  // const subcatItemLora = subcategories.
-
   return (
     <div className={classes.category}>
       <div className={classes["subcategories"]}>{subcategoriesHtml}</div>
-      {/* {!isLora && <TagList tags={subcategories[activeSubcategory]} />} */}
       {activeSubcategory && <ModelsList loraItems={loraSubcategories} />}
     </div>
   );

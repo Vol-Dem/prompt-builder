@@ -4,38 +4,76 @@ import { useNavigate, useParams } from "react-router-dom";
 import Carousel from "../carousel/Carousel";
 import UpdateModelForm from "../forms/update-model-form/UpdateModelForm";
 import { useDispatch, useSelector } from "react-redux";
-import { getModel, modelActions } from "../../store/model";
+import { modelActions } from "../../store/model";
 import VersionForm from "../forms/version-form/VersionForm";
 import SaveImageForm from "../forms/save-image-form/SaveImageForm";
 import ModelInfo from "../model/info/ModelInfo";
 import ModelTags from "../model/tags/ModelTags";
 import GeneratedImages from "../model/generated-images/GeneratedImages";
+import { doc, getFirestore, onSnapshot } from "firebase/firestore";
+import firebaseApp from "../../firebase-config";
+
+const firestore = getFirestore(firebaseApp);
 
 const Model = () => {
   const [modelPreview, setModelPreview] = useState({});
   const [editIsOpen, setEditIsOpen] = useState(false);
-  const [currVersionIndex, setCurrVersionIndex] = useState(null);
+  // const [currVersionIndex, setCurrVersionIndex] = useState(null);
   const [curCustomVersionData, setCurCustomVersionData] = useState({});
   const [curImagesModelVersionId, setCurImagesModelVersionId] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const { modelId } = useParams();
   const model = useSelector((state) => state.model.model);
-  const isLoading = useSelector((state) => state.model.isLoading);
   const curVersion = useSelector((state) => state.model.curVersion);
   const isAuth = useSelector((state) => state.auth.user.uid);
+  const uid = useSelector((state) => state.auth.user.uid);
   const dispatch = useDispatch();
-  console.log(curVersion);
 
   useEffect(() => {
-    // resetExamples();
     if (!isAuth) return;
-    dispatch(getModel(modelId));
-    setCurCustomVersionData({});
+
+    setIsLoading(true);
+
+    const unsub = onSnapshot(
+      doc(firestore, "users", uid, "models", modelId),
+      (doc) => {
+        const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+        console.log(source);
+        const data = doc.data();
+        console.log(data);
+        if (!data) {
+          setErrorMessage("Failed to load model");
+          setIsLoading(false);
+          return;
+        }
+        dispatch(modelActions.setModelData(data));
+        dispatch(modelActions.setModelPreview({}));
+        setIsLoading(false);
+      }
+    );
+
     return () => {
-      // resetExamples();
       dispatch(modelActions.setCurVersion({}));
       dispatch(modelActions.setModelData({}));
+      unsub();
     };
-  }, [modelId, isAuth, dispatch]);
+  }, [modelId, isAuth, dispatch, uid]);
+
+  useEffect(() => {
+    if (!Object.keys(model).length) return;
+    const curVersionId = model.data.modelVersions.find(
+      (version) =>
+        model?.modelVersionsCustomData.hasOwnProperty(version.id) &&
+        model.modelVersionsCustomData[version.id].downloadStatus
+    )?.id;
+    const curVersionData = curVersionId
+      ? model.data.modelVersions.find((version) => version.id === curVersionId)
+      : model.data.modelVersions[0];
+
+    if (model.data.id !== curVersion.modelId)
+      dispatch(modelActions.setCurVersion(curVersionData));
+  }, [model, dispatch, curVersion.modelId]);
 
   useEffect(() => {
     if (!curVersion?.baseModel) return;
@@ -55,22 +93,21 @@ const Model = () => {
       helperTags: model?.helperTags,
       updatedAt: model?.updatedAt,
     };
-    setModelPreview(modelPreviewData);
 
+    setModelPreview(modelPreviewData);
     const curCustomVersion = model.modelVersionsCustomData[curVersion.id];
-    console.log(curCustomVersion);
     setCurCustomVersionData(curCustomVersion);
 
     if (!curImagesModelVersionId)
       setCurImagesModelVersionId(curCustomVersion?.versionId || curVersion.id);
   }, [model, curVersion, curImagesModelVersionId]);
 
-  useEffect(() => {
-    if (currVersionIndex === null) return;
-    dispatch(
-      modelActions.setCurVersion(model?.data?.modelVersions[currVersionIndex])
-    );
-  }, [model, currVersionIndex, dispatch]);
+  // useEffect(() => {
+  //   if (currVersionIndex === null) return;
+  //   dispatch(
+  //     modelActions.setCurVersion(model?.data?.modelVersions[currVersionIndex])
+  //   );
+  // }, [model, currVersionIndex, dispatch]);
 
   const navigate = useNavigate();
   const backHandler = () => {
@@ -85,9 +122,7 @@ const Model = () => {
 
     // resetExamples();
     dispatch(modelActions.setCurVersion(curVer));
-    setCurrVersionIndex(e.target.dataset.version);
-    // setCurImagesModelVersionId(curVer.id);
-    // setCurVersion(curVer);
+    // setCurrVersionIndex(e.target.dataset.version);
   };
 
   const modelImagesHtml = (
@@ -139,7 +174,9 @@ const Model = () => {
 
   return (
     <div className={classes.model}>
-      {!isLoading && (
+      {isLoading && <div>Loading...</div>}
+      {!isLoading && errorMessage && <div>{errorMessage}</div>}
+      {!isLoading && !errorMessage && (
         <>
           <div className={classes["panel"]}>
             <button className={classes["btn-back"]} onClick={backHandler}>
@@ -164,7 +201,7 @@ const Model = () => {
 
           <div className={classes.title}> {model?.data?.name}</div>
           <ul className={classes.versions}>{modelVersionsHtml}</ul>
-          {!isLoading && modelImagesHtml}
+          {modelImagesHtml}
           <div className={classes["info-container"]}>
             <ModelInfo customData={curCustomVersionData} />
             <ModelTags
@@ -175,7 +212,9 @@ const Model = () => {
           {curVersion?.description && (
             <>
               <h3>Version description:</h3>
-              <div>{curVersion?.description?.replace(/(<([^>]+)>)/gi, "")}</div>
+              <div className={classes.description}>
+                {curVersion?.description?.replace(/(<([^>]+)>)/gi, "")}
+              </div>
             </>
           )}
           <h3>Description:</h3>

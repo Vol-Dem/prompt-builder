@@ -10,12 +10,12 @@ import {
 import Model from "./components/pages/Model";
 import Tabs from "./components/tabs/Tabs";
 import Layout from "./components/layout/layout/Layout";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { initAuth } from "./store/auth";
 
 function App() {
-  const isAuth = useSelector((state) => state.auth.isLoggedIn);
+  // const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const dispatch = useDispatch();
 
   //Authorizes user on application load
