@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import classes from "./UpdateModelForm.module.scss";
-import { makeBatchRequest } from "../../../utils/fetchUtils";
+import { getImagesInfo, makeBatchRequest } from "../../../utils/fetchUtils";
 import { clearObjectKeys } from "../../../utils/generalUtils";
 import {
   doc,
@@ -214,7 +214,10 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
 
           const imagesDataWithRes = await Promise.all(
             responseData.modelVersions.map(async (image) => {
-              const updImg = await makeBatchRequest(image.images);
+              const updImg = await makeBatchRequest(
+                image.images,
+                getImagesInfo
+              );
               //Temp
               image.images = updImg;
               return updImg;

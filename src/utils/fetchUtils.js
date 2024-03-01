@@ -1,25 +1,33 @@
-export const makeBatchRequest = async (data) => {
-  let result = [];
-  const queue = data.slice();
-  const concurrencyLimit = 5;
-  console.log(queue);
-  const processQueue = async () => {
-    while (queue.length > 0) {
-      const curBatch = [];
-      for (let i = 0; i < concurrencyLimit && queue.length > 0; i++) {
-        const curElement = queue.shift();
-        curBatch.push(curElement);
-      }
+export const makeBatchRequest = async (
+  data,
+  fetchFunc,
+  concurrencyLimit = 5
+) => {
+  try {
+    let result = [];
+    const queue = data.slice();
+    // const concurrencyLimit = 5;
+    console.log(queue);
+    const processQueue = async () => {
+      while (queue.length > 0) {
+        const curBatch = [];
+        for (let i = 0; i < concurrencyLimit && queue.length > 0; i++) {
+          const curElement = queue.shift();
+          curBatch.push(curElement);
+        }
 
-      const batchResults = await getImagesInfo(curBatch);
-      console.log(curBatch);
-      // console.log(queue);
-      result = [...result, ...batchResults];
-    }
-  };
-  console.log("END");
-  await processQueue();
-  return result;
+        const batchResults = await fetchFunc(curBatch);
+        console.log(curBatch);
+        // console.log(queue);
+        result = [...result, ...batchResults];
+      }
+    };
+    console.log("END");
+    await processQueue();
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export const getImagesInfo = async (images) => {
@@ -31,7 +39,10 @@ export const getImagesInfo = async (images) => {
       if (newMeta) updatedImgData.meta = newMeta;
 
       if (item.meta?.resources) {
-        const updatedRes = await addResourcesInfo(item.meta.resources);
+        const updatedRes = await makeBatchRequest(
+          item.meta.resources,
+          addResourcesInfo
+        );
         console.log(updatedRes);
         if (!updatedRes) {
           throw new Error("failed to update res");
@@ -42,8 +53,9 @@ export const getImagesInfo = async (images) => {
         };
       }
       if (item.meta?.civitaiResources) {
-        const updatedCivRes = await addResourcesInfo(
-          item.meta.civitaiResources
+        const updatedCivRes = await makeBatchRequest(
+          item.meta.civitaiResources,
+          addResourcesInfo
         );
         console.log(updatedCivRes);
         if (!updatedCivRes) {

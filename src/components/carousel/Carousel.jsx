@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import CarouselImage from "./carousel-image/CarouselImage";
 import useIntersection from "../../hooks/use-intersection";
 import { clearObjectKeys } from "../../utils/generalUtils";
-import { makeBatchRequest } from "../../utils/fetchUtils";
+import { getImagesInfo, makeBatchRequest } from "../../utils/fetchUtils";
 import firebaseApp from "../../firebase-config";
 import { arrayUnion, doc, getFirestore, setDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
@@ -302,7 +302,10 @@ const Carousel = ({
         }
       });
 
-      const examplesDataWithRes = await makeBatchRequest(data.items);
+      const examplesDataWithRes = await makeBatchRequest(
+        data.items,
+        getImagesInfo
+      );
       console.log(examplesDataWithRes);
       examplesDataWithRes.versionId = versionId;
 

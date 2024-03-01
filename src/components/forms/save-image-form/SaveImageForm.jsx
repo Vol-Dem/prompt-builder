@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import classes from "./SaveImageForm.module.scss";
-import { getImagesInfo } from "../../../utils/fetchUtils";
+import { getImagesInfo, makeBatchRequest } from "../../../utils/fetchUtils";
 import firebaseApp from "../../../firebase-config";
 import { arrayUnion, doc, getFirestore, setDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
@@ -94,7 +94,11 @@ const SaveImageForm = ({ modelData }) => {
 
           dataFiltered = { items: images };
         }
-        const examplesDataWithRes = await getImagesInfo(dataFiltered.items);
+
+        const examplesDataWithRes = await makeBatchRequest(
+          dataFiltered.items,
+          getImagesInfo
+        );
 
         examplesDataWithRes.curVersionId = curVersionId;
 

@@ -218,7 +218,9 @@ const Model = () => {
             </>
           )}
           <h3>Description:</h3>
-          <div>{model?.data?.description?.replace(/(<([^>]+)>)/gi, "")}</div>
+          <div className={classes.description}>
+            {model?.data?.description?.replace(/(<([^>]+)>)/gi, "")}
+          </div>
 
           <div>Exapmles:</div>
           <GeneratedImages customData={curCustomVersionData} />
