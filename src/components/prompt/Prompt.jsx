@@ -22,7 +22,9 @@ const Prompt = () => {
   };
 
   const copyToClipboardHandler = (e) => {
-    navigator.clipboard.writeText(curPrompt);
+    const promptData =
+      e.target.dataset.type === "positive" ? curPrompt : curNegPrompt;
+    navigator.clipboard.writeText(promptData);
   };
 
   return (
@@ -45,7 +47,11 @@ const Prompt = () => {
               value={curPrompt}
               className={classes.prompt}
             ></textarea>
-            <button type="button" onClick={copyToClipboardHandler}>
+            <button
+              type="button"
+              data-type="positive"
+              onClick={copyToClipboardHandler}
+            >
               Copy
             </button>
           </div>
@@ -60,7 +66,11 @@ const Prompt = () => {
               value={curNegPrompt}
               className={classes.prompt}
             ></textarea>
-            <button type="button" onClick={copyToClipboardHandler}>
+            <button
+              type="button"
+              data-type="negative"
+              onClick={copyToClipboardHandler}
+            >
               Copy
             </button>
           </div>

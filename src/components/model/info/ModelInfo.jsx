@@ -16,7 +16,10 @@ const ModelInfo = ({ customData }) => {
       <div>Weight: {customData?.weight || model?.weight}</div>
       <div>
         Version:{" "}
-        <a target="blank" href={`https://${model?.src}/models/${model?.id}`}>
+        <a
+          target="blank"
+          href={`https://${model?.src}/models/${model?.id}?modelVersionId=${curVersion.id}`}
+        >
           {curVersion?.name}
         </a>
       </div>
