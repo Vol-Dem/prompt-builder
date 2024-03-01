@@ -17,7 +17,6 @@ const Carousel = ({
   images,
   visibleImgAmount,
   postId,
-  onSave,
   onUpdate,
   modelId,
   versionId,
@@ -34,28 +33,44 @@ const Carousel = ({
   const [visibleImages, setVisibleImages] = useState([]);
   const [prevVisibleImages, setPrevVisibleImages] = useState([]);
   const [curVisibleAmount, setCurVisibleAmount] = useState(visibleImgAmount);
+  const [dimensions, setDimensions] = useState({});
   const carouselRef = useRef();
   const imagesRef = useRef();
   const wrapRef = useRef();
   const transitionDuration = 300;
   const caruselIsVisible = useIntersection(carouselRef);
   const uid = useSelector((state) => state.auth.user.uid);
-  // const model = useSelector((state) => state.model.model);
 
   useEffect(() => {
     const gap = parseInt(getComputedStyle(imagesRef.current).gap);
-    const imgWidth = imagesRef.current.children[0].clientWidth + gap;
-    const visAmount = Math.floor(wrapRef.current.clientWidth / imgWidth);
+    const imgWidth = imagesRef.current.children[0].clientWidth;
+    const imgWidthWithGap = imgWidth + gap;
+    const wrapWidth = wrapRef.current.clientWidth;
 
-    if (!visibleImgAmount && visAmount <= images?.length) {
-      setVisibleAmount(visAmount);
-      setCurVisibleAmount(visAmount);
+    setDimensions((prevState) => {
+      return {
+        ...prevState,
+        wrapWidth,
+        imgWidth,
+        gap,
+        imgWidthWithGap,
+      };
+    });
+  }, [imagesRef, wrapRef]);
+
+  useEffect(() => {
+    const curVisibleImgAmount = Math.floor(
+      dimensions.wrapWidth / dimensions.imgWidthWithGap
+    );
+    if (!visibleImgAmount && curVisibleImgAmount <= images?.length) {
+      setVisibleAmount(curVisibleImgAmount);
+      setCurVisibleAmount(curVisibleImgAmount);
     }
-    if (!visibleImgAmount && visAmount > images?.length) {
+    if (!visibleImgAmount && curVisibleImgAmount > images?.length) {
       setVisibleAmount(images?.length);
       setCurVisibleAmount(images?.length);
     }
-  }, [imagesRef, wrapRef, visibleImgAmount, images]);
+  }, [dimensions, visibleImgAmount, images]);
 
   useEffect(() => {
     const visibleImg = Array.from(
@@ -168,19 +183,18 @@ const Carousel = ({
       },
       [0, 0]
     );
-    const imgWidth = imagesRef.current.children[0].clientWidth;
-    const carHight = Math.floor((imgWidth / imgSize[1]) * imgSize[0]);
+    const carHight = Math.floor(
+      (dimensions.imgWidth / imgSize[1]) * imgSize[0]
+    );
 
     setCarouselHeight(carHight < 300 ? 300 : carHight);
-  }, [images, imagesRef]);
+  }, [images, dimensions.imgWidth]);
 
   useEffect(() => {
     if (images?.length > curVisibleAmount) {
-      const gap = parseInt(getComputedStyle(imagesRef.current).gap);
-      const imgWidth = imagesRef.current.children[0].clientWidth + gap;
-      setTranslate(-imgWidth * visibleImages[0]);
+      setTranslate(-dimensions.imgWidthWithGap * visibleImages[0]);
     }
-  }, [imagesRef, curVisibleAmount, visibleImages, images]);
+  }, [dimensions.imgWidthWithGap, curVisibleAmount, visibleImages, images]);
 
   useEffect(() => {
     if (images?.length <= curVisibleAmount) return;
@@ -188,8 +202,6 @@ const Carousel = ({
     const transitionEnd = () => {
       setTransitionEnd(true);
       if (!imagesRef?.current) return;
-      const gap = parseInt(getComputedStyle(imagesRef.current).gap);
-      const imgWidth = imagesRef.current.children[0].clientWidth + gap;
 
       if (visibleImages[0] === 0) {
         setCurTransitionDur("0ms");
@@ -199,14 +211,14 @@ const Carousel = ({
         setPrevVisibleImages((prevState) =>
           prevState.map((el, i) => images?.length + i)
         );
-        setTranslate(-imgWidth * images?.length);
+        setTranslate(-dimensions.imgWidthWithGap * images?.length);
       }
       if (visibleImages[0] === images?.length + curVisibleAmount) {
         setCurTransitionDur("0ms");
         setVisibleImages((prevState) =>
           prevState.map((el, i) => curVisibleAmount + i)
         );
-        setTranslate(-imgWidth * curVisibleAmount);
+        setTranslate(-dimensions.imgWidthWithGap * curVisibleAmount);
       }
       if (visibleImages[0] > images?.length + curVisibleAmount) {
         setCurTransitionDur("0ms");
@@ -226,16 +238,20 @@ const Carousel = ({
       document.removeEventListener("transitionstart", transitionStart);
       document.removeEventListener("transitionend", transitionEnd);
     };
-  }, [translate, curVisibleAmount, visibleImages, images]);
+  }, [
+    translate,
+    curVisibleAmount,
+    visibleImages,
+    images,
+    dimensions.imgWidthWithGap,
+  ]);
 
   const slideNextHandler = () => {
     if (!transitionEnd) return;
     setCurTransitionDur(`${transitionDuration}ms`);
     const curImg = visibleImages[0] + 1;
     setVisibleImages((prevState) => prevState.map((el) => el + 1));
-    const gap = parseInt(getComputedStyle(imagesRef.current).gap);
-    const imgWidth = imagesRef.current.children[0].clientWidth + gap;
-    setTranslate(-imgWidth * curImg);
+    setTranslate(-dimensions.imgWidthWithGap * curImg);
     setPrevVisibleImages(visibleImages.map((el) => el + 1));
     let imgNum = visibleImages[0] + 1 - visibleAmount;
     if (imgNum > images?.length - 1) imgNum = 0;
@@ -247,9 +263,7 @@ const Carousel = ({
     setCurTransitionDur(`${transitionDuration}ms`);
     const curImg = visibleImages[0] - 1;
     setVisibleImages((prevState) => prevState.map((el) => el - 1));
-    const gap = parseInt(getComputedStyle(imagesRef.current).gap);
-    const imgWidth = imagesRef.current.children[0].clientWidth + gap;
-    setTranslate(-imgWidth * curImg);
+    setTranslate(-dimensions.imgWidthWithGap * curImg);
     setPrevVisibleImages(visibleImages.map((el) => el - 1));
     const imgNum = visibleImages[0] - 1 - visibleAmount;
     setCurrImgNum(imgNum >= 0 ? imgNum : images?.length + imgNum);
