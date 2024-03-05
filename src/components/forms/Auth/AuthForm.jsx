@@ -12,22 +12,17 @@ import ButttonSecondary from "../../ui/ButtonSecondary";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showEmailError, setShowEmailError] = useState(false);
   const [showPasswordError, setShowPasswordError] = useState(false);
 
   const [emailState, validateEmail] = useValidation("email");
-  const {
-    isValid: emailIsValid,
-    errorMessage: emailErrorMessage,
-    inputValue: email,
-  } = emailState;
+  const { isValid: emailIsValid, errorMessage: emailErrorMessage } = emailState;
 
   const [passwordState, validatePassword] = useValidation("password");
-  const {
-    isValid: passwordIsValid,
-    errorMessage: passwordErrorMessage,
-    inputValue: password,
-  } = passwordState;
+  const { isValid: passwordIsValid, errorMessage: passwordErrorMessage } =
+    passwordState;
 
   const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
   const isLoading = useSelector((state) => state.auth.isLoading);
@@ -40,11 +35,13 @@ const AuthForm = () => {
     };
   }, [dispatch]);
 
-  const validateEmailOnChange = (value) => {
-    validateEmail(value);
+  const validateEmailOnChange = (e) => {
+    setEmail(e.target.value);
+    validateEmail(e.target.value);
   };
-  const validatePasswordOnChange = (value) => {
-    validatePassword(value);
+  const validatePasswordOnChange = (e) => {
+    setPassword(e.target.value);
+    validatePassword(e.target.value);
   };
 
   const showEmailErrorHandler = () => {
@@ -56,6 +53,8 @@ const AuthForm = () => {
 
   const signIn = async (e) => {
     e.preventDefault();
+    validateEmail(email);
+    validatePassword(password);
     setShowEmailError(true);
     setShowPasswordError(true);
 
@@ -78,8 +77,10 @@ const AuthForm = () => {
       </h3>
       <form onSubmit={signIn} className={classes["auth__form"]}>
         <Input
-          label="email"
-          input={{ type: "email", name: "email", disabled: isLoading }}
+          label="Email"
+          name="email"
+          type="email"
+          input={{ disabled: isLoading }}
           className={`${classes["auth__input"]} ${
             showEmailError && !emailIsValid ? classes.invalid : ""
           }`}
@@ -89,8 +90,10 @@ const AuthForm = () => {
           onChange={validateEmailOnChange}
         />
         <Input
-          label="password"
-          input={{ type: "password", name: "password", disabled: isLoading }}
+          label="Password"
+          name="password"
+          type="password"
+          input={{ disabled: isLoading }}
           className={`${classes["auth__input"]} ${
             showPasswordError && !passwordIsValid ? classes.invalid : ""
           }`}

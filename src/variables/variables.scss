@@ -8,9 +8,31 @@ $color-text-orange: #ad6c12;
 $color-grey: #bdbdbd;
 $color-red: #ca0000;
 $color-black: #000;
-$color-primary: #dc8425;
+$color-primary: #6526a0;
 $color-primaryd: #d68023;
 
 //FONTS
 $font-family-primary: "Raleway", sans-serif;
 $font-family-secondary: "Grand Hotel", sans-serif;
+
+$color-secondary: #eacc48;
+$color-tertiary: #c2005e;
+$color-white: #fff;
+$color-yellow: #eacc48;
+$color-gray: #b7b7b7;
+$color-gray-light: #e6f2fb;
+$color-violet: #7d6b9a;
+
+$color-violet-dark: #8a2be2;
+$color-violet-light: #e9d8f6;
+$color-green: #2abead;
+$color-text-dark: #2a1976;
+$color-text-white: #fff;
+$color-text-gray: #acacac;
+$color-background-gray: #f6f9ff;
+$color-background-violet: #302838;
+$color-background-gray-light: #fafafa;
+$gradient-main-top-dark: linear-gradient(to top, #c2005e, #0037ba);
+$drop-shadow: drop-shadow(2px 3px 5px rgba(22, 0, 0, 0.1));
+$box-shadow: 0rem 0rem 1rem rgba(0, 0, 0, 0.3);
+$box-shadow-inset: inset 0rem 0rem 0.5rem rgba(0, 0, 0, 0.3);

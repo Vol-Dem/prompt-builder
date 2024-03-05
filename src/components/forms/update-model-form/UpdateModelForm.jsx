@@ -11,19 +11,32 @@ import {
 } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
 import { useSelector } from "react-redux";
+import Input from "../../ui/Input";
+import Buttton from "../../ui/Button";
+import Textarea from "../../ui/Textarea";
+import ButttonSecondary from "../../ui/ButtonSecondary";
+import Checkbox from "../../ui/Checkbox";
+import Select from "../../ui/Select";
+import Fieldset from "../../ui/Fieldset";
 
 const firestore = getFirestore(firebaseApp);
 
 const UpdateModelForm = ({ modelData, formType = "model" }) => {
   const [updateInput, setUpdateInput] = useState(false);
+  const [advancedSettings, setAdvancedSettings] = useState(false);
   const [modelIsSaving, setModelIsSaving] = useState(false);
   const [errorMessage, seteErrorMessage] = useState("");
   const [successMessage, seteSuccessMessage] = useState("");
+  const [modelTypeInput, setModelTypeInput] = useState(
+    modelData?.modelType || ""
+  );
   const [srcInput, setSrcInput] = useState("civitai.com");
   const [idInput, setIdInput] = useState(modelData?.id || "");
   const [mainInput, setMainInput] = useState(modelData?.main || "");
   const [mainTagInput, setMainTagInput] = useState(modelData?.mainTag || "");
-  const [fileNameInput, setFileNameInput] = useState(modelData?.fileName || "");
+  const [fileNameInput, setFileNameInput] = useState(
+    modelData?.fileName || modelData?.defaultCustomData?.fileName || ""
+  );
   const [weightInput, setWeightInput] = useState(modelData?.weight || "");
   const [sizetInput, setSizeInput] = useState(modelData?.size || "");
   const [versionsDownloadStatus, setVersionsDownloadStatus] = useState([]);
@@ -47,20 +60,35 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
     modelData?.negativeTags || []
   );
 
-  const [subCatAmount, setSubCatAmount] = useState([
-    { type: "text", id: 1, name: "sub", placeholder: "sub", value: "" },
+  const types = [
+    { name: "LoRa/LoCon", value: "lora" },
+    { name: "Checkpoint", value: "checkpoint" },
+    { name: "Embedding", value: "embedding" },
+    { name: "Hypernetwork", value: "hypernetwork" },
+    { name: "Wildcard", value: "wildcard" },
+    { name: "Motion Module", value: "motionmodule" },
+  ];
+
+  const [subCatInputs, setSubCatInputs] = useState([
+    {
+      type: "text",
+      id: "subcat-def",
+      name: "sub",
+      placeholder: "Subcategory",
+      value: "",
+    },
   ]);
-  const [tagSetsAmount, setTagSetsAmount] = useState([
+  const [tagSetsInputs, setTagSetsInputs] = useState([
     [
       {
         type: "text",
-        id: "set-name-1",
+        id: "set-name-def",
         name: "set-name",
         placeholder: "set name",
         value: "",
       },
       {
-        id: "set-value-1",
+        id: "set-value-def",
         name: "set-value",
         placeholder: "set value",
         value: "",
@@ -98,44 +126,41 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
     );
 
     setVersionsDownloadStatus(versionStatusInputData || []);
-    console.log(modelData);
-    const subCats = modelData.sub.map((sub, i) => {
+    // console.log(modelData);
+    const subCats = modelData.sub.map((name, i) => {
       return {
         type: "text",
-        id: i,
+        id: `subcat-${i}`,
         name: "sub",
-        placeholder: "sub",
-        value: sub,
+        placeholder: "Subcategory",
+        value: name,
       };
     });
-    setSubCatAmount(subCats);
-    if (!modelData.tagSetsData) return;
+    setSubCatInputs(subCats);
+    if (!modelData.tagSetsData?.length) return;
     const tagSets = modelData.tagSetsData.map((tagSet, i) => {
       console.log(tagSet);
       return [
         {
           type: "text",
-          id: i + "tname",
+          id: "set-name-" + i,
           name: "set-name",
           placeholder: "set name",
           value: tagSet.name,
         },
         {
-          id: i + "tval",
+          id: "set-value-" + i,
           name: "set-value",
           placeholder: "set value",
           value: tagSet.value,
         },
       ];
     });
-    setTagSetsAmount(tagSets);
+    setTagSetsInputs(tagSets);
   }, [modelData]);
 
-  const addGeneralTagsHandler = (e) => {
+  const saveModelHandler = (e) => {
     e.preventDefault();
-    setModelIsSaving(true);
-    seteErrorMessage("");
-    seteSuccessMessage("");
     const formdata = new FormData(e.target);
 
     const formObj = {};
@@ -143,27 +168,28 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
       formObj[key] = value;
     }
     console.log(formObj);
-    const src = formdata.get("src").trim().toLowerCase();
-    const modelId = +formdata.get("id").trim().toLowerCase().trim();
-    const main = formdata.get("main").trim().toLowerCase().trim();
+    const src = formdata.get("src")?.trim().toLowerCase() || "";
+    const type = formdata.get("type");
+    const modelId = +formdata.get("id")?.trim().toLowerCase()?.trim();
+    const main = formdata.get("main")?.trim().toLowerCase()?.trim();
     const subData = formdata.getAll("sub").filter(Boolean);
-    const sub = subData.map((el) => el.trim());
-    const mainTag = formdata.get("main-tag").trim();
-    const weight = formdata.get("weight").trim();
-    const size = formdata.get("size").trim();
-    const fileName = formdata.get("file-name").trim();
-    const tagSetNames = formdata.getAll("set-name");
-    const tagSetsValues = formdata.getAll("set-value");
-    const sampler = formdata.get("sampler")?.trim().toLowerCase();
-    const cfgScale = formdata.get("cfgScale")?.trim().toLowerCase();
-    const hiresUpscaler = formdata.get("hiresUpscaler")?.trim().toLowerCase();
-    const hiresUpscale = formdata.get("hiresUpscale")?.trim().toLowerCase();
-    const denoisingStrength = formdata
-      .get("denoisingStrength")
-      ?.trim()
-      .toLowerCase();
-    const vae = formdata.get("vae")?.trim().toLowerCase();
-    const steps = formdata.get("steps")?.trim();
+    const sub = subData.map((el) => el?.trim());
+    const mainTag = formdata.get("main-tag")?.trim() || "";
+    const weight = formdata.get("weight")?.trim() || "";
+    const size = formdata.get("size")?.trim() || "";
+    const fileName = formdata.get("file-name")?.trim() || "";
+    const tagSetNames = formdata.getAll("set-name") || [];
+    const tagSetsValues = formdata.getAll("set-value") || [];
+    const sampler = formdata.get("sampler")?.trim().toLowerCase() || "";
+    const cfgScale = formdata.get("cfgScale")?.trim().toLowerCase() || "";
+    const hiresUpscaler =
+      formdata.get("hiresUpscaler")?.trim().toLowerCase() || "";
+    const hiresUpscale =
+      formdata.get("hiresUpscale")?.trim().toLowerCase() || "";
+    const denoisingStrength =
+      formdata.get("denoisingStrength")?.trim().toLowerCase() || "";
+    const vae = formdata.get("vae")?.trim().toLowerCase() || "";
+    const steps = formdata.get("steps")?.trim() || "";
 
     const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
 
@@ -172,21 +198,26 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
       return [{ name: setName, value: tagSetsValues[i] }];
     });
 
-    const helperTags = formdata
-      .get("helper-tags")
-      .trim()
-      .split(splitRegEx)
-      .filter(Boolean)
-      .map((tag) => tag.trim());
-    const negativeTags = formdata
-      .get("negative-tags")
-      .trim()
-      .split(splitRegEx)
-      .filter(Boolean)
-      .map((tag) => tag.trim());
+    const helperTags =
+      formdata
+        .get("helper-tags")
+        ?.trim()
+        .split(splitRegEx)
+        .filter(Boolean)
+        .map((tag) => tag.trim()) || [];
+    const negativeTags =
+      formdata
+        .get("negative-tags")
+        ?.trim()
+        .split(splitRegEx)
+        .filter(Boolean)
+        .map((tag) => tag.trim()) || [];
 
     const getModelData = async () => {
       try {
+        setModelIsSaving(true);
+        seteErrorMessage("");
+        seteSuccessMessage("");
         let data = {};
 
         if (!modelData || updateInput) {
@@ -231,6 +262,7 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
         } else {
           data = modelData.data;
         }
+
         if (modelData && updateInput) {
           console.log(modelData, data);
           const newVerison = data.modelVersions.filter(
@@ -297,27 +329,21 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
 
         const previewImg = activePreviewImg || previewImgDefault;
 
-        let modelInfo = {
+        const modelInfo = {
           ...modelData,
           id: modelData?.id || modelId,
-          src,
-          main: modelData?.main || main,
-          sub: sub,
-          mainTag,
-          fileName,
-          tagSetsData,
-          weight,
-          size,
-          helperTags,
-          negativeTags,
+          main,
+          sub,
           data,
-          modelVersionsCustomData,
-          updatedAt: new Date().toISOString(),
-        };
-
-        if (formType === "Checkpoint") {
-          modelInfo = {
-            ...modelInfo,
+          defaultCustomData: {
+            src,
+            mainTag,
+            fileName,
+            tagSetsData,
+            weight,
+            size,
+            helperTags,
+            negativeTags,
             steps,
             sampler,
             cfgScale,
@@ -325,17 +351,22 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
             hiresUpscale,
             denoisingStrength,
             vae,
-          };
-        }
+          },
+          modelVersionsCustomData,
+          updatedAt: new Date().toISOString(),
+          createdAt: modelData?.savedAt || new Date().toISOString(),
+        };
 
-        console.log(modelInfo);
+        // console.log(modelInfo);
+        // setModelIsSaving(false);
+        // return;
 
         const loraPrevData = {
           id: modelData?.id || modelId,
           src,
-          main: modelData?.main || main,
-          sub: sub,
-          title: data.name,
+          main,
+          sub,
+          title: data.name || "",
           imgUrl: previewImg || "",
           type: data.type,
           baseModel: data.modelVersions[0].baseModel,
@@ -350,6 +381,7 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
           updatedAt: new Date().toISOString(),
           createdAt: modelData?.downloadedAt || Date.now(),
         };
+        console.log(loraPrevData);
 
         const mdID = modelData?.id || modelId;
 
@@ -412,7 +444,7 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
             },
             { merge: true }
           );
-          const curPrevData = modelsPrevRefSnap.data();
+          const curPrevData = modelsPrevRefSnap.data() || {};
           console.log(curPrevData);
           await setDoc(modelsPrevRef, { ...curPrevData, ...loraPrevData });
         }
@@ -613,70 +645,111 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
   };
 
   const addSubHandler = () => {
-    const newFields = [...subCatAmount];
+    const newFields = [...subCatInputs];
     newFields.push({
       type: "text",
       id: Date.now(),
       name: "sub",
-      placeholder: "sub",
+      placeholder: "Subcategory",
+      value: "",
     });
 
-    setSubCatAmount(newFields);
+    setSubCatInputs(newFields);
   };
 
   const addtagSetHandler = () => {
-    const newFields = [...tagSetsAmount];
+    const newFields = [...tagSetsInputs];
     newFields.push([
       {
         type: "text",
-        id: Date.now(),
+        id: `set-name-${Date.now()}`,
         name: "set-name",
         placeholder: "set name",
         value: "",
       },
       {
         type: "text",
-        id: `${Date.now() + "val"}`,
+        id: `set-value-${Date.now()}`,
         name: "set-value",
         placeholder: "set value",
         value: "",
       },
     ]);
     console.log(newFields);
-    setTagSetsAmount(newFields);
+    setTagSetsInputs(newFields);
   };
 
-  const subCatHtml = subCatAmount.map((sub) => {
+  const subCatHandler = (e) => {
+    setSubCatInputs((prevState) => {
+      const newState = [...prevState];
+      console.log(newState);
+      console.log(e.target.id);
+      const curIndex = newState.findIndex((imageId) => {
+        return imageId.id + "" === e.target.id;
+      });
+      newState[curIndex].value = e.target.value;
+
+      return newState;
+    });
+  };
+
+  const subCatHtml = subCatInputs.map((sub) => {
     return (
-      <input
+      <Input
         key={sub.id}
+        id={sub.id}
         name={sub.name}
         type={sub.type}
         placeholder={sub.placeholder}
-        defaultValue={sub.value}
+        // defaultValue={sub.value}
+        onChange={subCatHandler}
+        value={sub.value}
       />
     );
   });
-  const tagSetsHtml = tagSetsAmount.map((tagSet) => {
+
+  const tagSetsHandler = (e) => {
+    setTagSetsInputs((prevState) => {
+      const newState = [...prevState];
+      const curSetNameIndex = newState.findIndex((imageId) => {
+        return imageId[0].id + "" === e.target.id;
+      });
+      const curSetTagsIndex = newState.findIndex((imageId) => {
+        return imageId[1].id + "" === e.target.id;
+      });
+      console.log(curSetNameIndex, curSetTagsIndex);
+      console.log(newState);
+      if (curSetNameIndex !== -1) {
+        newState[curSetNameIndex][0].value = e.target.value;
+      }
+      if (curSetTagsIndex !== -1) {
+        newState[curSetTagsIndex][1].value = e.target.value;
+      }
+      // newState[curIndex] = [];
+      console.log(newState);
+      return newState;
+    });
+  };
+
+  const tagSetsHtml = tagSetsInputs.map((tagSet) => {
     return (
-      <div key={tagSet[0].id}>
-        <input
+      <div key={tagSet[0].id} className={classes["input-group"]}>
+        <Input
+          id={tagSet[0].id}
           name={tagSet[0].name}
           type={tagSet[0].type}
           placeholder={tagSet[0].placeholder}
-          defaultValue={tagSet[0].value}
+          onChange={tagSetsHandler}
+          value={tagSet[0].value}
         />
-        <textarea
+        <Textarea
+          id={tagSet[1].id}
           name={tagSet[1].name}
-          id=""
-          cols="30"
           rows="5"
           placeholder={tagSet[1].placeholder}
-          defaultValue={tagSet[1].value}
-          // onChange={(e) => {
-          //   setHelperTagsInput(e.target.value);
-          // }}
-        ></textarea>
+          onChange={tagSetsHandler}
+          value={tagSet[1].value}
+        ></Textarea>
       </div>
     );
   });
@@ -698,198 +771,246 @@ const UpdateModelForm = ({ modelData, formType = "model" }) => {
   let versionStatusHtml = versionsDownloadStatus?.map((version) => {
     return (
       <div className={classes["example-field"]} key={version.id}>
-        <input
+        <Checkbox
           id={version.id}
+          value={updateInput}
           name={version.name}
-          type={version.type}
           checked={version.value}
+          label={version.label}
           onChange={versionStatusChangeHandler}
-        ></input>
-        <label htmlFor={version.id}>{version.label}</label>
+        />
       </div>
     );
   });
 
+  let typeSelectOption = types.map((version) => {
+    return {
+      name: version.name,
+      value: version.value,
+    };
+  });
+
   return (
-    <form onSubmit={addGeneralTagsHandler} className={classes["form"]}>
-      <label htmlFor="update">
-        <input
+    <form onSubmit={saveModelHandler} className={classes["form"]}>
+      {modelData && (
+        <Checkbox
           id="update"
-          type="checkbox"
           value={updateInput}
+          name="update"
+          label="update model"
           onChange={(e) => {
             setUpdateInput(e.target.checked);
           }}
         />
-        update
-      </label>
-      <input
-        name="src"
-        type="text"
-        placeholder="src"
-        value={srcInput}
+      )}
+      <Select
+        name="type"
+        id="type-select"
         onChange={(e) => {
-          setSrcInput(e.target.value);
+          setModelTypeInput(e.target.value);
         }}
+        options={typeSelectOption}
       />
-      <input
-        name="id"
-        type="number"
-        placeholder="id"
-        value={idInput}
-        onChange={(e) => {
-          setIdInput(e.target.value);
-        }}
-        readOnly={!!modelData}
-      />
-      <input
+      {!modelData && (
+        <Input
+          name="id"
+          type="number"
+          placeholder="Model id or url"
+          value={idInput}
+          onChange={(e) => {
+            setIdInput(e.target.value);
+          }}
+          readOnly={!!modelData}
+        />
+      )}
+      <Input
         name="main"
         type="text"
-        placeholder="main"
+        placeholder="Main category"
         value={mainInput}
         onChange={(e) => {
           setMainInput(e.target.value);
         }}
         readOnly={!!modelData}
       />
-      {subCatHtml}
-      <button type="button" id="sub" onClick={addSubHandler}>
-        Add sub
-      </button>
-      <input
-        name="main-tag"
-        type="text"
-        placeholder="main-tag"
-        value={mainTagInput}
-        onChange={(e) => {
-          setMainTagInput(e.target.value);
-        }}
-      />
-      <input
-        name="file-name"
-        type="text"
-        placeholder="file name"
-        value={fileNameInput}
-        onChange={(e) => {
-          setFileNameInput(e.target.value);
-        }}
-      />
-      <input
-        name="weight"
-        type="text"
-        placeholder="weight"
-        value={weightInput}
-        onChange={(e) => {
-          setWeightInput(e.target.value);
-        }}
-      />
-      <input
-        name="size"
-        type="text"
-        placeholder="size"
-        value={sizetInput}
-        onChange={(e) => {
-          setSizeInput(e.target.value);
-        }}
-      />
-      {formType === "Checkpoint" && (
+      <Fieldset legend="Subcategories">
+        {subCatHtml}
+        <ButttonSecondary
+          type="button"
+          id="sub"
+          onClick={addSubHandler}
+          className={classes["btn-secondary"]}
+        >
+          + add subcategory
+        </ButttonSecondary>
+      </Fieldset>
+      {!modelData && (
+        <Checkbox
+          id="advanced"
+          value={advancedSettings}
+          name="advanced"
+          label="advanced settings"
+          onChange={(e) => {
+            setAdvancedSettings(e.target.checked);
+          }}
+        />
+      )}
+      {(modelData || advancedSettings) && (
         <>
-          <input
-            name="steps"
+          <Input
+            name="src"
             type="text"
-            placeholder="steps"
-            value={stepsInput}
+            placeholder="src"
+            value={srcInput}
+            input={{ hidden: true }}
             onChange={(e) => {
-              setStepsInput(e.target.value);
+              setSrcInput(e.target.value);
             }}
           />
-          <input
-            name="sampler"
+          <Input
+            name="main-tag"
             type="text"
-            placeholder="sampler"
-            value={samplerInput}
+            placeholder="main-tag"
+            value={mainTagInput}
             onChange={(e) => {
-              setSamplerInput(e.target.value);
+              setMainTagInput(e.target.value);
             }}
           />
-          <input
-            name="cfgScale"
+          <Input
+            name="file-name"
             type="text"
-            placeholder="CFGScale"
-            value={cfgScaleInput}
+            placeholder="file name"
+            value={fileNameInput}
             onChange={(e) => {
-              setCfgScaleInput(e.target.value);
+              setFileNameInput(e.target.value);
             }}
           />
-          <input
-            name="hiresUpscaler"
+          <Input
+            name="weight"
             type="text"
-            placeholder="Hires upscaler"
-            value={hiresUpscalerInput}
+            placeholder="weight"
+            value={weightInput}
             onChange={(e) => {
-              setHiresUpscalerInput(e.target.value);
+              setWeightInput(e.target.value);
             }}
           />
-          <input
-            name="hiresUpscale"
+          <Input
+            name="size"
             type="text"
-            placeholder="Hires upscale"
-            value={hiresUpscaleInput}
+            placeholder="size"
+            value={sizetInput}
             onChange={(e) => {
-              setHiresUpscaleInput(e.target.value);
+              setSizeInput(e.target.value);
             }}
           />
-          <input
-            name="denoisingStrength"
-            type="text"
-            placeholder="Denoising strength"
-            value={denoisingStrengthtInput}
+          {formType === "Checkpoint" && (
+            <>
+              <Input
+                name="steps"
+                type="text"
+                placeholder="steps"
+                value={stepsInput}
+                onChange={(e) => {
+                  setStepsInput(e.target.value);
+                }}
+              />
+              <Input
+                name="sampler"
+                type="text"
+                placeholder="sampler"
+                value={samplerInput}
+                onChange={(e) => {
+                  setSamplerInput(e.target.value);
+                }}
+              />
+              <Input
+                name="cfgScale"
+                type="text"
+                placeholder="CFGScale"
+                value={cfgScaleInput}
+                onChange={(e) => {
+                  setCfgScaleInput(e.target.value);
+                }}
+              />
+              <Input
+                name="hiresUpscaler"
+                type="text"
+                placeholder="Hires upscaler"
+                value={hiresUpscalerInput}
+                onChange={(e) => {
+                  setHiresUpscalerInput(e.target.value);
+                }}
+              />
+              <Input
+                name="hiresUpscale"
+                type="text"
+                placeholder="Hires upscale"
+                value={hiresUpscaleInput}
+                onChange={(e) => {
+                  setHiresUpscaleInput(e.target.value);
+                }}
+              />
+              <Input
+                name="denoisingStrength"
+                type="text"
+                placeholder="Denoising strength"
+                value={denoisingStrengthtInput}
+                onChange={(e) => {
+                  setDenoisingStrengthInput(e.target.value);
+                }}
+              />
+              <Input
+                name="vae"
+                type="text"
+                placeholder="VAE"
+                value={vaeInput}
+                onChange={(e) => {
+                  setVaeInput(e.target.value);
+                }}
+              />
+            </>
+          )}
+          <Fieldset legend="Tag sets">
+            {tagSetsHtml}
+            <ButttonSecondary
+              type="button"
+              onClick={addtagSetHandler}
+              disabled={modelIsSaving}
+              className={classes["btn-secondary"]}
+            >
+              + add new set
+            </ButttonSecondary>
+          </Fieldset>
+
+          {modelData && (
+            <Fieldset legend="Model versions">
+              {versionStatusHtml}
+            </Fieldset>
+          )}
+          <Textarea
+            name="helper-tags"
+            rows="5"
+            placeholder="helper tags"
+            value={helperTagsInput}
             onChange={(e) => {
-              setDenoisingStrengthInput(e.target.value);
+              setHelperTagsInput(e.target.value);
             }}
-          />
-          <input
-            name="vae"
-            type="text"
-            placeholder="VAE"
-            value={vaeInput}
+          ></Textarea>
+          <Textarea
+            name="negative-tags"
+            rows="5"
+            placeholder="negative tags"
+            value={negativeTagsInput}
             onChange={(e) => {
-              setVaeInput(e.target.value);
+              setNegativeTagsInput(e.target.value);
             }}
-          />
+          ></Textarea>
         </>
       )}
-      {tagSetsHtml}
-      <button type="button" onClick={addtagSetHandler} disabled={modelIsSaving}>
-        Add tag set
-      </button>
-      {versionStatusHtml}
-      <textarea
-        name="helper-tags"
-        id=""
-        cols="30"
-        rows="10"
-        placeholder="helper tags"
-        value={helperTagsInput}
-        onChange={(e) => {
-          setHelperTagsInput(e.target.value);
-        }}
-      ></textarea>
-      <textarea
-        name="negative-tags"
-        id=""
-        cols="30"
-        rows="10"
-        placeholder="negative tags"
-        value={negativeTagsInput}
-        onChange={(e) => {
-          setNegativeTagsInput(e.target.value);
-        }}
-      ></textarea>
-      <button type="submit" disabled={modelIsSaving}>
-        {!modelIsSaving ? "Add" : "Saving..."}
-      </button>
-      <div>{errorMessage}</div>
+      <Buttton type="submit" disabled={modelIsSaving}>
+        {!modelIsSaving ? "Save" : "Saving..."}
+      </Buttton>
+      {errorMessage && <div>{errorMessage}</div>}
       {successMessage && <div>{successMessage}</div>}
     </form>
   );

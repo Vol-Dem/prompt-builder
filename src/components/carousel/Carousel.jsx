@@ -335,6 +335,9 @@ const Carousel = ({
       );
 
       const newImgData = { postId: +postId, amount: data.items.length };
+      console.log("LENGTH");
+      console.log(data.items.length);
+      console.log(examplesDataWithRes.length);
 
       await setDoc(
         modelImagesRef,

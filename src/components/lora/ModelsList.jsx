@@ -25,6 +25,9 @@ const ModelsList = ({ loraItems }) => {
   useEffect(() => {
     if (!activeSubcategory) return;
     const getModelsPreview = async () => {
+      console.log(activeTab);
+      console.log(activeCategory);
+      console.log(activeSubcategory);
       const q = query(
         collection(firestore, "users", uid, `${activeTab} preview`),
         where("main", "==", activeCategory),

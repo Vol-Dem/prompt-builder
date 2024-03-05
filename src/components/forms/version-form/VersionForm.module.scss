@@ -1,3 +1,5 @@
+@use "./../../../variables/variables.scss" as var;
+
 .form {
   display: flex;
   flex-direction: column;
@@ -13,4 +15,17 @@
 .example-field {
   display: flex;
   gap: 1rem;
+}
+
+.btn-secondary {
+  font-size: 1.6rem;
+  color: #818182 !important;
+  text-align: right;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }

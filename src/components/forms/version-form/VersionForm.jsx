@@ -3,10 +3,16 @@ import classes from "./VersionForm.module.scss";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
 import { useSelector } from "react-redux";
+import Textarea from "../../ui/Textarea";
+import Buttton from "../../ui/Button";
+import Input from "../../ui/Input";
+import ButttonSecondary from "../../ui/ButtonSecondary";
+import Fieldset from "../../ui/Fieldset";
 
 const firestore = getFirestore(firebaseApp);
 
 const VersionForm = ({ versionData, modelId, modelType }) => {
+  const [modelIsSaving, setModelIsSaving] = useState(false);
   const [mainTagInput, setMainTagInput] = useState(versionData?.mainTag || "");
   const [trigerInput, setTrigerInput] = useState(
     versionData?.trainedWords?.join(", ") || []
@@ -23,17 +29,17 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
     versionData?.negativeTags || []
   );
 
-  const [tagSetsAmount, setTagSetsAmount] = useState([
+  const [tagSetsInputs, setTagSetsInputs] = useState([
     [
       {
         type: "text",
-        id: "set-name-1",
+        id: "set-name-def",
         name: "set-name",
         placeholder: "set name",
         value: "",
       },
       {
-        id: "set-value-1",
+        id: "set-value-def",
         name: "set-value",
         placeholder: "set value",
         value: "",
@@ -45,29 +51,29 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
 
   useEffect(() => {
     if (!versionData) return;
-    if (!versionData.tagSetsData) return;
+    if (!versionData.tagSetsData?.length) return;
     const tagSets = versionData.tagSetsData.map((tagSet, i) => {
       console.log(tagSet);
       return [
         {
           type: "text",
-          id: i + "tname",
+          id: "set-name" + i,
           name: "set-name",
           placeholder: "set name",
           value: tagSet.name,
         },
         {
-          id: i + "tval",
+          id: "set-value" + i,
           name: "set-value",
           placeholder: "set value",
           value: tagSet.value,
         },
       ];
     });
-    setTagSetsAmount(tagSets);
+    setTagSetsInputs(tagSets);
   }, [versionData]);
 
-  const addGeneralTagsHandler = (e) => {
+  const saveVersionInfoHandler = (e) => {
     e.preventDefault();
 
     const formdata = new FormData(e.target);
@@ -108,6 +114,7 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
 
     const getModelData = async () => {
       try {
+        setModelIsSaving(true);
         const updatedVersionData = {
           ...versionData,
           mainTag,
@@ -123,25 +130,25 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
         console.log(updatedVersionData);
 
         const modelsRef = doc(firestore, "users", uid, "models", modelId + "");
-        // let modelsPrevRef;
+        let modelsPrevRef;
 
-        // if (modelType === "Checkpoint") {
-        //   modelsPrevRef = doc(
-        //     firestore,
-        //     "users",
-        //     uid,
-        //     "checkpoints preview",
-        //     modelId + ""
-        //   );
-        // } else {
-        //   modelsPrevRef = doc(
-        //     firestore,
-        //     "users",
-        //     uid,
-        //     "models preview",
-        //     modelId + ""
-        //   );
-        // }
+        if (modelType === "Checkpoint") {
+          modelsPrevRef = doc(
+            firestore,
+            "users",
+            uid,
+            "checkpoints preview",
+            modelId + ""
+          );
+        } else {
+          modelsPrevRef = doc(
+            firestore,
+            "users",
+            uid,
+            "models preview",
+            modelId + ""
+          );
+        }
 
         console.log(updatedVersionData);
         const versionPath = `modelVersionsCustomData.${versionData.versionId}`;
@@ -153,8 +160,17 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
           },
           { merge: true }
         );
+        await updateDoc(
+          modelsPrevRef,
+          {
+            [versionPath]: updatedVersionData,
+          },
+          { merge: true }
+        );
+        setModelIsSaving(false);
       } catch (err) {
         console.log(err);
+        setModelIsSaving(false);
       }
     };
 
@@ -162,54 +178,76 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
   };
 
   const addtagSetHandler = () => {
-    const newFields = [...tagSetsAmount];
+    const newFields = [...tagSetsInputs];
     newFields.push([
       {
         type: "text",
-        id: Date.now(),
+        id: `set-name-${Date.now()}`,
         name: "set-name",
         placeholder: "set name",
         value: "",
       },
       {
         type: "text",
-        id: `${Date.now() + "val"}`,
+        id: `set-value-${Date.now()}`,
         name: "set-value",
         placeholder: "set value",
         value: "",
       },
     ]);
     console.log(newFields);
-    setTagSetsAmount(newFields);
+    setTagSetsInputs(newFields);
   };
 
-  const tagSetsHtml = tagSetsAmount.map((tagSet) => {
+  const tagSetsHandler = (e) => {
+    setTagSetsInputs((prevState) => {
+      const newState = [...prevState];
+      const curSetNameIndex = newState.findIndex((imageId) => {
+        return imageId[0].id + "" === e.target.id;
+      });
+      const curSetTagsIndex = newState.findIndex((imageId) => {
+        return imageId[1].id + "" === e.target.id;
+      });
+      console.log(curSetNameIndex, curSetTagsIndex);
+      console.log(newState);
+      if (curSetNameIndex !== -1) {
+        newState[curSetNameIndex][0].value = e.target.value;
+      }
+      if (curSetTagsIndex !== -1) {
+        newState[curSetTagsIndex][1].value = e.target.value;
+      }
+      // newState[curIndex] = [];
+      console.log(newState);
+      return newState;
+    });
+  };
+
+  const tagSetsHtml = tagSetsInputs.map((tagSet) => {
     return (
-      <div key={tagSet[0].id}>
-        <input
+      <div key={tagSet[0].id} className={classes["input-group"]}>
+        <Input
+          id={tagSet[0].id}
           name={tagSet[0].name}
           type={tagSet[0].type}
           placeholder={tagSet[0].placeholder}
-          defaultValue={tagSet[0].value}
+          onChange={tagSetsHandler}
+          value={tagSet[0].value}
         />
-        <textarea
+        <Textarea
+          id={tagSet[1].id}
           name={tagSet[1].name}
-          id=""
-          cols="30"
           rows="5"
           placeholder={tagSet[1].placeholder}
-          defaultValue={tagSet[1].value}
-          // onChange={(e) => {
-          //   setHelperTagsInput(e.target.value);
-          // }}
-        ></textarea>
+          onChange={tagSetsHandler}
+          value={tagSet[1].value}
+        ></Textarea>
       </div>
     );
   });
 
   return (
-    <form onSubmit={addGeneralTagsHandler} className={classes["form"]}>
-      <input
+    <form onSubmit={saveVersionInfoHandler} className={classes["form"]}>
+      <Input
         name="main-tag"
         type="text"
         placeholder="main-tag"
@@ -219,7 +257,7 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
         }}
       />
 
-      <input
+      <Input
         name="file-name"
         type="text"
         placeholder="file name"
@@ -228,7 +266,7 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
           setFileNameInput(e.target.value);
         }}
       />
-      <input
+      <Input
         name="triger"
         type="text"
         placeholder="triger word"
@@ -237,7 +275,7 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
           setTrigerInput(e.target.value);
         }}
       />
-      <input
+      <Input
         name="weight"
         type="text"
         placeholder="weight"
@@ -246,7 +284,7 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
           setWeightInput(e.target.value);
         }}
       />
-      <input
+      <Input
         name="size"
         type="text"
         placeholder="size"
@@ -255,11 +293,18 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
           setSizeInput(e.target.value);
         }}
       />
-      {tagSetsHtml}
-      <button type="button" onClick={addtagSetHandler}>
-        Add tag set
-      </button>
-      <textarea
+      <Fieldset legend="Tag sets">
+        {tagSetsHtml}
+        <ButttonSecondary
+          type="button"
+          onClick={addtagSetHandler}
+          disabled={modelIsSaving}
+          className={classes["btn-secondary"]}
+        >
+          + add new set
+        </ButttonSecondary>
+      </Fieldset>
+      <Textarea
         name="helper-tags"
         id=""
         cols="30"
@@ -269,8 +314,8 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
         onChange={(e) => {
           setHelperTagsInput(e.target.value);
         }}
-      ></textarea>
-      <textarea
+      ></Textarea>
+      <Textarea
         name="negative-tags"
         id=""
         cols="30"
@@ -280,8 +325,10 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
         onChange={(e) => {
           setNegativeTagsInput(e.target.value);
         }}
-      ></textarea>
-      <button type="submit">Add</button>
+      ></Textarea>
+      <Buttton type="submit" disabled={modelIsSaving}>
+        Save
+      </Buttton>
     </form>
   );
 };

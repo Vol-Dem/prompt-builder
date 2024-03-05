@@ -118,7 +118,9 @@ const PreviewCard = ({ previewData }) => {
         <div className={classes["main-tag"]}>
           Version: {currVersion.versionName}
         </div>
-        <div className={classes["main-tag"]}>File: {currVersion.fileName}</div>
+        <div className={classes["main-tag"]}>
+          File: {currVersion.fileName || previewData.fileName}
+        </div>
         {previewData.mainTag && (
           <ul className={classes["main-tag"]}>
             Triger:

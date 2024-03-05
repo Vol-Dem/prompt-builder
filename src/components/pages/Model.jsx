@@ -12,6 +12,7 @@ import ModelTags from "../model/tags/ModelTags";
 import GeneratedImages from "../model/generated-images/GeneratedImages";
 import { doc, getFirestore, onSnapshot } from "firebase/firestore";
 import firebaseApp from "../../firebase-config";
+import ModelSettings from "../model/model-settings/ModelSettings";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -190,6 +191,7 @@ const Model = () => {
               Edit
             </button>
           </div>
+          {editIsOpen && <ModelSettings />}
           {editIsOpen && model.data.type !== "Checkpoint" && (
             <UpdateModelForm modelData={model} />
           )}

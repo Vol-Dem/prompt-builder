@@ -4,43 +4,61 @@ import { getImagesInfo, makeBatchRequest } from "../../../utils/fetchUtils";
 import firebaseApp from "../../../firebase-config";
 import { arrayUnion, doc, getFirestore, setDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
+import Input from "../../ui/Input";
+import Select from "../../ui/Select";
+import { useValidation } from "../../../hooks/use-validation";
+import ButttonSecondary from "../../ui/ButtonSecondary";
+import Checkbox from "../../ui/Checkbox";
+import Buttton from "../../ui/Button";
+import Fieldset from "../../ui/Fieldset";
 
 const firestore = getFirestore(firebaseApp);
 
 const SaveImageForm = ({ modelData }) => {
   const [filterDisabledInput, setFilterDisabledInput] = useState(false);
   const [imageIsSaving, setImageIsSaving] = useState(false);
-  const [errorMessage, seteErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, seteSuccessMessage] = useState("");
+  const [versionIdInput, setVersionIdInput] = useState(
+    modelData?.data?.modelVersions[0].id
+  );
   const [postIdInput, setPostIdInput] = useState("");
-  const [examplePromtsAmount, setExamplePromtsAmount] = useState([
-    [
-      {
-        type: "text",
-        id: "exmpl-image-id",
-        name: "image-id",
-        placeholder: "image id",
-        value: "",
-      },
-    ],
+  const [imagesIdInputs, setImagesIdInputs] = useState([
+    {
+      type: "text",
+      id: "exmpl-image-id",
+      name: "image-id",
+      placeholder: "image id",
+      value: "",
+    },
   ]);
+
+  const [postIdState, validatePostId] = useValidation("minLength", {
+    minLength: 5,
+  });
+  const { isValid: postIdIsValid, errorMessage: postIdErrorMessage } =
+    postIdState;
 
   const uid = useSelector((state) => state.auth.user.uid);
 
-  const addGeneralTagsHandler = (e) => {
+  const saveImagesHandler = (e) => {
     e.preventDefault();
-    setImageIsSaving(true);
-    seteErrorMessage("");
-    seteSuccessMessage("");
-    const formdata = new FormData(e.target);
-    const curVersionId = +formdata
-      .get("curVersionId")
-      .trim()
-      .toLowerCase()
-      .trim();
-    const postId = +formdata.get("post-id").trim().toLowerCase().trim();
-    const exemplePromtsImageId = formdata.getAll("image-id").filter(Boolean);
+    setErrorMessage("");
+    const curVersionId = +versionIdInput;
+    const postId = postIdInput.trim().toLowerCase().trim();
+    const imagesId = imagesIdInputs
+      .map((imageIdInput) => +imageIdInput.value?.trim())
+      .filter(Boolean);
 
+    console.log(postIdIsValid);
+    if (!postIdIsValid) {
+      setErrorMessage(postIdErrorMessage);
+    }
+
+    console.log(curVersionId);
+    console.log(postId);
+    console.log(imagesId);
+    // return;
     const clearObjectKeys = (obj) => {
       const convertedMetaArr = Object.entries(obj).map((entry, i) => {
         const newKey = entry[0]
@@ -51,8 +69,11 @@ const SaveImageForm = ({ modelData }) => {
       return Object.fromEntries(convertedMetaArr);
     };
 
-    const getModelData = async () => {
+    const getImagesData = async () => {
       try {
+        setImageIsSaving(true);
+        setErrorMessage("");
+        seteSuccessMessage("");
         if (!postId) {
           throw new Error("Empty post id");
         }
@@ -87,9 +108,9 @@ const SaveImageForm = ({ modelData }) => {
 
         let dataFiltered = data;
 
-        if (exemplePromtsImageId.length) {
+        if (imagesId.length) {
           const images = data.items.filter((image) => {
-            return exemplePromtsImageId.some((img) => +img === image.id);
+            return imagesId.some((id) => +id === image.id);
           });
 
           dataFiltered = { items: images };
@@ -153,84 +174,129 @@ const SaveImageForm = ({ modelData }) => {
         seteSuccessMessage("Saved");
       } catch (err) {
         setImageIsSaving(false);
-        seteErrorMessage(err.message);
+        setErrorMessage(err.message);
         console.log(err.message);
       }
     };
 
-    getModelData();
+    getImagesData();
   };
 
   const addExampleInputHandler = () => {
-    const newFields = [...examplePromtsAmount];
-    newFields.push([
-      {
-        id: `${Date.now() + "imid"}`,
-        name: "image-id",
-        placeholder: "image id",
-        cols: "30",
-        rows: "10",
-      },
-    ]);
+    const newFields = [...imagesIdInputs];
+    newFields.push({
+      id: `${Date.now() + "imid"}`,
+      name: "image-id",
+      placeholder: "image id",
+      cols: "30",
+      rows: "10",
+      value: "",
+    });
 
-    setExamplePromtsAmount(newFields);
+    setImagesIdInputs(newFields);
   };
 
-  let exemplePromtsHtml = examplePromtsAmount.map((example) => {
+  const imageIdHandler = (e) => {
+    setImagesIdInputs((prevState) => {
+      const newState = [...prevState];
+      const curIndex = newState.findIndex((imageId) => {
+        console.log(imageId);
+        console.log(e.target.id);
+        return imageId.id === e.target.id;
+      });
+      // console.log(newState);
+      console.log(curIndex);
+      // console.log(e.target.id);
+      // console.log(e.target.value);
+
+      newState[curIndex].value = e.target.value;
+      console.log(newState);
+      return newState;
+    });
+  };
+
+  let imagesIdInputsHtml = imagesIdInputs.map((example) => {
     return (
-      <div className={classes["example-field"]} key={example[0].id}>
-        <input
-          name={example[0].name}
-          type={example[0].type}
-          placeholder={example[0].placeholder}
-        ></input>
+      <div className={classes["example-field"]} key={example.id}>
+        <Input
+          id={example.id}
+          name={example.name}
+          type={example.type}
+          placeholder={example.placeholder}
+          onChange={imageIdHandler}
+          value={example.value}
+        />
       </div>
     );
   });
 
-  let versionSelectOptionHtml = modelData?.data?.modelVersions?.map(
-    (version, i) => {
-      return (
-        <option value={version.id} key={i}>
-          {version.name}
-        </option>
-      );
-    }
-  );
+  // let versionSelectOptionHtml = modelData?.data?.modelVersions?.map(
+  //   (version, i) => {
+  //     return (
+  //       <option value={version.id} key={i}>
+  //         {version.name}
+  //       </option>
+  //     );
+  //   }
+  // );
+  let versionSelectOption = modelData?.data?.modelVersions?.map((version) => {
+    return {
+      name: version.name,
+      value: version.id,
+    };
+  });
 
   return (
-    <form onSubmit={addGeneralTagsHandler} className={classes["form"]}>
+    <form onSubmit={saveImagesHandler} className={classes["form"]}>
       <label htmlFor="version-select">Select version:</label>
-      <select name="curVersionId" id="version-select">
-        {versionSelectOptionHtml}
-      </select>
-      <input
+      <Select
+        name="curVersionId"
+        id="version-select"
+        onChange={(e) => {
+          setVersionIdInput(e.target.value);
+        }}
+        options={versionSelectOption}
+      />
+
+      <Input
         name="post-id"
         type="text"
         placeholder="post id"
+        input={{ disabled: imageIsSaving }}
         value={postIdInput}
         onChange={(e) => {
+          validatePostId(e.target.value);
           setPostIdInput(e.target.value);
         }}
+        className={`${classes["auth__input"]} ${
+          !postIdIsValid ? classes.invalid : ""
+        }`}
+        error={postIdErrorMessage}
       />
-      {exemplePromtsHtml}
-
-      <button type="button" id="example" onClick={addExampleInputHandler}>
-        Add example
-      </button>
+      <Fieldset legend="Image IDs" className={classes.fieldset}>
+        {imagesIdInputsHtml}
+        <ButttonSecondary
+          type="button"
+          onClick={addExampleInputHandler}
+          disabled={imageIsSaving}
+          className={classes["btn-secondary"]}
+        >
+          + add image id
+        </ButttonSecondary>
+      </Fieldset>
       <div className={classes.filter}>
-        <input
+        <Checkbox
           id="filter"
-          type="checkbox"
+          label="Disable filter"
+          value={filterDisabledInput}
           onChange={(e) => {
             setFilterDisabledInput(e.target.checked);
           }}
         />
-        <label htmlFor="filter">disable filter</label>
       </div>
-      <button type="submit" disabled={imageIsSaving}>
-        Add
-      </button>
+      <Buttton type="submit" disabled={imageIsSaving}>
+        Save
+      </Buttton>
       {successMessage && <div>{successMessage}</div>}
       {errorMessage && <div>{errorMessage}</div>}
     </form>
