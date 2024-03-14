@@ -1,3 +1,5 @@
+import { clearObjectKeys } from "./generalUtils";
+
 export const makeBatchRequest = async (
   data,
   fetchFunc,
@@ -34,7 +36,7 @@ export const getImagesInfo = async (images) => {
   const examplesDataWithRes = await Promise.all(
     images.map(async (item) => {
       const updatedImgData = { ...item };
-      const newMeta = await getModelInfo(item.meta);
+      const newMeta = item?.meta && (await getModelInfo(item.meta));
       console.log(newMeta);
       if (newMeta) updatedImgData.meta = newMeta;
 
@@ -75,6 +77,7 @@ export const getImagesInfo = async (images) => {
 
 export const getModelInfo = async (resourcesData) => {
   try {
+    console.log(resourcesData);
     let modelHash;
     if (resourcesData.hasOwnProperty("Model hash")) {
       modelHash = resourcesData["Model hash"];
@@ -143,4 +146,39 @@ export const addResourcesInfo = async (resourcesData) => {
   } catch (err) {
     console.log(err.message);
   }
+};
+
+export const getModelData = async (modelId) => {
+  const response = await fetch(`https://civitai.com/api/v1/models/${modelId}`);
+
+  const responseData = await response.json();
+  console.log(response);
+
+  if (!response.ok) {
+    throw new Error(`Error status (${response.status})`);
+  }
+  console.log(responseData);
+  responseData?.modelVersions?.forEach((version) => {
+    version.images.forEach((image) => {
+      if (image.meta) {
+        image.meta.comfy = "";
+        image.meta = clearObjectKeys(image.meta);
+        if (image.meta.hashes)
+          image.meta.hashes = clearObjectKeys(image.meta.hashes);
+      }
+    });
+  });
+
+  const imagesDataWithRes = await Promise.all(
+    responseData.modelVersions.map(async (image) => {
+      const updImg = await makeBatchRequest(image.images, getImagesInfo);
+      //Temp
+      image.images = updImg;
+      return updImg;
+    })
+  );
+
+  console.log(imagesDataWithRes);
+
+  return responseData;
 };

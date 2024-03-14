@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import classes from "./Model.module.scss";
 import { useNavigate, useParams } from "react-router-dom";
 import Carousel from "../carousel/Carousel";
-import UpdateModelForm from "../forms/update-model-form/UpdateModelForm";
 import { useDispatch, useSelector } from "react-redux";
 import { modelActions } from "../../store/model";
-import VersionForm from "../forms/version-form/VersionForm";
-import SaveImageForm from "../forms/save-image-form/SaveImageForm";
+// import UpdateModelForm from "../forms/update-model-form/UpdateModelForm";
+// import VersionForm from "../forms/version-form/VersionForm";
+// import SaveImageForm from "../forms/save-image-form/SaveImageForm";
 import ModelInfo from "../model/info/ModelInfo";
 import ModelTags from "../model/tags/ModelTags";
 import GeneratedImages from "../model/generated-images/GeneratedImages";
@@ -156,28 +156,11 @@ const Model = () => {
     setEditIsOpen((prevState) => !prevState);
   };
 
-  const versionFormsHtml =
-    model?.modelVersionsCustomData &&
-    model.data.modelVersions.flatMap((version, i) => {
-      const customData = model.modelVersionsCustomData[version.id];
-      if (!customData?.downloadStatus) return [];
-      return (
-        <div key={i}>
-          <div>{customData.versionName}</div>
-          <VersionForm
-            versionData={customData}
-            modelId={model.id}
-            modelType={model.data.type}
-          />
-        </div>
-      );
-    });
-
   return (
     <div className={classes.model}>
       {isLoading && <div>Loading...</div>}
       {!isLoading && errorMessage && <div>{errorMessage}</div>}
-      {!isLoading && !errorMessage && (
+      {!isLoading && !errorMessage && model?.id && (
         <>
           <div className={classes["panel"]}>
             <button className={classes["btn-back"]} onClick={backHandler}>
@@ -187,21 +170,20 @@ const Model = () => {
               {model?.main}
               <ul className={classes["subcategories"]}>{subCatsHtml}</ul>
             </div>
-            <button className={classes["btn-edit"]} onClick={openEditHandler}>
+            <button
+              className={`${classes["btn-edit"]} ${
+                editIsOpen ? classes["btn-edit--active"] : ""
+              }`}
+              onClick={openEditHandler}
+            >
               Edit
             </button>
           </div>
           {editIsOpen && <ModelSettings />}
-          {editIsOpen && model.data.type !== "Checkpoint" && (
-            <UpdateModelForm modelData={model} />
-          )}
-          {editIsOpen && model.data.type === "Checkpoint" && (
-            <UpdateModelForm modelData={model} formType="Checkpoint" />
-          )}
-          {editIsOpen && versionFormsHtml}
-          {editIsOpen && <SaveImageForm modelData={model} />}
 
-          <div className={classes.title}> {model?.data?.name}</div>
+          <div className={classes.title}>
+            {model?.name || model?.data?.name}
+          </div>
           <ul className={classes.versions}>{modelVersionsHtml}</ul>
           {modelImagesHtml}
           <div className={classes["info-container"]}>
@@ -221,7 +203,8 @@ const Model = () => {
           )}
           <h3>Description:</h3>
           <div className={classes.description}>
-            {model?.data?.description?.replace(/(<([^>]+)>)/gi, "")}
+            {model?.defaultCustomData?.description ||
+              model?.data?.description?.replace(/(<([^>]+)>)/gi, "")}
           </div>
 
           <div>Exapmles:</div>

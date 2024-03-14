@@ -13,9 +13,14 @@ const tabsSlice = createSlice({
   },
   reducers: {
     setCurrentTab(state, actions) {
+      state.currSubcategory = "";
+      state.currCategory = "";
+      state.modelsData = [];
       state.currTab = actions.payload;
     },
     setCurrentCategory(state, actions) {
+      state.currSubcategory = "";
+      state.modelsData = [];
       state.currCategory = actions.payload;
     },
     setCurrentSubcategory(state, actions) {

@@ -41,145 +41,138 @@ const SaveImageForm = ({ modelData }) => {
 
   const uid = useSelector((state) => state.auth.user.uid);
 
-  const saveImagesHandler = (e) => {
-    e.preventDefault();
-    setErrorMessage("");
-    const curVersionId = +versionIdInput;
-    const postId = postIdInput.trim().toLowerCase().trim();
-    const imagesId = imagesIdInputs
-      .map((imageIdInput) => +imageIdInput.value?.trim())
-      .filter(Boolean);
+  const saveImagesHandler = async (e) => {
+    try {
+      e.preventDefault();
+      setImageIsSaving(true);
+      setErrorMessage("");
+      seteSuccessMessage("");
+      const curVersionId = +versionIdInput;
+      const postId = postIdInput.trim().toLowerCase().trim();
+      const imagesId = imagesIdInputs
+        .map((imageIdInput) => +imageIdInput.value?.trim())
+        .filter(Boolean);
 
-    console.log(postIdIsValid);
-    if (!postIdIsValid) {
-      setErrorMessage(postIdErrorMessage);
-    }
+      console.log(postIdIsValid);
+      if (!postIdIsValid) {
+        setErrorMessage(postIdErrorMessage);
+      }
 
-    console.log(curVersionId);
-    console.log(postId);
-    console.log(imagesId);
-    // return;
-    const clearObjectKeys = (obj) => {
-      const convertedMetaArr = Object.entries(obj).map((entry, i) => {
-        const newKey = entry[0]
-          ? entry[0].replace(/[^\w\s]/gi, " ")
-          : `key${i}`;
-        return [newKey, entry[1]];
+      // return;
+      const clearObjectKeys = (obj) => {
+        const convertedMetaArr = Object.entries(obj).map((entry, i) => {
+          const newKey = entry[0]
+            ? entry[0].replace(/[^\w\s]/gi, " ")
+            : `key${i}`;
+          return [newKey, entry[1]];
+        });
+        return Object.fromEntries(convertedMetaArr);
+      };
+
+      if (!postId) {
+        throw new Error("Empty post id");
+      }
+
+      if (
+        modelData?.savedImages?.hasOwnProperty(`${curVersionId}`) &&
+        modelData?.savedImages[`${curVersionId}`].some(
+          (post) => post.postId === postId
+        )
+      ) {
+        throw new Error("Exists");
+      }
+
+      const imgExampleResponse = await fetch(
+        `https://civitai.com/api/v1/images?postId=${postId}${
+          !filterDisabledInput ? `&modelId=${modelData?.id}` : ""
+        }`
+      );
+      const data = await imgExampleResponse.json();
+      console.log(data);
+
+      if (!data.items.length) {
+        throw new Error("0 items");
+      }
+      data.items.forEach((image) => {
+        if (image.meta) {
+          image.meta.comfy = "";
+          image.meta = clearObjectKeys(image.meta);
+          if (image.meta.hashes)
+            image.meta.hashes = clearObjectKeys(image.meta.hashes);
+        }
       });
-      return Object.fromEntries(convertedMetaArr);
-    };
 
-    const getImagesData = async () => {
-      try {
-        setImageIsSaving(true);
-        setErrorMessage("");
-        seteSuccessMessage("");
-        if (!postId) {
-          throw new Error("Empty post id");
-        }
+      let dataFiltered = data;
 
-        if (
-          modelData?.savedImages?.hasOwnProperty(`${curVersionId}`) &&
-          modelData?.savedImages[`${curVersionId}`].some(
-            (post) => post.postId === postId
-          )
-        ) {
-          throw new Error("Exists");
-        }
-
-        const imgExampleResponse = await fetch(
-          `https://civitai.com/api/v1/images?postId=${postId}${
-            !filterDisabledInput ? `&modelId=${modelData?.id}` : ""
-          }`
-        );
-        const data = await imgExampleResponse.json();
-        console.log(data);
-        if (!data.items.length) {
-          throw new Error("0 items");
-        }
-        data.items.forEach((image) => {
-          if (image.meta) {
-            image.meta.comfy = "";
-            image.meta = clearObjectKeys(image.meta);
-            if (image.meta.hashes)
-              image.meta.hashes = clearObjectKeys(image.meta.hashes);
-          }
+      if (imagesId.length) {
+        const images = data.items.filter((image) => {
+          return imagesId.some((id) => +id === image.id);
         });
 
-        let dataFiltered = data;
-
-        if (imagesId.length) {
-          const images = data.items.filter((image) => {
-            return imagesId.some((id) => +id === image.id);
-          });
-
-          dataFiltered = { items: images };
-        }
-
-        const examplesDataWithRes = await makeBatchRequest(
-          dataFiltered.items,
-          getImagesInfo
-        );
-
-        examplesDataWithRes.curVersionId = curVersionId;
-
-        console.log(examplesDataWithRes);
-
-        const modelRef = doc(
-          firestore,
-          "users",
-          uid,
-          "models",
-          modelData.id + ""
-        );
-        const modelImagesRef = doc(
-          firestore,
-          "users",
-          uid,
-          "models",
-          modelData.id + "",
-          "images",
-          postId + ""
-        );
-
-        const newImgData = {
-          postId: +postId,
-          amount: dataFiltered.items.length,
-        };
-
-        await setDoc(
-          modelImagesRef,
-          {
-            items: examplesDataWithRes,
-            versionId: curVersionId,
-            createdAt: examplesDataWithRes[0].createdAt,
-            savedAt: new Date().toISOString(),
-            nsfw: examplesDataWithRes[0].nsfw,
-            nsfwLevel: examplesDataWithRes[0]?.nsfwLevel || "",
-          },
-          { merge: true }
-        );
-
-        await setDoc(
-          modelRef,
-          {
-            savedImages: {
-              [`${curVersionId}`]: arrayUnion(newImgData),
-            },
-          },
-          { merge: true }
-        );
-
-        setImageIsSaving(false);
-        seteSuccessMessage("Saved");
-      } catch (err) {
-        setImageIsSaving(false);
-        setErrorMessage(err.message);
-        console.log(err.message);
+        dataFiltered = { items: images };
       }
-    };
 
-    getImagesData();
+      const examplesDataWithRes = await makeBatchRequest(
+        dataFiltered.items,
+        getImagesInfo
+      );
+
+      examplesDataWithRes.curVersionId = curVersionId;
+
+      console.log(examplesDataWithRes);
+
+      const modelRef = doc(
+        firestore,
+        "users",
+        uid,
+        "models",
+        modelData.id + ""
+      );
+      const modelImagesRef = doc(
+        firestore,
+        "users",
+        uid,
+        "models",
+        modelData.id + "",
+        "images",
+        postId + ""
+      );
+
+      const newImgData = {
+        postId: +postId,
+        amount: dataFiltered.items.length,
+      };
+
+      await setDoc(
+        modelImagesRef,
+        {
+          items: examplesDataWithRes,
+          versionId: curVersionId,
+          createdAt: examplesDataWithRes[0].createdAt,
+          savedAt: new Date().toISOString(),
+          nsfw: examplesDataWithRes[0].nsfw,
+          nsfwLevel: examplesDataWithRes[0]?.nsfwLevel || "",
+        },
+        { merge: true }
+      );
+
+      await setDoc(
+        modelRef,
+        {
+          savedImages: {
+            [`${curVersionId}`]: arrayUnion(newImgData),
+          },
+        },
+        { merge: true }
+      );
+
+      setImageIsSaving(false);
+      seteSuccessMessage("Saved");
+    } catch (err) {
+      setImageIsSaving(false);
+      setErrorMessage(err.message);
+      console.log(err.message);
+    }
   };
 
   const addExampleInputHandler = () => {
@@ -200,14 +193,8 @@ const SaveImageForm = ({ modelData }) => {
     setImagesIdInputs((prevState) => {
       const newState = [...prevState];
       const curIndex = newState.findIndex((imageId) => {
-        console.log(imageId);
-        console.log(e.target.id);
         return imageId.id === e.target.id;
       });
-      // console.log(newState);
-      console.log(curIndex);
-      // console.log(e.target.id);
-      // console.log(e.target.value);
 
       newState[curIndex].value = e.target.value;
       console.log(newState);
@@ -230,15 +217,6 @@ const SaveImageForm = ({ modelData }) => {
     );
   });
 
-  // let versionSelectOptionHtml = modelData?.data?.modelVersions?.map(
-  //   (version, i) => {
-  //     return (
-  //       <option value={version.id} key={i}>
-  //         {version.name}
-  //       </option>
-  //     );
-  //   }
-  // );
   let versionSelectOption = modelData?.data?.modelVersions?.map((version) => {
     return {
       name: version.name,
@@ -252,6 +230,7 @@ const SaveImageForm = ({ modelData }) => {
       <Select
         name="curVersionId"
         id="version-select"
+        selected={versionIdInput}
         onChange={(e) => {
           setVersionIdInput(e.target.value);
         }}

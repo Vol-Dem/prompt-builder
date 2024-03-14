@@ -108,7 +108,7 @@ const PreviewCard = ({ previewData }) => {
         } `}
       >
         <h4 className={classes.title} onClick={openLoraHandler}>
-          {previewData.title}
+          {previewData.name || previewData.title}
         </h4>
         <div className={classes.info}>
           <span>M: {previewData.baseModel}</span>

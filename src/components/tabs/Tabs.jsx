@@ -14,14 +14,14 @@ const Tabs = () => {
     console.log("RESET");
     // dispatch(tabActions.reset());
     dispatch(tabActions.setCurrentTab(e.target.id));
-    dispatch(tabActions.setCurrentSubcategory(""));
+    // dispatch(tabActions.setCurrentSubcategory(""));
   };
 
   return (
     <>
       <div className={classes["tag-menu"]}>
         <div className={classes["tag-menu__labels"]}>
-          <div
+          {/* <div
             id="general"
             onClick={categorySwitchHandler}
             className={`${classes[`category__link`]} ${
@@ -29,30 +29,30 @@ const Tabs = () => {
             }`}
           >
             General tags
-          </div>
+          </div> */}
           <div
-            id="models"
+            id="lora"
             onClick={categorySwitchHandler}
             className={`${classes[`category__link`]} ${
-              activeCategory === "models" ? classes.active : ""
+              activeCategory === "lora" ? classes.active : ""
             }`}
           >
             Lora
           </div>
           <div
-            id="embeddings"
+            id="embedding"
             onClick={categorySwitchHandler}
             className={`${classes[`category__link`]} ${
-              activeCategory === "embeddings" ? classes.active : ""
+              activeCategory === "embedding" ? classes.active : ""
             }`}
           >
             Embeddings
           </div>
           <div
-            id="checkpoints"
+            id="checkpoint"
             onClick={categorySwitchHandler}
             className={`${classes[`category__link`]} ${
-              activeCategory === "checkpoints" ? classes.active : ""
+              activeCategory === "checkpoint" ? classes.active : ""
             }`}
           >
             Checkpoint

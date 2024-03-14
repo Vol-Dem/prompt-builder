@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { doc, getFirestore, setDoc, updateDoc } from "firebase/firestore";
 import firebaseApp from "../firebase-config";
+import { getModelData } from "../utils/fetchUtils";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -70,15 +71,88 @@ const modelSlice = createSlice({
 //   };
 // };
 
-export const setPreviewImg = (url, isNsfw = false, type = "model") => {
+export const updateModel = (modelId) => {
+  return async (dispatch, getState) => {
+    console.log("UPD");
+    const uid = getState().auth.user.uid;
+    const modelData = getState().model.model;
+    const data = await getModelData(modelId);
+
+    const newVerison = data.modelVersions.filter(
+      (version) =>
+        !modelData.data.modelVersions.some(
+          (oldVersions) => version.id === oldVersions.id
+        )
+    );
+    console.log(newVerison);
+    if (!newVerison.length) {
+      console.log("NO UPDATEDS");
+      return;
+    }
+
+    data.modelVersions = [...newVerison, ...modelData.data.modelVersions];
+    console.log(data);
+
+    const newVersionsCustomData = {};
+
+    newVerison.forEach((version, i) => {
+      newVersionsCustomData[version.id] = {
+        versionId: version.id,
+        versionName: version.name,
+        versionImageUrl:
+          version.images?.filter((img, i) => img.type === "image")[0]?.url ||
+          "",
+        downloadStatus: false,
+      };
+    });
+    const modelVersionsCustomData = {
+      ...newVersionsCustomData,
+      ...modelData?.modelVersionsCustomData,
+    };
+    console.log(modelVersionsCustomData);
+
+    const modelsRef = doc(
+      firestore,
+      "users",
+      uid,
+      "models",
+      modelData?.id + ""
+    );
+    const modelsPrevRef = doc(
+      firestore,
+      "users",
+      uid,
+      "preview",
+      modelData?.id + ""
+    );
+
+    await updateDoc(
+      modelsRef,
+      {
+        data: data,
+        modelVersionsCustomData: modelVersionsCustomData,
+      },
+      { merge: true }
+    );
+    await updateDoc(
+      modelsPrevRef,
+      {
+        modelVersionsCustomData: modelVersionsCustomData,
+      },
+      { merge: true }
+    );
+  };
+};
+
+export const setPreviewImg = (url, isNsfw = false) => {
   return async (__, getState) => {
     const uid = getState().auth.user.uid;
     const id = getState().model.model.id;
-    const modelType =
-      type === "Checkpoint" ? "checkpoints preview" : "models preview";
+    // const modelType =
+    //   type === "Checkpoint" ? "checkpoints preview" : "models preview";
     const urlField = isNsfw ? "nsfwPreviewImgUrl" : "customPreviewImgUrl";
 
-    const modelsPrevRef = doc(firestore, "users", uid, modelType, id + "");
+    const modelsPrevRef = doc(firestore, "users", uid, "preview", id + "");
     await setDoc(
       modelsPrevRef,
       {

@@ -53,8 +53,6 @@ const UsedModelsPanel = () => {
         )}
         {formIsOpen && (
           <div className={classes.forms}>
-            <h3>Checkpoint</h3>
-            <UpdateModelForm formType="Checkpoint" />
             <h3>Lora</h3>
             <UpdateModelForm />
           </div>

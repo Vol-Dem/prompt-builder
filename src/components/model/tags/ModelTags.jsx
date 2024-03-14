@@ -7,7 +7,10 @@ import { useSelector } from "react-redux";
 const ModelTags = ({ customData, modelPreview }) => {
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
-  const tagSets = customData?.tagSetsData || model?.tagSetsData;
+  const tagSets = customData?.tagSetsData?.length
+    ? customData?.tagSetsData
+    : model?.defaultCustomData?.tagSetsData;
+  console.log(tagSets);
 
   const splitTags = (arr) => {
     const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
@@ -62,7 +65,7 @@ const ModelTags = ({ customData, modelPreview }) => {
           />
         </>
       )}
-      {(!!model?.tagSetsData?.length || !!customData?.tagSetsData?.length) && (
+      {!!tagSets?.length && (
         <>
           <div>Tag sets:</div>
           <ul className={classes["tag-sets__list"]}>{tagSetsHtml}</ul>

@@ -11,7 +11,7 @@ const Textarea = (props) => {
     onChange,
     error,
     cols,
-    rows,
+    rows = 5,
     // autoFocus,
     value,
     placeholder,

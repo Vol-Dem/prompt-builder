@@ -1,4 +1,3 @@
-import React from "react";
 import Subcategories from "../subcategories/Subcategories";
 import classes from "./Categories.module.scss";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,8 +11,8 @@ const Categories = () => {
 
   const categorySwitchHandler = (e) => {
     dispatch(tabActions.setCurrentCategory(e.target.id));
-    dispatch(tabActions.setCurrentSubcategory(""));
-    dispatch(tabActions.setModelsData([]));
+    // dispatch(tabActions.setCurrentSubcategory(""));
+    // dispatch(tabActions.setModelsData([]));
   };
 
   const catHtml = categories?.hasOwnProperty(activeTab)

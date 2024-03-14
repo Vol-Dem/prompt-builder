@@ -29,7 +29,8 @@ const ModelsList = ({ loraItems }) => {
       console.log(activeCategory);
       console.log(activeSubcategory);
       const q = query(
-        collection(firestore, "users", uid, `${activeTab} preview`),
+        collection(firestore, "users", uid, `preview`),
+        where("modelType", "==", activeTab),
         where("main", "==", activeCategory),
         where("sub", "array-contains", activeSubcategory)
         // orderBy("id", "desc")

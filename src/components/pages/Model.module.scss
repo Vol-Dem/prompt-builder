@@ -126,6 +126,10 @@
   // position: absolute;
   // top: 1rem;
   // right: 1rem;
+  &--active {
+    color: #fff;
+    background-color: blueviolet;
+  }
 }
 
 .btn-examples {

@@ -8,27 +8,33 @@ import Buttton from "../../ui/Button";
 import Input from "../../ui/Input";
 import ButttonSecondary from "../../ui/ButtonSecondary";
 import Fieldset from "../../ui/Fieldset";
+import FieldCategory from "../../ui/FieldCategory";
 
 const firestore = getFirestore(firebaseApp);
 
-const VersionForm = ({ versionData, modelId, modelType }) => {
-  const [modelIsSaving, setModelIsSaving] = useState(false);
-  const [mainTagInput, setMainTagInput] = useState(versionData?.mainTag || "");
-  const [trigerInput, setTrigerInput] = useState(
-    versionData?.trainedWords?.join(", ") || []
-  );
-  const [fileNameInput, setFileNameInput] = useState(
-    versionData?.fileName || ""
-  );
-  const [weightInput, setWeightInput] = useState(versionData?.weight || "");
-  const [sizetInput, setSizeInput] = useState(versionData?.size || "");
-  const [helperTagsInput, setHelperTagsInput] = useState(
-    versionData?.helperTags || []
-  );
-  const [negativeTagsInput, setNegativeTagsInput] = useState(
-    versionData?.negativeTags || []
-  );
-
+const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
+  const [isSaving, setIsSaving] = useState(false);
+  const [errorMessage, seteErrorMessage] = useState("");
+  const [successMessage, seteSuccessMessage] = useState("");
+  const [mainTagInput, setMainTagInput] = useState("");
+  const [titleInput, setTitleInput] = useState("");
+  const [descriptionInput, setDescriptionInput] = useState("");
+  const [trigerInput, setTrigerInput] = useState([]);
+  const [fileNameInput, setFileNameInput] = useState("");
+  const [weightInput, setWeightInput] = useState("");
+  const [minWeightInput, setMinWeightInput] = useState("");
+  const [maxWeightInput, setMaxWeightInput] = useState("");
+  const [sizetInput, setSizeInput] = useState("");
+  const [helperTagsInput, setHelperTagsInput] = useState([]);
+  const [negativeTagsInput, setNegativeTagsInput] = useState([]);
+  const [vaeInput, setVaeInput] = useState("");
+  const [denoisingStrengthtInput, setDenoisingStrengthInput] = useState("");
+  const [hiresUpscaleInput, setHiresUpscaleInput] = useState("");
+  const [hiresUpscaleStepsInput, setHiresUpscaleStepsInput] = useState("");
+  const [hiresUpscalerInput, setHiresUpscalerInput] = useState("");
+  const [cfgScaleInput, setCfgScaleInput] = useState("");
+  const [samplerInput, setSamplerInput] = useState("");
+  const [stepsInput, setStepsInput] = useState("");
   const [tagSetsInputs, setTagSetsInputs] = useState([
     [
       {
@@ -46,8 +52,38 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
       },
     ],
   ]);
-
+  console.log(versionData);
+  console.log(defaultData);
+  console.log(modelType);
   const uid = useSelector((state) => state.auth.user.uid);
+
+  useEffect(() => {
+    setMainTagInput(versionData?.mainTag || "");
+    setTitleInput(versionData?.name || defaultData.name || "");
+    setDescriptionInput(
+      versionData?.description || defaultData.description || ""
+    );
+    setTrigerInput(
+      versionData?.trainedWords?.join(", ") ||
+        defaultData.trainedWords?.join(", ") ||
+        []
+    );
+    setFileNameInput(versionData?.fileName || "");
+    setWeightInput(versionData?.weight || "");
+    setMinWeightInput(versionData?.minWeight || "");
+    setMaxWeightInput(versionData?.maxWeight || "");
+    setSizeInput(versionData?.size || "");
+    setHelperTagsInput(versionData?.helperTags || []);
+    setNegativeTagsInput(versionData?.negativeTags || []);
+    setVaeInput(versionData?.vae || "");
+    setDenoisingStrengthInput(versionData?.denoisingStrength || "");
+    setHiresUpscaleInput(versionData?.hiresUpscaleBy || "");
+    setHiresUpscalerInput(versionData?.hiresUpscaler || "");
+    setCfgScaleInput(versionData?.cfgScale || "");
+    setSamplerInput(versionData?.sampler || "");
+    setStepsInput(versionData?.steps || "");
+    setHiresUpscaleStepsInput(versionData?.hiresUpscaleSteps || "");
+  }, [versionData, defaultData]);
 
   useEffect(() => {
     if (!versionData) return;
@@ -73,32 +109,46 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
     setTagSetsInputs(tagSets);
   }, [versionData]);
 
-  const saveVersionInfoHandler = (e) => {
+  const saveVersionHandler = async (e) => {
     e.preventDefault();
-
-    const formdata = new FormData(e.target);
-
-    const mainTag = formdata.get("main-tag").trim();
-    const weight = formdata.get("weight").trim();
-    const size = formdata.get("size").trim();
-    const fileName = formdata.get("file-name").trim();
-    const tagSetNames = formdata.getAll("set-name");
-    const tagSetsValues = formdata.getAll("set-value");
+    setIsSaving(true);
+    seteErrorMessage("");
+    seteSuccessMessage("");
 
     const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
 
+    const formdata = new FormData(e.target);
+    const mainTag = formdata.get("main-tag").trim();
+    const description = descriptionInput.trim();
+    const weight = +formdata.get("weight").trim();
+    const minWeight = +minWeightInput;
+    const maxWeight = +maxWeightInput;
+    const size = formdata.get("size").trim();
+    const fileName = formdata.get("file-name").trim();
+    const tagSetsValues = formdata.getAll("set-value");
+    const sampler = formdata.get("sampler")?.trim().toLowerCase() || "";
+    const cfgScale = formdata.get("cfgScale")?.trim().toLowerCase() || "";
+    const hiresUpscaler =
+      formdata.get("hiresUpscaler")?.trim().toLowerCase() || "";
+    const hiresUpscaleBy =
+      formdata.get("hiresUpscaleBy")?.trim().toLowerCase() || "";
+    const hiresUpscaleSteps =
+      formdata.get("hiresUpscaleSteps")?.trim().toLowerCase() || "";
+    const denoisingStrength =
+      formdata.get("denoisingStrength")?.trim().toLowerCase() || "";
+    const vae = formdata.get("vae")?.trim().toLowerCase() || "";
+    const steps = formdata.get("steps")?.trim() || "";
     const trainedWords = formdata
       .get("triger")
       .trim()
       .split(splitRegEx)
       .filter(Boolean)
       .map((tag) => tag.trim());
-
+    const tagSetNames = formdata.getAll("set-name");
     const tagSetsData = tagSetNames.flatMap((setName, i) => {
       if (!setName && !tagSetsValues[i]) return [];
       return [{ name: setName, value: tagSetsValues[i] }];
     });
-
     const helperTags = formdata
       .get("helper-tags")
       .trim()
@@ -112,69 +162,68 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
       .filter(Boolean)
       .map((tag) => tag.trim());
 
-    const getModelData = async () => {
-      try {
-        setModelIsSaving(true);
-        const updatedVersionData = {
-          ...versionData,
-          mainTag,
-          trainedWords,
-          fileName,
-          tagSetsData,
-          weight,
-          size,
-          helperTags,
-          negativeTags,
-        };
+    try {
+      const updatedVersionData = {
+        ...versionData,
+        mainTag,
+        name: titleInput.trim(),
+        description,
+        trainedWords,
+        fileName,
+        tagSetsData,
+        weight,
+        minWeight,
+        maxWeight,
+        size,
+        helperTags,
+        negativeTags,
+        ...(modelType === "checkpoint" && {
+          steps,
+          sampler,
+          cfgScale,
+          hiresUpscaler,
+          hiresUpscaleBy,
+          hiresUpscaleSteps,
+          denoisingStrength,
+          vae,
+        }),
+      };
 
-        console.log(updatedVersionData);
+      console.log(updatedVersionData);
 
-        const modelsRef = doc(firestore, "users", uid, "models", modelId + "");
-        let modelsPrevRef;
+      const modelsRef = doc(firestore, "users", uid, "models", modelId + "");
+      const modelsPrevRef = doc(
+        firestore,
+        "users",
+        uid,
+        "preview",
+        modelId + ""
+      );
 
-        if (modelType === "Checkpoint") {
-          modelsPrevRef = doc(
-            firestore,
-            "users",
-            uid,
-            "checkpoints preview",
-            modelId + ""
-          );
-        } else {
-          modelsPrevRef = doc(
-            firestore,
-            "users",
-            uid,
-            "models preview",
-            modelId + ""
-          );
-        }
-
-        console.log(updatedVersionData);
-        const versionPath = `modelVersionsCustomData.${versionData.versionId}`;
-        console.log(versionPath);
-        await updateDoc(
-          modelsRef,
-          {
-            [versionPath]: updatedVersionData,
-          },
-          { merge: true }
-        );
-        await updateDoc(
-          modelsPrevRef,
-          {
-            [versionPath]: updatedVersionData,
-          },
-          { merge: true }
-        );
-        setModelIsSaving(false);
-      } catch (err) {
-        console.log(err);
-        setModelIsSaving(false);
-      }
-    };
-
-    getModelData();
+      console.log(updatedVersionData);
+      const versionPath = `modelVersionsCustomData.${versionData.versionId}`;
+      console.log(versionPath);
+      await updateDoc(
+        modelsRef,
+        {
+          [versionPath]: updatedVersionData,
+        },
+        { merge: true }
+      );
+      await updateDoc(
+        modelsPrevRef,
+        {
+          [versionPath]: updatedVersionData,
+        },
+        { merge: true }
+      );
+      seteSuccessMessage("Saved");
+      setIsSaving(false);
+    } catch (err) {
+      console.log(err.message);
+      seteErrorMessage(err.message);
+      setIsSaving(false);
+    }
   };
 
   const addtagSetHandler = () => {
@@ -246,89 +295,236 @@ const VersionForm = ({ versionData, modelId, modelType }) => {
   });
 
   return (
-    <form onSubmit={saveVersionInfoHandler} className={classes["form"]}>
+    <form onSubmit={saveVersionHandler} className={classes["form"]}>
+      <div className={classes.subtitle}>
+        Version ID: {versionData.id || defaultData.id}
+      </div>
       <Input
-        name="main-tag"
+        label="Version name"
+        name="name"
         type="text"
-        placeholder="main-tag"
-        value={mainTagInput}
+        placeholder="name"
+        value={titleInput}
         onChange={(e) => {
-          setMainTagInput(e.target.value);
+          setTitleInput(e.target.value);
         }}
       />
+      <Textarea
+        label="Description"
+        name="description"
+        rows="5"
+        placeholder="description"
+        value={descriptionInput}
+        onChange={(e) => {
+          setDescriptionInput(e.target.value);
+        }}
+      ></Textarea>
+      <div className={classes.fields}>
+        <FieldCategory title="Triger words">
+          <Input
+            label="Activation tag"
+            name="main-tag"
+            type="text"
+            placeholder="<activation tag:1>"
+            value={mainTagInput}
+            onChange={(e) => {
+              setMainTagInput(e.target.value);
+            }}
+          />
 
-      <Input
-        name="file-name"
-        type="text"
-        placeholder="file name"
-        value={fileNameInput}
-        onChange={(e) => {
-          setFileNameInput(e.target.value);
-        }}
-      />
-      <Input
-        name="triger"
-        type="text"
-        placeholder="triger word"
-        value={trigerInput}
-        onChange={(e) => {
-          setTrigerInput(e.target.value);
-        }}
-      />
-      <Input
-        name="weight"
-        type="text"
-        placeholder="weight"
-        value={weightInput}
-        onChange={(e) => {
-          setWeightInput(e.target.value);
-        }}
-      />
-      <Input
-        name="size"
-        type="text"
-        placeholder="size"
-        value={sizetInput}
-        onChange={(e) => {
-          setSizeInput(e.target.value);
-        }}
-      />
-      <Fieldset legend="Tag sets">
-        {tagSetsHtml}
-        <ButttonSecondary
-          type="button"
-          onClick={addtagSetHandler}
-          disabled={modelIsSaving}
-          className={classes["btn-secondary"]}
-        >
-          + add new set
-        </ButttonSecondary>
-      </Fieldset>
-      <Textarea
-        name="helper-tags"
-        id=""
-        cols="30"
-        rows="10"
-        placeholder="helper tags"
-        value={helperTagsInput}
-        onChange={(e) => {
-          setHelperTagsInput(e.target.value);
-        }}
-      ></Textarea>
-      <Textarea
-        name="negative-tags"
-        id=""
-        cols="30"
-        rows="10"
-        placeholder="negative tags"
-        value={negativeTagsInput}
-        onChange={(e) => {
-          setNegativeTagsInput(e.target.value);
-        }}
-      ></Textarea>
-      <Buttton type="submit" disabled={modelIsSaving}>
+          <Textarea
+            label="Triger word"
+            name="triger"
+            type="text"
+            placeholder="Triger word"
+            value={trigerInput}
+            onChange={(e) => {
+              setTrigerInput(e.target.value);
+            }}
+          />
+          <Textarea
+            label="Helper words"
+            name="helper-tags"
+            id=""
+            rows="5"
+            placeholder="Helper words"
+            value={helperTagsInput}
+            onChange={(e) => {
+              setHelperTagsInput(e.target.value);
+            }}
+          ></Textarea>
+          <Fieldset legend="Tag sets">
+            {tagSetsHtml}
+            <ButttonSecondary
+              type="button"
+              onClick={addtagSetHandler}
+              disabled={isSaving}
+              className={classes["btn-secondary"]}
+            >
+              + add new set
+            </ButttonSecondary>
+          </Fieldset>
+          <Textarea
+            label="Negative words"
+            name="negative-tags"
+            id=""
+            rows="5"
+            placeholder="Negative words"
+            value={negativeTagsInput}
+            onChange={(e) => {
+              setNegativeTagsInput(e.target.value);
+            }}
+          ></Textarea>
+        </FieldCategory>
+        <FieldCategory title="Info">
+          <Input
+            label="File name"
+            name="file-name"
+            type="text"
+            placeholder="File name"
+            value={fileNameInput}
+            onChange={(e) => {
+              setFileNameInput(e.target.value);
+            }}
+          />
+          <div>
+            <span className={classes["weight__label"]}>Strength (weight)</span>
+            <div className={classes.weight}>
+              <Input
+                name="minWeight"
+                type="number"
+                input={{ step: "0.1" }}
+                placeholder="Min"
+                value={minWeightInput}
+                onChange={(e) => {
+                  setMinWeightInput(e.target.value);
+                }}
+              />
+              –
+              <Input
+                name="maxWeight"
+                type="number"
+                input={{ step: "0.1" }}
+                placeholder="Max"
+                value={maxWeightInput}
+                onChange={(e) => {
+                  setMaxWeightInput(e.target.value);
+                }}
+              />
+              <Input
+                name="weight"
+                type="number"
+                input={{ step: "0.1" }}
+                placeholder="Recomended"
+                value={weightInput}
+                onChange={(e) => {
+                  setWeightInput(e.target.value);
+                }}
+              />
+            </div>
+          </div>
+          <Input
+            label="Image resolution"
+            name="size"
+            type="text"
+            placeholder="Image resolution"
+            value={sizetInput}
+            onChange={(e) => {
+              setSizeInput(e.target.value);
+            }}
+          />
+          {modelType === "checkpoint" && (
+            <>
+              <Input
+                label="Sampling method"
+                name="sampler"
+                type="text"
+                placeholder="Sampling method"
+                value={samplerInput}
+                onChange={(e) => {
+                  setSamplerInput(e.target.value);
+                }}
+              />
+              <Input
+                label="Sampling steps"
+                name="steps"
+                type="text"
+                placeholder="Sampling steps"
+                value={stepsInput}
+                onChange={(e) => {
+                  setStepsInput(e.target.value);
+                }}
+              />
+
+              <Input
+                label="CFG Scale"
+                name="cfgScale"
+                type="text"
+                placeholder="CFG Scale"
+                value={cfgScaleInput}
+                onChange={(e) => {
+                  setCfgScaleInput(e.target.value);
+                }}
+              />
+              <Input
+                label="Upscaler"
+                name="hiresUpscaler"
+                type="text"
+                placeholder="Upscaler"
+                value={hiresUpscalerInput}
+                onChange={(e) => {
+                  setHiresUpscalerInput(e.target.value);
+                }}
+              />
+              <Input
+                label="Upscale by"
+                name="hiresUpscaleBy"
+                type="text"
+                placeholder="Upscale by"
+                value={hiresUpscaleInput}
+                onChange={(e) => {
+                  setHiresUpscaleInput(e.target.value);
+                }}
+              />
+              <Input
+                label="Hires steps"
+                name="hiresUpscaleSteps"
+                type="text"
+                placeholder="Hires steps"
+                value={hiresUpscaleStepsInput}
+                onChange={(e) => {
+                  setHiresUpscaleStepsInput(e.target.value);
+                }}
+              />
+              <Input
+                label="Denoising strength"
+                name="denoisingStrength"
+                type="text"
+                placeholder="Denoising strength"
+                value={denoisingStrengthtInput}
+                onChange={(e) => {
+                  setDenoisingStrengthInput(e.target.value);
+                }}
+              />
+              <Input
+                label="VAE"
+                name="vae"
+                type="text"
+                placeholder="VAE"
+                value={vaeInput}
+                onChange={(e) => {
+                  setVaeInput(e.target.value);
+                }}
+              />
+            </>
+          )}
+        </FieldCategory>
+      </div>
+      <Buttton type="submit" disabled={isSaving}>
         Save
       </Buttton>
+      {errorMessage && <div>{errorMessage}</div>}
+      {successMessage && <div>{successMessage}</div>}
     </form>
   );
 };

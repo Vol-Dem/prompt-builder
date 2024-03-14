@@ -25,11 +25,11 @@ const CarouselImage = ({ id, src, alt, onClick, dataset }) => {
   };
 
   const setPreviwImgHandler = (e) => {
-    dispatch(setPreviewImg(src, false, model.data.type));
+    dispatch(setPreviewImg(src, false));
   };
   const setNsfwPreviwImgHandler = (e) => {
     console.log(model.data.type);
-    dispatch(setPreviewImg(src, true, model.data.type));
+    dispatch(setPreviewImg(src, true));
   };
 
   return (

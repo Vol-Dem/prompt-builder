@@ -39,6 +39,7 @@ const AuthForm = () => {
     setEmail(e.target.value);
     validateEmail(e.target.value);
   };
+
   const validatePasswordOnChange = (e) => {
     setPassword(e.target.value);
     validatePassword(e.target.value);

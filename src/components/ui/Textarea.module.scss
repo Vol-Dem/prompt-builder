@@ -6,13 +6,16 @@
   width: 100%;
   padding-left: 1rem;
   resize: vertical;
+  //   overflow: hidden;
+  //   overflow-y: scroll;
+  //   scrollbar-width: thin;
   // background-color: rgb(67, 51, 75);
   // color: #fff;
 }
 .label {
   display: inline-block;
-  font-size: 1.8rem;
-  margin: 0 1.2rem 0.8rem;
+  font-size: 1.6rem;
+  margin: 0 0.6rem 0.4rem;
 }
 
 .error {

@@ -3,15 +3,17 @@ import classes from "./Select.module.scss";
 import { useEffect, useRef, useState } from "react";
 import Input from "./Input";
 
-const Select = ({ options, onChange, className }) => {
+const Select = ({ id, options, onChange, className, label, selected }) => {
   const [selectIsOpen, setSelectIsOpen] = useState(false);
-  const [selectedField, setSelectedField] = useState(options[0].name);
+  const [selectedFieldName, setSelectedFieldName] = useState(selected);
+  const [selectedFieldValue, setSelectedFieldValue] = useState(selected);
   const [optionsFieldHeight, setOptionsFieldHeight] = useState(15);
   const visibleOptionsAmount = 3;
   const labeldRef = useRef();
   const inputRef = useRef();
 
   useEffect(() => {
+    console.log("OPT", options);
     const labelStyle = window.getComputedStyle(labeldRef.current);
     const merginTop = parseFloat(labelStyle.marginTop);
     const merginBottom = parseFloat(labelStyle.marginBottom);
@@ -25,10 +27,17 @@ const Select = ({ options, onChange, className }) => {
     console.log(selectHeight);
     // console.log(labelStyle);
     // console.log(labeldRef.current.clientHeight);
-  }, [visibleOptionsAmount, options.length, selectIsOpen]);
+    if (selected) {
+      const selectedData = options.find(
+        (option) => option.value + "" === selected + ""
+      );
+      setSelectedFieldName(selectedData.name);
+      setSelectedFieldValue(selectedData.value);
+    }
+  }, [visibleOptionsAmount, options.length, selectIsOpen, options, selected]);
 
-  const onBoxSizeChange = (e) => {
-    setSelectedField(e.target.dataset.name);
+  const onSelectValueChange = (e) => {
+    setSelectedFieldName(e.target.dataset.name);
     onChange(e);
     setSelectIsOpen(false);
   };
@@ -43,15 +52,17 @@ const Select = ({ options, onChange, className }) => {
         <input
           className={classes["select__radio"]}
           type="radio"
-          id={`select-${i}`}
+          id={`select-${item.value}-${i}`}
           name="option"
           value={item.value}
           data-name={item.name}
+          onChange={onSelectValueChange}
+          checked={item.value === selectedFieldValue}
         />
         <label
           ref={labeldRef}
           className={classes["select__label"]}
-          htmlFor={`select-${i}`}
+          htmlFor={`select-${item.value}-${i}`}
         >
           <div className={classes["select__title"]}>
             <span>{item.name}</span>
@@ -63,18 +74,24 @@ const Select = ({ options, onChange, className }) => {
 
   return (
     <div className={`${classes["select"]} ${className}`} onClick={onShowSelect}>
-      <span
-        className={`${classes["select__arrow"]} ${
-          selectIsOpen ? classes["select__arrow--open"] : ""
-        }`}
-      ></span>
-      <Input
-        className={classes["select__input"]}
-        type="text"
-        placeholder="Select size"
-        input={{ readOnly: true }}
-        value={selectedField}
-      />
+      <label htmlFor={id} className={classes.label}>
+        {label}
+      </label>
+      <div className={classes["select__input"]}>
+        <span
+          className={`${classes["select__arrow"]} ${
+            selectIsOpen ? classes["select__arrow--open"] : ""
+          }`}
+        ></span>
+        <Input
+          id={id}
+          className={classes["select__input-field"]}
+          type="text"
+          placeholder="Select size"
+          input={{ readOnly: true }}
+          value={selectedFieldName}
+        />
+      </div>
       <fieldset
         style={
           optionsFieldHeight && selectIsOpen
@@ -84,7 +101,6 @@ const Select = ({ options, onChange, className }) => {
         className={`${classes["select__field"]} ${
           !selectIsOpen ? classes["select__field--hide"] : ""
         }`}
-        onChange={onBoxSizeChange}
       >
         <div
           className={classes["select__field-container"]}
