@@ -27,7 +27,7 @@ const Image = forwardRef(({ id, src, type, alt, onClick }, ref) => {
   return (
     <>
       <div className={classes.img} onClick={onClick} ref={imageRef}>
-        <span className={classes.type}>{type}</span>
+        {type && <span className={classes.type}>{type}</span>}
 
         <img
           ref={ref}

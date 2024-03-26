@@ -3,7 +3,8 @@ import classes from "./Prompt.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { promptActions } from "../../store/prompt";
 import TagsTextarea from "../ui/TagsTextarea";
-import Buttton from "../ui/Button";
+import Arrow from "../ui/Arrow";
+// import Buttton from "../ui/Button";
 
 const Prompt = () => {
   const [promptIsOpen, setPromptIsOpen] = useState(true);
@@ -43,28 +44,28 @@ const Prompt = () => {
     >
       <div className={`${classes.content}`}>
         <>
-          <div>
+          <div className={classes.settings}>
             <label htmlFor="prompt" className={classes.label}>
-              Prompt
+              View:
             </label>
-            <div className={classes["btn-type-container"]}>
+            <div className={classes["mode-switch"]}>
               <button
                 data-type="text"
                 onClick={textModeHandler}
-                className={`${classes["btn-prompt-type"]} ${
-                  promptTextMode ? classes["btn-prompt-type--active"] : ""
+                className={`${classes["btn-mode"]}  ${
+                  promptTextMode ? classes["btn-mode--active"] : ""
                 }`}
               >
-                text
+                Text
               </button>
               <button
                 data-type="tag"
                 onClick={textModeHandler}
-                className={`${classes["btn-prompt-type"]} ${
-                  !promptTextMode ? classes["btn-prompt-type--active"] : ""
+                className={`${classes["btn-mode"]}  ${
+                  !promptTextMode ? classes["btn-mode--active"] : ""
                 }`}
               >
-                tags
+                Tags
               </button>
             </div>
           </div>
@@ -73,7 +74,8 @@ const Prompt = () => {
             {!promptTextMode && (
               <TagsTextarea
                 data={curPrompt}
-                placeholder="Prompt"
+                promptType="positive"
+                placeholder="Prompt (tags mode)"
                 className={classes["tagarea"]}
               />
             )}
@@ -81,7 +83,7 @@ const Prompt = () => {
               <textarea
                 id="prompt"
                 name="prompt"
-                placeholder="Enter your prompt"
+                placeholder="Prompt (text mode)"
                 onChange={promptHandler}
                 value={curPrompt}
                 className={classes.prompt}
@@ -101,7 +103,8 @@ const Prompt = () => {
             {!promptTextMode && (
               <TagsTextarea
                 data={curNegPrompt}
-                placeholder="Negative prompt"
+                promptType="negative"
+                placeholder="Negative prompt (tags mode)"
                 className={`${classes["tagarea"]} ${classes["tagarea--neg"]}`}
               />
             )}
@@ -109,7 +112,7 @@ const Prompt = () => {
               <textarea
                 id="neg-prompt"
                 name="neg-prompt"
-                placeholder="Enter your negative prompt"
+                placeholder="Negative prompt (text mode)"
                 onChange={negPromptHandler}
                 value={curNegPrompt}
                 className={`${classes.prompt} ${classes["prompt--neg"]}`}
@@ -126,8 +129,22 @@ const Prompt = () => {
           </div>
         </>
       </div>
-      <button className={classes["btn__open"]} onClick={openPromptHandler}>
-        \/
+      <button
+        type="button"
+        className={classes["btn-open"]}
+        onClick={openPromptHandler}
+      >
+        {promptIsOpen ? (
+          <>
+            <Arrow direction="up" />
+            Hide prompt
+          </>
+        ) : (
+          <>
+            <Arrow direction="down" />
+            Show prompt
+          </>
+        )}
       </button>
     </div>
   );

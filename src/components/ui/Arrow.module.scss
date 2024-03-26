@@ -1,0 +1,20 @@
+@use "./../../variables/variables.scss" as var;
+
+.arrow {
+  display: inline-block;
+  background-color: #ffffff;
+  height: 1.2rem;
+  width: 1.2rem;
+  &--up {
+    clip-path: var.$clip-path-arrow-up;
+  }
+  &--down {
+    clip-path: var.$clip-path-arrow-down;
+  }
+  &--left {
+    clip-path: var.$clip-path-arrow-left;
+  }
+  &--right {
+    clip-path: var.$clip-path-arrow-right;
+  }
+}

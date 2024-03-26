@@ -16,20 +16,22 @@ const Categories = () => {
   };
 
   const catHtml = categories?.hasOwnProperty(activeTab)
-    ? Object.keys(categories[activeTab]).map((key) => {
-        return (
-          <div
-            id={key}
-            onClick={categorySwitchHandler}
-            key={key}
-            className={`${classes[`category__link`]} ${
-              activeCategory === key ? classes.active : ""
-            }`}
-          >
-            {key}
-          </div>
-        );
-      })
+    ? Object.keys(categories[activeTab])
+        .toSorted()
+        .map((key) => {
+          return (
+            <div
+              id={key}
+              onClick={categorySwitchHandler}
+              key={key}
+              className={`${classes[`category__link`]} ${
+                activeCategory === key ? classes.active : ""
+              }`}
+            >
+              {key}
+            </div>
+          );
+        })
     : [];
 
   return (

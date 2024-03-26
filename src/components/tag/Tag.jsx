@@ -12,43 +12,65 @@ const Tag = forwardRef((props, ref) => {
 
   useEffect(() => {
     let isActive;
-    const escTag = props?.tag?.replace(/[.*+?^${}()<>|[\]\\]/g, "\\$&");
-    const word = new RegExp(
-      new RegExp(`\\b${escTag}\\b`).test(escTag)
-        ? `\\b${escTag}\\b.?`
-        : `${escTag}.?`,
-      "gi"
-    );
+    // const escTag = props?.tag?.replace(/[.*+?^${}()<>|[\]\\]/g, "\\$&");
+    // const word = new RegExp(
+    //   new RegExp(`\\b${escTag}\\b`).test(escTag)
+    //     ? `\\b${escTag}\\b.?`
+    //     : `${escTag}.?`,
+    //   "gi"
+    // );
+    // if (props.promptType === "positive") {
+    //   isActive = curPromt.match(word);
+    // } else {
+    //   isActive = curNegPromt.match(word);
+    // }
+    const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
+    const positiveWordsArr = curPromt
+      ?.split(splitRegEx)
+      ?.flatMap((tag) => tag.trim() || []);
+    const negativeWordsArr = curNegPromt
+      ?.split(splitRegEx)
+      ?.flatMap((tag) => tag.trim() || []);
     if (props.promptType === "positive") {
-      isActive = curPromt.match(word);
+      isActive = positiveWordsArr.find((word) => word === props?.tag);
     } else {
-      isActive = curNegPromt.match(word);
+      isActive = negativeWordsArr.find((word) => word === props?.tag);
     }
     setIsInPrompt(isActive);
   }, [props.promptType, curPromt, curNegPromt, props.tag]);
 
   const addTagHandler = (e) => {
     console.log(props.tag);
-    dispatch(
-      promptActions.addTagToPrompt({
-        type: props.promptType,
-        value: props.tag,
-      })
-    );
-    if (props.modelData) {
-      dispatch(usedModelsActions.addModelToPanel(props.modelData));
+    if (!isInPrompt) {
+      dispatch(
+        promptActions.addTagToPrompt({
+          type: props.promptType,
+          value: props.tag,
+        })
+      );
+      if (props.modelData) {
+        dispatch(usedModelsActions.addModelToPanel(props.modelData));
+      }
+    } else {
+      console.log("DEL");
+      dispatch(
+        promptActions.removeTag({
+          type: props.promptType,
+          value: props.tag,
+        })
+      );
     }
   };
 
   return (
-    <li
+    <div
       ref={ref}
       onClick={addTagHandler}
       data-type={props?.promptType}
       className={`${classes.tag} ${isInPrompt && classes.active}`}
     >
       {props.tag}
-    </li>
+    </div>
   );
 });
 

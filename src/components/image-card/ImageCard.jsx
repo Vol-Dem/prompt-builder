@@ -1,15 +1,15 @@
 import classes from "./ImageCard.module.scss";
 import TagList from "../tag-list/TagList";
-import { useDispatch } from "react-redux";
-import { promptActions } from "../../store/prompt";
+// import { useDispatch } from "react-redux";
+// import { promptActions } from "../../store/prompt";
 
 const ImageCard = ({ imageData, closeImg }) => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
-  const positiveHtml = imageData.meta?.prompt
+  const positiveWordsArr = imageData.meta?.prompt
     ?.split(splitRegEx)
     ?.flatMap((tag) => tag.trim() || []);
-  const negativeHtml = imageData.meta?.negativePrompt
+  const negativeWordsArr = imageData.meta?.negativePrompt
     ?.split(splitRegEx)
     ?.flatMap((tag) => tag.trim() || []);
 
@@ -40,24 +40,39 @@ const ImageCard = ({ imageData, closeImg }) => {
     </div>
   ));
 
-  const copyAllPromptHandler = (e) => {
-    const promt = imageData.meta[e.target.id];
-    navigator.clipboard.writeText(promt);
-  };
+  // const copyAllPromptHandler = (e) => {
+  //   const promt = imageData.meta[e.target.id];
+  //   navigator.clipboard.writeText(promt);
+  // };
 
-  const addAllPromptHandler = (e) => {
-    const promt = imageData.meta[e.target.id];
-    if (e.target.dataset.type === "positive") {
-      dispatch(
-        promptActions.addAllTagToPrompt({ type: "positive", value: promt })
-      );
-    }
-    if (e.target.dataset.type === "negative") {
-      dispatch(
-        promptActions.addAllTagToPrompt({ type: "negative", value: promt })
-      );
-    }
-  };
+  // const addAllPromptHandler = (e) => {
+  //   // const prompt = imageData.meta[e.target.id];
+  //   const prompt =
+  //     e.target.dataset.type === "positive"
+  //       ? positiveWordsArr
+  //       : negativeWordsArr;
+
+  //   dispatch(
+  //     promptActions.addAllTagsToPrompt({
+  //       type: e.target.dataset.type,
+  //       value: prompt,
+  //     })
+  //   );
+  // };
+
+  // const removeAllPromptHandler = (e) => {
+  //   const prompt =
+  //     e.target.dataset.type === "positive"
+  //       ? positiveWordsArr
+  //       : negativeWordsArr;
+
+  //   dispatch(
+  //     promptActions.removeAllTags({
+  //       type: e.target.dataset.type,
+  //       value: prompt,
+  //     })
+  //   );
+  // };
 
   const copyHandler = (e) => {
     navigator.clipboard.writeText(e.target.innerText);
@@ -69,61 +84,25 @@ const ImageCard = ({ imageData, closeImg }) => {
         <div className={classes["example__info"]}>
           <>
             <div className={classes["example__prompt"]}>
-              <div>
-                Positive prompt:
-                <button
-                  id="prompt"
-                  onClick={copyAllPromptHandler}
-                  className={classes["btn-copy"]}
-                >
-                  Copy all
-                </button>
-                <button
-                  id="prompt"
-                  onClick={addAllPromptHandler}
-                  className={classes["btn-copy"]}
-                  data-type="positive"
-                >
-                  Add all
-                </button>
-              </div>
               <TagList
-                tags={positiveHtml}
+                name="Positive prompt"
+                tags={positiveWordsArr}
                 promptType="positive"
                 className={classes["tags__list"]}
               />
-              <div>
-                Negative prompt:
-                <button
-                  id="negativePrompt"
-                  onClick={copyAllPromptHandler}
-                  className={classes["btn-copy"]}
-                >
-                  Copy all
-                </button>
-                <button
-                  id="negativePrompt"
-                  data-type="negative"
-                  onClick={addAllPromptHandler}
-                  className={classes["btn-copy"]}
-                >
-                  Add all
-                </button>
-              </div>
               <TagList
-                tags={negativeHtml}
+                name="Negative prompt"
+                tags={negativeWordsArr}
                 promptType="negative"
                 className={classes["tags__list"]}
               />
             </div>
             <div className={classes["example__config"]}>
-              <button onClick={closeImg}>Close</button>
-              <a
-                target="blank"
-                href={`https://civitai.com/images/${imageData.id}`}
-              >
-                Link
-              </a>
+              {/* <button onClick={closeImg}>Close</button> */}
+              <div className={classes["btn__close"]} onClick={closeImg}>
+                <span className={classes["btn__cross"]}></span>
+              </div>
+
               <div>Post ID: {imageData?.postId}</div>
               <div>Image ID: {imageData?.id}</div>
               <div>CFG scale: {imageData.meta?.cfgScale}</div>
@@ -155,6 +134,15 @@ const ImageCard = ({ imageData, closeImg }) => {
               </div>
               <div>Size: {imageData.meta?.Size}</div>
               <div>Clip Skip: {imageData.meta?.clipSkip}</div>
+              <div>
+                <a
+                  target="blank"
+                  href={`https://civitai.com/images/${imageData.id}`}
+                  className={classes.link}
+                >
+                  Show on civitai.com
+                </a>
+              </div>
               {resourcesHtml}
             </div>
           </>

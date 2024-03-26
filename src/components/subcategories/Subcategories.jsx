@@ -19,8 +19,9 @@ const Subcategories = () => {
     dispatch(tabActions.setCurrentSubcategory(e.target.id));
   };
 
-  const subcategoriesHtml = catigories[currTab][activeCategory]?.map(
-    (category) => {
+  const subcategoriesHtml = catigories[currTab][activeCategory]
+    ?.toSorted()
+    .map((category) => {
       return (
         <div
           id={category}
@@ -33,8 +34,7 @@ const Subcategories = () => {
           {category}
         </div>
       );
-    }
-  );
+    });
 
   return (
     <div className={classes.category}>

@@ -33,13 +33,24 @@ const Carousel = ({
   const [visibleImages, setVisibleImages] = useState([]);
   const [prevVisibleImages, setPrevVisibleImages] = useState([]);
   const [curVisibleAmount, setCurVisibleAmount] = useState(visibleImgAmount);
+  const [carouselWidth, setCarouselWidth] = useState(0);
   const [dimensions, setDimensions] = useState({});
   const carouselRef = useRef();
   const imagesRef = useRef();
   const wrapRef = useRef();
+  const maxCarouselHeight = 390;
   const transitionDuration = 300;
   const caruselIsVisible = useIntersection(carouselRef);
   const uid = useSelector((state) => state.auth.user.uid);
+
+  useEffect(() => {
+    if (!dimensions?.imgWidthWithGap) return;
+    // console.log(dimensions.imgWidthWithGap);
+    const curCarouselWidth =
+      dimensions.imgWidthWithGap * curVisibleAmount - dimensions.gap;
+    // console.log(curCarouselWidth);
+    setCarouselWidth(curCarouselWidth);
+  }, [dimensions.imgWidthWithGap, curVisibleAmount, dimensions.gap]);
 
   useEffect(() => {
     const gap = parseInt(getComputedStyle(imagesRef.current).gap);
@@ -176,18 +187,21 @@ const Carousel = ({
   }, [visibleAmount, images, visibleImages, openImgHandler, caruselIsVisible]);
 
   useEffect(() => {
-    if (!images) return;
-    const imgSize = images?.reduce(
-      (acc, cur) => {
-        return cur.height > acc[0] ? [cur.height, cur.width] : acc;
-      },
-      [0, 0]
-    );
-    const carHight = Math.floor(
-      (dimensions.imgWidth / imgSize[1]) * imgSize[0]
-    );
+    // if (!images) return;
+    // const imgSize = images?.reduce(
+    //   (acc, cur) => {
+    //     return cur.height > acc[0] ? [cur.height, cur.width] : acc;
+    //   },
+    //   [0, 0]
+    // );
+    // const imgHight = Math.floor(
+    //   (dimensions.imgWidth / imgSize[1]) * imgSize[0]
+    // );
 
-    setCarouselHeight(carHight < 300 ? 300 : carHight);
+    // setCarouselHeight(
+    //   imgHight > maxCarouselHeight ? maxCarouselHeight : imgHight
+    // );
+    setCarouselHeight(maxCarouselHeight);
   }, [images, dimensions.imgWidth]);
 
   useEffect(() => {
@@ -382,11 +396,13 @@ const Carousel = ({
         className={`${classes.wrap} ${imgIsOpen ? classes["wrap--open"] : ""}`}
       >
         <div
-          className={`${classes.carousel} ${
-            classes[`carousel__visible--${curVisibleAmount}`]
-          } `}
+          className={`${classes.carousel}`}
           ref={carouselRef}
-          style={carouselHeight ? { height: `${carouselHeight}px` } : {}}
+          style={
+            carouselHeight && carouselWidth
+              ? { height: `${carouselHeight}px`, width: `${carouselWidth}px` }
+              : {}
+          }
         >
           <div
             className={`${classes["carousel__images"]} `}
@@ -407,14 +423,18 @@ const Carousel = ({
                 className={`${classes.btn} ${classes["btn__left"]}`}
                 onClick={slidePrevHandler}
                 title="Prev"
-              ></button>
+              >
+                <span></span>
+              </button>
 
               <button
                 type="button"
                 className={`${classes.btn} ${classes["btn__right"]}`}
                 onClick={slideNextHandler}
                 title="Next"
-              ></button>
+              >
+                <span></span>
+              </button>
             </>
           )}
           {images?.length > curVisibleAmount && (
@@ -437,18 +457,12 @@ const Carousel = ({
           )}
           <span className={classes["amount"]}>{images?.length}</span>
         </div>
-        <div
-          className={`${classes.card} ${
-            imgIsOpen ? classes["card--hidden"] : ""
-          }`}
-        >
-          {imgIsOpen && (
-            <ImageCard
-              imageData={images[currImgNum]}
-              closeImg={closeImgHandler}
-            />
-          )}
-        </div>
+        {imgIsOpen && (
+          <ImageCard
+            imageData={images[currImgNum]}
+            closeImg={closeImgHandler}
+          />
+        )}
       </div>
     </div>
   );

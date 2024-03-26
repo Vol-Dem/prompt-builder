@@ -48,7 +48,7 @@
   }
 
   &__radio:checked ~ &__label {
-    background-color: var.$color-gray-light;
+    background-color: rgb(var.$color-primary, 0.4);
   }
 
   &__item {
@@ -57,26 +57,30 @@
   &__label {
     display: grid;
     cursor: pointer;
+    color: var.$color-text-white;
     align-items: center;
     gap: 0.7rem;
     border-radius: 1rem;
     padding: 0.6rem;
-    margin: 0.6rem 0 0.6rem 0;
+    margin: 0.1rem 0 0.1rem 0;
+    font-size: 1.2rem;
     transition: all 0.3s;
 
     &:hover {
-      background-color: var.$color-violet-light !important;
+      background-color: var.$color-primary !important;
     }
   }
 
   &__field {
     position: absolute;
-    background-color: var.$color-white;
+    // background-color: var.$color-white;
+    background-color: var.$color-input-bg;
+
     width: 94%;
     height: 14rem;
     margin-left: 3%;
     // padding: 0 1rem 1rem;
-    padding-left: 1rem;
+    padding-left: 0.5rem;
     overflow: hidden;
     border: 1px solid var.$color-violet-dark;
     border-radius: 0 0 1rem 1rem;
@@ -95,6 +99,29 @@
       // gap: 0.4rem;
       height: 100%;
       overflow-y: scroll;
+
+      &::-webkit-scrollbar {
+        width: 8px; /* width of the entire scrollbar */
+        border-radius: 1rem;
+        opacity: 0;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: #443d62; /* color of the tracking area */
+        border-radius: 1rem;
+        opacity: 0;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #ababab; /* color of the scroll thumb */
+        border-radius: 20px; /* roundness of the scroll thumb */
+        opacity: 0;
+        //   border: 3px solid #ababab; /* creates padding around scroll thumb */
+        &:hover {
+          background-color: #818181; /* color of the scroll thumb */
+          opacity: 0;
+        }
+      }
     }
   }
 
@@ -103,7 +130,7 @@
     align-items: center;
     gap: 1.4rem;
     font-weight: 600;
-    color: #000;
+    // color: #000;
   }
 
   &__img {

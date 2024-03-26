@@ -325,7 +325,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
             label="Activation tag"
             name="main-tag"
             type="text"
-            placeholder="<activation tag:1>"
+            placeholder="<lora:activation tag:1>"
             value={mainTagInput}
             onChange={(e) => {
               setMainTagInput(e.target.value);

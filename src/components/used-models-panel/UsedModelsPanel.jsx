@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import UsedCard from "../used-card/UsedCard";
 import { usedModelsActions } from "../../store/usedModels";
 import UpdateModelForm from "../forms/update-model-form/UpdateModelForm";
+import Arrow from "../ui/Arrow";
 
 const UsedModelsPanel = () => {
   const [panelIsOpen, setPanelIsOpen] = useState(true);
@@ -38,31 +39,42 @@ const UsedModelsPanel = () => {
         panelIsOpen ? classes["container--open"] : ""
       }`}
     >
-      <button onClick={openPanelHandler} className={classes["btn__open"]}>
-        l
+      <button
+        type="button"
+        title={panelIsOpen ? "Close side panel" : "Open side panel"}
+        onClick={openPanelHandler}
+        className={classes["btn__open"]}
+      >
+        <Arrow direction={panelIsOpen ? "right" : "left"} />
       </button>
       <div
         className={`${classes.panel} ${
           panelIsOpen ? classes["panel--open"] : ""
         }`}
       >
-        {panelIsOpen && (
+        <div className={classes["options"]}>
           <button className={classes["btn-forms"]} onClick={openFormHandler}>
-            Forms
+            {!formIsOpen ? "+ New resourse" : "Close form X"}
           </button>
-        )}
+        </div>
+
         {formIsOpen && (
           <div className={classes.forms}>
-            <h3>Lora</h3>
-            <UpdateModelForm />
+            <UpdateModelForm id="side-form" />
           </div>
         )}
-        {!formIsOpen && (
-          <>
-            <h3>Used models</h3>
-            <ul className={classes["model-cards"]}>{usedModelsHtml}</ul>
-          </>
-        )}
+
+        <>
+          {/* <h3>Used models</h3> */}
+          <ul className={classes["model-cards"]}>
+            {!!usedModelsHtml.length && usedModelsHtml}
+            {!usedModelsHtml.length && (
+              <div className={classes["model-cards__tip"]}>
+                Press + in model card to add it to side panel
+              </div>
+            )}
+          </ul>
+        </>
       </div>
     </aside>
   );

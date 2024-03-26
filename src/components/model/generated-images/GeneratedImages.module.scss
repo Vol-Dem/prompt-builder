@@ -1,3 +1,5 @@
+@use "../../../variables/variables.scss" as var;
+
 .img {
   width: 30rem;
   // height: 100%;
@@ -5,8 +7,14 @@
 
 .images {
   display: flex;
-  gap: 1rem;
+  gap: 2rem;
   flex-wrap: wrap;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
 .versions {
@@ -20,6 +28,7 @@
   transition: all 0.3s;
   border-radius: 0.5rem;
   padding: 0.4rem;
+  font-size: 1.6rem;
   cursor: pointer;
 
   &--active {
@@ -68,5 +77,43 @@
   padding: 0.2rem 0.6rem;
   &--active {
     color: blueviolet;
+  }
+}
+
+.mode-switch {
+  display: flex;
+  // font-size: 1.6rem;
+  border-radius: var.$border-radius;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  // width: 10rem;
+  overflow: hidden;
+}
+.btn-mode {
+  display: flex;
+  justify-content: center;
+  width: 8rem;
+  font-size: 1.8rem;
+  // text-transform: uppercase;
+  background-color: transparent;
+  // background-color: #fff;
+  padding: 0.4rem 0.6rem;
+  border: none;
+  transition: all 0.3s;
+  color: #fff;
+  cursor: pointer;
+  &--active {
+    background-color: blueviolet;
+  }
+}
+
+.select {
+  border-radius: 1rem;
+  padding: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var.$color-text-white;
+  background-color: var.$color-background-tertiary;
+
+  &:hover {
+    // background-color: aqua;
   }
 }

@@ -15,7 +15,7 @@
   list-style: none;
   font-size: 1.8rem;
   border-right: 1px solid #fff;
-  padding: 1rem;
+  // padding: 1rem;
 }
 
 .menu-item {
@@ -24,6 +24,9 @@
 
   &--active {
     color: blueviolet;
+    background-color: #201f2f;
+    padding: 0.3rem 1rem;
+    border-radius: 1rem 0 0 1rem;
   }
 }
 

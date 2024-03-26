@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
+
 const promptSlice = createSlice({
   name: "prompt",
   initialState: { curPrompt: "", curNegPrompt: "" },
@@ -11,109 +13,118 @@ const promptSlice = createSlice({
       state.curNegPrompt = actions.payload;
     },
     addTagToPrompt(state, actions) {
-      if (actions.payload.type === "positive") {
-        const prompt = state.curPrompt.trim();
-        const lastSimbol = prompt.slice(-1);
-        const isInPrompt = prompt.includes(`${actions.payload.value}`);
-        console.log(isInPrompt);
-        if (isInPrompt) {
-          console.log(actions.payload.value);
-          const tag = actions.payload.value.replace(
-            /[.*+?^${}()<>|[\]\\]/g,
-            "\\$&"
-          );
+      const isPositive = actions.payload.type === "positive";
+      const prompt = isPositive
+        ? state.curPrompt.trim()
+        : state.curNegPrompt.trim();
 
-          const replaceWord = new RegExp(
-            new RegExp(`\\b${tag}\\b`).test(tag)
-              ? `\\b${tag}\\b.?`
-              : `${tag}.?`,
-            "gi"
-          );
-          let newPromt = prompt.replace(replaceWord, "");
-          state.curPrompt = newPromt;
-        } else {
-          state.curPrompt =
-            lastSimbol === "," || !prompt.length
-              ? `${prompt} ${actions.payload.value},`
-              : `${prompt}, ${actions.payload.value},`;
-        }
-      }
-      if (actions.payload.type === "negative") {
-        const prompt = state.curNegPrompt.trim();
-        const lastSimbol = prompt.slice(-1);
-        const isInPrompt = prompt.includes(`${actions.payload.value}`);
-        console.log(isInPrompt);
-        if (isInPrompt) {
-          let newPromt = prompt.replace(`${actions.payload.value}, `, "");
-          newPromt = newPromt.replace(`${actions.payload.value},`, "");
-          newPromt = newPromt.replace(`${actions.payload.value}`, "");
-          state.curNegPrompt = newPromt;
-        } else {
-          state.curNegPrompt =
-            lastSimbol === "," || !prompt.length
-              ? `${prompt} ${actions.payload.value},`
-              : `${prompt}, ${actions.payload.value},`;
-        }
-      }
-    },
-    addAllTagToPrompt(state, actions) {
-      if (actions.payload.type === "positive") {
-        const prompt = state.curPrompt.trim();
-        const lastSimbol = prompt.slice(-1);
-        const tagsArr = actions.payload.value
-          .split(",")
-          .flatMap((el) => (el.trim() ? el.trim() : []));
-        const inPrompt = tagsArr.reduce((acc, cur) => {
-          return prompt.includes(`${cur.trim()}`) ? acc + 1 : acc;
-        }, 0);
-        const isAllInPrompt = inPrompt === tagsArr.length;
-        console.log(tagsArr);
-        console.log(inPrompt, isAllInPrompt);
-        if (isAllInPrompt) {
-          let newPromt = prompt;
-          tagsArr.forEach((tagEl) => {
-            newPromt = newPromt.replace(`${tagEl}, `, "");
-            newPromt = newPromt.replace(`${tagEl},`, "");
-            newPromt = newPromt.replace(`${tagEl}`, "");
-          });
-          state.curPrompt = newPromt;
-        } else {
-          let newPromt = prompt;
-          tagsArr.forEach((tagEl) => {
-            if (!prompt.includes(`${tagEl}`)) {
-              newPromt =
-                lastSimbol === "," || !prompt.length
-                  ? `${newPromt} ${tagEl},`
-                  : `${newPromt}, ${tagEl},`;
-            }
-          });
-          state.curPrompt = newPromt;
-        }
-      }
-      if (actions.payload.type === "negative") {
-        const prompt = state.curNegPrompt.trim();
-        const lastSimbol = prompt.slice(-1);
-        const isInPrompt = prompt.includes(`${actions.payload.value}`);
-        console.log(isInPrompt);
-        if (isInPrompt) {
-          let newPromt = prompt.replace(`${actions.payload.value}, `, "");
-          newPromt = newPromt.replace(`${actions.payload.value},`, "");
-          newPromt = newPromt.replace(`${actions.payload.value}`, "");
-          state.curNegPrompt = newPromt;
-        } else {
-          state.curNegPrompt =
-            lastSimbol === "," || !prompt.length
-              ? `${prompt} ${actions.payload.value},`
-              : `${prompt}, ${actions.payload.value},`;
-        }
+      const lastSimbol = prompt.slice(-1);
+
+      if (isPositive) {
+        state.curPrompt =
+          lastSimbol === "," || !prompt.length
+            ? `${prompt} ${actions.payload.value},`
+            : `${prompt}, ${actions.payload.value},`;
+      } else {
+        state.curNegPrompt =
+          lastSimbol === "," || !prompt.length
+            ? `${prompt} ${actions.payload.value},`
+            : `${prompt}, ${actions.payload.value},`;
       }
     },
     removeTag(state, actions) {
-      let newPromt = state.curPrompt;
-      newPromt = newPromt.replace(`${actions.payload}, `, "");
-      newPromt = newPromt.replace(`${actions.payload},`, "");
-      newPromt = newPromt.replace(`${actions.payload}`, "");
-      state.curPrompt = newPromt;
+      const curPrompt =
+        actions.payload.type === "positive"
+          ? state.curPrompt
+          : state.curNegPrompt;
+
+      const promptArr = curPrompt
+        ?.split(splitRegEx)
+        ?.flatMap((tag) => tag.trim() || []);
+
+      let newPromt = promptArr.flatMap((word) => {
+        if (word === actions.payload.value) return [];
+        return word;
+      });
+      if (actions.payload.type === "positive") {
+        state.curPrompt = newPromt.join(", ");
+      } else {
+        state.curNegPrompt = newPromt.join(", ");
+      }
+    },
+    addAllTagsToPrompt(state, actions) {
+      console.log(actions.payload);
+      const isPositive = actions.payload.type === "positive";
+      const prompt = isPositive
+        ? state.curPrompt.trim()
+        : state.curNegPrompt.trim();
+
+      const lastSimbol = prompt.slice(-1);
+
+      const promptArr = prompt
+        ?.split(splitRegEx)
+        ?.flatMap((tag) => tag.trim() || []);
+
+      const newWords = actions.payload.value.filter((newWord) => {
+        const isInPrompt = promptArr.find(
+          (promptWord) => promptWord === newWord
+        );
+        return !isInPrompt;
+      });
+      console.log(newWords);
+      if (isPositive && !!newWords.length) {
+        state.curPrompt =
+          lastSimbol === "," || !prompt.length
+            ? `${prompt} ${newWords.join(", ")},`
+            : `${prompt}, ${newWords.join(", ")},`;
+      } else if (!isPositive && !!newWords.length) {
+        state.curNegPrompt =
+          lastSimbol === "," || !prompt.length
+            ? `${prompt} ${newWords.join(", ")},`
+            : `${prompt}, ${newWords.join(", ")},`;
+      }
+    },
+    removeAllTags(state, actions) {
+      console.log(actions.payload);
+      const curPrompt =
+        actions.payload.type === "positive"
+          ? state.curPrompt
+          : state.curNegPrompt;
+
+      const promptArr = curPrompt
+        ?.split(splitRegEx)
+        ?.flatMap((tag) => tag.trim() || []);
+
+      let newPromt = promptArr.flatMap((word) => {
+        // const isInPrompt = word === actions.payload.value
+        const isInPrompt = actions.payload.value.find(
+          (wordToDel) => wordToDel === word
+        );
+        if (isInPrompt) return [];
+        return word;
+      });
+      if (actions.payload.type === "positive") {
+        state.curPrompt = newPromt.join(", ");
+      } else {
+        state.curNegPrompt = newPromt.join(", ");
+      }
+    },
+    changeActivationTag(state, actions) {
+      const promptArr = state.curPrompt
+        ?.split(splitRegEx)
+        ?.flatMap((tag) => tag.trim() || []);
+
+      const activationTagIndex = promptArr.findIndex((word) =>
+        word.trim().includes(actions.payload.prevTag)
+      );
+      if (activationTagIndex !== -1) {
+        const updatedPromptArr = promptArr.toSpliced(
+          activationTagIndex,
+          1,
+          actions.payload.newTag
+        );
+        state.curPrompt = updatedPromptArr.join(", ");
+      }
     },
   },
 });

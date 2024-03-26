@@ -1,4 +1,6 @@
+@use "./../../../variables/variables.scss" as var;
+
 .footer {
-  height: 10rem;
-  background-color: rgb(50, 48, 58);
+  height: 5rem;
+  background-color: var.$color-background-secondary;
 }

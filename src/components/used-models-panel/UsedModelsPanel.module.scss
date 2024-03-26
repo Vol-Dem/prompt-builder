@@ -1,49 +1,115 @@
+@use "../../variables/variables.scss" as var;
+
 .container {
   display: flex;
-  position: relative;
-  border-radius: 1rem;
+  position: sticky;
+  // position: relative;
+  // border-radius: 1rem;
+  height: 100vh;
+  top: 0;
+  background-color: rgba(darken(var.$color-background-secondary, 5%), 0.7);
+  // background-color: rgb(23 26 32 / 72%);
 }
 
 .panel {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background-color: rgb(48, 40, 56);
+  background-color: var.$color-background-secondary;
   //   border-left: 1px solid #fff;
   width: 0px;
   padding: 0rem;
   overflow: hidden;
   flex-shrink: 0;
-  transition: all 0.3s;
+  transition: all 0.4s;
 
   &--open {
-    padding: 1rem;
     width: 30rem;
+    padding: 1rem 1.5rem 0 1rem;
   }
 }
 
 .model-cards {
-  display: flex;
+  // display: flex;
+  background-color: lighten(var.$color-background-secondary, 3%);
+  border-radius: 1rem;
   flex-direction: column;
   gap: 1rem;
+  height: 100%;
+  overflow-y: scroll;
+  padding-right: 1rem;
+  margin-top: 1rem;
+  width: 28rem;
+
+  &__tip {
+    font-size: 1.6rem;
+    color: var.$color-text-gray-dark;
+    margin: auto;
+    margin-top: 30vh;
+    width: 15rem;
+    text-align: center;
+  }
+
+  &:hover {
+    // background-color: aliceblue;
+  }
+
+  &::-webkit-scrollbar {
+    width: 8px; /* width of the entire scrollbar */
+    border-radius: 1rem;
+    opacity: 0;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #443d62; /* color of the tracking area */
+    border-radius: 1rem;
+    opacity: 0;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ababab; /* color of the scroll thumb */
+    border-radius: 20px; /* roundness of the scroll thumb */
+    opacity: 0;
+    //   border: 3px solid #ababab; /* creates padding around scroll thumb */
+    &:hover {
+      background-color: #818181; /* color of the scroll thumb */
+      opacity: 0;
+    }
+  }
+}
+
+.options {
   width: 28rem;
 }
 
 .btn__open {
-  width: 1.4rem;
-  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.1rem;
+  // position: absolute;
+  width: 2rem;
+  height: 10rem;
+  margin-top: 45vh;
+  border: none;
+  border-radius: 1rem 0 0 1rem;
   background-color: #756b76;
+  cursor: pointer;
 }
 
 .btn-forms {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
+  display: block;
+  // position: absolute;
+  // top: 1rem;
+  // right: 1rem;
+  margin-left: auto;
+  width: 12rem;
   padding: 0.4rem 0.8rem;
   background-color: rgb(101, 38, 160);
   color: #fff;
   border: none;
   border-radius: 1rem;
+  cursor: pointer;
 }
 
 .forms {

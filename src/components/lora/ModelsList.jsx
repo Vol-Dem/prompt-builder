@@ -54,6 +54,7 @@ const ModelsList = ({ loraItems }) => {
   return (
     <div className={classes["container"]}>
       <div className={classes["category"]}>{loraHtml}</div>
+      {!loraHtml.length && <div className={classes.empty}>This category is empty</div>}
     </div>
   );
 };

@@ -1,0 +1,83 @@
+@use "./../../../variables/variables.scss" as var;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 2rem;
+  position: relative;
+}
+
+.inputs {
+  width: 60rem;
+  max-height: 70vh;
+  padding-right: 1rem;
+  overflow-y: scroll;
+  @include var.custom-scroll;
+}
+
+.subtitle {
+  position: absolute;
+  font-size: 1.4rem;
+  top: 0;
+  right: 0;
+  color: #818182;
+}
+
+.fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.filter {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.example-field {
+  display: flex;
+  gap: 1rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.btn-secondary {
+  font-size: 1.6rem;
+  color: #818182 !important;
+  text-align: right;
+}
+
+.checkbox {
+  display: flex;
+  font-size: 1.6rem;
+  padding: 1rem;
+  gap: 1rem;
+  align-items: center;
+}
+
+.versions {
+  // height: 100%;
+}
+
+.submit {
+  width: 12rem;
+  align-self: flex-end;
+}
+
+.weight {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  &__label {
+    display: inline-block;
+    font-size: 1.6rem;
+    margin: 0 0.6rem 0.4rem;
+  }
+}

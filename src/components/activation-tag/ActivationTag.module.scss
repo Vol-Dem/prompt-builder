@@ -1,0 +1,49 @@
+@use "../../variables/variables.scss" as var;
+
+.activation-tag {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+
+  &__btn-container {
+    display: flex;
+    gap: 0.1rem;
+    flex-direction: column;
+    width: 2rem;
+  }
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.4rem;
+    background-color: #323148;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: lighten(#323148, 5%);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      color: aqua;
+    }
+    &:active {
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background-color: darken(#323148, 5%);
+      box-shadow: var.$box-shadow-inset;
+    }
+    &-arrow {
+      display: inline-block;
+      background-color: #636363;
+      height: 1.2rem;
+      width: 1.2rem;
+
+      &--up {
+        clip-path: var.$clip-path-arrow-up;
+      }
+      &--down {
+        clip-path: var.$clip-path-arrow-down;
+      }
+    }
+  }
+}

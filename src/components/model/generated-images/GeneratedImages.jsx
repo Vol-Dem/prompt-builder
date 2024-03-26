@@ -76,6 +76,7 @@ const GeneratedImages = ({ customData }) => {
     setCurImagesModelVersionId(+e.target.id);
   };
   const switchCurExamples = (e) => {
+    if (curExampleImgsType === e.target.dataset.example) return;
     resetExamples();
     setErrorMessage("");
     setCurExampleImgsType(e.target.dataset.example);
@@ -206,7 +207,8 @@ const GeneratedImages = ({ customData }) => {
         return doc.data();
       });
       console.log(data);
-      const examples = data.map((item, i) => {
+      const examples = data.flatMap((item, i) => {
+        if (!nsfwMode && item.nsfw) return [];
         return (
           <Carousel
             key={i}
@@ -220,7 +222,7 @@ const GeneratedImages = ({ customData }) => {
     };
 
     getImages();
-  }, [curImagesModelVersionId, curExampleImgsType, model, uid]);
+  }, [curImagesModelVersionId, curExampleImgsType, model, uid, nsfwMode]);
 
   useEffect(() => {
     if (curExampleImgsType === "saved") return;
@@ -333,34 +335,39 @@ const GeneratedImages = ({ customData }) => {
 
   return (
     <>
-      <div>
-        {(model?.examplesData?.length ||
-          (model?.savedImages && !!Object.keys(model?.savedImages).length)) && (
+      <div className={classes["controls"]}>
+        <div className={classes["mode-switch"]}>
+          {(model?.examplesData?.length ||
+            (model?.savedImages &&
+              !!Object.keys(model?.savedImages).length)) && (
+            <span
+              className={`${classes["btn-mode"]} ${
+                curExampleImgsType === "saved"
+                  ? classes["btn-mode--active"]
+                  : ""
+              }`}
+              data-example="saved"
+              onClick={switchCurExamples}
+            >
+              Saved
+            </span>
+          )}
           <span
-            className={`${classes["btn-examples"]} ${
-              curExampleImgsType === "saved"
-                ? classes["btn-examples--active"]
-                : ""
+            className={`${classes["btn-mode"]} ${
+              curExampleImgsType === "all" ? classes["btn-mode--active"] : ""
             }`}
-            data-example="saved"
+            data-example="all"
             onClick={switchCurExamples}
           >
-            Saved
+            All
           </span>
-        )}{" "}
-        <span
-          className={`${classes["btn-examples"]} ${
-            curExampleImgsType === "all" ? classes["btn-examples--active"] : ""
-          }`}
-          data-example="all"
-          onClick={switchCurExamples}
-        >
-          All
-        </span>
+        </div>
+        <span>Sort: </span>
         <select
           name="sort"
           id="sort"
           value={imagesSortValue}
+          className={classes.select}
           onChange={(e) => {
             resetExamples();
             setImagesSortValue(e.target.value);
@@ -375,6 +382,7 @@ const GeneratedImages = ({ customData }) => {
           name="amount-per-page"
           id="amount-per-page"
           value={amountPerPage}
+          className={classes.select}
           onChange={(e) => {
             resetExamples();
             setAmountPerPage(e.target.value);

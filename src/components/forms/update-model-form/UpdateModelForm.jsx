@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import classes from "./UpdateModelForm.module.scss";
 import {
-  getImagesInfo,
+  // getImagesInfo,
   getModelData,
-  makeBatchRequest,
+  // makeBatchRequest,
 } from "../../../utils/fetchUtils";
-import { clearObjectKeys } from "../../../utils/generalUtils";
+// import { clearObjectKeys } from "../../../utils/generalUtils";
 import {
   doc,
   getDoc,
@@ -63,8 +63,8 @@ const modelTypes = [
   { name: "Other", value: "other" },
 ];
 
-const UpdateModelForm = ({ modelData }) => {
-  const [updateInput, setUpdateInput] = useState(false);
+const UpdateModelForm = ({ modelData, id }) => {
+  // const [updateInput, setUpdateInput] = useState(false);
   const [advancedSettings, setAdvancedSettings] = useState(false);
   const [modelIsSaving, setModelIsSaving] = useState(false);
   const [errorMessage, seteErrorMessage] = useState("");
@@ -131,7 +131,7 @@ const UpdateModelForm = ({ modelData }) => {
   );
   const [subCatInputs, setSubCatInputs] = useState([subCatsDefData]);
   const [tagSetsInputs, setTagSetsInputs] = useState([tagSetsDefData]);
-  const [userTags, setUserTags] = useState(modelData?.data?.tags || []);
+  // const [userTags, setUserTags] = useState(modelData?.data?.tags || []);
 
   const uid = useSelector((state) => state.auth.user.uid);
   const categories = useSelector((state) => state.tabs.categoriesData);
@@ -196,7 +196,7 @@ const UpdateModelForm = ({ modelData }) => {
     setTagSetsInputs(tagSets);
   }, [modelData]);
 
-  const saveModelHandlerData = () => {};
+  // const saveModelHandlerData = () => {};
 
   const saveModelHandler = async (e, update) => {
     try {
@@ -210,7 +210,7 @@ const UpdateModelForm = ({ modelData }) => {
       // }
       // console.log(formdata);
 
-      const src = formdata.get("src")?.trim().toLowerCase() || "";
+      // const src = formdata.get("src")?.trim().toLowerCase() || "";
       const modelType = modelTypeInput;
       const modelId = idInput;
       const modelName = titleInput.trim();
@@ -375,7 +375,7 @@ const UpdateModelForm = ({ modelData }) => {
         name: modelName || data.name,
         fileName,
         mainTag,
-        src,
+        src: "civitai.com",
         defaultCustomData: {
           description: description || data.description,
           tagSetsData,
@@ -404,7 +404,7 @@ const UpdateModelForm = ({ modelData }) => {
       const loraPrevData = {
         id: modelData?.id || modelId,
         modelType,
-        src,
+        src: "civitai.com",
         main,
         sub,
         name: modelName || data.name || "",
@@ -937,10 +937,10 @@ const UpdateModelForm = ({ modelData }) => {
           <Select
             label="Type"
             name="type"
-            id="type-select"
+            id={id}
             selected={modelTypeInput}
-            onChange={(e) => {
-              setModelTypeInput(e.target.value);
+            onChange={(value) => {
+              setModelTypeInput(value);
             }}
             options={typeSelectOption}
           />
@@ -985,7 +985,7 @@ const UpdateModelForm = ({ modelData }) => {
               {versionStatusHtml}
             </Fieldset>
           )}
-          {!modelData && (
+          {false && (
             <Checkbox
               id="advanced"
               value={advancedSettings}
@@ -1004,7 +1004,7 @@ const UpdateModelForm = ({ modelData }) => {
                 label="Activation tag"
                 name="main-tag"
                 type="text"
-                placeholder="<activation tag:1>"
+                placeholder="<lora:activation tag:1>"
                 value={mainTagInput}
                 onChange={(e) => {
                   setMainTagInput(e.target.value);

@@ -5,6 +5,9 @@
   display: grid;
   grid-template-rows: 0fr auto;
   transition: all 0.3s;
+  color: #fff;
+  width: 100%;
+  // padding: 0 2rem;
 
   &--open {
     grid-template-rows: 1fr auto;
@@ -15,15 +18,51 @@
   display: flex;
   // position: relative;
   flex-direction: column;
+  background-color: rgb(var.$color-background-primary, 0.9);
   gap: 0.6rem;
   // height: 0px;
   width: 100%;
+  // padding: 1rem;
   overflow: hidden;
   transition: all 0.3s;
 }
 
+.settings {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+
 .label {
+  display: inline-block;
   font-size: 1.4rem;
+  line-height: 1;
+}
+
+.mode-switch {
+  display: inline-block;
+  // font-size: 1.4rem;
+  border-radius: var.$border-radius;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  // width: 10rem;
+  overflow: hidden;
+}
+.btn-mode {
+  width: 5rem;
+  font-size: 1.2rem;
+  // text-transform: uppercase;
+  background-color: transparent;
+  // background-color: #fff;
+  padding: 0.4rem 0.6rem;
+  border: none;
+  transition: all 0.3s;
+  color: #fff;
+  cursor: pointer;
+  &--active {
+    background-color: blueviolet;
+  }
 }
 
 .btn-type-container {
@@ -35,7 +74,8 @@
   // max-width: 95%;
   // min-width: 95%;
   padding: 0.6rem 0.8rem;
-  background-color: #201f2f;
+  background-color: rgb(var.$color-background-tertiary, 0.9);
+  opacity: 0.9;
   border: 1px solid var.$color-violet-grey;
   border-radius: 1rem 0rem 0rem 1rem;
   color: #fff;
@@ -72,28 +112,46 @@
   height: 100%;
   width: 100%;
   border-radius: 1rem 0rem 0rem 1rem;
+  background-color: rgb(var.$color-background-tertiary, 0.8);
+  // opacity: 0.85;
 
   // &--neg {
   //   height: 6rem;
   // }
 }
 
-.btn-prompt-type {
-  border: none;
-  padding: 0.2rem 0.6rem;
-  transition: all 0.3s;
-  &--active {
-    color: #fff;
-    background-color: var.$color-primary;
-  }
-}
+// .btn-prompt-type {
+//   border: 1px solid rgb(255, 255, 255, 0.3);
+//   color: #fff;
+//   // font-size: 1.3rem;
+//   // background-color: transparent;
+//   background-color: var.$color-background-secondary;
+//   padding: 0.3rem 0.8rem;
+//   transition: all 0.3s;
+//   &--left {
+//     border-radius: var.$border-radius 0 0 var.$border-radius;
+//   }
+//   &--right {
+//     border-radius: 0 var.$border-radius var.$border-radius 0;
+//   }
+//   &--active {
+//     background-color: var.$color-primary;
+//   }
+// }
 
-.btn__open {
-  width: 20rem;
-  margin-left: auto;
+.btn-open {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var.$color-text-white;
+  width: 18rem;
+  margin: 0 4rem 0 auto;
   background-color: #756b76;
-  height: 1.4rem;
+  height: 1.6rem;
   border: none;
+  border-radius: 0 0 1rem 1rem;
+  cursor: pointer;
 }
 
 .btn-copy {

@@ -1,9 +1,9 @@
 import classes from "./Home.module.scss";
-import Prompt from "../../components/prompt/Prompt";
+// import Prompt from "../../components/prompt/Prompt";
 import { Outlet } from "react-router-dom";
-import UsedModelsPanel from "../used-models-panel/UsedModelsPanel";
+// import UsedModelsPanel from "../used-models-panel/UsedModelsPanel";
 import { useDispatch, useSelector } from "react-redux";
-import { modelActions } from "../../store/model";
+// import { modelActions } from "../../store/model";
 import { useEffect } from "react";
 import { tabActions } from "../../store/tabs";
 import { doc, getFirestore, onSnapshot } from "firebase/firestore";
@@ -12,7 +12,7 @@ import firebaseApp from "../../firebase-config";
 const firestore = getFirestore(firebaseApp);
 
 function Home() {
-  const isNsfwMode = useSelector((state) => state.model.nsfwMode);
+  // const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const uid = useSelector((state) => state.auth.user.uid);
   const dispatch = useDispatch();
 
@@ -31,20 +31,23 @@ function Home() {
     };
   }, [uid, dispatch]);
 
-  const nsfwSwitchHandler = () => {
-    dispatch(modelActions.setNsfwMode(!isNsfwMode));
-  };
+  // const nsfwSwitchHandler = () => {
+  //   dispatch(modelActions.setNsfwMode(!isNsfwMode));
+  // };
 
   return (
     <div className={classes["wrap"]}>
       <header className="Home-header"></header>
-      <button onClick={nsfwSwitchHandler}>{`H: ${
-        isNsfwMode ? "ON" : "OFF"
-      }`}</button>
-      <Prompt />
+      {/* <button
+        onClick={nsfwSwitchHandler}
+        className={`${classes["mode-switch"]} ${
+          isNsfwMode ? classes["mode-switch--active"] : ""
+        }`}
+      >{`H: ${isNsfwMode ? "ON" : "OFF"}`}</button> */}
+      {/* <Prompt /> */}
       <div className={classes["config"]}>
         <Outlet />
-        <UsedModelsPanel />
+        {/* <UsedModelsPanel /> */}
       </div>
     </div>
   );

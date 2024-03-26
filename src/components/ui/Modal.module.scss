@@ -1,3 +1,5 @@
+@use "./../../variables/variables.scss" as var;
+
 .modal {
   position: fixed;
   animation: show 0.3s ease;
@@ -16,12 +18,52 @@
   &--content {
     top: 50%;
     left: 50%;
+    // height: auto;
     height: auto;
     transform: translate(-50%, -50%);
     z-index: 30;
-    max-width: 60rem;
+    max-width: 90vh;
     min-width: 40rem;
+    max-height: 95vh;
+    // overflow-y: scroll;
+    // @include var.custom-scroll;
   }
+
+  &__close {
+    position: absolute;
+    cursor: pointer;
+    top: 0.8rem;
+    right: 0.8rem;
+  }
+
+  &__cross {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: rgb(168, 168, 168);
+    clip-path: polygon(
+      10% 0,
+      0 10%,
+      40% 50%,
+      0 90%,
+      10% 100%,
+      50% 60%,
+      90% 100%,
+      100% 90%,
+      60% 50%,
+      100% 10%,
+      90% 0,
+      50% 40%
+    );
+  }
+}
+
+.test {
+  position: relative;
+}
+
+.title {
+  margin-bottom: 1rem;
 }
 
 @keyframes show {

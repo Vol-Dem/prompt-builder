@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import classes from "./Model.module.scss";
 import { useNavigate, useParams } from "react-router-dom";
 import Carousel from "../carousel/Carousel";
@@ -13,12 +13,17 @@ import GeneratedImages from "../model/generated-images/GeneratedImages";
 import { doc, getFirestore, onSnapshot } from "firebase/firestore";
 import firebaseApp from "../../firebase-config";
 import ModelSettings from "../model/model-settings/ModelSettings";
+import TagSets from "../model/tag-sets/TagSets";
+import { usedModelsActions } from "../../store/usedModels";
 
 const firestore = getFirestore(firebaseApp);
+
+const minDescriptionHeight = 200;
 
 const Model = () => {
   const [modelPreview, setModelPreview] = useState({});
   const [editIsOpen, setEditIsOpen] = useState(false);
+  const [descriptionIsOpen, setDescriptionIsOpen] = useState(false);
   // const [currVersionIndex, setCurrVersionIndex] = useState(null);
   const [curCustomVersionData, setCurCustomVersionData] = useState({});
   const [curImagesModelVersionId, setCurImagesModelVersionId] = useState();
@@ -30,6 +35,8 @@ const Model = () => {
   const isAuth = useSelector((state) => state.auth.user.uid);
   const uid = useSelector((state) => state.auth.user.uid);
   const dispatch = useDispatch();
+  const descriptionRef = useRef();
+  // const descriptionHeight = useRef()
 
   useEffect(() => {
     if (!isAuth) return;
@@ -78,22 +85,31 @@ const Model = () => {
 
   useEffect(() => {
     if (!curVersion?.baseModel) return;
+    const curVersionCustomData = model.modelVersionsCustomData[curVersion.id];
     const modelPreviewData = {
       id: model?.id,
       src: model?.src,
       main: model?.main,
       sub: model?.sub,
-      title: model?.data?.name,
+      title: model.name || model.title || model?.data?.name,
+      versionName: curVersionCustomData?.name,
       imgUrl: curVersion?.images ? curVersion?.images[0]?.url : "",
       type: model?.data?.type,
       baseModel: curVersion?.baseModel,
-      mainTag: model?.mainTag,
-      weight: model?.weight,
-      size: model?.size,
-      tags: curVersion?.trainedWords,
-      helperTags: model?.helperTags,
+      mainTag: curVersionCustomData?.mainTag || model?.mainTag,
+      weight: curVersionCustomData?.weight || model?.defaultCustomData.weight,
+      minWeight:
+        curVersionCustomData?.minWeight || model?.defaultCustomData.minWeight,
+      maxWeight:
+        curVersionCustomData?.maxWeight || model?.defaultCustomData.maxWeight,
+      size: curVersionCustomData?.size || model?.defaultCustomData.size,
+      tags: curVersionCustomData?.trainedWords || curVersion?.trainedWords,
+      helperTags:
+        curVersionCustomData?.helperTags || model?.defaultCustomData.helperTags,
       updatedAt: model?.updatedAt,
     };
+    console.log(curVersionCustomData);
+    console.log(modelPreviewData);
 
     setModelPreview(modelPreviewData);
     const curCustomVersion = model.modelVersionsCustomData[curVersion.id];
@@ -120,7 +136,7 @@ const Model = () => {
     const curVer = model?.data?.modelVersions.find(
       (version) => version.id === id
     );
-
+    console.log(curVer);
     // resetExamples();
     dispatch(modelActions.setCurVersion(curVer));
     // setCurrVersionIndex(e.target.dataset.version);
@@ -156,6 +172,14 @@ const Model = () => {
     setEditIsOpen((prevState) => !prevState);
   };
 
+  const openDescriptionHandler = () => {
+    setDescriptionIsOpen((prevState) => !prevState);
+  };
+
+  const addToSidePanelHandler = () => {
+    dispatch(usedModelsActions.addModelToPanel(modelPreview));
+  };
+
   return (
     <div className={classes.model}>
       {isLoading && <div>Loading...</div>}
@@ -180,9 +204,16 @@ const Model = () => {
             </button>
           </div>
           {editIsOpen && <ModelSettings />}
-
-          <div className={classes.title}>
-            {model?.name || model?.data?.name}
+          <div className={classes["title-container"]}>
+            <h1 className={classes.title}>
+              {model?.name || model?.data?.name}
+            </h1>
+            <button
+              onClick={addToSidePanelHandler}
+              className={classes["btn-add"]}
+            >
+              +
+            </button>
           </div>
           <ul className={classes.versions}>{modelVersionsHtml}</ul>
           {modelImagesHtml}
@@ -193,21 +224,46 @@ const Model = () => {
               modelPreview={modelPreview}
             />
           </div>
+          <TagSets
+            customData={curCustomVersionData?.tagSetsData}
+            defaultData={model?.defaultCustomData?.tagSetsData}
+          />
           {curVersion?.description && (
             <>
-              <h3>Version description:</h3>
+              <h2 className="h2">Version description:</h2>
               <div className={classes.description}>
                 {curVersion?.description?.replace(/(<([^>]+)>)/gi, "")}
               </div>
             </>
           )}
-          <h3>Description:</h3>
-          <div className={classes.description}>
-            {model?.defaultCustomData?.description ||
-              model?.data?.description?.replace(/(<([^>]+)>)/gi, "")}
+          <h2 className="h2">Description:</h2>
+          <div
+            className={`${classes.description} ${
+              descriptionIsOpen ? classes["description--open"] : ""
+            }`}
+            style={{
+              maxHeight: `${
+                descriptionIsOpen
+                  ? descriptionRef.current.offsetHeight
+                  : minDescriptionHeight
+              }px`,
+            }}
+          >
+            <div ref={descriptionRef}>
+              {model?.defaultCustomData?.description ||
+                model?.data?.description?.replace(/(<([^>]+)>)/gi, "")}
+            </div>
           </div>
+          {descriptionRef?.current?.offsetHeight > minDescriptionHeight && (
+            <span
+              className={classes["description__btn-show"]}
+              onClick={openDescriptionHandler}
+            >
+              Read more
+            </span>
+          )}
 
-          <div>Exapmles:</div>
+          <h2 className="h2">Exapmles:</h2>
           <GeneratedImages customData={curCustomVersionData} />
         </>
       )}

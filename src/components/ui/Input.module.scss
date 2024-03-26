@@ -5,8 +5,10 @@
   padding: 0.5rem;
   width: 100%;
   padding-left: 1rem;
-  // background-color: rgb(67, 51, 75);
-  // color: #fff;
+  background-color: var.$color-input-bg;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var.$box-shadow-inset;
+  color: var.$color-text-white;
 }
 .label {
   display: inline-block;

@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 // import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
 import UpdateModelForm from "../../forms/update-model-form/UpdateModelForm";
 import VersionForm from "../../forms/version-form/VersionForm";
@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import Buttton from "../../ui/Button";
 import VersionStatusForm from "../../forms/version-status-form/VersionStatusForm";
 import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
-import { updateModel } from "../../../store/model";
+// import { updateModel } from "../../../store/model";
 import { getModelData } from "../../../utils/fetchUtils";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
@@ -23,7 +23,7 @@ const ModelSettings = () => {
   const [successMessage, seteSuccessMessage] = useState("");
   const model = useSelector((state) => state.model.model);
   const uid = useSelector((state) => state.auth.user.uid);
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   useEffect(() => {
     const customData = model.modelVersionsCustomData[curTab];
@@ -171,7 +171,7 @@ const ModelSettings = () => {
       <div className={classes.content}>
         {curTab === "general" && (
           <div>
-            <div className={classes['update']}>
+            <div className={classes["update"]}>
               <Buttton
                 type="button"
                 onClick={updateModelHandler}
@@ -201,8 +201,8 @@ const ModelSettings = () => {
             />
           </div>
         )}
+        <SaveImageForm modelData={model} />
       </div>
-      <SaveImageForm modelData={model} />
     </div>
   );
 };

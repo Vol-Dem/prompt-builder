@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import classes from "./UsedCard.module.scss";
-import Tag from "../tag/Tag";
+// import Tag from "../tag/Tag";
 import { ReactComponent as StarImg } from "../../assets/star.svg";
 import { useNavigate } from "react-router-dom";
 import TagList from "../tag-list/TagList";
 import { useDispatch, useSelector } from "react-redux";
 import { usedModelsActions } from "../../store/usedModels";
 import { promptActions } from "../../store/prompt";
+import ActivationTag from "../activation-tag/ActivationTag";
+import Arrow from "../ui/Arrow";
 
 const UsedCard = ({ previewData }) => {
   const [tagsIsOpen, setTagsIsOpen] = useState(false);
@@ -22,6 +24,7 @@ const UsedCard = ({ previewData }) => {
   const helperTagsRef = useRef();
   const taglistItemHeight = 34;
   const taglistHeight = tagsRef?.current?.clientHeight;
+  console.log(previewData);
 
   useEffect(() => {
     setImgIsLoading(true);
@@ -68,7 +71,7 @@ const UsedCard = ({ previewData }) => {
   };
 
   return (
-    <div id={previewData.id} className={`${classes.card} card`}>
+    <li id={previewData.id} className={`${classes.card} card`}>
       <div className={classes.head}>
         <div className={classes.img} onClick={openLoraHandler}>
           <img
@@ -90,7 +93,7 @@ const UsedCard = ({ previewData }) => {
           )}
         </div>
         <h4 className={classes.title} onClick={openLoraHandler}>
-          {previewData.title}
+          {previewData.name || previewData.title}
         </h4>
         <button className={classes["btn__close"]} onClick={closeCardHandler}>
           X
@@ -99,26 +102,33 @@ const UsedCard = ({ previewData }) => {
       <div className={`${classes.content}`}>
         <div className={classes.info}>
           <span className={classes.type}>{previewData.type}</span>
-          <span>W: {previewData.weight}</span>
-          <span>S: {previewData.size}</span>
+          {previewData?.minWeight && (
+            <span>
+              W:{previewData?.minWeight?.toFixed(1)}-
+              {previewData?.maxWeight?.toFixed(1)}
+            </span>
+          )}
+          {previewData.size && <span>S: {previewData.size}</span>}
         </div>
-        <ul className={classes["main-tag"]}>
-          Triger:
-          <Tag
-            tag={previewData.mainTag}
-            promptType="positive"
-            modelData={previewData}
-          />
-        </ul>
+        {!!previewData.mainTag && (
+          <div className={classes["main-tag"]}>
+            {/* Activation tag: */}
+            <ActivationTag
+              tag={previewData.mainTag}
+              modelData={previewData}
+              strength={previewData.weight}
+            />
+          </div>
+        )}
         <div className={classes["tags-container"]}>
           {!!previewData.tags?.length && (
             <>
-              <span>Tags: </span>
+              {/* <span>Tags: </span> */}
               <div
                 className={`${classes.tags} ${
                   tagsIsOpen ? classes["tags--open"] : ""
                 }`}
-                style={tagsHeight ? { height: `${tagsHeight}px` } : {}}
+                style={tagsHeight ? { maxHeight: `${tagsHeight}px` } : {}}
               >
                 <div
                   ref={tagsRef}
@@ -127,8 +137,10 @@ const UsedCard = ({ previewData }) => {
                   }`}
                 >
                   <TagList
+                    name="Trigger words"
                     ref={tagsListRef}
                     tags={previewData.tags}
+                    className={classes["tag-list"]}
                     promptType="positive"
                   />
                 </div>
@@ -138,7 +150,7 @@ const UsedCard = ({ previewData }) => {
                   className={classes["tags__btn"]}
                   onClick={openTagsHandler}
                 >
-                  v
+                  <Arrow direction={tagsIsOpen ? "up" : "down"} />
                 </button>
               )}
             </>
@@ -151,7 +163,7 @@ const UsedCard = ({ previewData }) => {
                 helperTagsIsOpen ? classes["helper-tags--open"] : ""
               }`}
               style={
-                helpertagsHeight ? { height: `${helpertagsHeight}px` } : {}
+                helpertagsHeight ? { maxHeight: `${helpertagsHeight}px` } : {}
               }
             >
               <div ref={helperTagsRef} className={classes["helper-tags__list"]}>
@@ -169,7 +181,7 @@ const UsedCard = ({ previewData }) => {
           </>
         )}
       </div>
-    </div>
+    </li>
   );
 };
 

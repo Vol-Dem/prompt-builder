@@ -1,16 +1,111 @@
-.main-tag {
+@use "../../../variables/variables.scss" as var;
+
+.activation-tag {
   display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
 .tags {
   display: flex;
+  position: relative;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.6rem;
+  width: 100%;
+
+  &__btn-edit {
+    font-size: 1.6rem;
+    color: var.$color-text-violet;
+    border: none;
+    background-color: transparent;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      color: var.$color-text-white;
+    }
+  }
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background-color: var.$color-background-tertiary;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: var.$box-shadow;
+    height: 100%;
+  }
+
+  &__subtitle {
+    font-size: 1.6rem;
+    font-weight: 500;
+  }
+
+  &__field ul {
+    padding: 1rem;
+    border-radius: 1rem;
+    background-color: lighten(var.$color-background-tertiary, 2%);
+    // background-color: var.$color-background-tertiary;
+  }
+
+  &__form {
+    width: 60rem;
+    max-height: 80vh;
+    padding-right: 1rem;
+    overflow-y: scroll;
+    @include var.custom-scroll;
+  }
 }
 
-.tag-sets__list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.title {
+  font-size: 2rem;
+}
+
+.tag-set__list {
+  display: grid;
+  grid-template-columns: 1fr;
+  // flex-direction: column;
+  gap: 2rem;
   list-style: none;
+}
+
+.tag-set__container {
+  // display: flex;
+}
+
+.tag-set {
+  display: flex;
+  gap: 2rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background-color: var.$color-background-tertiary;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var.$box-shadow;
+  &__img {
+    width: 14rem;
+    height: 20rem;
+    background-color: lighten(var.$color-background-tertiary, 2%);
+  }
+
+  & ul {
+    padding: 1rem;
+    border-radius: 1rem;
+    background-color: var.$color-background-tertiary;
+    background-color: lighten(var.$color-background-tertiary, 2%);
+  }
+
+  &__tags {
+    margin-top: 0.2rem;
+    flex: 1;
+  }
+
+  &__btn {
+    margin-top: 2rem;
+    margin-left: auto;
+  }
 }

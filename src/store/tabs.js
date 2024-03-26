@@ -33,7 +33,7 @@ const tabsSlice = createSlice({
       state.modelsData = actions.payload;
     },
     setSubcategories(state, actions) {
-      state.subcategories = actions.payload;
+      state.subcategories = actions.payload.sort();
     },
     reset(state, actions) {
       state.currCategory = "";

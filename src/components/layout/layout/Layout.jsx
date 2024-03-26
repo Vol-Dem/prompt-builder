@@ -26,6 +26,9 @@ import AuthForm from "../../forms/Auth/AuthForm";
 import { Suspense } from "react";
 import Spinner from "../../ui/Spinner";
 import Notification from "../../ui/Notification";
+import Prompt from "../../prompt/Prompt";
+import UsedModelsPanel from "../../used-models-panel/UsedModelsPanel";
+import { modelActions } from "../../../store/model";
 
 const Layout = () => {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
@@ -37,6 +40,7 @@ const Layout = () => {
   const notificationMessage = useSelector(
     (state) => state.notification.message
   );
+  const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const dispatch = useDispatch();
 
   const openAuth = () => {
@@ -46,34 +50,76 @@ const Layout = () => {
     dispatch(authActions.closeAuthForm());
   };
 
+  const nsfwSwitchHandler = () => {
+    dispatch(modelActions.setNsfwMode(!isNsfwMode));
+  };
+
   return (
     <div className={classes.wrapper}>
-      <Header>
-        <MobileNavigation />
-        <div className={classes.logo}>LOGO</div>
-        <MainNavigation />
-        {isAuth && <UserNavigation />}
-        {!isAuth && (
-          <Buttton onClick={openAuth} className={classes["btn-auth"]}>
-            Sign In
-          </Buttton>
-        )}
-      </Header>
+      <div className={classes.content}>
+        <Header>
+          <div className={classes["menu-container"]}>
+            <div className="wrapper">
+              <div className={classes.menu}>
+                <MobileNavigation />
+                <div className={classes.logo}>LOGO</div>
+                <MainNavigation />
+                <div className={classes["mode-switch"]}>
+                  <button
+                    type="button"
+                    onClick={nsfwSwitchHandler}
+                    className={`${classes["btn-mode"]} ${
+                      !isNsfwMode ? classes["btn-mode--active"] : ""
+                    }`}
+                  >
+                    SFW
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nsfwSwitchHandler}
+                    className={`${classes["btn-mode"]} ${
+                      isNsfwMode ? classes["btn-mode--active"] : ""
+                    }`}
+                  >
+                    NSFW
+                  </button>
+                </div>
 
-      <main>
-        <Suspense fallback={<Spinner />}>
-          <Outlet />
-        </Suspense>
-      </main>
-      {authIsOpen && (
-        <Modal onClose={closeAuth}>
-          <AuthForm />
-        </Modal>
-      )}
-      {notificationIsShown && (
-        <Notification title={notificationTitle} message={notificationMessage} />
-      )}
-      <Footer />
+                {isAuth && <UserNavigation />}
+                {!isAuth && (
+                  <Buttton onClick={openAuth} className={classes["btn-auth"]}>
+                    Sign In
+                  </Buttton>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="wrapper">
+            <Prompt />
+          </div>
+        </Header>
+
+        <main>
+          <div className="wrapper">
+            <Suspense fallback={<Spinner />}>
+              <Outlet />
+            </Suspense>
+          </div>
+        </main>
+        {authIsOpen && (
+          <Modal onClose={closeAuth}>
+            <AuthForm />
+          </Modal>
+        )}
+        {notificationIsShown && (
+          <Notification
+            title={notificationTitle}
+            message={notificationMessage}
+          />
+        )}
+        <Footer />
+      </div>
+      <UsedModelsPanel />
     </div>
   );
 };

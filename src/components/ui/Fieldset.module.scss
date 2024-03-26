@@ -7,7 +7,8 @@
   border-radius: 1rem;
   padding: 1rem;
   border: none;
-  background-color: var.$color-background-violet;
+  // background-color: var.$color-background-violet;
+  background-color: lighten(var.$color-background-tertiary, 2%);
   // box-shadow: inset 0rem 0rem 0.5rem rgba(0, 0, 0, 0.3);
   box-shadow: var.$box-shadow-inset;
   margin: 0.4rem 0;

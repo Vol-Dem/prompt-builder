@@ -3,26 +3,28 @@ import classes from "./PreviewCard.module.scss";
 import Tag from "../tag/Tag";
 // import { ReactComponent as StarImg } from "../../assets/star.svg";
 import { useNavigate } from "react-router-dom";
-import TagList from "../tag-list/TagList";
-import { useSelector } from "react-redux";
+// import TagList from "../tag-list/TagList";
+import { useDispatch, useSelector } from "react-redux";
 import Image from "../ui/image/Image";
+import { usedModelsActions } from "../../store/usedModels";
 
 const PreviewCard = ({ previewData }) => {
-  const [tagsIsOpen, setTagsIsOpen] = useState(false);
-  const [tagsHeight, setTagsHeight] = useState(null);
+  // const [tagsIsOpen, setTagsIsOpen] = useState(false);
+  // const [tagsHeight, setTagsHeight] = useState(null);
   const [currVersion, setCurrVersion] = useState({});
-  const [taglistHeight, setTaglistHeight] = useState(null);
-  const [helperTagsIsOpen, setHelperTagsIsOpen] = useState(false);
-  const [helpertagsHeight, setHelperTagsHeight] = useState(null);
-  const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
+  // const [taglistHeight, setTaglistHeight] = useState(null);
+  // const [helperTagsIsOpen, setHelperTagsIsOpen] = useState(false);
+  // const [helpertagsHeight, setHelperTagsHeight] = useState(null);
+  const dispatch = useDispatch();
+  // const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const navigate = useNavigate();
-  const tagsRef = useRef();
-  const tagsListRef = useRef();
-  const helperTagsRef = useRef();
+  // const tagsRef = useRef();
+  // const tagsListRef = useRef();
+  // const helperTagsRef = useRef();
   const imgRef = useRef();
   // const taglistItemHeight = tagsListRef?.current?.offsetHeight;
-  const taglistItemHeight = 34;
+  // const taglistItemHeight = 34;
 
   useEffect(() => {
     const currVersionData =
@@ -33,65 +35,72 @@ const PreviewCard = ({ previewData }) => {
     if (currVersionData?.length) setCurrVersion(currVersionData[0]);
   }, [previewData]);
 
-  useEffect(() => {
-    const taglistHeight = tagsRef?.current?.clientHeight;
-    if (taglistHeight) setTaglistHeight(taglistHeight);
-  }, [tagsRef, panelIsOpen, previewData]);
+  // useEffect(() => {
+  //   const taglistHeight = tagsRef?.current?.clientHeight;
+  //   if (taglistHeight) setTaglistHeight(taglistHeight);
+  // }, [tagsRef, panelIsOpen, previewData]);
 
-  useEffect(() => {
-    if (taglistHeight === taglistItemHeight) setTagsHeight(taglistItemHeight);
-    if (tagsIsOpen) setTagsHeight(taglistHeight);
-    if (helperTagsIsOpen)
-      setHelperTagsHeight(helperTagsRef.current.clientHeight);
-  }, [
-    previewData,
-    taglistHeight,
-    taglistItemHeight,
-    panelIsOpen,
-    tagsIsOpen,
-    helperTagsIsOpen,
-  ]);
+  // useEffect(() => {
+  //   if (taglistHeight === taglistItemHeight) setTagsHeight(taglistItemHeight);
+  //   if (tagsIsOpen) setTagsHeight(taglistHeight);
+  //   if (helperTagsIsOpen)
+  //     setHelperTagsHeight(helperTagsRef.current.clientHeight);
+  // }, [
+  //   previewData,
+  //   taglistHeight,
+  //   taglistItemHeight,
+  //   panelIsOpen,
+  //   tagsIsOpen,
+  //   helperTagsIsOpen,
+  // ]);
 
-  const openHelperTagsHandler = () => {
-    setHelperTagsIsOpen((prev) => {
-      if (prev) {
-        setHelperTagsHeight(0);
-        if (tagsHeight > 300)
-          imgRef.current.scrollIntoView({
-            behavior: "smooth",
-          });
-      } else {
-        setHelperTagsHeight(helperTagsRef.current.clientHeight);
-      }
-      return !prev;
-    });
-  };
+  // const openHelperTagsHandler = () => {
+  //   setHelperTagsIsOpen((prev) => {
+  //     if (prev) {
+  //       setHelperTagsHeight(0);
+  //       if (tagsHeight > 300)
+  //         imgRef.current.scrollIntoView({
+  //           behavior: "smooth",
+  //         });
+  //     } else {
+  //       setHelperTagsHeight(helperTagsRef.current.clientHeight);
+  //     }
+  //     return !prev;
+  //   });
+  // };
 
-  const openTagsHandler = () => {
-    setTagsIsOpen((prev) => {
-      if (prev) {
-        setTagsHeight(null);
-        if (tagsHeight > 300)
-          imgRef.current.scrollIntoView({
-            behavior: "smooth",
-          });
-      } else {
-        setTagsHeight(taglistHeight);
-      }
-      return !prev;
-    });
-  };
+  // const openTagsHandler = () => {
+  //   setTagsIsOpen((prev) => {
+  //     if (prev) {
+  //       setTagsHeight(null);
+  //       if (tagsHeight > 300)
+  //         imgRef.current.scrollIntoView({
+  //           behavior: "smooth",
+  //         });
+  //     } else {
+  //       setTagsHeight(taglistHeight);
+  //     }
+  //     return !prev;
+  //   });
+  // };
 
   const openLoraHandler = (e) => {
     const modelId = e.target.closest(`.card`).id;
     navigate(`model/${modelId}`);
   };
 
+  const addToSidePanelHandler = () => {
+    dispatch(usedModelsActions.addModelToPanel(previewData));
+  };
+
   return (
     <div id={previewData.id} className={`${classes.card} card`}>
+      <span className={classes["btn-add"]} onClick={addToSidePanelHandler}>
+        +
+      </span>
       <Image
         onClick={openLoraHandler}
-        type={previewData.type}
+        // type={previewData.type}
         ref={imgRef}
         src={
           isNsfwMode
@@ -103,14 +112,16 @@ const PreviewCard = ({ previewData }) => {
         alt="Preview"
       />
       <div
-        className={`${classes.content} ${
-          helperTagsIsOpen ? classes["content--open"] : ""
-        } `}
+        className={`${classes.content}`}
+        // className={`${classes.content} ${
+        //   helperTagsIsOpen ? classes["content--open"] : ""
+        // } `}
       >
         <h4 className={classes.title} onClick={openLoraHandler}>
           {previewData.name || previewData.title}
         </h4>
         <div className={classes.info}>
+          <span className={classes.type}>{previewData.type}</span>
           <span>M: {previewData.baseModel}</span>
           <span>W: {previewData.weight}</span>
           <span>S: {previewData.size}</span>
@@ -123,7 +134,7 @@ const PreviewCard = ({ previewData }) => {
         </div>
         {previewData.mainTag && (
           <ul className={classes["main-tag"]}>
-            Triger:
+            Activation tag:
             <Tag
               tag={previewData.mainTag}
               promptType="positive"
@@ -131,7 +142,7 @@ const PreviewCard = ({ previewData }) => {
             />
           </ul>
         )}
-        <div className={classes["tags-container"]}>
+        {/* <div className={classes["tags-container"]}>
           {previewData?.tags?.length !== 0 && (
             <>
               <span>Tags: </span>
@@ -164,8 +175,8 @@ const PreviewCard = ({ previewData }) => {
               )}
             </>
           )}
-        </div>
-        {previewData?.helperTags?.length !== 0 && (
+        </div> */}
+        {/* {previewData?.helperTags?.length !== 0 && (
           <>
             <div
               className={`${classes[["helper-tags"]]} ${
@@ -188,7 +199,7 @@ const PreviewCard = ({ previewData }) => {
               {`${helperTagsIsOpen ? "Hide" : "Show"} helper tags`}
             </button>
           </>
-        )}
+        )} */}
       </div>
     </div>
   );

@@ -1,3 +1,5 @@
+@use "./../../variables/variables.scss" as var;
+
 .example {
   // position: absolute;
   // left: 0;
@@ -5,11 +7,12 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  flex: 1;
   // width: 100%;
   // height: 100%;
 
   border-radius: 1rem;
-  padding: 1.6rem 1rem;
+  padding: 2rem 1.2rem;
   // overflow: hidden;
   // z-index: 1111;
   // transform: translateY(-100%);
@@ -19,7 +22,7 @@
     // grid-template-columns: 30rem 1fr auto;
     // grid-template-columns: auto;
     gap: 2rem;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
   }
 
   &__img {
@@ -43,6 +46,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
+    margin-top: 2.8rem;
   }
 }
 
@@ -60,38 +64,72 @@
   margin-left: 0.8rem;
 }
 
-.btn-copy {
-  color: #b2b2b2;
-  padding: 0.2rem 0.5rem;
-  margin-left: 0.4rem;
-  background: none;
-  border: 1px solid #b2b2b2;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.1s;
+// .btn-copy {
+//   color: #b2b2b2;
+//   padding: 0.2rem 0.5rem;
+//   margin-left: 0.4rem;
+//   background: none;
+//   border: 1px solid #b2b2b2;
+//   border-radius: 0.5rem;
+//   cursor: pointer;
+//   transition: all 0.1s;
 
-  &:hover {
-    color: #7278f0;
-    border-color: #7278f0;
+//   &:hover {
+//     color: #7278f0;
+//     border-color: #7278f0;
+//   }
+
+//   &:active {
+//     color: #49ab6b;
+//     border-color: #49ab6b;
+//     transform: translateY(1px);
+//   }
+// }
+
+.btn {
+  &__close {
+    position: absolute;
+    cursor: pointer;
+    top: 1rem;
+    right: 1.2rem;
   }
 
-  &:active {
-    color: #49ab6b;
-    border-color: #49ab6b;
-    transform: translateY(1px);
+  &__cross {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: rgb(168, 168, 168);
+    clip-path: polygon(
+      10% 0,
+      0 10%,
+      40% 50%,
+      0 90%,
+      10% 100%,
+      50% 60%,
+      90% 100%,
+      100% 90%,
+      60% 50%,
+      100% 10%,
+      90% 0,
+      50% 40%
+    );
   }
 }
 
-.tags__list {
-  background-color: #24202a;
-  padding: 1rem;
+.tags__list ul {
+  padding: 1.4rem;
   border-radius: 1rem;
+  background-color: rgb(var.$color-background-tertiary, 0.85);
+  box-shadow: var.$box-shadow-inset;
 }
 
 .resource {
-  border: 1px solid #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 1rem;
-  padding: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  margin-top: 1rem;
+  background-color: rgb(var.$color-background-tertiary, 0.85);
+  box-shadow: var.$box-shadow;
 
   &__name {
     font-size: 1.6rem;
@@ -107,4 +145,9 @@
   &__type {
     color: #49ab6b;
   }
+}
+
+.link {
+  display: inline-block;
+  color: #7278f0;
 }

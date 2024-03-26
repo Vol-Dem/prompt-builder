@@ -3,14 +3,34 @@ import classes from "./Select.module.scss";
 import { useEffect, useRef, useState } from "react";
 import Input from "./Input";
 
-const Select = ({ id, options, onChange, className, label, selected }) => {
+const Select = ({
+  id = "select",
+  options,
+  onChange,
+  className,
+  label,
+  selected,
+}) => {
   const [selectIsOpen, setSelectIsOpen] = useState(false);
   const [selectedFieldName, setSelectedFieldName] = useState(selected);
   const [selectedFieldValue, setSelectedFieldValue] = useState(selected);
   const [optionsFieldHeight, setOptionsFieldHeight] = useState(15);
-  const visibleOptionsAmount = 3;
+  const visibleOptionsAmount = 5;
   const labeldRef = useRef();
   const inputRef = useRef();
+
+  const closeSelect = (e) => {
+    if (!e.target.classList.contains(classes["select__input-field"]))
+      setSelectIsOpen(false);
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", closeSelect);
+
+    return () => {
+      document.removeEventListener("click", closeSelect);
+    };
+  }, []);
 
   useEffect(() => {
     console.log("OPT", options);
@@ -38,7 +58,7 @@ const Select = ({ id, options, onChange, className, label, selected }) => {
 
   const onSelectValueChange = (e) => {
     setSelectedFieldName(e.target.dataset.name);
-    onChange(e);
+    onChange(e.target.value);
     setSelectIsOpen(false);
   };
 
@@ -52,7 +72,7 @@ const Select = ({ id, options, onChange, className, label, selected }) => {
         <input
           className={classes["select__radio"]}
           type="radio"
-          id={`select-${item.value}-${i}`}
+          id={`select-${item.value}-${id}`}
           name="option"
           value={item.value}
           data-name={item.name}
@@ -62,7 +82,7 @@ const Select = ({ id, options, onChange, className, label, selected }) => {
         <label
           ref={labeldRef}
           className={classes["select__label"]}
-          htmlFor={`select-${item.value}-${i}`}
+          htmlFor={`select-${item.value}-${id}`}
         >
           <div className={classes["select__title"]}>
             <span>{item.name}</span>
@@ -73,7 +93,10 @@ const Select = ({ id, options, onChange, className, label, selected }) => {
   });
 
   return (
-    <div className={`${classes["select"]} ${className}`} onClick={onShowSelect}>
+    <div
+      className={`${classes["select"]} ${className || ""}`}
+      onClick={onShowSelect}
+    >
       <label htmlFor={id} className={classes.label}>
         {label}
       </label>

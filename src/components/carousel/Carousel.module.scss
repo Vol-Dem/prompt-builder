@@ -1,21 +1,24 @@
+@use "../../variables/variables.scss" as var;
+
 .container {
-  min-width: 30rem;
+  min-width: 26rem;
 }
 
 .wrap {
-  display: grid;
-  grid-template-columns: 30rem 1fr;
-  gap: 2rem;
+  display: flex;
+  // grid-template-columns: auto 1fr;
+  // gap: 1.6rem;
   position: static;
   z-index: 2222;
   justify-content: space-between;
   width: 100%;
 
   &--open {
-    // background-color: rgb(47, 45, 45);
-    background-color: rgb(43 41 50);
+    // background-color: rgb(43 41 50);
+    background-color: rgb(lighten(var.$color-background-secondary, 3%), 0.97);
     box-shadow: 0rem 0rem 0.9rem 0.4rem rgba(0, 0, 0, 0.2);
     position: absolute;
+    gap: 1.6rem;
     left: 0;
     animation: open 0.4s ease-in forwards;
     border-radius: 1rem;
@@ -30,19 +33,6 @@
   border-radius: 1rem;
   box-shadow: 0rem 0rem 0.6rem 0.7rem rgba(0, 0, 0, 0.2);
   transition: all 0.3s;
-
-  &__visible--1 {
-    width: 30rem;
-  }
-  &__visible--2 {
-    width: 61rem;
-  }
-  &__visible--3 {
-    width: 92rem;
-  }
-  &__visible--4 {
-    width: 123rem;
-  }
 }
 
 .carousel__images {
@@ -60,40 +50,67 @@
 
 .btn {
   position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #372ac7;
   top: 50%;
   transform: translateY(-50%);
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.6);
   padding: 1rem;
-  height: 4.6rem;
-  width: 4.6rem;
+  height: 4rem;
+  width: 4rem;
   border: none;
-  opacity: 0.8;
+  // opacity: 0.8;
   border-radius: 50%;
+  box-shadow: var.$box-shadow-light;
+  transition: background-color 0.1s;
   cursor: pointer;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+
+  &:active {
+    transform: translateY(-48%);
+  }
 
   &__left {
     left: 0;
-
-    &::before {
-      content: "<";
-      color: #636363;
-      font-size: 2.4rem;
+    & span {
+      display: inline-block;
+      clip-path: var.$clip-path-arrow-left;
+      background-color: #636363;
+      height: 1.6rem;
+      width: 1.6rem;
     }
+
+    // &::before {
+    //   content: "<";
+    //   color: #636363;
+    //   font-size: 2.4rem;
+    // }
   }
 
   &__right {
     right: 0;
-    &::before {
-      content: ">";
-      color: #636363;
-      font-size: 2.4rem;
+    & span {
+      display: inline-block;
+      clip-path: var.$clip-path-arrow-right;
+      background-color: #636363;
+      height: 1.6rem;
+      width: 1.6rem;
     }
+    // &::before {
+    //   content: ">";
+    //   color: #636363;
+    //   font-size: 2.4rem;
+    // }
   }
 }
 
 .image {
-  width: 30rem;
+  width: 26rem;
 }
 
 .spiner {
@@ -101,10 +118,6 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-
-.test {
-  width: 30rem;
 }
 
 .post-id {
@@ -132,7 +145,7 @@
   position: absolute;
   right: 2rem;
   top: 2rem;
-  z-index: 2222;
+  z-index: 22;
   background-color: rgba(55, 42, 199, 0.6);
   border-radius: 1rem;
   padding: 0.2rem 0.4rem;

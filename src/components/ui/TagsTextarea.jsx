@@ -4,14 +4,14 @@ import { promptActions } from "../../store/prompt";
 
 const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
 
-const TagsTextarea = ({ data, className, placeholder }) => {
+const TagsTextarea = ({ data, className, placeholder, promptType }) => {
   const dispatch = useDispatch();
 
   const removeTagHandler = (e) => {
     dispatch(
-      promptActions.addTagToPrompt({
+      promptActions.removeTag({
         //   type: props.promptType,
-        type: "positive",
+        type: promptType,
         value: e.target.dataset.value,
       })
     );
@@ -20,16 +20,17 @@ const TagsTextarea = ({ data, className, placeholder }) => {
   const tagItemsHtml = data
     .trim()
     .split(splitRegEx)
-    .flatMap((item) => {
+    .flatMap((item, i) => {
       if (!item) return [];
       return (
-        <li className={classes.tag}>
+        <li key={i} className={classes.tag}>
           <span className={classes["tag__text"]}>{item.trim()}</span>
           <button
             type="button"
             className={classes.btn}
             onClick={removeTagHandler}
             data-value={item.trim()}
+            data-type=""
           >
             X
           </button>

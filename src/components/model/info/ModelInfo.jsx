@@ -10,15 +10,20 @@ const ModelInfo = ({ customData }) => {
   )?.name;
   return (
     <div className={classes?.info}>
-      <div>{model?.data?.type}</div>
+      <div className={classes.type}>{model?.data?.type}</div>
       <div>Base model: {curVersion?.baseModel}</div>
       <div>Size: {customData?.size || model?.size}</div>
-      <div>Weight: {customData?.weight || model?.weight}</div>
+      <div>
+        Weight: {customData?.minWeight?.toFixed(1)}-
+        {customData?.maxWeight?.toFixed(1)}
+      </div>
+      <div>Best weight: {customData?.weight || model?.weight}</div>
       <div>
         Version:{" "}
         <a
           target="blank"
           href={`https://${model?.src}/models/${model?.id}?modelVersionId=${curVersion.id}`}
+          className={classes.link}
         >
           {curVersion?.name}
         </a>

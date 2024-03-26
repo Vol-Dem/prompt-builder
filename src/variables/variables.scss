@@ -1,17 +1,32 @@
 //COLORS
-$color-background-primary: rgba(255, 255, 255, 0.75);
+// $color-background-primary: rgba(255, 255, 255, 0.75);
+// $color-background-primary: #282c34;
+// $color-background-primary: #1f2530;
+// $color-background-secondary: #302838;
+// $color-background-tertiary: #201f2f;
+$color-background-primary: #282c34;
+// $color-background-primary: #272939;
+// $color-background-secondary: #28212f;
+// $color-background-secondary: #302838;
+// $color-background-secondary: #21242b;
+$color-background-secondary: #1a1e27;
+$color-background-tertiary: #201f2f;
 $color-background-light: #fff;
 $color-background-dark: #263237;
 $color-background-gray: #f6f9ff;
 $color-background-violet: #302838;
 $color-background-gray-light: #fafafa;
 $color-text-primary: #304750;
-$color-text-light: #fff;
+$color-text-light: #ffffff;
 $color-text-orange: #ad6c12;
 $color-text-dark: #2a1976;
-$color-text-white: #fff;
+$color-text-violet: #7d6b9a;
+// $color-text-white: #e1e1e1;
+// $color-text-white: #efefef;
+$color-text-white: #e8e8e8;
 $color-text-gray: #acacac;
 $color-text-gray-dark: #808080;
+$color-link: #7278f0;
 $color-grey: #bdbdbd;
 $color-gray-light: #e6f2fb;
 $color-red: #ca0000;
@@ -27,6 +42,9 @@ $color-violet-dark: #8a2be2;
 $color-violet-light: #e9d8f6;
 $color-violet-grey: #696976;
 $color-green: #2abead;
+// $color-input-bg: lighten($color-background-tertiary, 3%);
+// $color-input-bg: lighten($color-background-secondary, 5%);
+$color-input-bg: #212b3a;
 
 //FONTS
 $font-family-primary: "Raleway", sans-serif;
@@ -34,8 +52,68 @@ $font-family-secondary: "Grand Hotel", sans-serif;
 
 //SHADOWS
 $drop-shadow: drop-shadow(2px 3px 5px rgba(22, 0, 0, 0.1));
-$box-shadow: 0rem 0rem 1rem rgba(0, 0, 0, 0.3);
+$box-shadow: 0rem 0rem 1rem rgba(0, 0, 0, 0.4);
+$box-shadow-light: 0rem 0rem 0.5rem rgba(0, 0, 0, 0.25);
+$box-shadow-dark: 0rem 0rem 1rem rgba(0, 0, 0, 0.9);
 $box-shadow-inset: inset 0rem 0rem 0.5rem rgba(0, 0, 0, 0.3);
 
 //BORDERS
 $border-radius: 1rem;
+
+$clip-path-arrow-left: polygon(
+  60% 0,
+  80% 0,
+  20% 50%,
+  80% 100%,
+  60% 100%,
+  0 50%
+);
+$clip-path-arrow-right: polygon(
+  20% 0,
+  40% 0,
+  100% 50%,
+  40% 100%,
+  20% 100%,
+  80% 50%
+);
+$clip-path-arrow-up: polygon(
+  0 60%,
+  50% 20%,
+  100% 60%,
+  100% 80%,
+  50% 40%,
+  0 80%
+);
+$clip-path-arrow-down: polygon(
+  0 20%,
+  50% 60%,
+  100% 20%,
+  100% 40%,
+  50% 80%,
+  0 40%
+);
+
+@mixin custom-scroll {
+  &::-webkit-scrollbar {
+    width: 8px; /* width of the entire scrollbar */
+    border-radius: 1rem;
+    opacity: 0;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #443d62; /* color of the tracking area */
+    border-radius: 1rem;
+    opacity: 0;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ababab; /* color of the scroll thumb */
+    border-radius: 20px; /* roundness of the scroll thumb */
+    opacity: 0;
+    //   border: 3px solid #ababab; /* creates padding around scroll thumb */
+    &:hover {
+      background-color: #818181; /* color of the scroll thumb */
+      opacity: 0;
+    }
+  }
+}
