@@ -9,6 +9,8 @@ import {
   updateProfile,
 } from "firebase/auth";
 import firebaseApp from "../firebase-config";
+import { uploadPanelStateFromStorage } from "./usedModels";
+import { uploadPromptFromStorage } from "./prompt";
 
 const auth = getAuth(firebaseApp);
 
@@ -79,6 +81,8 @@ export const initAuth = () => {
             displayName: user.displayName,
           })
         );
+        dispatch(uploadPanelStateFromStorage(user.uid));
+        dispatch(uploadPromptFromStorage(user.uid));
       }
     });
   };

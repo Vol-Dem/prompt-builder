@@ -212,7 +212,21 @@ const UpdateModelForm = ({ modelData, id }) => {
 
       // const src = formdata.get("src")?.trim().toLowerCase() || "";
       const modelType = modelTypeInput;
-      const modelId = idInput;
+      let modelId;
+      if (Number.isFinite(+idInput)) {
+        modelId = +idInput;
+      } else {
+        const urlArr = idInput.split("/");
+        const modelIdIndex =
+          urlArr.findIndex((urlPart) => urlPart === "models") + 1;
+        console.log(modelIdIndex);
+        if (modelIdIndex) {
+          modelId = urlArr[modelIdIndex];
+        } else {
+          throw new Error("Invalid URL");
+        }
+      }
+
       const modelName = titleInput.trim();
       const description = descriptionInput.trim();
       const main = formdata.get("main")?.trim().toLowerCase();
@@ -336,6 +350,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           [version.id]: {
             versionId: version.id,
             versionName: version.name,
+            baseModel: version.baseModel,
             versionImageUrl:
               version.images?.filter((img, i) => img.type === "image")[0]
                 ?.url || "",

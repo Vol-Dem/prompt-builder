@@ -14,7 +14,7 @@ import { doc, getFirestore, onSnapshot } from "firebase/firestore";
 import firebaseApp from "../../firebase-config";
 import ModelSettings from "../model/model-settings/ModelSettings";
 import TagSets from "../model/tag-sets/TagSets";
-import { usedModelsActions } from "../../store/usedModels";
+import { addModelToPanel } from "../../store/usedModels";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -177,7 +177,7 @@ const Model = () => {
   };
 
   const addToSidePanelHandler = () => {
-    dispatch(usedModelsActions.addModelToPanel(modelPreview));
+    dispatch(addModelToPanel(modelPreview));
   };
 
   return (

@@ -1,17 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import classes from "./PreviewCard.module.scss";
-import Tag from "../tag/Tag";
+// import Tag from "../tag/Tag";
 // import { ReactComponent as StarImg } from "../../assets/star.svg";
 import { useNavigate } from "react-router-dom";
 // import TagList from "../tag-list/TagList";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "../ui/image/Image";
-import { usedModelsActions } from "../../store/usedModels";
+import { addModelToPanel } from "../../store/usedModels";
+import ActivationTag from "../activation-tag/ActivationTag";
 
 const PreviewCard = ({ previewData }) => {
   // const [tagsIsOpen, setTagsIsOpen] = useState(false);
   // const [tagsHeight, setTagsHeight] = useState(null);
   const [currVersion, setCurrVersion] = useState({});
+  const [currSidePanelData, setCurrSidePanelData] = useState({});
   // const [taglistHeight, setTaglistHeight] = useState(null);
   // const [helperTagsIsOpen, setHelperTagsIsOpen] = useState(false);
   // const [helpertagsHeight, setHelperTagsHeight] = useState(null);
@@ -27,13 +29,36 @@ const PreviewCard = ({ previewData }) => {
   // const taglistItemHeight = 34;
 
   useEffect(() => {
-    const currVersionData =
+    let curVersionData =
       previewData?.modelVersionsCustomData &&
-      Object.values(previewData.modelVersionsCustomData).filter(
-        (data) => data.downloadStatus
-      );
-    if (currVersionData?.length) setCurrVersion(currVersionData[0]);
-  }, [previewData]);
+      Object.values(previewData.modelVersionsCustomData)
+        .filter((data) => data.downloadStatus)
+        .toSorted((a, b) => b.versionId - a.versionId)[0];
+
+    setCurrVersion(curVersionData);
+
+    const sidePanelData = {
+      id: previewData?.id,
+      src: previewData?.src,
+      main: previewData?.main,
+      sub: previewData?.sub,
+      title: previewData.name || previewData.title,
+      versionName: curVersionData?.name,
+      imgUrl: previewData?.imgUrl,
+      nsfwPreviewImgUrl: previewData?.nsfwPreviewImgUrl,
+      type: previewData?.modelType,
+      baseModel: curVersionData?.baseModel || previewData?.baseModel,
+      mainTag: curVersionData?.mainTag || previewData?.mainTag,
+      weight: curVersionData?.weight || previewData?.weight,
+      minWeight: curVersionData?.minWeight || previewData?.minWeight,
+      maxWeight: curVersionData?.maxWeight || previewData?.maxWeight,
+      size: curVersionData?.size || previewData?.size,
+      tags: curVersionData?.trainedWords || curVersionData?.trainedWords,
+      helperTags: curVersionData?.helperTags || previewData?.helperTags,
+      updatedAt: previewData?.updatedAt,
+    };
+    setCurrSidePanelData(sidePanelData);
+  }, [previewData, isNsfwMode]);
 
   // useEffect(() => {
   //   const taglistHeight = tagsRef?.current?.clientHeight;
@@ -90,7 +115,7 @@ const PreviewCard = ({ previewData }) => {
   };
 
   const addToSidePanelHandler = () => {
-    dispatch(usedModelsActions.addModelToPanel(previewData));
+    dispatch(addModelToPanel(currSidePanelData));
   };
 
   return (
@@ -122,23 +147,25 @@ const PreviewCard = ({ previewData }) => {
         </h4>
         <div className={classes.info}>
           <span className={classes.type}>{previewData.type}</span>
-          <span>M: {previewData.baseModel}</span>
-          <span>W: {previewData.weight}</span>
-          <span>S: {previewData.size}</span>
+          <span>M: {currVersion.baseModel || previewData.baseModel}</span>
+          <span>W: {currVersion.weight || previewData.weight}</span>
+          <span>S: {currVersion.size || previewData.size}</span>
         </div>
-        <div className={classes["main-tag"]}>
-          Version: {currVersion.versionName}
-        </div>
+        {currVersion?.versionName && (
+          <div className={classes["main-tag"]}>
+            Version: {currVersion.versionName}
+          </div>
+        )}
         <div className={classes["main-tag"]}>
           File: {currVersion.fileName || previewData.fileName}
         </div>
-        {previewData.mainTag && (
+        {(currVersion.mainTag || previewData.mainTag) && (
           <ul className={classes["main-tag"]}>
-            Activation tag:
-            <Tag
-              tag={previewData.mainTag}
-              promptType="positive"
-              modelData={previewData}
+            {/* Activation tag: */}
+            <ActivationTag
+              tag={currVersion.mainTag || previewData.mainTag}
+              modelData={currSidePanelData}
+              strength={currVersion.weight || previewData.weight}
             />
           </ul>
         )}

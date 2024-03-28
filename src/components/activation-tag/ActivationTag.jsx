@@ -6,24 +6,30 @@ import { promptActions } from "../../store/prompt";
 
 const ActivationTag = ({ tag, modelData, strength }) => {
   const [curTagName, setCurTagName] = useState(tag);
-  const [curTagStrength, setCurTagStrength] = useState(strength || 1);
+  const [curTagStrength, setCurTagStrength] = useState(null);
   const dispatch = useDispatch();
   const curPrompt = useSelector((state) => state.prompt.curPrompt);
 
   useEffect(() => {
+    // console.log(tag);
     const tagName = tag.split(":").slice(0, -1).join(":");
-    console.log(tag.split(":"));
+    const curStr = parseFloat(tag?.split(":")?.slice(-1));
+    // console.log(tag.split(":"));
+    // console.log(tagName);
     setCurTagName(tagName);
+    if (curStr) {
+      setCurTagStrength(curStr);
+    }
   }, [tag]);
 
   useEffect(() => {
     const curPromptTag = curPrompt
       ?.split(",")
-      ?.find((word) => word.includes(curTagName))
-      ?.split(":")
-      ?.slice(-1);
-    if (curPromptTag) {
-      setCurTagStrength(parseFloat(curPromptTag));
+      ?.find((word) => word.includes(curTagName));
+    const curStr = parseFloat(curPromptTag?.split(":")?.slice(-1));
+
+    if (curStr) {
+      setCurTagStrength(curStr);
     }
   }, [curPrompt, curTagName]);
 
@@ -45,7 +51,9 @@ const ActivationTag = ({ tag, modelData, strength }) => {
   return (
     <div className={classes["activation-tag"]}>
       <Tag
-        tag={`${curTagName}:${curTagStrength.toFixed(1)}>`}
+        tag={
+          curTagStrength ? `${curTagName}:${curTagStrength.toFixed(1)}>` : tag
+        }
         promptType="positive"
         modelData={modelData}
       />

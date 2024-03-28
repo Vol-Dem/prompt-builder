@@ -5,45 +5,53 @@ import { ReactComponent as StarImg } from "../../assets/star.svg";
 import { useNavigate } from "react-router-dom";
 import TagList from "../tag-list/TagList";
 import { useDispatch, useSelector } from "react-redux";
-import { usedModelsActions } from "../../store/usedModels";
+import { removeModelFromPanel } from "../../store/usedModels";
 import { promptActions } from "../../store/prompt";
 import ActivationTag from "../activation-tag/ActivationTag";
 import Arrow from "../ui/Arrow";
 
-const UsedCard = ({ previewData }) => {
+const UsedCard = ({ previewData, fullView }) => {
   const [tagsIsOpen, setTagsIsOpen] = useState(false);
   const [tagsHeight, setTagsHeight] = useState(null);
-  const [helperTagsIsOpen, setHelperTagsIsOpen] = useState(false);
-  const [helpertagsHeight, setHelperTagsHeight] = useState(null);
+  const [taglistHeight, setTaglistHeight] = useState(null);
+  // const [helperTagsIsOpen, setHelperTagsIsOpen] = useState(false);
+  // const [helpertagsHeight, setHelperTagsHeight] = useState(null);
   const [imgIsLoading, setImgIsLoading] = useState(false);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const tagsRef = useRef();
   const tagsListRef = useRef();
-  const helperTagsRef = useRef();
+  // const helperTagsRef = useRef();
   const taglistItemHeight = 34;
-  const taglistHeight = tagsRef?.current?.clientHeight;
-  console.log(previewData);
+  // const taglistHeight = tagsRef?.current?.clientHeight;
+  // console.log(taglistHeight);
 
   useEffect(() => {
     setImgIsLoading(true);
   }, []);
 
   useEffect(() => {
+    if (tagsRef?.current?.clientHeight)
+      setTaglistHeight(tagsRef?.current?.clientHeight);
     if (taglistHeight === taglistItemHeight) setTagsHeight(taglistItemHeight);
-  }, [previewData, taglistHeight, taglistItemHeight]);
+  }, [
+    previewData,
+    taglistHeight,
+    taglistItemHeight,
+    tagsRef?.current?.clientHeight,
+  ]);
 
-  const openHelperTagsHandler = () => {
-    setHelperTagsIsOpen((prev) => {
-      if (prev) {
-        setHelperTagsHeight(0);
-      } else {
-        setHelperTagsHeight(helperTagsRef.current.clientHeight);
-      }
-      return !prev;
-    });
-  };
+  // const openHelperTagsHandler = () => {
+  //   setHelperTagsIsOpen((prev) => {
+  //     if (prev) {
+  //       setHelperTagsHeight(0);
+  //     } else {
+  //       setHelperTagsHeight(helperTagsRef.current.clientHeight);
+  //     }
+  //     return !prev;
+  //   });
+  // };
 
   const openTagsHandler = () => {
     setTagsIsOpen((prev) => {
@@ -66,7 +74,7 @@ const UsedCard = ({ previewData }) => {
   };
 
   const closeCardHandler = () => {
-    dispatch(usedModelsActions.removeModel(previewData.id));
+    dispatch(removeModelFromPanel(previewData.id));
     dispatch(promptActions.removeTag(previewData.mainTag));
   };
 
@@ -102,15 +110,16 @@ const UsedCard = ({ previewData }) => {
       <div className={`${classes.content}`}>
         <div className={classes.info}>
           <span className={classes.type}>{previewData.type}</span>
+          {previewData?.baseModel && <span>{previewData.baseModel}</span>}
           {previewData?.minWeight && (
             <span>
               W:{previewData?.minWeight?.toFixed(1)}-
               {previewData?.maxWeight?.toFixed(1)}
             </span>
           )}
-          {previewData.size && <span>S: {previewData.size}</span>}
+          {/* {previewData.size && <span>S: {previewData.size}</span>} */}
         </div>
-        {!!previewData.mainTag && (
+        {!!previewData.mainTag && fullView && (
           <div className={classes["main-tag"]}>
             {/* Activation tag: */}
             <ActivationTag
@@ -120,43 +129,45 @@ const UsedCard = ({ previewData }) => {
             />
           </div>
         )}
-        <div className={classes["tags-container"]}>
-          {!!previewData.tags?.length && (
-            <>
-              {/* <span>Tags: </span> */}
-              <div
-                className={`${classes.tags} ${
-                  tagsIsOpen ? classes["tags--open"] : ""
-                }`}
-                style={tagsHeight ? { maxHeight: `${tagsHeight}px` } : {}}
-              >
+        {fullView && (
+          <div className={classes["tags-container"]}>
+            {!!previewData.tags?.length && (
+              <>
+                {/* <span>Tags: </span> */}
                 <div
-                  ref={tagsRef}
-                  className={`${classes["tags__list"]} ${
-                    taglistHeight > taglistItemHeight ? classes.shadow : ""
+                  className={`${classes.tags} ${
+                    tagsIsOpen ? classes["tags--open"] : ""
                   }`}
+                  style={tagsHeight ? { maxHeight: `${tagsHeight}px` } : {}}
                 >
-                  <TagList
-                    name="Trigger words"
-                    ref={tagsListRef}
-                    tags={previewData.tags}
-                    className={classes["tag-list"]}
-                    promptType="positive"
-                  />
+                  <div
+                    ref={tagsRef}
+                    className={`${classes["tags__list"]} ${
+                      taglistHeight > taglistItemHeight ? classes.shadow : ""
+                    }`}
+                  >
+                    <TagList
+                      name="Trigger words"
+                      ref={tagsListRef}
+                      tags={previewData.tags}
+                      className={classes["tag-list"]}
+                      promptType="positive"
+                    />
+                  </div>
                 </div>
-              </div>
-              {taglistHeight > taglistItemHeight && (
-                <button
-                  className={classes["tags__btn"]}
-                  onClick={openTagsHandler}
-                >
-                  <Arrow direction={tagsIsOpen ? "up" : "down"} />
-                </button>
-              )}
-            </>
-          )}
-        </div>
-        {!!previewData.helperTags?.length && (
+                {taglistHeight > taglistItemHeight && (
+                  <button
+                    className={classes["tags__btn"]}
+                    onClick={openTagsHandler}
+                  >
+                    <Arrow direction={tagsIsOpen ? "up" : "down"} />
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        )}
+        {/* {!!previewData.helperTags?.length && (
           <>
             <div
               className={`${classes[["helper-tags"]]} ${
@@ -179,7 +190,7 @@ const UsedCard = ({ previewData }) => {
               {`${helperTagsIsOpen ? "Hide" : "Show"} helper tags`}
             </button>
           </>
-        )}
+        )} */}
       </div>
     </li>
   );

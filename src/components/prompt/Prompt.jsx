@@ -1,20 +1,24 @@
-import React, { useState } from "react";
+// import React, { useState } from "react";
 import classes from "./Prompt.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { promptActions } from "../../store/prompt";
 import TagsTextarea from "../ui/TagsTextarea";
 import Arrow from "../ui/Arrow";
+import ButtonTertiary from "../ui/ButtonTertiary";
 // import Buttton from "../ui/Button";
 
 const Prompt = () => {
-  const [promptIsOpen, setPromptIsOpen] = useState(true);
-  const [promptTextMode, setPromptTextMode] = useState(false);
+  // const [promptIsOpen, setPromptIsOpen] = useState(true);
+  // const [promptTextMode, setPromptTextMode] = useState(false);
   const curPrompt = useSelector((state) => state.prompt.curPrompt);
   const curNegPrompt = useSelector((state) => state.prompt.curNegPrompt);
+  const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
+  const promptTextMode = useSelector((state) => state.prompt.isTextMode);
   const dispatch = useDispatch();
 
   const openPromptHandler = () => {
-    setPromptIsOpen((prevState) => !prevState);
+    // setPromptIsOpen((prevState) => !prevState);
+    dispatch(promptActions.setPromptIsOpen(!promptIsOpen));
   };
 
   const promptHandler = (e) => {
@@ -33,7 +37,11 @@ const Prompt = () => {
 
   const textModeHandler = (e) => {
     const isTextMode = e.target.dataset.type === "text";
-    setPromptTextMode(isTextMode);
+    dispatch(promptActions.setTextMode(isTextMode));
+  };
+
+  const clearPromptHandler = () => {
+    dispatch(promptActions.clearPrompt());
   };
 
   return (
@@ -68,6 +76,9 @@ const Prompt = () => {
                 Tags
               </button>
             </div>
+            <ButtonTertiary type="button" onClick={clearPromptHandler}>
+              Clear
+            </ButtonTertiary>
           </div>
 
           <div className={classes.field}>

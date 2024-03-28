@@ -187,22 +187,25 @@ const Carousel = ({
   }, [visibleAmount, images, visibleImages, openImgHandler, caruselIsVisible]);
 
   useEffect(() => {
-    // if (!images) return;
-    // const imgSize = images?.reduce(
-    //   (acc, cur) => {
-    //     return cur.height > acc[0] ? [cur.height, cur.width] : acc;
-    //   },
-    //   [0, 0]
-    // );
-    // const imgHight = Math.floor(
-    //   (dimensions.imgWidth / imgSize[1]) * imgSize[0]
-    // );
+    if (!images) return;
+    const imgSize = images?.reduce(
+      (acc, cur) => {
+        return cur.height > acc[0] ? [cur.height, cur.width] : acc;
+      },
+      [0, 0]
+    );
+    const imgHight = Math.floor(
+      (dimensions.imgWidth / imgSize[1]) * imgSize[0]
+    );
 
-    // setCarouselHeight(
-    //   imgHight > maxCarouselHeight ? maxCarouselHeight : imgHight
-    // );
-    setCarouselHeight(maxCarouselHeight);
-  }, [images, dimensions.imgWidth]);
+    if (curVisibleAmount === 1) {
+      setCarouselHeight(maxCarouselHeight);
+    } else {
+      setCarouselHeight(
+        imgHight > maxCarouselHeight ? maxCarouselHeight : imgHight
+      );
+    }
+  }, [images, dimensions.imgWidth, curVisibleAmount]);
 
   useEffect(() => {
     if (images?.length > curVisibleAmount) {

@@ -91,9 +91,8 @@ const ModelTags = ({ customData, modelPreview }) => {
               <h3 className={classes["tags__subtitle"]}>Activation tag:</h3>
               <ActivationTag
                 tag={customData?.mainTag || model?.mainTag}
-                strength={customData?.weight || model.defaultCustomData?.weight}
-                promptType="positive"
                 modelData={modelPreview}
+                strength={customData?.weight || model.defaultCustomData?.weight}
               />
               {/* <Tag
                 tag={customData?.mainTag || model?.mainTag}

@@ -2,7 +2,7 @@ import React, { forwardRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { promptActions } from "../../store/prompt";
 import classes from "./Tag.module.scss";
-import { usedModelsActions } from "../../store/usedModels";
+import { addModelToPanel } from "../../store/usedModels";
 
 const Tag = forwardRef((props, ref) => {
   const [isInPrompt, setIsInPrompt] = useState(false);
@@ -49,7 +49,7 @@ const Tag = forwardRef((props, ref) => {
         })
       );
       if (props.modelData) {
-        dispatch(usedModelsActions.addModelToPanel(props.modelData));
+        dispatch(addModelToPanel(props.modelData));
       }
     } else {
       console.log("DEL");

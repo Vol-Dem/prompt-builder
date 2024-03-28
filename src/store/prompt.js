@@ -1,16 +1,37 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { authActions } from "./auth";
+import { getAuth } from "firebase/auth";
+import firebaseApp from "../firebase-config";
+import { saveToStorage, uploadStorage } from "../variables/utils";
+
+const auth = getAuth(firebaseApp);
 
 const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
 
 const promptSlice = createSlice({
   name: "prompt",
-  initialState: { curPrompt: "", curNegPrompt: "" },
+  initialState: {
+    curPrompt: "",
+    curNegPrompt: "",
+    promptIsOpen: true,
+    isTextMode: false,
+  },
   reducers: {
     setCurrentPrompt(state, actions) {
       state.curPrompt = actions.payload;
     },
     setCurrentNegPrompt(state, actions) {
       state.curNegPrompt = actions.payload;
+    },
+    clearPrompt(state, actions) {
+      state.curPrompt = "";
+      state.curNegPrompt = "";
+    },
+    setPromptIsOpen(state, actions) {
+      state.promptIsOpen = actions.payload;
+    },
+    setTextMode(state, actions) {
+      state.isTextMode = actions.payload;
     },
     addTagToPrompt(state, actions) {
       const isPositive = actions.payload.type === "positive";
@@ -127,7 +148,45 @@ const promptSlice = createSlice({
       }
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(authActions.logout, (state, actions) => {
+        state.curPrompt = "";
+        state.curNegPrompt = "";
+        state.promptIsOpen = true;
+        state.isTextMode = false;
+      })
+      .addMatcher(
+        (action) => action.type.startsWith("prompt/"),
+        (state, action) => {
+          const uid = auth.currentUser.uid;
+          saveToStorage(`${uid}-prompt`, state.curPrompt);
+          saveToStorage(`${uid}-neg-prompt`, state.curNegPrompt);
+          saveToStorage(`${uid}-prompt-state`, {
+            promptIsOpen: state.promptIsOpen,
+          });
+          saveToStorage(`${uid}-prompt-text`, { isTextMode: state.isTextMode });
+        }
+      );
+  },
 });
+
+export const uploadPromptFromStorage = () => {
+  return (dispatch, getState) => {
+    const uid = getState().auth.user.uid;
+    const prompt = uploadStorage(`${uid}-prompt`);
+    const negPrompt = uploadStorage(`${uid}-neg-prompt`);
+    const promptState = uploadStorage(`${uid}-prompt-state`);
+    const isTextMode = uploadStorage(`${uid}-prompt-text`);
+
+    if (prompt) dispatch(promptActions.setCurrentPrompt(prompt));
+
+    if (negPrompt) dispatch(promptActions.setCurrentNegPrompt(negPrompt));
+    if (promptState)
+      dispatch(promptActions.setPromptIsOpen(promptState.promptIsOpen));
+    if (isTextMode) dispatch(promptActions.setTextMode(isTextMode.isTextMode));
+  };
+};
 
 export const promptActions = promptSlice.actions;
 
