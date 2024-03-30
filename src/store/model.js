@@ -1,5 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { doc, getFirestore, setDoc, updateDoc } from "firebase/firestore";
+import {
+  arrayRemove,
+  deleteDoc,
+  doc,
+  getFirestore,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import firebaseApp from "../firebase-config";
 import { getModelData } from "../utils/fetchUtils";
 
@@ -160,6 +167,70 @@ export const setPreviewImg = (url, isNsfw = false) => {
       },
       { merge: true }
     );
+  };
+};
+
+export const setTagSetPreviewImg = (versionId, tagSetData) => {
+  return async (__, getState) => {
+    const uid = getState().auth.user.uid;
+    const id = getState().model.model.id;
+
+    const urlField =
+      versionId === "tsv-def"
+        ? `defaultCustomData.tagSetsData`
+        : `modelVersionsCustomData.${versionId}.tagSetsData`;
+    console.log(urlField);
+    console.log(tagSetData);
+    // return;
+    const modelRef = doc(firestore, "users", uid, "models", id + "");
+    await updateDoc(
+      modelRef,
+      {
+        [`${urlField}`]: tagSetData,
+      },
+      { merge: true }
+    );
+  };
+};
+
+export const deleteImgPost = (versionId, postId, postData) => {
+  return async (dispatch, getState) => {
+    const uid = getState().auth.user.uid;
+    const id = getState().model.model.id;
+
+    const modelRef = doc(firestore, "users", uid, "models", id + "");
+
+    const imgPostRef = doc(
+      firestore,
+      "users",
+      uid,
+      "models",
+      id + "",
+      "images",
+      postId + ""
+    );
+
+    const del = await deleteDoc(imgPostRef);
+    await updateDoc(modelRef, {
+      [`savedImages.${versionId}`]: arrayRemove(postData),
+    });
+
+    console.log(del);
+  };
+};
+
+export const deleteModel = (modelId) => {
+  return async (dispatch, getState) => {
+    const uid = getState().auth.user.uid;
+    const id = getState().model.model.id;
+
+    const modelRef = doc(firestore, "users", uid, "models", id + "");
+    const modelPreviewRef = doc(firestore, "users", uid, "preview", id + "");
+
+    const del = await deleteDoc(modelRef);
+    const delPr = await deleteDoc(modelPreviewRef);
+
+    console.log(del);
   };
 };
 

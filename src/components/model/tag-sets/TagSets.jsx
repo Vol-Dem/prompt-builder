@@ -15,6 +15,7 @@ const TagSets = ({ customData, defaultData }) => {
   const [tagsetItemHeight, setTagsetItemHeight] = useState(20);
   const [tagsetListHeight, setTagsetListHeight] = useState(20);
   const model = useSelector((state) => state.model.model);
+  const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const tagSetItemRef = useRef();
   const tagSetListRef = useRef();
 
@@ -53,7 +54,12 @@ const TagSets = ({ customData, defaultData }) => {
     >
       {/* <span className={classes["tag-sets__name"]}>{tagSet.name}:</span> */}
       <div className={classes["tag-sets__img"]}>
-        <Image src={tagSet?.imgUrl} alt="Set prewiew image" />
+        <Image
+          src={
+            isNsfwMode ? tagSet?.nsfwImgUrl || tagSet?.imgUrl : tagSet?.imgUrl
+          }
+          alt="Set prewiew image"
+        />
       </div>
       {
         <TagList

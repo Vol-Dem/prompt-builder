@@ -1,3 +1,5 @@
+@use "./../../../variables/variables.scss" as var;
+
 .container {
   display: flex;
   position: relative;
@@ -6,6 +8,46 @@
   width: 26rem;
   & img {
     max-width: 100%;
+  }
+}
+.menu-btn {
+  // position: absolute;
+  // top: 1rem;
+  // right: 1rem;
+  // list-style: none;
+}
+.menu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  top: 1rem;
+  right: 1rem;
+  list-style: none;
+  z-index: 2;
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.4rem;
+    list-style: none;
+    border-radius: 1rem;
+    background-color: var.$color-background-tertiary;
+    padding: 1rem;
+  }
+
+  &__item {
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &--del {
+      color: var.$color-red;
+    }
+
+    &:hover {
+      color: var.$color-text-violet;
+    }
   }
 }
 
@@ -39,6 +81,108 @@
   &--nsfw-previw {
     left: 2rem;
     bottom: 3rem;
+  }
+}
+
+.tag-sets {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  flex-direction: column;
+  gap: 0.8rem;
+  list-style: none;
+  margin-top: 1rem;
+  max-height: 55rem;
+  padding-right: 1rem;
+  overflow-y: scroll;
+  @include var.custom-scroll;
+
+  &__item {
+    display: flex;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 1rem;
+    overflow: hidden;
+    background-color: var.$color-background-tertiary;
+    // cursor: pointer;
+    transition: all 0.3s;
+
+    // &:hover {
+    //   color: var.$color-text-violet;
+    // }
+  }
+
+  &__img {
+    width: 9rem;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    width: 100%;
+    padding: 0.2rem 0.6rem;
+  }
+
+  &__name {
+    font-size: 1.6rem;
+    font-weight: 400;
+  }
+
+  &__btn-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+}
+
+.tag-sets-head {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tag-sets-title {
+  font-size: 2.4rem;
+  // line-height: 1;
+}
+
+.tag-sets-versions {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+
+  &__item {
+    cursor: pointer;
+    transition: all 0.3s;
+    &--active {
+      color: aqua;
+    }
+
+    &:hover {
+      color: var.$color-text-violet;
+    }
+  }
+}
+
+.mode-switch {
+  font-size: 1.4rem;
+  border-radius: var.$border-radius;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+}
+.btn-mode {
+  width: 5rem;
+  font-size: 1rem;
+  background-color: transparent;
+  // background-color: #fff;
+  padding: 0.6rem 0.8rem;
+  border: none;
+  transition: all 0.3s;
+  color: #fff;
+  cursor: pointer;
+
+  &--active {
+    background-color: blueviolet;
   }
 }
 

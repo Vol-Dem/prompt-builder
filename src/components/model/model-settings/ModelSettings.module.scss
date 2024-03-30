@@ -1,3 +1,5 @@
+@use "../../../variables/variables.scss" as var;
+
 .wrap {
   display: flex;
   gap: 2rem;
@@ -49,4 +51,31 @@
   display: flex;
   gap: 1rem;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.btn-del {
+  background-color: var.$color-red;
+
+  &:hover {
+    background-color: darken(var.$color-red, 10%);
+  }
+}
+
+.del-request {
+  width: 36rem;
+
+  &__message {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  &__btn-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
 }

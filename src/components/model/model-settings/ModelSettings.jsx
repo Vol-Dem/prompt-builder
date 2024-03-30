@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
 import UpdateModelForm from "../../forms/update-model-form/UpdateModelForm";
 import VersionForm from "../../forms/version-form/VersionForm";
@@ -11,6 +11,9 @@ import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
 import { getModelData } from "../../../utils/fetchUtils";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
+import { deleteModel } from "../../../store/model";
+import Modal from "../../ui/Modal";
+import { useNavigate } from "react-router-dom";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -21,9 +24,11 @@ const ModelSettings = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, seteErrorMessage] = useState("");
   const [successMessage, seteSuccessMessage] = useState("");
+  const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
   const model = useSelector((state) => state.model.model);
   const uid = useSelector((state) => state.auth.user.uid);
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const customData = model.modelVersionsCustomData[curTab];
@@ -120,6 +125,20 @@ const ModelSettings = () => {
     }
   };
 
+  const showDeleteReqeustHandler = () => {
+    setDeleteRequestIsOpen(true);
+  };
+
+  const closeDeleteReqeustHandler = () => {
+    setDeleteRequestIsOpen(false);
+  };
+
+  const deleteModelHandler = () => {
+    console.log("DEL");
+    dispatch(deleteModel());
+    navigate("/");
+  };
+
   const modelVersionsHtml = model?.data?.modelVersions.flatMap((version, i) => {
     const versionIsSaved =
       model.modelVersionsCustomData[version.id]?.downloadStatus;
@@ -179,6 +198,14 @@ const ModelSettings = () => {
               >
                 {!isLoading ? "Update" : "L..."}
               </Buttton>
+              <Buttton
+                type="button"
+                onClick={showDeleteReqeustHandler}
+                className={classes["btn-del"]}
+                disabled={isLoading}
+              >
+                Delete
+              </Buttton>
               {successMessage && <span>{successMessage}</span>}
               {errorMessage && <span>{errorMessage}</span>}
             </div>
@@ -203,6 +230,25 @@ const ModelSettings = () => {
         )}
         <SaveImageForm modelData={model} />
       </div>
+      {deleteRequestIsOpen && (
+        <Modal onClose={closeDeleteReqeustHandler}>
+          <div className={classes["del-request"]}>
+            <div className={classes["del-request__message"]}>
+              Are you sure that you want to delete this resource? This action
+              can't be reverted
+            </div>
+            <div className={classes["del-request__btn-container"]}>
+              <Buttton
+                className={classes["btn-del"]}
+                onClick={deleteModelHandler}
+              >
+                Delete
+              </Buttton>
+              <Buttton onClick={closeDeleteReqeustHandler}>Cancel</Buttton>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

@@ -380,16 +380,23 @@ const UpdateModelForm = ({ modelData, id }) => {
 
       const previewImg = activePreviewImg || previewImgDefault;
 
+      const baseModels = new Set(
+        data.modelVersions?.flatMap((version) => version?.baseModel || [])
+      );
+
       const modelInfo = {
         ...modelData,
         id: modelData?.id || +modelId,
         modelType,
+        baseModels: [...baseModels],
         main,
         sub,
         data,
         name: modelName || data.name,
         fileName,
         mainTag,
+        nsfw: data?.nsfw || "",
+        nsfwLevel: data?.nsfwLevel || "",
         src: "civitai.com",
         defaultCustomData: {
           description: description || data.description,
@@ -425,7 +432,10 @@ const UpdateModelForm = ({ modelData, id }) => {
         name: modelName || data.name || "",
         imgUrl: previewImg || "",
         type: data.type,
+        nsfw: data?.nsfw || "",
+        nsfwLevel: data?.nsfwLevel || "",
         baseModel: data.modelVersions[0].baseModel,
+        baseModels: [...baseModels],
         mainTag,
         fileName,
         weight,

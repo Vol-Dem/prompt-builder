@@ -86,19 +86,19 @@ const promptSlice = createSlice({
         ?.split(splitRegEx)
         ?.flatMap((tag) => tag.trim() || []);
 
-      const newWords = actions.payload.value.filter((newWord) => {
+      const newWords = actions.payload?.value?.filter((newWord) => {
         const isInPrompt = promptArr.find(
           (promptWord) => promptWord === newWord
         );
         return !isInPrompt;
       });
       console.log(newWords);
-      if (isPositive && !!newWords.length) {
+      if (isPositive && !!newWords?.length) {
         state.curPrompt =
           lastSimbol === "," || !prompt.length
             ? `${prompt} ${newWords.join(", ")},`
             : `${prompt}, ${newWords.join(", ")},`;
-      } else if (!isPositive && !!newWords.length) {
+      } else if (!isPositive && !!newWords?.length) {
         state.curNegPrompt =
           lastSimbol === "," || !prompt.length
             ? `${prompt} ${newWords.join(", ")},`

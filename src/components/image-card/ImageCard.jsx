@@ -19,15 +19,27 @@ const ImageCard = ({ imageData, closeImg }) => {
   const resourcesHtml = imageResources?.map((resource, i) => (
     <div key={i} className={classes["resource"]}>
       {resource?.modelId && (
-        <a
-          href={`https://civitai.com/models/${resource?.modelId}${
-            resource?.versionId ? `?modelVersionId=${resource?.versionId}` : ""
-          }`}
-          target="blank"
-          className={classes["resource__name"]}
-        >
-          {resource?.name || resource.modelVersionId}
-        </a>
+        <>
+          <a
+            href={`https://civitai.com/models/${resource?.modelId}${
+              resource?.versionId
+                ? `?modelVersionId=${resource?.versionId}`
+                : ""
+            }`}
+            target="blank"
+            className={classes["resource__name"]}
+          >
+            {resource?.name || resource.modelVersionId}
+          </a>
+          {" / "}
+          <a
+            href={`/model/${resource?.modelId}`}
+            target="blank"
+            className={classes["resource__name"]}
+          >
+            In my collection
+          </a>
+        </>
       )}
       {!resource?.modelId && (
         <div>{resource?.name || resource.modelVersionId}</div>

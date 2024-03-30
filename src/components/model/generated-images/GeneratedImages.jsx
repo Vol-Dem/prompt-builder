@@ -46,6 +46,10 @@ const GeneratedImages = ({ customData }) => {
     };
   }, [model.id]);
 
+  useEffect(() => {
+    resetExamples();
+  }, [nsfwMode]);
+
   // useEffect(() => {
   //   if (!curVersion?.baseModel) return;
   //   if (!curImagesModelVersionId) {
@@ -137,7 +141,9 @@ const GeneratedImages = ({ customData }) => {
           versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
         }${amountPerPage ? `&limit=${amountPerPage}` : ""}${
           imagesSortValue ? `&sort=${imagesSortValue}` : ""
-        }${cursor ? `&cursor=${cursor}` : ""}${!true ? `&nsfw=None` : ""}`;
+        }${cursor ? `&cursor=${cursor}` : ""}${
+          nsfwMode ? `&nsfw=X` : `&nsfw=None`
+        }`;
 
         const imgExampleResponse = await fetch(url);
         const data = await imgExampleResponse.json();
@@ -155,7 +161,7 @@ const GeneratedImages = ({ customData }) => {
         setExamplesIsLoading(false);
       }
     },
-    [amountPerPage, imagesSortValue, nextCursor]
+    [amountPerPage, imagesSortValue, nextCursor, nsfwMode]
   );
 
   useEffect(() => {
@@ -200,6 +206,7 @@ const GeneratedImages = ({ customData }) => {
         orderBy("versionId", "desc")
         // orderBy("savedAt", "desc")
       );
+      console.log("START");
       const modelImagesSnap = await getDocs(q);
 
       const data = modelImagesSnap.docs.map((doc) => {
@@ -212,6 +219,7 @@ const GeneratedImages = ({ customData }) => {
         return (
           <Carousel
             key={i}
+            versionId={curImagesModelVersionId}
             images={item.items}
             visibleImgAmount={1}
             // onUpdate={updateImgResData}
@@ -277,6 +285,7 @@ const GeneratedImages = ({ customData }) => {
           <Carousel
             images={sortedExamples[key]}
             visibleImgAmount={1}
+            existedImgsAmount={existedExample?.amount || null}
             postId={postId}
             modelId={model.id}
             versionId={curImagesModelVersionId}

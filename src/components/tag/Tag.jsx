@@ -68,6 +68,7 @@ const Tag = forwardRef((props, ref) => {
       onClick={addTagHandler}
       data-type={props?.promptType}
       className={`${classes.tag} ${isInPrompt && classes.active}`}
+      style={props.style}
     >
       {props.tag}
     </div>

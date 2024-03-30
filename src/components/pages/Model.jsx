@@ -97,15 +97,16 @@ const Model = () => {
       type: model?.data?.type,
       baseModel: curVersion?.baseModel,
       mainTag: curVersionCustomData?.mainTag || model?.mainTag,
-      weight: curVersionCustomData?.weight || model?.defaultCustomData.weight,
+      weight: curVersionCustomData?.weight || model?.defaultCustomData?.weight,
       minWeight:
-        curVersionCustomData?.minWeight || model?.defaultCustomData.minWeight,
+        curVersionCustomData?.minWeight || model?.defaultCustomData?.minWeight,
       maxWeight:
-        curVersionCustomData?.maxWeight || model?.defaultCustomData.maxWeight,
-      size: curVersionCustomData?.size || model?.defaultCustomData.size,
+        curVersionCustomData?.maxWeight || model?.defaultCustomData?.maxWeight,
+      size: curVersionCustomData?.size || model?.defaultCustomData?.size,
       tags: curVersionCustomData?.trainedWords || curVersion?.trainedWords,
       helperTags:
-        curVersionCustomData?.helperTags || model?.defaultCustomData.helperTags,
+        curVersionCustomData?.helperTags ||
+        model?.defaultCustomData?.helperTags,
       updatedAt: model?.updatedAt,
     };
     console.log(curVersionCustomData);

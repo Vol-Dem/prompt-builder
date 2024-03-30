@@ -93,7 +93,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
       .filter(Boolean)
       .map((tag) => tag.trim());
     const tagSetNames = formdata.getAll("set-name");
-    const tagSetsData = tagSetNames.flatMap((setName, i) => {
+    const tagSetsInputData = tagSetNames.flatMap((setName, i) => {
       if (!setName && !tagSetsValues[i]) return [];
       return [{ name: setName, value: tagSetsValues[i] }];
     });
@@ -109,6 +109,18 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
       .split(splitRegEx)
       .filter(Boolean)
       .map((tag) => tag.trim());
+
+    let tagSetsData;
+    if (!versionData.tagSetsData.length) {
+      tagSetsData = tagSetsInputData;
+    } else {
+      tagSetsData = tagSetsInputData.map((tagSet, i) => {
+        return {
+          ...versionData.tagSetsData[i],
+          ...tagSet,
+        };
+      });
+    }
 
     try {
       const updatedVersionData = {

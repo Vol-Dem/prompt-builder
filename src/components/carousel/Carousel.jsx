@@ -8,7 +8,15 @@ import useIntersection from "../../hooks/use-intersection";
 import { clearObjectKeys } from "../../utils/generalUtils";
 import { getImagesInfo, makeBatchRequest } from "../../utils/fetchUtils";
 import firebaseApp from "../../firebase-config";
-import { arrayUnion, doc, getFirestore, setDoc } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  doc,
+  getFirestore,
+  setDoc,
+  updateDoc,
+  writeBatch,
+} from "firebase/firestore";
 import { useSelector } from "react-redux";
 
 const firestore = getFirestore(firebaseApp);
@@ -20,6 +28,7 @@ const Carousel = ({
   onUpdate,
   modelId,
   versionId,
+  existedImgsAmount,
 }) => {
   const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount);
   const [imgIsOpen, setImgIsOpen] = useState(false);
@@ -42,6 +51,8 @@ const Carousel = ({
   const transitionDuration = 300;
   const caruselIsVisible = useIntersection(carouselRef);
   const uid = useSelector((state) => state.auth.user.uid);
+  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const model = useSelector((state) => state.model.model);
 
   useEffect(() => {
     if (!dimensions?.imgWidthWithGap) return;
@@ -135,6 +146,8 @@ const Carousel = ({
       return (
         <CarouselImage
           key={image.hash + i}
+          postId={images}
+          versionId={versionId}
           onClick={openImgHandler}
           id={image.hash}
           dataset={i + visibleAmount}
@@ -156,6 +169,8 @@ const Carousel = ({
         return (
           <CarouselImage
             key={image.hash + "r" + i}
+            postId={images}
+            versionId={versionId}
             onClick={openImgHandler}
             id={image.hash}
             dataset={i + visibleAmount}
@@ -174,6 +189,8 @@ const Carousel = ({
         return (
           <CarouselImage
             key={image.hash + "l" + i}
+            postId={images}
+            versionId={versionId}
             onClick={openImgHandler}
             id={image.hash}
             dataset={i}
@@ -184,7 +201,14 @@ const Carousel = ({
       });
     }
     setImagesHtml([...imagesleft, ...imagesHtml, ...imagesRight]);
-  }, [visibleAmount, images, visibleImages, openImgHandler, caruselIsVisible]);
+  }, [
+    visibleAmount,
+    images,
+    visibleImages,
+    openImgHandler,
+    caruselIsVisible,
+    postId,
+  ]);
 
   useEffect(() => {
     if (!images) return;
@@ -317,8 +341,17 @@ const Carousel = ({
       if (savingImages) return;
       setSavingImages(true);
       const imgExampleResponse = await fetch(
-        `https://civitai.com/api/v1/images?postId=${postId}&modelId=${modelId}&modelVersionId=${versionId}`
+        `https://civitai.com/api/v1/images?postId=${postId}&modelId=${modelId}&modelVersionId=${versionId}${
+          nsfwMode ? `&nsfw=X` : `&nsfw=None`
+        }`
       );
+      // const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
+      //     versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
+      //   }${amountPerPage ? `&limit=${amountPerPage}` : ""}${
+      //     imagesSortValue ? `&sort=${imagesSortValue}` : ""
+      //   }${cursor ? `&cursor=${cursor}` : ""}${
+      //     nsfwMode ? `&nsfw=X` : `&nsfw=None`
+      //   }`;
       const data = await imgExampleResponse.json();
       console.log(data);
       if (!data.items.length) {
@@ -356,7 +389,9 @@ const Carousel = ({
       console.log(data.items.length);
       console.log(examplesDataWithRes.length);
 
-      await setDoc(
+      const batch = writeBatch(firestore);
+
+      batch.set(
         modelImagesRef,
         {
           items: examplesDataWithRes,
@@ -369,7 +404,19 @@ const Carousel = ({
         { merge: true }
       );
 
-      await setDoc(
+      const postData =
+        model.hasOwnProperty("savedImages") &&
+        model?.savedImages[versionId]?.find((post) => post.postId === +postId);
+      console.log(postData);
+      console.log(versionId);
+      console.log(postId);
+      if (postData) {
+        batch.update(modelRef, {
+          [`savedImages.${versionId}`]: arrayRemove(postData),
+        });
+      }
+
+      batch.set(
         modelRef,
         {
           savedImages: {
@@ -379,10 +426,14 @@ const Carousel = ({
         { merge: true }
       );
 
+      // Commit the batch
+      await batch.commit();
+
       setSavingImages(false);
     } catch (err) {
       setSavingImages(false);
       console.log(err.message);
+      console.log(err);
     }
   };
   const updateExampleHandler = () => {
@@ -444,17 +495,27 @@ const Carousel = ({
             <ul className={classes.pagination}>{paginationHtml}</ul>
           )}
           {postId && (
-            <span
-              className={`${classes["post-id"]} ${
-                savingImages ? classes["post-id--saving"] : ""
-              }`}
-              onClick={saveExampleHandler}
-            >
-              {!savingImages ? "+" : "S..."}
+            <span className={classes["btn-save-container"]}>
+              <span
+                className={`${classes["btn-save"]} ${
+                  savingImages ? classes["btn-save--saving"] : ""
+                }`}
+                onClick={saveExampleHandler}
+              >
+                {!savingImages ? "+" : "S..."}
+              </span>
+              {existedImgsAmount && existedImgsAmount < images.length && (
+                <span className={classes["btn-save__amount"]}>
+                  {existedImgsAmount}/{images.length}
+                </span>
+              )}
             </span>
           )}
           {onUpdate && (
-            <span className={classes["post-id"]} onClick={updateExampleHandler}>
+            <span
+              className={classes["btn-save"]}
+              onClick={updateExampleHandler}
+            >
               UP
             </span>
           )}

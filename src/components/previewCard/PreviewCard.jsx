@@ -147,9 +147,21 @@ const PreviewCard = ({ previewData }) => {
         </h4>
         <div className={classes.info}>
           <span className={classes.type}>{previewData.type}</span>
-          <span>M: {currVersion.baseModel || previewData.baseModel}</span>
-          <span>W: {currVersion.weight || previewData.weight}</span>
-          <span>S: {currVersion.size || previewData.size}</span>
+          <span>
+            M: (
+            {previewData?.baseModels?.join(", ") ||
+              currVersion?.baseModel ||
+              previewData?.baseModel}
+            )
+          </span>
+          <span>
+            W: {currVersion?.minWeight || previewData?.minWeight} -{" "}
+            {currVersion?.maxWeight || previewData?.maxWeight}
+          </span>
+          {!currVersion?.minWeight && !previewData?.minWeight && (
+            <span>W: {currVersion?.weight || previewData?.weight}</span>
+          )}
+          {/* <span>S: {currVersion?.size || previewData?.size}</span> */}
         </div>
         {currVersion?.versionName && (
           <div className={classes["main-tag"]}>
@@ -157,9 +169,9 @@ const PreviewCard = ({ previewData }) => {
           </div>
         )}
         <div className={classes["main-tag"]}>
-          File: {currVersion.fileName || previewData.fileName}
+          File: {currVersion?.fileName || previewData?.fileName}
         </div>
-        {(currVersion.mainTag || previewData.mainTag) && (
+        {(currVersion?.mainTag || previewData?.mainTag) && (
           <ul className={classes["main-tag"]}>
             {/* Activation tag: */}
             <ActivationTag
