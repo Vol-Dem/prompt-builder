@@ -11,6 +11,7 @@ import {
 import firebaseApp from "../firebase-config";
 import { uploadPanelStateFromStorage } from "./usedModels";
 import { uploadPromptFromStorage } from "./prompt";
+import { getUserCategories } from "./tabs";
 
 const auth = getAuth(firebaseApp);
 
@@ -83,6 +84,7 @@ export const initAuth = () => {
         );
         dispatch(uploadPanelStateFromStorage(user.uid));
         dispatch(uploadPromptFromStorage(user.uid));
+        dispatch(getUserCategories(user.uid))
       }
     });
   };

@@ -3,6 +3,7 @@
 .modal {
   position: fixed;
   animation: show 0.3s ease;
+  box-shadow: var.$box-shadow;
 
   &--backdrop {
     top: 0;
@@ -60,6 +61,7 @@
 
 .test {
   position: relative;
+  z-index: 20;
 }
 
 .title {

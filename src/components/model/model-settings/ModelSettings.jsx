@@ -12,8 +12,9 @@ import { getModelData } from "../../../utils/fetchUtils";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
 import { deleteModel } from "../../../store/model";
-import Modal from "../../ui/Modal";
+// import Modal from "../../ui/Modal";
 import { useNavigate } from "react-router-dom";
+import DeleteRequest from "../../ui/DeleteRequest";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -231,23 +232,29 @@ const ModelSettings = () => {
         <SaveImageForm modelData={model} />
       </div>
       {deleteRequestIsOpen && (
-        <Modal onClose={closeDeleteReqeustHandler}>
-          <div className={classes["del-request"]}>
-            <div className={classes["del-request__message"]}>
-              Are you sure that you want to delete this resource? This action
-              can't be reverted
-            </div>
-            <div className={classes["del-request__btn-container"]}>
-              <Buttton
-                className={classes["btn-del"]}
-                onClick={deleteModelHandler}
-              >
-                Delete
-              </Buttton>
-              <Buttton onClick={closeDeleteReqeustHandler}>Cancel</Buttton>
-            </div>
-          </div>
-        </Modal>
+        <DeleteRequest
+          message="Are you sure that you want to delete this resource? This action
+        can't be reverted"
+          onSubmit={deleteModelHandler}
+          onClose={closeDeleteReqeustHandler}
+        />
+        // <Modal onClose={closeDeleteReqeustHandler}>
+        //   <div className={classes["del-request"]}>
+        //     <div className={classes["del-request__message"]}>
+        //       Are you sure that you want to delete this resource? This action
+        //       can't be reverted
+        //     </div>
+        //     <div className={classes["del-request__btn-container"]}>
+        //       <Buttton
+        //         className={classes["btn-del"]}
+        //         onClick={deleteModelHandler}
+        //       >
+        //         Delete
+        //       </Buttton>
+        //       <Buttton onClick={closeDeleteReqeustHandler}>Cancel</Buttton>
+        //     </div>
+        //   </div>
+        // </Modal>
       )}
     </div>
   );

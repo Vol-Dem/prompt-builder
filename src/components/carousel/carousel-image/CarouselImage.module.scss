@@ -6,6 +6,8 @@
   align-items: center;
   height: 100%;
   width: 26rem;
+  // background-color: var.$color-background-tertiary;
+
   & img {
     max-width: 100%;
   }
@@ -35,6 +37,7 @@
     border-radius: 1rem;
     background-color: var.$color-background-tertiary;
     padding: 1rem;
+    box-shadow: var.$box-shadow;
   }
 
   &__item {

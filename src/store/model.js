@@ -9,6 +9,11 @@ import {
 } from "firebase/firestore";
 import firebaseApp from "../firebase-config";
 import { getModelData } from "../utils/fetchUtils";
+import { getAuth } from "firebase/auth";
+import { saveToStorage, uploadStorage } from "../variables/utils";
+import { authActions } from "./auth";
+
+const auth = getAuth(firebaseApp);
 
 const firestore = getFirestore(firebaseApp);
 
@@ -16,6 +21,7 @@ const initialModelState = {
   model: {},
   modelPreview: [],
   isLoading: true,
+  errorMessage: "",
   curVersion: {},
   curExampleImgsType: "saved",
   examplesPage: 1,
@@ -28,7 +34,11 @@ const modelSlice = createSlice({
   initialState: initialModelState,
   reducers: {
     setModelData(state, actions) {
-      state.model = actions.payload;
+      if (actions.payload) {
+        state.model = actions.payload;
+      } else {
+        state.errorMessage = "Failed to load model";
+      }
     },
     setIsLoading(state, actions) {
       state.isLoading = actions.payload;
@@ -41,7 +51,18 @@ const modelSlice = createSlice({
     },
     setNsfwMode(state, actions) {
       state.nsfwMode = actions.payload;
+      const uid = auth.currentUser.uid;
+      saveToStorage(`${uid}-nsfw`, actions.payload);
     },
+    setErrorMessage(state, actions) {
+      state.errorMessage = actions.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(authActions.login, (state, actions) => {
+      const uid = auth.currentUser.uid;
+      state.nsfwMode = uploadStorage(`${uid}-nsfw`);
+    });
   },
 });
 
@@ -227,10 +248,25 @@ export const deleteModel = (modelId) => {
     const modelRef = doc(firestore, "users", uid, "models", id + "");
     const modelPreviewRef = doc(firestore, "users", uid, "preview", id + "");
 
-    const del = await deleteDoc(modelRef);
-    const delPr = await deleteDoc(modelPreviewRef);
+    await deleteDoc(modelRef);
+    await deleteDoc(modelPreviewRef);
+  };
+};
 
-    console.log(del);
+export const updateCategories = (modelType, updatedCat) => {
+  return async (dispatch, getState) => {
+    const uid = getState().auth.user.uid;
+
+    const userRef = doc(firestore, "users", uid);
+    const categoryField = `categoriesById.${modelType}`;
+
+    await updateDoc(
+      userRef,
+      {
+        [categoryField]: updatedCat,
+      },
+      { merge: true }
+    );
   };
 };
 

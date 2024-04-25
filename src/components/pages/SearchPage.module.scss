@@ -1,0 +1,14 @@
+.container {
+  width: 100%;
+}
+
+.title {
+  font-size: 1.6rem;
+}
+
+.result-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 2rem;
+}

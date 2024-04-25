@@ -4,12 +4,16 @@ import {
   // getImagesInfo,
   getModelData,
   // makeBatchRequest,
+  // makeBatchRequest,
 } from "../../../utils/fetchUtils";
 // import { clearObjectKeys } from "../../../utils/generalUtils";
 import {
+  // collection,
   doc,
   getDoc,
+  // getDocs,
   getFirestore,
+  // runTransaction,
   setDoc,
   updateDoc,
 } from "firebase/firestore";
@@ -23,6 +27,8 @@ import Checkbox from "../../ui/Checkbox";
 import Select from "../../ui/Select";
 import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
+import { clearFileExtension } from "../../../utils/generalUtils";
+import { Link } from "react-router-dom";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -164,19 +170,21 @@ const UpdateModelForm = ({ modelData, id }) => {
 
     setVersionsDownloadStatus(versionStatusInputData || []);
 
-    const subCats = modelData.sub.map((name, i) => {
+    const subCats = modelData.sub.map((subId, i) => {
+      const subData = categories[modelData.modelType]
+        ?.find((category) => category.id === modelData.main)
+        ?.subcategories.find((sucategory) => sucategory.id === subId);
       return {
         type: "text",
         id: `subcat-${i}`,
         name: subCatsDefData.name,
         placeholder: subCatsDefData.placeholder,
-        value: name,
+        value: subData?.name || subId || "",
       };
     });
     setSubCatInputs(subCats);
     if (!modelData?.defaultCustomData?.tagSetsData?.length) return;
     const tagSets = modelData.defaultCustomData.tagSetsData.map((tagSet, i) => {
-      console.log(tagSet);
       return [
         {
           type: "text",
@@ -194,9 +202,31 @@ const UpdateModelForm = ({ modelData, id }) => {
       ];
     });
     setTagSetsInputs(tagSets);
-  }, [modelData]);
+  }, [modelData, categories]);
 
-  // const saveModelHandlerData = () => {};
+  const createCategoryId = (id, categoriesData) => {
+    if (!id) {
+      return;
+    }
+    let curId = id;
+    let mainIdExists;
+
+    //Check if category id is exists
+    mainIdExists = categoriesData.find((category) => category.id === curId);
+
+    while (mainIdExists) {
+      const idArr = curId.split("-");
+      const lastNubmer = parseInt(idArr.slice(-1));
+
+      curId = lastNubmer
+        ? `${idArr.slice(0, -1).join("-")}-${lastNubmer + 1}`
+        : `${curId}-2`;
+
+      mainIdExists = categoriesData.find((category) => category.id === curId);
+    }
+
+    return curId;
+  };
 
   const saveModelHandler = async (e, update) => {
     try {
@@ -219,9 +249,9 @@ const UpdateModelForm = ({ modelData, id }) => {
         const urlArr = idInput.split("/");
         const modelIdIndex =
           urlArr.findIndex((urlPart) => urlPart === "models") + 1;
-        console.log(modelIdIndex);
+
         if (modelIdIndex) {
-          modelId = urlArr[modelIdIndex];
+          modelId = parseInt(urlArr[modelIdIndex]);
         } else {
           throw new Error("Invalid URL");
         }
@@ -278,43 +308,12 @@ const UpdateModelForm = ({ modelData, id }) => {
       let data = {};
 
       if (!modelData || update) {
-        // const response = await fetch(
-        //   `https://civitai.com/api/v1/models/${modelData?.id || modelId}`
-        // );
-        // const responseData = await response.json();
-        // console.log(response);
-        // if (!response.ok) {
-        //   throw new Error(`Error status (${response.status})`);
-        // }
-        // console.log(responseData);
-        // responseData?.modelVersions?.forEach((version) => {
-        //   version.images.forEach((image) => {
-        //     if (image.meta) {
-        //       image.meta.comfy = "";
-        //       image.meta = clearObjectKeys(image.meta);
-        //       if (image.meta.hashes)
-        //         image.meta.hashes = clearObjectKeys(image.meta.hashes);
-        //     }
-        //   });
-        // });
-        // const imagesDataWithRes = await Promise.all(
-        //   responseData.modelVersions.map(async (image) => {
-        //     const updImg = await makeBatchRequest(image.images, getImagesInfo);
-        //     //Temp
-        //     image.images = updImg;
-        //     return updImg;
-        //   })
-        // );
-        // data = responseData;
-        // console.log(data);
-        // console.log(imagesDataWithRes);
         data = await getModelData(modelData?.id || modelId);
       } else {
         data = modelData.data;
       }
 
       if (modelData && update) {
-        console.log(modelData, data);
         const newVerison = data.modelVersions.filter(
           (version) =>
             !modelData.data.modelVersions.some(
@@ -322,14 +321,12 @@ const UpdateModelForm = ({ modelData, id }) => {
             )
         );
         data.modelVersions = [...newVerison, ...modelData.data.modelVersions];
-        console.log(data.modelVersions);
       }
 
       if (!data.id) return;
 
       let modelVersionsCustomData = modelData?.modelVersionsCustomData || {};
 
-      console.log(versionsDownloadStatus);
       data.modelVersions.forEach((version, i) => {
         const isSingle = data.modelVersions.length === 1;
         const curVersionDlStatus = versionsDownloadStatus.find(
@@ -344,7 +341,6 @@ const UpdateModelForm = ({ modelData, id }) => {
           ? modelVersionsCustomData[version.id]
           : {};
 
-        console.log(version.id, dlStatus, isSingle);
         modelVersionsCustomData = {
           ...modelVersionsCustomData,
           [version.id]: {
@@ -360,12 +356,10 @@ const UpdateModelForm = ({ modelData, id }) => {
         };
       });
 
-      console.log(modelVersionsCustomData);
-
       const activePreviewId = data.modelVersions.find(
         (version) => modelVersionsCustomData[version.id].downloadStatus === true
       )?.id;
-      console.log(activePreviewId);
+
       const activePreviewImg =
         (activePreviewId &&
           data.modelVersions
@@ -384,19 +378,120 @@ const UpdateModelForm = ({ modelData, id }) => {
         data.modelVersions?.flatMap((version) => version?.baseModel || [])
       );
 
+      const fileNames = data.modelVersions?.flatMap((version) => {
+        // version.files.map((file) => file.name)
+        if (version.hasOwnProperty("files") && version?.files) {
+          return clearFileExtension(
+            version.files.find((file) => file?.primary).name
+          ).toLowerCase();
+        }
+        return [];
+      });
+
+      const customFileNames = Object.values(modelVersionsCustomData)
+        ?.map((version) => {
+          return clearFileExtension(version?.fileName)?.toLowerCase();
+        })
+        .filter(Boolean);
+
+      const nameArr =
+        (modelName || data.name)
+          .replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, "")
+          .toLowerCase()
+          .split(" ") || [];
+
+      let updatedCategories;
+      // if (categories && categories[modelType]?.hasOwnProperty(`${main}`)) {
+      //   const newCat = new Set([...categories[modelType][`${main}`], ...sub]);
+      //   updatedCategories = {
+      //     ...categories[modelType],
+      //     [`${main}`]: [...newCat],
+      //   };
+      //   console.log("TEST", updatedCategories);
+      // } else if (categories) {
+      //   updatedCategories = {
+      //     ...categories[modelType],
+      //     [`${modelData?.main || main}`]: sub,
+      //   };
+      // } else {
+      //   updatedCategories = { [`${modelData?.main || main}`]: sub };
+      // }
+
+      let mainId;
+      let subIds;
+      const mainCategoryData = categories[modelType].find(
+        (category) => category.name === main
+      );
+
+      if (!mainCategoryData) {
+        mainId = createCategoryId(main, categories[modelType]);
+        // console.log(mainId)
+        subIds = sub;
+        updatedCategories = [
+          ...categories[modelType],
+          {
+            id: mainId,
+            name: main,
+            subcategories: sub.map((subcategory) => {
+              return { id: subcategory, name: subcategory };
+            }),
+          },
+        ];
+      } else {
+        mainId = mainCategoryData.id;
+        subIds = [];
+        const newSubcategoriesData = sub.flatMap((subcategory) => {
+          const subExists = mainCategoryData.subcategories.find(
+            (oldSucategories) => oldSucategories.name === subcategory
+          );
+
+          if (!subExists) {
+            const categoryId = createCategoryId(
+              subcategory,
+              mainCategoryData.subcategories
+            );
+            subIds = [...subIds, categoryId];
+            return {
+              id: categoryId,
+              name: subcategory,
+            };
+          } else {
+            subIds = [...subIds, subExists.id];
+            return [];
+          }
+        });
+        const mainCategoryIndex = categories[modelType].findIndex(
+          (category) => category.name === main
+        );
+
+        const curUpdatedCategory = {
+          id: mainId,
+          name: mainCategoryData.name,
+          subcategories: [
+            ...mainCategoryData.subcategories,
+            ...newSubcategoriesData,
+          ],
+        };
+        updatedCategories = [
+          ...categories[modelType].slice(0, mainCategoryIndex),
+          curUpdatedCategory,
+          ...categories[modelType].slice(mainCategoryIndex + 1),
+        ];
+      }
+
       const modelInfo = {
         ...modelData,
         id: modelData?.id || +modelId,
         modelType,
         baseModels: [...baseModels],
-        main,
-        sub,
+        main: mainId,
+        sub: subIds,
         data,
         name: modelName || data.name,
         fileName,
         mainTag,
-        nsfw: data?.nsfw || "",
-        nsfwLevel: data?.nsfwLevel || "",
+        nsfw: data?.nsfw || false,
+        nsfwLevel: data?.nsfwLevel || null,
         src: "civitai.com",
         defaultCustomData: {
           description: description || data.description,
@@ -427,17 +522,21 @@ const UpdateModelForm = ({ modelData, id }) => {
         id: modelData?.id || modelId,
         modelType,
         src: "civitai.com",
-        main,
-        sub,
+        main: mainId,
+        sub: subIds,
         name: modelName || data.name || "",
+        nameArr,
         imgUrl: previewImg || "",
         type: data.type,
-        nsfw: data?.nsfw || "",
+        nsfw: !!data?.nsfw,
         nsfwLevel: data?.nsfwLevel || "",
         baseModel: data.modelVersions[0].baseModel,
         baseModels: [...baseModels],
         mainTag,
         fileName,
+        latestFileName: !!fileNames?.length ? fileNames[0] : "",
+        fileNames,
+        customFileNames,
         weight,
         minWeight,
         maxWeight,
@@ -464,35 +563,18 @@ const UpdateModelForm = ({ modelData, id }) => {
 
       const modelSnap = await getDoc(modelsRef);
       const modelsPrevRefSnap = await getDoc(modelsPrevRef);
-      let updatedCat;
-      if (categories && categories[modelType]?.hasOwnProperty(`${main}`)) {
-        const newCat = new Set([...categories[modelType][`${main}`], ...sub]);
-        updatedCat = {
-          ...categories[modelType],
-          [`${main}`]: [...newCat],
-        };
-        console.log("TEST", updatedCat);
-      } else if (categories) {
-        updatedCat = {
-          ...categories[modelType],
-          [`${modelData?.main || main}`]: sub,
-        };
-      } else {
-        updatedCat = { [`${modelData?.main || main}`]: sub };
-      }
-      console.log("TEST2", updatedCat);
 
       // Throw error if user try to add existing model using new model form
       if (modelSnap.exists() && modelsPrevRefSnap.exists() && !modelData) {
         throw new Error("Exists");
       } else {
         await setDoc(modelsRef, modelInfo);
-        const categoryField = `categories.${modelType}`;
+        const categoryField = `categoriesById.${modelType}`;
 
         await updateDoc(
           userRef,
           {
-            [categoryField]: updatedCat,
+            [categoryField]: updatedCategories,
           },
           { merge: true }
         );
@@ -536,156 +618,8 @@ const UpdateModelForm = ({ modelData, id }) => {
       //   console.log(doc.id);
       // });
 
-      /////////////////////////////////////////////////////////////////////
-      //MODELS PORT
-      /////////////////////////////////////////////
-
-      // // const modelsRDRef = ref(db, "models/" + "134016");
-      // const modelsRDRef = ref(db, "models");
-      // const snapshot = await get(modelsRDRef);
-
-      // if (snapshot.exists()) {
-      //   const curData = await snapshot.val();
-      //   // const curDataR = await snapshot.val();
-      //   // console.log(curDataR);
-      //   // const curData = { name: curDataR };
-
-      //   await Promise.all(
-      //     Object.values(curData).map((model) => {
-      //       const modelsFrRef = doc(
-      //         firestore,
-      //         "users",
-      //         uid,
-      //         "models",
-      //         model.id + ""
-      //       );
-
-      //       const modelVersions = model.data.modelVersions.map((version) => {
-      //         const images =
-      //           version?.images?.map((img) => {
-      //             const nImg = { ...img };
-      //             nImg.meta = nImg?.meta ? clearObjectKeys(nImg.meta) : {};
-      //             nImg.meta.comfy = null;
-      //             return nImg;
-      //           }) || [];
-      //         return {
-      //           baseModel: version.baseModel || "",
-      //           baseModelType: version.baseModelType || "",
-      //           createdAt: version.createdAt || "",
-      //           description: version.description || "",
-      //           id: version.id,
-      //           modelId: version.modelId,
-      //           name: version.name,
-      //           trainedWords: version.trainedWords || null,
-      //           updatedAt: version.updatedAt || "",
-      //           vaeId: version.vaeId || null,
-      //           images,
-      //         };
-      //       });
-      //       const cleanedModelData = {
-      //         id: model.data.id,
-      //         name: model.data.name,
-      //         description: model.data?.description || "",
-      //         nsfw: model.data?.nsfw,
-      //         poi: model.data?.poi,
-      //         tags: model.data?.tags || "",
-      //         type: model.data?.type || "",
-      //         modelVersions,
-      //       };
-      //       const modelVersionsCustomDataConverted = {};
-      //       model?.modelVersionsCustomData?.forEach((mvcd) => {
-      //         modelVersionsCustomDataConverted[mvcd.versionId] = mvcd;
-      //       });
-      //       let cleanedSavedImages = {};
-      //       if (model?.savedImages)
-      //         Object.keys(model?.savedImages).forEach((key) => {
-      //           cleanedSavedImages[key] =
-      //             model?.savedImages[key].filter(Boolean);
-      //         });
-      //       const cleanedData = {
-      //         id: model.id,
-      //         data: cleanedModelData,
-      //         main: model.main,
-      //         mainTag: model?.mainTag || "",
-      //         sampler: model?.sampler || "",
-      //         cfgScale: model?.cfgScale || "",
-      //         denoisingStrength: model?.denoisingStrength || "",
-      //         fileName: model?.fileName || "",
-      //         hiresUpscaleBy: model?.hiresUpscale || "",
-      //         hiresUpscaler: model?.hiresUpscaler || "",
-      //         modelVersionsCustomData: modelVersionsCustomDataConverted || {},
-      //         negativeTags: model?.negativeTags || [],
-      //         savedImages: cleanedSavedImages || {},
-      //         size: model?.size || "",
-      //         src: model.src,
-      //         steps: model?.steps || "",
-      //         sub: model.sub,
-      //         updatedAt: model.updatedAt,
-      //         vae: model?.vae || "",
-      //         weight: model?.weight || "",
-      //         title: model?.title || "",
-      //         imgUrl: model?.imgUrl || "",
-      //         type: model?.type || "",
-      //         baseModel: model?.baseModel || "",
-      //         tags: model?.tags || [],
-      //         tagSetsData: model?.tagSetsData || [],
-      //         helperTags: model?.helperTags || [],
-      //       };
-      //       console.log(cleanedData);
-      //       return setDoc(modelsFrRef, cleanedData);
-      //     })
-      //   );
-      // }
-
-      //////////////////////////////////////////////////////
-      // PREV PORT
-      //////////////////////////////////
-
-      // const modelsRDRef = ref(db, "models preview");
-      // const snapshot = await get(modelsRDRef);
-
-      // if (snapshot.exists()) {
-      //   const curData = await snapshot.val();
-      //   const allprev = Object.values(curData).flat();
-      //   let categories = {};
-      //   allprev.forEach((prev) => {
-      //     if (categories.hasOwnProperty(prev.main)) {
-      //       categories[prev.main] = [
-      //         ...new Set([...categories[prev.main], ...prev.sub]),
-      //       ];
-      //     } else {
-      //       categories[prev.main] = prev.sub;
-      //     }
-      //   });
-      //   console.log(categories);
-      //   const categoryField = `categories.models`;
-      //   await updateDoc(
-      //     userRef,
-      //     {
-      //       [categoryField]: categories,
-      //     },
-      //     { merge: true }
-      //   );
-
-      //   await Promise.all(
-      //     allprev.map((model) => {
-      //       const modelsFrRef = doc(
-      //         firestore,
-      //         "users",
-      //         uid,
-      //         "models preview",
-      //         model.id + ""
-      //       );
-
-      //       return setDoc(modelsFrRef, model);
-      //     })
-      //   );
-      // }
-
-      /////////////////////////////////////
-
       setModelIsSaving(false);
-      seteSuccessMessage("Saved");
+      seteSuccessMessage("Saved successfully");
     } catch (err) {
       setModelIsSaving(false);
       console.log(err);
@@ -793,15 +727,14 @@ const UpdateModelForm = ({ modelData, id }) => {
         value: "",
       },
     ]);
-    console.log(newFields);
+
     setTagSetsInputs(newFields);
   };
 
   const subCatHandler = (e) => {
     setSubCatInputs((prevState) => {
       const newState = [...prevState];
-      console.log(newState);
-      console.log(e.target.id);
+
       const curIndex = newState.findIndex((imageId) => {
         return imageId.id + "" === e.target.id;
       });
@@ -835,8 +768,7 @@ const UpdateModelForm = ({ modelData, id }) => {
       const curSetTagsIndex = newState.findIndex((imageId) => {
         return imageId[1].id + "" === e.target.id;
       });
-      console.log(curSetNameIndex, curSetTagsIndex);
-      console.log(newState);
+
       if (curSetNameIndex !== -1) {
         newState[curSetNameIndex][0].value = e.target.value;
       }
@@ -844,7 +776,7 @@ const UpdateModelForm = ({ modelData, id }) => {
         newState[curSetTagsIndex][1].value = e.target.value;
       }
       // newState[curIndex] = [];
-      console.log(newState);
+
       return newState;
     });
   };
@@ -878,10 +810,9 @@ const UpdateModelForm = ({ modelData, id }) => {
       const curIndex = newState.findIndex(
         (version) => version.id === e.target.id
       );
-      console.log(e.target.checked);
 
       newState[curIndex].value = e.target.checked;
-      console.log(newState);
+
       return newState;
     });
   };
@@ -909,6 +840,7 @@ const UpdateModelForm = ({ modelData, id }) => {
 
   return (
     <form onSubmit={saveModelHandler} className={classes["form"]}>
+      <div>{modelIsSaving ? "Saving..." : "Done"}</div>
       {/* {modelData && (
         <Buttton
           type="button"
@@ -1243,8 +1175,18 @@ const UpdateModelForm = ({ modelData, id }) => {
       >
         {!modelIsSaving ? "Save" : "Saving..."}
       </Buttton>
-      {errorMessage && <div>{errorMessage}</div>}
-      {successMessage && <div>{successMessage}</div>}
+      <div className={classes.status}>
+        {errorMessage && <div>{errorMessage}</div>}
+        {successMessage && <div>{successMessage}</div>}
+        {successMessage && !modelData && (
+          <>
+            {"-"}
+            <Link to={`/model/${idInput}`} className={classes.link}>
+              Show model
+            </Link>
+          </>
+        )}
+      </div>
     </form>
   );
 };

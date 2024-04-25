@@ -11,7 +11,6 @@ const Tabs = () => {
   const dispatch = useDispatch();
 
   const categorySwitchHandler = (e) => {
-    console.log("RESET");
     // dispatch(tabActions.reset());
     dispatch(tabActions.setCurrentTab(e.target.id));
     // dispatch(tabActions.setCurrentSubcategory(""));

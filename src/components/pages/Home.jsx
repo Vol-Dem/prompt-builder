@@ -2,38 +2,33 @@ import classes from "./Home.module.scss";
 // import Prompt from "../../components/prompt/Prompt";
 import { Outlet } from "react-router-dom";
 // import UsedModelsPanel from "../used-models-panel/UsedModelsPanel";
-import { useDispatch, useSelector } from "react-redux";
+// import { useDispatch, useSelector } from "react-redux";
 // import { modelActions } from "../../store/model";
-import { useEffect } from "react";
-import { tabActions } from "../../store/tabs";
-import { doc, getFirestore, onSnapshot } from "firebase/firestore";
-import firebaseApp from "../../firebase-config";
+// import { useEffect } from "react";
+// import { tabActions } from "../../store/tabs";
+// import { doc, getFirestore, onSnapshot } from "firebase/firestore";
+// import firebaseApp from "../../firebase-config";
 
-const firestore = getFirestore(firebaseApp);
+// const firestore = getFirestore(firebaseApp);
 
 function Home() {
-  // const isNsfwMode = useSelector((state) => state.model.nsfwMode);
-  const uid = useSelector((state) => state.auth.user.uid);
-  const dispatch = useDispatch();
+  // const uid = useSelector((state) => state.auth.user.uid);
+  // const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (!uid) return;
-    const unsub = onSnapshot(doc(firestore, "users", uid), (doc) => {
-      const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
-      console.log(source);
-      const data = doc.data();
-      console.log(data?.categories);
-      dispatch(tabActions.setCategories(data?.categories));
-    });
+  // useEffect(() => {
+  //   if (!uid) return;
+  //   const unsub = onSnapshot(doc(firestore, "users", uid), (doc) => {
+  //     const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+  //     console.log(source);
+  //     const data = doc.data();
+  //     console.log(data?.categoriesById);
+  //     dispatch(tabActions.setCategories(data?.categoriesById));
+  //   });
 
-    return () => {
-      unsub();
-    };
-  }, [uid, dispatch]);
-
-  // const nsfwSwitchHandler = () => {
-  //   dispatch(modelActions.setNsfwMode(!isNsfwMode));
-  // };
+  //   return () => {
+  //     unsub();
+  //   };
+  // }, [uid, dispatch]);
 
   return (
     <div className={classes["wrap"]}>

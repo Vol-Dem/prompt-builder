@@ -2,8 +2,13 @@ import Subcategories from "../subcategories/Subcategories";
 import classes from "./Categories.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { tabActions } from "../../store/tabs";
+import ButtonTertiary from "../ui/ButtonTertiary";
+import { useState } from "react";
+import Modal from "../ui/Modal";
+import CategoriesForm from "../forms/categories-form/CategoriesForm";
 
 const Categories = () => {
+  const [editIsOpen, setEditIsOpen] = useState(false);
   const activeCategory = useSelector((state) => state.tabs.currCategory);
   const activeTab = useSelector((state) => state.tabs.currTab);
   const categories = useSelector((state) => state.tabs.categoriesData);
@@ -15,28 +20,71 @@ const Categories = () => {
     // dispatch(tabActions.setModelsData([]));
   };
 
+  // const catHtml = categories?.hasOwnProperty(activeTab)
+  //   ? Object.keys(categories[activeTab])
+  //       .toSorted()
+  //       .map((key) => {
+  //         return (
+  //           <div
+  //             id={key}
+  //             onClick={categorySwitchHandler}
+  //             key={key}
+  //             className={`${classes[`category__link`]} ${
+  //               activeCategory === key ? classes.active : ""
+  //             }`}
+  //           >
+  //             {key}
+  //           </div>
+  //         );
+  //       })
+  //   : [];
   const catHtml = categories?.hasOwnProperty(activeTab)
-    ? Object.keys(categories[activeTab])
-        .toSorted()
-        .map((key) => {
+    ? categories[activeTab]
+        ?.toSorted((a, b) => {
+          const nameA = a.name.toUpperCase(); // ignore upper and lowercase
+          const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+
+          // names must be equal
+          return 0;
+        })
+        .map((category, i) => {
           return (
-            <div
-              id={key}
+            <li
+              id={category.id}
               onClick={categorySwitchHandler}
-              key={key}
+              key={i}
               className={`${classes[`category__link`]} ${
-                activeCategory === key ? classes.active : ""
+                activeCategory === category.id ? classes.active : ""
               }`}
             >
-              {key}
-            </div>
+              {category.name}
+            </li>
           );
         })
     : [];
 
+  const editCategoriesHandler = () => {
+    setEditIsOpen(true);
+  };
+
   return (
     <div className={classes["container"]}>
-      <div className={classes["category"]}>{catHtml}</div>
+      <div className={classes["category"]}>
+        <ul className={classes["category__list"]}>{catHtml}</ul>
+        <ButtonTertiary
+          type="button"
+          className={classes["category__edit"]}
+          onClick={editCategoriesHandler}
+        >
+          Edit
+        </ButtonTertiary>
+      </div>
       {activeCategory && (
         <Subcategories
           subcategories={categories[activeTab][activeCategory]}
@@ -44,6 +92,19 @@ const Categories = () => {
         />
       )}
       {!categories && <div>Nothing is here...</div>}
+      {editIsOpen && (
+        <Modal
+          title="Categories"
+          onClose={() => {
+            setEditIsOpen(false);
+          }}
+        >
+          <CategoriesForm
+            modelType={activeTab}
+            categories={categories[activeTab]}
+          />
+        </Modal>
+      )}
     </div>
   );
 };

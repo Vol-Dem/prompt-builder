@@ -56,26 +56,26 @@
 }
 
 .btn-del {
-  background-color: var.$color-red;
+  background-color: var.$color-background-red;
 
   &:hover {
     background-color: darken(var.$color-red, 10%);
   }
 }
 
-.del-request {
-  width: 36rem;
+// .del-request {
+//   width: 36rem;
 
-  &__message {
-    font-size: 1.6rem;
-    text-align: center;
-  }
+//   &__message {
+//     font-size: 1.6rem;
+//     text-align: center;
+//   }
 
-  &__btn-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2rem;
-    margin-top: 2rem;
-  }
-}
+//   &__btn-container {
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     gap: 2rem;
+//     margin-top: 2rem;
+//   }
+// }

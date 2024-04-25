@@ -3,14 +3,14 @@ import classes from "./CarouselImage.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteImgPost,
-  modelActions,
+  // modelActions,
   setPreviewImg,
   setTagSetPreviewImg,
 } from "../../../store/model";
 import ButttonTertiary from "../../ui/ButtonTertiary";
 import Modal from "../../ui/Modal";
 import Image from "../../ui/image/Image";
-import Buttton from "../../ui/Button";
+// import Buttton from "../../ui/Button";
 
 const CarouselImage = ({
   id,

@@ -30,9 +30,6 @@ const UserNavigation = () => {
             <li className={classes["nav-profile__link"]}>
               <NavLink to="profile">Profile</NavLink>
             </li>
-            <li className={classes["nav-profile__link"]}>
-              <NavLink to="favorites">Favorites</NavLink>
-            </li>
           </ul>
           <ButttonSecondary
             onClick={logout}

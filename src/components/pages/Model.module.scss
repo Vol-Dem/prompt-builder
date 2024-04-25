@@ -25,6 +25,7 @@
   height: 4rem;
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
   cursor: pointer;
 
   &:hover {
@@ -196,4 +197,10 @@
     height: 30rem;
     background-color: blueviolet;
   }
+}
+
+.link {
+  display: inline-block;
+  color: #7278f0;
+  text-decoration: none;
 }

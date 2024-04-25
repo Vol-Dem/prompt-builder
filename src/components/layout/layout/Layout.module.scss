@@ -40,6 +40,7 @@ main {
   border-radius: var.$border-radius;
   border: 1px solid rgba(255, 255, 255, 0.3);
   overflow: hidden;
+  flex-shrink: 0;
 }
 .btn-mode {
   width: 5rem;

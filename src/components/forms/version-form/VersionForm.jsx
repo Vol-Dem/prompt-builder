@@ -9,6 +9,7 @@ import Input from "../../ui/Input";
 import ButttonSecondary from "../../ui/ButtonSecondary";
 import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
+import { clearFileExtension } from "../../../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -52,10 +53,11 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
       },
     ],
   ]);
-  console.log(versionData);
-  console.log(defaultData);
-  console.log(modelType);
+  // console.log(versionData);
+  // console.log(defaultData);
+  // console.log(modelType);
   const uid = useSelector((state) => state.auth.user.uid);
+  const model = useSelector((state) => state.model.model);
 
   useEffect(() => {
     setMainTagInput(versionData?.mainTag || "");
@@ -191,6 +193,27 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
 
       console.log(updatedVersionData);
 
+      const allUpdatedVersions = {
+        ...model.modelVersionsCustomData,
+        [versionData.versionId]: updatedVersionData,
+      };
+
+      const mainTags = Object.values(allUpdatedVersions)
+        .map((version) => {
+          const mainTagArr = version?.mainTag?.split(":");
+          if (mainTagArr?.length === 3) {
+            return mainTagArr[1];
+          }
+          return version?.mainTag?.toLowerCase();
+        })
+        .filter(Boolean);
+
+      const customFileNames = Object.values(allUpdatedVersions)
+        ?.map((version) => {
+          return clearFileExtension(version?.fileName)?.toLowerCase();
+        })
+        .filter(Boolean);
+
       const modelsRef = doc(firestore, "users", uid, "models", modelId + "");
       const modelsPrevRef = doc(
         firestore,
@@ -214,6 +237,8 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         modelsPrevRef,
         {
           [versionPath]: updatedVersionData,
+          mainTags: mainTags,
+          customFileNames: customFileNames,
         },
         { merge: true }
       );

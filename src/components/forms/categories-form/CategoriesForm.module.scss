@@ -1,0 +1,88 @@
+@use "./../../../variables/variables.scss" as var;
+
+.category {
+  &__container {
+    // display: flex;
+    // gap: 2rem;
+    background-color: var.$color-background-tertiary;
+    border-radius: 1rem;
+    box-shadow: var.$box-shadow-inset;
+    // overflow-y: scroll;
+    // padding: 1rem;
+    // max-height: 75vh;
+    // @include var.custom-scroll;
+  }
+
+  &__img {
+    & svg {
+      width: 100%;
+      height: 22rem;
+    }
+  }
+
+  &__title {
+    font-family: var.$font-family-secondary;
+    font-size: 5.2rem;
+    margin-bottom: 2.4rem;
+    font-weight: 500;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.8rem;
+    overflow-y: scroll;
+    padding: 1rem;
+    max-height: 75vh;
+    @include var.custom-scroll;
+  }
+
+  &__form {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__name {
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+
+  &__element {
+    display: flex;
+    align-items: center;
+    font-size: 2.4rem;
+    gap: 1rem;
+    margin-left: 1rem;
+  }
+
+  &__error {
+    color: var.$color-red;
+    padding: 0.4rem;
+  }
+}
+
+.btn-del {
+  background-color: var.$color-background-red;
+
+  &:hover {
+    background-color: lighten(var.$color-background-red, 10%);
+  }
+}
+
+@media (max-width: 700px) {
+  .profile {
+    &__container {
+      flex-direction: column;
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .profile {
+    &__element {
+      font-size: 2rem;
+    }
+  }
+}

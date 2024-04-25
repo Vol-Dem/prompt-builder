@@ -11,6 +11,7 @@ const ModelInfo = ({ customData }) => {
   return (
     <div className={classes?.info}>
       <div className={classes.type}>{model?.data?.type}</div>
+      <div>Version ID: {curVersion.id}</div>
       <div>Base model: {curVersion?.baseModel}</div>
       <div>Size: {customData?.size || model?.size}</div>
       <div>
@@ -28,9 +29,15 @@ const ModelInfo = ({ customData }) => {
           {curVersion?.name}
         </a>
       </div>
-      {customData?.fileName && (
-        <div>File: {customData?.fileName || model?.fileName}</div>
-      )}
+      {customData?.fileName ||
+        (curVersion.hasOwnProperty("files") && !!curVersion.files.length && (
+          <div>
+            File:{" "}
+            {customData?.fileName ||
+              (curVersion.hasOwnProperty("files") &&
+                curVersion?.files.find((file) => file?.primary)?.name)}
+          </div>
+        ))}
       {viersionVAE && <div>VAE: {viersionVAE}</div>}
       {model?.clipSkip && <div>Clip Skip: {model?.clipSkip}</div>}
     </div>

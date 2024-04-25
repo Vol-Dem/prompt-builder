@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import classes from "./PreviewCard.module.scss";
 // import Tag from "../tag/Tag";
 // import { ReactComponent as StarImg } from "../../assets/star.svg";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 // import TagList from "../tag-list/TagList";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "../ui/image/Image";
@@ -20,7 +20,7 @@ const PreviewCard = ({ previewData }) => {
   const dispatch = useDispatch();
   // const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   // const tagsRef = useRef();
   // const tagsListRef = useRef();
   // const helperTagsRef = useRef();
@@ -29,7 +29,7 @@ const PreviewCard = ({ previewData }) => {
   // const taglistItemHeight = 34;
 
   useEffect(() => {
-    let curVersionData =
+    const curVersionData =
       previewData?.modelVersionsCustomData &&
       Object.values(previewData.modelVersionsCustomData)
         .filter((data) => data.downloadStatus)
@@ -109,10 +109,10 @@ const PreviewCard = ({ previewData }) => {
   //   });
   // };
 
-  const openLoraHandler = (e) => {
-    const modelId = e.target.closest(`.card`).id;
-    navigate(`model/${modelId}`);
-  };
+  // const openLoraHandler = (e) => {
+  //   const modelId = e.target.closest(`.card`).id;
+  //   navigate(`/model/${modelId}`);
+  // };
 
   const addToSidePanelHandler = () => {
     dispatch(addModelToPanel(currSidePanelData));
@@ -123,28 +123,38 @@ const PreviewCard = ({ previewData }) => {
       <span className={classes["btn-add"]} onClick={addToSidePanelHandler}>
         +
       </span>
-      <Image
-        onClick={openLoraHandler}
-        // type={previewData.type}
-        ref={imgRef}
-        src={
-          isNsfwMode
-            ? previewData.nsfwPreviewImgUrl ||
-              previewData.customPreviewImgUrl ||
-              previewData.imgUrl
-            : previewData.customPreviewImgUrl || previewData.imgUrl
-        }
-        alt="Preview"
-      />
+      <Link to={`/model/${previewData.id}`}>
+        <Image
+          // onClick={openLoraHandler}
+          // type={previewData.type}
+          ref={imgRef}
+          src={
+            isNsfwMode
+              ? previewData.nsfwPreviewImgUrl ||
+                previewData.customPreviewImgUrl ||
+                previewData.imgUrl
+              : previewData.customPreviewImgUrl || previewData.imgUrl
+          }
+          alt="Preview"
+        />
+      </Link>
+
       <div
         className={`${classes.content}`}
         // className={`${classes.content} ${
         //   helperTagsIsOpen ? classes["content--open"] : ""
         // } `}
       >
-        <h4 className={classes.title} onClick={openLoraHandler}>
-          {previewData.name || previewData.title}
-        </h4>
+        <div className={classes["title-container"]}>
+          <Link to={`/model/${previewData.id}`} className={classes.link}>
+            <h4
+              className={classes.title}
+              title={previewData.name || previewData.title}
+            >
+              {previewData.name || previewData.title}
+            </h4>
+          </Link>
+        </div>
         <div className={classes.info}>
           <span className={classes.type}>{previewData.type}</span>
           <span>
@@ -171,13 +181,18 @@ const PreviewCard = ({ previewData }) => {
         <div className={classes["main-tag"]}>
           File: {currVersion?.fileName || previewData?.fileName}
         </div>
+        {previewData?.fileNames && (
+          <div className={classes["main-tag"]}>
+            Files: {previewData?.fileNames?.join(", ")}
+          </div>
+        )}
         {(currVersion?.mainTag || previewData?.mainTag) && (
           <ul className={classes["main-tag"]}>
             {/* Activation tag: */}
             <ActivationTag
-              tag={currVersion.mainTag || previewData.mainTag}
+              tag={currVersion?.mainTag || previewData?.mainTag}
               modelData={currSidePanelData}
-              strength={currVersion.weight || previewData.weight}
+              strength={currVersion?.weight || previewData?.weight}
             />
           </ul>
         )}

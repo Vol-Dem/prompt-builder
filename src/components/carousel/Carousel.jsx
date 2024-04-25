@@ -13,8 +13,8 @@ import {
   arrayUnion,
   doc,
   getFirestore,
-  setDoc,
-  updateDoc,
+  // setDoc,
+  // updateDoc,
   writeBatch,
 } from "firebase/firestore";
 import { useSelector } from "react-redux";
@@ -208,27 +208,28 @@ const Carousel = ({
     openImgHandler,
     caruselIsVisible,
     postId,
+    versionId,
   ]);
 
   useEffect(() => {
     if (!images) return;
-    const imgSize = images?.reduce(
-      (acc, cur) => {
-        return cur.height > acc[0] ? [cur.height, cur.width] : acc;
-      },
-      [0, 0]
-    );
-    const imgHight = Math.floor(
-      (dimensions.imgWidth / imgSize[1]) * imgSize[0]
-    );
-
-    if (curVisibleAmount === 1) {
-      setCarouselHeight(maxCarouselHeight);
-    } else {
-      setCarouselHeight(
-        imgHight > maxCarouselHeight ? maxCarouselHeight : imgHight
-      );
-    }
+    // const imgSize = images?.reduce(
+    //   (acc, cur) => {
+    //     return cur.height > acc[0] ? [cur.height, cur.width] : acc;
+    //   },
+    //   [0, 0]
+    // );
+    // const imgHight = Math.floor(
+    //   (dimensions.imgWidth / imgSize[1]) * imgSize[0]
+    // );
+    setCarouselHeight(maxCarouselHeight);
+    // if (curVisibleAmount === 1) {
+    //   setCarouselHeight(maxCarouselHeight);
+    // } else {
+    //   setCarouselHeight(
+    //     imgHight > maxCarouselHeight ? maxCarouselHeight : imgHight
+    //   );
+    // }
   }, [images, dimensions.imgWidth, curVisibleAmount]);
 
   useEffect(() => {

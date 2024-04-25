@@ -3,7 +3,7 @@ import classes from "./Image.module.scss";
 import { ReactComponent as StarImg } from "../../../assets/star.svg";
 import useIntersection from "../../../hooks/use-intersection";
 
-const Image = forwardRef(({ id, src, type, alt, onClick }, ref) => {
+const Image = forwardRef(({ id, src, type, alt, onClick, className }, ref) => {
   const [imgIsLoading, setImgIsLoading] = useState(true);
   const [imgError, setImgError] = useState(true);
   const [imgSrc, setImgSrc] = useState("#");
@@ -26,7 +26,11 @@ const Image = forwardRef(({ id, src, type, alt, onClick }, ref) => {
 
   return (
     <>
-      <div className={classes.img} onClick={onClick} ref={imageRef}>
+      <div
+        className={`${classes.img} ${className || ""}`}
+        onClick={onClick}
+        ref={imageRef}
+      >
         {type && <span className={classes.type}>{type}</span>}
 
         <img

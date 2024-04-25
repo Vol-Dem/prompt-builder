@@ -10,6 +10,8 @@ const Input = (props) => {
     className,
     onBlur,
     onChange,
+    onClick,
+    onFocus,
     error,
     autoFocus,
     value,
@@ -29,6 +31,8 @@ const Input = (props) => {
         name={name}
         onBlur={onBlur}
         onChange={onChange}
+        onClick={onClick}
+        onFocus={onFocus}
         placeholder={placeholder}
         {...input}
         className={`${classes.input} ${className || ""}`}

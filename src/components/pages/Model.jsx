@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import classes from "./Model.module.scss";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Carousel from "../carousel/Carousel";
 import { useDispatch, useSelector } from "react-redux";
 import { modelActions } from "../../store/model";
@@ -15,6 +15,8 @@ import firebaseApp from "../../firebase-config";
 import ModelSettings from "../model/model-settings/ModelSettings";
 import TagSets from "../model/tag-sets/TagSets";
 import { addModelToPanel } from "../../store/usedModels";
+import { tabActions } from "../../store/tabs";
+import Spinner from "../ui/Spinner";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -32,8 +34,10 @@ const Model = () => {
   const { modelId } = useParams();
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
+  // const errorMessage = useSelector((state) => state.model.errorMessage);
   const isAuth = useSelector((state) => state.auth.user.uid);
   const uid = useSelector((state) => state.auth.user.uid);
+  const categories = useSelector((state) => state.tabs.categoriesData);
   const dispatch = useDispatch();
   const descriptionRef = useRef();
   // const descriptionHeight = useRef()
@@ -46,11 +50,12 @@ const Model = () => {
     const unsub = onSnapshot(
       doc(firestore, "users", uid, "models", modelId),
       (doc) => {
+        setErrorMessage("");
         const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
         console.log(source);
         const data = doc.data();
         console.log(data);
-        if (!data) {
+        if (!data?.id) {
           setErrorMessage("Failed to load model");
           setIsLoading(false);
           return;
@@ -62,6 +67,8 @@ const Model = () => {
     );
 
     return () => {
+      // console.log("MODEL RESET");
+      setErrorMessage("");
       dispatch(modelActions.setCurVersion({}));
       dispatch(modelActions.setModelData({}));
       unsub();
@@ -109,11 +116,14 @@ const Model = () => {
         model?.defaultCustomData?.helperTags,
       updatedAt: model?.updatedAt,
     };
-    console.log(curVersionCustomData);
-    console.log(modelPreviewData);
+    // console.log(curVersionCustomData);
+    // console.log(modelPreviewData);
 
     setModelPreview(modelPreviewData);
     const curCustomVersion = model.modelVersionsCustomData[curVersion.id];
+    // console.log(curCustomVersion);
+    // console.log(curCustomVersion?.versionId);
+    // console.log(curVersion);
     setCurCustomVersionData(curCustomVersion);
 
     if (!curImagesModelVersionId)
@@ -137,6 +147,7 @@ const Model = () => {
     const curVer = model?.data?.modelVersions.find(
       (version) => version.id === id
     );
+    console.log(id);
     console.log(curVer);
     // resetExamples();
     dispatch(modelActions.setCurVersion(curVer));
@@ -167,7 +178,30 @@ const Model = () => {
     );
   });
 
-  const subCatsHtml = model?.sub?.map((sub, i) => <li key={i}>{sub}</li>);
+  const subCatsHtml = useMemo(() => {
+    return model?.sub?.map((sub, i) => {
+      const subcategoryName =
+        categories[model?.modelType]
+          ?.find((category) => category.id === model?.main)
+          ?.subcategories.find((subcategory) => subcategory.id === sub)?.name ||
+        sub;
+      return (
+        <li key={i}>
+          <Link
+            to="/"
+            className={classes["link"]}
+            onClick={() => {
+              dispatch(tabActions.setCurrentTab(model.modelType));
+              dispatch(tabActions.setCurrentCategory(model.main));
+              dispatch(tabActions.setCurrentSubcategory(sub));
+            }}
+          >
+            {subcategoryName || sub}
+          </Link>
+        </li>
+      );
+    });
+  }, [model, categories, dispatch]);
 
   const openEditHandler = () => {
     setEditIsOpen((prevState) => !prevState);
@@ -181,9 +215,15 @@ const Model = () => {
     dispatch(addModelToPanel(modelPreview));
   };
 
+  const mainCategoryName = useMemo(() => {
+    return categories[model?.modelType]?.find(
+      (category) => category.id === model?.main
+    )?.name;
+  }, [categories, model?.main, model?.modelType]);
+
   return (
     <div className={classes.model}>
-      {isLoading && <div>Loading...</div>}
+      {isLoading && <Spinner />}
       {!isLoading && errorMessage && <div>{errorMessage}</div>}
       {!isLoading && !errorMessage && model?.id && (
         <>
@@ -192,7 +232,16 @@ const Model = () => {
               Back
             </button>
             <div className={classes.categories}>
-              {model?.main}
+              <Link
+                to="/"
+                className={classes["link"]}
+                onClick={() => {
+                  dispatch(tabActions.setCurrentTab(model.modelType));
+                  dispatch(tabActions.setCurrentCategory(model.main));
+                }}
+              >
+                {mainCategoryName || model?.main}
+              </Link>
               <ul className={classes["subcategories"]}>{subCatsHtml}</ul>
             </div>
             <button

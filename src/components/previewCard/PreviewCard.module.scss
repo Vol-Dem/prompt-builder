@@ -40,6 +40,11 @@
   }
 }
 
+.link {
+  text-decoration: none;
+  color: var.$color-text-white;
+}
+
 .img {
   display: flex;
   // width: 12rem;
@@ -91,11 +96,24 @@
   border-radius: 1rem;
   text-transform: uppercase;
   font-size: 1.4rem;
+  word-break: normal;
+}
+
+.title-container {
+  display: flex;
+  align-items: center;
+  height: 6rem;
+  overflow: hidden;
 }
 
 .title {
+  display: -webkit-box;
   font-size: 2.2rem;
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .content {

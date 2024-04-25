@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "./ModelsList.module.scss";
 import PreviewCard from "../previewCard/PreviewCard";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,10 +11,12 @@ import {
 } from "firebase/firestore";
 import firebaseApp from "../../firebase-config";
 import { tabActions } from "../../store/tabs";
+import Spinner from "../ui/Spinner";
 
 const firestore = getFirestore(firebaseApp);
 
 const ModelsList = ({ loraItems }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const activeTab = useSelector((state) => state.tabs.currTab);
   const activeSubcategory = useSelector((state) => state.tabs.currSubcategory);
   const activeCategory = useSelector((state) => state.tabs.currCategory);
@@ -25,24 +27,31 @@ const ModelsList = ({ loraItems }) => {
   useEffect(() => {
     if (!activeSubcategory) return;
     const getModelsPreview = async () => {
-      console.log(activeTab);
-      console.log(activeCategory);
-      console.log(activeSubcategory);
-      const q = query(
-        collection(firestore, "users", uid, `preview`),
-        where("modelType", "==", activeTab),
-        where("main", "==", activeCategory),
-        where("sub", "array-contains", activeSubcategory)
-        // orderBy("id", "desc")
-      );
-      const querySnapshot = await getDocs(q);
-      const modelsData = querySnapshot.docs.map((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        return doc.data();
-      });
-      console.log(modelsData);
+      try {
+        // console.log(activeTab);
+        // console.log(activeCategory);
+        // console.log(activeSubcategory);
+        setIsLoading(true);
+        const q = query(
+          collection(firestore, "users", uid, `preview`),
+          where("modelType", "==", activeTab),
+          where("main", "==", activeCategory),
+          where("sub", "array-contains", activeSubcategory)
+          // orderBy("id", "desc")
+        );
+        const querySnapshot = await getDocs(q);
+        const modelsData = querySnapshot.docs.map((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          return doc.data();
+        });
+        console.log(modelsData);
 
-      dispatch(tabActions.setModelsData(modelsData));
+        dispatch(tabActions.setModelsData(modelsData));
+        setIsLoading(false);
+      } catch (err) {
+        console.log(err.message);
+        setIsLoading(false);
+      }
     };
     getModelsPreview();
   }, [uid, activeCategory, activeSubcategory, activeTab, dispatch]);
@@ -53,8 +62,11 @@ const ModelsList = ({ loraItems }) => {
 
   return (
     <div className={classes["container"]}>
-      <div className={classes["category"]}>{loraHtml}</div>
-      {!loraHtml.length && <div className={classes.empty}>This category is empty</div>}
+      {isLoading && <Spinner />}
+      {!isLoading && <div className={classes["category"]}>{loraHtml}</div>}
+      {!loraHtml.length && (
+        <div className={classes.empty}>This category is empty</div>
+      )}
     </div>
   );
 };

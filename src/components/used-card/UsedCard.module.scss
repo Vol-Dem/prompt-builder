@@ -4,19 +4,22 @@
   display: flex;
   flex-direction: column;
   //   grid-template-columns: 2fr 3fr;
-  border: 1px solid #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 1rem;
   overflow: hidden;
   transition: all 0.3s;
   background-color: var.$color-background-tertiary;
-  margin: 1rem 0 1rem 0.6rem;
+  // margin: 1rem 0 1rem 0.6rem;
+  // margin-left: 1rem;
+  box-shadow: var.$box-shadow;
+  flex-shrink: 0;
 }
 
 .head {
   display: grid;
   //   align-items: center;
   position: relative;
-  gap: 1rem;
+  // gap: 1rem;
   grid-template-columns: 8rem 1fr;
   overflow: hidden;
   &::after {
@@ -51,6 +54,11 @@
   &:hover {
     color: #5966a1;
   }
+}
+
+.link {
+  text-decoration: none;
+  color: var.$color-text-white;
 }
 
 .img {
@@ -105,26 +113,44 @@
   padding: 0.4rem 0.8rem;
   border-radius: 1rem;
   text-transform: uppercase;
+  margin-right: 1rem;
+  font-size: 1.2rem;
   //   font-size: 1.6rem;
   //   z-index: 2;
 }
 
+.title-container {
+  display: flex;
+  align-items: center;
+  height: 5rem;
+  overflow: hidden;
+}
+
 .title {
+  display: -webkit-box;
   font-size: 1.8rem;
-  margin-top: 1.2rem;
-  margin-bottom: 1.2rem;
-  align-self: center;
+  // margin-top: 1.2rem;
+  // margin-bottom: 1.2rem;
+  // align-self: center;
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.cont {
+  padding-bottom: 1rem;
 }
 
 .content {
   display: flex;
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   flex-direction: column;
   // grid-template-rows: auto auto auto auto auto 1fr;
   align-items: flex-start;
   gap: 1rem;
-  padding: 1rem;
+  // padding: 1rem;
   transition: all 0.3s;
 
   // &--open {
@@ -134,9 +160,12 @@
 
 .info {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  // align-items: center;
+  padding: 1rem;
   gap: 1rem;
   font-size: 1.4rem;
+  overflow: hidden;
 }
 
 .main-tag {
@@ -146,6 +175,7 @@
   font-weight: 500;
   gap: 1rem;
   list-style: none;
+  padding: 1rem 1rem 0 1rem;
 }
 
 .tag-list h3 {

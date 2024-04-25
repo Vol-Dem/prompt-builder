@@ -11,6 +11,7 @@ import {
   where,
 } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
+import Spinner from "../../ui/Spinner";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -31,9 +32,10 @@ const GeneratedImages = ({ customData }) => {
   const uid = useSelector((state) => state.auth.user.uid);
 
   const resetExamples = () => {
-    console.log("RESET");
+    // console.log("RESET");
     setCurrCursor(null);
     setExamplesImages([]);
+    setExamplesHtml([]);
     // setCurImagesModelVersionId(null);
   };
 
@@ -81,6 +83,7 @@ const GeneratedImages = ({ customData }) => {
   };
   const switchCurExamples = (e) => {
     if (curExampleImgsType === e.target.dataset.example) return;
+    setErrorMessage("");
     resetExamples();
     setErrorMessage("");
     setCurExampleImgsType(e.target.dataset.example);
@@ -200,33 +203,52 @@ const GeneratedImages = ({ customData }) => {
     // }
 
     const getImages = async () => {
-      const q = query(
-        collection(firestore, "users", uid, "models", model.id + "", "images"),
-        where("versionId", "==", curImagesModelVersionId),
-        orderBy("versionId", "desc")
-        // orderBy("savedAt", "desc")
-      );
-      console.log("START");
-      const modelImagesSnap = await getDocs(q);
-
-      const data = modelImagesSnap.docs.map((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        return doc.data();
-      });
-      console.log(data);
-      const examples = data.flatMap((item, i) => {
-        if (!nsfwMode && item.nsfw) return [];
-        return (
-          <Carousel
-            key={i}
-            versionId={curImagesModelVersionId}
-            images={item.items}
-            visibleImgAmount={1}
-            // onUpdate={updateImgResData}
-          />
+      try {
+        setErrorMessage("");
+        setExamplesIsLoading(true);
+        const q = query(
+          collection(
+            firestore,
+            "users",
+            uid,
+            "models",
+            model.id + "",
+            "images"
+          ),
+          where("versionId", "==", curImagesModelVersionId),
+          orderBy("versionId", "desc")
+          // orderBy("savedAt", "desc")
         );
-      });
-      setExamplesHtml(examples);
+        // console.log("START");
+        const modelImagesSnap = await getDocs(q);
+
+        const data = modelImagesSnap.docs.map((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          return doc.data();
+        });
+        console.log(data);
+        const examples = data.flatMap((item, i) => {
+          if (!nsfwMode && item.nsfw) return [];
+          return (
+            <Carousel
+              key={i}
+              versionId={curImagesModelVersionId}
+              images={item.items}
+              visibleImgAmount={1}
+              // onUpdate={updateImgResData}
+            />
+          );
+        });
+        // if (!examples?.length) {
+        //   setErrorMessage("No images found, try to switch nsfw mode");
+        // }
+        // console.log(examples);
+        setExamplesHtml(examples);
+        setExamplesIsLoading(false);
+      } catch (err) {
+        setErrorMessage(err.message);
+        setExamplesIsLoading(false);
+      }
     };
 
     getImages();
@@ -423,18 +445,17 @@ const GeneratedImages = ({ customData }) => {
         {modelImageVersionsHtml}
       </div>
       <div className={classes.images}>{examplesHtml}</div>
-      {examplesIsLoading && <div>Loading...</div>}
+      {examplesIsLoading && <Spinner />}
       {errorMessage && <div>{errorMessage}</div>}
       <div>
         {nextCursor && curExampleImgsType === "all" && (
           <button onClick={nextPageHandler}>next</button>
         )}
-        {errorMessage && !nextCursor && (
-          <button on onClick={retryImageLoadingHandler}>
-            Retry
-          </button>
+        {errorMessage && !nextCursor && curExampleImgsType === "all" && (
+          <button onClick={retryImageLoadingHandler}>Retry</button>
         )}
       </div>
+      {!examplesIsLoading && !examplesHtml.length && <div>No images found</div>}
     </>
   );
 };

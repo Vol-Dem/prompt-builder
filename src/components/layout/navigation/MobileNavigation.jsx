@@ -31,9 +31,6 @@ const MobileNavigation = () => {
               <li>
                 <NavLink to="profile">Profile</NavLink>
               </li>
-              <li>
-                <NavLink to="favorites">Favorites</NavLink>
-              </li>
             </>
           )}
           <li>

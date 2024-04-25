@@ -111,7 +111,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
       .map((tag) => tag.trim());
 
     let tagSetsData;
-    if (!versionData.tagSetsData.length) {
+    if (!versionData?.tagSetsData?.length) {
       tagSetsData = tagSetsInputData;
     } else {
       tagSetsData = tagSetsInputData.map((tagSet, i) => {

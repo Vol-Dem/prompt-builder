@@ -16,3 +16,12 @@ export const clearObjectKeys = (obj) => {
   });
   return Object.fromEntries(convertedMetaArr);
 };
+
+export const clearFileExtension = (name) => {
+  const clearedName = name
+    ?.replace(".safetensors", "")
+    .replace(".pt", "")
+    .replace(".pth", "")
+    .replace(".ckpt", "");
+  return clearedName;
+};

@@ -12,8 +12,8 @@ const TagSets = ({ customData, defaultData }) => {
   const [tagSetsIsOpen, setTagSetsIsOpen] = useState(false);
   const [tagSets, setTagSets] = useState([]);
   const [allTagSets, setAllTagSets] = useState([]);
-  const [tagsetItemHeight, setTagsetItemHeight] = useState(20);
-  const [tagsetListHeight, setTagsetListHeight] = useState(20);
+  const [tagsetItemHeight, setTagsetItemHeight] = useState(500);
+  const [tagsetListHeight, setTagsetListHeight] = useState(500);
   const model = useSelector((state) => state.model.model);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const tagSetItemRef = useRef();
@@ -27,19 +27,31 @@ const TagSets = ({ customData, defaultData }) => {
   }, [
     tagSetItemRef?.current?.offsetHeight,
     tagSetListRef?.current?.offsetHeight,
+    customData,
   ]);
 
   useEffect(() => {
     const tagSetsData = customData?.length ? customData : defaultData;
-    console.log(tagSetsData);
-    console.log(customData, defaultData);
+    // console.log(tagSetsData);
+    // console.log(customData, defaultData);
     if (!tagSetsData) return;
     setAllTagSets(tagSetsData);
     setTagSets(tagSetsData);
+    const itemHeight = tagSetItemRef?.current?.offsetHeight;
+    const listHeight = tagSetListRef?.current?.offsetHeight;
+    setTagsetItemHeight(itemHeight);
+    setTagsetListHeight(listHeight);
     // setTagSets(
     //   tagSetsData.slice(0, tagSetsIsOpen ? tagSetsData.length : defVisibleTags)
     // );
-  }, [customData, defaultData, model, tagSetsIsOpen]);
+  }, [
+    customData,
+    defaultData,
+    model,
+    tagSetsIsOpen,
+    tagSetItemRef?.current?.offsetHeight,
+    tagSetListRef?.current?.offsetHeight,
+  ]);
 
   const splitTags = (arr) => {
     const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;

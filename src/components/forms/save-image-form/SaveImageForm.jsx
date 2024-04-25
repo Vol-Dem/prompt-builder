@@ -40,6 +40,7 @@ const SaveImageForm = ({ modelData }) => {
     postIdState;
 
   const uid = useSelector((state) => state.auth.user.uid);
+  const nsfwMode = useSelector((state) => state.model.nsfwMode);
 
   const saveImagesHandler = async (e) => {
     try {
@@ -82,10 +83,16 @@ const SaveImageForm = ({ modelData }) => {
         throw new Error("Exists");
       }
 
+      // const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
+      //     versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
+      //   }${amountPerPage ? `&limit=${amountPerPage}` : ""}${
+      //     imagesSortValue ? `&sort=${imagesSortValue}` : ""
+      //   }${cursor ? `&cursor=${cursor}` : ""}`;
+
       const imgExampleResponse = await fetch(
         `https://civitai.com/api/v1/images?postId=${postId}${
           !filterDisabledInput ? `&modelId=${modelData?.id}` : ""
-        }`
+        }${nsfwMode ? `&nsfw=X` : `&nsfw=None`}`
       );
       const data = await imgExampleResponse.json();
       console.log(data);
@@ -228,11 +235,12 @@ const SaveImageForm = ({ modelData }) => {
     <form onSubmit={saveImagesHandler} className={classes["form"]}>
       <label htmlFor="version-select">Select version:</label>
       <Select
+        label="Version"
         name="curVersionId"
         id="version-select"
         selected={versionIdInput}
-        onChange={(e) => {
-          setVersionIdInput(e.target.value);
+        onChange={(value) => {
+          setVersionIdInput(value);
         }}
         options={versionSelectOption}
       />

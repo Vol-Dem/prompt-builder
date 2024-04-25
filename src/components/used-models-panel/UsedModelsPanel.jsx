@@ -6,6 +6,7 @@ import { usedModelsActions } from "../../store/usedModels";
 import UpdateModelForm from "../forms/update-model-form/UpdateModelForm";
 import Arrow from "../ui/Arrow";
 import ButtonTertiary from "../ui/ButtonTertiary";
+import UpdateDb from "../update-db/UpdateDb";
 
 const UsedModelsPanel = () => {
   // const [panelIsOpen, setPanelIsOpen] = useState(true);
@@ -68,8 +69,9 @@ const UsedModelsPanel = () => {
       >
         <div className={classes["options"]}>
           <button className={classes["btn-forms"]} onClick={openFormHandler}>
-            {!formIsOpen ? "+ New resourse" : "Close form X"}
+            {!formIsOpen ? "+ New resourse" : "Hide form X"}
           </button>
+          <UpdateDb />
           {formIsOpen && (
             <div className={classes.forms}>
               <UpdateModelForm id="side-form" />

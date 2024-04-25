@@ -1,0 +1,256 @@
+import classes from "./CategoriesForm.module.scss";
+// import Card from "../../../components/ui/Card";
+import Input from "../../../components/ui/Input";
+import { useDispatch, useSelector } from "react-redux";
+// import { changeUserName, changeUserPassword } from "../store/auth";
+import ErrorMessage from "../../../components/ui/ErrorMessage";
+import { useEffect, useState } from "react";
+// import ButttonSecondary from "../../ui/ButtonSecondary";
+// import { ReactComponent as UserIcon } from "./../../../assets/user.svg";
+import { updateCategories } from "../../../store/model";
+import ButtonTertiary from "../../ui/ButtonTertiary";
+import DeleteRequest from "../../ui/DeleteRequest";
+
+const CategoriesForm = ({ modelType, activeCategory, categories }) => {
+  //   const [changeNameIsActive, setChangeNameIsActive] = useState(false);
+  const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
+  const [categoriesToUpdate, setCategoriesToUpdate] = useState([]);
+  const [deleteCategoryId, setDeleteCategoryId] = useState("");
+  const [categoriesInputs, setCategoriesInputs] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const dispatch = useDispatch();
+  const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
+
+  useEffect(() => {
+    const categoriesData = !activeCategory
+      ? categories
+      : categories.find((category) => category.id === activeCategory)
+          ?.subcategories;
+
+    setCategoriesToUpdate(categoriesData);
+
+    const categoriesInputData = categoriesData
+      .toSorted((a, b) => {
+        const nameA = a.name.toUpperCase(); // ignore upper and lowercase
+        const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        // names must be equal
+        return 0;
+      })
+      .map((category, i) => {
+        return {
+          type: "text",
+          id: category.id,
+          name: category.name,
+          placeholder: "",
+          value: category.name,
+          active: false,
+        };
+      });
+    setCategoriesInputs(categoriesInputData);
+  }, [categories, activeCategory]);
+
+  const subCatHandler = (e) => {
+    setCategoriesInputs((prevState) => {
+      const newState = [...prevState];
+      console.log(newState);
+      console.log(e.target.id);
+      const curIndex = newState.findIndex((imageId) => {
+        return imageId.id + "" === e.target.id;
+      });
+      newState[curIndex].value = e.target.value;
+
+      return newState;
+    });
+  };
+
+  //Switch visibility of change name form
+  const changeNameIsActiveHandler = (e) => {
+    setErrorMessage("");
+    const categoryId = e.target.dataset.id;
+
+    setCategoriesInputs((prevState) => {
+      console.log(prevState);
+      return prevState.map((category) => {
+        if (category.id === categoryId) {
+          return {
+            ...category,
+            active: !category.active,
+          };
+        }
+        return {
+          ...category,
+          active: false,
+        };
+      });
+    });
+  };
+
+  //Retrive data from form and dispatch changeUserName action with new name
+  const changeCategoryNameHandler = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const [id, categoryName] = [...formData][0];
+
+    const existedName = categoriesToUpdate.find(
+      (category) => category.name === categoryName
+    );
+
+    if (existedName) {
+      setErrorMessage(`The "${categoryName}" category already exists`);
+      return;
+    }
+
+    const updatedCategories = categoriesToUpdate.map((category) => {
+      if (category.id === id) {
+        return {
+          ...category,
+          name: categoryName,
+        };
+      }
+      return category;
+    });
+
+    const categoriesData = !activeCategory
+      ? updatedCategories
+      : categories.map((category) => {
+          if (category.id === activeCategory) {
+            return {
+              ...category,
+              subcategories: updatedCategories,
+            };
+          }
+          return category;
+        });
+
+    console.log(categoriesData);
+
+    dispatch(updateCategories(modelType, categoriesData));
+    // setChangeNameIsActive(false);
+  };
+
+  const deleteCategoryHandler = () => {
+    const updatedCategories = categoriesToUpdate.filter(
+      (category) => category.id !== deleteCategoryId
+    );
+
+    if (activeCategory) {
+      const mainCategory = categories.find(
+        (category) => category.id === activeCategory
+      );
+      const mainCategoryIndex = categories.findIndex(
+        (category) => category.id === activeCategory
+      );
+      const updatedMainCategory = {
+        ...mainCategory,
+        subcategories: updatedCategories,
+      };
+
+      const updatedAllCategories = [
+        ...categories.slice(0, mainCategoryIndex),
+        updatedMainCategory,
+        ...categories.slice(mainCategoryIndex + 1),
+      ];
+      console.log(updatedAllCategories);
+      dispatch(updateCategories(modelType, updatedAllCategories));
+    } else {
+      console.log(updatedCategories);
+      dispatch(updateCategories(modelType, updatedCategories));
+    }
+
+    // dispatch(updateCategories(modelType, updatedCategories));
+    setDeleteRequestIsOpen(false);
+  };
+
+  const showDeleteReqeustHandler = (e) => {
+    const categoryId = e.target.dataset.id;
+    setDeleteCategoryId(categoryId);
+    setDeleteRequestIsOpen(true);
+  };
+
+  const closeDeleteReqeustHandler = () => {
+    setDeleteCategoryId("");
+    setDeleteRequestIsOpen(false);
+  };
+
+  const categoriesInputsHtml = categoriesInputs.map((category, i) => {
+    return (
+      <form key={i} onSubmit={changeCategoryNameHandler}>
+        <div className={classes["category__form"]}>
+          {!category.active && (
+            <div className={classes["category__name"]}>{category.name}</div>
+          )}
+          {category.active && (
+            <>
+              <Input
+                key={category.id}
+                id={category.id}
+                name={category.id}
+                type={category.type}
+                placeholder={category.placeholder}
+                // defaultValue={category.value}
+                onChange={subCatHandler}
+                value={category.value}
+                // error={errorMessage}
+              />
+              <ButtonTertiary type="submit">Submit</ButtonTertiary>
+            </>
+          )}
+          <ButtonTertiary
+            type="button"
+            button={{ "data-id": category.id }}
+            onClick={changeNameIsActiveHandler}
+          >
+            {!category.active ? "Change" : "Cancel"}
+          </ButtonTertiary>
+          {!category.active && (
+            <ButtonTertiary
+              type="button"
+              button={{ "data-id": category.id }}
+              className={classes["btn-del"]}
+              onClick={showDeleteReqeustHandler}
+            >
+              Delete
+            </ButtonTertiary>
+          )}
+        </div>
+        {category.active && errorMessage && (
+          <div className={classes["category__error"]}>{errorMessage}</div>
+        )}
+      </form>
+    );
+  });
+
+  return (
+    <section className={classes.category}>
+      <div className={classes["category__container"]}>
+        <div>
+          <div className={classes["category__info"]}>
+            {categoriesInputsHtml}
+            {errorMessageAuth && (
+              <ErrorMessage className={classes["auth__error"]}>
+                {errorMessageAuth}
+              </ErrorMessage>
+            )}
+          </div>
+        </div>
+      </div>
+      {deleteRequestIsOpen && (
+        <DeleteRequest
+          message={`Are you sure that you want to delete "${deleteCategoryId}" category? This action can't
+        be reverted`}
+          onSubmit={deleteCategoryHandler}
+          onClose={closeDeleteReqeustHandler}
+        />
+      )}
+    </section>
+  );
+};
+
+export default CategoriesForm;

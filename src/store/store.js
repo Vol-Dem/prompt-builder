@@ -5,6 +5,7 @@ import usedModelsSlice from "./usedModels";
 import modelSlice from "./model";
 import authSlice from "./auth";
 import notificationSlice from "./notification";
+import searchSlice from "./search";
 
 const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ const store = configureStore({
     used: usedModelsSlice.reducer,
     model: modelSlice.reducer,
     auth: authSlice.reducer,
+    search: searchSlice.reducer,
     notification: notificationSlice.reducer,
   },
 });

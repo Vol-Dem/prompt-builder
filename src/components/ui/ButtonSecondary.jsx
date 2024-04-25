@@ -7,6 +7,7 @@ const ButttonSecondary = (props) => {
       type={props.type}
       onClick={props.onClick}
       disabled={props.disabled}
+      {...props.button}
     >
       {props.children}
     </button>

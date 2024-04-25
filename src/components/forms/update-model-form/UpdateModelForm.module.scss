@@ -68,3 +68,14 @@
   padding-bottom: 1rem;
   margin: 1rem 0 2rem;
 }
+
+.link {
+  display: inline-block;
+  color: #7278f0;
+}
+
+.status {
+  display: flex;
+  gap: 1rem;
+  // justify-content: space-between;
+}
