@@ -7,7 +7,7 @@ import Spinner from "../ui/Spinner";
 
 // let initial = true;
 
-const SearchPage = () => {
+const SearchPage = ({ title }) => {
   const [initial, setInitial] = useState(true);
   const searchQuery = useSelector((state) => state.search.searchQuery);
   const searchResult = useSelector((state) => state.search.searchResult);
@@ -18,6 +18,10 @@ const SearchPage = () => {
   });
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    document.title = searchQuery ? `${title} - ${searchQuery}` : title;
+  }, [title, searchQuery]);
 
   useEffect(() => {
     return () => {

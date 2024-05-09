@@ -1,10 +1,44 @@
 import classes from "./ImageCard.module.scss";
 import TagList from "../tag-list/TagList";
+import { useEffect, useState } from "react";
+import { getImageInfo } from "../../utils/fetchUtils";
+import Spinner from "../ui/Spinner";
 // import { useDispatch } from "react-redux";
 // import { promptActions } from "../../store/prompt";
 
 const ImageCard = ({ imageData, closeImg }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [imageResources, setImageResources] = useState([]);
   // const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log("START FETCH");
+    const loadResoursesInfo = async () => {
+      try {
+        setIsLoading(true);
+
+        const imageWithResInfo = await getImageInfo(imageData);
+        console.log(imageWithResInfo);
+        const imageResourcesInfo =
+          imageWithResInfo.meta?.civitaiResources ||
+          imageWithResInfo.meta?.resources;
+        console.log(imageResourcesInfo);
+        setImageResources(imageResourcesInfo);
+        setIsLoading(false);
+      } catch (err) {
+        console.log(err);
+        setErrorMessage(err.message);
+        setIsLoading(false);
+      }
+    };
+    loadResoursesInfo();
+
+    return () => {
+      console.log("CLEAN");
+    };
+  }, [imageData]);
+
   const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
   const positiveWordsArr = imageData.meta?.prompt
     ?.split(splitRegEx)
@@ -12,9 +46,6 @@ const ImageCard = ({ imageData, closeImg }) => {
   const negativeWordsArr = imageData.meta?.negativePrompt
     ?.split(splitRegEx)
     ?.flatMap((tag) => tag.trim() || []);
-
-  const imageResources =
-    imageData.meta?.civitaiResources || imageData.meta?.resources;
 
   const resourcesHtml = imageResources?.map((resource, i) => (
     <div key={i} className={classes["resource"]}>
@@ -155,7 +186,12 @@ const ImageCard = ({ imageData, closeImg }) => {
                   Show on civitai.com
                 </a>
               </div>
-              {resourcesHtml}
+              {isLoading && (
+                <div className={classes["spiner-container"]}>
+                  <Spinner size="medium" />
+                </div>
+              )}
+              {!isLoading && resourcesHtml}
             </div>
           </>
         </div>

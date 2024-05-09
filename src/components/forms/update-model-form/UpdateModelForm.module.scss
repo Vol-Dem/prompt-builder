@@ -50,6 +50,11 @@
 }
 
 .submit {
+  display: flex;
+  position: relative;
+  height: 3.2rem;
+  justify-content: center;
+  align-items: center;
   // width: 12rem;
   // align-self: flex-end;
 }

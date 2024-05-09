@@ -159,13 +159,17 @@ const promptSlice = createSlice({
       .addMatcher(
         (action) => action.type.startsWith("prompt/"),
         (state, action) => {
-          const uid = auth.currentUser.uid;
-          saveToStorage(`${uid}-prompt`, state.curPrompt);
-          saveToStorage(`${uid}-neg-prompt`, state.curNegPrompt);
-          saveToStorage(`${uid}-prompt-state`, {
-            promptIsOpen: state.promptIsOpen,
-          });
-          saveToStorage(`${uid}-prompt-text`, { isTextMode: state.isTextMode });
+          const uid = auth?.currentUser?.uid;
+          if (uid) {
+            saveToStorage(`${uid}-prompt`, state.curPrompt);
+            saveToStorage(`${uid}-neg-prompt`, state.curNegPrompt);
+            saveToStorage(`${uid}-prompt-state`, {
+              promptIsOpen: state.promptIsOpen,
+            });
+            saveToStorage(`${uid}-prompt-text`, {
+              isTextMode: state.isTextMode,
+            });
+          }
         }
       );
   },

@@ -5,21 +5,28 @@ import useIntersection from "../../../hooks/use-intersection";
 
 const Image = forwardRef(({ id, src, type, alt, onClick, className }, ref) => {
   const [imgIsLoading, setImgIsLoading] = useState(true);
-  const [imgError, setImgError] = useState(true);
+  const [imgError, setImgError] = useState(false);
+  const [imgIsLoaded, setiImgIsLoaded] = useState(false);
   const [imgSrc, setImgSrc] = useState("#");
   const imageRef = useRef();
   const imageIsVisible = useIntersection(imageRef);
 
   useEffect(() => {
-    if (imgError) setImgIsLoading(true);
-    if (imageIsVisible) setImgSrc(src);
-  }, [src, imageIsVisible, imgError]);
+    // if (!imgIsLoaded) setImgIsLoading(true);
+    if (imageIsVisible) {
+      setImgSrc(src);
+      setImgError(false);
+      setImgIsLoading(true);
+    }
+  }, [src, imageIsVisible]);
 
   const imgLoadHandler = () => {
     setImgIsLoading(false);
+    setiImgIsLoaded(true);
   };
 
   const imgErrorHandler = () => {
+    console.log("ERRR");
     setImgIsLoading(false);
     setImgError(true);
   };
@@ -32,21 +39,19 @@ const Image = forwardRef(({ id, src, type, alt, onClick, className }, ref) => {
         ref={imageRef}
       >
         {type && <span className={classes.type}>{type}</span>}
-
+        <div className={classes.preloader}>
+          <StarImg />
+        </div>
         <img
           ref={ref}
           src={imgSrc}
           alt={alt}
           onLoad={imgLoadHandler}
           onError={imgErrorHandler}
-          className={`${imgIsLoading ? classes["img--hidden"] : ""}`}
+          className={`${
+            imgIsLoading || imgError ? classes["img--hidden"] : ""
+          }`}
         />
-
-        {imgIsLoading && (
-          <div className={classes.preloader}>
-            <StarImg />
-          </div>
-        )}
       </div>
     </>
   );

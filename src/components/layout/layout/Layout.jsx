@@ -30,6 +30,7 @@ import Prompt from "../../prompt/Prompt";
 import UsedModelsPanel from "../../used-models-panel/UsedModelsPanel";
 import { modelActions } from "../../../store/model";
 import Search from "../../search/Search";
+import UploadingPanel from "../../uploading-panel/UploadingPanel";
 
 const Layout = () => {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
@@ -86,6 +87,7 @@ const Layout = () => {
                     NSFW
                   </button>
                 </div>
+                <UploadingPanel />
 
                 {isAuth && <UserNavigation />}
                 {!isAuth && (

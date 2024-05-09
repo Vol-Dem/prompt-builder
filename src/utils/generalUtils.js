@@ -25,3 +25,11 @@ export const clearFileExtension = (name) => {
     .replace(".ckpt", "");
   return clearedName;
 };
+
+export const addDelayPromise = (delay) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve("foo");
+    }, delay);
+  });
+};

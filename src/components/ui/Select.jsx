@@ -33,7 +33,6 @@ const Select = ({
   }, []);
 
   useEffect(() => {
-    console.log("OPT", options);
     const labelStyle = window.getComputedStyle(labeldRef.current);
     const merginTop = parseFloat(labelStyle.marginTop);
     const merginBottom = parseFloat(labelStyle.marginBottom);
@@ -44,7 +43,7 @@ const Select = ({
         ? options.length * selectHeight
         : visibleOptionsAmount * selectHeight;
     setOptionsFieldHeight(fieldHeight);
-    console.log(selectHeight);
+    // console.log(selectHeight);
     // console.log(labelStyle);
     // console.log(labeldRef.current.clientHeight);
     if (selected) {

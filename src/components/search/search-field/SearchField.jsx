@@ -144,6 +144,10 @@ const SearchField = ({ onSubmit, onChange }) => {
           ]),
           where("nsfw", "==", nsfwMode)
         )
+        // and(
+        //   where("versionIds", "array-contains-any", [parseInt(searchInput)]),
+        //   where("nsfw", "==", nsfwMode)
+        // )
       ),
       // where("fileNames", "array-contains-any", [searchInput])
 

@@ -23,7 +23,7 @@ import {
   // useMatches,
   useNavigate,
 } from "react-router-dom";
-import { tabActions } from "../../store/tabs";
+import { getModelsPreview, tabActions } from "../../store/tabs";
 import { addModelToPanel } from "../../store/usedModels";
 import { ReactComponent as SearchIcon } from "./../../assets/search.svg";
 import { searchActions } from "../../store/search";
@@ -31,7 +31,7 @@ import Spinner from "../ui/Spinner";
 
 const firestore = getFirestore(firebaseApp);
 let searchTimeout;
-const amountPerPage = 5;
+const amountPerPage = 10;
 const searchTimeoutMs = 1000;
 // const routes = [{ path: "/search" }];
 
@@ -168,6 +168,10 @@ const Search = () => {
               clearFileExtension(searchString).toLowerCase(),
             ]),
             where("nsfw", "==", false)
+          ),
+          and(
+            where("versionIds", "array-contains-any", [+searchString]),
+            where("nsfw", "==", false)
           )
         );
       } else {
@@ -191,7 +195,8 @@ const Search = () => {
             where("mainTags", "array-contains-any", [
               clearFileExtension(searchString).toLowerCase(),
             ])
-          )
+          ),
+          and(where("versionIds", "array-contains-any", [+searchString]))
         );
       }
       const queryByOther = query(
@@ -322,6 +327,10 @@ const Search = () => {
         <NavLink
           to={`model/${modelPreveiw.id}`}
           className={classes["search__link"]}
+          onClick={() => {
+            dispatch(searchActions.setSearchQuery(""));
+            dispatch(searchActions.setSearchResult([]));
+          }}
         >
           <>
             <Image
@@ -377,6 +386,7 @@ const Search = () => {
               dispatch(tabActions.setCurrentTab(result.type));
               dispatch(tabActions.setCurrentCategory(result.id));
               dispatch(tabActions.setCurrentSubcategory(result.subId));
+              dispatch(getModelsPreview());
             }}
           >
             {result.subName}
@@ -443,7 +453,11 @@ const Search = () => {
                   {categoriesSearchResultHtml}
                 </ul>
               )}
-              {searchIsLoading && <Spinner />}
+              {searchIsLoading && (
+                <div className={classes["spiner-container"]}>
+                  <Spinner size="small" />
+                </div>
+              )}
               {!searchIsLoading && errorMessage && (
                 <div className={classes.error}>{errorMessage}</div>
               )}

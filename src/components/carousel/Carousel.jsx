@@ -17,7 +17,9 @@ import {
   // updateDoc,
   writeBatch,
 } from "firebase/firestore";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import Spinner from "../ui/Spinner";
+import { uploadActions } from "../../store/upload";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -31,8 +33,9 @@ const Carousel = ({
   existedImgsAmount,
 }) => {
   const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount);
+  const [initial, setInitial] = useState(true);
   const [imgIsOpen, setImgIsOpen] = useState(false);
-  const [savingImages, setSavingImages] = useState(false);
+  // const [isUploading, setSavingImages] = useState(false);
   const [currImgNum, setCurrImgNum] = useState(0);
   const [translate, setTranslate] = useState(0);
   const [curTransitionDur, setCurTransitionDur] = useState("0ms");
@@ -53,6 +56,13 @@ const Carousel = ({
   const uid = useSelector((state) => state.auth.user.uid);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const model = useSelector((state) => state.model.model);
+  const queue = useSelector((state) => state.upload.queue);
+  const isUploading = queue.find((item) => item.postId === postId);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    setInitial(true);
+  }, [versionId]);
 
   useEffect(() => {
     if (!dimensions?.imgWidthWithGap) return;
@@ -80,6 +90,17 @@ const Carousel = ({
     });
   }, [imagesRef, wrapRef]);
 
+  // useEffect(()=> {
+  //   const handleResize = () => {}
+  //   if(visibleImgAmount > 1) {
+  //     window.addEventListener('resize', handleResize)
+  //   }
+
+  //   return ()=> {
+  //     window.removeEventListener('resize', handleResize)
+  //   }
+  // },[])
+
   useEffect(() => {
     const curVisibleImgAmount = Math.floor(
       dimensions.wrapWidth / dimensions.imgWidthWithGap
@@ -95,14 +116,17 @@ const Carousel = ({
   }, [dimensions, visibleImgAmount, images]);
 
   useEffect(() => {
-    const visibleImg = Array.from(
-      { length: visibleAmount },
-      (_, i) => visibleAmount + i
-    );
+    if (initial && !!images?.length && visibleAmount) {
+      const visibleImg = Array.from(
+        { length: visibleAmount },
+        (_, i) => visibleAmount + i
+      );
 
-    setVisibleImages(visibleImg);
-    setCurTransitionDur("0ms");
-  }, [visibleAmount, images]);
+      setVisibleImages(visibleImg);
+      setCurTransitionDur("0ms");
+      setInitial(false);
+    }
+  }, [visibleAmount, images, initial]);
 
   const openImgHandler = useCallback(
     (e) => {
@@ -133,6 +157,7 @@ const Carousel = ({
 
   useEffect(() => {
     if (!images?.length || !visibleImages?.length) return;
+    // console.log(currImgNum);
 
     const imagesFiltered = images.filter((image) => true);
     const imagesHtml = imagesFiltered.map((image, i) => {
@@ -147,6 +172,7 @@ const Carousel = ({
         <CarouselImage
           key={image.hash + i}
           postId={images}
+          saved={!postId}
           versionId={versionId}
           onClick={openImgHandler}
           id={image.hash}
@@ -170,6 +196,7 @@ const Carousel = ({
           <CarouselImage
             key={image.hash + "r" + i}
             postId={images}
+            saved={!postId}
             versionId={versionId}
             onClick={openImgHandler}
             id={image.hash}
@@ -190,6 +217,7 @@ const Carousel = ({
           <CarouselImage
             key={image.hash + "l" + i}
             postId={images}
+            saved={!postId}
             versionId={versionId}
             onClick={openImgHandler}
             id={image.hash}
@@ -209,19 +237,22 @@ const Carousel = ({
     caruselIsVisible,
     postId,
     versionId,
+    currImgNum,
   ]);
 
   useEffect(() => {
     if (!images) return;
-    // const imgSize = images?.reduce(
-    //   (acc, cur) => {
-    //     return cur.height > acc[0] ? [cur.height, cur.width] : acc;
-    //   },
-    //   [0, 0]
-    // );
-    // const imgHight = Math.floor(
-    //   (dimensions.imgWidth / imgSize[1]) * imgSize[0]
-    // );
+    const bookImages = images.filter((img) => img.height - img.width > 0);
+    const imgsToGetSize = !bookImages.length ? images : bookImages;
+    const imgSize = imgsToGetSize?.reduce(
+      (acc, cur) => {
+        return cur.height > acc[0] ? [cur.height, cur.width] : acc;
+      },
+      [0, 0]
+    );
+    const imgHight = Math.floor(
+      (dimensions.imgWidth / imgSize[1]) * imgSize[0]
+    );
     setCarouselHeight(maxCarouselHeight);
     // if (curVisibleAmount === 1) {
     //   setCarouselHeight(maxCarouselHeight);
@@ -338,105 +369,115 @@ const Carousel = ({
   });
 
   const saveExampleHandler = async () => {
-    try {
-      if (savingImages) return;
-      setSavingImages(true);
-      const imgExampleResponse = await fetch(
-        `https://civitai.com/api/v1/images?postId=${postId}&modelId=${modelId}&modelVersionId=${versionId}${
-          nsfwMode ? `&nsfw=X` : `&nsfw=None`
-        }`
-      );
-      // const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
-      //     versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
-      //   }${amountPerPage ? `&limit=${amountPerPage}` : ""}${
-      //     imagesSortValue ? `&sort=${imagesSortValue}` : ""
-      //   }${cursor ? `&cursor=${cursor}` : ""}${
-      //     nsfwMode ? `&nsfw=X` : `&nsfw=None`
-      //   }`;
-      const data = await imgExampleResponse.json();
-      console.log(data);
-      if (!data.items.length) {
-        throw new Error("0 items");
-      }
-      data.items.forEach((image) => {
-        if (image.meta) {
-          image.meta.comfy = "";
-          image.meta = clearObjectKeys(image.meta);
-          if (image.meta.hashes)
-            image.meta.hashes = clearObjectKeys(image.meta.hashes);
-        }
-      });
+    const postData =
+      model.hasOwnProperty("savedImages") &&
+      model?.savedImages[versionId]?.find((post) => post.postId === +postId);
+    console.log(queue);
+    dispatch(
+      uploadActions.addToQueue({
+        postId,
+        modelId,
+        modelName: model.name,
+        versionId,
+        nsfwMode,
+        postData: postData || null,
+        imgUrl: images[0].url,
+      })
+    );
 
-      const examplesDataWithRes = await makeBatchRequest(
-        data.items,
-        getImagesInfo
-      );
-      console.log(examplesDataWithRes);
-      examplesDataWithRes.versionId = versionId;
-
-      const modelRef = doc(firestore, "users", uid, "models", modelId + "");
-      const modelImagesRef = doc(
-        firestore,
-        "users",
-        uid,
-        "models",
-        modelId + "",
-        "images",
-        postId + ""
-      );
-
-      const newImgData = { postId: +postId, amount: data.items.length };
-      console.log("LENGTH");
-      console.log(data.items.length);
-      console.log(examplesDataWithRes.length);
-
-      const batch = writeBatch(firestore);
-
-      batch.set(
-        modelImagesRef,
-        {
-          items: examplesDataWithRes,
-          versionId,
-          createdAt: examplesDataWithRes[0].createdAt,
-          savedAt: new Date().toISOString(),
-          nsfw: examplesDataWithRes[0].nsfw,
-          nsfwLevel: examplesDataWithRes[0]?.nsfwLevel || "",
-        },
-        { merge: true }
-      );
-
-      const postData =
-        model.hasOwnProperty("savedImages") &&
-        model?.savedImages[versionId]?.find((post) => post.postId === +postId);
-      console.log(postData);
-      console.log(versionId);
-      console.log(postId);
-      if (postData) {
-        batch.update(modelRef, {
-          [`savedImages.${versionId}`]: arrayRemove(postData),
-        });
-      }
-
-      batch.set(
-        modelRef,
-        {
-          savedImages: {
-            [`${versionId}`]: arrayUnion(newImgData),
-          },
-        },
-        { merge: true }
-      );
-
-      // Commit the batch
-      await batch.commit();
-
-      setSavingImages(false);
-    } catch (err) {
-      setSavingImages(false);
-      console.log(err.message);
-      console.log(err);
-    }
+    // try {
+    //   if (isUploading) return;
+    //   setSavingImages(true);
+    //   const imgExampleResponse = await fetch(
+    //     `https://civitai.com/api/v1/images?postId=${postId}&modelId=${modelId}&modelVersionId=${versionId}${
+    //       nsfwMode ? `&nsfw=X` : `&nsfw=None`
+    //     }`
+    //   );
+    //   // const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
+    //   //     versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
+    //   //   }${amountPerPage ? `&limit=${amountPerPage}` : ""}${
+    //   //     imagesSortValue ? `&sort=${imagesSortValue}` : ""
+    //   //   }${cursor ? `&cursor=${cursor}` : ""}${
+    //   //     nsfwMode ? `&nsfw=X` : `&nsfw=None`
+    //   //   }`;
+    //   const data = await imgExampleResponse.json();
+    //   console.log(data);
+    //   if (!data.items.length) {
+    //     throw new Error("0 items");
+    //   }
+    //   data.items.forEach((image) => {
+    //     if (image.meta) {
+    //       image.meta.comfy = "";
+    //       image.meta = clearObjectKeys(image.meta);
+    //       if (image.meta.hashes)
+    //         image.meta.hashes = clearObjectKeys(image.meta.hashes);
+    //     }
+    //   });
+    //   const examplesDataWithRes = await makeBatchRequest(
+    //     data.items.sort((a, b) => {
+    //       return b.createdAt - a.createdAt;
+    //     }),
+    //     getImagesInfo
+    //   );
+    //   console.log(examplesDataWithRes);
+    //   examplesDataWithRes.versionId = versionId;
+    //   const modelRef = doc(firestore, "users", uid, "models", modelId + "");
+    //   const modelImagesRef = doc(
+    //     firestore,
+    //     "users",
+    //     uid,
+    //     "models",
+    //     modelId + "",
+    //     "images",
+    //     postId + ""
+    //   );
+    //   const newImgData = { postId: +postId, amount: data.items.length };
+    //   console.log("LENGTH");
+    //   console.log(data.items.length);
+    //   console.log(examplesDataWithRes.length);
+    //   const batch = writeBatch(firestore);
+    //   batch.set(
+    //     modelImagesRef,
+    //     {
+    //       items: examplesDataWithRes,
+    //       versionId,
+    //       createdAt: examplesDataWithRes[0].createdAt,
+    //       savedAt: new Date().toISOString(),
+    //       nsfw: examplesDataWithRes[0].nsfw,
+    //       nsfwLevel: examplesDataWithRes[0]?.nsfwLevel || "",
+    //     },
+    //     { merge: true }
+    //   );
+    //   const postData =
+    //     model.hasOwnProperty("savedImages") &&
+    //     model?.savedImages[versionId]?.find((post) => post.postId === +postId);
+    //   console.log(postData);
+    //   console.log(versionId);
+    //   console.log(postId);
+    //   if (postData) {
+    //     batch.update(modelRef, {
+    //       [`savedImages.${versionId}`]: arrayRemove(postData),
+    //     });
+    //   }
+    //   batch.set(
+    //     modelRef,
+    //     {
+    //       savedImages: {
+    //         [`${versionId}`]: arrayUnion(newImgData),
+    //       },
+    //     },
+    //     { merge: true }
+    //   );
+    //   // Commit the batch
+    //   await batch.commit();
+    //   setSavingImages(false);
+    // } catch (err) {
+    //   setSavingImages(false);
+    //   console.log(err.message);
+    //   console.log(err);
+    // }
   };
+
   const updateExampleHandler = () => {
     onUpdate(images[0].postId);
   };
@@ -455,7 +496,10 @@ const Carousel = ({
           ref={carouselRef}
           style={
             carouselHeight && carouselWidth
-              ? { height: `${carouselHeight}px`, width: `${carouselWidth}px` }
+              ? {
+                  height: `${carouselHeight}px`,
+                  maxWidth: `${carouselWidth}px`,
+                }
               : {}
           }
         >
@@ -497,14 +541,14 @@ const Carousel = ({
           )}
           {postId && (
             <span className={classes["btn-save-container"]}>
-              <span
+              <button
                 className={`${classes["btn-save"]} ${
-                  savingImages ? classes["btn-save--saving"] : ""
+                  isUploading ? classes["btn-save--saving"] : ""
                 }`}
                 onClick={saveExampleHandler}
               >
-                {!savingImages ? "+" : "S..."}
-              </span>
+                {!isUploading ? "+" : <Spinner size="small" />}
+              </button>
               {existedImgsAmount && existedImgsAmount < images.length && (
                 <span className={classes["btn-save__amount"]}>
                   {existedImgsAmount}/{images.length}

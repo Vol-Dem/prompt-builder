@@ -15,14 +15,14 @@ import firebaseApp from "../../firebase-config";
 import ModelSettings from "../model/model-settings/ModelSettings";
 import TagSets from "../model/tag-sets/TagSets";
 import { addModelToPanel } from "../../store/usedModels";
-import { tabActions } from "../../store/tabs";
+import { getModelsPreview, tabActions } from "../../store/tabs";
 import Spinner from "../ui/Spinner";
 
 const firestore = getFirestore(firebaseApp);
 
 const minDescriptionHeight = 200;
 
-const Model = () => {
+const Model = ({ title }) => {
   const [modelPreview, setModelPreview] = useState({});
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [descriptionIsOpen, setDescriptionIsOpen] = useState(false);
@@ -43,35 +43,46 @@ const Model = () => {
   // const descriptionHeight = useRef()
 
   useEffect(() => {
+    document.title = model?.name || title;
+  }, [title, model?.name]);
+
+  useEffect(() => {
     if (!isAuth) return;
+    let unsub;
+    try {
+      setIsLoading(true);
 
-    setIsLoading(true);
-
-    const unsub = onSnapshot(
-      doc(firestore, "users", uid, "models", modelId),
-      (doc) => {
-        setErrorMessage("");
-        const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
-        console.log(source);
-        const data = doc.data();
-        console.log(data);
-        if (!data?.id) {
-          setErrorMessage("Failed to load model");
+      unsub = onSnapshot(
+        doc(firestore, "users", uid, "models", modelId),
+        (doc) => {
+          setErrorMessage("");
+          const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+          console.log(source);
+          const data = doc.data();
+          console.log(data);
+          if (!data) {
+            setErrorMessage("Failed to load model");
+            setIsLoading(false);
+            return;
+          }
+          dispatch(modelActions.setModelData(data));
+          dispatch(modelActions.setModelPreview({}));
           setIsLoading(false);
-          return;
         }
-        dispatch(modelActions.setModelData(data));
-        dispatch(modelActions.setModelPreview({}));
-        setIsLoading(false);
-      }
-    );
-
+      );
+    } catch (err) {
+      setErrorMessage("Failed to load model");
+      dispatch(modelActions.setErrorMessage(err.message));
+      setIsLoading(false);
+    }
     return () => {
       // console.log("MODEL RESET");
       setErrorMessage("");
       dispatch(modelActions.setCurVersion({}));
       dispatch(modelActions.setModelData({}));
-      unsub();
+      if (unsub) {
+        unsub();
+      }
     };
   }, [modelId, isAuth, dispatch, uid]);
 
@@ -156,7 +167,7 @@ const Model = () => {
 
   const modelImagesHtml = (
     <div id={curVersion?.name}>
-      <Carousel images={curVersion?.images} />
+      <Carousel images={curVersion?.images} versionId={curVersion} />
     </div>
   );
 
@@ -194,6 +205,7 @@ const Model = () => {
               dispatch(tabActions.setCurrentTab(model.modelType));
               dispatch(tabActions.setCurrentCategory(model.main));
               dispatch(tabActions.setCurrentSubcategory(sub));
+              dispatch(getModelsPreview());
             }}
           >
             {subcategoryName || sub}
@@ -216,6 +228,7 @@ const Model = () => {
   };
 
   const mainCategoryName = useMemo(() => {
+    if (model?.modelType) return;
     return categories[model?.modelType]?.find(
       (category) => category.id === model?.main
     )?.name;

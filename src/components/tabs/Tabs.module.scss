@@ -40,9 +40,11 @@
   display: flex;
   gap: 2rem;
   margin-bottom: 0.8rem;
+  list-style: none;
   // cursor: pointer;
 }
 
 .category__link {
+  transition: all 0.3s;
   cursor: pointer;
 }

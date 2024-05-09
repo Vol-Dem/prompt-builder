@@ -10,6 +10,7 @@ import {
 import ButttonTertiary from "../../ui/ButtonTertiary";
 import Modal from "../../ui/Modal";
 import Image from "../../ui/image/Image";
+import DeleteRequest from "../../ui/DeleteRequest";
 // import Buttton from "../../ui/Button";
 
 const CarouselImage = ({
@@ -20,8 +21,10 @@ const CarouselImage = ({
   dataset,
   postId,
   versionId,
+  saved,
 }) => {
   const [imgIsLoading, setImgIsLoading] = useState(true);
+  const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState("#");
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -211,6 +214,17 @@ const CarouselImage = ({
     // console.log(versionId);
     // console.log(postData);
     dispatch(deleteImgPost(versionId, imgPostId, postData));
+    setDeleteRequestIsOpen(false);
+    setMenuIsOpen(false);
+  };
+
+  const showDeleteReqeustHandler = (e) => {
+    console.log(id);
+    setDeleteRequestIsOpen(true);
+  };
+
+  const closeDeleteReqeustHandler = () => {
+    setDeleteRequestIsOpen(false);
   };
 
   return (
@@ -253,12 +267,12 @@ const CarouselImage = ({
                 >
                   Set as NSFW preview
                 </li>
-                {true && (
+                {saved && (
                   <li
                     className={`${classes["menu__item"]} ${classes["menu__item--del"]}`}
-                    onClick={deleteImgPostHandler}
+                    onClick={showDeleteReqeustHandler}
                   >
-                    Delete
+                    Delete post
                   </li>
                 )}
               </menu>
@@ -336,6 +350,14 @@ const CarouselImage = ({
             <ul className={classes["tag-sets"]}>{versionTagsetsHtml}</ul>
           )}
         </Modal>
+      )}
+      {deleteRequestIsOpen && (
+        <DeleteRequest
+          message={`Are you sure that you want to delete this post? This action can't
+        be reverted`}
+          onSubmit={deleteImgPostHandler}
+          onClose={closeDeleteReqeustHandler}
+        />
       )}
     </div>
   );

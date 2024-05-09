@@ -13,6 +13,7 @@ import {
   getDoc,
   // getDocs,
   getFirestore,
+  runTransaction,
   // runTransaction,
   setDoc,
   updateDoc,
@@ -29,6 +30,8 @@ import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
 import { clearFileExtension } from "../../../utils/generalUtils";
 import { Link } from "react-router-dom";
+import Spinner from "../../ui/Spinner";
+import { modelTypes } from "../../../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -56,18 +59,18 @@ const subCatsDefData = {
   value: "",
 };
 
-const modelTypes = [
-  { name: "LoRa/LoCon", value: "lora" },
-  { name: "Checkpoint", value: "checkpoint" },
-  { name: "Embedding", value: "embedding" },
-  { name: "Hypernetwork", value: "hypernetwork" },
-  { name: "Wildcard", value: "wildcard" },
-  { name: "Motion", value: "motionmodule" },
-  { name: "Controlnet", value: "controlnet" },
-  { name: "VAE", value: "vae" },
-  { name: "Wildcards", value: "wildcards" },
-  { name: "Other", value: "other" },
-];
+// const modelTypes = [
+//   { name: "LoRa/LoCon", value: "lora" },
+//   { name: "Checkpoint", value: "checkpoint" },
+//   { name: "Embedding", value: "embedding" },
+//   { name: "Hypernetwork", value: "hypernetwork" },
+//   { name: "Wildcard", value: "wildcard" },
+//   { name: "Motion", value: "motionmodule" },
+//   { name: "Controlnet", value: "controlnet" },
+//   { name: "VAE", value: "vae" },
+//   { name: "Wildcards", value: "wildcards" },
+//   { name: "Other", value: "other" },
+// ];
 
 const UpdateModelForm = ({ modelData, id }) => {
   // const [updateInput, setUpdateInput] = useState(false);
@@ -137,6 +140,7 @@ const UpdateModelForm = ({ modelData, id }) => {
   );
   const [subCatInputs, setSubCatInputs] = useState([subCatsDefData]);
   const [tagSetsInputs, setTagSetsInputs] = useState([tagSetsDefData]);
+  const [savedModel, setSavedModel] = useState(null);
   // const [userTags, setUserTags] = useState(modelData?.data?.tags || []);
 
   const uid = useSelector((state) => state.auth.user.uid);
@@ -212,7 +216,7 @@ const UpdateModelForm = ({ modelData, id }) => {
     let mainIdExists;
 
     //Check if category id is exists
-    mainIdExists = categoriesData.find((category) => category.id === curId);
+    mainIdExists = categoriesData?.find((category) => category.id === curId);
 
     while (mainIdExists) {
       const idArr = curId.split("-");
@@ -400,156 +404,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           .toLowerCase()
           .split(" ") || [];
 
-      let updatedCategories;
-      // if (categories && categories[modelType]?.hasOwnProperty(`${main}`)) {
-      //   const newCat = new Set([...categories[modelType][`${main}`], ...sub]);
-      //   updatedCategories = {
-      //     ...categories[modelType],
-      //     [`${main}`]: [...newCat],
-      //   };
-      //   console.log("TEST", updatedCategories);
-      // } else if (categories) {
-      //   updatedCategories = {
-      //     ...categories[modelType],
-      //     [`${modelData?.main || main}`]: sub,
-      //   };
-      // } else {
-      //   updatedCategories = { [`${modelData?.main || main}`]: sub };
-      // }
-
-      let mainId;
-      let subIds;
-      const mainCategoryData = categories[modelType].find(
-        (category) => category.name === main
-      );
-
-      if (!mainCategoryData) {
-        mainId = createCategoryId(main, categories[modelType]);
-        // console.log(mainId)
-        subIds = sub;
-        updatedCategories = [
-          ...categories[modelType],
-          {
-            id: mainId,
-            name: main,
-            subcategories: sub.map((subcategory) => {
-              return { id: subcategory, name: subcategory };
-            }),
-          },
-        ];
-      } else {
-        mainId = mainCategoryData.id;
-        subIds = [];
-        const newSubcategoriesData = sub.flatMap((subcategory) => {
-          const subExists = mainCategoryData.subcategories.find(
-            (oldSucategories) => oldSucategories.name === subcategory
-          );
-
-          if (!subExists) {
-            const categoryId = createCategoryId(
-              subcategory,
-              mainCategoryData.subcategories
-            );
-            subIds = [...subIds, categoryId];
-            return {
-              id: categoryId,
-              name: subcategory,
-            };
-          } else {
-            subIds = [...subIds, subExists.id];
-            return [];
-          }
-        });
-        const mainCategoryIndex = categories[modelType].findIndex(
-          (category) => category.name === main
-        );
-
-        const curUpdatedCategory = {
-          id: mainId,
-          name: mainCategoryData.name,
-          subcategories: [
-            ...mainCategoryData.subcategories,
-            ...newSubcategoriesData,
-          ],
-        };
-        updatedCategories = [
-          ...categories[modelType].slice(0, mainCategoryIndex),
-          curUpdatedCategory,
-          ...categories[modelType].slice(mainCategoryIndex + 1),
-        ];
-      }
-
-      const modelInfo = {
-        ...modelData,
-        id: modelData?.id || +modelId,
-        modelType,
-        baseModels: [...baseModels],
-        main: mainId,
-        sub: subIds,
-        data,
-        name: modelName || data.name,
-        fileName,
-        mainTag,
-        nsfw: data?.nsfw || false,
-        nsfwLevel: data?.nsfwLevel || null,
-        src: "civitai.com",
-        defaultCustomData: {
-          description: description || data.description,
-          tagSetsData,
-          weight,
-          minWeight,
-          maxWeight,
-          size,
-          helperTags,
-          negativeTags,
-          ...(modelType === "checkpoint" && {
-            steps,
-            sampler,
-            cfgScale,
-            hiresUpscaler,
-            hiresUpscaleBy,
-            hiresUpscaleSteps,
-            denoisingStrength,
-            vae,
-          }),
-        },
-        modelVersionsCustomData,
-        updatedAt: new Date().toISOString(),
-        createdAt: modelData?.savedAt || new Date().toISOString(),
-      };
-
-      const loraPrevData = {
-        id: modelData?.id || modelId,
-        modelType,
-        src: "civitai.com",
-        main: mainId,
-        sub: subIds,
-        name: modelName || data.name || "",
-        nameArr,
-        imgUrl: previewImg || "",
-        type: data.type,
-        nsfw: !!data?.nsfw,
-        nsfwLevel: data?.nsfwLevel || "",
-        baseModel: data.modelVersions[0].baseModel,
-        baseModels: [...baseModels],
-        mainTag,
-        fileName,
-        latestFileName: !!fileNames?.length ? fileNames[0] : "",
-        fileNames,
-        customFileNames,
-        weight,
-        minWeight,
-        maxWeight,
-        size,
-        tags: data.modelVersions[0].trainedWords || "",
-        authorTags: data.tags || [],
-        tagSetsData,
-        helperTags,
-        modelVersionsCustomData,
-        updatedAt: new Date().toISOString(),
-        createdAt: modelData?.downloadedAt || Date.now(),
-      };
-      console.log(loraPrevData);
+      const versionIds = data.modelVersions?.map((version) => version.id) || [];
 
       const modelsRef = doc(firestore, "users", uid, "models", modelId + "");
       const userRef = doc(firestore, "users", uid);
@@ -568,16 +423,206 @@ const UpdateModelForm = ({ modelData, id }) => {
       if (modelSnap.exists() && modelsPrevRefSnap.exists() && !modelData) {
         throw new Error("Exists");
       } else {
-        await setDoc(modelsRef, modelInfo);
-        const categoryField = `categoriesById.${modelType}`;
+        const { mainId, subIds } = await runTransaction(
+          firestore,
+          async (transaction) => {
+            const sfDoc = await transaction.get(userRef);
+            if (!sfDoc.exists()) {
+              throw "Document does not exist!";
+            }
 
-        await updateDoc(
-          userRef,
-          {
-            [categoryField]: updatedCategories,
-          },
-          { merge: true }
+            const categories = sfDoc.data().categoriesById;
+
+            if (!categories) {
+              throw "Can't update, try a bit later";
+            }
+
+            let updatedCategories;
+            // if (categories && categories[modelType]?.hasOwnProperty(`${main}`)) {
+            //   const newCat = new Set([...categories[modelType][`${main}`], ...sub]);
+            //   updatedCategories = {
+            //     ...categories[modelType],
+            //     [`${main}`]: [...newCat],
+            //   };
+            //   console.log("TEST", updatedCategories);
+            // } else if (categories) {
+            //   updatedCategories = {
+            //     ...categories[modelType],
+            //     [`${modelData?.main || main}`]: sub,
+            //   };
+            // } else {
+            //   updatedCategories = { [`${modelData?.main || main}`]: sub };
+            // }
+
+            let mainId;
+            let subIds;
+            const mainCategoryData = categories[modelType]?.find(
+              (category) => category.name === main
+            );
+
+            if (!mainCategoryData) {
+              const currCategories = categories[modelType] || [];
+              mainId = createCategoryId(main, categories[modelType]);
+              // console.log(mainId)
+              subIds = sub;
+              updatedCategories = [
+                ...currCategories,
+                {
+                  id: mainId,
+                  name: main,
+                  subcategories: sub.map((subcategory) => {
+                    return { id: subcategory, name: subcategory };
+                  }),
+                },
+              ];
+            } else {
+              mainId = mainCategoryData.id;
+              subIds = [];
+              const newSubcategoriesData = sub.flatMap((subcategory) => {
+                const subExists = mainCategoryData.subcategories.find(
+                  (oldSucategories) => oldSucategories.name === subcategory
+                );
+
+                if (!subExists) {
+                  const categoryId = createCategoryId(
+                    subcategory,
+                    mainCategoryData.subcategories
+                  );
+                  subIds = [...subIds, categoryId];
+                  return {
+                    id: categoryId,
+                    name: subcategory,
+                  };
+                } else {
+                  subIds = [...subIds, subExists.id];
+                  return [];
+                }
+              });
+              const mainCategoryIndex = categories[modelType].findIndex(
+                (category) => category.name === main
+              );
+
+              const curUpdatedCategory = {
+                id: mainId,
+                name: mainCategoryData.name,
+                subcategories: [
+                  ...mainCategoryData.subcategories,
+                  ...newSubcategoriesData,
+                ],
+              };
+              updatedCategories = [
+                ...categories[modelType].slice(0, mainCategoryIndex),
+                curUpdatedCategory,
+                ...categories[modelType].slice(mainCategoryIndex + 1),
+              ];
+            }
+
+            const categoryField = `categoriesById.${modelType}`;
+
+            // await updateDoc(
+            //   userRef,
+            //   {
+            //     [categoryField]: updatedCategories,
+            //   },
+            //   { merge: true }
+            // );
+
+            transaction.update(
+              userRef,
+              {
+                [categoryField]: updatedCategories,
+              },
+              { merge: true }
+            );
+
+            return { mainId, subIds };
+            // if (newPop <= 1000000) {
+            //   transaction.update(sfDocRef, { population: newPop });
+            //   return newPop;
+            // } else {
+            //   return Promise.reject("Sorry! Population is too big");
+            // }
+          }
         );
+
+        const modelInfo = {
+          ...modelData,
+          id: modelData?.id || +modelId,
+          versionIds,
+          modelType,
+          baseModels: [...baseModels],
+          main: mainId,
+          sub: subIds,
+          data,
+          name: modelName || data.name,
+          fileName,
+          mainTag,
+          nsfw: data?.nsfw || false,
+          nsfwLevel: data?.nsfwLevel || null,
+
+          src: "civitai.com",
+          defaultCustomData: {
+            description: description || data.description,
+            tagSetsData,
+            weight,
+            minWeight,
+            maxWeight,
+            size,
+            helperTags,
+            negativeTags,
+            ...(modelType === "checkpoint" && {
+              steps,
+              sampler,
+              cfgScale,
+              hiresUpscaler,
+              hiresUpscaleBy,
+              hiresUpscaleSteps,
+              denoisingStrength,
+              vae,
+            }),
+          },
+          modelVersionsCustomData,
+          updatedAt: new Date().toISOString(),
+          createdAt: modelData?.savedAt || new Date().toISOString(),
+        };
+
+        const loraPrevData = {
+          id: modelData?.id || modelId,
+          versionIds,
+          modelType,
+          src: "civitai.com",
+          main: mainId,
+          sub: subIds,
+          name: modelName || data.name || "",
+          nameArr,
+          imgUrl: previewImg || "",
+          type: data.type,
+          nsfw: !!data?.nsfw,
+          nsfwLevel: data?.nsfwLevel || "",
+          baseModel: data.modelVersions[0].baseModel,
+          baseModels: [...baseModels],
+          mainTag,
+          fileName,
+          latestFileName: !!fileNames?.length ? fileNames[0] : "",
+          fileNames,
+          customFileNames,
+          weight,
+          minWeight,
+          maxWeight,
+          size,
+
+          tags: data.modelVersions[0].trainedWords || "",
+          authorTags: data.tags || [],
+          tagSetsData,
+          helperTags,
+          modelVersionsCustomData,
+          updatedAt: new Date().toISOString(),
+          createdAt: modelData?.downloadedAt || Date.now(),
+        };
+        console.log(loraPrevData);
+
+        await setDoc(modelsRef, modelInfo);
+
         const curPrevData = modelsPrevRefSnap.data() || {};
         console.log(curPrevData);
         await setDoc(modelsPrevRef, { ...curPrevData, ...loraPrevData });
@@ -620,6 +665,7 @@ const UpdateModelForm = ({ modelData, id }) => {
 
       setModelIsSaving(false);
       seteSuccessMessage("Saved successfully");
+      setSavedModel(modelId);
     } catch (err) {
       setModelIsSaving(false);
       console.log(err);
@@ -1173,7 +1219,7 @@ const UpdateModelForm = ({ modelData, id }) => {
         disabled={modelIsSaving}
         className={classes.submit}
       >
-        {!modelIsSaving ? "Save" : "Saving..."}
+        {!modelIsSaving ? "Save" : <Spinner size="small" />}
       </Buttton>
       <div className={classes.status}>
         {errorMessage && <div>{errorMessage}</div>}
@@ -1181,7 +1227,7 @@ const UpdateModelForm = ({ modelData, id }) => {
         {successMessage && !modelData && (
           <>
             {"-"}
-            <Link to={`/model/${idInput}`} className={classes.link}>
+            <Link to={`/model/${savedModel}`} className={classes.link}>
               Show model
             </Link>
           </>

@@ -1,3 +1,9 @@
+.spiner-container {
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+}
+
 .spinner {
   display: flex;
   position: relative;
@@ -21,6 +27,19 @@
     }
   }
 
+  &.medium {
+    position: absolute;
+    width: 4rem;
+    height: 4rem;
+    left: 50%;
+    transform: translate(-50%, 0);
+    & div {
+      width: 4rem;
+      height: 4rem;
+      border-width: 4px;
+    }
+  }
+
   & div {
     box-sizing: border-box;
     display: block;
@@ -30,7 +49,7 @@
     border: 8px solid #304750;
     border-radius: 50%;
     animation: spinner 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-    border-color: #7c7c7c transparent transparent transparent;
+    border-color: #ffffff transparent transparent transparent;
   }
 
   & div:nth-child(1) {

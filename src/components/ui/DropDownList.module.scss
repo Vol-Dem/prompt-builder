@@ -54,21 +54,23 @@
   &__dropdown {
     position: absolute;
     top: 100%;
-    left: 50%;
+    left: 100%;
     // min-height: 2rem;
     // max-height: 40rem;
     width: 97%;
     // padding: 0.4rem 0.6rem;
-    border-radius: 0 0 1rem 1rem;
+    border-radius: 10px 0 10px 10px;
     background-color: var.$color-background-primary;
     box-shadow: var.$box-shadow;
-    transform: translateX(-50%);
+    transform: translateX(-100%);
+    z-index: 5;
   }
 
   &__settings {
     padding: 0.3rem 0.6rem;
+    border-radius: 10px 0 0 0;
     background-color: darken(var.$color-background-primary, 4%);
-    // background-color: darken(var.$color-background-primary, 5%);
+    box-shadow: var.$box-shadow;
   }
 
   &__btn-close {
@@ -212,8 +214,7 @@
 }
 .error {
   text-align: center;
-  margin: 1rem 0;
-  // margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .spiner-container {

@@ -2,12 +2,14 @@ import classes from "./Tabs.module.scss";
 import Categories from "../categories/Categories";
 import { useDispatch, useSelector } from "react-redux";
 import { tabActions } from "../../store/tabs";
+import { modelTypes } from "../../variables/constants";
 // import LoraForm from "../forms/lora/LoraForm";
 // import GeneralForm from "../forms/general/GeneralForm";
 // import EmbeddingsForm from "../forms/embeddings/EmbeddingsForm";
 
 const Tabs = () => {
   const activeCategory = useSelector((state) => state.tabs.currTab);
+  const categories = useSelector((state) => state.tabs.categoriesData);
   const dispatch = useDispatch();
 
   const categorySwitchHandler = (e) => {
@@ -16,10 +18,38 @@ const Tabs = () => {
     // dispatch(tabActions.setCurrentSubcategory(""));
   };
 
+  const modelTypesHtml = Object.keys(categories)
+    .map((categoryId) => {
+      const modelTypeInfo = modelTypes.find(
+        (modelType) => modelType.value === categoryId
+      );
+
+      return {
+        id: categoryId,
+        name: modelTypeInfo.name,
+        position: modelTypeInfo.position,
+      };
+    })
+    .sort((a, b) => a.position - b.position)
+    .map((category, i) => {
+      return (
+        <li
+          key={i}
+          id={category.id}
+          onClick={categorySwitchHandler}
+          className={`${classes[`category__link`]} ${
+            activeCategory === category.id ? classes.active : ""
+          }`}
+        >
+          {category.name}
+        </li>
+      );
+    });
+
   return (
     <>
       <div className={classes["tag-menu"]}>
-        <div className={classes["tag-menu__labels"]}>
+        <ul className={classes["tag-menu__labels"]}>
           {/* <div
             id="general"
             onClick={categorySwitchHandler}
@@ -29,7 +59,8 @@ const Tabs = () => {
           >
             General tags
           </div> */}
-          <div
+          {modelTypesHtml}
+          {/* <div
             id="lora"
             onClick={categorySwitchHandler}
             className={`${classes[`category__link`]} ${
@@ -55,8 +86,8 @@ const Tabs = () => {
             }`}
           >
             Checkpoint
-          </div>
-        </div>
+          </div> */}
+        </ul>
         <div>{activeCategory && <Categories category={activeCategory} />}</div>
       </div>
     </>

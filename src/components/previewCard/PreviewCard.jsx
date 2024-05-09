@@ -181,11 +181,11 @@ const PreviewCard = ({ previewData }) => {
         <div className={classes["main-tag"]}>
           File: {currVersion?.fileName || previewData?.fileName}
         </div>
-        {previewData?.fileNames && (
+        {/* {previewData?.fileNames && (
           <div className={classes["main-tag"]}>
             Files: {previewData?.fileNames?.join(", ")}
           </div>
-        )}
+        )} */}
         {(currVersion?.mainTag || previewData?.mainTag) && (
           <ul className={classes["main-tag"]}>
             {/* Activation tag: */}

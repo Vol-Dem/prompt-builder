@@ -1,0 +1,176 @@
+@use "../../variables/variables.scss" as var;
+
+.uploading {
+  position: relative;
+  display: flex;
+  // padding: 0.8rem;
+
+  &__btn {
+    padding: 0.5rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      // background-color: rgba(173, 132, 203, 0.3);
+      background-color: rgba(215, 205, 222, 0.3);
+    }
+
+    &--active {
+      background-color: rgba(215, 205, 222, 0.3);
+    }
+  }
+
+  &__amount {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    right: -5px;
+    font-size: 1.2rem;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 10px;
+
+    &--queue {
+      bottom: -2px;
+      background-color: var.$color-primary;
+    }
+
+    &--rejected {
+      top: -2px;
+      background-color: var.$color-red;
+    }
+  }
+
+  &__empty {
+    padding: 1rem;
+    text-align: center;
+  }
+}
+
+.rejected-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  &__title {
+    padding: 0.3rem 0.6rem;
+    width: 100%;
+    text-align: center;
+    background-color: darken(var.$color-background-primary, 4%);
+    box-shadow: var.$box-shadow;
+  }
+}
+
+.btns-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.uploading-dropdown {
+  width: 25rem !important;
+}
+
+.uploading-list {
+  width: 100%;
+  // position: absolute;
+  // background-color: var.$color-background-primary;
+  // min-height: 2rem;
+  // max-height: 30rem;
+  // width: 25rem;
+  // list-style: none;
+  // overflow-y: scroll;
+  // @include var.custom-scroll;
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  &__name {
+  }
+
+  &__model {
+    font-size: 1.2rem;
+    color: var.$color-text-gray;
+  }
+
+  &__link {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: 1rem;
+    width: 100%;
+    align-items: center;
+    text-decoration: none;
+    // background-color: var.$color-background-tertiary;
+    background-color: #3f394c;
+    border-radius: 10px;
+    box-shadow: var.$box-shadow-light;
+  }
+
+  &__item {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    padding: 1px;
+    border-radius: 1rem;
+    // overflow: hidden;
+    margin-bottom: 0.6rem;
+    margin-right: 1rem;
+    overflow: hidden;
+
+    &--active {
+      & .uploading-list__link {
+        background-color: var.$color-background-tertiary;
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        z-index: -2;
+        left: -50%;
+        top: -160%;
+        width: 200%;
+        height: 0;
+        padding-bottom: 200%;
+        background-repeat: no-repeat;
+        background: conic-gradient(
+          from 45deg,
+          var.$color-primary,
+          transparent,
+          transparent,
+          transparent,
+          transparent,
+          transparent,
+          var.$color-primary,
+          transparent,
+          transparent,
+          transparent,
+          transparent,
+          transparent,
+          var.$color-primary
+        );
+        animation: loading 4s linear infinite;
+      }
+    }
+  }
+}
+
+.img-container {
+  //   width: 8rem;
+  border-radius: 1rem 0 0 1rem;
+  //   overflow: hidden;
+  //   flex-shrink: 0;
+}
+
+@keyframes loading {
+  100% {
+    transform: rotate(1turn);
+  }
+}

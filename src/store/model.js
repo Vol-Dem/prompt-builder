@@ -34,10 +34,10 @@ const modelSlice = createSlice({
   initialState: initialModelState,
   reducers: {
     setModelData(state, actions) {
-      if (actions.payload) {
+      if (actions.payload?.id) {
         state.model = actions.payload;
       } else {
-        state.errorMessage = "Failed to load model";
+        state.model = { ...state.model, ...actions.payload };
       }
     },
     setIsLoading(state, actions) {
@@ -51,8 +51,8 @@ const modelSlice = createSlice({
     },
     setNsfwMode(state, actions) {
       state.nsfwMode = actions.payload;
-      const uid = auth.currentUser.uid;
-      saveToStorage(`${uid}-nsfw`, actions.payload);
+      const uid = auth.currentUser?.uid;
+      if (uid) saveToStorage(`${uid}-nsfw`, actions.payload);
     },
     setErrorMessage(state, actions) {
       state.errorMessage = actions.payload;
@@ -256,17 +256,18 @@ export const deleteModel = (modelId) => {
 export const updateCategories = (modelType, updatedCat) => {
   return async (dispatch, getState) => {
     const uid = getState().auth.user.uid;
+    if (uid) {
+      const userRef = doc(firestore, "users", uid);
+      const categoryField = `categoriesById.${modelType}`;
 
-    const userRef = doc(firestore, "users", uid);
-    const categoryField = `categoriesById.${modelType}`;
-
-    await updateDoc(
-      userRef,
-      {
-        [categoryField]: updatedCat,
-      },
-      { merge: true }
-    );
+      await updateDoc(
+        userRef,
+        {
+          [categoryField]: updatedCat,
+        },
+        { merge: true }
+      );
+    }
   };
 };
 

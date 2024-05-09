@@ -9,7 +9,7 @@
   // grid-template-columns: auto 1fr;
   // gap: 1.6rem;
   position: static;
-  z-index: 20;
+  z-index: 10;
   justify-content: space-between;
   width: 100%;
 
@@ -30,6 +30,7 @@
   position: relative;
   overflow: hidden;
   height: 45rem;
+  width: 100%;
   border-radius: 1rem;
   // background-color: lighten(var.$color-background-tertiary, 1%);
   box-shadow: 0rem 0rem 0.6rem 0.7rem rgba(0, 0, 0, 0.2);
@@ -141,6 +142,7 @@
   // flex-direction: column;
   align-items: center;
   justify-content: center;
+  color: var.$color-text-white;
   // left: 2rem;
   // top: 2rem;
   border-radius: 1rem;
@@ -170,11 +172,11 @@
   }
 
   &--saving {
-    background-color: #5e5e5e;
+    // background-color: #5e5e5e;
     cursor: default;
   }
 
-  &:hover {
+  &:not(&--saving):hover {
     background-color: var.$color-primary;
   }
 }
@@ -183,7 +185,7 @@
   position: absolute;
   right: 2rem;
   bottom: 2rem;
-  z-index: 22;
+  z-index: 5;
   background-color: rgba(55, 42, 199, 0.6);
   border-radius: 1rem;
   padding: 0.2rem 0.4rem;

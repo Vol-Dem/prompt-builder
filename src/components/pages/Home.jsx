@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import classes from "./Home.module.scss";
 // import Prompt from "../../components/prompt/Prompt";
 import { Outlet } from "react-router-dom";
@@ -11,7 +12,10 @@ import { Outlet } from "react-router-dom";
 
 // const firestore = getFirestore(firebaseApp);
 
-function Home() {
+function Home({ title }) {
+  useEffect(() => {
+    document.title = title;
+  }, [title]);
   // const uid = useSelector((state) => state.auth.user.uid);
   // const dispatch = useDispatch();
 

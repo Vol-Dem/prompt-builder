@@ -82,6 +82,49 @@ export const getImagesInfo = async (images) => {
   }
 };
 
+export const getImageInfo = async (image) => {
+  try {
+    const updatedImgData = { ...image };
+    const newMeta = image?.meta && (await getModelInfo(image.meta));
+    // console.log(newMeta);
+    if (newMeta) updatedImgData.meta = newMeta;
+
+    if (image.meta?.resources) {
+      const updatedRes = await makeBatchRequest(
+        image.meta.resources,
+        addResourcesInfo
+      );
+      console.log(updatedRes);
+      if (!updatedRes) {
+        throw new Error("failed to update res");
+      }
+      updatedImgData.meta = {
+        ...updatedImgData.meta,
+        resources: updatedRes,
+      };
+    }
+    if (image.meta?.civitaiResources) {
+      const updatedCivRes = await makeBatchRequest(
+        image.meta.civitaiResources,
+        addResourcesInfo
+      );
+      console.log(updatedCivRes);
+      if (!updatedCivRes) {
+        throw new Error("failed to update res");
+      }
+      updatedImgData.meta = {
+        ...updatedImgData.meta,
+        civitaiResources: updatedCivRes,
+      };
+    }
+    // console.log(updatedImgData);
+    return await updatedImgData;
+  } catch (err) {
+    console.log(err);
+    throw new Error(err);
+  }
+};
+
 export const getModelInfo = async (resourcesData) => {
   try {
     console.log(resourcesData);

@@ -4,17 +4,21 @@ import classes from "./Profile.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { changeUserName, changeUserPassword } from "../../store/auth";
 import ErrorMessage from "../../components/ui/ErrorMessage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import ButttonSecondary from "../../components/ui/ButtonSecondary";
 import { ReactComponent as UserIcon } from "./../../assets/user.svg";
 import ButtonTertiary from "../ui/ButtonTertiary";
 
-const Profile = () => {
+const Profile = ({ title }) => {
   const [changeNameIsActive, setChangeNameIsActive] = useState(false);
   const [changePassIsActive, setChangePassIsActive] = useState(false);
   const dispatch = useDispatch();
   const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
   const userData = useSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    document.title = title;
+  }, [title]);
 
   //Switch visibility of change name form
   const changeNameIsActiveHandler = () => {

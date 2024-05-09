@@ -18,12 +18,15 @@ import { doc, getFirestore, onSnapshot } from "firebase/firestore";
 import firebaseApp from "./firebase-config";
 import { tabActions } from "./store/tabs";
 import Profile from "./components/pages/Profile";
+import About from "./components/pages/About";
+import { savePost } from "./store/upload";
 
 const firestore = getFirestore(firebaseApp);
 
 function App() {
   // const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const uid = useSelector((state) => state.auth.user.uid);
+  // const queue = useSelector((state) => state.upload.queue);
   const dispatch = useDispatch();
 
   //Authorizes user on application load
@@ -37,8 +40,11 @@ function App() {
       const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
       console.log(source);
       const data = doc.data();
+      console.log(data);
       console.log(data?.categoriesById);
-      dispatch(tabActions.setCategories(data?.categoriesById));
+      if (data?.categoriesById) {
+        dispatch(tabActions.setCategories(data?.categoriesById));
+      }
     });
 
     return () => {
@@ -49,12 +55,16 @@ function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
-        <Route path="/" element={<Home />}>
+        <Route path="/" element={<Home title="Prompt builder" />}>
           <Route path="/" element={<Tabs />}></Route>
-          <Route path="model/:modelId" element={<Model />}></Route>
+          <Route
+            path="model/:modelId"
+            element={<Model title="Model" />}
+          ></Route>
         </Route>
-        <Route path="search" element={<SearchPage />}></Route>
-        <Route path="profile" element={<Profile />}></Route>
+        <Route path="search" element={<SearchPage title="Search" />}></Route>
+        <Route path="profile" element={<Profile title="Profile" />}></Route>
+        <Route path="about" element={<About title="About" />}></Route>
       </Route>
     )
   );
