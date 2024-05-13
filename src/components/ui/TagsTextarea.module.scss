@@ -43,13 +43,42 @@
   padding: 0.4rem 0.6rem;
   background-color: #323148;
   border-radius: 1rem;
+  &__content {
+    display: flex;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
   &__text {
     margin-right: 0.6rem;
     cursor: default;
   }
+  &__cross {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    background-color: var.$color-violet-grey;
+    clip-path: polygon(
+      10% 0,
+      0 10%,
+      40% 50%,
+      0 90%,
+      10% 100%,
+      50% 60%,
+      90% 100%,
+      100% 90%,
+      60% 50%,
+      100% 10%,
+      90% 0,
+      50% 40%
+    );
+  }
 }
 
 .btn {
+  display: flex;
+  align-items: center;
+  height: 100%;
   color: var.$color-violet-grey;
   background: none;
   border: none;

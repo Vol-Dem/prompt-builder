@@ -6,7 +6,7 @@ import Spinner from "../ui/Spinner";
 // import { useDispatch } from "react-redux";
 // import { promptActions } from "../../store/prompt";
 
-const ImageCard = ({ imageData, closeImg }) => {
+const ImageCard = ({ imageData, closeImg, curImgId, isOpen }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [imageResources, setImageResources] = useState([]);
@@ -17,7 +17,8 @@ const ImageCard = ({ imageData, closeImg }) => {
     const loadResoursesInfo = async () => {
       try {
         setIsLoading(true);
-
+        console.log(imageData);
+        console.log(isOpen);
         const imageWithResInfo = await getImageInfo(imageData);
         console.log(imageWithResInfo);
         const imageResourcesInfo =
@@ -48,7 +49,7 @@ const ImageCard = ({ imageData, closeImg }) => {
     ?.flatMap((tag) => tag.trim() || []);
 
   const resourcesHtml = imageResources?.map((resource, i) => (
-    <div key={i} className={classes["resource"]}>
+    <li key={i} className={classes["resource"]}>
       {resource?.modelId && (
         <>
           <a
@@ -80,7 +81,7 @@ const ImageCard = ({ imageData, closeImg }) => {
         <div className={classes["resource__type"]}>{resource.type}</div>
         {resource?.weight && <div>weight: {resource?.weight || ""}</div>}
       </div>
-    </div>
+    </li>
   ));
 
   // const copyAllPromptHandler = (e) => {
@@ -158,7 +159,7 @@ const ImageCard = ({ imageData, closeImg }) => {
                 </span>
               </div>
               <div className={classes["config__name"]}>
-                Model : {!imageData.meta?.modelId && imageData.meta?.Model}
+                Checkpoint : {!imageData.meta?.modelId && imageData.meta?.Model}
                 {imageData.meta?.modelId && (
                   <a
                     href={`https://civitai.com/models/${
@@ -191,7 +192,15 @@ const ImageCard = ({ imageData, closeImg }) => {
                   <Spinner size="medium" />
                 </div>
               )}
-              {!isLoading && resourcesHtml}
+
+              {!isLoading && (
+                <div>
+                  Resourses:
+                  <ul className={classes["example__resourses"]}>
+                    {resourcesHtml}
+                  </ul>
+                </div>
+              )}
             </div>
           </>
         </div>

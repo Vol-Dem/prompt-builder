@@ -63,6 +63,7 @@
     background-color: var.$color-background-primary;
     box-shadow: var.$box-shadow;
     transform: translateX(-50%);
+    z-index: 60;
   }
 
   &__settings {

@@ -204,3 +204,9 @@
   color: #7278f0;
   text-decoration: none;
 }
+
+.active-corousel {
+  position: sticky;
+  top: 10rem;
+  z-index: 14;
+}

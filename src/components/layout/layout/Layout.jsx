@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import classes from "./Layout.module.scss";
 import { Outlet } from "react-router-dom";
 import Footer from "../footer/Footer";
@@ -31,6 +31,8 @@ import UsedModelsPanel from "../../used-models-panel/UsedModelsPanel";
 import { modelActions } from "../../../store/model";
 import Search from "../../search/Search";
 import UploadingPanel from "../../uploading-panel/UploadingPanel";
+import Carousel from "../../carousel/Carousel";
+import ActiveCarousel from "../../active-carousel/ActiveCarousel";
 
 const Layout = () => {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
@@ -55,6 +57,31 @@ const Layout = () => {
   const nsfwSwitchHandler = () => {
     dispatch(modelActions.setNsfwMode(!isNsfwMode));
   };
+
+  // const activeCarouselData = useSelector(
+  //   (state) => state.model.activeCarouselData
+  // );
+  // const activeCarouselHtml = (
+  //   <div>
+  //     <Carousel
+  //       images={activeCarouselData?.images}
+  //       versionId={activeCarouselData.versionId}
+  //       existedImgsAmount={activeCarouselData?.existedImgsAmount || null}
+  //       postId={activeCarouselData.postId}
+  //       modelId={activeCarouselData.modelId}
+  //       visibleImgAmount={1}
+  //       isOpen={true}
+  //     />
+  //   </div>
+  // );
+
+  // useEffect(() => {
+  //   if (!!activeCarouselData?.images?.length) {
+  //     document.body.style.overflow = "hidden";
+  //   } else {
+  //     document.body.style.overflow = null;
+  //   }
+  // }, [activeCarouselData]);
 
   return (
     <div className={classes.wrapper}>
@@ -101,6 +128,12 @@ const Layout = () => {
           <div className="wrapper">
             <Prompt />
           </div>
+          {/* {!!activeCarouselData?.images?.length && (
+            // <div className={classes["active-corousel"]}>
+            //   {activeCarouselHtml}
+            // </div>
+          )} */}
+          <ActiveCarousel />
         </Header>
 
         <main>

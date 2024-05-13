@@ -25,12 +25,16 @@ const Select = ({
   };
 
   useEffect(() => {
-    document.addEventListener("click", closeSelect);
+    if (selectIsOpen) {
+      document.addEventListener("click", closeSelect);
+    } else {
+      document.removeEventListener("click", closeSelect);
+    }
 
     return () => {
       document.removeEventListener("click", closeSelect);
     };
-  }, []);
+  }, [selectIsOpen]);
 
   useEffect(() => {
     const labelStyle = window.getComputedStyle(labeldRef.current);

@@ -34,6 +34,22 @@ const Model = ({ title }) => {
   const { modelId } = useParams();
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
+  // const activeCarouselData = useSelector(
+  //   (state) => state.model.activeCarouselData
+  // );
+  // const activeCarouselHtml = (
+  //   <div>
+  //     <Carousel
+  //       images={activeCarouselData?.images}
+  //       versionId={activeCarouselData.curVersion}
+  //       existedImgsAmount={activeCarouselData?.existedImgsAmount || null}
+  //       postId={activeCarouselData.postId}
+  //       modelId={activeCarouselData.modelId}
+  //       visibleImgAmount={1}
+  //       isOpen={true}
+  //     />
+  //   </div>
+  // );
   // const errorMessage = useSelector((state) => state.model.errorMessage);
   const isAuth = useSelector((state) => state.auth.user.uid);
   const uid = useSelector((state) => state.auth.user.uid);
@@ -80,6 +96,7 @@ const Model = ({ title }) => {
       setErrorMessage("");
       dispatch(modelActions.setCurVersion({}));
       dispatch(modelActions.setModelData({}));
+      dispatch(modelActions.setActiveCarouselData({}));
       if (unsub) {
         unsub();
       }
@@ -238,6 +255,9 @@ const Model = ({ title }) => {
     <div className={classes.model}>
       {isLoading && <Spinner />}
       {!isLoading && errorMessage && <div>{errorMessage}</div>}
+      {/* {!!activeCarouselData?.images?.length && (
+        <div className={classes["active-corousel"]}>{activeCarouselHtml}</div>
+      )} */}
       {!isLoading && !errorMessage && model?.id && (
         <>
           <div className={classes["panel"]}>

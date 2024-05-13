@@ -12,7 +12,7 @@
   // height: 100%;
 
   border-radius: 1rem;
-  padding: 2rem 1.2rem;
+  // padding: 2.8rem 0.2rem 2.8rem 1.2rem;
   // overflow: hidden;
   // z-index: 1111;
   // transform: translateY(-100%);
@@ -23,6 +23,10 @@
     // grid-template-columns: auto;
     gap: 2rem;
     font-size: 1.4rem;
+    overflow-y: scroll;
+    // height: 80vh;
+    height: 100%;
+    @include var.custom-scroll;
   }
 
   &__img {
@@ -47,6 +51,11 @@
     flex-direction: column;
     gap: 0.6rem;
     margin-top: 2.8rem;
+    padding-right: 1rem;
+  }
+
+  &__resourses {
+    list-style: none;
   }
 }
 

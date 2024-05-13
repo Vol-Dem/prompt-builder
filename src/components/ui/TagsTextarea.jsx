@@ -24,16 +24,18 @@ const TagsTextarea = ({ data, className, placeholder, promptType }) => {
       if (!item) return [];
       return (
         <li key={i} className={classes.tag}>
-          <span className={classes["tag__text"]}>{item.trim()}</span>
-          <button
-            type="button"
-            className={classes.btn}
-            onClick={removeTagHandler}
-            data-value={item.trim()}
-            data-type=""
-          >
-            X
-          </button>
+          <div className={classes["tag__content"]}>
+            <span className={classes["tag__text"]}>{item.trim()}</span>
+            <button
+              type="button"
+              className={classes.btn}
+              onClick={removeTagHandler}
+              data-value={item.trim()}
+              data-type=""
+            >
+              <span className={classes["tag__cross"]}></span>
+            </button>
+          </div>
         </li>
       );
     });

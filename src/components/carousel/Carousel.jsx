@@ -20,6 +20,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../ui/Spinner";
 import { uploadActions } from "../../store/upload";
+import { modelActions } from "../../store/model";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -31,10 +32,12 @@ const Carousel = ({
   modelId,
   versionId,
   existedImgsAmount,
+  isOpen = false,
+  activeImgNum,
 }) => {
   const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount);
   const [initial, setInitial] = useState(true);
-  const [imgIsOpen, setImgIsOpen] = useState(false);
+  const [imgIsOpen, setImgIsOpen] = useState(isOpen);
   // const [isUploading, setSavingImages] = useState(false);
   const [currImgNum, setCurrImgNum] = useState(0);
   const [translate, setTranslate] = useState(0);
@@ -57,6 +60,7 @@ const Carousel = ({
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const model = useSelector((state) => state.model.model);
   const queue = useSelector((state) => state.upload.queue);
+  const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
   const isUploading = queue.find((item) => item.postId === postId);
   const dispatch = useDispatch();
 
@@ -101,6 +105,31 @@ const Carousel = ({
   //   }
   // },[])
 
+  const openCarouselHandler = useCallback(() => {
+    console.log("open");
+    document.body.style.overflow = "hidden";
+    dispatch(
+      modelActions.setActiveCarouselData({
+        images,
+        visibleImgAmount,
+        postId,
+        modelId,
+        versionId,
+        existedImgsAmount,
+        currImgNum,
+      })
+    );
+  }, [
+    dispatch,
+    images,
+    visibleImgAmount,
+    postId,
+    modelId,
+    versionId,
+    existedImgsAmount,
+    currImgNum,
+  ]);
+
   useEffect(() => {
     const curVisibleImgAmount = Math.floor(
       dimensions.wrapWidth / dimensions.imgWidthWithGap
@@ -142,17 +171,18 @@ const Carousel = ({
   );
 
   const closeImgHandler = () => {
-    setImgIsOpen(false);
-    setCurVisibleAmount(visibleAmount);
-    if (prevVisibleImages?.length === visibleAmount) {
-      setVisibleImages(prevVisibleImages);
-    } else {
-      const visibleImg = Array.from(
-        { length: visibleAmount },
-        (_, i) => visibleImages[0] + i
-      );
-      setVisibleImages(visibleImg);
-    }
+    // setImgIsOpen(false);
+    // setCurVisibleAmount(visibleAmount);
+    // if (prevVisibleImages?.length === visibleAmount) {
+    //   setVisibleImages(prevVisibleImages);
+    // } else {
+    //   const visibleImg = Array.from(
+    //     { length: visibleAmount },
+    //     (_, i) => visibleImages[0] + i
+    //   );
+    //   setVisibleImages(visibleImg);
+    // }
+    dispatch(modelActions.setActiveCarouselData({}));
   };
 
   useEffect(() => {
@@ -174,7 +204,7 @@ const Carousel = ({
           postId={images}
           saved={!postId}
           versionId={versionId}
-          onClick={openImgHandler}
+          onClick={openCarouselHandler}
           id={image.hash}
           dataset={i + visibleAmount}
           src={src}
@@ -198,7 +228,7 @@ const Carousel = ({
             postId={images}
             saved={!postId}
             versionId={versionId}
-            onClick={openImgHandler}
+            onClick={openCarouselHandler}
             id={image.hash}
             dataset={i + visibleAmount}
             src={src}
@@ -219,7 +249,7 @@ const Carousel = ({
             postId={images}
             saved={!postId}
             versionId={versionId}
-            onClick={openImgHandler}
+            onClick={openCarouselHandler}
             id={image.hash}
             dataset={i}
             src={src}
@@ -238,6 +268,7 @@ const Carousel = ({
     postId,
     versionId,
     currImgNum,
+    openCarouselHandler,
   ]);
 
   useEffect(() => {
@@ -482,14 +513,48 @@ const Carousel = ({
     onUpdate(images[0].postId);
   };
 
+  // useEffect(() => {
+  //   document.body.style.overflow = "hidden";
+  //   return () => {
+  //     document.body.style.overflow = null;
+  //   };
+  // }, []);
+  useEffect(() => {
+    if (activeImgNum) {
+      console.log(activeImgNum);
+      setCurrImgNum(activeImgNum);
+      setVisibleImages((prevState) => {
+        const newVisibleImages = prevState.map(
+          (el, j) => activeImgNum + j + visibleAmount
+        );
+        setPrevVisibleImages(newVisibleImages);
+        return newVisibleImages;
+      });
+    }
+  }, [activeImgNum]);
+
   return (
     <div
-      className={classes.container}
-      style={carouselHeight ? { height: `${carouselHeight}px` } : {}}
+      // className={classes.container}
+      className={`${classes.container} ${
+        imgIsOpen ? classes["container--open"] : ""
+      }`}
+      style={carouselHeight && !isOpen ? { height: `${carouselHeight}px` } : {}}
+      // onClick={openCarouselHandler}
     >
       <div
         ref={wrapRef}
-        className={`${classes.wrap} ${imgIsOpen ? classes["wrap--open"] : ""}`}
+        className={`${classes.wrap}`}
+        style={
+          isOpen
+            ? {
+                height: `${
+                  promptIsOpen ? "calc(100vh - 315px)" : "calc(100vh - 110px)"
+                }`,
+              }
+            : {}
+        }
+        // className={`${classes.wrap} ${imgIsOpen ? classes["wrap--open"] : ""}`}
       >
         <div
           className={`${classes.carousel}`}
@@ -570,6 +635,7 @@ const Carousel = ({
           <ImageCard
             imageData={images[currImgNum]}
             closeImg={closeImgHandler}
+            isOpen={isOpen}
           />
         )}
       </div>

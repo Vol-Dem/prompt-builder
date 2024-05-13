@@ -27,6 +27,7 @@ const initialModelState = {
   examplesPage: 1,
   examplesImages: [],
   nsfwMode: false,
+  activeCarouselData: {},
 };
 
 const modelSlice = createSlice({
@@ -56,6 +57,10 @@ const modelSlice = createSlice({
     },
     setErrorMessage(state, actions) {
       state.errorMessage = actions.payload;
+    },
+    setActiveCarouselData(state, actions) {
+      console.log(actions.payload);
+      state.activeCarouselData = actions.payload;
     },
   },
   extraReducers: (builder) => {

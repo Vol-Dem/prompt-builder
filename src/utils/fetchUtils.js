@@ -85,9 +85,9 @@ export const getImagesInfo = async (images) => {
 export const getImageInfo = async (image) => {
   try {
     const updatedImgData = { ...image };
-    const newMeta = image?.meta && (await getModelInfo(image.meta));
-    // console.log(newMeta);
-    if (newMeta) updatedImgData.meta = newMeta;
+    // const newMeta = image?.meta && (await getModelInfo(image.meta));
+    // // console.log(newMeta);
+    // if (newMeta) updatedImgData.meta = newMeta;
 
     if (image.meta?.resources) {
       const updatedRes = await makeBatchRequest(

@@ -1,7 +1,8 @@
 @use "./../../variables/variables.scss" as var;
 
 .container {
-  overflow: hidden;
+  position: relative;
+  // overflow: hidden;
   display: grid;
   grid-template-rows: 0fr auto;
   transition: all 0.3s;
@@ -152,6 +153,10 @@
   border: none;
   border-radius: 0 0 1rem 1rem;
   cursor: pointer;
+  position: absolute;
+  top: 100%;
+  right: 2%;
+  z-index: 20;
 }
 
 .btn-copy {

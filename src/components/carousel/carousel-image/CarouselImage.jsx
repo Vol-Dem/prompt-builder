@@ -227,6 +227,27 @@ const CarouselImage = ({
     setDeleteRequestIsOpen(false);
   };
 
+  const closeMenu = (e) => {
+    console.log("CLOSE");
+    console.log(classes.menu);
+    console.log(e.target.classList);
+
+    if (!e.target.closest(`.${classes.menu}`)) setMenuIsOpen(false);
+  };
+
+  useEffect(() => {
+    if (menuIsOpen) {
+      console.log("MENU");
+      document.addEventListener("click", closeMenu);
+    } else {
+      document.removeEventListener("click", closeMenu);
+    }
+
+    return () => {
+      document.removeEventListener("click", closeMenu);
+    };
+  }, [menuIsOpen]);
+
   return (
     <div className={classes.container}>
       {imgIsLoading && <div className={classes.loading}>Loading...</div>}

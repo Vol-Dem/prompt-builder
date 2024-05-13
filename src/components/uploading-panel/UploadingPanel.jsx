@@ -16,6 +16,26 @@ const UploadingPanel = () => {
   const isUploading = useSelector((state) => state.upload.isUploading);
   const dispatch = useDispatch();
 
+  const beforeUnloadHandler = (event) => {
+    // Recommended
+    event.preventDefault();
+
+    // Included for legacy support, e.g. Chrome/Edge < 119
+    event.returnValue = true;
+  };
+
+  useEffect(() => {
+    if (!!queue.length) {
+      window.addEventListener("beforeunload", beforeUnloadHandler);
+    } else {
+      window.removeEventListener("beforeunload", beforeUnloadHandler);
+    }
+
+    return () => {
+      window.removeEventListener("beforeunload", beforeUnloadHandler);
+    };
+  }, [queue]);
+
   useEffect(() => {
     if (
       uid &&
