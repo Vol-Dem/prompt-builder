@@ -13,12 +13,16 @@ const ImageCard = ({ imageData, closeImg, curImgId, isOpen }) => {
   // const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log("IMGCARD");
+  }, []);
+
+  useEffect(() => {
     console.log("START FETCH");
+    if (isLoading) return;
     const loadResoursesInfo = async () => {
       try {
         setIsLoading(true);
         console.log(imageData);
-        console.log(isOpen);
         const imageWithResInfo = await getImageInfo(imageData);
         console.log(imageWithResInfo);
         const imageResourcesInfo =
@@ -38,7 +42,7 @@ const ImageCard = ({ imageData, closeImg, curImgId, isOpen }) => {
     return () => {
       console.log("CLEAN");
     };
-  }, [imageData]);
+  }, []);
 
   const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
   const positiveWordsArr = imageData.meta?.prompt

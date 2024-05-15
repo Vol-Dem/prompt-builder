@@ -22,8 +22,10 @@ const CarouselImage = ({
   postId,
   versionId,
   saved,
+  nsfw,
 }) => {
-  const [imgIsLoading, setImgIsLoading] = useState(true);
+  const [imgIsLoading, setImgIsLoading] = useState(false);
+  const [imgIsLoaded, setImgIsLoaded] = useState(false);
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState("#");
@@ -34,14 +36,19 @@ const CarouselImage = ({
   const dispatch = useDispatch();
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
+  const nsfwMode = useSelector((state) => state.model.nsfwMode);
 
   useEffect(() => {
     // if (imgError) setImgIsLoading(true);
-    if (src) setImgSrc(src);
-  }, [src]);
+    if (src && !imgIsLoaded) {
+      setImgSrc(src);
+      setImgIsLoading(true);
+    }
+  }, [src, imgIsLoaded]);
 
   const imgLoadHandler = () => {
     setImgIsLoading(false);
+    setImgIsLoaded(true);
   };
 
   const imgErrorHandler = () => {
@@ -302,7 +309,7 @@ const CarouselImage = ({
           <img
             className={`${classes.image} ${
               imgIsLoading ? classes["image--hidden"] : ""
-            }`}
+            } ${!nsfwMode && nsfw ? classes["image--nsfw"] : ""}`}
             onClick={onClick}
             onLoad={imgLoadHandler}
             onError={imgErrorHandler}

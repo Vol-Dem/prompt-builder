@@ -103,7 +103,10 @@ export const savePost = (postInfo) => {
         data.items.sort((a, b) => {
           return b.createdAt - a.createdAt;
         }),
-        getImagesInfo
+        getImagesInfo,
+        5,
+        true,
+        500
       );
       console.log(examplesDataWithRes);
       examplesDataWithRes.versionId = versionId;

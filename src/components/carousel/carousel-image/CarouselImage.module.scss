@@ -60,6 +60,10 @@
   &--hidden {
     display: none;
   }
+
+  &--nsfw {
+    filter: blur(20px);
+  }
 }
 
 .placeholder {

@@ -46,7 +46,7 @@ const ActiveCarousel = () => {
           postId={!isSaved ? activeCarouselData.postId : null}
           modelId={activeCarouselData.modelId}
           visibleImgAmount={1}
-          isOpen={true}
+          imgIsOpen={true}
           activeImgNum={activeCarouselData.currImgNum}
         />
       )}

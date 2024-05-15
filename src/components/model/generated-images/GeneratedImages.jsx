@@ -200,6 +200,7 @@ const GeneratedImages = ({ customData }) => {
       const q = query(
         collection(firestore, "users", uid, "models", model.id + "", "images"),
         where("versionId", "==", curImagesModelVersionId),
+        // where("nsfw", "==", nsfwMode),
         orderBy("versionId", "desc"),
         // orderBy("savedAt", "desc"),
         startAfter(lastVisible),
@@ -231,7 +232,17 @@ const GeneratedImages = ({ customData }) => {
 
       console.log(data);
 
-      const examples = data.map((item, i) => item.items);
+      const examples = data
+        .map((post) => {
+          if (nsfwMode) {
+            return post.items;
+          } else {
+            return post.items.filter((item) => !item.nsfw);
+          }
+        })
+        .filter((item) => !!item.length);
+      // const examples = data.map((item, i) => item.items);
+      console.log(examples);
       // const examples = data.flatMap((item, i) => {
       //   if (!nsfwMode && item.nsfw) return [];
       //   return (

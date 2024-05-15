@@ -32,12 +32,12 @@ const Carousel = ({
   modelId,
   versionId,
   existedImgsAmount,
-  isOpen = false,
+  imgIsOpen = false,
   activeImgNum,
 }) => {
   const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount);
   const [initial, setInitial] = useState(true);
-  const [imgIsOpen, setImgIsOpen] = useState(isOpen);
+  // const [imgIsOpen, setImgIsOpen] = useState(imgIsOpen);
   // const [isUploading, setSavingImages] = useState(false);
   const [currImgNum, setCurrImgNum] = useState(0);
   const [translate, setTranslate] = useState(0);
@@ -106,6 +106,7 @@ const Carousel = ({
   // },[])
 
   const openCarouselHandler = useCallback(() => {
+    if (imgIsOpen) return;
     console.log("open");
     document.body.style.overflow = "hidden";
     dispatch(
@@ -160,7 +161,7 @@ const Carousel = ({
   const openImgHandler = useCallback(
     (e) => {
       // setCurTransitionDur("0ms");
-      setImgIsOpen((prevState) => !prevState);
+      // setImgIsOpen((prevState) => !prevState);
       const imgNum = e.target.dataset.position - visibleAmount;
       setCurrImgNum(imgNum >= 0 ? imgNum : images?.length + imgNum);
       setCurVisibleAmount(1);
@@ -209,6 +210,7 @@ const Carousel = ({
           dataset={i + visibleAmount}
           src={src}
           alt="example image"
+          nsfw={image.nsfw}
         />
       );
     });
@@ -233,6 +235,7 @@ const Carousel = ({
             dataset={i + visibleAmount}
             src={src}
             alt="example image"
+            nsfw={image.nsfw}
           />
         );
       });
@@ -254,6 +257,7 @@ const Carousel = ({
             dataset={i}
             src={src}
             alt="example image"
+            nsfw={image.nsfw}
           />
         );
       });
@@ -531,7 +535,7 @@ const Carousel = ({
         return newVisibleImages;
       });
     }
-  }, [activeImgNum]);
+  }, [activeImgNum, visibleAmount]);
 
   return (
     <div
@@ -539,14 +543,16 @@ const Carousel = ({
       className={`${classes.container} ${
         imgIsOpen ? classes["container--open"] : ""
       }`}
-      style={carouselHeight && !isOpen ? { height: `${carouselHeight}px` } : {}}
+      style={
+        carouselHeight && !imgIsOpen ? { height: `${carouselHeight}px` } : {}
+      }
       // onClick={openCarouselHandler}
     >
       <div
         ref={wrapRef}
         className={`${classes.wrap}`}
         style={
-          isOpen
+          imgIsOpen
             ? {
                 height: `${
                   promptIsOpen ? "calc(100vh - 315px)" : "calc(100vh - 110px)"
@@ -635,7 +641,7 @@ const Carousel = ({
           <ImageCard
             imageData={images[currImgNum]}
             closeImg={closeImgHandler}
-            isOpen={isOpen}
+            // isOpen={imgIsOpen}
           />
         )}
       </div>

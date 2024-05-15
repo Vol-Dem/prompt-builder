@@ -1,10 +1,11 @@
-import { clearObjectKeys } from "./generalUtils";
+import { addDelayPromise, clearObjectKeys } from "./generalUtils";
 
 export const makeBatchRequest = async (
   data,
   fetchFunc,
   concurrencyLimit = 5,
-  returnResult = true
+  returnResult = true,
+  delay
 ) => {
   try {
     let result = [];
@@ -18,6 +19,7 @@ export const makeBatchRequest = async (
           const curElement = queue.shift();
           curBatch.push(curElement);
         }
+        await addDelayPromise(delay);
 
         const batchResults = await fetchFunc(curBatch);
         // console.log(batchResults);
