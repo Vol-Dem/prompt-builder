@@ -9,6 +9,8 @@ import Input from "../../ui/Input";
 import ButttonSecondary from "../../ui/ButtonSecondary";
 import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
+import ErrorMessage from "../../ui/ErrorMessage";
+import SuccessMessage from "../../ui/SuccessMessage";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -305,8 +307,8 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
       <Buttton type="submit" disabled={isSaving}>
         Save
       </Buttton>
-      {errorMessage && <div>{errorMessage}</div>}
-      {successMessage && <div>{successMessage}</div>}
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
     </form>
   );
 };

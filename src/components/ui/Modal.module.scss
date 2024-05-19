@@ -35,6 +35,16 @@
     cursor: pointer;
     top: 0.8rem;
     right: 0.8rem;
+    color: #a8a8a8;
+    transition: all 0.3s;
+
+    & svg {
+      width: 2.4rem;
+    }
+
+    &:hover {
+      color: lighten(#a8a8a8, 20%);
+    }
   }
 
   &__cross {

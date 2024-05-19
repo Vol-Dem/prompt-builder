@@ -63,13 +63,30 @@ const modelSlice = createSlice({
       state.activeCarouselData = actions.payload;
     },
   },
-  extraReducers: (builder) => {
-    builder.addCase(authActions.login, (state, actions) => {
-      const uid = auth.currentUser.uid;
-      state.nsfwMode = uploadStorage(`${uid}-nsfw`);
-    });
-  },
+  // extraReducers: (builder) => {
+  //   builder.addCase(authActions.login, (state, actions) => {
+  //     const uid = auth.currentUser.uid;
+  //     state.nsfwMode = uploadStorage(`${uid}-nsfw`);
+  //   });
+  // },
 });
+
+export const switchNsfwMode = (nsfw) => {
+  return async (dispatch, getState) => {
+    dispatch(modelActions.setNsfwMode(nsfw));
+    const uid = getState().auth.user.uid;
+    const userRef = doc(firestore, "users", uid);
+    await updateDoc(
+      userRef,
+      {
+        nsfwMode: nsfw,
+      },
+      {
+        merge: true,
+      }
+    );
+  };
+};
 
 // export const getModel = (modelId) => {
 //   return async (dispatch, getState) => {

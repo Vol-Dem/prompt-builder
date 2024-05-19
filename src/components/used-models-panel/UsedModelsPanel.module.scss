@@ -126,26 +126,43 @@
   border: none;
   border-radius: 1rem 0 0 1rem;
   background-color: #756b76;
+  color: var.$color-text-white;
   cursor: pointer;
 }
 
 .btn-forms {
-  display: block;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6rem;
   // position: absolute;
   // top: 1rem;
   // right: 1rem;
   margin-left: auto;
-  width: 12rem;
+  width: 12.5rem;
   padding: 0.4rem 0.8rem;
   background-color: rgb(101, 38, 160);
   color: #fff;
   border: none;
   border-radius: 1rem;
   cursor: pointer;
+
+  & svg {
+    width: 2rem;
+  }
 }
 
 .forms {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+}
+
+.controls__btn {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.3rem;
+  padding: 0.3rem 0.4rem;
+  & svg {
+    width: 1.4rem;
+  }
 }

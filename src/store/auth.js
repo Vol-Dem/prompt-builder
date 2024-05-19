@@ -11,9 +11,12 @@ import {
 import firebaseApp from "../firebase-config";
 import { uploadPanelStateFromStorage } from "./usedModels";
 import { uploadPromptFromStorage } from "./prompt";
-import { getUserCategories } from "./tabs";
+import { getUserCategories, tabActions } from "./tabs";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
+import { modelActions } from "./model";
 
 const auth = getAuth(firebaseApp);
+const firestore = getFirestore(firebaseApp);
 
 const authInitialState = {
   isLoggedIn: false,
@@ -84,7 +87,8 @@ export const initAuth = () => {
         );
         dispatch(uploadPanelStateFromStorage(user.uid));
         dispatch(uploadPromptFromStorage(user.uid));
-        dispatch(getUserCategories(user.uid))
+        // dispatch(getUserCategories(user.uid));
+        dispatch(getUserData(user.uid));
       }
     });
   };
@@ -171,6 +175,24 @@ export const changeUserName = (name) => {
     } catch (error) {
       dispatch(authActions.setErrorMessage(error.message));
     }
+  };
+};
+
+export const getUserData = (uid) => {
+  return async (dispatch, getState) => {
+    try {
+      const userRef = doc(firestore, "users", uid);
+
+      const userDataDoc = await getDoc(userRef);
+      if (userDataDoc.exists()) {
+        const userData = userDataDoc.data();
+        dispatch(tabActions.setCategories(userData.categoriesById));
+        dispatch(modelActions.setNsfwMode(userData.nsfwMode));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    // const uid = getState().auth.user.uid;
   };
 };
 

@@ -28,6 +28,7 @@ import { addModelToPanel } from "../../store/usedModels";
 import { ReactComponent as SearchIcon } from "./../../assets/search.svg";
 import { searchActions } from "../../store/search";
 import Spinner from "../ui/Spinner";
+import ButtonAdd from "../ui/ButtonAdd";
 
 const firestore = getFirestore(firebaseApp);
 let searchTimeout;
@@ -352,13 +353,17 @@ const Search = () => {
             {modelPreveiw.name}
           </div>
         </NavLink>
-        <span
+        {/* <span
           className={classes["search__add"]}
           data-id={modelPreveiw.id}
           onClick={addToSidePanelHandler}
         >
           +
-        </span>
+        </span> */}
+        <ButtonAdd
+          previewData={modelPreveiw}
+          className={classes["search__add"]}
+        />
       </li>
     );
   });

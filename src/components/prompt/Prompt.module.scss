@@ -74,6 +74,7 @@
 .prompt {
   // max-width: 95%;
   // min-width: 95%;
+  resize: none;
   padding: 0.6rem 0.8rem;
   background-color: rgb(var.$color-background-tertiary, 0.9);
   opacity: 0.9;
@@ -83,7 +84,7 @@
   font-size: 1.2rem;
   line-height: 1.4;
   // height: 10rem;
-  resize: vertical;
+  // resize: vertical;
   flex-grow: 1;
   font-family: "Segoe UI", sans-serif;
   word-spacing: 0.3rem;
@@ -157,12 +158,35 @@
   top: 100%;
   right: 2%;
   z-index: 20;
+
+  & svg {
+    width: 1.8rem;
+  }
 }
 
 .btn-copy {
   border: 1px solid #fff;
-  // height: auto;
   border-radius: 0 1rem 1rem 0;
-  // height: 100%;
   cursor: pointer;
+  border: 1px solid rgb(255 255 255 / 30%);
+  background-color: #323148;
+  border-radius: 0 1rem 1rem 0;
+  color: #cdcbcb;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: lighten(#323148, 5%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  &:active {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background-color: darken(#323148, 5%);
+    box-shadow: var.$box-shadow-inset;
+  }
+
+  & svg {
+    width: 2rem;
+  }
 }

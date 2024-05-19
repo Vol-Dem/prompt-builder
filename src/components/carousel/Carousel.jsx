@@ -105,31 +105,43 @@ const Carousel = ({
   //   }
   // },[])
 
-  const openCarouselHandler = useCallback(() => {
-    if (imgIsOpen) return;
-    console.log("open");
-    document.body.style.overflow = "hidden";
-    dispatch(
-      modelActions.setActiveCarouselData({
-        images,
-        visibleImgAmount,
-        postId,
-        modelId,
-        versionId,
-        existedImgsAmount,
-        currImgNum,
-      })
-    );
-  }, [
-    dispatch,
-    images,
-    visibleImgAmount,
-    postId,
-    modelId,
-    versionId,
-    existedImgsAmount,
-    currImgNum,
-  ]);
+  const openCarouselHandler = useCallback(
+    (e) => {
+      if (imgIsOpen) return;
+      console.log("open");
+
+      document.body.style.overflow = "hidden";
+      const imgNum = e.target.dataset.position - visibleAmount;
+      const currImg = imgNum >= 0 ? imgNum : images?.length + imgNum;
+      // console.log(e.target.dataset.position);
+      // console.log(visibleAmount);
+      // console.log(imgNum);
+      // console.log(currImg);
+      dispatch(
+        modelActions.setActiveCarouselData({
+          images,
+          visibleImgAmount,
+          postId,
+          modelId,
+          versionId,
+          existedImgsAmount,
+          currImgNum: +currImg,
+        })
+      );
+    },
+    [
+      dispatch,
+      images,
+      visibleImgAmount,
+      postId,
+      modelId,
+      versionId,
+      existedImgsAmount,
+      currImgNum,
+      imgIsOpen,
+      visibleAmount,
+    ]
+  );
 
   useEffect(() => {
     const curVisibleImgAmount = Math.floor(
@@ -210,7 +222,7 @@ const Carousel = ({
           dataset={i + visibleAmount}
           src={src}
           alt="example image"
-          nsfw={image.nsfw}
+          nsfw={!image.nsfw || image.nsfw === "None" ? false : true}
         />
       );
     });
@@ -235,7 +247,7 @@ const Carousel = ({
             dataset={i + visibleAmount}
             src={src}
             alt="example image"
-            nsfw={image.nsfw}
+            nsfw={!image.nsfw || image.nsfw === "None" ? false : true}
           />
         );
       });
@@ -257,7 +269,7 @@ const Carousel = ({
             dataset={i}
             src={src}
             alt="example image"
-            nsfw={image.nsfw}
+            nsfw={!image.nsfw || image.nsfw === "None" ? false : true}
           />
         );
       });
@@ -594,7 +606,20 @@ const Carousel = ({
                 onClick={slidePrevHandler}
                 title="Prev"
               >
-                <span></span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 19.5 8.25 12l7.5-7.5"
+                  />
+                </svg>
               </button>
 
               <button
@@ -603,7 +628,20 @@ const Carousel = ({
                 onClick={slideNextHandler}
                 title="Next"
               >
-                <span></span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m8.25 4.5 7.5 7.5-7.5 7.5"
+                  />
+                </svg>
               </button>
             </>
           )}
@@ -635,7 +673,7 @@ const Carousel = ({
               UP
             </span>
           )}
-          <span className={classes["amount"]}>{images?.length}</span>
+          {/* <span className={classes["amount"]}>{images?.length}</span> */}
         </div>
         {imgIsOpen && (
           <ImageCard

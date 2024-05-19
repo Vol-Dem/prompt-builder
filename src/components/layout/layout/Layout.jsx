@@ -28,7 +28,7 @@ import Spinner from "../../ui/Spinner";
 import Notification from "../../ui/Notification";
 import Prompt from "../../prompt/Prompt";
 import UsedModelsPanel from "../../used-models-panel/UsedModelsPanel";
-import { modelActions } from "../../../store/model";
+import { modelActions, switchNsfwMode } from "../../../store/model";
 import Search from "../../search/Search";
 import UploadingPanel from "../../uploading-panel/UploadingPanel";
 import Carousel from "../../carousel/Carousel";
@@ -55,7 +55,7 @@ const Layout = () => {
   };
 
   const nsfwSwitchHandler = () => {
-    dispatch(modelActions.setNsfwMode(!isNsfwMode));
+    dispatch(switchNsfwMode(!isNsfwMode));
   };
 
   // const activeCarouselData = useSelector(

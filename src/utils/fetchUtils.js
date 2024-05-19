@@ -214,16 +214,69 @@ export const getModelData = async (modelId) => {
       throw new Error(`Error status (${response.status})`);
     }
     console.log(responseData);
-    responseData?.modelVersions?.forEach((version) => {
-      version.images.forEach((image) => {
-        if (image.meta) {
-          image.meta.comfy = "";
-          image.meta = clearObjectKeys(image.meta);
-          if (image.meta.hashes)
-            image.meta.hashes = clearObjectKeys(image.meta.hashes);
+    // responseData?.modelVersions?.forEach((version) => {
+    //   version.images.forEach((image) => {
+    //     if (image?.meta) {
+    //       image.meta.comfy = "";
+    //       image.meta = clearObjectKeys(image.meta);
+    //       if (image.meta?.hashes)
+    //         image.meta.hashes = clearObjectKeys(image.meta.hashes);
+    //     }
+    //   });
+    // });
+
+    const updatedModelversions = await Promise.all(
+      responseData?.modelVersions?.map(async (version) => {
+        const versionImagesRequest = await fetch(
+          `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${responseData.creator.username}&nsfw=X`
+        );
+        const versionImages = await versionImagesRequest.json();
+        console.log(versionImages);
+        const updatedImages = version?.images?.map((image) => {
+          const fullImgData =
+            versionImages?.items?.find(
+              (verImg) => verImg.hash === image.hash
+            ) || [];
+          // if (fullImgData?.meta) {
+          //   fullImgData.meta.comfy = "";
+          //   fullImgData.meta = clearObjectKeys(fullImgData.meta);
+          //   if (fullImgData.meta?.hashes)
+          //     fullImgData.meta.hashes = clearObjectKeys(
+          //       fullImgData.meta.hashes
+          //     );
+          // }
+          return { ...image, ...fullImgData };
+        });
+        return {
+          ...version,
+          images: updatedImages.filter(Boolean),
+        };
+      })
+    );
+
+    // clear empty keys
+    updatedModelversions.forEach((version) => {
+      version.images?.forEach((image) => {
+        if (image?.meta) {
+          const metaArr = Object.entries(image.meta).filter(
+            (entry) => !!entry[0]
+          );
+
+          if (metaArr) {
+            image.meta = Object.fromEntries(metaArr);
+          }
         }
       });
     });
+
+    const updatedModelData = {
+      ...responseData,
+      modelVersions: updatedModelversions,
+    };
+
+    console.log(updatedModelData);
+
+    // const modelImages = await fetch(`https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId={versionId}&username=${userName}`)
 
     // const imagesDataWithRes = await Promise.all(
     //   responseData.modelVersions.map(async (image) => {
@@ -236,7 +289,7 @@ export const getModelData = async (modelId) => {
 
     // console.log(imagesDataWithRes);
 
-    return responseData;
+    return updatedModelData;
   } catch (err) {
     // console.log(err);
     throw new Error(err);

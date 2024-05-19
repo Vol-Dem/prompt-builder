@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { updateCategories } from "../../../store/model";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import DeleteRequest from "../../ui/DeleteRequest";
+import SuccessMessage from "../../ui/SuccessMessage";
 
 const CategoriesForm = ({ modelType, activeCategory, categories }) => {
   //   const [changeNameIsActive, setChangeNameIsActive] = useState(false);
@@ -18,6 +19,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
   const [deleteCategoryId, setDeleteCategoryId] = useState("");
   const [categoriesInputs, setCategoriesInputs] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const dispatch = useDispatch();
   const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
 
@@ -233,6 +235,9 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
         <div>
           <div className={classes["category__info"]}>
             {categoriesInputsHtml}
+            {successMessage && (
+              <SuccessMessage>{successMessage}</SuccessMessage>
+            )}
             {errorMessageAuth && (
               <ErrorMessage className={classes["auth__error"]}>
                 {errorMessageAuth}

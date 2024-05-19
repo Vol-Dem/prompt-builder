@@ -11,16 +11,18 @@ import ButttonSecondary from "../../ui/ButtonSecondary";
 import Checkbox from "../../ui/Checkbox";
 import Buttton from "../../ui/Button";
 import Fieldset from "../../ui/Fieldset";
+import ErrorMessage from "../../ui/ErrorMessage";
+import SuccessMessage from "../../ui/SuccessMessage";
 
 const firestore = getFirestore(firebaseApp);
 
-const SaveImageForm = ({ modelData }) => {
-  const [filterDisabledInput, setFilterDisabledInput] = useState(false);
+const SaveImageForm = ({ modelData, curVersion }) => {
+  const [filterDisabledInput, setFilterDisabledInput] = useState(true);
   const [imageIsSaving, setImageIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, seteSuccessMessage] = useState("");
   const [versionIdInput, setVersionIdInput] = useState(
-    modelData?.data?.modelVersions[0].id
+    curVersion || modelData?.data?.modelVersions[0].id
   );
   const [postIdInput, setPostIdInput] = useState("");
   const [imagesIdInputs, setImagesIdInputs] = useState([
@@ -91,7 +93,7 @@ const SaveImageForm = ({ modelData }) => {
 
       const imgExampleResponse = await fetch(
         `https://civitai.com/api/v1/images?postId=${postId}${
-          !filterDisabledInput ? `&modelId=${modelData?.id}` : ""
+          filterDisabledInput ? `&modelId=${modelData?.id}` : ""
         }${nsfwMode ? `&nsfw=X` : `&nsfw=None`}`
       );
       const data = await imgExampleResponse.json();
@@ -209,18 +211,17 @@ const SaveImageForm = ({ modelData }) => {
     });
   };
 
-  let imagesIdInputsHtml = imagesIdInputs.map((example) => {
+  let imagesIdInputsHtml = imagesIdInputs.map((example, i) => {
     return (
-      <div className={classes["example-field"]} key={example.id}>
-        <Input
-          id={example.id}
-          name={example.name}
-          type={example.type}
-          placeholder={example.placeholder}
-          onChange={imageIdHandler}
-          value={example.value}
-        />
-      </div>
+      <Input
+        key={i}
+        id={example.id}
+        name={example.name}
+        type={example.type}
+        placeholder={example.placeholder}
+        onChange={imageIdHandler}
+        value={example.value}
+      />
     );
   });
 
@@ -233,9 +234,10 @@ const SaveImageForm = ({ modelData }) => {
 
   return (
     <form onSubmit={saveImagesHandler} className={classes["form"]}>
-      <label htmlFor="version-select">Select version:</label>
+      {/* <label htmlFor="version-select">Select version:</label> */}
+
       <Select
-        label="Version"
+        label="Select version:"
         name="curVersionId"
         id="version-select"
         selected={versionIdInput}
@@ -248,6 +250,7 @@ const SaveImageForm = ({ modelData }) => {
       <Input
         name="post-id"
         type="text"
+        label="Post ID"
         placeholder="post id"
         input={{ disabled: imageIsSaving }}
         value={postIdInput}
@@ -260,22 +263,26 @@ const SaveImageForm = ({ modelData }) => {
         }`}
         error={postIdErrorMessage}
       />
-      <Fieldset legend="Image IDs" className={classes.fieldset}>
-        {imagesIdInputsHtml}
-        <ButttonSecondary
-          type="button"
-          onClick={addExampleInputHandler}
-          disabled={imageIsSaving}
-          className={classes["btn-secondary"]}
-        >
-          + add image id
-        </ButttonSecondary>
-      </Fieldset>
+      <div className={classes["imputs-container"]}>
+        <Fieldset legend="Image IDs" className={classes.fieldset}>
+          {imagesIdInputsHtml}
+          <ButttonSecondary
+            type="button"
+            onClick={addExampleInputHandler}
+            disabled={imageIsSaving}
+            className={classes["btn-secondary"]}
+          >
+            + add image ID
+          </ButttonSecondary>
+        </Fieldset>
+      </div>
       <div className={classes.filter}>
         <Checkbox
           id="filter"
-          label="Disable filter"
+          label="Only related to this model"
           value={filterDisabledInput}
+          checked={filterDisabledInput}
+          className={classes["checkbox"]}
           onChange={(e) => {
             setFilterDisabledInput(e.target.checked);
           }}
@@ -284,8 +291,8 @@ const SaveImageForm = ({ modelData }) => {
       <Buttton type="submit" disabled={imageIsSaving}>
         Save
       </Buttton>
-      {successMessage && <div>{successMessage}</div>}
-      {errorMessage && <div>{errorMessage}</div>}
+      {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
     </form>
   );
 };

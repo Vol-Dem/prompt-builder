@@ -10,6 +10,8 @@ import ButttonSecondary from "../../ui/ButtonSecondary";
 import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
 import { clearFileExtension } from "../../../utils/generalUtils";
+import ErrorMessage from "../../ui/ErrorMessage";
+import SuccessMessage from "../../ui/SuccessMessage";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -548,8 +550,8 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
       <Buttton type="submit" disabled={isSaving}>
         Save
       </Buttton>
-      {errorMessage && <div>{errorMessage}</div>}
-      {successMessage && <div>{successMessage}</div>}
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
     </form>
   );
 };

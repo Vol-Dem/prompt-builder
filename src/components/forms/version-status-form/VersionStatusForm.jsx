@@ -7,6 +7,8 @@ import Checkbox from "../../ui/Checkbox";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
 import { useSelector } from "react-redux";
+import SuccessMessage from "../../ui/SuccessMessage";
+import ErrorMessage from "../../ui/ErrorMessage";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -163,8 +165,8 @@ const VersionStatusForm = ({ modelData }) => {
         {!isSaving ? "Save" : "Saving..."}
       </Buttton>
 
-      {errorMessage && <div>{errorMessage}</div>}
-      {successMessage && <div>{successMessage}</div>}
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
     </form>
   );
 };

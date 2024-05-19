@@ -3,7 +3,21 @@
 .form {
   display: flex;
   flex-direction: column;
-  width: 20rem;
+  gap: 1rem;
+  // width: 20rem;
+}
+
+.imputs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.fieldset {
+  overflow-y: scroll;
+  max-height: 40vh;
+
+  @include var.custom-scroll;
 }
 
 .filter {
@@ -19,8 +33,12 @@
 
 .btn-secondary {
   font-size: 1.6rem;
-  color: #818182 !important;
+  color: #818182;
   text-align: right;
+
+  &:hover {
+    color: lighten(#818182, 15%);
+  }
 }
 
 .input-group {
@@ -31,9 +49,10 @@
 }
 
 .checkbox {
-  display: flex;
-  font-size: 1.6rem;
-  padding: 1rem;
-  gap: 1rem;
-  align-items: center;
+  margin-left: 1rem;
+  // display: flex;
+  // font-size: 1.6rem;
+  // padding: 1rem;
+  // gap: 1rem;
+  // align-items: center;
 }

@@ -16,28 +16,10 @@
 }
 
 .btn-add {
-  display: flex;
   position: absolute;
-  justify-content: center;
-  align-items: center;
   top: 1rem;
   left: 1rem;
-  font-size: 2.8rem;
-  border-radius: 1rem;
-  background-color: rgb(var.$color-background-tertiary, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  // padding: 1rem;
-  width: 4rem;
-  height: 4rem;
-  line-height: 1;
-  font-family: serif;
-  cursor: pointer;
-  transition: all 0.3s;
   z-index: 1;
-
-  &:hover {
-    background-color: var.$color-primary;
-  }
 }
 
 .link {

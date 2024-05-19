@@ -15,6 +15,13 @@
   box-shadow: var.$box-shadow-light;
   word-spacing: 0.3rem;
   letter-spacing: 0.4px;
+  transition: all 0.3s;
+
+  &:hover {
+    // background-color: #249e3e;
+    // background-color: #252435;
+    border: 1px solid rgb(255, 255, 255, 0.5);
+  }
 }
 
 .active {

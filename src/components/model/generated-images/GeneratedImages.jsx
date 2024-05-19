@@ -15,6 +15,9 @@ import {
 import firebaseApp from "../../../firebase-config";
 import Spinner from "../../ui/Spinner";
 import useIntersection from "../../../hooks/use-intersection";
+import Modal from "../../ui/Modal";
+import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
+import Buttton from "../../ui/Button";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -37,6 +40,7 @@ const GeneratedImages = ({ customData }) => {
   const [imagesSortValue, setImagesSortValue] = useState("Newest");
   const [amountPerPage, setAmountPerPage] = useState(50);
   const [isIntersecting, setIsIntersecting] = useState(false);
+  const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
@@ -276,7 +280,7 @@ const GeneratedImages = ({ customData }) => {
     isLastPage,
     lastVisible,
     model.id,
-    // nsfwMode,
+    nsfwMode,
     uid,
   ]);
 
@@ -538,6 +542,10 @@ const GeneratedImages = ({ customData }) => {
     nsfwMode,
   ]);
 
+  const addImgByIdHandler = () => {
+    setAddImgModalIsOpen(true);
+  };
+
   return (
     <>
       <div className={classes["controls"]}>
@@ -599,6 +607,7 @@ const GeneratedImages = ({ customData }) => {
           <option value="50">50</option>
           <option value="100">100</option>
         </select>
+        <Buttton onClick={addImgByIdHandler}>Add Image by ID</Buttton>
       </div>
 
       <div className={classes["image-versions"]}>
@@ -636,6 +645,19 @@ const GeneratedImages = ({ customData }) => {
       )}
       {!examplesIsLoading && !examplesHtml.length && <div>No images found</div>}
       <div ref={endPage}></div>
+      {addImgModalIsOpen && (
+        <Modal
+          title="Add images by ID"
+          onClose={() => {
+            setAddImgModalIsOpen(false);
+          }}
+        >
+          <SaveImageForm
+            modelData={model}
+            curVersion={curImagesModelVersionId}
+          />
+        </Modal>
+      )}
     </>
   );
 };

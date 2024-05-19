@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Image from "../ui/image/Image";
 import { addModelToPanel } from "../../store/usedModels";
 import ActivationTag from "../activation-tag/ActivationTag";
+import ButtonAdd from "../ui/ButtonAdd";
 
 const PreviewCard = ({ previewData }) => {
   // const [tagsIsOpen, setTagsIsOpen] = useState(false);
@@ -120,9 +121,10 @@ const PreviewCard = ({ previewData }) => {
 
   return (
     <div id={previewData.id} className={`${classes.card} card`}>
-      <span className={classes["btn-add"]} onClick={addToSidePanelHandler}>
+      {/* <span className={classes["btn-add"]} onClick={addToSidePanelHandler}>
         +
-      </span>
+      </span> */}
+      <ButtonAdd previewData={previewData} className={classes["btn-add"]} />
       <Link to={`/model/${previewData.id}`}>
         <Image
           // onClick={openLoraHandler}

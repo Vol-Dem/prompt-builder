@@ -58,26 +58,42 @@ const ModelSettings = () => {
       console.log("UPD");
       const newModelData = await getModelData(model.id);
 
-      const newVerison = newModelData.modelVersions.filter(
+      const newVersions = newModelData.modelVersions.filter(
         (version) =>
           !model.data.modelVersions.some(
             (oldVersions) => version.id === oldVersions.id
           )
       );
-      console.log(newVerison);
-      if (!newVerison.length) {
+      // newVersions.forEach((version) => {
+      //   version.images.forEach((image) => {
+      //     const metaArr = Object.entries(image?.meta).filter(
+      //       (entry) => !!entry[0]
+      //     );
+      //     image.meta = Object.fromEntries(metaArr);
+      //   });
+      // });
+      // console.log(newVersions);
+      // setIsLoading(false);
+      // return;
+      if (!newVersions.length) {
         console.log("NO UPDATEDS");
         seteSuccessMessage("No new wersion found");
         setIsLoading(false);
         return;
       }
 
-      newModelData.modelVersions = [...newVerison, ...model.data.modelVersions];
+      console.log("ONE", newVersions[newVersions.length - 1]);
+
+      newModelData.modelVersions = [
+        ...newVersions,
+        // newVersions[newVersions.length - 1],
+        ...model.data.modelVersions,
+      ].filter(Boolean);
       console.log(newModelData);
 
       const newVersionsCustomData = {};
 
-      newVerison.forEach((version, i) => {
+      newVersions.forEach((version, i) => {
         newVersionsCustomData[version.id] = {
           versionId: version.id,
           versionName: version.name,
@@ -229,7 +245,7 @@ const ModelSettings = () => {
             />
           </div>
         )}
-        <SaveImageForm modelData={model} />
+        {/* <SaveImageForm modelData={model} /> */}
       </div>
       {deleteRequestIsOpen && (
         <DeleteRequest

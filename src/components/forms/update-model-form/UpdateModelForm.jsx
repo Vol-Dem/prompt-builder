@@ -32,6 +32,8 @@ import { clearFileExtension } from "../../../utils/generalUtils";
 import { Link } from "react-router-dom";
 import Spinner from "../../ui/Spinner";
 import { modelTypes } from "../../../variables/constants";
+import SuccessMessage from "../../ui/SuccessMessage";
+import ErrorMessage from "../../ui/ErrorMessage";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -392,6 +394,18 @@ const UpdateModelForm = ({ modelData, id }) => {
         return [];
       });
 
+      const hashes = data.modelVersions
+        ?.flatMap((version) => {
+          // version.files.map((file) => file.name)
+          if (version.hasOwnProperty("files") && version?.files) {
+            return version?.files
+              .find((file) => file?.primary)
+              ?.hashes?.AutoV3?.toLowerCase();
+          }
+          return [];
+        })
+        .filter(Boolean);
+
       const customFileNames = Object.values(modelVersionsCustomData)
         ?.map((version) => {
           return clearFileExtension(version?.fileName)?.toLowerCase();
@@ -559,7 +573,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           mainTag,
           nsfw: data?.nsfw || false,
           nsfwLevel: data?.nsfwLevel || null,
-
+          hashes,
           src: "civitai.com",
           defaultCustomData: {
             description: description || data.description,
@@ -604,13 +618,13 @@ const UpdateModelForm = ({ modelData, id }) => {
           mainTag,
           fileName,
           latestFileName: !!fileNames?.length ? fileNames[0] : "",
+          hashes,
           fileNames,
           customFileNames,
           weight,
           minWeight,
           maxWeight,
           size,
-
           tags: data.modelVersions[0].trainedWords || "",
           authorTags: data.tags || [],
           tagSetsData,
@@ -886,7 +900,7 @@ const UpdateModelForm = ({ modelData, id }) => {
 
   return (
     <form onSubmit={saveModelHandler} className={classes["form"]}>
-      <div>{modelIsSaving ? "Saving..." : "Done"}</div>
+      {/* <div>{modelIsSaving ? "Saving..." : "Done"}</div> */}
       {/* {modelData && (
         <Buttton
           type="button"
@@ -1222,8 +1236,8 @@ const UpdateModelForm = ({ modelData, id }) => {
         {!modelIsSaving ? "Save" : <Spinner size="small" />}
       </Buttton>
       <div className={classes.status}>
-        {errorMessage && <div>{errorMessage}</div>}
-        {successMessage && <div>{successMessage}</div>}
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+        {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
         {successMessage && !modelData && (
           <>
             {"-"}

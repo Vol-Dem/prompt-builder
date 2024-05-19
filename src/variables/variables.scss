@@ -96,7 +96,7 @@ $clip-path-arrow-down: polygon(
   0 40%
 );
 
-@mixin custom-scroll {
+@mixin custom-scroll($color: transparent) {
   &::-webkit-scrollbar {
     width: 8px; /* width of the entire scrollbar */
     border-radius: 1rem;
@@ -104,7 +104,8 @@ $clip-path-arrow-down: polygon(
   }
 
   &::-webkit-scrollbar-track {
-    background: #443d6254; /* color of the tracking area */
+    background: $color; /* color of the tracking area */
+    // background: #443d6254; /* color of the tracking area */
     border-radius: 1rem;
     opacity: 0;
   }

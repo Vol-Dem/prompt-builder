@@ -17,6 +17,10 @@
 
 .link {
   color: var.$color-link;
+  text-decoration: none;
+  & svg {
+    width: 1.6rem;
+  }
 }
 
 .type {
