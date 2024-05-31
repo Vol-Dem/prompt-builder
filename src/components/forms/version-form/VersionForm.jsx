@@ -547,7 +547,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
           )}
         </FieldCategory>
       </div>
-      <Buttton type="submit" disabled={isSaving}>
+      <Buttton type="submit" disabled={isSaving} className={classes.submit}>
         Save
       </Buttton>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}

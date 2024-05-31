@@ -6,10 +6,12 @@ import TagsTextarea from "../ui/TagsTextarea";
 import Arrow from "../ui/Arrow";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import { useState } from "react";
+import Presets from "../presets/Presets";
 // import Buttton from "../ui/Button";
 
 const Prompt = () => {
   const [copiedId, setCopiedId] = useState("");
+  const [presetsIsOpen, setPresetsIsOpen] = useState(false);
   // const [promptIsOpen, setPromptIsOpen] = useState(true);
   // const [promptTextMode, setPromptTextMode] = useState(false);
   const curPrompt = useSelector((state) => state.prompt.curPrompt);
@@ -50,6 +52,10 @@ const Prompt = () => {
     dispatch(promptActions.clearPrompt());
   };
 
+  const openPresetsHandler = () => {
+    setPresetsIsOpen(true);
+  };
+
   return (
     <div
       className={`${classes.container} ${
@@ -82,7 +88,15 @@ const Prompt = () => {
                 Tags
               </button>
             </div>
-            <ButtonTertiary type="button" onClick={clearPromptHandler}>
+
+            <ButtonTertiary type="button" onClick={openPresetsHandler}>
+              Presets
+            </ButtonTertiary>
+            <ButtonTertiary
+              type="button"
+              onClick={clearPromptHandler}
+              className={classes["btn-clear"]}
+            >
               Clear
             </ButtonTertiary>
           </div>
@@ -255,6 +269,13 @@ const Prompt = () => {
           </>
         )}
       </button>
+      {presetsIsOpen && (
+        <Presets
+          onClose={() => {
+            setPresetsIsOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 };

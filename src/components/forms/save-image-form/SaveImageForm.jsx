@@ -13,6 +13,7 @@ import Buttton from "../../ui/Button";
 import Fieldset from "../../ui/Fieldset";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
+import Spinner from "../../ui/Spinner";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -288,8 +289,12 @@ const SaveImageForm = ({ modelData, curVersion }) => {
           }}
         />
       </div>
-      <Buttton type="submit" disabled={imageIsSaving}>
-        Save
+      <Buttton
+        type="submit"
+        disabled={imageIsSaving}
+        className={classes.submit}
+      >
+        {!imageIsSaving ? "Save" : <Spinner size="small" />}
       </Buttton>
       {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}

@@ -2,17 +2,27 @@ import React, { useState } from "react";
 import classes from "./UsedModelsPanel.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import UsedCard from "../used-card/UsedCard";
-import { usedModelsActions } from "../../store/usedModels";
+import {
+  removeImageFromPanel,
+  usedModelsActions,
+} from "../../store/usedModels";
 import UpdateModelForm from "../forms/update-model-form/UpdateModelForm";
 import Arrow from "../ui/Arrow";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import UpdateDb from "../update-db/UpdateDb";
+import Buttton from "../ui/Button";
+import CrossSvg from "../../assets/CrossSvg";
+import Image from "../ui/image/Image";
+import { modelActions } from "../../store/model";
+import ImageSvg from "../../assets/ImageSvg";
 
 const UsedModelsPanel = () => {
   // const [panelIsOpen, setPanelIsOpen] = useState(true);
   const [formIsOpen, setFormIsOpen] = useState(false);
   // const [fullCardView, setFullCardView] = useState(true);
   const usedModels = useSelector((state) => state.used.models);
+  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const usedImages = useSelector((state) => state.used.images);
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
   const fullCardView = useSelector((state) => state.used.fullCardView);
   const dispatch = useDispatch();
@@ -40,9 +50,82 @@ const UsedModelsPanel = () => {
     dispatch(usedModelsActions.cardViewState());
   };
 
+  const openImageHandler = (e) => {
+    const id = e.target.closest(`.${classes["ref-images__item"]}`).dataset.id;
+    const hash = e.target.closest(`.${classes["ref-images__item"]}`).dataset.id;
+    const image = usedImages.find((image) => image.hash === hash);
+    // const image = usedImages.find((image) => image.id === +id);
+    console.log(image);
+
+    if (hash) {
+      dispatch(
+        modelActions.setActiveCarouselData({
+          images: [image],
+          side: true,
+        })
+      );
+    }
+  };
+
+  const closeImageHandler = (e) => {
+    // const id = +e.target.closest(`.${classes["ref-images__item"]}`).dataset.id;
+    const hash = e.target.closest(`.${classes["ref-images__item"]}`).dataset.id;
+
+    if (hash) {
+      dispatch(removeImageFromPanel(hash));
+    }
+  };
+
   const usedModelsHtml = usedModels.map((model, i) => {
     return <UsedCard key={i} previewData={model} fullView={fullCardView} />;
   });
+
+  const usedImagesHtml = [...Array(3).keys()].map((image, i) => {
+    // if (!!usedImages[i]?.id) {
+
+    // const nsfw = !image?.nsfw || image?.nsfw === "None" ? false : true;
+    const nsfw =
+      usedImages[i]?.nsfw === false ||
+      usedImages[i]?.nsfw === "None" ||
+      usedImages[i]?.nsfwLevel === 1
+        ? false
+        : true;
+    if (!!usedImages[i]?.hash) {
+      return (
+        <li
+          key={`i${i}`}
+          className={classes["ref-images__item"]}
+          data-id={usedImages[i]?.hash}
+          // data-id={usedImages[i]?.id}
+        >
+          <Image
+            src={usedImages[i].url}
+            alt={`Reference image ${i++}`}
+            onClick={openImageHandler}
+            className={`${
+              !nsfwMode && nsfw ? classes["ref-images__nsfw"] : ""
+            }`}
+          />
+          <span className={classes.close} onClick={closeImageHandler}>
+            <CrossSvg />
+          </span>
+        </li>
+      );
+    } else {
+      return (
+        <li key={`s${i}`} className={classes["ref-images__item--def"]}>
+          <ImageSvg />
+        </li>
+      );
+    }
+  });
+  // const usedImagesHtml = usedImages.map((image, i) => {
+  //   return (
+  //     <li key={i} className={classes["ref-images__item"]}>
+  //       <Image src={image.url} alt={`Reference image ${i++}`} />
+  //     </li>
+  //   );
+  // });
 
   const clearPanelHandler = () => {
     dispatch(usedModelsActions.clearPanel());
@@ -100,7 +183,7 @@ const UsedModelsPanel = () => {
         }`}
       >
         <div className={classes["options"]}>
-          <button className={classes["btn-forms"]} onClick={openFormHandler}>
+          <Buttton className={classes["btn-forms"]} onClick={openFormHandler}>
             {!formIsOpen ? (
               <>
                 <svg
@@ -120,9 +203,26 @@ const UsedModelsPanel = () => {
                 New resourse
               </>
             ) : (
-              "Hide form X"
+              <>
+                <CrossSvg />
+                Hide form
+                {/* <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+                  />
+                </svg> */}
+              </>
             )}
-          </button>
+          </Buttton>
           <UpdateDb />
           {formIsOpen && (
             <div className={classes.forms}>
@@ -189,10 +289,32 @@ const UsedModelsPanel = () => {
         <>
           {/* <h3>Used models</h3> */}
           <ul className={classes["model-cards"]}>
+            {!!usedImages.length && (
+              <li>
+                <ul className={classes["ref-images"]}>{usedImagesHtml}</ul>
+              </li>
+            )}
             {!!usedModelsHtml.length && usedModelsHtml}
             {!usedModelsHtml.length && (
               <div className={classes["model-cards__tip"]}>
-                Press + in model card to add it to side panel
+                Press{" "}
+                <span className={classes.plus}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 4.5v15m7.5-7.5h-15"
+                    />
+                  </svg>
+                </span>{" "}
+                to add model or image to side panel
               </div>
             )}
           </ul>

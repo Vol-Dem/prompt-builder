@@ -1,14 +1,15 @@
 .container {
   width: 100%;
+  margin-top: 2rem;
 }
 
 .title {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
 }
 
 .result-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
-  margin-top: 2rem;
+  margin-top: 1rem;
 }

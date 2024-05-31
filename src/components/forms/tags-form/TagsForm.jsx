@@ -146,6 +146,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
       );
 
       console.log(updatedVersionData);
+      console.log(versionData);
       const versionPath = `modelVersionsCustomData.${versionData.versionId}`;
       console.log(versionPath);
       await updateDoc(
@@ -304,7 +305,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
           </FieldCategory>
         </div>
       </div>
-      <Buttton type="submit" disabled={isSaving}>
+      <Buttton type="submit" disabled={isSaving} className={classes.submit}>
         Save
       </Buttton>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}

@@ -8,11 +8,12 @@ const TagsTextarea = ({ data, className, placeholder, promptType }) => {
   const dispatch = useDispatch();
 
   const removeTagHandler = (e) => {
+    const value = e.target.closest(`.${classes.btn}`).dataset.value;
     dispatch(
       promptActions.removeTag({
         //   type: props.promptType,
         type: promptType,
-        value: e.target.dataset.value,
+        value: value,
       })
     );
   };

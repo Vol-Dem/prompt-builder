@@ -15,6 +15,9 @@ import { deleteModel } from "../../../store/model";
 // import Modal from "../../ui/Modal";
 import { useNavigate } from "react-router-dom";
 import DeleteRequest from "../../ui/DeleteRequest";
+import { clearFileExtension } from "../../../utils/generalUtils";
+import SuccessMessage from "../../ui/SuccessMessage";
+import ErrorMessage from "../../ui/ErrorMessage";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -94,9 +97,20 @@ const ModelSettings = () => {
       const newVersionsCustomData = {};
 
       newVersions.forEach((version, i) => {
+        version.modelId = model.id;
+
+        let fileName;
+        if (version.hasOwnProperty("files") && version?.files) {
+          fileName = clearFileExtension(
+            version.files.find((file) => file?.primary).name
+          ).toLowerCase();
+        }
+
         newVersionsCustomData[version.id] = {
           versionId: version.id,
           versionName: version.name,
+          baseModel: version.baseModel,
+          defFileName: fileName || "",
           versionImageUrl:
             version.images?.filter((img, i) => img.type === "image")[0]?.url ||
             "",
@@ -108,6 +122,36 @@ const ModelSettings = () => {
         ...model?.modelVersionsCustomData,
       };
       console.log(modelVersionsCustomData);
+
+      const fileNames = newModelData.modelVersions?.flatMap((version) => {
+        // version.files.map((file) => file.name)
+        if (version.hasOwnProperty("files") && version?.files) {
+          return clearFileExtension(
+            version.files.find((file) => file?.primary).name
+          ).toLowerCase();
+        }
+        return [];
+      });
+
+      const hashes = newModelData.modelVersions
+        ?.flatMap((version) => {
+          // version.files.map((file) => file.name)
+          if (version.hasOwnProperty("files") && version?.files) {
+            const primaryFileHashes = version?.files.find(
+              (file) => file?.primary
+            )?.hashes;
+            if (primaryFileHashes) {
+              return Object.values(primaryFileHashes)?.map((hash) =>
+                hash.toLowerCase()
+              );
+            }
+          }
+          return [];
+        })
+        .filter(Boolean);
+
+      const versionIds =
+        newModelData.modelVersions?.map((version) => version.id) || [];
 
       const modelsRef = doc(firestore, "users", uid, "models", model?.id + "");
       const modelsPrevRef = doc(
@@ -130,6 +174,9 @@ const ModelSettings = () => {
         modelsPrevRef,
         {
           modelVersionsCustomData: modelVersionsCustomData,
+          fileNames,
+          hashes,
+          versionIds,
         },
         { merge: true }
       );
@@ -215,6 +262,11 @@ const ModelSettings = () => {
               >
                 {!isLoading ? "Update" : "L..."}
               </Buttton>
+
+              {successMessage && (
+                <SuccessMessage>{successMessage}</SuccessMessage>
+              )}
+              {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
               <Buttton
                 type="button"
                 onClick={showDeleteReqeustHandler}
@@ -223,8 +275,6 @@ const ModelSettings = () => {
               >
                 Delete
               </Buttton>
-              {successMessage && <span>{successMessage}</span>}
-              {errorMessage && <span>{errorMessage}</span>}
             </div>
 
             <UpdateModelForm modelData={model} />

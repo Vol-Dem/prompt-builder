@@ -2,6 +2,7 @@ import React, { forwardRef, useEffect, useRef, useState } from "react";
 import classes from "./Image.module.scss";
 import { ReactComponent as StarImg } from "../../../assets/star.svg";
 import useIntersection from "../../../hooks/use-intersection";
+import ImageSvg from "../../../assets/ImageSvg";
 
 const Image = forwardRef(({ id, src, type, alt, onClick, className }, ref) => {
   const [imgIsLoading, setImgIsLoading] = useState(true);
@@ -40,7 +41,8 @@ const Image = forwardRef(({ id, src, type, alt, onClick, className }, ref) => {
       >
         {type && <span className={classes.type}>{type}</span>}
         <div className={classes.preloader}>
-          <StarImg />
+          {/* <StarImg /> */}
+          <ImageSvg />
         </div>
         <img
           ref={ref}

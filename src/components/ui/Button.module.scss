@@ -1,8 +1,14 @@
 @use "./../../variables/variables.scss" as var;
 
 .btn {
-  color: var.$color-text-light;
-  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var.$color-text-white;
+  font-family: var.$font-family-primary;
+  // font-size: 1.4rem;
+  font-weight: 500;
+  // min-height: 3.2rem;
   background-color: var.$color-primary;
   padding: 0.6rem 1.4rem;
   border: none;

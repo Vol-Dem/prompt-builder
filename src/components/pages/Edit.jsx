@@ -1,0 +1,83 @@
+import { useParams } from "react-router-dom";
+import ModelSettings from "../model/model-settings/ModelSettings";
+import classes from "./Edit.module.scss";
+import { useDispatch, useSelector } from "react-redux";
+import { modelActions } from "../../store/model";
+import { useEffect, useState } from "react";
+import { doc, getFirestore, onSnapshot } from "firebase/firestore";
+import firebaseApp from "../../firebase-config";
+import Spinner from "../ui/Spinner";
+import ErrorMessage from "../ui/ErrorMessage";
+
+const firestore = getFirestore(firebaseApp);
+
+const Edit = ({ title }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const model = useSelector((state) => state.model.model);
+  const isAuth = useSelector((state) => state.auth.user.uid);
+  const uid = useSelector((state) => state.auth.user.uid);
+  const categories = useSelector((state) => state.tabs.categoriesData);
+  const dispatch = useDispatch();
+
+  const { modelId } = useParams();
+
+  useEffect(() => {
+    document.title = `Edit - ${model?.name}` || title;
+  }, [title, model?.name]);
+
+  useEffect(() => {
+    // if (!isAuth || model?.id === +modelId) return;
+    if (!isAuth) return;
+    let unsub;
+    try {
+      setIsLoading(true);
+
+      unsub = onSnapshot(
+        doc(firestore, "users", uid, "models", modelId),
+        (doc) => {
+          setErrorMessage("");
+          const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+          console.log(source);
+          const data = doc.data();
+          console.log(data);
+          if (!data) {
+            setErrorMessage("Failed to load model");
+            setIsLoading(false);
+            return;
+          }
+          dispatch(modelActions.setModelData(data));
+          dispatch(modelActions.setModelPreview({}));
+          setIsLoading(false);
+        }
+      );
+    } catch (err) {
+      setErrorMessage("Failed to load model");
+      dispatch(modelActions.setErrorMessage(err.message));
+      setIsLoading(false);
+    }
+    return () => {
+      // console.log("MODEL RESET");
+      setErrorMessage("");
+      dispatch(modelActions.setCurVersion({}));
+      dispatch(modelActions.setModelData({}));
+      dispatch(modelActions.setActiveCarouselData({}));
+      if (unsub) {
+        unsub();
+      }
+    };
+  }, [modelId, isAuth, dispatch, uid]);
+
+  return (
+    <div>
+      {!isLoading && !errorMessage && model?.id && <ModelSettings />}
+      {!isLoading && errorMessage && (
+        <ErrorMessage>{errorMessage}</ErrorMessage>
+      )}
+      {isLoading && <Spinner />}
+    </div>
+  );
+};
+
+export default Edit;

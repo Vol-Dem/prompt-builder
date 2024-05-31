@@ -48,7 +48,7 @@ const ModelsList = () => {
         <div className={classes.empty}>This category is empty</div>
       )}
 
-      <div ref={endPage}>END</div>
+      <div ref={endPage}></div>
       {!isLoading && !isLastPage && (
         <button
           onClick={() => {

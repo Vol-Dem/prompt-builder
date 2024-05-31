@@ -8,10 +8,19 @@ const auth = getAuth(firebaseApp);
 
 const usedModelsSlice = createSlice({
   name: "used",
-  initialState: { models: [], panelIsOpen: true, fullCardView: true },
+  initialState: {
+    models: [],
+    images: [],
+    panelIsOpen: true,
+    fullCardView: true,
+  },
   reducers: {
     addModelsToPanel(state, actions) {
       state.models = actions.payload;
+    },
+    addImagesToPanel(state, actions) {
+      console.log(actions.payload);
+      state.images = actions.payload;
     },
     panelState(state, actions) {
       if (actions.payload) {
@@ -29,6 +38,7 @@ const usedModelsSlice = createSlice({
     },
     clearPanel(state, actions) {
       state.models = [];
+      state.images = [];
     },
   },
   extraReducers: (builder) => {
@@ -48,6 +58,7 @@ const usedModelsSlice = createSlice({
         (state, action) => {
           const uid = auth.currentUser.uid;
           saveToStorage(`${uid}-side`, state.models);
+          saveToStorage(`${uid}-side-img`, state.images);
           saveToStorage(`${uid}-side-state`, {
             panelIsOpen: state.panelIsOpen,
           });
@@ -86,15 +97,45 @@ export const addModelToPanel = (data) => {
   };
 };
 
+export const addImageToPanel = (data) => {
+  return (dispatch, getState) => {
+    const curImages = getState().used.images;
+    const imageIsInPanel = getState().used.images.some(
+      (image) => image.hash === data.hash
+      // (image) => image.id === data.id
+    );
+
+    if (!imageIsInPanel && curImages?.length < 3) {
+      const newImages = [...curImages, data];
+      // saveToStorage(`${uid}-side`, newModels);
+      dispatch(usedModelsActions.addImagesToPanel(newImages));
+    }
+  };
+};
+
+export const removeImageFromPanel = (hash) => {
+  return (dispatch, getState) => {
+    // const uid = getState().auth.user.uid;
+    const curImages = getState().used.images;
+    const newImages = curImages.filter((image) => image.hash !== hash);
+
+    // saveToStorage(`${uid}-side`, newModels);
+    dispatch(usedModelsActions.addImagesToPanel(newImages));
+  };
+};
+
 export const uploadPanelStateFromStorage = () => {
   return (dispatch, getState) => {
     const uid = getState().auth.user.uid;
     const storageData = uploadStorage(`${uid}-side`);
+    const storageImgData = uploadStorage(`${uid}-side-img`);
     const storagePanelState = uploadStorage(`${uid}-side-state`);
     const storageViewState = uploadStorage(`${uid}-side-view`);
     // console.log(storageData);
 
     if (storageData) dispatch(usedModelsActions.addModelsToPanel(storageData));
+    if (storageImgData)
+      dispatch(usedModelsActions.addImagesToPanel(storageImgData));
     if (storagePanelState)
       dispatch(usedModelsActions.panelState(storagePanelState));
     if (storageViewState)

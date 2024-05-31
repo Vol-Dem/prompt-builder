@@ -16,6 +16,10 @@
   color: blueviolet;
 }
 
+.outlet {
+  width: 100%;
+}
+
 .config {
   display: flex;
   justify-content: space-between;
@@ -23,6 +27,10 @@
   gap: 1.6rem;
   height: 100%;
   flex-grow: 1;
+
+  & > div:first-child {
+    width: 100%;
+  }
 }
 
 .tag-menu {

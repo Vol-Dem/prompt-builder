@@ -26,6 +26,15 @@
   // padding: 1rem;
   // border-radius: 1rem;
   // background-color: rgb(var.$color-background-tertiary, 0.6);
+
+  &__edit {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.6rem;
+    & svg {
+      width: 1.6rem;
+    }
+  }
 }
 
 .subcategory__link {

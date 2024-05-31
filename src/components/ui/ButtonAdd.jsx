@@ -1,22 +1,47 @@
 import { useDispatch, useSelector } from "react-redux";
 import classes from "./ButtonAdd.module.scss";
-import { addModelToPanel, removeModelFromPanel } from "../../store/usedModels";
+import {
+  addImageToPanel,
+  addModelToPanel,
+  removeImageFromPanel,
+  removeModelFromPanel,
+} from "../../store/usedModels";
 import { useState } from "react";
 
-const ButtonAdd = ({ previewData, className }) => {
+const ButtonAdd = ({ previewData, type, className, versionId }) => {
   // const [isInPanel, setIsInPanel] = useState()
   const modelsInPanel = useSelector((state) => state.used.models);
-  const isInPanel = modelsInPanel?.find((model) => model.id === previewData.id);
+  const imagesInPanel = useSelector((state) => state.used.images);
+  const isInPanel =
+    type === "image"
+      ? imagesInPanel?.find((image) => image?.hash === previewData?.hash)
+      : // ? imagesInPanel?.find((image) => image?.id === previewData?.id)
+        modelsInPanel?.find((model) => model?.id === previewData?.id);
+
+  // const isInPanel = modelsInPanel?.find(
+  //   (model) => model?.id === previewData?.id
+  // );
+  const imageIsInPanel = imagesInPanel?.find(
+    (image) => image?.id === previewData?.id
+  );
   const dispatch = useDispatch();
 
   const addToSidePanelHandler = (e) => {
+    console.log(previewData);
+    if (!isInPanel && type === "image") {
+      dispatch(addImageToPanel(previewData));
+      return;
+    } else if (isInPanel && type === "image") {
+      dispatch(removeImageFromPanel(previewData.hash));
+      return;
+    }
     // const modelId = e.target.closest(`.${classes["resource__add"]}`)?.dataset
     //   ?.id;
     // console.log(modelId);
     // const previewData = imageResources.find(
     //   (resource) => resource?.preview?.id === +modelId
     // )?.preview;
-    if (!isInPanel) {
+    if (!isInPanel && type !== "image") {
       let curVersionData =
         previewData?.modelVersionsCustomData &&
         Object.values(previewData.modelVersionsCustomData)
@@ -25,13 +50,14 @@ const ButtonAdd = ({ previewData, className }) => {
 
       const sidePanelData = {
         id: previewData?.id,
+        activeVersionId: versionId,
         src: previewData?.src,
         main: previewData?.main,
         sub: previewData?.sub,
         title: previewData?.name || previewData.title,
-        versionName: curVersionData?.name || "",
+        versionName: curVersionData?.name || previewData?.versionName || "",
         imgUrl: previewData?.imgUrl,
-        nsfwPreviewImgUrl: previewData?.nsfwPreviewImgUrl,
+        nsfwPreviewImgUrl: previewData?.nsfwPreviewImgUrl || null,
         type: previewData?.modelType,
         baseModel: curVersionData?.baseModel || previewData?.baseModel,
         mainTag: curVersionData?.mainTag || previewData?.mainTag,
@@ -39,7 +65,7 @@ const ButtonAdd = ({ previewData, className }) => {
         minWeight: curVersionData?.minWeight || previewData?.minWeight,
         maxWeight: curVersionData?.maxWeight || previewData?.maxWeight,
         size: curVersionData?.size || previewData?.size,
-        tags: curVersionData?.trainedWords || curVersionData?.trainedWords,
+        tags: curVersionData?.trainedWords || previewData?.trainedWords,
         helperTags: curVersionData?.helperTags || previewData?.helperTags,
         updatedAt: previewData?.updatedAt,
       };

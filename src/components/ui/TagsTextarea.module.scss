@@ -15,25 +15,8 @@
   // background-color: var.$color-background-tertiary;
   word-spacing: 0.3rem;
   letter-spacing: 0.4px;
-}
 
-.field::-webkit-scrollbar {
-  width: 8px; /* width of the entire scrollbar */
-  border-radius: 1rem;
-}
-
-.field::-webkit-scrollbar-track {
-  background: #443d62; /* color of the tracking area */
-  border-radius: 1rem;
-}
-
-.field::-webkit-scrollbar-thumb {
-  background-color: #ababab; /* color of the scroll thumb */
-  border-radius: 20px; /* roundness of the scroll thumb */
-  //   border: 3px solid #ababab; /* creates padding around scroll thumb */
-  &:hover {
-    background-color: #818181; /* color of the scroll thumb */
-  }
+  @include var.custom-scroll;
 }
 
 .tag {

@@ -139,6 +139,16 @@
   -webkit-box-orient: vertical;
 }
 
+.version-name {
+  display: -webkit-box;
+  word-break: break-all;
+  color: var.$color-text-gray;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
 .cont {
   padding-bottom: 1rem;
 }
@@ -196,6 +206,7 @@
   &-container {
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
 
   &__list {

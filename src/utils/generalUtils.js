@@ -33,3 +33,8 @@ export const addDelayPromise = (delay) => {
     }, delay);
   });
 };
+
+export const splitTags = (arr) => {
+  const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
+  return arr.split(splitRegEx).flatMap((tag) => tag.trim() || []);
+};

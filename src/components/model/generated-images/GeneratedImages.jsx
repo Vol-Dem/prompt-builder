@@ -18,6 +18,7 @@ import useIntersection from "../../../hooks/use-intersection";
 import Modal from "../../ui/Modal";
 import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
 import Buttton from "../../ui/Button";
+import ErrorMessage from "../../ui/ErrorMessage";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -171,6 +172,13 @@ const GeneratedImages = ({ customData }) => {
         }${cursor ? `&cursor=${cursor}` : ""}${
           nsfwMode ? `&nsfw=X` : `&nsfw=None`
         }`;
+        // const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
+        //   versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
+        // }${amountPerPage ? `&limit=${amountPerPage}` : ""}${
+        //   imagesSortValue ? `&sort=${imagesSortValue}` : ""
+        // }${cursor ? `&cursor=${cursor}` : ""}${
+        //   nsfwMode ? `&nsfw=X` : `&nsfw=None`
+        // }`;
 
         const imgExampleResponse = await fetch(url);
         const data = await imgExampleResponse.json();
@@ -196,6 +204,7 @@ const GeneratedImages = ({ customData }) => {
   );
 
   const getImagesFromFirestore = useCallback(async () => {
+    console.log("START FB FETCH");
     try {
       if (isLastPage) return;
       setIsIntersecting(false);
@@ -217,6 +226,8 @@ const GeneratedImages = ({ customData }) => {
       const isLast =
         !modelImagesSnap.docs.length ||
         modelImagesSnap.docs.length < postsPerPage;
+
+      console.log("LAST", isLast);
 
       const allData = modelImagesSnap.docs.map((doc, i) => {
         // doc.data() is never undefined for query doc snapshots
@@ -241,7 +252,12 @@ const GeneratedImages = ({ customData }) => {
           if (nsfwMode) {
             return post.items;
           } else {
-            return post.items.filter((item) => !item.nsfw);
+            return post.items.filter(
+              (item) =>
+                item?.nsfw === "None" ||
+                item?.nsfwLevel <= 1 ||
+                item?.nsfw === false
+            );
           }
         })
         .filter((item) => !!item.length);
@@ -329,13 +345,9 @@ const GeneratedImages = ({ customData }) => {
   ]);
 
   useEffect(() => {
-    if (
-      !isLastPage &&
-      isIntersecting &&
-      !examplesIsLoading &&
-      !errorMessage &&
-      !!examplesImgData.length
-    ) {
+    const rule =
+      !isLastPage && isIntersecting && !examplesIsLoading && !errorMessage;
+    if ((rule && nextCursor) || (rule && !!examplesImgData.length)) {
       setExamplesIsLoading(true);
       if (curExampleImgsType === "all") {
         // console.log("INTERSECT", isIntersecting);
@@ -491,6 +503,14 @@ const GeneratedImages = ({ customData }) => {
     }
   );
 
+  const deletePostHandler = (id) => {
+    const newExamples = examplesImgData.filter(
+      (image) => image[0].postId !== id
+    );
+
+    setExamplesImgData(newExamples);
+  };
+
   useEffect(() => {
     let examples;
     if (curExampleImgsType === "saved") {
@@ -502,6 +522,7 @@ const GeneratedImages = ({ customData }) => {
             versionId={curImagesModelVersionId}
             images={item}
             visibleImgAmount={1}
+            onDelete={deletePostHandler}
             // onUpdate={updateImgResData}
           />
         );
@@ -607,7 +628,9 @@ const GeneratedImages = ({ customData }) => {
           <option value="50">50</option>
           <option value="100">100</option>
         </select>
-        <Buttton onClick={addImgByIdHandler}>Add Image by ID</Buttton>
+        <Buttton className={classes["button-add"]} onClick={addImgByIdHandler}>
+          Add Image by ID
+        </Buttton>
       </div>
 
       <div className={classes["image-versions"]}>
@@ -629,7 +652,7 @@ const GeneratedImages = ({ customData }) => {
       </div>
       <div className={classes.images}>{examplesHtml}</div>
       {examplesIsLoading && <Spinner />}
-      {errorMessage && <div>{errorMessage}</div>}
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {!examplesIsLoading && (
         <div>
           {/* {nextCursor && curExampleImgsType === "all" && (
@@ -638,12 +661,14 @@ const GeneratedImages = ({ customData }) => {
           {!isLastPage && curExampleImgsType !== "all" && (
             <button onClick={getImagesFromFirestore}>more</button>
           )} */}
-          {errorMessage && !nextCursor && curExampleImgsType === "all" && (
-            <button onClick={retryImageLoadingHandler}>Retry</button>
+          {errorMessage && !!nextCursor && curExampleImgsType === "all" && (
+            <Buttton onClick={retryImageLoadingHandler}>Retry</Buttton>
           )}
         </div>
       )}
-      {!examplesIsLoading && !examplesHtml.length && <div>No images found</div>}
+      {!examplesIsLoading && !examplesHtml.length && !errorMessage && (
+        <div>No images found</div>
+      )}
       <div ref={endPage}></div>
       {addImgModalIsOpen && (
         <Modal

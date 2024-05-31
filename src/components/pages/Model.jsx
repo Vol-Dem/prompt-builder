@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import classes from "./Model.module.scss";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Carousel from "../carousel/Carousel";
 import { useDispatch, useSelector } from "react-redux";
 import { modelActions } from "../../store/model";
@@ -18,6 +18,10 @@ import { addModelToPanel } from "../../store/usedModels";
 import { getModelsPreview, tabActions } from "../../store/tabs";
 import Spinner from "../ui/Spinner";
 import ButtonAdd from "../ui/ButtonAdd";
+import ImageCard from "../image-card/ImageCard";
+import Buttton from "../ui/Button";
+import CrossSvg from "../../assets/CrossSvg";
+import ErrorMessage from "../ui/ErrorMessage";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -29,13 +33,15 @@ const Model = ({ title }) => {
   const [descriptionIsOpen, setDescriptionIsOpen] = useState(false);
   // const [currVersionIndex, setCurrVersionIndex] = useState(null);
   const [curCustomVersionData, setCurCustomVersionData] = useState({});
-  const [curImagesModelVersionId, setCurImagesModelVersionId] = useState();
+  const [curImagesModelVersionId, setCurImagesModelVersionId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { modelId } = useParams();
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  let { state } = useLocation();
+
   // const activeCarouselData = useSelector(
   //   (state) => state.model.activeCarouselData
   // );
@@ -66,6 +72,7 @@ const Model = ({ title }) => {
 
   useEffect(() => {
     if (!isAuth) return;
+    // if (!isAuth || model?.id === +modelId) return;
     let unsub;
     try {
       setIsLoading(true);
@@ -99,6 +106,7 @@ const Model = ({ title }) => {
       dispatch(modelActions.setCurVersion({}));
       dispatch(modelActions.setModelData({}));
       dispatch(modelActions.setActiveCarouselData({}));
+      dispatch(modelActions.resetModelData());
       if (unsub) {
         unsub();
       }
@@ -107,21 +115,27 @@ const Model = ({ title }) => {
 
   useEffect(() => {
     if (!Object.keys(model).length) return;
-    const curVersionId = model.data.modelVersions.find(
-      (version) =>
-        model?.modelVersionsCustomData.hasOwnProperty(version.id) &&
-        model.modelVersionsCustomData[version.id].downloadStatus
-    )?.id;
+    console.log(state?.versionId);
+    const curVersionId =
+      state?.versionId ||
+      model.data.modelVersions.find(
+        (version) =>
+          model?.modelVersionsCustomData.hasOwnProperty(version.id) &&
+          model.modelVersionsCustomData[version.id].downloadStatus
+      )?.id;
+    console.log(state?.versionId);
     const curVersionData = curVersionId
       ? model.data.modelVersions.find((version) => version.id === curVersionId)
       : model.data.modelVersions[0];
-
+    console.log(curVersionData);
+    console.log(model.data.modelVersions);
     if (model.data.id !== curVersion.modelId)
       dispatch(modelActions.setCurVersion(curVersionData));
   }, [model, dispatch, curVersion.modelId]);
 
   useEffect(() => {
-    if (!curVersion?.baseModel) return;
+    if (!curVersion?.baseModel || !model.id) return;
+    console.log(model);
     const curVersionCustomData = model.modelVersionsCustomData[curVersion.id];
     const modelPreviewData = {
       id: model?.id,
@@ -162,6 +176,10 @@ const Model = ({ title }) => {
       setCurImagesModelVersionId(curCustomVersion?.versionId || curVersion.id);
   }, [model, curVersion, curImagesModelVersionId]);
 
+  useEffect(() => {
+    console.log(state);
+  }, [state]);
+
   // useEffect(() => {
   //   if (currVersionIndex === null) return;
   //   dispatch(
@@ -189,7 +207,10 @@ const Model = ({ title }) => {
   const modelImages = nsfwMode
     ? curVersion?.images
     : curVersion?.images?.filter(
-        (image) => !image?.nsfw || image?.nsfw === "None"
+        (image) =>
+          image?.nsfw === "None" ||
+          image?.nsfwLevel <= 1 ||
+          image?.nsfw === false
       );
 
   const modelImagesHtml = (
@@ -263,15 +284,18 @@ const Model = ({ title }) => {
 
   return (
     <div className={classes.model}>
+      {/* <ImageCard /> */}
       {isLoading && <Spinner />}
-      {!isLoading && errorMessage && <div>{errorMessage}</div>}
+      {!isLoading && errorMessage && (
+        <ErrorMessage>{errorMessage}</ErrorMessage>
+      )}
       {/* {!!activeCarouselData?.images?.length && (
         <div className={classes["active-corousel"]}>{activeCarouselHtml}</div>
       )} */}
       {!isLoading && !errorMessage && model?.id && (
         <>
           <div className={classes["panel"]}>
-            <button className={classes["btn-back"]} onClick={backHandler}>
+            <Buttton className={classes["btn-back"]} onClick={backHandler}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -288,7 +312,7 @@ const Model = ({ title }) => {
               </svg>
 
               <span>Back</span>
-            </button>
+            </Buttton>
             <div className={classes.categories}>
               <Link
                 to="/"
@@ -302,12 +326,7 @@ const Model = ({ title }) => {
               </Link>
               <ul className={classes["subcategories"]}>{subCatsHtml}</ul>
             </div>
-            <button
-              className={`${classes["btn-edit"]} ${
-                editIsOpen ? classes["btn-edit--active"] : ""
-              }`}
-              onClick={openEditHandler}
-            >
+            <Link className={`${classes["btn-edit"]}`} to="edit">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -328,7 +347,37 @@ const Model = ({ title }) => {
                 />
               </svg>
               Edit
-            </button>
+            </Link>
+            {/* <Buttton
+              className={`${classes["btn-edit"]} ${
+                editIsOpen ? classes["btn-edit--active"] : ""
+              }`}
+              onClick={openEditHandler}
+            >
+              {!editIsOpen && (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+              )}
+              {editIsOpen && <CrossSvg />}
+              {!editIsOpen ? "Edit" : "Close edit"}
+            </Buttton> */}
           </div>
           {editIsOpen && <ModelSettings />}
           <div className={classes["title-container"]}>

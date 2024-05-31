@@ -83,7 +83,11 @@ const UsedCard = ({ previewData, fullView }) => {
   return (
     <li id={previewData.id} className={`${classes.card} card`}>
       <div className={classes.head}>
-        <Link to={`/model/${previewData.id}`} className={classes.link}>
+        <Link
+          to={`/model/${previewData.id}`}
+          state={{ versionId: previewData?.activeVersionId || null }}
+          className={classes.link}
+        >
           <Image
             src={
               isNsfwMode
@@ -117,7 +121,11 @@ const UsedCard = ({ previewData, fullView }) => {
         </Link>
         <div className={classes.info}>
           <div className={classes["title-container"]}>
-            <Link to={`/model/${previewData.id}`} className={classes.link}>
+            <Link
+              to={`/model/${previewData.id}`}
+              state={{ versionId: previewData?.activeVersionId || null }}
+              className={classes.link}
+            >
               <h4
                 className={classes.title}
                 title={previewData.name || previewData.title}
@@ -126,6 +134,11 @@ const UsedCard = ({ previewData, fullView }) => {
               </h4>
             </Link>
           </div>
+          {previewData?.versionName && (
+            <div className={classes["version-name"]}>
+              {previewData?.versionName}
+            </div>
+          )}
           <div>
             <span className={classes.type}>{previewData.type}</span>
             {previewData?.baseModel && <span>{previewData.baseModel}</span>}

@@ -11,6 +11,8 @@ import ButttonTertiary from "../../ui/ButtonTertiary";
 import Modal from "../../ui/Modal";
 import Image from "../../ui/image/Image";
 import DeleteRequest from "../../ui/DeleteRequest";
+import ButtonAdd from "../../ui/ButtonAdd";
+import ImageSvg from "../../../assets/ImageSvg";
 // import Buttton from "../../ui/Button";
 
 const CarouselImage = ({
@@ -23,6 +25,8 @@ const CarouselImage = ({
   versionId,
   saved,
   nsfw,
+  imageData,
+  onDelete,
 }) => {
   const [imgIsLoading, setImgIsLoading] = useState(false);
   const [imgIsLoaded, setImgIsLoaded] = useState(false);
@@ -37,10 +41,13 @@ const CarouselImage = ({
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const activeCarouselData = useSelector(
+    (state) => state.model.activeCarouselData
+  );
 
   useEffect(() => {
     // if (imgError) setImgIsLoading(true);
-    if (src && !imgIsLoaded) {
+    if (src && !imgIsLoaded && !imgError) {
       setImgSrc(src);
       setImgIsLoading(true);
     }
@@ -220,7 +227,11 @@ const CarouselImage = ({
     );
     // console.log(versionId);
     // console.log(postData);
+
     dispatch(deleteImgPost(versionId, imgPostId, postData));
+    if (onDelete) {
+      onDelete(imgPostId);
+    }
     setDeleteRequestIsOpen(false);
     setMenuIsOpen(false);
   };
@@ -265,7 +276,8 @@ const CarouselImage = ({
           data-position={dataset}
         ></div>
       )}
-      {!imgError && imgSrc !== "#" && (
+      <ImageSvg className={classes["image-svg"]} />
+      {!imgIsLoading && !activeCarouselData?.side && imgSrc !== "#" && (
         <>
           <div className={classes.menu}>
             <ButttonTertiary
@@ -319,10 +331,23 @@ const CarouselImage = ({
               </menu>
             )}
           </div>
+          <ButtonAdd
+            className={classes["btn-add"]}
+            previewData={imageData}
+            type="image"
+          />
+        </>
+      )}
+      {!imgError && imgSrc !== "#" && (
+        <>
           <img
             className={`${classes.image} ${
-              imgIsLoading ? classes["image--hidden"] : ""
-            } ${!nsfwMode && nsfw ? classes["image--nsfw"] : ""}`}
+              imageData?.width - imageData?.height < 0
+                ? classes["image--portrait"]
+                : ""
+            } ${imgIsLoading && !imgIsLoaded ? classes["image--hidden"] : ""} ${
+              !nsfwMode && nsfw ? classes["image--nsfw"] : ""
+            }`}
             onClick={onClick}
             onLoad={imgLoadHandler}
             onError={imgErrorHandler}

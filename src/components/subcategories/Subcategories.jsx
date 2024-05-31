@@ -6,6 +6,7 @@ import ButtonTertiary from "../ui/ButtonTertiary";
 import { useState } from "react";
 import Modal from "../ui/Modal";
 import CategoriesForm from "../forms/categories-form/CategoriesForm";
+import EditSvg from "../../assets/EditSvg";
 
 const Subcategories = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
@@ -67,8 +68,12 @@ const Subcategories = () => {
     <div className={classes.category}>
       <div className={classes["subcategories-container"]}>
         <ul className={classes["subcategories"]}>{subcategoriesHtml}</ul>
-        <ButtonTertiary type="button" onClick={editCategoriesHandler}>
-          Edit
+        <ButtonTertiary
+          className={classes["subcategories__edit"]}
+          type="button"
+          onClick={editCategoriesHandler}
+        >
+          <EditSvg />
         </ButtonTertiary>
       </div>
 

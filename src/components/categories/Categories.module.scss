@@ -4,6 +4,15 @@
   margin-left: 1.8rem;
   justify-content: space-between;
   align-items: flex-start;
+
+  &__edit {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.6rem;
+    & svg {
+      width: 1.6rem;
+    }
+  }
 }
 
 .category__list {

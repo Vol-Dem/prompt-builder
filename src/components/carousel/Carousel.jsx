@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../ui/Spinner";
 import { uploadActions } from "../../store/upload";
 import { modelActions } from "../../store/model";
+import ButtonAdd from "../ui/ButtonAdd";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -34,6 +35,7 @@ const Carousel = ({
   existedImgsAmount,
   imgIsOpen = false,
   activeImgNum,
+  onDelete,
 }) => {
   const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount);
   const [initial, setInitial] = useState(true);
@@ -52,7 +54,8 @@ const Carousel = ({
   const [dimensions, setDimensions] = useState({});
   const carouselRef = useRef();
   const imagesRef = useRef();
-  const wrapRef = useRef();
+  // const wrapRef = useRef();
+  const wrapRef = carouselRef;
   const maxCarouselHeight = 390;
   const transitionDuration = 300;
   const caruselIsVisible = useIntersection(carouselRef);
@@ -67,6 +70,12 @@ const Carousel = ({
   useEffect(() => {
     setInitial(true);
   }, [versionId]);
+
+  useEffect(() => {
+    setInitial(true);
+    setCurrImgNum(0);
+    setTranslate(0);
+  }, [nsfwMode]);
 
   useEffect(() => {
     if (!dimensions?.imgWidthWithGap) return;
@@ -137,7 +146,6 @@ const Carousel = ({
       modelId,
       versionId,
       existedImgsAmount,
-      currImgNum,
       imgIsOpen,
       visibleAmount,
     ]
@@ -213,16 +221,24 @@ const Carousel = ({
 
       return (
         <CarouselImage
-          key={image.hash + i}
+          key={image?.hash + i}
+          imageData={image}
           postId={images}
           saved={!postId}
           versionId={versionId}
           onClick={openCarouselHandler}
-          id={image.hash}
+          onDelete={onDelete}
+          id={image?.hash}
           dataset={i + visibleAmount}
           src={src}
           alt="example image"
-          nsfw={!image.nsfw || image.nsfw === "None" ? false : true}
+          nsfw={
+            image?.nsfw === false ||
+            image?.nsfw === "None" ||
+            image.nsfwLevel === 1
+              ? false
+              : true
+          }
         />
       );
     });
@@ -238,16 +254,24 @@ const Carousel = ({
             : "";
         return (
           <CarouselImage
-            key={image.hash + "r" + i}
+            key={image?.hash + "r" + i}
+            imageData={image}
             postId={images}
             saved={!postId}
             versionId={versionId}
             onClick={openCarouselHandler}
-            id={image.hash}
+            onDelete={onDelete}
+            id={image?.hash}
             dataset={i + visibleAmount}
             src={src}
             alt="example image"
-            nsfw={!image.nsfw || image.nsfw === "None" ? false : true}
+            nsfw={
+              image?.nsfw === false ||
+              image?.nsfw === "None" ||
+              image.nsfwLevel === 1
+                ? false
+                : true
+            }
           />
         );
       });
@@ -260,16 +284,24 @@ const Carousel = ({
             : "";
         return (
           <CarouselImage
-            key={image.hash + "l" + i}
+            key={image?.hash + "l" + i}
+            imageData={image}
             postId={images}
             saved={!postId}
             versionId={versionId}
             onClick={openCarouselHandler}
-            id={image.hash}
+            onDelete={onDelete}
+            id={image?.hash}
             dataset={i}
             src={src}
             alt="example image"
-            nsfw={!image.nsfw || image.nsfw === "None" ? false : true}
+            nsfw={
+              image?.nsfw === false ||
+              image?.nsfw === "None" ||
+              image.nsfwLevel === 1
+                ? false
+                : true
+            }
           />
         );
       });
@@ -289,11 +321,11 @@ const Carousel = ({
 
   useEffect(() => {
     if (!images) return;
-    const bookImages = images.filter((img) => img.height - img.width > 0);
+    const bookImages = images.filter((img) => img?.height - img?.width > 0);
     const imgsToGetSize = !bookImages.length ? images : bookImages;
     const imgSize = imgsToGetSize?.reduce(
       (acc, cur) => {
-        return cur.height > acc[0] ? [cur.height, cur.width] : acc;
+        return cur?.height > acc[0] ? [cur?.height, cur?.width] : acc;
       },
       [0, 0]
     );
@@ -376,6 +408,19 @@ const Carousel = ({
     let imgNum = visibleImages[0] + 1 - visibleAmount;
     if (imgNum > images?.length - 1) imgNum = 0;
     setCurrImgNum(imgNum >= 0 ? imgNum : images?.length + imgNum);
+    if (imgIsOpen) {
+      dispatch(
+        modelActions.setActiveCarouselData({
+          images,
+          visibleImgAmount,
+          postId,
+          modelId,
+          versionId,
+          existedImgsAmount,
+          currImgNum: imgNum >= 0 ? imgNum : images?.length + imgNum,
+        })
+      );
+    }
   };
 
   const slidePrevHandler = () => {
@@ -387,6 +432,19 @@ const Carousel = ({
     setPrevVisibleImages(visibleImages.map((el) => el - 1));
     const imgNum = visibleImages[0] - 1 - visibleAmount;
     setCurrImgNum(imgNum >= 0 ? imgNum : images?.length + imgNum);
+    if (imgIsOpen) {
+      dispatch(
+        modelActions.setActiveCarouselData({
+          images,
+          visibleImgAmount,
+          postId,
+          modelId,
+          versionId,
+          existedImgsAmount,
+          currImgNum: imgNum >= 0 ? imgNum : images?.length + imgNum,
+        })
+      );
+    }
   };
 
   const paginationHtml = images?.map((_, i) => {
@@ -410,6 +468,19 @@ const Carousel = ({
             setPrevVisibleImages(newVisibleImages);
             return newVisibleImages;
           });
+          if (imgIsOpen) {
+            dispatch(
+              modelActions.setActiveCarouselData({
+                images,
+                visibleImgAmount,
+                postId,
+                modelId,
+                versionId,
+                existedImgsAmount,
+                currImgNum: i,
+              })
+            );
+          }
         }}
       ></li>
     );
@@ -550,140 +621,159 @@ const Carousel = ({
   }, [activeImgNum, visibleAmount]);
 
   return (
+    // <div
+    //   // className={classes.container}
+    //   className={`${classes.container} ${
+    //     imgIsOpen ? classes["container--open"] : ""
+    //   }`}
+    //   style={
+    //     carouselHeight && !imgIsOpen ? { height: `${carouselHeight}px` } : {}
+    //   }
+    //   // onClick={openCarouselHandler}
+    // >
+    //   <div
+    //     ref={wrapRef}
+    //     className={`${classes.wrap}`}
+    //     style={
+    //       imgIsOpen
+    //         ? {
+    //             height: `${
+    //               promptIsOpen ? "calc(100vh - 315px)" : "calc(100vh - 110px)"
+    //             }`,
+    //           }
+    //         : {}
+    //     }
+    //     // className={`${classes.wrap} ${imgIsOpen ? classes["wrap--open"] : ""}`}
+    //   >
     <div
-      // className={classes.container}
-      className={`${classes.container} ${
-        imgIsOpen ? classes["container--open"] : ""
-      }`}
+      className={`${classes.carousel}`}
+      ref={carouselRef}
       style={
-        carouselHeight && !imgIsOpen ? { height: `${carouselHeight}px` } : {}
+        carouselHeight && carouselWidth
+          ? {
+              height: `${carouselHeight}px`,
+              maxWidth: `${carouselWidth}px`,
+            }
+          : {}
       }
-      // onClick={openCarouselHandler}
     >
       <div
-        ref={wrapRef}
-        className={`${classes.wrap}`}
-        style={
-          imgIsOpen
-            ? {
-                height: `${
-                  promptIsOpen ? "calc(100vh - 315px)" : "calc(100vh - 110px)"
-                }`,
-              }
-            : {}
-        }
-        // className={`${classes.wrap} ${imgIsOpen ? classes["wrap--open"] : ""}`}
+        className={`${classes["carousel__images"]} `}
+        style={{
+          transform: `translate3D(${translate}px, 0, 0)`,
+          transitionDuration: curTransitionDur,
+        }}
+        ref={imagesRef}
       >
-        <div
-          className={`${classes.carousel}`}
-          ref={carouselRef}
-          style={
-            carouselHeight && carouselWidth
-              ? {
-                  height: `${carouselHeight}px`,
-                  maxWidth: `${carouselWidth}px`,
-                }
-              : {}
-          }
-        >
-          <div
-            className={`${classes["carousel__images"]} `}
-            style={{
-              transform: `translate3D(${translate}px, 0, 0)`,
-              transitionDuration: curTransitionDur,
-            }}
-            ref={imagesRef}
-          >
-            {imagesHtml}
-            {!imagesHtml.length && <div className={classes.image}>img</div>}
-          </div>
-
-          {images?.length > curVisibleAmount && (
-            <>
-              <button
-                type="button"
-                className={`${classes.btn} ${classes["btn__left"]}`}
-                onClick={slidePrevHandler}
-                title="Prev"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 19.5 8.25 12l7.5-7.5"
-                  />
-                </svg>
-              </button>
-
-              <button
-                type="button"
-                className={`${classes.btn} ${classes["btn__right"]}`}
-                onClick={slideNextHandler}
-                title="Next"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m8.25 4.5 7.5 7.5-7.5 7.5"
-                  />
-                </svg>
-              </button>
-            </>
-          )}
-          {images?.length > curVisibleAmount && (
-            <ul className={classes.pagination}>{paginationHtml}</ul>
-          )}
-          {postId && (
-            <span className={classes["btn-save-container"]}>
-              <button
-                className={`${classes["btn-save"]} ${
-                  isUploading ? classes["btn-save--saving"] : ""
-                }`}
-                onClick={saveExampleHandler}
-              >
-                {!isUploading ? "+" : <Spinner size="small" />}
-              </button>
-              {existedImgsAmount && existedImgsAmount < images.length && (
-                <span className={classes["btn-save__amount"]}>
-                  {existedImgsAmount}/{images.length}
-                </span>
-              )}
-            </span>
-          )}
-          {onUpdate && (
-            <span
-              className={classes["btn-save"]}
-              onClick={updateExampleHandler}
-            >
-              UP
-            </span>
-          )}
-          {/* <span className={classes["amount"]}>{images?.length}</span> */}
-        </div>
-        {imgIsOpen && (
-          <ImageCard
-            imageData={images[currImgNum]}
-            closeImg={closeImgHandler}
-            // isOpen={imgIsOpen}
-          />
-        )}
+        {imagesHtml}
+        {!imagesHtml.length && <div className={classes.image}>img</div>}
       </div>
+
+      {images?.length > curVisibleAmount && (
+        <>
+          <button
+            type="button"
+            className={`${classes.btn} ${classes["btn__left"]}`}
+            onClick={slidePrevHandler}
+            title="Prev"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 19.5 8.25 12l7.5-7.5"
+              />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            className={`${classes.btn} ${classes["btn__right"]}`}
+            onClick={slideNextHandler}
+            title="Next"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m8.25 4.5 7.5 7.5-7.5 7.5"
+              />
+            </svg>
+          </button>
+        </>
+      )}
+      {images?.length > curVisibleAmount && (
+        <ul className={classes.pagination}>{paginationHtml}</ul>
+      )}
+      {/* <ButtonAdd
+        className={classes["btn-add"]}
+        previewData={images[currImgNum]}
+        type="image"
+      /> */}
+      {postId && (
+        <span className={classes["btn-save-container"]}>
+          <button
+            className={`${classes["btn-save"]} ${
+              isUploading ? classes["btn-save--saving"] : ""
+            }`}
+            onClick={saveExampleHandler}
+          >
+            {!isUploading ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m9 13.5 3 3m0 0 3-3m-3 3v-6m1.06-4.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"
+                />
+              </svg>
+            ) : (
+              <Spinner size="small" />
+            )}
+          </button>
+          {existedImgsAmount && existedImgsAmount < images.length && (
+            <span className={classes["btn-save__amount"]}>
+              {existedImgsAmount}/{images.length}
+            </span>
+          )}
+        </span>
+      )}
+      {onUpdate && (
+        <span className={classes["btn-save"]} onClick={updateExampleHandler}>
+          UP
+        </span>
+      )}
+      {/* <span className={classes["amount"]}>{images?.length}</span> */}
     </div>
+    //     {imgIsOpen && (
+    //       <ImageCard
+    //         imageData={images[currImgNum]}
+    //         closeImg={closeImgHandler}
+    //         // isOpen={imgIsOpen}
+    //       />
+    //     )}
+    //   </div>
+    // </div>
   );
 };
 

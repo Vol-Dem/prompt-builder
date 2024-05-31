@@ -334,7 +334,8 @@ const UpdateModelForm = ({ modelData, id }) => {
       let modelVersionsCustomData = modelData?.modelVersionsCustomData || {};
 
       data.modelVersions.forEach((version, i) => {
-        const isSingle = data.modelVersions.length === 1;
+        // const isSingle = data.modelVersions.length === 1;
+        const isSingle = !Object.keys(modelVersionsCustomData).length;
         const curVersionDlStatus = versionsDownloadStatus.find(
           (dlData) => Number.parseInt(dlData.id) === version.id
         )?.value;
@@ -347,17 +348,25 @@ const UpdateModelForm = ({ modelData, id }) => {
           ? modelVersionsCustomData[version.id]
           : {};
 
+        let fileName;
+        if (version.hasOwnProperty("files") && version?.files) {
+          fileName = clearFileExtension(
+            version.files.find((file) => file?.primary).name
+          ).toLowerCase();
+        }
+
         modelVersionsCustomData = {
           ...modelVersionsCustomData,
           [version.id]: {
             versionId: version.id,
             versionName: version.name,
             baseModel: version.baseModel,
+            defFileName: fileName || "",
             versionImageUrl:
               version.images?.filter((img, i) => img.type === "image")[0]
                 ?.url || "",
             ...currVersionData,
-            downloadStatus: isSingle ? true : dlStatus,
+            downloadStatus: isSingle && !i ? true : dlStatus,
           },
         };
       });
@@ -398,9 +407,14 @@ const UpdateModelForm = ({ modelData, id }) => {
         ?.flatMap((version) => {
           // version.files.map((file) => file.name)
           if (version.hasOwnProperty("files") && version?.files) {
-            return version?.files
-              .find((file) => file?.primary)
-              ?.hashes?.AutoV3?.toLowerCase();
+            const primaryFileHashes = version?.files.find(
+              (file) => file?.primary
+            )?.hashes;
+            if (primaryFileHashes) {
+              return Object.values(primaryFileHashes)?.map((hash) =>
+                hash.toLowerCase()
+              );
+            }
           }
           return [];
         })
@@ -442,13 +456,13 @@ const UpdateModelForm = ({ modelData, id }) => {
           async (transaction) => {
             const sfDoc = await transaction.get(userRef);
             if (!sfDoc.exists()) {
-              throw "Document does not exist!";
+              throw new Error("Document does not exist!");
             }
 
             const categories = sfDoc.data().categoriesById;
 
             if (!categories) {
-              throw "Can't update, try a bit later";
+              throw new Error("Can't update, try a bit later");
             }
 
             let updatedCategories;

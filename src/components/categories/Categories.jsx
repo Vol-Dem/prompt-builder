@@ -6,6 +6,7 @@ import ButtonTertiary from "../ui/ButtonTertiary";
 import { useState } from "react";
 import Modal from "../ui/Modal";
 import CategoriesForm from "../forms/categories-form/CategoriesForm";
+import EditSvg from "../../assets/EditSvg";
 
 const Categories = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
@@ -81,8 +82,9 @@ const Categories = () => {
           type="button"
           className={classes["category__edit"]}
           onClick={editCategoriesHandler}
+          title="Edit categories"
         >
-          Edit
+          <EditSvg />
         </ButtonTertiary>
       </div>
       {activeCategory && (

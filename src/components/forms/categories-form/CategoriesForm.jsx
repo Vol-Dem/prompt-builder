@@ -16,7 +16,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
   //   const [changeNameIsActive, setChangeNameIsActive] = useState(false);
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
   const [categoriesToUpdate, setCategoriesToUpdate] = useState([]);
-  const [deleteCategoryId, setDeleteCategoryId] = useState("");
+  const [deleteCategoryData, setDeleteCategoryData] = useState("");
   const [categoriesInputs, setCategoriesInputs] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -139,7 +139,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
 
   const deleteCategoryHandler = () => {
     const updatedCategories = categoriesToUpdate.filter(
-      (category) => category.id !== deleteCategoryId
+      (category) => category.id !== deleteCategoryData.id
     );
 
     if (activeCategory) {
@@ -172,12 +172,16 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
 
   const showDeleteReqeustHandler = (e) => {
     const categoryId = e.target.dataset.id;
-    setDeleteCategoryId(categoryId);
+    const categoryName = categoriesToUpdate.find(
+      (category) => category.id === categoryId
+    ).name;
+    console.log(categoryName);
+    setDeleteCategoryData({ id: categoryId, name: categoryName });
     setDeleteRequestIsOpen(true);
   };
 
   const closeDeleteReqeustHandler = () => {
-    setDeleteCategoryId("");
+    setDeleteCategoryData("");
     setDeleteRequestIsOpen(false);
   };
 
@@ -248,7 +252,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
       </div>
       {deleteRequestIsOpen && (
         <DeleteRequest
-          message={`Are you sure that you want to delete "${deleteCategoryId}" category? This action can't
+          message={`Are you sure that you want to delete "${deleteCategoryData.name}" category? This action can't
         be reverted`}
           onSubmit={deleteCategoryHandler}
           onClose={closeDeleteReqeustHandler}

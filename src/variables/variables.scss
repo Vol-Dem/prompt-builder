@@ -50,7 +50,10 @@ $color-green: #2abead;
 $color-input-bg: #212b3a;
 
 //FONTS
-$font-family-primary: "Raleway", sans-serif;
+// $font-family-primary: "Raleway", sans-serif;
+$font-family-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+  "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+  sans-serif;
 $font-family-secondary: "Grand Hotel", sans-serif;
 
 //SHADOWS
@@ -120,4 +123,25 @@ $clip-path-arrow-down: polygon(
       opacity: 0;
     }
   }
+}
+
+@mixin linkA {
+  display: inline-block;
+  color: #7278f0;
+  font-size: 1.6rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    color: lighten(#7278f0, 7%);
+  }
+}
+
+@mixin ellipsis($line: 2) {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: $line;
+  -webkit-box-orient: vertical;
 }

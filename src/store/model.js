@@ -41,6 +41,16 @@ const modelSlice = createSlice({
         state.model = { ...state.model, ...actions.payload };
       }
     },
+    resetModelData(state, actions) {
+      state.model = {};
+      state.modelPreview = [];
+      state.errorMessage = "";
+      state.curVersion = {};
+      // state.curExampleImgsType = "saved";
+      // state.examplesPage = 1;
+      // state.examplesImages = [];
+      // state.activeCarouselData = {};
+    },
     setIsLoading(state, actions) {
       state.isLoading = actions.payload;
     },

@@ -3,7 +3,9 @@ import { authActions } from "./auth";
 import { getAuth } from "firebase/auth";
 import firebaseApp from "../firebase-config";
 import { saveToStorage, uploadStorage } from "../variables/utils";
+import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
 
+const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
 
 const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
@@ -13,6 +15,7 @@ const promptSlice = createSlice({
   initialState: {
     curPrompt: "",
     curNegPrompt: "",
+    presets: { positive: [], negative: [] },
     promptIsOpen: true,
     isTextMode: false,
   },
@@ -26,6 +29,10 @@ const promptSlice = createSlice({
     clearPrompt(state, actions) {
       state.curPrompt = "";
       state.curNegPrompt = "";
+    },
+    setPresets(state, actions) {
+      console.log(actions.payload);
+      if (actions?.payload) state.presets = actions.payload;
     },
     setPromptIsOpen(state, actions) {
       state.promptIsOpen = actions.payload;
@@ -189,6 +196,50 @@ export const uploadPromptFromStorage = () => {
     if (promptState)
       dispatch(promptActions.setPromptIsOpen(promptState.promptIsOpen));
     if (isTextMode) dispatch(promptActions.setTextMode(isTextMode.isTextMode));
+  };
+};
+
+export const updatePresets = (presetType, updatedPresets) => {
+  return async (dispatch, getState) => {
+    const uid = getState().auth.user.uid;
+    const curPreset = getState().prompt.presets;
+    if (uid) {
+      const userRef = doc(firestore, "users", uid);
+      const presetField = `presets.${presetType}`;
+
+      await updateDoc(
+        userRef,
+        {
+          [presetField]: updatedPresets,
+        },
+        { merge: true }
+      );
+
+      dispatch(
+        promptActions.setPresets({
+          ...curPreset,
+          [presetType]: updatedPresets,
+        })
+      );
+    }
+  };
+};
+
+export const getUserPresets = (uid) => {
+  return async (dispatch, getState) => {
+    try {
+      const userRef = doc(firestore, "users", uid);
+      const presetsDoc = await getDoc(userRef);
+      if (presetsDoc.exists()) {
+        const presetsData = presetsDoc.data();
+        if (presetsData?.presets) {
+          dispatch(promptActions.setPresets(presetsData.presets));
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    // const uid = getState().auth.user.uid;
   };
 };
 

@@ -73,7 +73,7 @@ export const getImagesInfo = async (images) => {
             civitaiResources: updatedCivRes,
           };
         }
-        // console.log(updatedImgData);
+        console.log(updatedImgData);
         return await updatedImgData;
       })
     );
@@ -131,12 +131,12 @@ export const getModelInfo = async (resourcesData) => {
   try {
     console.log(resourcesData);
     let modelHash;
-    if (resourcesData.hasOwnProperty("Model hash")) {
+    if (resourcesData?.hasOwnProperty("Model hash")) {
       modelHash = resourcesData["Model hash"];
-    } else if (resourcesData.hasOwnProperty("Modelhash")) {
+    } else if (resourcesData?.hasOwnProperty("Modelhash")) {
       modelHash = resourcesData["Modelhash"];
     } else {
-      return;
+      return resourcesData;
     }
     const response = await fetch(
       `https://civitai.com/api/v1/model-versions/by-hash/${modelHash}`
@@ -156,7 +156,7 @@ export const getModelInfo = async (resourcesData) => {
       versionId: data.id,
     };
 
-    // console.log(updatedResources);
+    console.log(updatedResources);
     return updatedResources;
   } catch (err) {
     console.log(err.message);
@@ -264,6 +264,9 @@ export const getModelData = async (modelId) => {
 
           if (metaArr) {
             image.meta = Object.fromEntries(metaArr);
+          }
+          if (image?.meta?.comfy) {
+            image.meta.comfy = "";
           }
         }
       });

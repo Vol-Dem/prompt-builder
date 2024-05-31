@@ -20,6 +20,7 @@ import { tabActions } from "./store/tabs";
 import Profile from "./components/pages/Profile";
 import About from "./components/pages/About";
 import { savePost } from "./store/upload";
+import Edit from "./components/pages/Edit";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -60,6 +61,10 @@ function App() {
           <Route
             path="model/:modelId"
             element={<Model title="Model" />}
+          ></Route>
+          <Route
+            path="model/:modelId/edit"
+            element={<Edit title="Edit" />}
           ></Route>
         </Route>
         <Route path="search" element={<SearchPage title="Search" />}></Route>

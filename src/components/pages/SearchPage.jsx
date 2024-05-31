@@ -4,6 +4,7 @@ import classes from "./SearchPage.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { searchActions } from "../../store/search";
 import Spinner from "../ui/Spinner";
+import ErrorMessage from "../ui/ErrorMessage";
 
 // let initial = true;
 
@@ -38,7 +39,9 @@ const SearchPage = ({ title }) => {
   return (
     <div className={classes["container"]}>
       {searchIsLoading && <Spinner />}
-      {!searchIsLoading && errorMessage && <div>{errorMessage}</div>}
+      {!searchIsLoading && errorMessage && (
+        <ErrorMessage>{errorMessage}</ErrorMessage>
+      )}
       {!searchIsLoading && !!searchResultHtml?.length && (
         <div className={classes["title"]}>
           Search result for "{searchQuery}"

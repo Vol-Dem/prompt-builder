@@ -52,9 +52,11 @@
 .submit {
   display: flex;
   position: relative;
-  height: 3.2rem;
+  // height: 3.2rem;
   justify-content: center;
   align-items: center;
+  font-size: 1.6rem;
+  min-height: 3.4rem;
   // width: 12rem;
   // align-self: flex-end;
 }
@@ -75,12 +77,13 @@
 }
 
 .link {
-  display: inline-block;
-  color: #7278f0;
+  @include var.linkA;
+  font-size: 1.4rem;
 }
 
 .status {
   display: flex;
   gap: 1rem;
+  align-items: center;
   // justify-content: space-between;
 }

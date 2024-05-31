@@ -10,7 +10,7 @@ import {
 } from "firebase/auth";
 import firebaseApp from "../firebase-config";
 import { uploadPanelStateFromStorage } from "./usedModels";
-import { uploadPromptFromStorage } from "./prompt";
+import { promptActions, uploadPromptFromStorage } from "./prompt";
 import { getUserCategories, tabActions } from "./tabs";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { modelActions } from "./model";
@@ -187,6 +187,7 @@ export const getUserData = (uid) => {
       if (userDataDoc.exists()) {
         const userData = userDataDoc.data();
         dispatch(tabActions.setCategories(userData.categoriesById));
+        dispatch(promptActions.setPresets(userData.presets));
         dispatch(modelActions.setNsfwMode(userData.nsfwMode));
       }
     } catch (err) {
