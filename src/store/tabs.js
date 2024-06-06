@@ -27,8 +27,17 @@ const tabsSlice = createSlice({
     currSubcategory: "",
     allCategories: [],
     categoriesData: "",
-    modelsData: [],
+    // modelsData: [],
+    modelsData: {
+      tab: "",
+      category: "",
+      subcategory: "",
+      nsfw: false,
+      previews: [],
+    },
     subcategories: [],
+    sortBy: "createdAt",
+    modelType: "",
     isLoading: false,
     isLastPage: false,
   },
@@ -53,11 +62,30 @@ const tabsSlice = createSlice({
     setCategories(state, actions) {
       state.categoriesData = actions.payload;
     },
+    setSortBy(state, actions) {
+      state.sortBy = actions.payload;
+    },
+    setModelType(state, actions) {
+      state.modelType = actions.payload;
+    },
+    // setModelsData(state, actions) {
+    //   console.log("P", actions.payload);
+    //   state.modelsData = !actions.payload.length
+    //     ? []
+    //     : [...state.modelsData, ...actions.payload];
+    // },
     setModelsData(state, actions) {
       console.log("P", actions.payload);
-      state.modelsData = !actions.payload.length
-        ? []
-        : [...state.modelsData, ...actions.payload];
+      state.modelsData = actions.payload;
+    },
+    resetModelsData(state, actions) {
+      state.modelsData = {
+        tab: "",
+        category: "",
+        subcategory: "",
+        nsfw: false,
+        previews: [],
+      };
     },
     setSubcategories(state, actions) {
       state.subcategories = actions.payload.sort();
@@ -94,51 +122,103 @@ export const getUserCategories = (uid) => {
   };
 };
 
-export const getModelsPreview = () => {
+export const getModelsPreview = (loadMore = false, nsfwMode) => {
   return async (dispatch, getState) => {
-    const uid = getState().auth.user.uid;
-    const activeTab = getState().tabs.currTab;
-    const activeCategory = getState().tabs.currCategory;
-    const activeSubcategory = getState().tabs.currSubcategory;
-    const isLastPage = getState().tabs.isLastPage;
-    console.log("GET");
-    console.log(uid);
-    console.log(activeTab);
-    console.log(activeCategory);
-    console.log(activeSubcategory);
-    console.log(isLastPage);
-    console.log(lastVisible);
-    if (isLastPage) return;
+    try {
+      if (!loadMore) {
+        lastVisible = {};
+        dispatch(tabActions.setIsLastPage(false));
+      }
+      const uid = getState().auth.user.uid;
+      const activeTab = getState().tabs.currTab;
+      const activeCategory = getState().tabs.currCategory;
+      const activeSubcategory = getState().tabs.currSubcategory;
+      const isLastPage = getState().tabs.isLastPage;
+      const sortBy = getState().tabs.sortBy;
+      const baseModel = getState().tabs.modelType;
+      const curModelsData = getState().tabs.modelsData.previews;
+      // const nsfwMode = getState().model.nsfwMode;
+      console.log("GET");
+      console.log(uid);
+      console.log(activeTab);
+      console.log(activeCategory);
+      console.log(activeSubcategory);
+      console.log(isLastPage);
+      console.log(lastVisible);
+      console.log(loadMore);
+      if (isLastPage) return;
 
-    dispatch(tabActions.setIsLoading(true));
-    const q = query(
-      collection(firestore, "users", uid, `preview`),
-      where("modelType", "==", activeTab),
-      where("main", "==", activeCategory),
-      where("sub", "array-contains", activeSubcategory),
-      orderBy("id", "desc"),
-      startAfter(lastVisible),
-      limit(amountPerPage)
-    );
-    const querySnapshot = await getDocs(q);
+      dispatch(tabActions.setIsLoading(true));
+      console.log(sortBy);
+      const direction = sortBy === "name" ? "asc" : "desc";
+      console.log(direction);
+      const order = orderBy(sortBy, direction);
+      // const order = orderBy("name", "asc");
+      // const modelTypeBy = orderBy(sortBy, "desc");
+      let q;
 
-    const modelsData = querySnapshot.docs.map((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      return doc.data();
-    });
-    console.log(modelsData);
+      const nsfwFilter = !nsfwMode ? [false] : [true, false];
 
-    // const isLast = querySnapshot.docs.length <= amountPerPage;
-    const isLast =
-      !querySnapshot.docs.length || querySnapshot.docs.length < amountPerPage;
-    console.log(isLast);
+      if (baseModel) {
+        q = query(
+          collection(firestore, "users", uid, `preview`),
+          where("modelType", "==", activeTab),
+          where("main", "==", activeCategory),
+          where("baseModel", "==", baseModel),
+          where("nsfw", "in", nsfwFilter),
+          where("sub", "array-contains", activeSubcategory),
+          // where("baseModels", "array-contains-any", ["SD 1.5"]),
+          // orderBy("id", "desc"),
+          order,
+          startAfter(lastVisible),
+          limit(amountPerPage)
+        );
+      } else {
+        q = query(
+          collection(firestore, "users", uid, `preview`),
+          where("modelType", "==", activeTab),
+          where("main", "==", activeCategory),
+          where("nsfw", "in", nsfwFilter),
+          where("sub", "array-contains", activeSubcategory),
+          // where("baseModels", "array-contains-any", ["SD 1.5"]),
+          // orderBy("id", "desc"),
+          order,
+          startAfter(lastVisible),
+          limit(amountPerPage)
+        );
+      }
 
-    if (!isLast) {
-      lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+      const querySnapshot = await getDocs(q);
+
+      const modelsData = querySnapshot.docs.map((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        return doc.data();
+      });
+      console.log(modelsData);
+
+      // const isLast = querySnapshot.docs.length <= amountPerPage;
+      const isLast =
+        !querySnapshot.docs.length || querySnapshot.docs.length < amountPerPage;
+      console.log(isLast);
+
+      if (!isLast) {
+        lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+      }
+      if (modelsData)
+        dispatch(
+          tabActions.setModelsData({
+            tab: activeTab,
+            category: activeCategory,
+            subcategory: activeSubcategory,
+            nsfw: nsfwMode,
+            previews: loadMore ? [...curModelsData, ...modelsData] : modelsData,
+          })
+        );
+      dispatch(tabActions.setIsLastPage(isLast));
+      dispatch(tabActions.setIsLoading(false));
+    } catch (err) {
+      console.log(err);
     }
-    if (!!modelsData.length) dispatch(tabActions.setModelsData(modelsData));
-    dispatch(tabActions.setIsLastPage(isLast));
-    dispatch(tabActions.setIsLoading(false));
   };
 };
 

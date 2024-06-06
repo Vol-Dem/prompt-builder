@@ -21,6 +21,7 @@ import Profile from "./components/pages/Profile";
 import About from "./components/pages/About";
 import { savePost } from "./store/upload";
 import Edit from "./components/pages/Edit";
+import ErrorPage from "./components/pages/ErrorPage";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -55,21 +56,43 @@ function App() {
 
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route path="/" element={<Layout />}>
-        <Route path="/" element={<Home title="Prompt builder" />}>
-          <Route path="/" element={<Tabs />}></Route>
+      <Route path="/" errorElement={<ErrorPage />} element={<Layout />}>
+        <Route
+          path="/"
+          errorElement={<ErrorPage />}
+          element={<Home title="Prompt builder" />}
+        >
+          <Route
+            path="/"
+            errorElement={<ErrorPage />}
+            element={<Tabs />}
+          ></Route>
           <Route
             path="model/:modelId"
+            errorElement={<ErrorPage />}
             element={<Model title="Model" />}
           ></Route>
           <Route
             path="model/:modelId/edit"
+            errorElement={<ErrorPage />}
             element={<Edit title="Edit" />}
           ></Route>
         </Route>
-        <Route path="search" element={<SearchPage title="Search" />}></Route>
-        <Route path="profile" element={<Profile title="Profile" />}></Route>
-        <Route path="about" element={<About title="About" />}></Route>
+        <Route
+          path="search"
+          errorElement={<ErrorPage />}
+          element={<SearchPage title="Search" />}
+        ></Route>
+        <Route
+          path="profile"
+          errorElement={<ErrorPage />}
+          element={<Profile title="Profile" />}
+        ></Route>
+        <Route
+          path="about"
+          errorElement={<ErrorPage />}
+          element={<About title="About" />}
+        ></Route>
       </Route>
     )
   );

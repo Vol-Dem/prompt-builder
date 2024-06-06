@@ -145,7 +145,9 @@ const ModelTags = ({ customData, modelPreview }) => {
                   "Default"
                 }
                 tags={
-                  customData?.helperTags || model?.defaultCustomData.helperTags
+                  !!customData?.helperTags?.length
+                    ? customData?.helperTags
+                    : model?.defaultCustomData?.helperTags
                 }
                 promptType="positive"
                 className={classes["tags__field"]}
@@ -164,8 +166,9 @@ const ModelTags = ({ customData, modelPreview }) => {
                   "Default"
                 }
                 tags={
-                  customData?.negativeTags ||
-                  model?.defaultCustomData.negativeTags
+                  customData?.negativeTags?.length
+                    ? customData?.negativeTags
+                    : model?.defaultCustomData?.negativeTags
                 }
                 promptType="negative"
                 className={classes["tags__field"]}

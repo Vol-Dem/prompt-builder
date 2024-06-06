@@ -54,7 +54,7 @@ const GeneratedImages = ({ customData }) => {
   }, [intersecting]);
 
   const resetExamples = () => {
-    // console.log("RESET");
+    console.log("RESET");
     setCurrCursor(null);
     setExamplesImages([]);
     setExamplesImgData([]);
@@ -206,15 +206,21 @@ const GeneratedImages = ({ customData }) => {
   const getImagesFromFirestore = useCallback(async () => {
     console.log("START FB FETCH");
     try {
+      console.log("FB LAST", isLastPage);
       if (isLastPage) return;
+      setExamplesIsLoading(true);
+      // if (examplesIsLoading) return;
       setIsIntersecting(false);
       setErrorMessage("");
-      setExamplesIsLoading(true);
+
+      const nsfwFilter = !nsfwMode ? [false] : [true, false];
+
       const q = query(
         collection(firestore, "users", uid, "models", model.id + "", "images"),
         where("versionId", "==", curImagesModelVersionId),
-        // where("nsfw", "==", nsfwMode),
-        orderBy("versionId", "desc"),
+        where("nsfwTypes", "array-contains-any", nsfwFilter),
+        orderBy("createdAt", "desc"),
+        // orderBy("versionId", "desc"),
         // orderBy("savedAt", "desc"),
         startAfter(lastVisible),
         limit(postsPerPage)
@@ -277,15 +283,15 @@ const GeneratedImages = ({ customData }) => {
       // });
 
       setExamplesImgData((prevState) => [...prevState, ...examples]);
-      setExamplesIsLoading(false);
 
       const lastVisiblePost =
         modelImagesSnap.docs[modelImagesSnap.docs.length - 1];
       if (!isLast) {
         setLastVisible(lastVisiblePost);
       }
-      // const firstVisible = data.docs[0];
       setIsLastPage(isLast);
+      setExamplesIsLoading(false);
+      // const firstVisible = data.docs[0];
     } catch (err) {
       console.log(err);
       setErrorMessage(err.message);
@@ -347,16 +353,21 @@ const GeneratedImages = ({ customData }) => {
   useEffect(() => {
     const rule =
       !isLastPage && isIntersecting && !examplesIsLoading && !errorMessage;
-    if ((rule && nextCursor) || (rule && !!examplesImgData.length)) {
-      setExamplesIsLoading(true);
-      if (curExampleImgsType === "all") {
+    if (true) {
+      // if ((rule && nextCursor) || (rule && !!examplesImgData.length)) {
+      // setExamplesIsLoading(true);
+      if (curExampleImgsType === "all" && rule && nextCursor) {
         // console.log("INTERSECT", isIntersecting);
         // console.log(nextCursor);
         clearTimeout(getImageTimeout);
         getImageTimeout = setTimeout(() => {
           getallExamples(model.id, curImagesModelVersionId, nextCursor);
         }, 1000);
-      } else if (curExampleImgsType === "saved") {
+      } else if (
+        curExampleImgsType === "saved" &&
+        rule &&
+        !!examplesImgData.length
+      ) {
         clearTimeout(getImageTimeout);
         getImageTimeout = setTimeout(() => {
           getImagesFromFirestore();
@@ -503,13 +514,16 @@ const GeneratedImages = ({ customData }) => {
     }
   );
 
-  const deletePostHandler = (id) => {
-    const newExamples = examplesImgData.filter(
-      (image) => image[0].postId !== id
-    );
+  const deletePostHandler = useCallback(
+    (id) => {
+      const newExamples = examplesImgData.filter(
+        (image) => image[0].postId !== id
+      );
 
-    setExamplesImgData(newExamples);
-  };
+      setExamplesImgData(newExamples);
+    },
+    [examplesImgData]
+  );
 
   useEffect(() => {
     let examples;
@@ -523,6 +537,7 @@ const GeneratedImages = ({ customData }) => {
             images={item}
             visibleImgAmount={1}
             onDelete={deletePostHandler}
+            saved={true}
             // onUpdate={updateImgResData}
           />
         );
@@ -547,6 +562,7 @@ const GeneratedImages = ({ customData }) => {
             visibleImgAmount={1}
             existedImgsAmount={existedExample?.amount || null}
             postId={postId}
+            saved={!postId}
             modelId={model.id}
             versionId={curImagesModelVersionId}
           />
@@ -561,6 +577,7 @@ const GeneratedImages = ({ customData }) => {
     examplesImgData,
     model,
     nsfwMode,
+    deletePostHandler,
   ]);
 
   const addImgByIdHandler = () => {
@@ -596,38 +613,42 @@ const GeneratedImages = ({ customData }) => {
             All
           </span>
         </div>
-        <span>Sort: </span>
-        <select
-          name="sort"
-          id="sort"
-          value={imagesSortValue}
-          className={classes.select}
-          onChange={(e) => {
-            resetExamples();
-            setImagesSortValue(e.target.value);
-          }}
-        >
-          <option value="">-</option>
-          <option value="Newest">Newest</option>
-          <option value="Most Comments">Most Comments</option>
-          <option value="Most Reactions">Most Reactions</option>
-        </select>
-        <select
-          name="amount-per-page"
-          id="amount-per-page"
-          value={amountPerPage}
-          className={classes.select}
-          onChange={(e) => {
-            resetExamples();
-            setAmountPerPage(e.target.value);
-          }}
-        >
-          <option value="">-</option>
-          <option value="20">20</option>
-          <option value="30">30</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-        </select>
+        {curExampleImgsType === "all" && (
+          <>
+            <span>Sort: </span>
+            <select
+              name="sort"
+              id="sort"
+              value={imagesSortValue}
+              className={classes.select}
+              onChange={(e) => {
+                resetExamples();
+                setImagesSortValue(e.target.value);
+              }}
+            >
+              <option value="">-</option>
+              <option value="Newest">Newest</option>
+              <option value="Most Comments">Most Comments</option>
+              <option value="Most Reactions">Most Reactions</option>
+            </select>
+            <select
+              name="amount-per-page"
+              id="amount-per-page"
+              value={amountPerPage}
+              className={classes.select}
+              onChange={(e) => {
+                resetExamples();
+                setAmountPerPage(e.target.value);
+              }}
+            >
+              <option value="">-</option>
+              <option value="20">20</option>
+              <option value="30">30</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </>
+        )}
         <Buttton className={classes["button-add"]} onClick={addImgByIdHandler}>
           Add Image by ID
         </Buttton>

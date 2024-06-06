@@ -56,7 +56,7 @@ main {
   cursor: pointer;
 
   &--active {
-    background-color: blueviolet;
+    background-color: var.$color-primary;
   }
 }
 

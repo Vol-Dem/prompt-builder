@@ -9,11 +9,13 @@ const ModelInfo = ({ customData }) => {
   const viersionVAE = curVersion?.files?.find(
     (file) => file.type === "VAE"
   )?.name;
-  const size = customData?.size || model?.size;
-  const weightRange = `${customData?.minWeight?.toFixed(
-    1
-  )} - ${customData?.maxWeight?.toFixed(1)}`;
-  const weight = customData?.weight || model?.weight;
+  const size = customData?.size || model?.defaultCustomData?.size;
+  const minWeight =
+    customData?.minWeight || model?.defaultCustomData?.minWeight || null;
+  const maxWeight =
+    customData?.maxWeight || model?.defaultCustomData?.maxWeight || null;
+  const weightRange = `${minWeight?.toFixed(1)} - ${maxWeight?.toFixed(1)}`;
+  const weight = customData?.weight || model?.defaultCustomData?.weight;
 
   return (
     <div className={classes?.info}>
@@ -21,7 +23,7 @@ const ModelInfo = ({ customData }) => {
       <div>Version ID: {curVersion.id}</div>
       <div>Base model: {curVersion?.baseModel}</div>
       {size && <div>Size: {size}</div>}
-      {!!customData?.minWeight && <div>Weight: {weightRange}</div>}
+      {minWeight && maxWeight && <div>Weight: {weightRange}</div>}
       {weight && <div>Best weight: {weight}</div>}
       <div>
         Version: {curVersion?.name}

@@ -75,6 +75,32 @@ const UploadingPanel = () => {
     );
   });
 
+  useEffect(() => {
+    const closeMenu = (e) => {
+      console.log("CLOSE");
+      console.log(uploadingLIstIsOpen);
+      // console.log(classes["search"]);
+      // console.log(e.target);
+      // console.log(e.target.closest(`.${classes.search}`));
+      console.log(e.target.closest(`.${classes.uploading}`));
+
+      if (!e.target.closest(`.${classes.uploading}`)) {
+        setUploadingLIstIsOpen(false);
+      }
+    };
+    if (uploadingLIstIsOpen) {
+      console.log("MENU");
+      console.log(uploadingLIstIsOpen);
+      document.addEventListener("click", closeMenu);
+    } else {
+      document.removeEventListener("click", closeMenu);
+    }
+
+    return () => {
+      document.removeEventListener("click", closeMenu);
+    };
+  }, [uploadingLIstIsOpen]);
+
   return (
     <div className={classes.uploading}>
       <div

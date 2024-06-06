@@ -226,41 +226,41 @@ const ImageCard = ({ currImgNum }) => {
     ?.split(splitRegEx)
     ?.flatMap((tag) => tag.trim() || []);
 
-  const addToSidePanelHandler = (e) => {
-    const modelId = e.target.closest(`.${classes["resource__add"]}`)?.dataset
-      ?.id;
-    console.log(modelId);
-    const previewData = imageResources.find(
-      (resource) => resource?.preview?.id === +modelId
-    )?.preview;
-    let curVersionData =
-      previewData?.modelVersionsCustomData &&
-      Object.values(previewData.modelVersionsCustomData)
-        .filter((data) => data.downloadStatus)
-        .toSorted((a, b) => b.versionId - a.versionId)[0];
-
-    const sidePanelData = {
-      id: previewData?.id,
-      src: previewData?.src,
-      main: previewData?.main,
-      sub: previewData?.sub,
-      title: previewData?.name || previewData.title,
-      versionName: curVersionData?.name,
-      imgUrl: previewData?.imgUrl,
-      nsfwPreviewImgUrl: previewData?.nsfwPreviewImgUrl,
-      type: previewData?.modelType,
-      baseModel: curVersionData?.baseModel || previewData?.baseModel,
-      mainTag: curVersionData?.mainTag || previewData?.mainTag,
-      weight: curVersionData?.weight || previewData?.weight,
-      minWeight: curVersionData?.minWeight || previewData?.minWeight,
-      maxWeight: curVersionData?.maxWeight || previewData?.maxWeight,
-      size: curVersionData?.size || previewData?.size,
-      tags: curVersionData?.trainedWords || curVersionData?.trainedWords,
-      helperTags: curVersionData?.helperTags || previewData?.helperTags,
-      updatedAt: previewData?.updatedAt,
-    };
-    dispatch(addModelToPanel(sidePanelData));
-  };
+  // const addToSidePanelHandler = (e) => {
+  //   const modelId = e.target.closest(`.${classes["resource__add"]}`)?.dataset
+  //     ?.id;
+  //   console.log(modelId);
+  //   const previewData = imageResources.find(
+  //     (resource) => resource?.preview?.id === +modelId
+  //   )?.preview;
+  //   let curVersionData =
+  //     previewData?.modelVersionsCustomData &&
+  //     Object.values(previewData.modelVersionsCustomData)
+  //       .filter((data) => data.downloadStatus)
+  //       .toSorted((a, b) => b.versionId - a.versionId)[0];
+  //   console.log(previewData);
+  //   const sidePanelData = {
+  //     id: previewData?.id,
+  //     src: previewData?.src,
+  //     main: previewData?.main,
+  //     sub: previewData?.sub,
+  //     title: previewData?.name || previewData.title,
+  //     versionName: curVersionData?.name,
+  //     imgUrl: previewData?.imgUrl,
+  //     nsfwPreviewImgUrl: previewData?.nsfwPreviewImgUrl,
+  //     type: previewData?.modelType,
+  //     baseModel: curVersionData?.baseModel || previewData?.baseModel,
+  //     mainTag: curVersionData?.mainTag || previewData?.mainTag,
+  //     weight: curVersionData?.weight || previewData?.weight,
+  //     minWeight: curVersionData?.minWeight || previewData?.minWeight,
+  //     maxWeight: curVersionData?.maxWeight || previewData?.maxWeight,
+  //     size: curVersionData?.size || previewData?.size,
+  //     tags: curVersionData?.trainedWords || previewData?.tags,
+  //     helperTags: curVersionData?.helperTags || previewData?.helperTags,
+  //     updatedAt: previewData?.updatedAt,
+  //   };
+  //   dispatch(addModelToPanel(sidePanelData));
+  // };
 
   const resourcesHtml = imageResources?.map((resource, i) => {
     const versiondId = resource?.modelVersionId || resource?.versionId;
@@ -268,7 +268,6 @@ const ImageCard = ({ currImgNum }) => {
     let versionIsSaved;
     let versionName;
     let versionIdByName;
-    const version = versiondId || versionIdByName;
 
     if (
       versiondId &&
@@ -278,6 +277,8 @@ const ImageCard = ({ currImgNum }) => {
     ) {
       versionIsSaved =
         resource.preview.modelVersionsCustomData[versiondId].downloadStatus;
+      versionName =
+        resource.preview.modelVersionsCustomData[versiondId]?.versionName;
     } else {
       const curVersion =
         resource?.preview?.modelVersionsCustomData &&
@@ -288,6 +289,7 @@ const ImageCard = ({ currImgNum }) => {
       versionName = curVersion?.versionName;
       versionIdByName = curVersion?.id;
     }
+    const version = versiondId || versionIdByName;
 
     return (
       <li key={i} className={classes["resource"]}>
@@ -327,23 +329,7 @@ const ImageCard = ({ currImgNum }) => {
             {resource?.name || resource.modelVersionId}
           </div>
         )}
-        {resource?.modelId && (
-          <div className={classes["resource__field"]}>
-            Source:{" "}
-            <LinkA
-              external={true}
-              href={`https://civitai.com/models/${resource?.modelId}${
-                resource?.versionId
-                  ? `?modelVersionId=${resource?.versionId}`
-                  : ""
-              }`}
-              // className={`${classes["resource__link"]} ${classes["resource__source"]}`}
-            >
-              {/* {resource?.name || resource.modelVersionId} */}
-              civitai
-            </LinkA>
-          </div>
-        )}
+
         {!resource?.modelId && !versionName && (
           <div
             className={classes["resource__name"]}
@@ -373,6 +359,23 @@ const ImageCard = ({ currImgNum }) => {
             {versionName || resource?.versionName}
           </span>
         </div>
+        {resource?.modelId && (
+          <div className={classes["resource__field"]}>
+            Source:{" "}
+            <LinkA
+              external={true}
+              href={`https://civitai.com/models/${resource?.modelId}${
+                resource?.versionId
+                  ? `?modelVersionId=${resource?.versionId}`
+                  : ""
+              }`}
+              // className={`${classes["resource__link"]} ${classes["resource__source"]}`}
+            >
+              {/* {resource?.name || resource.modelVersionId} */}
+              civitai
+            </LinkA>
+          </div>
+        )}
         <div className={classes["resource__info"]}>
           <div className={classes["resource__type"]}>{resource.type}</div>
           {resource?.weight && <div>weight: {resource?.weight || ""}</div>}

@@ -1,5 +1,27 @@
+import { useEffect } from "react";
 import classes from "./DropDownList.module.scss";
 const DropDownList = (props) => {
+  // useEffect(() => {
+  //   const closeResultHandler = (e) => {
+  //     const uploading = e.target.closest(`.${classes["search__dropdown"]}`);
+  //     if (!uploading) {
+  //       console.log(uploading);
+  //       // setUploadingLIstIsOpen(false);
+  //       props.onClose();
+  //     }
+  //   };
+  //   if (true) {
+  //     console.log("DROPPPPP");
+  //     document.addEventListener("click", closeResultHandler);
+  //   } else {
+  //     document.removeEventListener("click", closeResultHandler);
+  //   }
+
+  //   return () => {
+  //     document.removeEventListener("click", closeResultHandler);
+  //   };
+  // }, []);
+
   return (
     <div className={`${classes["search__dropdown"]} ${props.className || ""}`}>
       <div className={classes["search__settings"]}>

@@ -8,7 +8,11 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import firebaseApp from "../firebase-config";
-import { getModelData } from "../utils/fetchUtils";
+import {
+  deleteImagePostDoc,
+  getModelData,
+  makeBatchRequest,
+} from "../utils/fetchUtils";
 import { getAuth } from "firebase/auth";
 import { saveToStorage, uploadStorage } from "../variables/utils";
 import { authActions } from "./auth";
@@ -272,13 +276,52 @@ export const deleteImgPost = (versionId, postId, postData) => {
   };
 };
 
+// export const deleteImgPostDoc = (postId) => {
+//   return async (dispatch, getState) => {
+//     const uid = getState().auth.user.uid;
+//     const id = getState().model.model.id;
+
+//     const imgPostRef = doc(
+//       firestore,
+//       "users",
+//       uid,
+//       "models",
+//       id + "",
+//       "images",
+//       postId + ""
+//     );
+
+//     const del = await deleteDoc(imgPostRef);
+
+//     console.log(del);
+//   };
+// };
+
 export const deleteModel = (modelId) => {
   return async (dispatch, getState) => {
     const uid = getState().auth.user.uid;
-    const id = getState().model.model.id;
+    const model = getState().model.model;
 
-    const modelRef = doc(firestore, "users", uid, "models", id + "");
-    const modelPreviewRef = doc(firestore, "users", uid, "preview", id + "");
+    Object.values(model.savedImages).forEach(async (versionData) => {
+      const postsData = versionData.map((post) => {
+        return {
+          ...post,
+          uid,
+          modelId: model.id,
+        };
+      });
+      // console.log(postsData);
+      await makeBatchRequest(postsData, deleteImagePostDoc, 5, false);
+    });
+
+    const modelRef = doc(firestore, "users", uid, "models", model.id + "");
+    const modelPreviewRef = doc(
+      firestore,
+      "users",
+      uid,
+      "preview",
+      model.id + ""
+    );
 
     await deleteDoc(modelRef);
     await deleteDoc(modelPreviewRef);

@@ -7,6 +7,8 @@ import Arrow from "../ui/Arrow";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import { useState } from "react";
 import Presets from "../presets/Presets";
+import ArrowDownSvg from "../../assets/ArrowDownSvg";
+import ArrowUp from "../../assets/ArrowUp";
 // import Buttton from "../ui/Button";
 
 const Prompt = () => {
@@ -232,39 +234,13 @@ const Prompt = () => {
         {promptIsOpen ? (
           <>
             {/* <Arrow direction="up" /> */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2.4}
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m4.5 15.75 7.5-7.5 7.5 7.5"
-              />
-            </svg>
+            <ArrowUp />
             Hide prompt
           </>
         ) : (
           <>
             {/* <Arrow direction="down" /> */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2.4}
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m19.5 8.25-7.5 7.5-7.5-7.5"
-              />
-            </svg>
+            <ArrowDownSvg />
             Show prompt
           </>
         )}

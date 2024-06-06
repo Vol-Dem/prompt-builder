@@ -2,6 +2,7 @@ import classes from "./Select.module.scss";
 // import { ReactComponent as BoxEmptyImg } from "./../assets/layout/boxempty.svg";
 import { useEffect, useRef, useState } from "react";
 import Input from "./Input";
+import ArrowDownSvg from "../../assets/ArrowDownSvg";
 
 const Select = ({
   id = "select",
@@ -66,7 +67,8 @@ const Select = ({
   };
 
   const onShowSelect = () => {
-    setSelectIsOpen((state) => !state);
+    console.log("click");
+    setSelectIsOpen((curState) => !curState);
   };
 
   const selectOptions = options.map((item, i) => {
@@ -96,47 +98,56 @@ const Select = ({
   });
 
   return (
-    <div
-      className={`${classes["select"]} ${className || ""}`}
-      onClick={onShowSelect}
-    >
-      <label htmlFor={id} className={classes.label}>
-        {label}
-      </label>
-      <div className={classes["select__input"]}>
-        <span
+    <div onClick={onShowSelect}>
+      <div className={`${classes["select"]} ${className || ""}`}>
+        {label && (
+          <label htmlFor={id} className={classes.label}>
+            {label}
+          </label>
+        )}
+        <div className={classes["select__input"]}>
+          {/* <span
           className={`${classes["select__arrow"]} ${
             selectIsOpen ? classes["select__arrow--open"] : ""
           }`}
-        ></span>
-        <Input
-          id={id}
-          className={classes["select__input-field"]}
-          type="text"
-          placeholder="Select size"
-          input={{ readOnly: true }}
-          value={selectedFieldName}
-        />
-      </div>
-      <fieldset
-        style={
-          optionsFieldHeight && selectIsOpen
-            ? { height: `${optionsFieldHeight}px` }
-            : {}
-        }
-        className={`${classes["select__field"]} ${
-          !selectIsOpen ? classes["select__field--hide"] : ""
-        }`}
-      >
-        <div
-          className={classes["select__field-container"]}
-          style={
-            options.length <= visibleOptionsAmount ? { overflowY: `unset` } : {}
-          }
-        >
-          {selectOptions}
+        ></span> */}
+          <ArrowDownSvg
+            className={`${classes["select__arrow"]} ${
+              selectIsOpen ? classes["select__arrow--open"] : ""
+            }`}
+            // onClick={onShowSelect}
+          />
+          <Input
+            id={id}
+            className={classes["select__input-field"]}
+            type="text"
+            placeholder="-"
+            input={{ readOnly: true }}
+            value={selectedFieldName}
+          />
         </div>
-      </fieldset>
+        <fieldset
+          style={
+            optionsFieldHeight && selectIsOpen
+              ? { height: `${optionsFieldHeight}px` }
+              : {}
+          }
+          className={`${classes["select__field"]} ${
+            !selectIsOpen ? classes["select__field--hide"] : ""
+          }`}
+        >
+          <div
+            className={classes["select__field-container"]}
+            style={
+              options.length <= visibleOptionsAmount
+                ? { overflowY: `unset` }
+                : {}
+            }
+          >
+            {selectOptions}
+          </div>
+        </fieldset>
+      </div>
     </div>
   );
 };

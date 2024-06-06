@@ -141,7 +141,9 @@ const UsedCard = ({ previewData, fullView }) => {
           )}
           <div>
             <span className={classes.type}>{previewData.type}</span>
-            {previewData?.baseModel && <span>{previewData.baseModel}</span>}
+            {previewData?.baseModel && (
+              <span className={classes.models}>{previewData.baseModel}</span>
+            )}
           </div>
         </div>
         <button className={classes["btn__close"]} onClick={closeCardHandler}>
@@ -181,7 +183,7 @@ const UsedCard = ({ previewData, fullView }) => {
         )}
         {fullView && (
           <div className={classes["tags-container"]}>
-            {!!previewData.tags?.length && (
+            {!!previewData?.tags?.length && (
               <>
                 {/* <span>Tags: </span> */}
                 <div

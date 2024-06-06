@@ -108,7 +108,12 @@ const AuthForm = () => {
           </ErrorMessage>
         )}
         <div className={classes["auth__controls"]}>
-          <ButttonSecondary type="button" onClick={signUp} disabled={isLoading}>
+          <ButttonSecondary
+            type="button"
+            onClick={signUp}
+            disabled={isLoading}
+            className={classes["auth__btn--switch"]}
+          >
             {isLogin ? "Create Account" : "Log in"}
           </ButttonSecondary>
           <Buttton

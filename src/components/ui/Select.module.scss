@@ -5,18 +5,19 @@
   &__arrow {
     display: block;
     position: absolute;
-    right: 1rem;
+    right: 0.6rem;
     top: 50%;
     transform: translateY(-50%);
-    width: 5%;
-    height: 50%;
-    background-color: var.$color-text-gray;
+    width: 1.6rem;
+    color: var.$color-text-gray;
+    // height: 50%;
+    // background-color: var.$color-text-gray;
     clip-path: polygon(0 25%, 50% 60%, 100% 25%, 100% 40%, 50% 80%, 0 40%);
     transition: all 0.3s;
     cursor: pointer;
 
     &--open {
-      transform-origin: 50% 30%;
+      transform-origin: 50% 25%;
       transform: rotate(180deg);
     }
   }
@@ -75,16 +76,16 @@
     position: absolute;
     // background-color: var.$color-white;
     background-color: var.$color-input-bg;
-
     width: 94%;
     height: 14rem;
     margin-left: 3%;
     // padding: 0 1rem 1rem;
-    padding-left: 0.5rem;
+    // padding-left: 0.5rem;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 0 0 1rem 1rem;
     transition: all 0.3s;
+    z-index: 6;
 
     &--hide {
       background-color: transparent;

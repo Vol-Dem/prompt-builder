@@ -3,6 +3,7 @@
 .card {
   display: flex;
   flex-direction: column;
+  gap: 0.8rem;
   //   grid-template-columns: 2fr 3fr;
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 1rem;
@@ -119,6 +120,16 @@
   //   z-index: 2;
 }
 
+.models {
+  // display: flex;
+  // align-items: center;
+  color: var.$color-text-gray;
+  background-color: #323148;
+  padding: 0.4rem 0.8rem;
+  border-radius: 10px;
+  font-size: 1.2rem;
+}
+
 .title-container {
   display: flex;
   align-items: center;
@@ -172,6 +183,7 @@
   display: flex;
   flex-direction: column;
   // align-items: center;
+  justify-content: center;
   padding: 1rem;
   gap: 1rem;
   font-size: 1.4rem;

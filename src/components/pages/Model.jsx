@@ -25,10 +25,11 @@ import ErrorMessage from "../ui/ErrorMessage";
 
 const firestore = getFirestore(firebaseApp);
 
-const minDescriptionHeight = 200;
+const minDescriptionHeight = 300;
 
 const Model = ({ title }) => {
   const [modelPreview, setModelPreview] = useState({});
+  const [descHeight, setDescHeight] = useState(null);
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [descriptionIsOpen, setDescriptionIsOpen] = useState(false);
   // const [currVersionIndex, setCurrVersionIndex] = useState(null);
@@ -68,7 +69,29 @@ const Model = ({ title }) => {
 
   useEffect(() => {
     document.title = model?.name || title;
+
+    return () => {
+      document.title = "Prompt builder";
+    };
   }, [title, model?.name]);
+
+  useEffect(() => {
+    if (model?.id) {
+      setDescriptionIsOpen(false);
+      setDescHeight(null);
+    }
+  }, [model?.id]);
+
+  useEffect(() => {
+    if (!descHeight && descriptionRef?.current?.offsetHeight !== descHeight) {
+      console.log(descriptionRef?.current?.offsetHeight);
+      setDescHeight(descriptionRef?.current?.offsetHeight);
+    }
+
+    return () => {
+      // setDescHeight(null);
+    };
+  }, [descHeight]);
 
   useEffect(() => {
     if (!isAuth) return;
@@ -129,9 +152,9 @@ const Model = ({ title }) => {
       : model.data.modelVersions[0];
     console.log(curVersionData);
     console.log(model.data.modelVersions);
-    if (model.data.id !== curVersion.modelId)
+    if (model.data.id !== curVersion?.modelId)
       dispatch(modelActions.setCurVersion(curVersionData));
-  }, [model, dispatch, curVersion.modelId]);
+  }, [model, dispatch, curVersion?.modelId, state?.versionId]);
 
   useEffect(() => {
     if (!curVersion?.baseModel || !model.id) return;
@@ -155,15 +178,14 @@ const Model = ({ title }) => {
       maxWeight:
         curVersionCustomData?.maxWeight || model?.defaultCustomData?.maxWeight,
       size: curVersionCustomData?.size || model?.defaultCustomData?.size,
-      trainedWords:
-        curVersionCustomData?.trainedWords || curVersion?.trainedWords,
+      tags: curVersionCustomData?.trainedWords || curVersion?.trainedWords,
       helperTags:
         curVersionCustomData?.helperTags ||
         model?.defaultCustomData?.helperTags,
       updatedAt: model?.updatedAt,
     };
     // console.log(curVersionCustomData);
-    // console.log(modelPreviewData);
+    console.log(modelPreviewData);
 
     setModelPreview(modelPreviewData);
     const curCustomVersion = model.modelVersionsCustomData[curVersion.id];
@@ -215,7 +237,7 @@ const Model = ({ title }) => {
 
   const modelImagesHtml = (
     <div id={curVersion?.name}>
-      <Carousel images={modelImages} versionId={curVersion} />
+      <Carousel images={modelImages} versionId={curVersion} saved={false} />
     </div>
   );
 
@@ -407,40 +429,51 @@ const Model = ({ title }) => {
           />
           {curVersion?.description && (
             <>
-              <h2 className="h2">Version description:</h2>
+              <h2 className={classes["h2"]}>Version description:</h2>
               <div className={classes.description}>
                 {curVersion?.description?.replace(/(<([^>]+)>)/gi, "")}
               </div>
             </>
           )}
-          <h2 className="h2">Description:</h2>
+          <h2 className={classes["h2"]}>Description:</h2>
           <div
             className={`${classes.description} ${
               descriptionIsOpen ? classes["description--open"] : ""
+            } ${
+              descHeight > minDescriptionHeight &&
+              !descriptionIsOpen &&
+              descHeight
+                ? classes["description--hidden"]
+                : ""
             }`}
             style={{
               maxHeight: `${
-                descriptionIsOpen
-                  ? descriptionRef.current.offsetHeight
-                  : minDescriptionHeight
+                descriptionIsOpen ? descHeight + 100 : minDescriptionHeight
               }px`,
             }}
           >
-            <div ref={descriptionRef}>
-              {model?.defaultCustomData?.description ||
-                model?.data?.description?.replace(/(<([^>]+)>)/gi, "")}
-            </div>
+            <div
+              ref={descriptionRef}
+              dangerouslySetInnerHTML={{
+                __html:
+                  model?.defaultCustomData?.description ||
+                  model?.data?.description,
+              }}
+            />
+
+            {/* {model?.defaultCustomData?.description || 
+                model?.data?.description?.replace(/(<([^>]+)>)/gi, "")} */}
           </div>
-          {descriptionRef?.current?.offsetHeight > minDescriptionHeight && (
+          {descHeight > minDescriptionHeight && (
             <span
               className={classes["description__btn-show"]}
               onClick={openDescriptionHandler}
             >
-              Read more
+              {!descriptionIsOpen ? "Read more" : "Hide"}
             </span>
           )}
 
-          <h2 className="h2">Exapmles:</h2>
+          <h2 className={classes["h2"]}>Exapmles:</h2>
           <GeneratedImages customData={curCustomVersionData} />
         </>
       )}

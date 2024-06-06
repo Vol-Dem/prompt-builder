@@ -280,17 +280,6 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
                 setHelperTagsInput(e.target.value);
               }}
             ></Textarea>
-            <Fieldset legend="Tag sets">
-              {tagSetsHtml}
-              <ButttonSecondary
-                type="button"
-                onClick={addtagSetHandler}
-                disabled={isSaving}
-                className={classes["btn-secondary"]}
-              >
-                + add new set
-              </ButttonSecondary>
-            </Fieldset>
             <Textarea
               label="Negative words"
               name="negative-tags"
@@ -302,6 +291,17 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
                 setNegativeTagsInput(e.target.value);
               }}
             ></Textarea>
+            <Fieldset legend="Tag sets">
+              {tagSetsHtml}
+              <ButttonSecondary
+                type="button"
+                onClick={addtagSetHandler}
+                disabled={isSaving}
+                className={classes["btn-secondary"]}
+              >
+                + add new set
+              </ButttonSecondary>
+            </Fieldset>
           </FieldCategory>
         </div>
       </div>

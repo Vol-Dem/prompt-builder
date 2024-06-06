@@ -56,7 +56,7 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
         sub: previewData?.sub,
         title: previewData?.name || previewData.title,
         versionName: curVersionData?.name || previewData?.versionName || "",
-        imgUrl: previewData?.imgUrl,
+        imgUrl: previewData?.customPreviewImgUrl || previewData?.imgUrl,
         nsfwPreviewImgUrl: previewData?.nsfwPreviewImgUrl || null,
         type: previewData?.modelType,
         baseModel: curVersionData?.baseModel || previewData?.baseModel,
@@ -65,7 +65,7 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
         minWeight: curVersionData?.minWeight || previewData?.minWeight,
         maxWeight: curVersionData?.maxWeight || previewData?.maxWeight,
         size: curVersionData?.size || previewData?.size,
-        tags: curVersionData?.trainedWords || previewData?.trainedWords,
+        tags: curVersionData?.trainedWords || previewData?.tags,
         helperTags: curVersionData?.helperTags || previewData?.helperTags,
         updatedAt: previewData?.updatedAt,
       };

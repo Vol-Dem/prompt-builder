@@ -124,23 +124,25 @@ const PreviewCard = ({ previewData }) => {
       {/* <span className={classes["btn-add"]} onClick={addToSidePanelHandler}>
         +
       </span> */}
-      <ButtonAdd previewData={previewData} className={classes["btn-add"]} />
-      <Link to={`/model/${previewData.id}`}>
-        <Image
-          // onClick={openLoraHandler}
-          // type={previewData.type}
-          ref={imgRef}
-          src={
-            isNsfwMode
-              ? previewData.nsfwPreviewImgUrl ||
-                previewData.customPreviewImgUrl ||
-                previewData.imgUrl
-              : previewData.customPreviewImgUrl || previewData.imgUrl
-          }
-          alt="Preview"
-        />
-      </Link>
+      <div className={classes["image-container"]}>
+        <ButtonAdd previewData={previewData} className={classes["btn-add"]} />
 
+        <Link to={`/model/${previewData.id}`}>
+          <Image
+            // onClick={openLoraHandler}
+            // type={previewData.type}
+            ref={imgRef}
+            src={
+              isNsfwMode
+                ? previewData.nsfwPreviewImgUrl ||
+                  previewData.customPreviewImgUrl ||
+                  previewData.imgUrl
+                : previewData.customPreviewImgUrl || previewData.imgUrl
+            }
+            alt="Preview"
+          />
+        </Link>
+      </div>
       <div
         className={`${classes.content}`}
         // className={`${classes.content} ${
@@ -157,32 +159,56 @@ const PreviewCard = ({ previewData }) => {
             </h4>
           </Link>
         </div>
+        <span className={classes.type}>
+          {previewData.type === "TextualInversion"
+            ? "Embedding"
+            : previewData.type}
+        </span>
         <div className={classes.info}>
-          <span className={classes.type}>{previewData.type}</span>
-          <span>
-            M: (
-            {previewData?.baseModels?.join(", ") ||
+          Model:{" "}
+          <ul className={classes["models"]}>
+            {previewData?.baseModels?.map((model, i) => (
+              <li key={i} className={classes["models__item"]}>
+                {model}
+              </li>
+            )) ||
               currVersion?.baseModel ||
               previewData?.baseModel}
-            )
-          </span>
-          <span>
-            W: {currVersion?.minWeight || previewData?.minWeight} -{" "}
+          </ul>
+        </div>
+        {/* {(currVersion?.minWeight || previewData?.minWeight) && (
+          <span className={classes["text"]}>
+            Weight: {currVersion?.minWeight || previewData?.minWeight} -{" "}
             {currVersion?.maxWeight || previewData?.maxWeight}
           </span>
-          {!currVersion?.minWeight && !previewData?.minWeight && (
-            <span>W: {currVersion?.weight || previewData?.weight}</span>
-          )}
-          {/* <span>S: {currVersion?.size || previewData?.size}</span> */}
-        </div>
+        )}
+        {!currVersion?.minWeight &&
+          !previewData?.minWeight &&
+          (currVersion?.weight || previewData?.weight) && (
+            <span className={classes["text"]}>
+              Weight: {currVersion?.weight || previewData?.weight}
+            </span>
+          )} */}
         {currVersion?.versionName && (
-          <div className={classes["main-tag"]}>
-            Version: {currVersion.versionName}
+          <div className={classes["text"]}>
+            Version:{" "}
+            <span className={classes["text-secondary"]}>
+              {currVersion.versionName}
+            </span>
           </div>
         )}
-        <div className={classes["main-tag"]}>
-          File: {currVersion?.fileName || previewData?.fileName}
-        </div>
+        {(currVersion?.fileName ||
+          previewData?.fileName ||
+          currVersion?.defFileName) && (
+          <div className={classes["text"]}>
+            File:{" "}
+            <span className={classes["text-secondary"]}>
+              {currVersion?.fileName ||
+                previewData?.fileName ||
+                currVersion?.defFileName}
+            </span>
+          </div>
+        )}
         {/* {previewData?.fileNames && (
           <div className={classes["main-tag"]}>
             Files: {previewData?.fileNames?.join(", ")}

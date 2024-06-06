@@ -51,7 +51,7 @@ const CarouselImage = ({
       setImgSrc(src);
       setImgIsLoading(true);
     }
-  }, [src, imgIsLoaded]);
+  }, [src, imgIsLoaded, imgError]);
 
   const imgLoadHandler = () => {
     setImgIsLoading(false);

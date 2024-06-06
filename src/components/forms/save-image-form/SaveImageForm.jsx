@@ -122,10 +122,11 @@ const SaveImageForm = ({ modelData, curVersion }) => {
         dataFiltered = { items: images };
       }
 
-      const examplesDataWithRes = await makeBatchRequest(
-        dataFiltered.items,
-        getImagesInfo
-      );
+      // const examplesDataWithRes = await makeBatchRequest(
+      //   dataFiltered.items,
+      //   getImagesInfo
+      // );
+      const examplesDataWithRes = dataFiltered.items;
 
       examplesDataWithRes.curVersionId = curVersionId;
 
@@ -153,6 +154,8 @@ const SaveImageForm = ({ modelData, curVersion }) => {
         amount: dataFiltered.items.length,
       };
 
+      const nsfw = [...new Set(examplesDataWithRes.map((image) => image.nsfw))];
+
       await setDoc(
         modelImagesRef,
         {
@@ -161,6 +164,7 @@ const SaveImageForm = ({ modelData, curVersion }) => {
           createdAt: examplesDataWithRes[0].createdAt,
           savedAt: new Date().toISOString(),
           nsfw: examplesDataWithRes[0].nsfw,
+          nsfwTypes: nsfw,
           nsfwLevel: examplesDataWithRes[0]?.nsfwLevel || "",
         },
         { merge: true }

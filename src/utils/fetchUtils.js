@@ -1,11 +1,15 @@
+import { deleteDoc, doc, getFirestore } from "firebase/firestore";
 import { addDelayPromise, clearObjectKeys } from "./generalUtils";
+import firebaseApp from "../firebase-config";
+
+const firestore = getFirestore(firebaseApp);
 
 export const makeBatchRequest = async (
   data,
   fetchFunc,
   concurrencyLimit = 5,
   returnResult = true,
-  delay
+  delay = 500
 ) => {
   try {
     let result = [];
@@ -297,4 +301,61 @@ export const getModelData = async (modelId) => {
     // console.log(err);
     throw new Error(err);
   }
+};
+
+export const deleteModelDoc = async (uid, model) => {
+  Object.values(model.savedImages).forEach(async (versionData) => {
+    const postsData = versionData.map((post) => {
+      return {
+        ...post,
+        uid,
+        modelId: model.id,
+      };
+    });
+    // console.log(postsData);
+    await makeBatchRequest(postsData, deleteImagePostDoc, 5, false);
+  });
+
+  const modelRef = doc(firestore, "users", uid, "models", model.id + "");
+  const modelPreviewRef = doc(
+    firestore,
+    "users",
+    uid,
+    "preview",
+    model.id + ""
+  );
+
+  await deleteDoc(modelRef);
+  await deleteDoc(modelPreviewRef);
+};
+
+export const deleteImagePostDoc = async (posts) => {
+  await Promise.all(
+    posts.map(async (post) => {
+      const imgPostRef = doc(
+        firestore,
+        "users",
+        post.uid,
+        "models",
+        post.modelId + "",
+        "images",
+        post.postId + ""
+      );
+
+      return await deleteDoc(imgPostRef);
+    })
+  );
+  // const imgPostRef = doc(
+  //   firestore,
+  //   "users",
+  //   data.uid,
+  //   "models",
+  //   data.modelId + "",
+  //   "images",
+  //   data.postId + ""
+  // );
+
+  // const del = await deleteDoc(imgPostRef);
+
+  // console.log(del);
 };

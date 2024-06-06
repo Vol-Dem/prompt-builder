@@ -26,23 +26,26 @@ import {
 import { getModelsPreview, tabActions } from "../../store/tabs";
 import { addModelToPanel } from "../../store/usedModels";
 import { ReactComponent as SearchIcon } from "./../../assets/search.svg";
-import { searchActions } from "../../store/search";
+import { liveSearch, searchActions } from "../../store/search";
 import Spinner from "../ui/Spinner";
 import ButtonAdd from "../ui/ButtonAdd";
+import ErrorMessage from "../ui/ErrorMessage";
+import ButtonTertiary from "../ui/ButtonTertiary";
 
 const firestore = getFirestore(firebaseApp);
 let searchTimeout;
-const amountPerPage = 10;
+const amountPerPage = 3;
 const searchTimeoutMs = 1000;
 // const routes = [{ path: "/search" }];
 
 const Search = () => {
   const [searchResultIsOpen, setSearchResultIsOpen] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   // const [errorMessage, setErrorMessage] = useState("");
   // const [searchResultIsLoading, setSearchResultIsLoading] = useState(false);
   // const [searchInput, setSearchInput] = useState("");
   const searchInput = useSelector((state) => state.search.searchQuery);
-  const [searchResult, setSearchResult] = useState([]);
+  const [searchResult, setSearchResult] = useState({});
   const [categoriesSearchData, setCategoriesSearchData] = useState([]);
   const [subcategoriesSearchResult, setSubcategoriesSearchResult] = useState(
     []
@@ -51,6 +54,9 @@ const Search = () => {
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const categories = useSelector((state) => state.tabs.categoriesData);
   const searchIsLoading = useSelector((state) => state.search.isLoading);
+  const quickSerchResult = useSelector(
+    (state) => state.search.quickSerchResult
+  );
   const errorMessage = useSelector((state) => state.search.errorMessage);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -60,6 +66,7 @@ const Search = () => {
 
   const searchInputHandler = (e) => {
     const searchInputValue = e.target.value;
+    setSearchResultIsOpen(true);
     // setSearchInput(searchInputValue);
     dispatch(searchActions.setSearchQuery(searchInputValue));
   };
@@ -76,6 +83,16 @@ const Search = () => {
 
     setCategoriesSearchData(categoriesArr);
   }, [categories]);
+
+  useEffect(() => {
+    if (quickSerchResult.result.length > 3) {
+      const newResult = quickSerchResult.result.toSpliced(-1);
+      setSearchResult({ ...quickSerchResult, result: newResult });
+      setShowMore(true);
+    } else {
+      setSearchResult(quickSerchResult);
+    }
+  }, [quickSerchResult]);
 
   const subcategoriesSearch = useCallback(() => {
     console.log(categoriesSearchData);
@@ -104,161 +121,228 @@ const Search = () => {
     setSubcategoriesSearchResult(subcats);
   }, [categoriesSearchData, searchInput]);
 
-  const liveSearch = useCallback(
-    async (limitAmount = 3) => {
-      const searchString = searchInput.trim();
-      const collectionRef = collection(firestore, "users", uid, `preview`);
-      const queryByName = query(
-        collectionRef,
-        or(
-          // query as-is:
-          and(
-            where("name", ">=", searchString),
-            where("name", "<=", searchString + "\uf8ff")
-          ),
-          // capitalize first letter:
-          and(
-            where(
-              "name",
-              ">=",
-              searchString.charAt(0).toUpperCase() + searchString.slice(1)
-            ),
-            where(
-              "name",
-              "<=",
-              searchString.charAt(0).toUpperCase() +
-                searchString.slice(1) +
-                "\uf8ff"
-            )
-          ),
-          // lowercase:
-          and(
-            where("name", ">=", searchString.toLowerCase()),
-            where("name", "<=", searchString.toLowerCase() + "\uf8ff")
-          )
-          // and(where("fileNames", "array-contains-any", [searchString]))
-        ),
-        // where("fileNames", "array-contains-any", [searchString])
-        //   where("nsfw", "==", nsfwMode),
-        limit(limitAmount)
-      );
-      let queryRule;
+  // const liveSearch = useCallback(
+  //   async (searchString, nsfw, limitAmount = 3) => {
+  //     // const searchString = searchInput.trim();
+  //     const collectionRef = collection(firestore, "users", uid, `preview`);
+  //     let queryRule;
+  //     if (!nsfw) {
+  //       queryRule = or(
+  //         // query as-is:
+  //         and(
+  //           where("name", ">=", searchString),
+  //           where("name", "<=", searchString + "\uf8ff"),
+  //           where("nsfw", "==", false)
+  //         ),
+  //         // capitalize first letter:
+  //         and(
+  //           where(
+  //             "name",
+  //             ">=",
+  //             searchString.charAt(0).toUpperCase() + searchString.slice(1)
+  //           ),
+  //           where(
+  //             "name",
+  //             "<=",
+  //             searchString.charAt(0).toUpperCase() +
+  //               searchString.slice(1) +
+  //               "\uf8ff"
+  //           ),
+  //           where("nsfw", "==", false)
+  //         ),
+  //         // lowercase:
+  //         and(
+  //           where("name", ">=", searchString.toLowerCase()),
+  //           where("name", "<=", searchString.toLowerCase() + "\uf8ff"),
+  //           where("nsfw", "==", false)
+  //         )
+  //         // and(where("fileNames", "array-contains-any", [searchString]))
+  //       );
+  //     } else {
+  //       queryRule = or(
+  //         // query as-is:
+  //         and(
+  //           where("name", ">=", searchString),
+  //           where("name", "<=", searchString + "\uf8ff")
+  //         ),
+  //         // capitalize first letter:
+  //         and(
+  //           where(
+  //             "name",
+  //             ">=",
+  //             searchString.charAt(0).toUpperCase() + searchString.slice(1)
+  //           ),
+  //           where(
+  //             "name",
+  //             "<=",
+  //             searchString.charAt(0).toUpperCase() +
+  //               searchString.slice(1) +
+  //               "\uf8ff"
+  //           )
+  //         ),
+  //         // lowercase:
+  //         and(
+  //           where("name", ">=", searchString.toLowerCase()),
+  //           where("name", "<=", searchString.toLowerCase() + "\uf8ff")
+  //         )
+  //         // and(where("fileNames", "array-contains-any", [searchString]))
+  //       );
+  //     }
+  //     const queryByName = query(
+  //       collectionRef,
+  //       queryRule,
+  //       // where("fileNames", "array-contains-any", [searchString])
+  //       //   where("nsfw", "==", nsfwMode),
+  //       limit(limitAmount)
+  //     );
+  //     let queryRuleSub;
 
-      if (!nsfwMode) {
-        queryRule = or(
-          and(
-            where("nameArr", "array-contains-any", [
-              clearFileExtension(searchString).toLowerCase(),
-            ]),
-            where("nsfw", "==", false)
-          ),
-          and(
-            where("fileNames", "array-contains-any", [
-              clearFileExtension(searchString).toLowerCase(),
-            ]),
-            where("nsfw", "==", false)
-          ),
-          and(
-            where("customFileNames", "array-contains-any", [
-              clearFileExtension(searchString).toLowerCase(),
-            ]),
-            where("nsfw", "==", false)
-          ),
-          and(
-            where("mainTags", "array-contains-any", [
-              clearFileExtension(searchString).toLowerCase(),
-            ]),
-            where("nsfw", "==", false)
-          ),
-          and(
-            where("versionIds", "array-contains-any", [+searchString]),
-            where("nsfw", "==", false)
-          )
-        );
-      } else {
-        queryRule = or(
-          and(
-            where("nameArr", "array-contains-any", [
-              clearFileExtension(searchString).toLowerCase(),
-            ])
-          ),
-          and(
-            where("fileNames", "array-contains-any", [
-              clearFileExtension(searchString).toLowerCase(),
-            ])
-          ),
-          and(
-            where("customFileNames", "array-contains-any", [
-              clearFileExtension(searchString).toLowerCase(),
-            ])
-          ),
-          and(
-            where("mainTags", "array-contains-any", [
-              clearFileExtension(searchString).toLowerCase(),
-            ])
-          ),
-          and(where("versionIds", "array-contains-any", [+searchString]))
-        );
-      }
-      const queryByOther = query(
-        collectionRef,
-        queryRule,
-        // where("fileNames", "array-contains-any", [searchString])
+  //     if (!nsfw) {
+  //       console.log("NSFW!!!!!!");
+  //       queryRuleSub = or(
+  //         and(
+  //           where("nameArr", "array-contains-any", [
+  //             clearFileExtension(searchString).toLowerCase(),
+  //           ]),
+  //           where("nsfw", "==", false)
+  //         ),
+  //         and(
+  //           where("fileNames", "array-contains-any", [
+  //             clearFileExtension(searchString).toLowerCase(),
+  //           ]),
+  //           where("nsfw", "==", false)
+  //         ),
+  //         and(
+  //           where("customFileNames", "array-contains-any", [
+  //             clearFileExtension(searchString).toLowerCase(),
+  //           ]),
+  //           where("nsfw", "==", false)
+  //         ),
+  //         and(
+  //           where("mainTags", "array-contains-any", [
+  //             clearFileExtension(searchString).toLowerCase(),
+  //           ]),
+  //           where("nsfw", "==", false)
+  //         ),
+  //         and(
+  //           where("versionIds", "array-contains-any", [+searchString]),
+  //           where("nsfw", "==", false)
+  //         )
+  //       );
+  //     } else {
+  //       queryRuleSub = or(
+  //         and(
+  //           where("nameArr", "array-contains-any", [
+  //             clearFileExtension(searchString).toLowerCase(),
+  //           ])
+  //         ),
+  //         and(
+  //           where("fileNames", "array-contains-any", [
+  //             clearFileExtension(searchString).toLowerCase(),
+  //           ])
+  //         ),
+  //         and(
+  //           where("customFileNames", "array-contains-any", [
+  //             clearFileExtension(searchString).toLowerCase(),
+  //           ])
+  //         ),
+  //         and(
+  //           where("mainTags", "array-contains-any", [
+  //             clearFileExtension(searchString).toLowerCase(),
+  //           ])
+  //         ),
+  //         and(where("versionIds", "array-contains-any", [+searchString]))
+  //       );
+  //     }
+  //     const queryByOther = query(
+  //       collectionRef,
+  //       queryRuleSub,
+  //       // where("fileNames", "array-contains-any", [searchString])
 
-        //   where("nsfw", "==", nsfwMode),
-        //   where("main", "==", activeCategory),
-        //   where("fileNames", "array-contains-any", [searchString]),
-        // orderBy("id", "desc")
-        limit(limitAmount)
-      );
-      const querySnapshot = await getDocs(queryByName);
-      const querySnapshotOther = await getDocs(queryByOther);
-      const modelsDataName = querySnapshot.docs.map((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        return doc.data();
-      });
-      const modelsDataOther = querySnapshotOther.docs.map((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        return doc.data();
-      });
+  //       //   where("nsfw", "==", nsfwMode),
+  //       //   where("main", "==", activeCategory),
+  //       //   where("fileNames", "array-contains-any", [searchString]),
+  //       // orderBy("id", "desc")
+  //       limit(limitAmount)
+  //     );
+  //     const querySnapshot = await getDocs(queryByName);
+  //     const querySnapshotOther = await getDocs(queryByOther);
+  //     const modelsDataName = querySnapshot.docs.map((doc) => {
+  //       // doc.data() is never undefined for query doc snapshots
+  //       return doc.data();
+  //     });
+  //     const modelsDataOther = querySnapshotOther.docs.map((doc) => {
+  //       // doc.data() is never undefined for query doc snapshots
+  //       return doc.data();
+  //     });
 
-      const allSearchResults = [...modelsDataName, ...modelsDataOther];
-      console.log(allSearchResults);
+  //     const allSearchResults = [...modelsDataName, ...modelsDataOther];
+  //     console.log(allSearchResults);
 
-      const ids = allSearchResults.map(({ id }) => id);
-      const filteredResult = allSearchResults.filter(
-        ({ id }, index) => !ids.includes(id, index + 1)
-      );
+  //     const ids = allSearchResults.map(({ id }) => id);
+  //     const filteredResult = allSearchResults.filter(
+  //       ({ id }, index) => !ids.includes(id, index + 1)
+  //     );
 
-      // setSearchResult(filteredResult);
-      // dispatch(searchActions.setSearchResult(filteredResult));
-      return filteredResult;
-    },
-    [nsfwMode, searchInput, uid]
-  );
+  //     // setSearchResult(filteredResult);
+  //     // dispatch(searchActions.setSearchResult(filteredResult));
+  //     return { query: searchString, nsfw, result: filteredResult };
+  //   },
+  //   [uid]
+  // );
 
   useEffect(() => {
     // console.log(location);
     if (uid && searchInput.length >= 3) {
-      dispatch(searchActions.setSearchIsLoading(true));
+      if (
+        location.pathname !== "/search" &&
+        searchResult.query === searchInput.trim() &&
+        searchResult.nsfw === nsfwMode
+      )
+        return;
+      dispatch(searchActions.resetQuickSearchData());
+      if (location.pathname === "/search") {
+        dispatch(searchActions.resetSearchData());
+      } else {
+      }
+      console.log("CLEAN SERACH !!!!!!!");
+      setShowMore(false);
+      // dispatch(searchActions.setSearchIsLoading(true));
       dispatch(searchActions.setErrorMessage(""));
       clearTimeout(searchTimeout);
       const getModelsPreview = async () => {
-        let result = [];
+        let serachResult = [];
         try {
           if (location.pathname !== "/search") {
-            result = await liveSearch();
-            setSearchResult(result);
+            // serachResult = await liveSearch(searchInput.trim(), nsfwMode);
+            // setSearchResult(serachResult);
+            dispatch(
+              liveSearch(
+                searchInput.trim(),
+                nsfwMode,
+                amountPerPage,
+                false,
+                true
+              )
+            );
           } else {
-            result = await liveSearch(amountPerPage);
-            dispatch(searchActions.setSearchResult(result));
+            // serachResult = await liveSearch(
+            //   searchInput.trim(),
+            //   nsfwMode,
+            //   amountPerPage
+            // );
+            // dispatch(searchActions.setSearchResult(serachResult));
+            dispatch(searchActions.setIsLastPage(false));
+            dispatch(searchActions.setIsLastSubPage(false));
+            dispatch(liveSearch(searchInput.trim(), nsfwMode, amountPerPage));
           }
-          if (!result.length) {
-            throw new Error("No resources found");
-          }
-          dispatch(searchActions.setSearchIsLoading(false));
+          // if (!serachResult?.result?.length) {
+          //   throw new Error("No resources found");
+          // }
+          // dispatch(searchActions.setSearchIsLoading(false));
         } catch (err) {
           // setErrorMessage(err.message);
+          console.log(err);
           dispatch(searchActions.setErrorMessage(err.message));
           dispatch(searchActions.setSearchIsLoading(false));
         }
@@ -272,7 +356,7 @@ const Search = () => {
     } else {
       clearTimeout(searchTimeout);
       setSubcategoriesSearchResult([]);
-      setSearchResult([]);
+      // setSearchResult([]);
       dispatch(searchActions.setSearchIsLoading(false));
     }
 
@@ -283,14 +367,16 @@ const Search = () => {
     searchInput,
     nsfwMode,
     uid,
-    liveSearch,
+    // liveSearch,
     subcategoriesSearch,
     dispatch,
-    location.pathname,
+    location?.pathname,
+    searchResult?.query,
+    searchResult?.nsfw,
   ]);
 
   const addToSidePanelHandler = (e) => {
-    const previewData = searchResult.find(
+    const previewData = searchResult.result.find(
       (prev) => +prev.id === +e.target.dataset.id
     );
     let curVersionData =
@@ -322,7 +408,7 @@ const Search = () => {
     dispatch(addModelToPanel(sidePanelData));
   };
 
-  const searchResultHtml = searchResult?.map((modelPreveiw, i) => {
+  const searchResultHtml = searchResult?.result?.map((modelPreveiw, i) => {
     return (
       <li key={i} className={classes["search__item"]}>
         <NavLink
@@ -345,12 +431,23 @@ const Search = () => {
               }
             />
           </>
-          <div
-            className={classes["search__name"]}
-            // href={`/model/${modelPreveiw.id}`}
-            // target="blank"
-          >
-            {modelPreveiw.name}
+          <div className={classes["card__content"]}>
+            <div>
+              <span className={classes.type}>
+                {modelPreveiw.type === "TextualInversion"
+                  ? "Embedding"
+                  : modelPreveiw.type}
+              </span>
+              <span className={classes.models}>{modelPreveiw.baseModel}</span>
+            </div>
+
+            <div
+              className={classes["search__name"]}
+              // href={`/model/${modelPreveiw.id}`}
+              // target="blank"
+            >
+              {modelPreveiw.name}
+            </div>
           </div>
         </NavLink>
         {/* <span
@@ -403,18 +500,46 @@ const Search = () => {
 
   const submitSearchHandler = (e) => {
     e.preventDefault();
-    dispatch(searchActions.setSearchIsLoading(true));
+    // dispatch(searchActions.setSearchIsLoading(true));
+    dispatch(searchActions.resetSearchData());
+    if (location.pathname !== "/search") {
+      navigate("search");
+    }
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(async () => {
-      if (location.pathname !== "/search") {
-        navigate("search");
-      }
-      const result = await liveSearch(amountPerPage);
-      dispatch(searchActions.setSearchResult(result));
-      dispatch(searchActions.setSearchIsLoading(false));
+      // const serachResult = await liveSearch(
+      //   searchInput.trim(),
+      //   nsfwMode,
+      //   amountPerPage
+      // );
+      dispatch(liveSearch(searchInput.trim(), nsfwMode, amountPerPage));
+      // dispatch(searchActions.setSearchResult(serachResult));
+      // dispatch(searchActions.setSearchIsLoading(false));
       console.log(searchInput);
     }, searchTimeoutMs);
   };
+
+  // const closeMenu = (e) => {
+  //   if (!e.target.closest(`.${classes.search}`)) {
+  //     // setSearchResultIsOpen(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (
+  //     searchInput.length >= 3 &&
+  //     searchResultIsOpen &&
+  //     location.pathname !== "/search"
+  //   ) {
+  //     document.addEventListener("click", closeMenu);
+  //   } else {
+  //     document.removeEventListener("click", closeMenu);
+  //   }
+
+  //   return () => {
+  //     document.removeEventListener("click", closeMenu);
+  //   };
+  // }, [searchResultIsOpen, searchInput, location.pathname]);
 
   return (
     <div className={classes["search"]}>
@@ -464,12 +589,27 @@ const Search = () => {
                 </div>
               )}
               {!searchIsLoading && errorMessage && (
-                <div className={classes.error}>{errorMessage}</div>
+                <ErrorMessage>{errorMessage}</ErrorMessage>
               )}
-              {!searchIsLoading && !!searchResult.length && (
+              {!searchIsLoading &&
+                !errorMessage &&
+                !searchResult?.result?.length &&
+                !!searchResult?.query && (
+                  <div className={classes.error}>No resources found</div>
+                )}
+              {!searchIsLoading && !!searchResult?.result?.length && (
                 <ul className={classes["search__models"]}>
                   {searchResultHtml}
                 </ul>
+              )}
+              {showMore && (
+                <ButtonTertiary
+                  type="button"
+                  className={classes["btn-more"]}
+                  onClick={submitSearchHandler}
+                >
+                  Show more
+                </ButtonTertiary>
               )}
             </div>
           </div>

@@ -8,7 +8,7 @@ import Buttton from "../../ui/Button";
 import VersionStatusForm from "../../forms/version-status-form/VersionStatusForm";
 import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
 // import { updateModel } from "../../../store/model";
-import { getModelData } from "../../../utils/fetchUtils";
+import { deleteModelDoc, getModelData } from "../../../utils/fetchUtils";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
 import { deleteModel } from "../../../store/model";
@@ -26,6 +26,7 @@ const ModelSettings = () => {
   const [curVersionData, setCurVersionData] = useState(null);
   const [curVersionDefData, setCurVersionDefData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [errorMessage, seteErrorMessage] = useState("");
   const [successMessage, seteSuccessMessage] = useState("");
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
@@ -197,9 +198,12 @@ const ModelSettings = () => {
     setDeleteRequestIsOpen(false);
   };
 
-  const deleteModelHandler = () => {
+  const deleteModelHandler = async () => {
     console.log("DEL");
-    dispatch(deleteModel());
+    setIsDeleting(true);
+    // dispatch(deleteModel());
+    await deleteModelDoc(uid, model);
+    setIsDeleting(false);
     navigate("/");
   };
 
@@ -303,6 +307,7 @@ const ModelSettings = () => {
         can't be reverted"
           onSubmit={deleteModelHandler}
           onClose={closeDeleteReqeustHandler}
+          isDeleting={isDeleting}
         />
         // <Modal onClose={closeDeleteReqeustHandler}>
         //   <div className={classes["del-request"]}>

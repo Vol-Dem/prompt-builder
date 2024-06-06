@@ -33,8 +33,12 @@
 
 .btn-secondary {
   font-size: 1.6rem;
-  color: #818182 !important;
+  color: #818182;
   text-align: right;
+
+  &:hover {
+    color: var.$color-primary;
+  }
 }
 
 .checkbox {

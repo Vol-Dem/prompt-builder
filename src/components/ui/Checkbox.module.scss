@@ -1,9 +1,10 @@
 @use "./../../variables/variables.scss" as var;
 
 .checkbox {
-  border: 1px solid var.$color-text-primary;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   appearance: none;
   background-color: var.$color-background-light;
+  background-color: var.$color-input-bg;
   width: 1.8rem;
   height: 1.8rem;
   border-radius: 0.4rem;
@@ -28,7 +29,7 @@
   height: 1.4rem;
   transform: scale(0);
   transition: 120ms transform ease-in-out;
-  box-shadow: inset 1em 1em var.$color-primary;
+  box-shadow: inset 1em 1em lighten(var.$color-primary, 20%);
   clip-path: polygon(31% 44%, 46% 72%, 70% 12%, 100% 2%, 48% 98%, 2% 40%);
 }
 

@@ -22,8 +22,8 @@ const Subcategories = () => {
 
   const categorySwitchHandler = (e) => {
     dispatch(tabActions.setCurrentSubcategory(e.target.id));
-    dispatch(getModelsPreview());
-    // dispatch(tabActions.setModelsData([]));
+    dispatch(tabActions.resetModelsData());
+    // dispatch(getModelsPreview());
     // console.log("SCSC");
   };
 

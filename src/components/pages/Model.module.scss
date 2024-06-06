@@ -7,13 +7,16 @@
   gap: 2rem;
   // font-size: 2.2rem;
   width: 100%;
-  color: #fff;
+  color: var.$color-text-white;
   // overflow: hidden;
 }
 
 .h2 {
-  font-size: 1.8rem;
+  font-size: 2.4rem;
   font-weight: 500;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.35;
 }
 
 .btn-add {
@@ -71,14 +74,67 @@
   word-break: break-word;
   max-height: 10rem;
   transition: all 0.6s;
+  font-size: 1.6rem;
+
+  &--hidden {
+    // display: -webkit-box;
+    // overflow: hidden;
+    // text-overflow: ellipsis;
+    // -webkit-line-clamp: 8;
+    // -webkit-box-orient: vertical;
+  }
 
   // &--open {
   //   max-height: 100rem;
   // }
 
   &__btn-show {
+    font-size: 1.6rem;
     color: var.$color-link;
     cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      color: lighten(var.$color-link, 15%);
+    }
+  }
+
+  & img {
+    max-width: 100%;
+  }
+
+  & a {
+    @include var.linkA;
+  }
+
+  & ul {
+    list-style-type: disc;
+    margin-bottom: 16px;
+    padding-left: 38px;
+  }
+
+  & li {
+    margin-top: 10px;
+  }
+
+  & h2 {
+    margin-top: calc(24px * 1.35);
+    margin-bottom: 12px;
+    font-size: 24px;
+    line-height: 1.35;
+  }
+
+  & code {
+    white-space: break-spaces;
+    line-height: 1.55;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #c1c2c5;
+    background-color: var.$color-background-tertiary;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      Liberation Mono, Courier New, monospace;
+    font-size: 12px;
+    border: 1px solid var.$color-background-tertiary;
   }
 }
 

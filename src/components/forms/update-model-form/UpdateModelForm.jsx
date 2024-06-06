@@ -28,7 +28,7 @@ import Checkbox from "../../ui/Checkbox";
 import Select from "../../ui/Select";
 import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
-import { clearFileExtension } from "../../../utils/generalUtils";
+import { clearFileExtension, splitTags } from "../../../utils/generalUtils";
 import { Link } from "react-router-dom";
 import Spinner from "../../ui/Spinner";
 import { modelTypes } from "../../../variables/constants";
@@ -84,6 +84,7 @@ const UpdateModelForm = ({ modelData, id }) => {
     modelData?.modelType || "lora"
   );
   const [srcInput, setSrcInput] = useState("civitai.com");
+  const [nsfwInput, setNsfwInput] = useState(modelData?.nsfw);
   const [titleInput, setTitleInput] = useState(modelData?.name || "");
   const [descriptionInput, setDescriptionInput] = useState(
     modelData?.data.description || ""
@@ -269,9 +270,9 @@ const UpdateModelForm = ({ modelData, id }) => {
       const subData = formdata.getAll("sub").filter(Boolean);
       const sub = subData.map((el) => el?.trim());
       const mainTag = formdata.get("main-tag")?.trim() || "";
-      const weight = +formdata.get("weight")?.trim() || "";
-      const minWeight = minWeightInput;
-      const maxWeight = maxWeightInput;
+      const weight = parseFloat(formdata.get("weight")?.trim()) || null;
+      const minWeight = parseFloat(minWeightInput) || null;
+      const maxWeight = parseFloat(maxWeightInput) || null;
       const size = formdata.get("size")?.trim() || "";
       const fileName = formdata.get("file-name")?.trim() || "";
       const tagSetNames = formdata.getAll("set-name") || [];
@@ -361,6 +362,10 @@ const UpdateModelForm = ({ modelData, id }) => {
             versionId: version.id,
             versionName: version.name,
             baseModel: version.baseModel,
+            trainedWords:
+              version?.trainedWords?.flatMap((word) => {
+                return splitTags(word);
+              }) || [],
             defFileName: fileName || "",
             versionImageUrl:
               version.images?.filter((img, i) => img.type === "image")[0]
@@ -396,9 +401,17 @@ const UpdateModelForm = ({ modelData, id }) => {
       const fileNames = data.modelVersions?.flatMap((version) => {
         // version.files.map((file) => file.name)
         if (version.hasOwnProperty("files") && version?.files) {
-          return clearFileExtension(
-            version.files.find((file) => file?.primary).name
-          ).toLowerCase();
+          return [
+            ...new Set(
+              version.files
+                .filter((file) => file?.type === "Model")
+                .map((file) => clearFileExtension(file?.name).toLowerCase())
+            ),
+          ];
+
+          // return clearFileExtension(
+          //   version.files.find((file) => file?.primary).name
+          // ).toLowerCase();
         }
         return [];
       });
@@ -407,14 +420,21 @@ const UpdateModelForm = ({ modelData, id }) => {
         ?.flatMap((version) => {
           // version.files.map((file) => file.name)
           if (version.hasOwnProperty("files") && version?.files) {
-            const primaryFileHashes = version?.files.find(
-              (file) => file?.primary
-            )?.hashes;
-            if (primaryFileHashes) {
-              return Object.values(primaryFileHashes)?.map((hash) =>
-                hash.toLowerCase()
-              );
-            }
+            //   const primaryFileHashes = version?.files.find(
+            //     (file) => file?.primary
+            //   )?.hashes;
+            return version?.files
+              .filter((file) => file?.type === "Model")
+              .flatMap((file) => Object.values(file?.hashes).filter(Boolean))
+              .map((hash) => hash.toLowerCase());
+            // return version?.files
+            //   .flatMap((file) => Object.values(file?.hashes).filter(Boolean))
+            //   .map((hash) => hash.toLowerCase());
+            // if (primaryFileHashes) {
+            //   return Object.values(primaryFileHashes)?.map((hash) =>
+            //     hash.toLowerCase()
+            //   );
+            // }
           }
           return [];
         })
@@ -585,7 +605,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           name: modelName || data.name,
           fileName,
           mainTag,
-          nsfw: data?.nsfw || false,
+          nsfw: nsfwInput || false,
           nsfwLevel: data?.nsfwLevel || null,
           hashes,
           src: "civitai.com",
@@ -593,8 +613,8 @@ const UpdateModelForm = ({ modelData, id }) => {
             description: description || data.description,
             tagSetsData,
             weight,
-            minWeight,
-            maxWeight,
+            minWeight: minWeight || null,
+            maxWeight: maxWeight || null,
             size,
             helperTags,
             negativeTags,
@@ -611,7 +631,10 @@ const UpdateModelForm = ({ modelData, id }) => {
           },
           modelVersionsCustomData,
           updatedAt: new Date().toISOString(),
-          createdAt: modelData?.savedAt || new Date().toISOString(),
+          createdAt:
+            modelData?.createdAt ||
+            Date.parse(modelData?.downloadedAt) ||
+            Date.now(),
         };
 
         const loraPrevData = {
@@ -625,7 +648,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           nameArr,
           imgUrl: previewImg || "",
           type: data.type,
-          nsfw: !!data?.nsfw,
+          nsfw: nsfwInput || false,
           nsfwLevel: data?.nsfwLevel || "",
           baseModel: data.modelVersions[0].baseModel,
           baseModels: [...baseModels],
@@ -645,7 +668,10 @@ const UpdateModelForm = ({ modelData, id }) => {
           helperTags,
           modelVersionsCustomData,
           updatedAt: new Date().toISOString(),
-          createdAt: modelData?.downloadedAt || Date.now(),
+          createdAt:
+            modelData?.createdAt ||
+            Date.parse(modelData?.downloadedAt) ||
+            Date.now(),
         };
         console.log(loraPrevData);
 
@@ -947,6 +973,15 @@ const UpdateModelForm = ({ modelData, id }) => {
               setDescriptionInput(e.target.value);
             }}
           ></Textarea>
+          <Checkbox
+            id="nsfw"
+            name="nsfw"
+            checked={nsfwInput}
+            label="NSFW"
+            onChange={(e) => {
+              setNsfwInput(e.target.checked);
+            }}
+          />
         </FieldCategory>
       )}
       {modelData && (
@@ -1062,6 +1097,16 @@ const UpdateModelForm = ({ modelData, id }) => {
                   setHelperTagsInput(e.target.value);
                 }}
               ></Textarea>
+              <Textarea
+                label="Negative words"
+                name="negative-tags"
+                rows="5"
+                placeholder="Negative words"
+                value={negativeTagsInput}
+                onChange={(e) => {
+                  setNegativeTagsInput(e.target.value);
+                }}
+              ></Textarea>
               <Fieldset legend="Tag sets">
                 {tagSetsHtml}
                 <ButttonSecondary
@@ -1073,16 +1118,6 @@ const UpdateModelForm = ({ modelData, id }) => {
                   + add new set
                 </ButttonSecondary>
               </Fieldset>
-              <Textarea
-                label="Negative words"
-                name="negative-tags"
-                rows="5"
-                placeholder="Negative words"
-                value={negativeTagsInput}
-                onChange={(e) => {
-                  setNegativeTagsInput(e.target.value);
-                }}
-              ></Textarea>
             </FieldCategory>
             <FieldCategory title="Info">
               <Input
@@ -1153,7 +1188,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                 }}
               />
 
-              {modelTypeInput === "checkpoint" && (
+              {modelTypeInput === "checkpointssss" && (
                 <>
                   <Input
                     label="Sampling method"

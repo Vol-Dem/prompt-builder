@@ -99,15 +99,18 @@ export const savePost = (postInfo) => {
         }
       });
 
-      const examplesDataWithRes = await makeBatchRequest(
-        data.items.sort((a, b) => {
-          return b.createdAt - a.createdAt;
-        }),
-        getImagesInfo,
-        5,
-        true,
-        500
-      );
+      // const examplesDataWithRes = await makeBatchRequest(
+      //   data.items.sort((a, b) => {
+      //     return b.createdAt - a.createdAt;
+      //   }),
+      //   getImagesInfo,
+      //   5,
+      //   true,
+      //   500
+      // );
+      const examplesDataWithRes = data.items.sort((a, b) => {
+        return b.createdAt - a.createdAt;
+      });
       console.log(examplesDataWithRes);
       examplesDataWithRes.versionId = versionId;
 
@@ -131,6 +134,8 @@ export const savePost = (postInfo) => {
 
       const batch = writeBatch(firestore);
 
+      const nsfw = [...new Set(examplesDataWithRes.map((image) => image.nsfw))];
+
       batch.set(
         modelImagesRef,
         {
@@ -139,6 +144,7 @@ export const savePost = (postInfo) => {
           createdAt: examplesDataWithRes[0].createdAt,
           savedAt: new Date().toISOString(),
           nsfw: examplesDataWithRes[0].nsfw,
+          nsfwTypes: nsfw,
           nsfwLevel: examplesDataWithRes[0]?.nsfwLevel || "",
         },
         { merge: true }
