@@ -54,7 +54,7 @@ const ModelsList = () => {
       dispatch(tabActions.resetModelsData());
       dispatch(tabActions.setIsLastPage(false));
     }
-  }, [dispatch, modelsData, nsfwMode]);
+  }, [dispatch, modelsData, nsfwMode, activeCategory, activeSubcategory, activeTab]);
 
   useEffect(() => {
     console.log(modelsData);

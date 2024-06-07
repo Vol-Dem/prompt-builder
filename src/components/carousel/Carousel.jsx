@@ -322,6 +322,7 @@ const Carousel = ({
     currImgNum,
     openCarouselHandler,
     onDelete,
+    saved,
   ]);
 
   useEffect(() => {

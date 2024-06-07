@@ -163,87 +163,67 @@ const UsedCard = ({ previewData, fullView }) => {
           </svg>
         </button>
       </div>
-      <div className={`${fullView ? classes.content : ""}`}>
-        {previewData?.minWeight && fullView && (
-          <div>
-            Weight: {previewData?.minWeight?.toFixed(1)}-
-            {previewData?.maxWeight?.toFixed(1)}
-          </div>
-        )}
-        {/* {previewData.size && <span>S: {previewData.size}</span>} */}
-        {!!previewData.mainTag && fullView && (
-          <div className={classes["main-tag"]}>
-            {/* Activation tag: */}
-            <ActivationTag
-              tag={previewData.mainTag}
-              modelData={previewData}
-              strength={previewData.weight}
-            />
-          </div>
-        )}
-        {fullView && (
-          <div className={classes["tags-container"]}>
-            {!!previewData?.tags?.length && (
-              <>
-                {/* <span>Tags: </span> */}
-                <div
-                  className={`${classes.tags} ${
-                    tagsIsOpen ? classes["tags--open"] : ""
-                  }`}
-                  style={tagsHeight ? { maxHeight: `${tagsHeight}px` } : {}}
-                >
-                  <div
-                    ref={tagsRef}
-                    className={`${classes["tags__list"]} ${
-                      taglistHeight > taglistItemHeight ? classes.shadow : ""
-                    }`}
-                  >
-                    <TagList
-                      name="Trigger words"
-                      ref={tagsListRef}
-                      tags={previewData.tags}
-                      className={classes["tag-list"]}
-                      promptType="positive"
-                    />
-                  </div>
-                </div>
-                {taglistHeight > taglistItemHeight && (
-                  <button
-                    className={classes["tags__btn"]}
-                    onClick={openTagsHandler}
-                  >
-                    <Arrow direction={tagsIsOpen ? "up" : "down"} />
-                  </button>
-                )}
-              </>
-            )}
-          </div>
-        )}
-        {/* {!!previewData.helperTags?.length && (
-          <>
-            <div
-              className={`${classes[["helper-tags"]]} ${
-                helperTagsIsOpen ? classes["helper-tags--open"] : ""
-              }`}
-              style={
-                helpertagsHeight ? { maxHeight: `${helpertagsHeight}px` } : {}
-              }
-            >
-              <div ref={helperTagsRef} className={classes["helper-tags__list"]}>
-                <span>Helper tags:</span>
-                <TagList tags={previewData.helperTags} promptType="positive" />
+      {fullView &&
+        (previewData?.minWeight ||
+          previewData.mainTag ||
+          !!previewData?.tags?.length) && (
+          <div className={`${fullView ? classes.content : ""}`}>
+            {previewData?.minWeight && fullView && (
+              <div>
+                Weight: {previewData?.minWeight?.toFixed(1)}-
+                {previewData?.maxWeight?.toFixed(1)}
               </div>
+            )}
+            {/* {previewData.size && <span>S: {previewData.size}</span>} */}
+            {!!previewData.mainTag && fullView && (
+              <div className={classes["main-tag"]}>
+                {/* Activation tag: */}
+                <ActivationTag
+                  tag={previewData.mainTag}
+                  modelData={previewData}
+                  strength={previewData.weight}
+                />
+              </div>
+            )}
+
+            <div className={classes["tags-container"]}>
+              {!!previewData?.tags?.length && (
+                <>
+                  {/* <span>Tags: </span> */}
+                  <div
+                    className={`${classes.tags} ${
+                      tagsIsOpen ? classes["tags--open"] : ""
+                    }`}
+                    style={tagsHeight ? { maxHeight: `${tagsHeight}px` } : {}}
+                  >
+                    <div
+                      ref={tagsRef}
+                      className={`${classes["tags__list"]} ${
+                        taglistHeight > taglistItemHeight ? classes.shadow : ""
+                      }`}
+                    >
+                      <TagList
+                        name="Trigger words"
+                        ref={tagsListRef}
+                        tags={previewData.tags}
+                        className={classes["tag-list"]}
+                        promptType="positive"
+                      />
+                    </div>
+                  </div>
+                  {taglistHeight > taglistItemHeight && (
+                    <button
+                      className={classes["tags__btn"]}
+                      onClick={openTagsHandler}
+                    >
+                      <Arrow direction={tagsIsOpen ? "up" : "down"} />
+                    </button>
+                  )}
+                </>
+              )}
             </div>
-            <button
-              className={classes.btn}
-              type="button"
-              onClick={openHelperTagsHandler}
-            >
-              {`${helperTagsIsOpen ? "Hide" : "Show"} helper tags`}
-            </button>
-          </>
-        )} */}
-      </div>
+          </div>
+        )}
     </li>
   );
 };

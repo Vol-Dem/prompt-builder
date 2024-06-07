@@ -229,37 +229,41 @@ export const getModelData = async (modelId) => {
     //   });
     // });
 
-    const updatedModelversions = await Promise.all(
-      responseData?.modelVersions?.map(async (version) => {
-        const versionImagesRequest = await fetch(
-          `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${responseData.creator.username}&nsfw=X`
-        );
-        const versionImages = await versionImagesRequest.json();
-        console.log(versionImages);
-        const updatedImages = version?.images?.map((image) => {
-          const fullImgData =
-            versionImages?.items?.find(
-              (verImg) => verImg.hash === image.hash
-            ) || [];
-          // if (fullImgData?.meta) {
-          //   fullImgData.meta.comfy = "";
-          //   fullImgData.meta = clearObjectKeys(fullImgData.meta);
-          //   if (fullImgData.meta?.hashes)
-          //     fullImgData.meta.hashes = clearObjectKeys(
-          //       fullImgData.meta.hashes
-          //     );
-          // }
-          return { ...image, ...fullImgData };
-        });
-        return {
-          ...version,
-          images: updatedImages.filter(Boolean),
-        };
-      })
-    );
+    let updatedModelversions = responseData?.modelVersions;
+
+    if (responseData?.creator?.username) {
+      updatedModelversions = await Promise.all(
+        responseData?.modelVersions?.map(async (version) => {
+          const versionImagesRequest = await fetch(
+            `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${responseData.creator.username}&nsfw=X`
+          );
+          const versionImages = await versionImagesRequest.json();
+          console.log(versionImages);
+          const updatedImages = version?.images?.map((image) => {
+            const fullImgData =
+              versionImages?.items?.find(
+                (verImg) => verImg.hash === image.hash
+              ) || [];
+            // if (fullImgData?.meta) {
+            //   fullImgData.meta.comfy = "";
+            //   fullImgData.meta = clearObjectKeys(fullImgData.meta);
+            //   if (fullImgData.meta?.hashes)
+            //     fullImgData.meta.hashes = clearObjectKeys(
+            //       fullImgData.meta.hashes
+            //     );
+            // }
+            return { ...image, ...fullImgData };
+          });
+          return {
+            ...version,
+            images: updatedImages.filter(Boolean),
+          };
+        })
+      );
+    }
 
     // clear empty keys
-    updatedModelversions.forEach((version) => {
+    updatedModelversions?.forEach((version) => {
       version.images?.forEach((image) => {
         if (image?.meta) {
           const metaArr = Object.entries(image.meta).filter(

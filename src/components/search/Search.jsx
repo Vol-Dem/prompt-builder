@@ -488,7 +488,7 @@ const Search = () => {
               dispatch(tabActions.setCurrentTab(result.type));
               dispatch(tabActions.setCurrentCategory(result.id));
               dispatch(tabActions.setCurrentSubcategory(result.subId));
-              dispatch(getModelsPreview());
+              // dispatch(getModelsPreview());
             }}
           >
             {result.subName}

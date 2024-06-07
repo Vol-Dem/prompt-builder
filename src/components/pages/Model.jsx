@@ -275,7 +275,7 @@ const Model = ({ title }) => {
               dispatch(tabActions.setCurrentTab(model.modelType));
               dispatch(tabActions.setCurrentCategory(model.main));
               dispatch(tabActions.setCurrentSubcategory(sub));
-              dispatch(getModelsPreview());
+              // dispatch(getModelsPreview());
             }}
           >
             {subcategoryName || sub}
