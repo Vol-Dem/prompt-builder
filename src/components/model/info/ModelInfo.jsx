@@ -20,13 +20,33 @@ const ModelInfo = ({ customData }) => {
   return (
     <div className={classes?.info}>
       <div className={classes.type}>{model?.data?.type}</div>
-      <div>Version ID: {curVersion.id}</div>
-      <div>Base model: {curVersion?.baseModel}</div>
-      {size && <div>Size: {size}</div>}
-      {minWeight && maxWeight && <div>Weight: {weightRange}</div>}
-      {weight && <div>Best weight: {weight}</div>}
       <div>
-        Version: {curVersion?.name}
+        <span className={classes["info__name"]}>Version ID:</span>{" "}
+        {curVersion.id}
+      </div>
+      <div>
+        <span className={classes["info__name"]}>Base model: </span>
+        <span className={classes.model}>{curVersion?.baseModel}</span>
+      </div>
+      {size && (
+        <div>
+          <span className={classes["info__name"]}>Size:</span> {size}
+        </div>
+      )}
+      {minWeight && maxWeight && (
+        <div>
+          {" "}
+          <span className={classes["info__name"]}>Weight:</span> {weightRange}
+        </div>
+      )}
+      {weight && (
+        <div>
+          <span className={classes["info__name"]}>Best weight:</span> {weight}
+        </div>
+      )}
+      <div>
+        <span className={classes["info__name"]}>Version:</span>{" "}
+        {curVersion?.name}
         {" ("}
         <LinkA
           // target="blank"
@@ -55,14 +75,23 @@ const ModelInfo = ({ customData }) => {
       {customData?.fileName ||
         (curVersion.hasOwnProperty("files") && !!curVersion?.files?.length && (
           <div>
-            File:{" "}
+            <span className={classes["info__name"]}>File:</span>{" "}
             {customData?.fileName ||
               (curVersion.hasOwnProperty("files") &&
                 curVersion?.files.find((file) => file?.primary)?.name)}
           </div>
         ))}
-      {viersionVAE && <div>VAE: {viersionVAE}</div>}
-      {model?.clipSkip && <div>Clip Skip: {model?.clipSkip}</div>}
+      {viersionVAE && (
+        <div>
+          <span className={classes["info__name"]}>VAE:</span> {viersionVAE}
+        </div>
+      )}
+      {model?.clipSkip && (
+        <div>
+          <span className={classes["info__name"]}>Clip Skip:</span>{" "}
+          {model?.clipSkip}
+        </div>
+      )}
     </div>
   );
 };

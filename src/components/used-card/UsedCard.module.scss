@@ -14,6 +14,7 @@
   // margin-left: 1rem;
   box-shadow: var.$box-shadow;
   flex-shrink: 0;
+  // padding-bottom: 0.8rem;
 }
 
 .head {
@@ -224,6 +225,8 @@
   &__list {
     opacity: 1;
     // padding-bottom: 1rem;
+    padding: 0 1rem;
+    padding-bottom: 0.8rem;
   }
 
   &__btn {
@@ -237,6 +240,18 @@
     border: none;
     border-radius: 0 0 1rem 1rem;
     cursor: pointer;
+    position: relative;
+
+    &--shadow::after {
+      content: "";
+      position: absolute;
+      top: -2rem;
+      opacity: 1;
+      height: 2rem;
+      width: 100%;
+      background: linear-gradient(to top, #3e445e, transparent);
+      animation: showGradient 1s ease forwards;
+    }
   }
 
   &--open ~ &__btn {
@@ -254,15 +269,25 @@
   opacity: 1;
 }
 
+.weight {
+  display: flex;
+  gap: 0.8rem;
+  padding: 0 1rem;
+
+  &__value {
+    color: var.$color-text-gray;
+  }
+}
+
 .tags:not(.tags--open) .shadow::after {
   content: "";
-  position: absolute;
-  top: 4.6rem;
-  opacity: 1;
-  height: 2rem;
-  width: 100%;
-  background: linear-gradient(to top, #3e445e, transparent);
-  animation: showGradient 1s ease forwards;
+  // position: absolute;
+  // top: 4.6rem;
+  // opacity: 1;
+  // height: 2rem;
+  // width: 100%;
+  // background: linear-gradient(to top, #3e445e, transparent);
+  // animation: showGradient 1s ease forwards;
 }
 
 .btn {

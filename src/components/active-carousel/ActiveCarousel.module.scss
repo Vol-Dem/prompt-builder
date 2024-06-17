@@ -65,3 +65,11 @@
     opacity: 1;
   }
 }
+
+@media screen and (max-width: 980px) {
+  .wrap {
+    flex-wrap: wrap;
+    overflow-y: scroll;
+    justify-content: center;
+  }
+}

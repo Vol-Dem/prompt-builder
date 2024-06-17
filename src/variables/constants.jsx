@@ -13,3 +13,19 @@ export const modelTypes = [
   { name: "Wildcards", value: "wildcards", position: 9 },
   { name: "Other", value: "other", position: 10 },
 ];
+export const CATEGORY_NAME_MAX_LENGTH = 70;
+export const NAME_MAX_LENGTH = 300;
+export const TITLE_MAX_LENGTH = 500;
+export const DESCRIPTION_MAX_LENGTH = 100000;
+export const TRIGER_WORDS_MAX_LENGTH = 1000;
+export const ID_MAX_LENGTH = 20;
+export const NUMBER_MAX_LENGTH = 5;
+export const EMAIL_MAX_LENGTH = 50;
+export const PASSWORD_MAX_LENGTH = 100;
+export const DEF_SUCCESS_MESSAGE = "Saved successfully";
+export const SAVED_SUCCESS_MESSAGE = "Upload complete";
+export const DEF_INPUT_ERROR_MESSAGE = "Invalid input data";
+export const UNIQUE_ERROR_MESSAGE = "This name already exists";
+export const EXISTS_ERROR_MESSAGE = "This resource already exists";
+export const EMPTY_ERROR_MESSAGE =
+  "No matching images found. Try to switch the NSFW filter or the related checkbox.";

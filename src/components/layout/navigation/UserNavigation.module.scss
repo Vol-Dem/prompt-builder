@@ -24,12 +24,19 @@
     text-transform: uppercase;
     font-weight: 500;
     align-items: center;
+    min-width: 3rem;
+
+    & span {
+      word-break: break-all;
+      @include var.ellipsis(1);
+    }
   }
 
   & svg {
-    height: 3.2rem;
-    width: 3.2rem;
+    height: 3rem;
+    width: 3rem;
     color: var.$color-text-light;
+    flex-shrink: 0;
   }
 
   &__menu {
@@ -94,4 +101,14 @@
 .nav-btn-auth {
   margin-top: 1rem;
   color: #b12727;
+}
+
+@media (max-width: 480px) {
+  .nav-profile {
+    padding: 0.7rem 0.8rem;
+    &__name {
+      // width: 4rem;
+      font-size: 1.2rem;
+    }
+  }
 }

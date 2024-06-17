@@ -54,7 +54,14 @@ const ModelsList = () => {
       dispatch(tabActions.resetModelsData());
       dispatch(tabActions.setIsLastPage(false));
     }
-  }, [dispatch, modelsData, nsfwMode, activeCategory, activeSubcategory, activeTab]);
+  }, [
+    dispatch,
+    modelsData,
+    nsfwMode,
+    activeCategory,
+    activeSubcategory,
+    activeTab,
+  ]);
 
   useEffect(() => {
     console.log(modelsData);
@@ -80,9 +87,10 @@ const ModelsList = () => {
   ];
   const modelTypes = [
     { name: "-", value: "" },
-    { name: "SD 1.5", value: "SD 1.5" },
-    { name: "SDXL", value: "SDXL 1.0" },
+    { name: "SD 3", value: "SD 3" },
     { name: "Pony", value: "Pony" },
+    { name: "SDXL", value: "SDXL 1.0" },
+    { name: "SD 1.5", value: "SD 1.5" },
     { name: "Other", value: "Other" },
   ];
 

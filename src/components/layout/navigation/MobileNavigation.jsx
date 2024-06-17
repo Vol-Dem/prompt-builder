@@ -1,11 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import classes from "./MobileNavigation.module.scss";
 import { NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { tabActions } from "../../../store/tabs";
 
 const MobileNavigation = () => {
   const [navIsOpen, setNavIsOpen] = useState(false);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
+  const dispatch = useDispatch();
+
+  const resetTabsHandler = () => {
+    dispatch(tabActions.resetActiveTabs());
+  };
+
+  useEffect(() => {
+    if (navIsOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = null;
+    }
+
+    return () => {
+      document.body.style.overflow = null;
+    };
+  }, [navIsOpen]);
 
   const navSwitch = () => {
     setNavIsOpen((prevState) => !prevState);
@@ -24,17 +42,23 @@ const MobileNavigation = () => {
       <nav className={classes["mobile-nav__nav"]}>
         <ul className={classes["mobile-nav__links"]} onClick={navSwitch}>
           <li>
-            <NavLink to="/">Home</NavLink>
+            <NavLink to="/" onClick={resetTabsHandler}>
+              Home
+            </NavLink>
           </li>
           {isAuth && (
             <>
               <li>
-                <NavLink to="profile">Profile</NavLink>
+                <NavLink to="profile" onClick={resetTabsHandler}>
+                  Profile
+                </NavLink>
               </li>
             </>
           )}
           <li>
-            <NavLink to="about">About</NavLink>
+            <NavLink to="about" onClick={resetTabsHandler}>
+              About
+            </NavLink>
           </li>
         </ul>
       </nav>

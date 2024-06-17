@@ -34,22 +34,24 @@ const TagList = forwardRef(function TagList(props, ref) {
             <span className={classes.coment}>({props.coment})</span>
           )}
         </h3>
-        <button
-          id="negativePrompt"
-          data-type={props?.promptType}
-          onClick={addAllPromptHandler}
-          className={classes["btn-copy"]}
-        >
-          Add all
-        </button>
-        <button
-          id="prompt"
-          data-type={props?.promptType}
-          onClick={removeAllPromptHandler}
-          className={classes["btn-copy"]}
-        >
-          Remove all
-        </button>
+        <span>
+          <button
+            id="negativePrompt"
+            data-type={props?.promptType}
+            onClick={addAllPromptHandler}
+            className={classes["btn-copy"]}
+          >
+            Add all
+          </button>
+          <button
+            id="prompt"
+            data-type={props?.promptType}
+            onClick={removeAllPromptHandler}
+            className={classes["btn-copy"]}
+          >
+            Remove all
+          </button>
+        </span>
       </div>
       <ul className={classes.tags}>
         {props?.tags?.length &&

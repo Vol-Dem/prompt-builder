@@ -11,6 +11,11 @@ import { updateCategories } from "../../../store/model";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import DeleteRequest from "../../ui/DeleteRequest";
 import SuccessMessage from "../../ui/SuccessMessage";
+import { CATEGORY_NAME_MAX_LENGTH } from "../../../variables/constants";
+import { useValidation } from "../../../hooks/use-validation";
+import { validateInput } from "../../../utils/generalUtils";
+
+const categoryNameMaxLength = 50;
 
 const CategoriesForm = ({ modelType, activeCategory, categories }) => {
   //   const [changeNameIsActive, setChangeNameIsActive] = useState(false);
@@ -19,9 +24,17 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
   const [deleteCategoryData, setDeleteCategoryData] = useState("");
   const [categoriesInputs, setCategoriesInputs] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const dispatch = useDispatch();
-  const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
+  // const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
+
+  // const [categoryState, validateCategory] = useValidation({
+  //   required: true,
+  //   maxLength: CATEGORY_NAME_MAX_LENGTH,
+  // });
+  // const { isValid: categoryIsValid, errorMessage: categoryErrorMessage } =
+  //   categoryState;
 
   useEffect(() => {
     const categoriesData = !activeCategory
@@ -53,23 +66,46 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
           placeholder: "",
           value: category.name,
           active: false,
+          isValid: true,
         };
       });
     setCategoriesInputs(categoriesInputData);
   }, [categories, activeCategory]);
 
-  const subCatHandler = (e) => {
+  const subCatHandler = (e, isValid) => {
+    setErrorMessage("");
     setCategoriesInputs((prevState) => {
-      const newState = [...prevState];
-      console.log(newState);
-      console.log(e.target.id);
-      const curIndex = newState.findIndex((imageId) => {
-        return imageId.id + "" === e.target.id;
-      });
-      newState[curIndex].value = e.target.value;
+      // const newState = [...prevState];
+      // console.log(newState);
+      // console.log(e.target.id);
+      // const curIndex = newState.findIndex((imageId) => {
+      //   return imageId.id + "" === e.target.id;
+      // });
+      // newState[curIndex].value = e.target.value;
+      // return newState;
+      // const { isValid, errorMessage } = validateInput(
+      //   {
+      //     required: true,
+      //     maxLength: CATEGORY_NAME_MAX_LENGTH,
+      //   },
+      //   e.target.value
+      // );
 
+      const newState = prevState.map((item) => {
+        if (item.id === e.target.id) {
+          return {
+            ...item,
+            value: e.target.value,
+            isValid,
+            // errorMessage,
+          };
+        }
+        return item;
+      });
       return newState;
     });
+    // console.log(e.target.value);
+    // validateCategory(e.target.value);
   };
 
   //Switch visibility of change name form
@@ -96,45 +132,71 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
 
   //Retrive data from form and dispatch changeUserName action with new name
   const changeCategoryNameHandler = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const [id, categoryName] = [...formData][0];
+    try {
+      e.preventDefault();
+      setShowErrorMessage(true);
+      setErrorMessage("");
+      const formData = new FormData(e.target);
+      const [id, categoryName] = [...formData][0];
+      // validateCategory(categoryName);
 
-    const existedName = categoriesToUpdate.find(
-      (category) => category.name === categoryName
-    );
+      const existedName = categoriesToUpdate.find(
+        (category) => category.name === categoryName
+      );
 
-    if (existedName) {
-      setErrorMessage(`The "${categoryName}" category already exists`);
-      return;
-    }
+      const inputData = categoriesInputs.find((input) => input.id === id);
 
-    const updatedCategories = categoriesToUpdate.map((category) => {
-      if (category.id === id) {
-        return {
-          ...category,
-          name: categoryName,
-        };
+      if (!inputData.isValid) {
+        return;
       }
-      return category;
-    });
 
-    const categoriesData = !activeCategory
-      ? updatedCategories
-      : categories.map((category) => {
-          if (category.id === activeCategory) {
-            return {
-              ...category,
-              subcategories: updatedCategories,
-            };
-          }
-          return category;
-        });
+      // if (categoryName.length > CATEGORY_NAME_MAX_LENGTH) {
+      //   setErrorMessage(
+      //     `Name can't be more then ${CATEGORY_NAME_MAX_LENGTH} symbols`
+      //   );
+      //   return;
+      // }
 
-    console.log(categoriesData);
+      if (existedName) {
+        // setErrorMessage(`The "${categoryName}" category already exists`);
+        // return;
+        throw new Error(`The "${categoryName}" category already exists`);
+      }
 
-    dispatch(updateCategories(modelType, categoriesData));
-    // setChangeNameIsActive(false);
+      // if (!categoryIsValid) {
+      //   setErrorMessage(categoryErrorMessage);
+      //   return;
+      // }
+
+      const updatedCategories = categoriesToUpdate.map((category) => {
+        if (category.id === id) {
+          return {
+            ...category,
+            name: categoryName,
+          };
+        }
+        return category;
+      });
+
+      const categoriesData = !activeCategory
+        ? updatedCategories
+        : categories.map((category) => {
+            if (category.id === activeCategory) {
+              return {
+                ...category,
+                subcategories: updatedCategories,
+              };
+            }
+            return category;
+          });
+
+      console.log(categoriesData);
+
+      dispatch(updateCategories(modelType, categoriesData));
+      // setChangeNameIsActive(false);
+    } catch (err) {
+      setErrorMessage(err.message);
+    }
   };
 
   const deleteCategoryHandler = () => {
@@ -203,14 +265,22 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
                 // defaultValue={category.value}
                 onChange={subCatHandler}
                 value={category.value}
-                // error={errorMessage}
+                validation={{
+                  required: true,
+                  maxLength: CATEGORY_NAME_MAX_LENGTH,
+                }}
+                showError={showErrorMessage}
+                // error={categoryErrorMessage}
               />
-              <ButtonTertiary type="submit">Submit</ButtonTertiary>
+              <ButtonTertiary type="submit" className={classes["btn"]}>
+                Submit
+              </ButtonTertiary>
             </>
           )}
           <ButtonTertiary
             type="button"
             button={{ "data-id": category.id }}
+            className={classes["btn"]}
             onClick={changeNameIsActiveHandler}
           >
             {!category.active ? "Change" : "Cancel"}
@@ -219,7 +289,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
             <ButtonTertiary
               type="button"
               button={{ "data-id": category.id }}
-              className={classes["btn-del"]}
+              className={`${classes["btn"]} ${classes["btn--del"]}`}
               onClick={showDeleteReqeustHandler}
             >
               Delete
@@ -242,11 +312,11 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
             {successMessage && (
               <SuccessMessage>{successMessage}</SuccessMessage>
             )}
-            {errorMessageAuth && (
+            {/* {errorMessageAuth && (
               <ErrorMessage className={classes["auth__error"]}>
                 {errorMessageAuth}
               </ErrorMessage>
-            )}
+            )} */}
           </div>
         </div>
       </div>

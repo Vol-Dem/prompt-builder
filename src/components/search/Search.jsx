@@ -38,7 +38,7 @@ const amountPerPage = 3;
 const searchTimeoutMs = 1000;
 // const routes = [{ path: "/search" }];
 
-const Search = () => {
+const Search = ({ className }) => {
   const [searchResultIsOpen, setSearchResultIsOpen] = useState(false);
   const [showMore, setShowMore] = useState(false);
   // const [errorMessage, setErrorMessage] = useState("");
@@ -542,7 +542,7 @@ const Search = () => {
   // }, [searchResultIsOpen, searchInput, location.pathname]);
 
   return (
-    <div className={classes["search"]}>
+    <div className={`${classes["search"]} ${className || ""}`}>
       <form onSubmit={submitSearchHandler} className={classes["search__field"]}>
         <input
           type="search"
@@ -572,6 +572,7 @@ const Search = () => {
                 className={classes["search__btn-close"]}
                 onClick={() => {
                   setSearchResultIsOpen(false);
+                  dispatch(searchActions.setSearchQuery(""));
                 }}
               >
                 <span className={classes["search__cross"]}></span>

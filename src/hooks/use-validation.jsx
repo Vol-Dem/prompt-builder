@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useReducer } from "react";
 
 const defaultState = {
@@ -8,54 +8,106 @@ const defaultState = {
 };
 
 const validationReducer = (state, action) => {
-  if (action.type === "email") {
-    const isValid = action.value.split("").includes("@");
-    const errorMessage = isValid ? "" : "Email must includes @";
-    return { inputValue: action.value, isValid, errorMessage };
+  const validTypes = action.type;
+  if (!validTypes) {
+    return state;
   }
-  if (action.type === "password") {
-    const isValid = action.value.length >= 6;
-    const errorMessage = isValid ? "" : "Password needs to be 6+ characters";
-    return { inputValue: action.value, isValid, errorMessage };
-  }
-  if (action.type === "required") {
-    const isValid = !action.value === "";
-    const errorMessage = isValid ? "" : "This field is required";
-    return { inputValue: action.value, isValid, errorMessage };
-  }
-  if (action.type === "maxLength") {
-    const isValid = action.value.length >= action.options.maxLength;
-    const errorMessage = isValid
-      ? ""
-      : `Value cannot be more than ${action.options.maxLength} characters`;
-    return { inputValue: action.value, isValid, errorMessage };
-  }
-  if (action.type === "minLength") {
-    console.log(action.value.length, action.options.minLength);
-    const isValid = action.value.length >= action.options.minLength;
-    const errorMessage = isValid
-      ? ""
-      : `Value cannot be less than ${action.options.minLength} characters`;
-    return { inputValue: action.value, isValid, errorMessage };
-  }
-  return state;
+  // const validTypes = {
+  //   required: "",
+  //   maxLength: "",
+  //   minLength: "",
+  //   email: "",
+  //   password: true,
+  //   number: "",
+  //   string: "",
+  // };
+  const errorMessages = [];
+  Object.keys(validTypes).forEach((type) => {
+    if (!!validTypes[type] && type === "email") {
+      const isValid = action.value.split("").includes("@");
+      const errorMessage = isValid ? "" : "Email must includes @";
+      if (!!errorMessage) {
+        errorMessages.push(errorMessage);
+      }
+      // return { inputValue: action.value, isValid, errorMessage };
+    }
+    if (!!validTypes[type] && type === "password") {
+      const isValid = action.value.length >= 6;
+      const errorMessage = isValid ? "" : "Password needs to be 6+ characters";
+      console.log(isValid);
+      if (!!errorMessage) {
+        errorMessages.push(errorMessage);
+      }
+      // return { inputValue: action.value, isValid, errorMessage };
+    }
+    if (!!validTypes[type] && type === "required") {
+      const isValid = !!action.value;
+      console.log(action.value);
+      const errorMessage = isValid ? "" : "This field is required";
+      if (!!errorMessage) {
+        errorMessages.push(errorMessage);
+      }
+      // return { inputValue: action.value, isValid, errorMessage };
+    }
+    if (!!validTypes[type] && type === "maxLength") {
+      const isValid = !(action.value.length > validTypes[type]);
+      const errorMessage = isValid
+        ? ""
+        : `Value cannot be more than ${validTypes[type]} characters`;
+      if (!!errorMessage) {
+        errorMessages.push(errorMessage);
+      }
+      // return { inputValue: action.value, isValid, errorMessage };
+    }
+    if (!!validTypes[type] && type === "minLength") {
+      console.log(action.value.length, action.options.minLength);
+      const isValid = action.value.length >= validTypes[type];
+      const errorMessage = isValid
+        ? ""
+        : `Value cannot be less than ${validTypes[type]} characters`;
+      if (!!errorMessage) {
+        errorMessages.push(errorMessage);
+      }
+      // return { inputValue: action.value, isValid, errorMessage };
+    }
+  });
+  const isValid = !errorMessages.length;
+  const errorMessage = !isValid ? errorMessages[0] : "";
+  console.log("VAL", action.value);
+  console.log("WTF", isValid);
+  console.log("WTFM", errorMessages);
+  return { inputValue: action.value, isValid, errorMessage };
 };
 
 /**
  * Validate input data
- * @param {string} type - Type of validation (email or password)
- * @param {Object} options - Additional options for validation
+ * @param {string} type - Type of validation (email, password, required, minLength, maxLength, number, string)
+ * @param {Object} initialValue - initialValue
  * @returns {Array} - Returns array with a state object {inputValue,isValid,errorMessage}, and a function to pass value.
  */
-export const useValidation = (type, options) => {
-  const [state, dispatch] = useReducer(validationReducer, defaultState);
 
-  const validate = useCallback(
-    (value) => {
-      dispatch({ type: type, value: value, options });
-    },
-    [dispatch, type, options]
-  );
+// export const useValidation = (type, initialValue) => {
+//   const [state, dispatch] = useReducer(validationReducer, defaultState);
 
-  return [state, validate];
+//   const validate = useCallback(
+//     (value) => {
+//       dispatch({ type: type, value: value });
+//     },
+//     [dispatch, type]
+//   );
+
+//   return [state, validate];
+// };
+export const useValidation = (type, initialValue) => {
+  const [state, dispatch] = useReducer(validationReducer, {
+    inputValue: initialValue,
+    isValid: false,
+    errorMessage: "",
+  });
+
+  useEffect(() => {
+    dispatch({ type: type, value: initialValue });
+  }, [dispatch, type, initialValue]);
+
+  return state;
 };

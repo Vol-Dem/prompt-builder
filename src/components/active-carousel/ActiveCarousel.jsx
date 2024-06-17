@@ -75,6 +75,9 @@ const ActiveCarousel = () => {
               visibleImgAmount={1}
               imgIsOpen={true}
               activeImgNum={activeCarouselData?.currImgNum || 0}
+              active={true}
+              saved={activeCarouselData?.saved}
+              // onDelete={activeCarouselData?.onDelete}
             />
           )}
           <ImageCard />

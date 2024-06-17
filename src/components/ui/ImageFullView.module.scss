@@ -23,8 +23,8 @@
     height: auto;
     transform: translate(-50%, -50%);
     z-index: 30;
-    max-width: 95vw;
-    // min-width: 40rem;
+    max-width: 90vw;
+    min-width: 40rem;
     max-height: 95vh;
     // overflow-y: scroll;
     // @include var.custom-scroll;
@@ -76,6 +76,34 @@
 
 .title {
   margin-bottom: 1rem;
+}
+
+.img {
+  display: flex;
+  // width: 12rem;
+  height: 100%;
+  min-height: 10rem;
+  max-height: 95vh;
+  max-width: 90vw;
+  // min-width: 16rem;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  background-color: #383838;
+  //   cursor: pointer;
+  overflow: hidden;
+
+  & img {
+    position: absolute;
+    min-height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    transition: all 0.3s;
+  }
+
+  &--hidden {
+    opacity: 0;
+  }
 }
 
 @keyframes show {

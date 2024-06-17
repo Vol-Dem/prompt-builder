@@ -15,7 +15,8 @@ const ActivationTag = ({ tag, modelData, strength }) => {
     const tagName = tag.split(":").slice(0, -1).join(":");
     const curStr = parseFloat(tag?.split(":")?.slice(-1));
     // console.log(tag.split(":"));
-    // console.log(tagName);
+    console.log(tagName);
+    console.log(curStr || null);
     setCurTagName(tagName);
     if (curStr) {
       setCurTagStrength(curStr);
@@ -57,32 +58,34 @@ const ActivationTag = ({ tag, modelData, strength }) => {
         promptType="positive"
         modelData={modelData}
       />
-      <div className={classes["activation-tag__btn-container"]}>
-        <button
-          type="button"
-          title="up"
-          className={classes["activation-tag__btn"]}
-          onClick={strengthHandler}
-          data-type="inc"
-        >
-          <span
+      {curTagStrength !== null && (
+        <div className={classes["activation-tag__btn-container"]}>
+          <button
+            type="button"
+            title="up"
+            className={classes["activation-tag__btn"]}
+            onClick={strengthHandler}
             data-type="inc"
-            className={`${classes["activation-tag__btn-arrow"]} ${classes["activation-tag__btn-arrow--up"]}`}
-          ></span>
-        </button>
-        <button
-          type="button"
-          title="down"
-          className={classes["activation-tag__btn"]}
-          onClick={strengthHandler}
-          data-type="dec"
-        >
-          <span
+          >
+            <span
+              data-type="inc"
+              className={`${classes["activation-tag__btn-arrow"]} ${classes["activation-tag__btn-arrow--up"]}`}
+            ></span>
+          </button>
+          <button
+            type="button"
+            title="down"
+            className={classes["activation-tag__btn"]}
+            onClick={strengthHandler}
             data-type="dec"
-            className={`${classes["activation-tag__btn-arrow"]} ${classes["activation-tag__btn-arrow--down"]}`}
-          ></span>
-        </button>
-      </div>
+          >
+            <span
+              data-type="dec"
+              className={`${classes["activation-tag__btn-arrow"]} ${classes["activation-tag__btn-arrow--down"]}`}
+            ></span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

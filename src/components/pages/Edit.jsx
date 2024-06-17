@@ -25,6 +25,9 @@ const Edit = ({ title }) => {
 
   useEffect(() => {
     document.title = `Edit - ${model?.name}` || title;
+    return () => {
+      document.title = "Prompt builder";
+    };
   }, [title, model?.name]);
 
   useEffect(() => {

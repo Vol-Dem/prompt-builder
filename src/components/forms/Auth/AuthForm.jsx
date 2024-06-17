@@ -9,20 +9,39 @@ import Buttton from "../../ui/Button";
 import { useValidation } from "../../../hooks/use-validation";
 import { useEffect } from "react";
 import ButttonSecondary from "../../ui/ButtonSecondary";
+import {
+  DEF_INPUT_ERROR_MESSAGE,
+  EMAIL_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+  PASSWORD_MAX_LENGTH,
+} from "../../../variables/constants";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showEmailError, setShowEmailError] = useState(false);
-  const [showPasswordError, setShowPasswordError] = useState(false);
+  const [email, setEmail] = useState({
+    value: "",
+    isValid: false,
+  });
+  const [password, setPassword] = useState({
+    value: "",
+    isValid: false,
+  });
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  // const [showEmailError, setShowEmailError] = useState(false);
+  // const [showPasswordError, setShowPasswordError] = useState(false);
 
-  const [emailState, validateEmail] = useValidation("email");
-  const { isValid: emailIsValid, errorMessage: emailErrorMessage } = emailState;
+  // const [emailState, validateEmail] = useValidation({
+  //   email: true,
+  //   required: true,
+  // });
+  // const { isValid: emailIsValid, errorMessage: emailErrorMessage } = emailState;
 
-  const [passwordState, validatePassword] = useValidation("password");
-  const { isValid: passwordIsValid, errorMessage: passwordErrorMessage } =
-    passwordState;
+  // const [passwordState, validatePassword] = useValidation({
+  //   required: true,
+  //   password: true,
+  // });
+  // const { isValid: passwordIsValid, errorMessage: passwordErrorMessage } =
+  //   passwordState;
 
   const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
   const isLoading = useSelector((state) => state.auth.isLoading);
@@ -35,40 +54,52 @@ const AuthForm = () => {
     };
   }, [dispatch]);
 
-  const validateEmailOnChange = (e) => {
-    setEmail(e.target.value);
-    validateEmail(e.target.value);
-  };
+  // const validateEmailOnChange = (e) => {
+  //   setEmail(e.target.value);
+  //   validateEmail(e.target.value);
+  // };
 
-  const validatePasswordOnChange = (e) => {
-    setPassword(e.target.value);
-    validatePassword(e.target.value);
-  };
+  // const validatePasswordOnChange = (e) => {
+  //   setPassword(e.target.value);
+  //   validatePassword(e.target.value);
+  // };
 
-  const showEmailErrorHandler = () => {
-    setShowEmailError(true);
-  };
-  const showPasswordErrorHandler = () => {
-    setShowPasswordError(true);
-  };
+  // const showEmailErrorHandler = () => {
+  //   setShowEmailError(true);
+  // };
+  // const showPasswordErrorHandler = () => {
+  //   setShowPasswordError(true);
+  // };
 
   const signIn = async (e) => {
     e.preventDefault();
-    validateEmail(email);
-    validatePassword(password);
-    setShowEmailError(true);
-    setShowPasswordError(true);
+    dispatch(authActions.setErrorMessage(""));
+    setShowErrorMessage(true);
+    // validateEmail(email);
+    // validatePassword(password);
+    // setShowEmailError(true);
+    // setShowPasswordError(true);
+    // console.log("WTF", emailErrorMessage);
 
-    if (!emailIsValid || !passwordIsValid) {
-      dispatch(authActions.setErrorMessage("Invalid input data"));
+    if (!email.isValid || !password.isValid) {
+      dispatch(authActions.setErrorMessage(DEF_INPUT_ERROR_MESSAGE));
     } else {
-      dispatch(authRequest(isLogin, email, password));
+      dispatch(authRequest(isLogin, email.value, password.value));
     }
   };
 
   const signUp = () => {
     dispatch(authActions.setErrorMessage(""));
     setIsLogin((state) => !state);
+    setEmail({
+      value: "",
+      isValid: false,
+    });
+    setPassword({
+      value: "",
+      isValid: false,
+    });
+    setShowErrorMessage(false);
   };
 
   return (
@@ -83,12 +114,21 @@ const AuthForm = () => {
           type="email"
           input={{ disabled: isLoading }}
           className={`${classes["auth__input"]} ${
-            showEmailError && !emailIsValid ? classes.invalid : ""
+            showErrorMessage && !email.isValid ? classes.invalid : ""
           }`}
-          onBlur={showEmailErrorHandler}
-          error={showEmailError && emailErrorMessage}
+          // onBlur={showEmailErrorHandler}
+          // error={showEmailError && emailErrorMessage}
           autoFocus={true}
-          onChange={validateEmailOnChange}
+          onChange={(e, isValid) => {
+            setEmail({ value: e.target.value, isValid });
+          }}
+          validation={{
+            required: true,
+            email: true,
+            maxLength: EMAIL_MAX_LENGTH,
+          }}
+          showError={showErrorMessage}
+          value={email.value}
         />
         <Input
           label="Password"
@@ -96,11 +136,20 @@ const AuthForm = () => {
           type="password"
           input={{ disabled: isLoading }}
           className={`${classes["auth__input"]} ${
-            showPasswordError && !passwordIsValid ? classes.invalid : ""
+            showErrorMessage && !password.isValid ? classes.invalid : ""
           }`}
-          onBlur={showPasswordErrorHandler}
-          error={showPasswordError && passwordErrorMessage}
-          onChange={validatePasswordOnChange}
+          // onBlur={showPasswordErrorHandler}
+          // error={showPasswordError && passwordErrorMessage}
+          onChange={(e, isValid) => {
+            setPassword({ value: e.target.value, isValid });
+          }}
+          validation={{
+            required: true,
+            password: true,
+            maxLength: PASSWORD_MAX_LENGTH,
+          }}
+          showError={showErrorMessage}
+          value={password.value}
         />
         {errorMessageAuth && (
           <ErrorMessage className={classes["auth__error"]}>

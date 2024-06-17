@@ -9,6 +9,7 @@ import firebaseApp from "../../../firebase-config";
 import { useSelector } from "react-redux";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
+import { SAVED_SUCCESS_MESSAGE } from "../../../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -113,7 +114,7 @@ const VersionStatusForm = ({ modelData }) => {
         },
         { merge: true }
       );
-      seteSuccessMessage("Saved");
+      seteSuccessMessage(SAVED_SUCCESS_MESSAGE);
       setIsSaving(false);
     } catch (err) {
       console.log(err.message);

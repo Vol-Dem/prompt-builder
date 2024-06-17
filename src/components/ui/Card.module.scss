@@ -8,3 +8,9 @@
   // padding: 1rem 1rem;
   height: 100%;
 }
+
+@media (max-width: 480px) {
+  .card {
+    padding: 1.6rem;
+  }
+}

@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "./Layout.module.scss";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Footer from "../footer/Footer";
 
 // const Layout = () => {
@@ -33,8 +33,10 @@ import Search from "../../search/Search";
 import UploadingPanel from "../../uploading-panel/UploadingPanel";
 import Carousel from "../../carousel/Carousel";
 import ActiveCarousel from "../../active-carousel/ActiveCarousel";
+import SearchSvg from "../../../assets/SearchSvg";
 
 const Layout = () => {
+  // const [mobileSearchIsOpen, setMobileSea  rchIsOpen] = useState(false);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const authIsOpen = useSelector((state) => state.auth.authFormIsOpen);
   const notificationIsShown = useSelector(
@@ -46,6 +48,8 @@ const Layout = () => {
   );
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const openAuth = () => {
     dispatch(authActions.openAuthForm());
@@ -53,6 +57,16 @@ const Layout = () => {
   const closeAuth = () => {
     dispatch(authActions.closeAuthForm());
   };
+
+  const openMobileSearch = () => {
+    if (location.pathname !== "/search") {
+      navigate("search");
+    }
+    // setMobileSearchIsOpen((prevState) => !prevState);
+  };
+  // const closeMobileSearch = () => {
+  //   setMobileSearchIsOpen(false);
+  // };
 
   const nsfwSwitchHandler = () => {
     dispatch(switchNsfwMode(!isNsfwMode));
@@ -93,7 +107,20 @@ const Layout = () => {
                 <MobileNavigation />
                 <div className={classes.logo}>LOGO</div>
                 <MainNavigation />
-                <Search />
+                <Search
+                  className={`${
+                    location.pathname === "/search"
+                      ? ""
+                      : classes["search-hidden"]
+                  }`}
+                />
+                <span
+                  className={classes["btn-search"]}
+                  onClick={openMobileSearch}
+                >
+                  <SearchSvg />
+                </span>
+                <UploadingPanel />
                 <div className={classes["mode-switch"]}>
                   <button
                     type="button"
@@ -114,7 +141,6 @@ const Layout = () => {
                     NSFW
                   </button>
                 </div>
-                <UploadingPanel />
 
                 {isAuth && <UserNavigation />}
                 {!isAuth && (

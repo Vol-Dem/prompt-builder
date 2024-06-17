@@ -19,6 +19,7 @@ import Modal from "../../ui/Modal";
 import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
 import Buttton from "../../ui/Button";
 import ErrorMessage from "../../ui/ErrorMessage";
+import ButtonTertiary from "../../ui/ButtonTertiary";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -27,6 +28,7 @@ const postsPerPage = 16;
 let getImageTimeout;
 
 const GeneratedImages = ({ customData }) => {
+  const [showAllVersions, setShowAllVersions] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [curExampleImgsType, setCurExampleImgsType] = useState("saved");
   const [examplesIsLoading, setExamplesIsLoading] = useState(false);
@@ -46,8 +48,10 @@ const GeneratedImages = ({ customData }) => {
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const uid = useSelector((state) => state.auth.user.uid);
-  const endPage = useRef(null);
-  const intersecting = useIntersection(endPage, false);
+  const endPageRef = useRef(null);
+  const versionsListRef = useRef(null);
+  const versionsItemRef = useRef(null);
+  const intersecting = useIntersection(endPageRef, false);
 
   useEffect(() => {
     setIsIntersecting(intersecting);
@@ -496,8 +500,9 @@ const GeneratedImages = ({ customData }) => {
         return [];
       }
       return (
-        <div
+        <li
           key={i}
+          ref={versionsItemRef}
           id={version.id}
           data-version={i}
           onClick={openSavedVersionImagesHandler}
@@ -509,21 +514,44 @@ const GeneratedImages = ({ customData }) => {
         ${versionIsSaved ? classes["version--downloaded"] : ""}`}
         >
           {version.name}
-        </div>
+        </li>
       );
     }
   );
 
-  const deletePostHandler = useCallback(
-    (id) => {
-      const newExamples = examplesImgData.filter(
-        (image) => image[0].postId !== id
-      );
+  // const deletePostHandler = useCallback(
+  //   (id) => {
+  //     // const newExamples = examplesImgData.filter(
+  //     //   (image) => image[0].postId !== id
+  //     // );
+  //     // setExamplesImgData(newExamples);
+  //   },
+  //   [examplesImgData]
+  // );
 
-      setExamplesImgData(newExamples);
-    },
-    [examplesImgData]
-  );
+  useEffect(() => {
+    if (
+      !!model?.savedImages &&
+      curExampleImgsType === "saved" &&
+      !!examplesImgData?.length
+    ) {
+      const savedPostsIds = model?.savedImages[curImagesModelVersionId]?.map(
+        (post) => post.postId
+      );
+      console.log("IDS", savedPostsIds);
+      const newExamples = examplesImgData?.filter((image) =>
+        savedPostsIds?.includes(image[0]?.postId)
+      );
+      if (examplesImgData?.length > newExamples?.length) {
+        setExamplesImgData(newExamples);
+      }
+    }
+  }, [
+    model.savedImages,
+    curImagesModelVersionId,
+    curExampleImgsType,
+    examplesImgData,
+  ]);
 
   useEffect(() => {
     let examples;
@@ -536,7 +564,7 @@ const GeneratedImages = ({ customData }) => {
             versionId={curImagesModelVersionId}
             images={item}
             visibleImgAmount={1}
-            onDelete={deletePostHandler}
+            // onDelete={deletePostHandler}
             saved={true}
             // onUpdate={updateImgResData}
           />
@@ -577,11 +605,15 @@ const GeneratedImages = ({ customData }) => {
     examplesImgData,
     model,
     nsfwMode,
-    deletePostHandler,
+    // deletePostHandler,
   ]);
 
   const addImgByIdHandler = () => {
     setAddImgModalIsOpen(true);
+  };
+
+  const showAllVersionsHandler = () => {
+    setShowAllVersions((prevState) => !prevState);
   };
 
   return (
@@ -613,8 +645,11 @@ const GeneratedImages = ({ customData }) => {
             All
           </span>
         </div>
+        <Buttton className={classes["button-add"]} onClick={addImgByIdHandler}>
+          Add Image by ID
+        </Buttton>
         {curExampleImgsType === "all" && (
-          <>
+          <div className={classes.sort}>
             <span>Sort: </span>
             <select
               name="sort"
@@ -631,7 +666,7 @@ const GeneratedImages = ({ customData }) => {
               <option value="Most Comments">Most Comments</option>
               <option value="Most Reactions">Most Reactions</option>
             </select>
-            <select
+            {/* <select
               name="amount-per-page"
               id="amount-per-page"
               value={amountPerPage}
@@ -646,31 +681,42 @@ const GeneratedImages = ({ customData }) => {
               <option value="30">30</option>
               <option value="50">50</option>
               <option value="100">100</option>
-            </select>
-          </>
-        )}
-        <Buttton className={classes["button-add"]} onClick={addImgByIdHandler}>
-          Add Image by ID
-        </Buttton>
-      </div>
-
-      <div className={classes["image-versions"]}>
-        {curExampleImgsType !== "saved" && (
-          <div
-            className={`${classes.version} ${
-              curImagesModelVersionId === "all-versions"
-                ? classes["version--active"]
-                : ""
-            }
-        `}
-            id="all-versions"
-            onClick={openSavedVersionImagesHandler}
-          >
-            All
+            </select> */}
           </div>
         )}
-        {modelImageVersionsHtml}
       </div>
+      <div
+        className={classes["versions"]}
+        style={{
+          maxHeight: showAllVersions
+            ? `${versionsListRef?.current?.offsetHeight}px`
+            : `${versionsItemRef?.current?.offsetHeight + 2}px`,
+        }}
+      >
+        <ul ref={versionsListRef} className={classes["versions__list"]}>
+          {curExampleImgsType !== "saved" && (
+            <div
+              className={`${classes.version} ${
+                curImagesModelVersionId === "all-versions"
+                  ? classes["version--active"]
+                  : ""
+              }
+        `}
+              id="all-versions"
+              onClick={openSavedVersionImagesHandler}
+            >
+              All
+            </div>
+          )}
+          {modelImageVersionsHtml}
+        </ul>
+      </div>
+      {versionsListRef?.current?.offsetHeight >
+        versionsItemRef?.current?.offsetHeight + 2 && (
+        <ButtonTertiary onClick={showAllVersionsHandler}>
+          {showAllVersions ? "Hide" : "Show All"}
+        </ButtonTertiary>
+      )}
       <div className={classes.images}>{examplesHtml}</div>
       {examplesIsLoading && <Spinner />}
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
@@ -690,7 +736,7 @@ const GeneratedImages = ({ customData }) => {
       {!examplesIsLoading && !examplesHtml.length && !errorMessage && (
         <div>No images found</div>
       )}
-      <div ref={endPage}></div>
+      <div ref={endPageRef}></div>
       {addImgModalIsOpen && (
         <Modal
           title="Add images by ID"

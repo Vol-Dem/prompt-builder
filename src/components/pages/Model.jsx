@@ -22,6 +22,7 @@ import ImageCard from "../image-card/ImageCard";
 import Buttton from "../ui/Button";
 import CrossSvg from "../../assets/CrossSvg";
 import ErrorMessage from "../ui/ErrorMessage";
+import ButtonTertiary from "../ui/ButtonTertiary";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -31,6 +32,7 @@ const Model = ({ title }) => {
   const [modelPreview, setModelPreview] = useState({});
   const [descHeight, setDescHeight] = useState(null);
   const [editIsOpen, setEditIsOpen] = useState(false);
+  const [showAllVersions, setSHowAllVersions] = useState(false);
   const [descriptionIsOpen, setDescriptionIsOpen] = useState(false);
   // const [currVersionIndex, setCurrVersionIndex] = useState(null);
   const [curCustomVersionData, setCurCustomVersionData] = useState({});
@@ -41,6 +43,8 @@ const Model = ({ title }) => {
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const versionsListRef = useRef(null);
+  const versionsItemRef = useRef(null);
   let { state } = useLocation();
 
   // const activeCarouselData = useSelector(
@@ -139,13 +143,28 @@ const Model = ({ title }) => {
   useEffect(() => {
     if (!Object.keys(model).length) return;
     console.log(state?.versionId);
-    const curVersionId =
-      state?.versionId ||
-      model.data.modelVersions.find(
+    let curVersionId;
+    if (
+      state?.versionId &&
+      !!model.data.modelVersions.find(
+        (version) => version.id === state?.versionId
+      )
+    ) {
+      curVersionId = state?.versionId;
+    } else {
+      curVersionId = model.data.modelVersions.find(
         (version) =>
           model?.modelVersionsCustomData.hasOwnProperty(version.id) &&
           model.modelVersionsCustomData[version.id].downloadStatus
       )?.id;
+    }
+    //  const curVersionId =
+    //   state?.versionId ||
+    //   model.data.modelVersions.find(
+    //     (version) =>
+    //       model?.modelVersionsCustomData.hasOwnProperty(version.id) &&
+    //       model.modelVersionsCustomData[version.id].downloadStatus
+    //   )?.id;
     console.log(state?.versionId);
     const curVersionData = curVersionId
       ? model.data.modelVersions.find((version) => version.id === curVersionId)
@@ -167,7 +186,9 @@ const Model = ({ title }) => {
       sub: model?.sub,
       title: model.name || model.title || model?.data?.name,
       versionName:
-        curVersionCustomData?.name || curVersionCustomData?.versionName,
+        curVersionCustomData?.name ||
+        curVersionCustomData?.versionName ||
+        curVersion.name,
       imgUrl: curVersion?.images ? curVersion?.images[0]?.url : "",
       modelType: model?.data?.type,
       baseModel: curVersion?.baseModel,
@@ -244,8 +265,9 @@ const Model = ({ title }) => {
   const modelVersionsHtml = model?.data?.modelVersions.map((version, i) => {
     const isSaved = model.modelVersionsCustomData[version.id]?.downloadStatus;
     return (
-      <div
+      <li
         key={i}
+        ref={versionsItemRef}
         id={version.id}
         data-version={i}
         onClick={openVersionHandler}
@@ -255,7 +277,7 @@ const Model = ({ title }) => {
         ${isSaved ? classes["version--downloaded"] : ""}`}
       >
         {version.name}
-      </div>
+      </li>
     );
   });
 
@@ -298,11 +320,17 @@ const Model = ({ title }) => {
   };
 
   const mainCategoryName = useMemo(() => {
-    if (model?.modelType) return;
-    return categories[model?.modelType]?.find(
-      (category) => category.id === model?.main
-    )?.name;
+    if (!!model?.modelType) {
+      const categoryName = categories[model?.modelType]?.find(
+        (category) => category.id === model?.main
+      )?.name;
+      return categoryName;
+    }
   }, [categories, model?.main, model?.modelType]);
+
+  const showAllVersionsHandler = () => {
+    setSHowAllVersions((prevState) => !prevState);
+  };
 
   return (
     <div className={classes.model}>
@@ -414,7 +442,25 @@ const Model = ({ title }) => {
             </button> */}
             <ButtonAdd previewData={modelPreview} />
           </div>
-          <ul className={classes.versions}>{modelVersionsHtml}</ul>
+          <div
+            className={classes.versions}
+            style={{
+              maxHeight: showAllVersions
+                ? `${versionsListRef?.current?.offsetHeight}px`
+                : `${versionsItemRef?.current?.offsetHeight + 1}px`,
+            }}
+          >
+            <ul ref={versionsListRef} className={classes["versions__list"]}>
+              {modelVersionsHtml}
+            </ul>
+          </div>
+
+          {versionsListRef?.current?.offsetHeight >
+            versionsItemRef?.current?.offsetHeight + 1 && (
+            <ButtonTertiary onClick={showAllVersionsHandler}>
+              {showAllVersions ? "Hide" : "Show All"}
+            </ButtonTertiary>
+          )}
           {!!modelImages?.length && modelImagesHtml}
           <div className={classes["info-container"]}>
             <ModelInfo customData={curCustomVersionData} />

@@ -1,6 +1,7 @@
 .container {
   width: 100%;
-  margin-top: 2rem;
+  margin-top: 2.8rem;
+  margin-bottom: 1rem;
 }
 
 .title {
@@ -11,5 +12,21 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 1.8rem;
+}
+
+@media (max-width: 680px) {
+  .container {
+    margin-top: 4.8rem;
+  }
+
+  .title {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .result-list {
+    grid-template-columns: 1fr;
+  }
 }

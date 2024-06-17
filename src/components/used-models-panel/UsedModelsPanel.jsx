@@ -319,6 +319,7 @@ const UsedModelsPanel = () => {
             )}
           </ul>
         </>
+        <div className={classes["support"]}>Support project: patreon ko-fi</div>
       </div>
     </aside>
   );

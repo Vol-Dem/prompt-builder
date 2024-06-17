@@ -28,7 +28,7 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
 
   const addToSidePanelHandler = (e) => {
     console.log(previewData);
-    if (!isInPanel && type === "image") {
+    if (!isInPanel && type === "image" && imagesInPanel?.length < 3) {
       dispatch(addImageToPanel(previewData));
       return;
     } else if (isInPanel && type === "image") {
@@ -79,6 +79,8 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
     <div
       className={`${classes["resource__add"]} ${
         isInPanel ? classes["resource__add--active"] : ""
+      } ${
+        imagesInPanel?.length === 3 ? classes["resource__add--disabled"] : ""
       } ${className || ""}`}
       onClick={addToSidePanelHandler}
     >

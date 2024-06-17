@@ -90,7 +90,7 @@ const TagSets = ({ customData, defaultData }) => {
   };
 
   return (
-    <div className={classes["tag-setss"]}>
+    <div>
       {!!tagSets?.length && <div className={classes.title}>Tag sets:</div>}
       <div
         className={classes["tag-sets__container"]}

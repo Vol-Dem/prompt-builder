@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { validateInput } from "../../utils/generalUtils";
 import classes from "./Textarea.module.scss";
 
 const Textarea = (props) => {
@@ -9,13 +11,31 @@ const Textarea = (props) => {
     className,
     // onBlur,
     onChange,
+    onBlur,
     error,
     cols,
     rows = 5,
     // autoFocus,
     value,
     placeholder,
+    validation,
+    showError,
   } = props;
+  const [inputErrorMessage, setInputErrorMessage] = useState("");
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+
+  useEffect(() => {
+    setShowErrorMessage(showError);
+  }, [showError]);
+
+  useEffect(() => {
+    if (validation) {
+      const { isValid, errorMessage } = validateInput(validation, value);
+
+      // onChange(e, isValid, errorMessage);
+      setInputErrorMessage(errorMessage);
+    }
+  }, [value]);
 
   return (
     <div>
@@ -33,10 +53,38 @@ const Textarea = (props) => {
         placeholder={placeholder}
         value={value}
         {...textarea}
-        onChange={onChange}
-        className={`${classes.textarea} ${className || ""}`}
+        onBlur={(e) => {
+          if (onBlur) {
+            onBlur(e);
+          }
+          if (validation) {
+            setShowErrorMessage(true);
+          }
+        }}
+        onChange={(e) => {
+          console.log("CHANGE");
+          if (validation) {
+            const { isValid, errorMessage } = validateInput(
+              validation,
+              e.target.value
+            );
+            console.log(e.target.value.length);
+            onChange(e, isValid, errorMessage);
+            setInputErrorMessage(errorMessage);
+          } else {
+            onChange(e);
+          }
+        }}
+        className={`${classes.textarea} ${className || ""} ${
+          inputErrorMessage && showErrorMessage
+            ? classes["textarea--error"]
+            : ""
+        }`}
       ></textarea>
-      {error && <div className={classes.error}>{error}</div>}
+      {showError && error && <div className={classes.error}>{error}</div>}
+      {showError && inputErrorMessage && (
+        <div className={classes.error}>{inputErrorMessage}</div>
+      )}
     </div>
   );
 };

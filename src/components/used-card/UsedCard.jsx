@@ -5,7 +5,10 @@ import classes from "./UsedCard.module.scss";
 import { Link } from "react-router-dom";
 import TagList from "../tag-list/TagList";
 import { useDispatch, useSelector } from "react-redux";
-import { removeModelFromPanel } from "../../store/usedModels";
+import {
+  removeModelFromPanel,
+  usedModelsActions,
+} from "../../store/usedModels";
 import { promptActions } from "../../store/prompt";
 import ActivationTag from "../activation-tag/ActivationTag";
 import Arrow from "../ui/Arrow";
@@ -24,7 +27,7 @@ const UsedCard = ({ previewData, fullView }) => {
   const tagsRef = useRef();
   const tagsListRef = useRef();
   // const helperTagsRef = useRef();
-  const taglistItemHeight = 34;
+  const taglistItemHeight = 68;
   // const taglistHeight = tagsRef?.current?.clientHeight;
   // console.log(taglistHeight);
 
@@ -37,6 +40,7 @@ const UsedCard = ({ previewData, fullView }) => {
     if (tagsRef?.current?.clientHeight)
       setTaglistHeight(tagsRef?.current?.clientHeight);
     if (taglistHeight === taglistItemHeight) setTagsHeight(taglistItemHeight);
+    console.log(taglistHeight);
   }, [
     previewData,
     taglistHeight,
@@ -80,6 +84,12 @@ const UsedCard = ({ previewData, fullView }) => {
     dispatch(promptActions.removeTag(previewData.mainTag));
   };
 
+  const closePanelHandler = () => {
+    if (document.body.offsetWidth < 1024) {
+      dispatch(usedModelsActions.panelState(false));
+    }
+  };
+
   return (
     <li id={previewData.id} className={`${classes.card} card`}>
       <div className={classes.head}>
@@ -87,6 +97,7 @@ const UsedCard = ({ previewData, fullView }) => {
           to={`/model/${previewData.id}`}
           state={{ versionId: previewData?.activeVersionId || null }}
           className={classes.link}
+          onClick={closePanelHandler}
         >
           <Image
             src={
@@ -125,6 +136,7 @@ const UsedCard = ({ previewData, fullView }) => {
               to={`/model/${previewData.id}`}
               state={{ versionId: previewData?.activeVersionId || null }}
               className={classes.link}
+              onClick={closePanelHandler}
             >
               <h4
                 className={classes.title}
@@ -140,7 +152,9 @@ const UsedCard = ({ previewData, fullView }) => {
             </div>
           )}
           <div>
-            <span className={classes.type}>{previewData.type}</span>
+            <span className={classes.type}>
+              {previewData.type || previewData.modelType}
+            </span>
             {previewData?.baseModel && (
               <span className={classes.models}>{previewData.baseModel}</span>
             )}
@@ -168,10 +182,18 @@ const UsedCard = ({ previewData, fullView }) => {
           previewData.mainTag ||
           !!previewData?.tags?.length) && (
           <div className={`${fullView ? classes.content : ""}`}>
-            {previewData?.minWeight && fullView && (
-              <div>
-                Weight: {previewData?.minWeight?.toFixed(1)}-
-                {previewData?.maxWeight?.toFixed(1)}
+            {(!!previewData?.minWeight || !!previewData?.weight) && (
+              <div className={classes["weight"]}>
+                <span>Weight:</span>
+                <span className={classes["weight__value"]}>
+                  {previewData?.minWeight
+                    ? `${previewData?.minWeight?.toFixed(1)} - 
+                    ${previewData?.maxWeight?.toFixed(1)}`
+                    : ""}{" "}
+                  {previewData?.weight
+                    ? `(${previewData?.weight?.toFixed(1)})`
+                    : ""}
+                </span>
               </div>
             )}
             {/* {previewData.size && <span>S: {previewData.size}</span>} */}
@@ -213,7 +235,9 @@ const UsedCard = ({ previewData, fullView }) => {
                   </div>
                   {taglistHeight > taglistItemHeight && (
                     <button
-                      className={classes["tags__btn"]}
+                      className={`${classes["tags__btn"]} ${
+                        !tagsIsOpen ? classes["tags__btn--shadow"] : ""
+                      }`}
                       onClick={openTagsHandler}
                     >
                       <Arrow direction={tagsIsOpen ? "up" : "down"} />

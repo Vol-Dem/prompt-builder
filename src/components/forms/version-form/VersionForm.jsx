@@ -9,35 +9,103 @@ import Input from "../../ui/Input";
 import ButttonSecondary from "../../ui/ButtonSecondary";
 import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
-import { clearFileExtension } from "../../../utils/generalUtils";
+import { clearFileExtension, validateInput } from "../../../utils/generalUtils";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
+import {
+  DEF_INPUT_ERROR_MESSAGE,
+  DESCRIPTION_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+  NUMBER_MAX_LENGTH,
+  SAVED_SUCCESS_MESSAGE,
+  TITLE_MAX_LENGTH,
+  TRIGER_WORDS_MAX_LENGTH,
+} from "../../../variables/constants";
+import InputNumber from "../../ui/InputNumber";
 
 const firestore = getFirestore(firebaseApp);
 
 const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, seteErrorMessage] = useState("");
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [successMessage, seteSuccessMessage] = useState("");
-  const [mainTagInput, setMainTagInput] = useState("");
-  const [titleInput, setTitleInput] = useState("");
-  const [descriptionInput, setDescriptionInput] = useState("");
-  const [trigerInput, setTrigerInput] = useState([]);
-  const [fileNameInput, setFileNameInput] = useState("");
-  const [weightInput, setWeightInput] = useState("");
-  const [minWeightInput, setMinWeightInput] = useState("");
-  const [maxWeightInput, setMaxWeightInput] = useState("");
-  const [sizetInput, setSizeInput] = useState("");
-  const [helperTagsInput, setHelperTagsInput] = useState([]);
-  const [negativeTagsInput, setNegativeTagsInput] = useState([]);
-  const [vaeInput, setVaeInput] = useState("");
-  const [denoisingStrengthtInput, setDenoisingStrengthInput] = useState("");
-  const [hiresUpscaleInput, setHiresUpscaleInput] = useState("");
-  const [hiresUpscaleStepsInput, setHiresUpscaleStepsInput] = useState("");
-  const [hiresUpscalerInput, setHiresUpscalerInput] = useState("");
-  const [cfgScaleInput, setCfgScaleInput] = useState("");
-  const [samplerInput, setSamplerInput] = useState("");
-  const [stepsInput, setStepsInput] = useState("");
+  const [mainTagInput, setMainTagInput] = useState({
+    value: "",
+    isValid: true,
+  });
+  const [titleInput, setTitleInput] = useState({
+    value: "",
+    isValid: true,
+  });
+  const [descriptionInput, setDescriptionInput] = useState({
+    value: "",
+    isValid: true,
+  });
+  const [trigerInput, setTrigerInput] = useState({
+    value: [],
+    isValid: true,
+  });
+  const [fileNameInput, setFileNameInput] = useState({
+    value: "",
+    isValid: true,
+  });
+  const [weightInput, setWeightInput] = useState({
+    value: "",
+    isValid: true,
+  });
+  const [minWeightInput, setMinWeightInput] = useState({
+    value: "",
+    isValid: true,
+  });
+  const [maxWeightInput, setMaxWeightInput] = useState({
+    value: "",
+    isValid: true,
+  });
+  const [sizetInput, setSizeInput] = useState({
+    value: "",
+    isValid: true,
+  });
+  const [helperTagsInput, setHelperTagsInput] = useState({
+    value: [],
+    isValid: true,
+  });
+  const [negativeTagsInput, setNegativeTagsInput] = useState({
+    value: [],
+    isValid: true,
+  });
+  const [vaeInput, setVaeInput] = useState({
+    value: "",
+    isValid: true,
+  });
+  const [denoisingStrengthtInput, setDenoisingStrengthInput] = useState({
+    value: "",
+    isValid: true,
+  });
+  const [hiresUpscaleInput, setHiresUpscaleInput] = useState({
+    value: "",
+    isValid: true,
+  });
+  const [hiresUpscaleStepsInput, setHiresUpscaleStepsInput] = useState({
+    value: "",
+    isValid: true,
+  });
+  const [hiresUpscalerInput, setHiresUpscalerInput] = useState({
+    value: "",
+    isValid: true,
+  });
+  const [cfgScaleInput, setCfgScaleInput] = useState({
+    value: "",
+    isValid: true,
+  });
+  const [samplerInput, setSamplerInput] = useState({
+    value: "",
+    isValid: true,
+  });
+  const [stepsInput, setStepsInput] = useState({
+    value: "",
+    isValid: true,
+  });
   const [tagSetsInputs, setTagSetsInputs] = useState([
     [
       {
@@ -46,12 +114,16 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         name: "set-name",
         placeholder: "set name",
         value: "",
+        isValid: true,
+        errorMessage: "",
       },
       {
         id: "set-value-def",
         name: "set-value",
         placeholder: "set value",
         value: "",
+        isValid: true,
+        errorMessage: "",
       },
     ],
   ]);
@@ -62,31 +134,52 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
   const model = useSelector((state) => state.model.model);
 
   useEffect(() => {
-    setMainTagInput(versionData?.mainTag || "");
-    setTitleInput(versionData?.name || defaultData.name || "");
-    setDescriptionInput(
-      versionData?.description || defaultData.description || ""
-    );
-    setTrigerInput(
-      versionData?.trainedWords?.join(", ") ||
+    setMainTagInput({ value: versionData?.mainTag || "", isValid: true });
+    setTitleInput({
+      value: versionData?.name || defaultData.name || "",
+      isValid: true,
+    });
+    setDescriptionInput({
+      value: versionData?.description || defaultData.description || "",
+      isValid: true,
+    });
+    setTrigerInput({
+      value:
+        versionData?.trainedWords?.join(", ") ||
         defaultData.trainedWords?.join(", ") ||
-        []
-    );
-    setFileNameInput(versionData?.fileName || "");
-    setWeightInput(versionData?.weight || "");
-    setMinWeightInput(versionData?.minWeight || "");
-    setMaxWeightInput(versionData?.maxWeight || "");
-    setSizeInput(versionData?.size || "");
-    setHelperTagsInput(versionData?.helperTags || []);
-    setNegativeTagsInput(versionData?.negativeTags || []);
-    setVaeInput(versionData?.vae || "");
-    setDenoisingStrengthInput(versionData?.denoisingStrength || "");
-    setHiresUpscaleInput(versionData?.hiresUpscaleBy || "");
-    setHiresUpscalerInput(versionData?.hiresUpscaler || "");
-    setCfgScaleInput(versionData?.cfgScale || "");
-    setSamplerInput(versionData?.sampler || "");
-    setStepsInput(versionData?.steps || "");
-    setHiresUpscaleStepsInput(versionData?.hiresUpscaleSteps || "");
+        [],
+      isValid: true,
+    });
+    setFileNameInput({ value: versionData?.fileName || "", isValid: true });
+    setWeightInput({ value: versionData?.weight || "", isValid: true });
+    setMinWeightInput({ value: versionData?.minWeight || "", isValid: true });
+    setMaxWeightInput({ value: versionData?.maxWeight || "", isValid: true });
+    setSizeInput({ value: versionData?.size || "", isValid: true });
+    setHelperTagsInput({ value: versionData?.helperTags || [], isValid: true });
+    setNegativeTagsInput({
+      value: versionData?.negativeTags || [],
+      isValid: true,
+    });
+    setVaeInput({ value: versionData?.vae || "", isValid: true });
+    setDenoisingStrengthInput({
+      value: versionData?.denoisingStrength || "",
+      isValid: true,
+    });
+    setHiresUpscaleInput({
+      value: versionData?.hiresUpscaleBy || "",
+      isValid: true,
+    });
+    setHiresUpscalerInput({
+      value: versionData?.hiresUpscaler || "",
+      isValid: true,
+    });
+    setCfgScaleInput({ value: versionData?.cfgScale || "", isValid: true });
+    setSamplerInput({ value: versionData?.sampler || "", isValid: true });
+    setStepsInput({ value: versionData?.steps || "", isValid: true });
+    setHiresUpscaleStepsInput({
+      value: versionData?.hiresUpscaleSteps || "",
+      isValid: true,
+    });
   }, [versionData, defaultData]);
 
   useEffect(() => {
@@ -101,12 +194,16 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
           name: "set-name",
           placeholder: "set name",
           value: tagSet.name,
+          isValid: true,
+          errorMessage: "",
         },
         {
           id: "set-value" + i,
           name: "set-value",
           placeholder: "set value",
           value: tagSet.value,
+          isValid: true,
+          errorMessage: "",
         },
       ];
     });
@@ -114,63 +211,130 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
   }, [versionData]);
 
   const saveVersionHandler = async (e) => {
-    e.preventDefault();
-    setIsSaving(true);
-    seteErrorMessage("");
-    seteSuccessMessage("");
-
-    const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
-
-    const formdata = new FormData(e.target);
-    const mainTag = formdata.get("main-tag").trim();
-    const description = descriptionInput.trim();
-    const weight = +formdata.get("weight").trim();
-    const minWeight = +minWeightInput;
-    const maxWeight = +maxWeightInput;
-    const size = formdata.get("size").trim();
-    const fileName = formdata.get("file-name").trim();
-    const tagSetsValues = formdata.getAll("set-value");
-    const sampler = formdata.get("sampler")?.trim().toLowerCase() || "";
-    const cfgScale = formdata.get("cfgScale")?.trim().toLowerCase() || "";
-    const hiresUpscaler =
-      formdata.get("hiresUpscaler")?.trim().toLowerCase() || "";
-    const hiresUpscaleBy =
-      formdata.get("hiresUpscaleBy")?.trim().toLowerCase() || "";
-    const hiresUpscaleSteps =
-      formdata.get("hiresUpscaleSteps")?.trim().toLowerCase() || "";
-    const denoisingStrength =
-      formdata.get("denoisingStrength")?.trim().toLowerCase() || "";
-    const vae = formdata.get("vae")?.trim().toLowerCase() || "";
-    const steps = formdata.get("steps")?.trim() || "";
-    const trainedWords = formdata
-      .get("triger")
-      .trim()
-      .split(splitRegEx)
-      .filter(Boolean)
-      .map((tag) => tag.trim());
-    const tagSetNames = formdata.getAll("set-name");
-    const tagSetsData = tagSetNames.flatMap((setName, i) => {
-      if (!setName && !tagSetsValues[i]) return [];
-      return [{ name: setName, value: tagSetsValues[i] }];
-    });
-    const helperTags = formdata
-      .get("helper-tags")
-      .trim()
-      .split(splitRegEx)
-      .filter(Boolean)
-      .map((tag) => tag.trim());
-    const negativeTags = formdata
-      .get("negative-tags")
-      .trim()
-      .split(splitRegEx)
-      .filter(Boolean)
-      .map((tag) => tag.trim());
-
     try {
+      e.preventDefault();
+      seteErrorMessage("");
+      seteSuccessMessage("");
+      setShowErrorMessage(true);
+      const tagsetsIsNotValid = !!tagSetsInputs.find(
+        (input) => input[0].isValid === false || input[1].isValid === false
+      );
+
+      console.log("TAG", tagsetsIsNotValid);
+
+      console.log(
+        !titleInput.isValid,
+        !descriptionInput.isValid,
+        !mainTagInput.isValid,
+        !trigerInput.isValid,
+        !helperTagsInput.isValid,
+        !negativeTagsInput.isValid,
+        tagsetsIsNotValid,
+        !fileNameInput.isValid,
+        !weightInput.isValid,
+        !minWeightInput.isValid,
+        !maxWeightInput.isValid,
+        !sizetInput.isValid,
+        !vaeInput.isValid,
+        !denoisingStrengthtInput.isValid,
+        !hiresUpscaleInput.isValid,
+        !hiresUpscaleStepsInput.isValid,
+        !hiresUpscalerInput.isValid,
+        !cfgScaleInput.isValid,
+        !samplerInput.isValid,
+        !stepsInput.isValid
+      );
+
+      const baseInputsIsNotValid =
+        !titleInput.isValid ||
+        !descriptionInput.isValid ||
+        !mainTagInput.isValid ||
+        !trigerInput.isValid ||
+        !helperTagsInput.isValid ||
+        !negativeTagsInput.isValid ||
+        tagsetsIsNotValid ||
+        !fileNameInput.isValid ||
+        !weightInput.isValid ||
+        !minWeightInput.isValid ||
+        !maxWeightInput.isValid ||
+        !sizetInput.isValid;
+
+      const aditionalInputsIsNotValid =
+        !vaeInput.isValid ||
+        !denoisingStrengthtInput.isValid ||
+        !hiresUpscaleInput.isValid ||
+        !hiresUpscaleStepsInput.isValid ||
+        !hiresUpscalerInput.isValid ||
+        !cfgScaleInput.isValid ||
+        !samplerInput.isValid ||
+        !stepsInput.isValid;
+
+      console.log("ALL INP", baseInputsIsNotValid, aditionalInputsIsNotValid);
+
+      if (
+        baseInputsIsNotValid ||
+        (modelType === "checkpoint" && aditionalInputsIsNotValid)
+      ) {
+        console.log("NO");
+        throw new Error(DEF_INPUT_ERROR_MESSAGE);
+      }
+      console.log("YES");
+      // return;
+
+      setIsSaving(true);
+
+      const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
+
+      const formdata = new FormData(e.target);
+      const mainTag = formdata.get("main-tag").trim();
+      const name = titleInput?.value?.trim();
+      const description = descriptionInput?.value?.trim();
+      const weight = +formdata.get("weight").trim();
+      const minWeight = +minWeightInput?.value;
+      const maxWeight = +maxWeightInput?.value;
+      const size = formdata.get("size").trim();
+      const fileName = formdata.get("file-name").trim();
+      const tagSetsValues = formdata.getAll("set-value");
+      const sampler = formdata.get("sampler")?.trim().toLowerCase() || "";
+      const cfgScale = formdata.get("cfgScale")?.trim().toLowerCase() || "";
+      const hiresUpscaler =
+        formdata.get("hiresUpscaler")?.trim().toLowerCase() || "";
+      const hiresUpscaleBy =
+        formdata.get("hiresUpscaleBy")?.trim().toLowerCase() || "";
+      const hiresUpscaleSteps =
+        formdata.get("hiresUpscaleSteps")?.trim().toLowerCase() || "";
+      const denoisingStrength =
+        formdata.get("denoisingStrength")?.trim().toLowerCase() || "";
+      const vae = formdata.get("vae")?.trim().toLowerCase() || "";
+      const steps = formdata.get("steps")?.trim() || "";
+      const trainedWords = formdata
+        .get("triger")
+        .trim()
+        .split(splitRegEx)
+        .filter(Boolean)
+        .map((tag) => tag.trim());
+      const tagSetNames = formdata.getAll("set-name");
+      const tagSetsData = tagSetNames.flatMap((setName, i) => {
+        if (!setName && !tagSetsValues[i]) return [];
+        return [{ name: setName, value: tagSetsValues[i] }];
+      });
+      const helperTags = formdata
+        .get("helper-tags")
+        .trim()
+        .split(splitRegEx)
+        .filter(Boolean)
+        .map((tag) => tag.trim());
+      const negativeTags = formdata
+        .get("negative-tags")
+        .trim()
+        .split(splitRegEx)
+        .filter(Boolean)
+        .map((tag) => tag.trim());
+
       const updatedVersionData = {
         ...versionData,
         mainTag,
-        name: titleInput.trim(),
+        name,
         description,
         trainedWords,
         fileName,
@@ -244,7 +408,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         },
         { merge: true }
       );
-      seteSuccessMessage("Saved");
+      seteSuccessMessage(SAVED_SUCCESS_MESSAGE);
       setIsSaving(false);
     } catch (err) {
       console.log(err.message);
@@ -262,6 +426,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         name: "set-name",
         placeholder: "set name",
         value: "",
+        isValid: true,
       },
       {
         type: "text",
@@ -269,13 +434,14 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         name: "set-value",
         placeholder: "set value",
         value: "",
+        isValid: true,
       },
     ]);
     console.log(newFields);
     setTagSetsInputs(newFields);
   };
 
-  const tagSetsHandler = (e) => {
+  const tagSetsHandler = (e, isValid) => {
     setTagSetsInputs((prevState) => {
       const newState = [...prevState];
       const curSetNameIndex = newState.findIndex((imageId) => {
@@ -284,16 +450,27 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
       const curSetTagsIndex = newState.findIndex((imageId) => {
         return imageId[1].id + "" === e.target.id;
       });
-      console.log(curSetNameIndex, curSetTagsIndex);
-      console.log(newState);
+
+      // const { isValid, errorMessage } = validateInput(
+      //   {
+      //     maxLength:
+      //       curSetNameIndex !== -1 ? NAME_MAX_LENGTH : TRIGER_WORDS_MAX_LENGTH,
+      //   },
+      //   e.target.value
+      // );
+
       if (curSetNameIndex !== -1) {
         newState[curSetNameIndex][0].value = e.target.value;
+        newState[curSetNameIndex][0].isValid = isValid;
+        // newState[curSetNameIndex][0].errorMessage = errorMessage;
       }
       if (curSetTagsIndex !== -1) {
         newState[curSetTagsIndex][1].value = e.target.value;
+        newState[curSetTagsIndex][1].isValid = isValid;
+        // newState[curSetTagsIndex][1].errorMessage = errorMessage;
       }
       // newState[curIndex] = [];
-      console.log(newState);
+
       return newState;
     });
   };
@@ -308,6 +485,12 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
           placeholder={tagSet[0].placeholder}
           onChange={tagSetsHandler}
           value={tagSet[0].value}
+          isValid={tagSet[0].isValid}
+          // error={tagSet[0].errorMessage}
+          showError={showErrorMessage}
+          validation={{
+            maxLength: NAME_MAX_LENGTH,
+          }}
         />
         <Textarea
           id={tagSet[1].id}
@@ -316,6 +499,12 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
           placeholder={tagSet[1].placeholder}
           onChange={tagSetsHandler}
           value={tagSet[1].value}
+          isValid={tagSet[1].isValid}
+          // error={tagSet[1].errorMessage}
+          showError={showErrorMessage}
+          validation={{
+            maxLength: TRIGER_WORDS_MAX_LENGTH,
+          }}
         ></Textarea>
       </div>
     );
@@ -331,20 +520,29 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         name="name"
         type="text"
         placeholder="name"
-        value={titleInput}
-        onChange={(e) => {
-          setTitleInput(e.target.value);
+        value={titleInput.value}
+        onChange={(e, isValid) => {
+          setTitleInput({ value: e.target.value, isValid });
         }}
+        validation={{
+          required: true,
+          maxLength: NAME_MAX_LENGTH,
+        }}
+        showError={showErrorMessage}
       />
       <Textarea
         label="Description"
         name="description"
         rows="5"
         placeholder="description"
-        value={descriptionInput}
-        onChange={(e) => {
-          setDescriptionInput(e.target.value);
+        value={descriptionInput.value}
+        onChange={(e, isValid) => {
+          setDescriptionInput({ value: e.target.value, isValid });
         }}
+        validation={{
+          maxLength: DESCRIPTION_MAX_LENGTH,
+        }}
+        showError={showErrorMessage}
       ></Textarea>
       <div className={classes.fields}>
         <FieldCategory title="Triger words">
@@ -353,10 +551,14 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
             name="main-tag"
             type="text"
             placeholder="<lora:activation tag:1>"
-            value={mainTagInput}
-            onChange={(e) => {
-              setMainTagInput(e.target.value);
+            value={mainTagInput.value}
+            onChange={(e, isValid) => {
+              setMainTagInput({ value: e.target.value, isValid });
             }}
+            validation={{
+              maxLength: TRIGER_WORDS_MAX_LENGTH,
+            }}
+            showError={showErrorMessage}
           />
 
           <Textarea
@@ -364,10 +566,14 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
             name="triger"
             type="text"
             placeholder="Triger word"
-            value={trigerInput}
-            onChange={(e) => {
-              setTrigerInput(e.target.value);
+            value={trigerInput.value}
+            onChange={(e, isValid) => {
+              setTrigerInput({ value: e.target.value, isValid });
             }}
+            validation={{
+              maxLength: TRIGER_WORDS_MAX_LENGTH,
+            }}
+            showError={showErrorMessage}
           />
           <Textarea
             label="Helper words"
@@ -375,10 +581,14 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
             id=""
             rows="5"
             placeholder="Helper words"
-            value={helperTagsInput}
-            onChange={(e) => {
-              setHelperTagsInput(e.target.value);
+            value={helperTagsInput.value}
+            onChange={(e, isValid) => {
+              setHelperTagsInput({ value: e.target.value, isValid });
             }}
+            validation={{
+              maxLength: TRIGER_WORDS_MAX_LENGTH,
+            }}
+            showError={showErrorMessage}
           ></Textarea>
           <Textarea
             label="Negative words"
@@ -386,10 +596,14 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
             id=""
             rows="5"
             placeholder="Negative words"
-            value={negativeTagsInput}
-            onChange={(e) => {
-              setNegativeTagsInput(e.target.value);
+            value={negativeTagsInput.value}
+            onChange={(e, isValid) => {
+              setNegativeTagsInput({ value: e.target.value, isValid });
             }}
+            validation={{
+              maxLength: TRIGER_WORDS_MAX_LENGTH,
+            }}
+            showError={showErrorMessage}
           ></Textarea>
           <Fieldset legend="Tag sets">
             {tagSetsHtml}
@@ -409,44 +623,62 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
             name="file-name"
             type="text"
             placeholder="File name"
-            value={fileNameInput}
-            onChange={(e) => {
-              setFileNameInput(e.target.value);
+            value={fileNameInput.value}
+            onChange={(e, isValid) => {
+              setFileNameInput({ value: e.target.value, isValid });
             }}
+            validation={{
+              maxLength: NAME_MAX_LENGTH,
+            }}
+            showError={showErrorMessage}
           />
           <div>
             <span className={classes["weight__label"]}>Strength (weight)</span>
             <div className={classes.weight}>
-              <Input
+              <InputNumber
                 name="minWeight"
                 type="number"
-                input={{ step: "0.1" }}
+                step={0.1}
                 placeholder="Min"
-                value={minWeightInput}
-                onChange={(e) => {
-                  setMinWeightInput(e.target.value);
+                value={minWeightInput.value}
+                onChange={(e, isValid) => {
+                  setMinWeightInput({ value: e.target.value, isValid });
                 }}
+                validation={{
+                  number: true,
+                  maxLength: NUMBER_MAX_LENGTH,
+                }}
+                showError={showErrorMessage}
               />
-              –
-              <Input
+              <InputNumber
                 name="maxWeight"
                 type="number"
-                input={{ step: "0.1" }}
+                step={0.1}
                 placeholder="Max"
-                value={maxWeightInput}
-                onChange={(e) => {
-                  setMaxWeightInput(e.target.value);
+                value={maxWeightInput.value}
+                onChange={(e, isValid) => {
+                  setMaxWeightInput({ value: e.target.value, isValid });
                 }}
+                validation={{
+                  number: true,
+                  maxLength: NUMBER_MAX_LENGTH,
+                }}
+                showError={showErrorMessage}
               />
-              <Input
+              <InputNumber
                 name="weight"
                 type="number"
-                input={{ step: "0.1" }}
+                step={0.1}
                 placeholder="Recomended"
-                value={weightInput}
-                onChange={(e) => {
-                  setWeightInput(e.target.value);
+                value={weightInput.value}
+                onChange={(e, isValid) => {
+                  setWeightInput({ value: e.target.value, isValid });
                 }}
+                validation={{
+                  number: true,
+                  maxLength: NUMBER_MAX_LENGTH,
+                }}
+                showError={showErrorMessage}
               />
             </div>
           </div>
@@ -455,32 +687,44 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
             name="size"
             type="text"
             placeholder="Image resolution"
-            value={sizetInput}
-            onChange={(e) => {
-              setSizeInput(e.target.value);
+            value={sizetInput.value}
+            onChange={(e, isValid) => {
+              setSizeInput({ value: e.target.value, isValid });
             }}
+            validation={{
+              maxLength: TITLE_MAX_LENGTH,
+            }}
+            showError={showErrorMessage}
           />
-          {modelType === "checkpoint" && (
+          {modelType === "checkpointsss" && (
             <>
               <Input
                 label="Sampling method"
                 name="sampler"
                 type="text"
                 placeholder="Sampling method"
-                value={samplerInput}
-                onChange={(e) => {
-                  setSamplerInput(e.target.value);
+                value={samplerInput.value}
+                onChange={(e, isValid) => {
+                  setSamplerInput({ value: e.target.value, isValid });
                 }}
+                validation={{
+                  maxLength: NAME_MAX_LENGTH,
+                }}
+                showError={showErrorMessage}
               />
               <Input
                 label="Sampling steps"
                 name="steps"
                 type="text"
                 placeholder="Sampling steps"
-                value={stepsInput}
-                onChange={(e) => {
-                  setStepsInput(e.target.value);
+                value={stepsInput.value}
+                onChange={(e, isValid) => {
+                  setStepsInput({ value: e.target.value, isValid });
                 }}
+                validation={{
+                  maxLength: NAME_MAX_LENGTH,
+                }}
+                showError={showErrorMessage}
               />
 
               <Input
@@ -488,60 +732,84 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
                 name="cfgScale"
                 type="text"
                 placeholder="CFG Scale"
-                value={cfgScaleInput}
-                onChange={(e) => {
-                  setCfgScaleInput(e.target.value);
+                value={cfgScaleInput.value}
+                onChange={(e, isValid) => {
+                  setCfgScaleInput({ value: e.target.value, isValid });
                 }}
+                validation={{
+                  maxLength: NAME_MAX_LENGTH,
+                }}
+                showError={showErrorMessage}
               />
               <Input
                 label="Upscaler"
                 name="hiresUpscaler"
                 type="text"
                 placeholder="Upscaler"
-                value={hiresUpscalerInput}
-                onChange={(e) => {
-                  setHiresUpscalerInput(e.target.value);
+                value={hiresUpscalerInput.value}
+                onChange={(e, isValid) => {
+                  setHiresUpscalerInput({ value: e.target.value, isValid });
                 }}
+                validation={{
+                  maxLength: NAME_MAX_LENGTH,
+                }}
+                showError={showErrorMessage}
               />
               <Input
                 label="Upscale by"
                 name="hiresUpscaleBy"
                 type="text"
                 placeholder="Upscale by"
-                value={hiresUpscaleInput}
-                onChange={(e) => {
-                  setHiresUpscaleInput(e.target.value);
+                value={hiresUpscaleInput.value}
+                onChange={(e, isValid) => {
+                  setHiresUpscaleInput({ value: e.target.value, isValid });
                 }}
+                validation={{
+                  maxLength: NAME_MAX_LENGTH,
+                }}
+                showError={showErrorMessage}
               />
               <Input
                 label="Hires steps"
                 name="hiresUpscaleSteps"
                 type="text"
                 placeholder="Hires steps"
-                value={hiresUpscaleStepsInput}
-                onChange={(e) => {
-                  setHiresUpscaleStepsInput(e.target.value);
+                value={hiresUpscaleStepsInput.value}
+                onChange={(e, isValid) => {
+                  setHiresUpscaleStepsInput({ value: e.target.value, isValid });
                 }}
+                validation={{
+                  maxLength: NAME_MAX_LENGTH,
+                }}
+                showError={showErrorMessage}
               />
               <Input
                 label="Denoising strength"
                 name="denoisingStrength"
                 type="text"
                 placeholder="Denoising strength"
-                value={denoisingStrengthtInput}
-                onChange={(e) => {
-                  setDenoisingStrengthInput(e.target.value);
+                value={denoisingStrengthtInput.value}
+                onChange={(e, isValid) => {
+                  setDenoisingStrengthInput({ value: e.target.value, isValid });
                 }}
+                validation={{
+                  maxLength: NAME_MAX_LENGTH,
+                }}
+                showError={showErrorMessage}
               />
               <Input
                 label="VAE"
                 name="vae"
                 type="text"
                 placeholder="VAE"
-                value={vaeInput}
-                onChange={(e) => {
-                  setVaeInput(e.target.value);
+                value={vaeInput.value}
+                onChange={(e, isValid) => {
+                  setVaeInput({ value: e.target.value, isValid });
                 }}
+                validation={{
+                  maxLength: NAME_MAX_LENGTH,
+                }}
+                showError={showErrorMessage}
               />
             </>
           )}

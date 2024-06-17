@@ -21,7 +21,12 @@
   transition: all 0.3s;
   flex-shrink: 0;
 
-  &:hover {
+  &--disabled {
+    background-color: var.$color-text-gray;
+    cursor: default;
+  }
+
+  &:not(&--disabled):hover {
     background-color: var.$color-primary;
   }
 

@@ -4,6 +4,7 @@
   display: flex;
   gap: 1rem;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .tags {
@@ -21,9 +22,9 @@
     color: var.$color-text-violet;
     border: none;
     background-color: transparent;
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
+    // position: absolute;
+    // top: 1rem;
+    // right: 1rem;
     cursor: pointer;
     transition: all 0.3s;
 
@@ -34,9 +35,18 @@
     & svg {
       width: 2rem;
     }
+
+    &:first-child {
+      width: 100%;
+      justify-content: flex-end;
+    }
   }
 
-  &__main {
+  &__btn-edit-name {
+    display: block;
+  }
+
+  &__container {
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -46,6 +56,13 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: var.$box-shadow;
     height: 100%;
+  }
+
+  &__param {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
   }
 
   &__subtitle {
@@ -115,4 +132,21 @@
     margin-top: 2rem;
     margin-left: auto;
   }
+}
+
+@media screen and (max-width: 600px) {
+  .tags__param {
+    // flex-wrap: wrap;
+    // justify-content: flex-end;
+    gap: 1rem;
+  }
+
+  .tags__btn-edit-name {
+    display: none;
+  }
+
+  // .activation-tag {
+  //   width: 100%;
+  //   order: 2;
+  // }
 }

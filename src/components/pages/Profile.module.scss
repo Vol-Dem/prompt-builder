@@ -30,6 +30,13 @@
   &__form {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  &__field {
+    display: flex;
+    align-items: center;
     gap: 1rem;
   }
 
@@ -53,7 +60,7 @@
 @media (max-width: 700px) {
   .profile {
     &__element {
-      font-size: 2rem;
+      font-size: 1.8rem;
     }
   }
 }

@@ -1,9 +1,15 @@
 import { NavLink } from "react-router-dom";
 import classes from "./MainNavigation.module.scss";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { tabActions } from "../../../store/tabs";
 
 function MainNavigation() {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
+  const dispatch = useDispatch();
+
+  const resetTabsHandler = () => {
+    dispatch(tabActions.resetActiveTabs());
+  };
 
   return (
     <>
@@ -13,6 +19,7 @@ function MainNavigation() {
             <NavLink
               to="/"
               className={(nav) => (nav.isActive ? classes.active : "")}
+              onClick={resetTabsHandler}
             >
               Home
             </NavLink>
@@ -23,6 +30,7 @@ function MainNavigation() {
                 <NavLink
                   to="profile"
                   className={(nav) => (nav.isActive ? classes.active : "")}
+                  onClick={resetTabsHandler}
                 >
                   Profile
                 </NavLink>
@@ -33,6 +41,7 @@ function MainNavigation() {
             <NavLink
               to="about"
               className={(nav) => (nav.isActive ? classes.active : "")}
+              onClick={resetTabsHandler}
             >
               About
             </NavLink>

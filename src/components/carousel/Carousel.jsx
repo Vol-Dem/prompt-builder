@@ -35,8 +35,9 @@ const Carousel = ({
   existedImgsAmount,
   imgIsOpen = false,
   activeImgNum,
-  onDelete,
+  // onDelete,
   saved,
+  active,
 }) => {
   const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount);
   const [initial, setInitial] = useState(true);
@@ -133,6 +134,8 @@ const Carousel = ({
           visibleImgAmount,
           postId,
           modelId,
+          saved,
+          // onDelete,
           versionId,
           existedImgsAmount,
           currImgNum: +currImg,
@@ -149,6 +152,7 @@ const Carousel = ({
       existedImgsAmount,
       imgIsOpen,
       visibleAmount,
+      saved,
     ]
   );
 
@@ -227,9 +231,10 @@ const Carousel = ({
           postId={images}
           // saved={!postId}
           saved={saved}
+          active={!!active}
           versionId={versionId}
           onClick={openCarouselHandler}
-          onDelete={onDelete}
+          // // onDelete={onDelete}
           id={image?.hash}
           dataset={i + visibleAmount}
           src={src}
@@ -261,9 +266,10 @@ const Carousel = ({
             postId={images}
             // saved={!postId}
             saved={saved}
+            active={!!active}
             versionId={versionId}
             onClick={openCarouselHandler}
-            onDelete={onDelete}
+            // // onDelete={onDelete}
             id={image?.hash}
             dataset={i + visibleAmount}
             src={src}
@@ -292,9 +298,10 @@ const Carousel = ({
             postId={images}
             // saved={!postId}
             saved={saved}
+            active={!!active}
             versionId={versionId}
             onClick={openCarouselHandler}
-            onDelete={onDelete}
+            // // onDelete={onDelete}
             id={image?.hash}
             dataset={i}
             src={src}
@@ -321,8 +328,9 @@ const Carousel = ({
     versionId,
     currImgNum,
     openCarouselHandler,
-    onDelete,
+    // onDelete,
     saved,
+    active,
   ]);
 
   useEffect(() => {

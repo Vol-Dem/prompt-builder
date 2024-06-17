@@ -18,6 +18,8 @@ import DeleteRequest from "../../ui/DeleteRequest";
 import { clearFileExtension } from "../../../utils/generalUtils";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
+import ButtonTertiary from "../../ui/ButtonTertiary";
+import Spinner from "../../ui/Spinner";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -25,6 +27,7 @@ const ModelSettings = () => {
   const [curTab, setCurTab] = useState("general");
   const [curVersionData, setCurVersionData] = useState(null);
   const [curVersionDefData, setCurVersionDefData] = useState(null);
+  const [mobileMenuIsOpen, setMobileMenuIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [errorMessage, seteErrorMessage] = useState("");
@@ -52,6 +55,7 @@ const ModelSettings = () => {
 
   const switchTabHandler = (e) => {
     setCurTab(e.target.id);
+    setMobileMenuIsOpen(false);
   };
 
   const updateModelHandler = async () => {
@@ -230,9 +234,20 @@ const ModelSettings = () => {
     );
   });
 
+  const openMenuHandler = () => {
+    setMobileMenuIsOpen((prevState) => !prevState);
+  };
+
   return (
     <div className={classes.wrap}>
-      <ul className={classes["menu"]}>
+      <ButtonTertiary className={classes["btn-menu"]} onClick={openMenuHandler}>
+        {!mobileMenuIsOpen ? "Menu" : "Close"}
+      </ButtonTertiary>
+      <ul
+        className={`${classes["menu"]} ${
+          !mobileMenuIsOpen ? classes["menu--hidden"] : ""
+        }`}
+      >
         <li
           className={`${classes["menu-item"]} ${
             curTab === "general" ? classes["menu-item--active"] : ""
@@ -255,6 +270,12 @@ const ModelSettings = () => {
           <ul className={classes.versions}>{modelVersionsHtml}</ul>
         </li>
       </ul>
+      {mobileMenuIsOpen && (
+        <div
+          className={classes["menu-overlay"]}
+          onClick={openMenuHandler}
+        ></div>
+      )}
       <div className={classes.content}>
         {curTab === "general" && (
           <div>
@@ -264,7 +285,7 @@ const ModelSettings = () => {
                 onClick={updateModelHandler}
                 disabled={isLoading}
               >
-                {!isLoading ? "Update" : "L..."}
+                {!isLoading ? "Update" : <Spinner />}
               </Buttton>
 
               {successMessage && (

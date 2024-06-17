@@ -9,6 +9,7 @@
   top: 0;
   background-color: rgba(darken(var.$color-background-secondary, 5%), 0.7);
   // background-color: rgb(23 26 32 / 72%);
+  z-index: 10;
 }
 
 .panel {
@@ -102,7 +103,7 @@
     font-size: 1.6rem;
     color: var.$color-text-gray-dark;
     margin: auto;
-    margin-top: 70%;
+    // margin-top: 70%;
     width: 15rem;
     text-align: center;
     margin-left: 6.4rem;
@@ -238,5 +239,22 @@
   padding: 0.3rem 0.4rem;
   & svg {
     width: 1.4rem;
+  }
+}
+
+.support {
+  width: 28rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    position: fixed;
+    right: 0;
+    padding-top: 5rem;
+  }
+
+  .panel {
+    padding-top: 2rem;
   }
 }

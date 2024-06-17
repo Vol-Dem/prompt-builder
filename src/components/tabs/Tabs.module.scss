@@ -31,7 +31,7 @@
 
 .tag-menu {
   width: 100%;
-  padding-right: 2rem;
+  // padding-right: 2rem;
   font-size: 1.8rem;
   // border-right: 1px solid #fff;
 }
@@ -41,6 +41,7 @@
   gap: 2rem;
   margin-bottom: 0.8rem;
   list-style: none;
+  flex-wrap: wrap;
   // cursor: pointer;
 }
 

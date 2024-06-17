@@ -55,37 +55,44 @@ const Profile = ({ title }) => {
           <span>{userData.userName || userData.email.split("@")[0]}</span>
         )}
       </div>
-      {changeNameIsActive && (
-        <>
-          <Input
-            input={{
-              type: "text",
-              name: "name",
-              placeholder: `${userData.userName || ""}`,
-            }}
-            autoFocus={true}
-          />
-          <ButtonTertiary>Submit</ButtonTertiary>
-        </>
-      )}
-      <ButtonTertiary type="button" onClick={changeNameIsActiveHandler}>
-        {!changeNameIsActive ? "Change" : "Cancel"}
-      </ButtonTertiary>
+      <div className={classes["profile__field"]}>
+        {changeNameIsActive && (
+          <>
+            <Input
+              input={{
+                type: "text",
+                name: "name",
+                placeholder: `${userData.userName || ""}`,
+              }}
+              autoFocus={true}
+            />
+            <ButtonTertiary>Submit</ButtonTertiary>
+          </>
+        )}
+        <ButtonTertiary type="button" onClick={changeNameIsActiveHandler}>
+          {!changeNameIsActive ? "Change" : "Cancel"}
+        </ButtonTertiary>
+      </div>
     </form>
   );
 
   const passForm = (
     <form onSubmit={changePasswordHandler} className={classes["profile__form"]}>
       <div>Password: {!changePassIsActive && <span>********</span>}</div>
-      {changePassIsActive && (
-        <>
-          <Input input={{ type: "password", name: "pass" }} autoFocus={true} />
-          <ButtonTertiary>Submit</ButtonTertiary>
-        </>
-      )}
-      <ButtonTertiary type="button" onClick={changePassIsActiveHandler}>
-        {!changePassIsActive ? "Change" : "Cancel"}
-      </ButtonTertiary>
+      <div className={classes["profile__field"]}>
+        {changePassIsActive && (
+          <>
+            <Input
+              input={{ type: "password", name: "pass" }}
+              autoFocus={true}
+            />
+            <ButtonTertiary>Submit</ButtonTertiary>
+          </>
+        )}
+        <ButtonTertiary type="button" onClick={changePassIsActiveHandler}>
+          {!changePassIsActive ? "Change" : "Cancel"}
+        </ButtonTertiary>
+      </div>
     </form>
   );
 

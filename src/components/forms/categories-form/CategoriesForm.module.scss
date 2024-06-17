@@ -39,16 +39,17 @@
   }
 
   &__form {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+    // display: flex;
     display: grid;
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: 26rem auto auto;
+    align-items: flex-start;
+    gap: 1rem;
   }
 
   &__name {
     font-size: 1.4rem;
     line-height: 1;
+    margin-top: 0.5rem;
   }
 
   &__element {
@@ -62,14 +63,21 @@
   &__error {
     color: var.$color-red;
     padding: 0.4rem;
+    font-size: 1.4rem;
+    color: var.$color-text-red;
+    margin: 0.2rem 1.8rem 0rem;
   }
 }
 
-.btn-del {
-  background-color: var.$color-background-red;
+.btn {
+  margin-top: 0.3rem;
 
-  &:hover {
-    background-color: lighten(var.$color-background-red, 10%);
+  &--del {
+    background-color: var.$color-background-red;
+
+    &:hover {
+      background-color: lighten(var.$color-background-red, 10%);
+    }
   }
 }
 

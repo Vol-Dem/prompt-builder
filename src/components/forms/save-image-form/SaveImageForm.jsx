@@ -14,6 +14,14 @@ import Fieldset from "../../ui/Fieldset";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
 import Spinner from "../../ui/Spinner";
+import {
+  DEF_INPUT_ERROR_MESSAGE,
+  EMPTY_ERROR_MESSAGE,
+  EXISTS_ERROR_MESSAGE,
+  ID_MAX_LENGTH,
+  SAVED_SUCCESS_MESSAGE,
+} from "../../../variables/constants";
+import { validateInput } from "../../../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -21,11 +29,13 @@ const SaveImageForm = ({ modelData, curVersion }) => {
   const [filterDisabledInput, setFilterDisabledInput] = useState(true);
   const [imageIsSaving, setImageIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [successMessage, seteSuccessMessage] = useState("");
   const [versionIdInput, setVersionIdInput] = useState(
     curVersion || modelData?.data?.modelVersions[0].id
   );
-  const [postIdInput, setPostIdInput] = useState("");
+  const [postIdInput, setPostIdInput] = useState({ value: "", isValid: false });
+  const [postIdIsValid, setPostIdIsValid] = useState(false);
   const [imagesIdInputs, setImagesIdInputs] = useState([
     {
       type: "text",
@@ -33,36 +43,51 @@ const SaveImageForm = ({ modelData, curVersion }) => {
       name: "image-id",
       placeholder: "image id",
       value: "",
+      isValid: true,
+      errorMessage: "",
     },
   ]);
 
-  const [postIdState, validatePostId] = useValidation("minLength", {
-    minLength: 5,
-  });
-  const { isValid: postIdIsValid, errorMessage: postIdErrorMessage } =
-    postIdState;
+  // const [postIdState, validatePostId] = useValidation("minLength", {
+  //   minLength: 5,
+  // });
+  // const { isValid: postIdIsValid, errorMessage: postIdErrorMessage } =
+  //   postIdState;
 
   const uid = useSelector((state) => state.auth.user.uid);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
 
+  // const [postIdState, validatePostId] = useValidation({
+  //   required: true,
+  //   maxLength: ID_MAX_LENGTH,
+  // });
+  // const { isValid: postIdIsValid, errorMessage: postIdErrorMessage } =
+  //   postIdState;
+
   const saveImagesHandler = async (e) => {
     try {
       e.preventDefault();
-      setImageIsSaving(true);
       setErrorMessage("");
       seteSuccessMessage("");
+      setShowErrorMessage(true);
+      console.log("INV", postIdInput.isValid);
+      const imagesIdInputsIsNotValid = imagesIdInputs
+        .map((imageInput) => imageInput.isValid)
+        .includes(false);
+      console.log("IMG INP VAL", imagesIdInputsIsNotValid);
+
+      if (!postIdInput.isValid || imagesIdInputsIsNotValid) {
+        throw new Error(DEF_INPUT_ERROR_MESSAGE);
+      }
+      // return;
+      setImageIsSaving(true);
+
       const curVersionId = +versionIdInput;
-      const postId = postIdInput.trim().toLowerCase().trim();
+      const postId = postIdInput.value.trim().toLowerCase().trim();
       const imagesId = imagesIdInputs
         .map((imageIdInput) => +imageIdInput.value?.trim())
         .filter(Boolean);
 
-      console.log(postIdIsValid);
-      if (!postIdIsValid) {
-        setErrorMessage(postIdErrorMessage);
-      }
-
-      // return;
       const clearObjectKeys = (obj) => {
         const convertedMetaArr = Object.entries(obj).map((entry, i) => {
           const newKey = entry[0]
@@ -73,17 +98,13 @@ const SaveImageForm = ({ modelData, curVersion }) => {
         return Object.fromEntries(convertedMetaArr);
       };
 
-      if (!postId) {
-        throw new Error("Empty post id");
-      }
-
       if (
         modelData?.savedImages?.hasOwnProperty(`${curVersionId}`) &&
         modelData?.savedImages[`${curVersionId}`].some(
           (post) => post.postId === postId
         )
       ) {
-        throw new Error("Exists");
+        throw new Error(EXISTS_ERROR_MESSAGE);
       }
 
       // const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
@@ -101,8 +122,9 @@ const SaveImageForm = ({ modelData, curVersion }) => {
       console.log(data);
 
       if (!data.items.length) {
-        throw new Error("0 items");
+        throw new Error(EMPTY_ERROR_MESSAGE);
       }
+
       data.items.forEach((image) => {
         if (image.meta) {
           image.meta.comfy = "";
@@ -181,7 +203,7 @@ const SaveImageForm = ({ modelData, curVersion }) => {
       );
 
       setImageIsSaving(false);
-      seteSuccessMessage("Saved");
+      seteSuccessMessage(SAVED_SUCCESS_MESSAGE);
     } catch (err) {
       setImageIsSaving(false);
       setErrorMessage(err.message);
@@ -203,15 +225,36 @@ const SaveImageForm = ({ modelData, curVersion }) => {
     setImagesIdInputs(newFields);
   };
 
-  const imageIdHandler = (e) => {
+  const imageIdHandler = (e, isValid) => {
     setImagesIdInputs((prevState) => {
-      const newState = [...prevState];
-      const curIndex = newState.findIndex((imageId) => {
-        return imageId.id === e.target.id;
-      });
+      // const newState = [...prevState];
+      // const curIndex = newState.findIndex((imageId) => {
+      //   return imageId.id === id;
+      // });
 
-      newState[curIndex].value = e.target.value;
-      console.log(newState);
+      // newState[curIndex].value = value;
+      // newState[curIndex].isValid = isValid;
+      // console.log(newState);
+      // const { isValid, errorMessage } = validateInput(
+      //   {
+      //     // required: true,
+      //     maxLength: ID_MAX_LENGTH,
+      //     number: true,
+      //   },
+      //   e.target.value
+      // );
+
+      const newState = prevState.map((item) => {
+        if (item.id === e.target.id) {
+          return {
+            ...item,
+            value: e.target.value,
+            isValid,
+            // errorMessage,
+          };
+        }
+        return item;
+      });
       return newState;
     });
   };
@@ -226,6 +269,16 @@ const SaveImageForm = ({ modelData, curVersion }) => {
         placeholder={example.placeholder}
         onChange={imageIdHandler}
         value={example.value}
+        // error={example.errorMessage}
+        showError={showErrorMessage}
+        validation={{
+          maxLength: ID_MAX_LENGTH,
+          number: true,
+        }}
+        // validation={{
+        //   required: true,
+        //   maxLength: ID_MAX_LENGTH,
+        // }}
       />
     );
   });
@@ -258,15 +311,22 @@ const SaveImageForm = ({ modelData, curVersion }) => {
         label="Post ID"
         placeholder="post id"
         input={{ disabled: imageIsSaving }}
-        value={postIdInput}
-        onChange={(e) => {
-          validatePostId(e.target.value);
-          setPostIdInput(e.target.value);
+        value={postIdInput.value}
+        onChange={(e, isValid) => {
+          // validatePostId(e.target.value);
+          setPostIdInput({ value: e.target.value, isValid });
+          // setPostIdIsValid(isValid);
         }}
         className={`${classes["auth__input"]} ${
-          !postIdIsValid ? classes.invalid : ""
+          !postIdInput.isValid ? classes.invalid : ""
         }`}
-        error={postIdErrorMessage}
+        // error={postIdErrorMessage}
+        validation={{
+          required: true,
+          maxLength: ID_MAX_LENGTH,
+          number: true,
+        }}
+        showError={showErrorMessage}
       />
       <div className={classes["imputs-container"]}>
         <Fieldset legend="Image IDs" className={classes.fieldset}>

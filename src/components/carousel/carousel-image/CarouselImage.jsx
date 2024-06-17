@@ -13,6 +13,7 @@ import Image from "../../ui/image/Image";
 import DeleteRequest from "../../ui/DeleteRequest";
 import ButtonAdd from "../../ui/ButtonAdd";
 import ImageSvg from "../../../assets/ImageSvg";
+import ImageFullView from "../../ui/ImageFullView";
 // import Buttton from "../../ui/Button";
 
 const CarouselImage = ({
@@ -26,14 +27,17 @@ const CarouselImage = ({
   saved,
   nsfw,
   imageData,
-  onDelete,
+  // onDelete,
+  active,
 }) => {
   const [imgIsLoading, setImgIsLoading] = useState(false);
   const [imgIsLoaded, setImgIsLoaded] = useState(false);
+  const [imgIsSaved, setImgIsSaved] = useState(!!saved);
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState("#");
   const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const [fullViewIsOpen, setFullViewIsOpen] = useState(false);
   const [tagSetMenuIsOpen, settagSetMenuIsOpen] = useState(false);
   const [showNsfwPreview, setShowNsfwPreview] = useState(false);
   const [curTagSetVersionId, setCurTagSetVersionId] = useState("tsv-def");
@@ -125,25 +129,25 @@ const CarouselImage = ({
     settagSetMenuIsOpen(false);
   };
 
-  const tagSetVersionsHtml = Object.values(
-    model.modelVersionsCustomData
-  ).flatMap((version, i) => {
-    if (!version?.tagSetsData?.length) return [];
-    return (
-      <li
-        key={i}
-        id={`${version.versionId}`}
-        className={`${classes["tag-sets-versions__item"]} ${
-          curTagSetVersionId === `${version.versionId}`
-            ? classes["tag-sets-versions__item--active"]
-            : ""
-        }`}
-        onClick={openTagSetVersionHandler}
-      >
-        {version.versionName}
-      </li>
-    );
-  });
+  const tagSetVersionsHtml =
+    model?.modelVersionsCustomData &&
+    Object.values(model?.modelVersionsCustomData).flatMap((version, i) => {
+      if (!version?.tagSetsData?.length) return [];
+      return (
+        <li
+          key={i}
+          id={`${version.versionId}`}
+          className={`${classes["tag-sets-versions__item"]} ${
+            curTagSetVersionId === `${version.versionId}`
+              ? classes["tag-sets-versions__item--active"]
+              : ""
+          }`}
+          onClick={openTagSetVersionHandler}
+        >
+          {version.versionName}
+        </li>
+      );
+    });
 
   const defTagSetsHtml = model?.defaultCustomData?.tagSetsData?.map(
     (tagSet, i) => {
@@ -181,41 +185,45 @@ const CarouselImage = ({
     }
   );
 
-  const versionTagsetsHtml = model?.modelVersionsCustomData[
-    curTagSetVersionId
-  ]?.tagSetsData.map((tagSet, i) => {
-    return (
-      <li
-        key={i}
-        data-id={i}
-        className={classes["tag-sets__item"]}
-        // onClick={setTagSetPreviwImgHandler}
-      >
-        <div className={classes["tag-sets__img"]}>
-          <Image src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl} />
-        </div>
-        <div className={classes["tag-sets__info"]}>
-          <h3 className={classes["tag-sets__name"]}>{tagSet.name}</h3>
-          <div className={classes["tag-sets__btn-container"]}>
-            <ButttonTertiary
-              type="button"
-              onClick={setTagSetPreviwImgHandler}
-              button={{ "data-id": i, "data-nsfw": "safe" }}
-            >
-              Set as preview
-            </ButttonTertiary>
-            <ButttonTertiary
-              type="button"
-              onClick={setTagSetPreviwImgHandler}
-              button={{ "data-id": i, "data-nsfw": "nsfw" }}
-            >
-              Set as NSFW preview
-            </ButttonTertiary>
-          </div>
-        </div>
-      </li>
+  const versionTagsetsHtml =
+    model?.modelVersionsCustomData &&
+    model?.modelVersionsCustomData[curTagSetVersionId]?.tagSetsData.map(
+      (tagSet, i) => {
+        return (
+          <li
+            key={i}
+            data-id={i}
+            className={classes["tag-sets__item"]}
+            // onClick={setTagSetPreviwImgHandler}
+          >
+            <div className={classes["tag-sets__img"]}>
+              <Image
+                src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl}
+              />
+            </div>
+            <div className={classes["tag-sets__info"]}>
+              <h3 className={classes["tag-sets__name"]}>{tagSet.name}</h3>
+              <div className={classes["tag-sets__btn-container"]}>
+                <ButttonTertiary
+                  type="button"
+                  onClick={setTagSetPreviwImgHandler}
+                  button={{ "data-id": i, "data-nsfw": "safe" }}
+                >
+                  Set as preview
+                </ButttonTertiary>
+                <ButttonTertiary
+                  type="button"
+                  onClick={setTagSetPreviwImgHandler}
+                  button={{ "data-id": i, "data-nsfw": "nsfw" }}
+                >
+                  Set as NSFW preview
+                </ButttonTertiary>
+              </div>
+            </div>
+          </li>
+        );
+      }
     );
-  });
 
   const nsfwSwitchHandler = () => {
     setShowNsfwPreview((prevState) => !prevState);
@@ -229,11 +237,12 @@ const CarouselImage = ({
     // console.log(postData);
 
     dispatch(deleteImgPost(versionId, imgPostId, postData));
-    if (onDelete) {
-      onDelete(imgPostId);
-    }
+    // if (onDelete) {
+    //   onDelete(imgPostId);
+    // }
     setDeleteRequestIsOpen(false);
     setMenuIsOpen(false);
+    setImgIsSaved(false);
   };
 
   const showDeleteReqeustHandler = (e) => {
@@ -253,6 +262,14 @@ const CarouselImage = ({
     if (!e.target.closest(`.${classes.menu}`)) setMenuIsOpen(false);
   };
 
+  const openFullViewHandler = () => {
+    console.log(activeCarouselData);
+    setFullViewIsOpen(true);
+  };
+  const closeFullViewHandler = () => {
+    setFullViewIsOpen(false);
+  };
+
   useEffect(() => {
     if (menuIsOpen) {
       console.log("MENU");
@@ -267,7 +284,13 @@ const CarouselImage = ({
   }, [menuIsOpen]);
 
   return (
-    <div className={classes.container}>
+    <div
+      className={`${classes.container} ${
+        active && !imgIsLoading && !imgError && imgSrc !== "#"
+          ? classes["container--shadow"]
+          : ""
+      }`}
+    >
       {imgIsLoading && <div className={classes.loading}>Loading...</div>}
       {imgError && (
         <div
@@ -320,7 +343,7 @@ const CarouselImage = ({
                 >
                   Set as NSFW preview
                 </li>
-                {saved && (
+                {imgIsSaved && (
                   <li
                     className={`${classes["menu__item"]} ${classes["menu__item--del"]}`}
                     onClick={showDeleteReqeustHandler}
@@ -337,6 +360,24 @@ const CarouselImage = ({
             type="image"
           />
         </>
+      )}
+      {active && !imgIsLoading && !imgError && imgSrc !== "#" && (
+        <span className={classes["btn-full"]} onClick={openFullViewHandler}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6"
+            />
+          </svg>
+        </span>
       )}
       {!imgError && imgSrc !== "#" && (
         <>
@@ -416,6 +457,9 @@ const CarouselImage = ({
             <ul className={classes["tag-sets"]}>{versionTagsetsHtml}</ul>
           )}
         </Modal>
+      )}
+      {fullViewIsOpen && (
+        <ImageFullView src={src} onClose={closeFullViewHandler}></ImageFullView>
       )}
       {deleteRequestIsOpen && (
         <DeleteRequest

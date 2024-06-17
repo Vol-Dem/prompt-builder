@@ -14,7 +14,7 @@
     &::before,
     &::after {
       display: inline-block;
-      width: 2.5rem;
+      width: 1.8rem;
       height: 0.1rem;
       background-color: var.$color-background-light;
       transition: all 0.3s;
@@ -28,17 +28,17 @@
     }
 
     &::before {
-      top: -0.9rem;
+      top: -0.6rem;
     }
     &::after {
-      top: 0.9rem;
+      top: 0.6rem;
     }
   }
 
   &__button {
     position: relative;
-    height: 5rem;
-    width: 5rem;
+    height: 3.2rem;
+    width: 3.2rem;
     border-radius: 50%;
     background-color: var.$color-primary;
     text-align: center;
@@ -51,8 +51,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 5rem;
-    width: 5rem;
+    height: 3.2rem;
+    width: 3.2rem;
     border-radius: 50%;
     background-color: rgba(var.$color-text-primary, 0.99);
     z-index: 999;
@@ -67,6 +67,7 @@
     width: 100%;
     z-index: -555;
     opacity: 0;
+    display: none;
   }
 
   &__links {
@@ -110,13 +111,15 @@
   }
 
   &--open &__background {
-    transform: scale(80);
+    // transform: scale(80);
   }
 
   &--open &__nav {
+    display: block;
     z-index: 1111;
     opacity: 1;
-    animation: slideIn 0.5s ease-in;
+    animation: slideIn 0.4s ease-in;
+    background-color: var.$color-background-tertiary;
   }
 
   &--open &__icon {
@@ -134,7 +137,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 968px) {
   .mobile-nav {
     display: block;
   }

@@ -102,6 +102,11 @@ const tabsSlice = createSlice({
       state.categoriesData = [];
       state.subcategories = [];
     },
+    resetActiveTabs(state, actions) {
+      state.currTab = "";
+      state.currCategory = "";
+      state.currSubcategory = "";
+    },
   },
 });
 

@@ -1,16 +1,44 @@
-@use "../../variables/variables.scss" as var;
+@use "./../../variables/variables.scss" as var;
 
-.activation-tag {
+.input-number {
   display: flex;
-  gap: 0.3rem;
-  align-items: center;
+}
+
+.input {
+  border-radius: 10px;
+  padding: 0.5rem;
+  width: 100%;
+  padding-left: 1rem;
+  background-color: var.$color-input-bg;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var.$box-shadow-inset;
+  color: var.$color-text-white;
+  color: var.$color-text-gray;
+
+  &--error {
+    border: 1px solid rgba(var.$color-red, 0.6);
+    // border: 1px solid var.$color-text-red;
+  }
+
+  &--number {
+    /* WebKit and Blink */
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    &[type="number"] {
+      -moz-appearance: textfield;
+    }
+  }
 
   &__btn-container {
     display: flex;
     gap: 0.1rem;
     flex-direction: column;
     width: 2rem;
-    flex-shrink: 0;
   }
 
   &__btn {
@@ -46,4 +74,15 @@
       }
     }
   }
+}
+.label {
+  display: inline-block;
+  font-size: 1.6rem;
+  margin: 0 0.6rem 0.4rem;
+}
+
+.error {
+  font-size: 1.4rem;
+  color: var.$color-text-red;
+  margin: 0.2rem 1.8rem 0rem;
 }

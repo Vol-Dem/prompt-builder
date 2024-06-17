@@ -9,6 +9,12 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: var.$box-shadow-inset;
   color: var.$color-text-white;
+  color: var.$color-text-gray;
+
+  &--error {
+    border: 1px solid rgba(var.$color-red, 0.6);
+    // border: 1px solid var.$color-text-red;
+  }
 }
 .label {
   display: inline-block;
@@ -17,7 +23,7 @@
 }
 
 .error {
-  font-size: 1.6rem;
-  color: var.$color-red;
-  margin: 0 1.8rem 0rem;
+  font-size: 1.4rem;
+  color: var.$color-text-red;
+  margin: 0.2rem 1.8rem 0rem;
 }
