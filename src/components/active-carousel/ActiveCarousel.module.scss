@@ -66,10 +66,11 @@
   }
 }
 
-@media screen and (max-width: 980px) {
+@media screen and (max-width: 1310px) {
   .wrap {
     flex-wrap: wrap;
     overflow-y: scroll;
     justify-content: center;
+    @include var.custom-scroll;
   }
 }

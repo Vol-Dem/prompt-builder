@@ -52,7 +52,10 @@
 .content {
   width: 100%;
   padding: 1rem;
+  animation: show 0.4s ease-in forwards;
 }
+
+@include var.animation-show;
 
 .versions {
   font-size: 1.6rem;

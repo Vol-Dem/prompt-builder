@@ -13,6 +13,7 @@
   box-shadow: var.$box-shadow;
   background-color: var.$color-background-tertiary;
   word-break: break-word;
+  animation: show 0.3s ease-in forwards;
 }
 
 .btn-add {
@@ -280,3 +281,5 @@
     left: 0.4rem;
   }
 }
+
+@include var.animation-show;

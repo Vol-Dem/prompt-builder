@@ -23,7 +23,7 @@ import { clearFileExtension } from "../../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 
-const ImageCard = ({ currImgNum }) => {
+const ImageCard = ({ activeImgNum }) => {
   const [imageData, setImageData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -40,16 +40,12 @@ const ImageCard = ({ currImgNum }) => {
   useEffect(() => {
     if (!!activeCarouselData?.images?.length) {
       // console.log(activeCarouselData?.images[activeCarouselData.currImgNum]);
-      console.log(
-        activeCarouselData?.images[activeCarouselData?.currImgNum || 0]
-      );
-      setImageData(
-        activeCarouselData?.images[activeCarouselData?.currImgNum || 0]
-      );
+      console.log(activeCarouselData?.images[activeImgNum || 0]);
+      setImageData(activeCarouselData?.images[activeImgNum || 0]);
     } else {
       setImageData({});
     }
-  }, [activeCarouselData]);
+  }, [activeCarouselData, activeImgNum]);
 
   useEffect(() => {
     console.log("IMGCARD");
@@ -822,12 +818,12 @@ const ImageCard = ({ currImgNum }) => {
                       </LinkA>
                     </div>
                   )}
-                  {isLoading && (
-                    <div className={classes["spiner-container"]}>
-                      <Spinner size="medium" />
-                    </div>
-                  )}
                 </div>
+                {isLoading && (
+                  <div className={classes["spiner-container"]}>
+                    <Spinner size="medium" />
+                  </div>
+                )}
                 {!isLoading && !!resourcesHtml?.length && (
                   <div>
                     Resourses:

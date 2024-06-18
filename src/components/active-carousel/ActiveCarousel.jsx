@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import classes from "./ActiveCarousel.module.scss";
 import { useSelector } from "react-redux";
 import Carousel from "../carousel/Carousel";
 import ImageCard from "../image-card/ImageCard";
 
 const ActiveCarousel = () => {
+  const [activeImageNumber, setActiveImageNumber] = useState(null);
   const activeCarouselData = useSelector(
     (state) => state.model.activeCarouselData
   );
@@ -21,6 +22,7 @@ const ActiveCarousel = () => {
   useEffect(() => {
     if (!!activeCarouselData?.images?.length) {
       console.log(activeCarouselData?.images);
+      setActiveImageNumber(activeCarouselData.currImgNum);
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = null;
@@ -77,10 +79,11 @@ const ActiveCarousel = () => {
               activeImgNum={activeCarouselData?.currImgNum || 0}
               active={true}
               saved={activeCarouselData?.saved}
+              onActiveNumChange={setActiveImageNumber}
               // onDelete={activeCarouselData?.onDelete}
             />
           )}
-          <ImageCard />
+          <ImageCard activeImgNum={activeImageNumber} />
         </div>
       </div>
     </>

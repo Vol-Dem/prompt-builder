@@ -146,3 +146,14 @@ $clip-path-arrow-down: polygon(
   -webkit-line-clamp: $line;
   -webkit-box-orient: vertical;
 }
+
+@mixin animation-show {
+  @keyframes show {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+}

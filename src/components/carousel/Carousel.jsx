@@ -38,6 +38,7 @@ const Carousel = ({
   // onDelete,
   saved,
   active,
+  onActiveNumChange,
 }) => {
   const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount);
   const [initial, setInitial] = useState(true);
@@ -54,6 +55,8 @@ const Carousel = ({
   const [curVisibleAmount, setCurVisibleAmount] = useState(visibleImgAmount);
   const [carouselWidth, setCarouselWidth] = useState(0);
   const [dimensions, setDimensions] = useState({});
+  const [cursorInitialX, setCursorInitialX] = useState(null);
+  const [cursorCurX, setCursorCurX] = useState(null);
   const carouselRef = useRef();
   const imagesRef = useRef();
   // const wrapRef = useRef();
@@ -421,20 +424,25 @@ const Carousel = ({
     setPrevVisibleImages(visibleImages.map((el) => el + 1));
     let imgNum = visibleImages[0] + 1 - visibleAmount;
     if (imgNum > images?.length - 1) imgNum = 0;
-    setCurrImgNum(imgNum >= 0 ? imgNum : images?.length + imgNum);
-    if (imgIsOpen) {
-      dispatch(
-        modelActions.setActiveCarouselData({
-          images,
-          visibleImgAmount,
-          postId,
-          modelId,
-          versionId,
-          existedImgsAmount,
-          currImgNum: imgNum >= 0 ? imgNum : images?.length + imgNum,
-        })
-      );
+    const activeImage = imgNum >= 0 ? imgNum : images?.length + imgNum;
+    setCurrImgNum(activeImage);
+    if (!!onActiveNumChange) {
+      onActiveNumChange(activeImage);
     }
+
+    // if (imgIsOpen) {
+    //   dispatch(
+    //     modelActions.setActiveCarouselData({
+    //       images,
+    //       visibleImgAmount,
+    //       postId,
+    //       modelId,
+    //       versionId,
+    //       existedImgsAmount,
+    //       currImgNum: imgNum >= 0 ? imgNum : images?.length + imgNum,
+    //     })
+    //   );
+    // }
   };
 
   const slidePrevHandler = () => {
@@ -445,20 +453,24 @@ const Carousel = ({
     setTranslate(-dimensions.imgWidthWithGap * curImg);
     setPrevVisibleImages(visibleImages.map((el) => el - 1));
     const imgNum = visibleImages[0] - 1 - visibleAmount;
-    setCurrImgNum(imgNum >= 0 ? imgNum : images?.length + imgNum);
-    if (imgIsOpen) {
-      dispatch(
-        modelActions.setActiveCarouselData({
-          images,
-          visibleImgAmount,
-          postId,
-          modelId,
-          versionId,
-          existedImgsAmount,
-          currImgNum: imgNum >= 0 ? imgNum : images?.length + imgNum,
-        })
-      );
+    const activeImage = imgNum >= 0 ? imgNum : images?.length + imgNum;
+    setCurrImgNum(activeImage);
+    if (!!onActiveNumChange) {
+      onActiveNumChange(activeImage);
     }
+    // if (imgIsOpen) {
+    //   dispatch(
+    //     modelActions.setActiveCarouselData({
+    //       images,
+    //       visibleImgAmount,
+    //       postId,
+    //       modelId,
+    //       versionId,
+    //       existedImgsAmount,
+    //       currImgNum: imgNum >= 0 ? imgNum : images?.length + imgNum,
+    //     })
+    //   );
+    // }
   };
 
   const paginationHtml = images?.map((_, i) => {
@@ -482,19 +494,19 @@ const Carousel = ({
             setPrevVisibleImages(newVisibleImages);
             return newVisibleImages;
           });
-          if (imgIsOpen) {
-            dispatch(
-              modelActions.setActiveCarouselData({
-                images,
-                visibleImgAmount,
-                postId,
-                modelId,
-                versionId,
-                existedImgsAmount,
-                currImgNum: i,
-              })
-            );
-          }
+          // if (imgIsOpen) {
+          //   dispatch(
+          //     modelActions.setActiveCarouselData({
+          //       images,
+          //       visibleImgAmount,
+          //       postId,
+          //       modelId,
+          //       versionId,
+          //       existedImgsAmount,
+          //       currImgNum: i,
+          //     })
+          //   );
+          // }
         }}
       ></li>
     );
@@ -634,6 +646,32 @@ const Carousel = ({
     }
   }, [activeImgNum, visibleAmount]);
 
+  // const moveElement = (e) => {
+  //   const clientX = Math.round(e.clientX || e.touches[0].clientX);
+  //   setCursorCurX(clientX);
+  // };
+
+  const mouseDownHandler = (e) => {
+    const clientX = Math.round(e.clientX || e.touches[0].clientX);
+    // setCursorCurX(null);
+    setCursorInitialX(clientX);
+  };
+
+  const mouseUp = (e) => {
+    const clientX = Math.round(e.clientX || e.touches[0].clientX);
+    console.log(cursorInitialX - clientX);
+    const offcet = cursorInitialX - clientX;
+    setCursorCurX(null);
+    setCursorInitialX(null);
+    if (!!offcet && offcet > 0 && Math.abs(offcet) > 40) {
+      console.log("NEXT T");
+      slideNextHandler();
+    } else if (!!offcet && offcet < 0 && Math.abs(offcet) > 40) {
+      console.log("PREV T");
+      slidePrevHandler();
+    }
+  };
+
   return (
     // <div
     //   // className={classes.container}
@@ -670,6 +708,12 @@ const Carousel = ({
             }
           : {}
       }
+      onMouseUp={mouseUp}
+      onTouchEnd={mouseUp}
+      onMouseDown={mouseDownHandler}
+      onTouchStart={mouseDownHandler}
+      // onPointerMove={moveElement}
+      // onTouchMove={moveElement}
     >
       <div
         className={`${classes["carousel__images"]} `}

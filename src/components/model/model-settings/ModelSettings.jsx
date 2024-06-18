@@ -285,13 +285,9 @@ const ModelSettings = () => {
                 onClick={updateModelHandler}
                 disabled={isLoading}
               >
-                {!isLoading ? "Update" : <Spinner />}
+                {!isLoading ? "Update" : <Spinner size="small" />}
               </Buttton>
 
-              {successMessage && (
-                <SuccessMessage>{successMessage}</SuccessMessage>
-              )}
-              {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
               <Buttton
                 type="button"
                 onClick={showDeleteReqeustHandler}
@@ -301,7 +297,10 @@ const ModelSettings = () => {
                 Delete
               </Buttton>
             </div>
-
+            {successMessage && (
+              <SuccessMessage>{successMessage}</SuccessMessage>
+            )}
+            {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
             <UpdateModelForm modelData={model} />
           </div>
         )}

@@ -5,6 +5,7 @@
   flex-direction: column;
   width: 100%;
   gap: 2rem;
+  animation: show 0.3s ease-in forwards;
 }
 
 .fields {
@@ -91,3 +92,5 @@
   align-items: center;
   // justify-content: space-between;
 }
+
+@include var.animation-show;

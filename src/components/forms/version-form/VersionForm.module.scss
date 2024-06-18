@@ -6,6 +6,7 @@
   width: 100%;
   gap: 2rem;
   position: relative;
+  animation: show 0.3s ease-in forwards;
 }
 
 .subtitle {
@@ -73,3 +74,5 @@
     margin: 0 0.6rem 0.4rem;
   }
 }
+
+@include var.animation-show;
