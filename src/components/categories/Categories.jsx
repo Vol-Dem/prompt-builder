@@ -78,16 +78,18 @@ const Categories = () => {
     <div className={classes["container"]}>
       <div className={classes["category"]}>
         <ul className={classes["category__list"]}>{catHtml}</ul>
-        <ButtonTertiary
-          type="button"
-          className={classes["category__edit"]}
-          onClick={editCategoriesHandler}
-          title="Edit categories"
-        >
-          <EditSvg />
-        </ButtonTertiary>
+        {categories && (
+          <ButtonTertiary
+            type="button"
+            className={classes["category__edit"]}
+            onClick={editCategoriesHandler}
+            title="Edit categories"
+          >
+            <EditSvg />
+          </ButtonTertiary>
+        )}
       </div>
-      {activeCategory && (
+      {activeCategory && activeTab && categories && (
         <Subcategories
           subcategories={categories[activeTab][activeCategory]}
           activeCategory={activeCategory}

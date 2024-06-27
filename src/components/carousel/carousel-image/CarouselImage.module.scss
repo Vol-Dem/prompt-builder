@@ -71,7 +71,7 @@
   top: 1.2rem;
   right: 1.2rem;
   list-style: none;
-  z-index: 2;
+  z-index: 5;
 
   &__list {
     display: flex;
@@ -257,12 +257,15 @@
 
 .btn-full {
   position: absolute;
+  display: flex;
   z-index: 2;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   opacity: 0;
   transition: all 0.5s ease;
+  width: 50%;
+  height: 50%;
   cursor: pointer;
 
   & svg {
@@ -272,6 +275,7 @@
     color: rgb(var.$color-background-tertiary, 0.8);
     color: var.$color-text-gray;
     transition: all 0.4s ease;
+    margin: auto;
     // color: rgb(var.$color-text-gray, 0.7);
   }
 

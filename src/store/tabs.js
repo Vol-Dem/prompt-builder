@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   collection,
   doc,
+  endBefore,
   getDoc,
   getDocs,
   getFirestore,
@@ -15,7 +16,7 @@ import firebaseApp from "../firebase-config";
 
 const firestore = getFirestore(firebaseApp);
 
-let lastVisible = {};
+let lastVisible = "";
 
 const amountPerPage = 6;
 
@@ -36,7 +37,8 @@ const tabsSlice = createSlice({
       previews: [],
     },
     subcategories: [],
-    sortBy: "createdAt",
+    // sortBy: "createdAt",
+    sortBy: "name",
     modelType: "",
     isLoading: false,
     isLastPage: false,
@@ -54,7 +56,7 @@ const tabsSlice = createSlice({
       state.currCategory = actions.payload;
     },
     setCurrentSubcategory(state, actions) {
-      lastVisible = {};
+      lastVisible = "";
       state.modelsData = [];
       state.isLastPage = false;
       state.currSubcategory = actions.payload;
@@ -131,7 +133,7 @@ export const getModelsPreview = (loadMore = false, nsfwMode) => {
   return async (dispatch, getState) => {
     try {
       if (!loadMore) {
-        lastVisible = {};
+        lastVisible = "";
         dispatch(tabActions.setIsLastPage(false));
       }
       const uid = getState().auth.user.uid;
@@ -149,13 +151,15 @@ export const getModelsPreview = (loadMore = false, nsfwMode) => {
       console.log(activeCategory);
       console.log(activeSubcategory);
       console.log(isLastPage);
-      console.log(lastVisible);
-      console.log(loadMore);
+      console.log("LAST", lastVisible);
+      console.log(sortBy);
+      console.log(baseModel);
       if (isLastPage) return;
 
       dispatch(tabActions.setIsLoading(true));
-      console.log(sortBy);
+      // console.log(sortBy);
       const direction = sortBy === "name" ? "asc" : "desc";
+      // const direction = "desc";
       console.log(direction);
       const order = orderBy(sortBy, direction);
       // const order = orderBy("name", "asc");
@@ -164,7 +168,7 @@ export const getModelsPreview = (loadMore = false, nsfwMode) => {
 
       const nsfwFilter = !nsfwMode ? [false] : [true, false];
 
-      if (baseModel) {
+      if (baseModel && baseModel !== "-") {
         q = query(
           collection(firestore, "users", uid, `preview`),
           where("modelType", "==", activeTab),
@@ -176,6 +180,7 @@ export const getModelsPreview = (loadMore = false, nsfwMode) => {
           // orderBy("id", "desc"),
           order,
           startAfter(lastVisible),
+          // endBefore(lastVisible),
           limit(amountPerPage)
         );
       } else {
@@ -189,6 +194,7 @@ export const getModelsPreview = (loadMore = false, nsfwMode) => {
           // orderBy("id", "desc"),
           order,
           startAfter(lastVisible),
+          // endBefore(lastVisible),
           limit(amountPerPage)
         );
       }

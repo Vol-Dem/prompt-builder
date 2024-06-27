@@ -6,19 +6,27 @@ import { liveSearch, searchActions } from "../../store/search";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import useIntersection from "../../hooks/use-intersection";
+import usePageEnd from "../../hooks/use-page-end";
 
 // let initial = true;
 const amountPerPage = 10;
 
 const SearchPage = ({ title }) => {
   const [initial, setInitial] = useState(true);
+  const [isIntersecting, setIsIntersecting] = useState(true);
   const searchQuery = useSelector((state) => state.search.searchQuery);
   const searchResult = useSelector((state) => state.search.searchResult);
   const searchIsLoading = useSelector((state) => state.search.isLoading);
   const isLastPage = useSelector((state) => state.search.isLastPage);
   const errorMessage = useSelector((state) => state.search.errorMessage);
   const endPage = useRef(null);
-  const isIntersecting = useIntersection(endPage, false);
+  // const isIntersecting = useIntersection(endPage, false);
+  const isPageEnd = usePageEnd(600);
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    setIsIntersecting(isPageEnd);
+  }, [isPageEnd]);
 
   const searchResultHtml = searchResult.result?.map((item, i) => {
     return <PreviewCard key={item.id} previewData={item} />;
@@ -34,9 +42,13 @@ const SearchPage = ({ title }) => {
     if (!isLastPage && isIntersecting && !!searchResult?.result?.length) {
       console.log("INERS");
       console.log(isIntersecting);
-      dispatch(
-        liveSearch(searchResult.query, searchResult.nsfw, amountPerPage, true)
-      );
+      setIsIntersecting(false);
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        dispatch(
+          liveSearch(searchResult.query, searchResult.nsfw, amountPerPage, true)
+        );
+      }, 1000);
     }
   }, [
     isIntersecting,

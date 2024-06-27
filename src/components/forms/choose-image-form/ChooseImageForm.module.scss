@@ -1,0 +1,107 @@
+@use "./../../../variables/variables.scss" as var;
+
+.images-list {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  list-style: none;
+  overflow-y: scroll;
+  max-height: 80vh;
+  min-width: 24rem;
+  @include var.custom-scroll;
+
+  &__item {
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  &__icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+
+    & svg {
+      width: 4rem;
+      height: 4rem;
+      opacity: 0.8;
+    }
+  }
+}
+
+.checkbox {
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: 0;
+}
+
+.image {
+  min-width: 10rem;
+  height: 14rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  // &__img {
+  //   min-width: 10rem;
+  //   height: 14rem;
+  // }
+
+  & img {
+    position: relative;
+    min-width: 10rem;
+    height: 14rem;
+  }
+
+  &:hover {
+  }
+
+  &--active {
+    &::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 123, 200, 0.6);
+      z-index: 1;
+    }
+  }
+
+  &--saved {
+    cursor: default;
+    &::before {
+      background-color: rgba(0, 200, 190, 0.6);
+      background-color: rgba(184, 184, 184, 0.85);
+    }
+  }
+  &--del {
+    &::before {
+      background-color: rgba(200, 20, 0, 0.6);
+    }
+  }
+}
+
+.btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.btn-del {
+  background-color: var.$color-background-red;
+
+  &:hover {
+    background-color: lighten(var.$color-background-red, 5%);
+    background-color: darken(var.$color-background-red, 5%);
+  }
+}
+
+.spiner-container {
+  position: relative;
+  height: 3rem;
+}

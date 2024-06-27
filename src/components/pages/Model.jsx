@@ -10,7 +10,7 @@ import { modelActions } from "../../store/model";
 import ModelInfo from "../model/info/ModelInfo";
 import ModelTags from "../model/tags/ModelTags";
 import GeneratedImages from "../model/generated-images/GeneratedImages";
-import { doc, getFirestore, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
 import firebaseApp from "../../firebase-config";
 import ModelSettings from "../model/model-settings/ModelSettings";
 import TagSets from "../model/tag-sets/TagSets";
@@ -37,6 +37,7 @@ const Model = ({ title }) => {
   // const [currVersionIndex, setCurrVersionIndex] = useState(null);
   const [curCustomVersionData, setCurCustomVersionData] = useState({});
   const [curImagesModelVersionId, setCurImagesModelVersionId] = useState(null);
+  const [curVersionImages, setCurVersionImages] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { modelId } = useParams();
@@ -85,6 +86,59 @@ const Model = ({ title }) => {
       setDescHeight(null);
     }
   }, [model?.id]);
+
+  useEffect(() => {
+    if (curVersionImages?.versionId === curVersion?.id) return;
+    const modelImages = nsfwMode
+      ? curVersion?.images
+      : curVersion?.images?.filter(
+          (image) =>
+            image?.nsfw === "None" ||
+            image?.nsfwLevel <= 1 ||
+            image?.nsfw === false
+        );
+    setCurVersionImages({ items: modelImages, versionId: curVersion?.id });
+
+    const getCurVersionImages = async () => {
+      console.log("GET CUR VER IMAGES");
+      console.log(uid);
+      console.log(model?.id);
+      console.log(curVersion?.id);
+      const modelDefImagesRef = doc(
+        firestore,
+        "users",
+        uid,
+        "models",
+        model?.id + "",
+        "defaultImages",
+        curVersion?.id + ""
+      );
+
+      const docSnap = await getDoc(modelDefImagesRef);
+
+      if (docSnap.exists()) {
+        console.log("Document data:", docSnap.data());
+        const curImages = docSnap.data().items;
+        console.log(curImages);
+
+        const modelImages = nsfwMode
+          ? curImages
+          : curImages?.filter(
+              (image) =>
+                image?.nsfw === "None" ||
+                image?.nsfwLevel <= 1 ||
+                image?.nsfw === false
+            );
+
+        // setCurVersionImages(modelImages);
+        setCurVersionImages({ items: modelImages, versionId: curVersion?.id });
+      }
+    };
+
+    if (!!model?.id && !!curVersion?.id) {
+      getCurVersionImages();
+    }
+  }, [model?.id, curVersion, nsfwMode, uid, curVersionImages?.versionId]);
 
   useEffect(() => {
     if (!descHeight && descriptionRef?.current?.offsetHeight !== descHeight) {
@@ -247,18 +301,13 @@ const Model = ({ title }) => {
     // setCurrVersionIndex(e.target.dataset.version);
   };
 
-  const modelImages = nsfwMode
-    ? curVersion?.images
-    : curVersion?.images?.filter(
-        (image) =>
-          image?.nsfw === "None" ||
-          image?.nsfwLevel <= 1 ||
-          image?.nsfw === false
-      );
-
   const modelImagesHtml = (
     <div id={curVersion?.name}>
-      <Carousel images={modelImages} versionId={curVersion} saved={false} />
+      <Carousel
+        imagesData={curVersionImages.items}
+        versionId={curVersion}
+        saved={false}
+      />
     </div>
   );
 
@@ -461,7 +510,7 @@ const Model = ({ title }) => {
               {showAllVersions ? "Hide" : "Show All"}
             </ButtonTertiary>
           )}
-          {!!modelImages?.length && modelImagesHtml}
+          {!!curVersionImages.items?.length && modelImagesHtml}
           <div className={classes["info-container"]}>
             <ModelInfo customData={curCustomVersionData} />
             <ModelTags

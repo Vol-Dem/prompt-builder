@@ -1,6 +1,6 @@
 import classes from "./Select.module.scss";
 // import { ReactComponent as BoxEmptyImg } from "./../assets/layout/boxempty.svg";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Input from "./Input";
 import ArrowDownSvg from "../../assets/ArrowDownSvg";
 
@@ -20,22 +20,23 @@ const Select = ({
   const labeldRef = useRef();
   const inputRef = useRef();
 
-  const closeSelect = (e) => {
+  const closeSelectHandler = useCallback((e) => {
     if (!e.target.classList.contains(classes["select__input-field"]))
       setSelectIsOpen(false);
-  };
+  }, []);
 
   useEffect(() => {
     if (selectIsOpen) {
-      document.addEventListener("click", closeSelect);
+      document.removeEventListener("click", closeSelectHandler);
+      document.addEventListener("click", closeSelectHandler);
     } else {
-      document.removeEventListener("click", closeSelect);
+      document.removeEventListener("click", closeSelectHandler);
     }
 
     return () => {
-      document.removeEventListener("click", closeSelect);
+      document.removeEventListener("click", closeSelectHandler);
     };
-  }, [selectIsOpen]);
+  }, [selectIsOpen, closeSelectHandler]);
 
   useEffect(() => {
     const labelStyle = window.getComputedStyle(labeldRef.current);
@@ -72,6 +73,9 @@ const Select = ({
   };
 
   const selectOptions = options.map((item, i) => {
+    // console.log("SELECTED", selectedFieldValue);
+    // console.log("ITEM", item.value);
+    // console.log(item.value === selectedFieldValue);
     return (
       <div ref={inputRef} key={i} className={classes["select__item"]}>
         <input

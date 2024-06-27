@@ -20,12 +20,13 @@ import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
 import Buttton from "../../ui/Button";
 import ErrorMessage from "../../ui/ErrorMessage";
 import ButtonTertiary from "../../ui/ButtonTertiary";
+import usePageEnd from "../../../hooks/use-page-end";
 
 const firestore = getFirestore(firebaseApp);
 
 const postsPerPage = 16;
 
-let getImageTimeout;
+// let timeoutRef.current;
 
 const GeneratedImages = ({ customData }) => {
   const [showAllVersions, setShowAllVersions] = useState(false);
@@ -41,7 +42,7 @@ const GeneratedImages = ({ customData }) => {
   const [examplesHtml, setExamplesHtml] = useState([]);
   const [curImagesModelVersionId, setCurImagesModelVersionId] = useState();
   const [imagesSortValue, setImagesSortValue] = useState("Newest");
-  const [amountPerPage, setAmountPerPage] = useState(50);
+  const [amountPerPage, setAmountPerPage] = useState(100);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
   const model = useSelector((state) => state.model.model);
@@ -51,15 +52,20 @@ const GeneratedImages = ({ customData }) => {
   const endPageRef = useRef(null);
   const versionsListRef = useRef(null);
   const versionsItemRef = useRef(null);
+  const abortControlerRef = useRef(null);
   const intersecting = useIntersection(endPageRef, false);
+  const isPageEnd = usePageEnd(600);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
-    setIsIntersecting(intersecting);
-  }, [intersecting]);
+    // setIsIntersecting(intersecting);
+    setIsIntersecting(isPageEnd);
+  }, [isPageEnd]);
 
   const resetExamples = () => {
     console.log("RESET");
     setCurrCursor(null);
+    setNextCursor(null);
     setExamplesImages([]);
     setExamplesImgData([]);
     setIsLastPage(false);
@@ -72,7 +78,11 @@ const GeneratedImages = ({ customData }) => {
     // if (!model.savedImages) setCurExampleImgsType("all");
     return () => {
       resetExamples();
+      clearTimeout(timeoutRef.current);
       setCurImagesModelVersionId(null);
+      if (abortControlerRef.current) {
+        abortControlerRef.current.abort();
+      }
     };
   }, [model.id]);
 
@@ -159,12 +169,71 @@ const GeneratedImages = ({ customData }) => {
   //   }
   // };
 
+  const sortExampleImages = useCallback(
+    (newExampleImages, versionId) => {
+      // if (curExampleImgsType === "saved") return;
+      // Temp replace with for
+      // console.log(examplesImages);
+      // const sortedImages = examplesImages.toSorted(
+      //   (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
+      // );
+      const sortedExamples = {};
+      newExampleImages.forEach((image) => {
+        if (sortedExamples.hasOwnProperty(image.postId)) {
+          sortedExamples[image.postId].push(image);
+        } else {
+          sortedExamples[image.postId] = [image];
+        }
+      });
+      // const sortedExamples = examplesImages.reduce((acc, cur) => {
+      //   acc.hasOwnProperty(cur.postId)
+      //     ? acc[cur.postId].push(cur)
+      //     : (acc[cur.postId] = [cur]);
+      //   return acc;
+      // }, {});
+
+      if (!sortedExamples) return;
+
+      const sortedExamplesArr = Object.keys(sortedExamples).sort((a, b) => {
+        return (
+          Date.parse(sortedExamples[b][0].createdAt) -
+          Date.parse(sortedExamples[a][0].createdAt)
+        );
+      });
+
+      const examples = sortedExamplesArr.map((key, i) => {
+        return sortedExamples[key];
+      });
+
+      const sortedExamplesArrWithSortedImgs = examples.map((post) => {
+        // console.log(post);
+        return post.sort((a, b) => {
+          return Date.parse(a.createdAt) - Date.parse(b.createdAt);
+        });
+      });
+      // console.log(Object.values(sortedExamples));
+      // console.log("SORT", versionId, curImagesModelVersionId);
+      // console.log("SORTED", sortedExamplesArrWithSortedImgs);
+      if (versionId === curImagesModelVersionId) {
+        setExamplesImgData(sortedExamplesArrWithSortedImgs);
+      }
+      // setExamplesImgData(sortedExamplesArrWithSortedImgs);
+    },
+    [curImagesModelVersionId]
+  );
+
   const getallExamples = useCallback(
     async (modelId, versionId, cursor) => {
       try {
-        // if (currCursor === nextCursor) return;
-        setIsIntersecting(false);
         setExamplesIsLoading(true);
+        if (abortControlerRef.current) {
+          abortControlerRef.current.abort();
+        }
+        const newAbortControler = new AbortController();
+        abortControlerRef.current = newAbortControler;
+        // if (versionId !== curImagesModelVersionId) return;
+        clearTimeout(timeoutRef.current);
+        setIsIntersecting(false);
         setErrorMessage("");
         // const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
         //   versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
@@ -184,10 +253,12 @@ const GeneratedImages = ({ customData }) => {
         //   nsfwMode ? `&nsfw=X` : `&nsfw=None`
         // }`;
 
-        const imgExampleResponse = await fetch(url);
+        // const imgExampleResponse = await fetch(url);
+        const imgExampleResponse = await fetch(url, {
+          signal: newAbortControler.signal,
+        });
         const data = await imgExampleResponse.json();
         console.log(data);
-        setExamplesIsLoading(false);
         if (!data?.items) return;
         setCurrCursor(nextCursor || true);
         if (data.metadata?.nextCursor) {
@@ -195,22 +266,48 @@ const GeneratedImages = ({ customData }) => {
         } else {
           setIsLastPage(true);
         }
-        setExamplesImages((prevState) => {
-          return [...data?.items, ...prevState];
-        });
+        // console.log("TEST", versionId, curImagesModelVersionId);
+        if (true) {
+          setExamplesImages((prevState) => {
+            const newExampleImages = [...data?.items, ...prevState];
+            // console.log("PREV", prevState);
+            // console.log("NEW", newExampleImages);
+            if (versionId === curImagesModelVersionId) {
+              sortExampleImages(newExampleImages, versionId);
+            }
+            return newExampleImages;
+          });
+        }
+
+        setExamplesIsLoading(false);
       } catch (err) {
-        console.log(err.message);
-        setErrorMessage(err.message);
+        console.log(err);
+        // console.log(err.message);
+        // console.log("ERROR NAME", err.name);
+        if (err.name !== "AbortError") {
+          setErrorMessage(err.message);
+        }
         setExamplesIsLoading(false);
       }
     },
-    [amountPerPage, imagesSortValue, nextCursor, nsfwMode]
+    [
+      amountPerPage,
+      imagesSortValue,
+      nextCursor,
+      nsfwMode,
+      curImagesModelVersionId,
+      sortExampleImages,
+    ]
   );
 
   const getImagesFromFirestore = useCallback(async () => {
     console.log("START FB FETCH");
     try {
-      console.log("FB LAST", isLastPage);
+      if (abortControlerRef.current) {
+        abortControlerRef.current.abort();
+      }
+      clearTimeout(timeoutRef.current);
+      // console.log("FB LAST", isLastPage);
       if (isLastPage) return;
       setExamplesIsLoading(true);
       // if (examplesIsLoading) return;
@@ -237,15 +334,7 @@ const GeneratedImages = ({ customData }) => {
         !modelImagesSnap.docs.length ||
         modelImagesSnap.docs.length < postsPerPage;
 
-      console.log("LAST", isLast);
-
-      const allData = modelImagesSnap.docs.map((doc, i) => {
-        // doc.data() is never undefined for query doc snapshots
-
-        return doc.data();
-      });
-      console.log(modelImagesSnap.docs.length);
-      console.log(allData);
+      // console.log("LAST", isLast);
 
       const data = modelImagesSnap.docs.flatMap((doc, i) => {
         // doc.data() is never undefined for query doc snapshots
@@ -272,7 +361,7 @@ const GeneratedImages = ({ customData }) => {
         })
         .filter((item) => !!item.length);
       // const examples = data.map((item, i) => item.items);
-      console.log(examples);
+      // console.log(examples);
       // const examples = data.flatMap((item, i) => {
       //   if (!nsfwMode && item.nsfw) return [];
       //   return (
@@ -355,16 +444,46 @@ const GeneratedImages = ({ customData }) => {
   ]);
 
   useEffect(() => {
+    if (curExampleImgsType === "saved") return;
+    if (!Object.keys(model).length) return;
+
+    //Temp
+    // if (curImagesModelVersionId === "unsorted") return;
+    if (!curImagesModelVersionId) return;
+    // if (examplesImages.length) return;
+    if (!currCursor && !examplesImgData.length) {
+      clearTimeout(timeoutRef.current);
+      getallExamples(model.id, curImagesModelVersionId, currCursor);
+    }
+  }, [
+    model,
+    curExampleImgsType,
+    curImagesModelVersionId,
+    currCursor,
+    nsfwMode,
+    getallExamples,
+    examplesImgData.length,
+  ]);
+
+  useEffect(() => {
     const rule =
-      !isLastPage && isIntersecting && !examplesIsLoading && !errorMessage;
+      !isLastPage &&
+      isIntersecting &&
+      !!examplesImgData.length &&
+      !errorMessage &&
+      !examplesIsLoading;
     if (true) {
+      // if (!!examplesImgData.length) {
       // if ((rule && nextCursor) || (rule && !!examplesImgData.length)) {
       // setExamplesIsLoading(true);
-      if (curExampleImgsType === "all" && rule && nextCursor) {
+      if (curExampleImgsType === "all" && rule && !!nextCursor) {
+        if (currCursor === nextCursor) return;
+        setExamplesIsLoading(true);
+        setIsIntersecting(false);
         // console.log("INTERSECT", isIntersecting);
         // console.log(nextCursor);
-        clearTimeout(getImageTimeout);
-        getImageTimeout = setTimeout(() => {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => {
           getallExamples(model.id, curImagesModelVersionId, nextCursor);
         }, 1000);
       } else if (
@@ -372,10 +491,13 @@ const GeneratedImages = ({ customData }) => {
         rule &&
         !!examplesImgData.length
       ) {
-        clearTimeout(getImageTimeout);
-        getImageTimeout = setTimeout(() => {
+        setExamplesIsLoading(true);
+        clearTimeout(timeoutRef.current);
+        setIsIntersecting(false);
+        // console.log("START INTERSECTING FETCH");
+        timeoutRef.current = setTimeout(() => {
           getImagesFromFirestore();
-        }, 500);
+        }, 1000);
         console.log("INT", isIntersecting);
       }
     }
@@ -391,90 +513,15 @@ const GeneratedImages = ({ customData }) => {
     getallExamples,
     model.id,
     nextCursor,
-  ]);
-
-  useEffect(() => {
-    if (curExampleImgsType === "saved") return;
-    if (Object.keys(model).length === 0) return;
-
-    //Temp
-    if (curImagesModelVersionId === "unsorted") return;
-    if (!curImagesModelVersionId) return;
-    // if (examplesImages.length) return;
-    if (!currCursor && !examplesImgData.length)
-      getallExamples(model.id, curImagesModelVersionId, currCursor);
-  }, [
-    model,
-    curExampleImgsType,
-    curImagesModelVersionId,
     currCursor,
-    nsfwMode,
-    getallExamples,
-    examplesImgData.length,
   ]);
 
-  const sortExampleImages = () => {
-    if (curExampleImgsType === "saved") return;
-    // Temp replace with for
-    const sortedExamples = examplesImages.reduce((acc, cur) => {
-      acc.hasOwnProperty(cur.postId)
-        ? acc[cur.postId].push(cur)
-        : (acc[cur.postId] = [cur]);
-      return acc;
-    }, {});
-    if (!sortedExamples) return;
-
-    const sortedExamplesArr = Object.keys(sortedExamples).sort((a, b) => {
-      return (
-        Date.parse(sortedExamples[b][0].createdAt) -
-        Date.parse(sortedExamples[a][0].createdAt)
-      );
-    });
-
-    const examples = sortedExamplesArr.map((key, i) => {
-      const existedExample =
-        model?.savedImages?.hasOwnProperty(curImagesModelVersionId) &&
-        model?.savedImages[`${curImagesModelVersionId}`]?.find(
-          (img) => img?.postId === +key
-        );
-      const postId =
-        existedExample && existedExample.amount >= sortedExamples[key].length
-          ? ""
-          : key;
-
-      return sortedExamples[key];
-      // return (
-      //   <div key={i}>
-      //     <Carousel
-      //       images={sortedExamples[key]}
-      //       visibleImgAmount={1}
-      //       existedImgsAmount={existedExample?.amount || null}
-      //       postId={postId}
-      //       modelId={model.id}
-      //       versionId={curImagesModelVersionId}
-      //     />
-      //   </div>
-      // );
-    });
-
-    // console.log(examples);
-
-    const sortedExamplesArrWithSortedImgs = examples.map((post) => {
-      // console.log(post);
-      return post.sort((a, b) => {
-        return b.createdAt - a.createdAt;
-      });
-    });
-
-    setExamplesImgData(sortedExamplesArrWithSortedImgs);
-  };
-
-  useEffect(sortExampleImages, [
-    examplesImages,
-    model,
-    curExampleImgsType,
-    curImagesModelVersionId,
-  ]);
+  // useEffect(sortExampleImages, [
+  //   examplesImages,
+  //   model,
+  //   curExampleImgsType,
+  //   curImagesModelVersionId,
+  // ]);
 
   const nextPageHandler = () => {
     if (curExampleImgsType === "all") {
@@ -538,7 +585,7 @@ const GeneratedImages = ({ customData }) => {
       const savedPostsIds = model?.savedImages[curImagesModelVersionId]?.map(
         (post) => post.postId
       );
-      console.log("IDS", savedPostsIds);
+      // console.log("IDS", savedPostsIds);
       const newExamples = examplesImgData?.filter((image) =>
         savedPostsIds?.includes(image[0]?.postId)
       );
@@ -562,8 +609,9 @@ const GeneratedImages = ({ customData }) => {
           <Carousel
             key={i}
             versionId={curImagesModelVersionId}
-            images={item}
+            imagesData={item}
             visibleImgAmount={1}
+            modelId={model.id}
             // onDelete={deletePostHandler}
             saved={true}
             // onUpdate={updateImgResData}
@@ -586,7 +634,7 @@ const GeneratedImages = ({ customData }) => {
         return (
           <Carousel
             key={i}
-            images={item}
+            imagesData={item}
             visibleImgAmount={1}
             existedImgsAmount={existedExample?.amount || null}
             postId={postId}
@@ -689,12 +737,12 @@ const GeneratedImages = ({ customData }) => {
         className={classes["versions"]}
         style={{
           maxHeight: showAllVersions
-            ? `${versionsListRef?.current?.offsetHeight}px`
+            ? `${versionsListRef?.current?.offsetHeight + 2}px`
             : `${versionsItemRef?.current?.offsetHeight + 2}px`,
         }}
       >
         <ul ref={versionsListRef} className={classes["versions__list"]}>
-          {curExampleImgsType !== "saved" && (
+          {/* {curExampleImgsType !== "saved" && (
             <div
               className={`${classes.version} ${
                 curImagesModelVersionId === "all-versions"
@@ -707,7 +755,7 @@ const GeneratedImages = ({ customData }) => {
             >
               All
             </div>
-          )}
+          )} */}
           {modelImageVersionsHtml}
         </ul>
       </div>

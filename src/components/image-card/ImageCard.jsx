@@ -1,6 +1,6 @@
 import classes from "./ImageCard.module.scss";
 import TagList from "../tag-list/TagList";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getImageInfo, getModelInfo } from "../../utils/fetchUtils";
 import Spinner from "../ui/Spinner";
 import {
@@ -23,7 +23,10 @@ import { clearFileExtension } from "../../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 
+const timeoutDelay = 1000;
+
 const ImageCard = ({ activeImgNum }) => {
+  // const [curImgId, setCurImgId] = useState(null);
   const [imageData, setImageData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -32,10 +35,14 @@ const ImageCard = ({ activeImgNum }) => {
   const [modelInfoCiv, setModelInfoCiv] = useState({});
   const [modelInfo, setModelInfo] = useState({});
   const uid = useSelector((state) => state.auth.user.uid);
+  const timeoutRef = useRef(null);
+
   const activeCarouselData = useSelector(
     (state) => state.model.activeCarouselData
   );
   const dispatch = useDispatch();
+
+  let timeout;
 
   useEffect(() => {
     if (!!activeCarouselData?.images?.length) {
@@ -61,17 +68,18 @@ const ImageCard = ({ activeImgNum }) => {
 
     if (imageData?.url) {
       console.log("START FETCH");
-      setIsLoading(true);
-      const loadResoursesInfo = async () => {
+
+      const loadResoursesInfo = async (curImageData) => {
         try {
-          console.log(imageData);
+          setIsLoading(true);
+          console.log(curImageData);
 
           //MODEL
           let modelHash = "";
-          if (imageData?.meta?.hasOwnProperty("Model hash")) {
-            modelHash = imageData?.meta["Model hash"];
-          } else if (imageData?.meta?.hasOwnProperty("Modelhash")) {
-            modelHash = imageData?.meta["Modelhash"];
+          if (curImageData?.meta?.hasOwnProperty("Model hash")) {
+            modelHash = curImageData?.meta["Model hash"];
+          } else if (curImageData?.meta?.hasOwnProperty("Modelhash")) {
+            modelHash = curImageData?.meta["Modelhash"];
           }
           let modelQ;
           if (!!modelHash) {
@@ -80,7 +88,7 @@ const ImageCard = ({ activeImgNum }) => {
               where("hashes", "array-contains", modelHash)
             );
           } else {
-            const modelName = imageData?.meta?.Model || "";
+            const modelName = curImageData?.meta?.Model || "";
             modelQ = query(
               collection(firestore, "users", uid, `preview`),
               where("fileNames", "array-contains", modelName?.toLowerCase())
@@ -101,25 +109,43 @@ const ImageCard = ({ activeImgNum }) => {
           console.log(modelHash);
           console.log(modelInfoData);
 
-          // const modelData = await getModelInfo(imageData?.meta);
+          // const modelData = await getModelInfo(curImageData?.meta);
           // console.log(modelData);
 
           //RESOURCES
-          const imageWithResCiv = await getImageInfo(imageData);
+          const imageWithResCiv = await getImageInfo(curImageData);
           console.log(imageWithResCiv);
+
           let resourcesInfoCiv = [];
+
           if (!!imageWithResCiv?.meta?.civitaiResources?.length) {
-            resourcesInfoCiv = imageWithResCiv.meta.civitaiResources;
-          } else if (!!imageWithResCiv?.meta?.resources?.length) {
-            resourcesInfoCiv = imageWithResCiv.meta.resources;
-          } else if (!!imageWithResCiv?.meta?.additionalResources?.length) {
-            resourcesInfoCiv = imageWithResCiv.meta.additionalResources;
+            resourcesInfoCiv = [
+              ...resourcesInfoCiv,
+              ...imageWithResCiv.meta.civitaiResources,
+            ];
           }
-          // const resourcesInfoCiv = !!imageWithResCiv?.meta?.civitaiResources
-          //   ?.length
-          //   ? imageWithResCiv.meta?.civitaiResources
-          //   : imageWithResCiv.meta?.resources;
-          //additionalResources
+
+          if (!!imageWithResCiv?.meta?.resources?.length) {
+            resourcesInfoCiv = [
+              ...resourcesInfoCiv,
+              ...imageWithResCiv.meta.resources,
+            ];
+          }
+
+          if (!!imageWithResCiv?.meta?.additionalResources?.length) {
+            resourcesInfoCiv = [
+              ...resourcesInfoCiv,
+              ...imageWithResCiv.meta.additionalResources,
+            ];
+          }
+
+          if (!!imageWithResCiv?.meta?.hashResources?.length) {
+            resourcesInfoCiv = [
+              ...resourcesInfoCiv,
+              ...imageWithResCiv.meta.hashResources,
+            ];
+          }
+
           console.log(resourcesInfoCiv);
 
           let modelsIds = [];
@@ -194,22 +220,33 @@ const ImageCard = ({ activeImgNum }) => {
           }
 
           if (!!modelsNames.length) {
-            console.log(modelsNames);
-            const q = query(
-              collection(firestore, "users", uid, `preview`),
-              where("fileNames", "array-contains-any", modelsNames)
+            const uniqModelsNames = modelsNames.filter(
+              (name) =>
+                !allModelsPreviews.find((model) =>
+                  model?.fileNames?.includes(name.toLowerCase())
+                )
             );
-            const querySnapshot = await getDocs(q);
 
-            const modelsPrewiewByName = querySnapshot.docs.map((doc) => {
-              // doc.data() is never undefined for query doc snapshots
-              return doc.data();
-            });
-            console.log(modelsPrewiewByName);
-            allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewByName];
+            if (!!uniqModelsNames.length) {
+              const q = query(
+                collection(firestore, "users", uid, `preview`),
+                where("fileNames", "array-contains-any", uniqModelsNames)
+              );
+              const querySnapshot = await getDocs(q);
+
+              const modelsPrewiewByName = querySnapshot.docs.map((doc) => {
+                // doc.data() is never undefined for query doc snapshots
+                return doc.data();
+              });
+              console.log(modelsPrewiewByName);
+              allModelsPreviews = [
+                ...allModelsPreviews,
+                ...modelsPrewiewByName,
+              ];
+            }
           }
 
-          console.log(allModelsPreviews);
+          console.log("All", allModelsPreviews);
           const resources = resourcesInfoCiv?.map((resource) => {
             const versionId = resource?.modelVersionId || resource?.versionId;
             const preview = allModelsPreviews.find(
@@ -217,7 +254,9 @@ const ImageCard = ({ activeImgNum }) => {
                 preview?.id === resource.modelId ||
                 preview?.versionIds?.includes(versionId) ||
                 preview?.hashes?.includes(resource.hash) ||
-                preview?.fileNames?.includes(clearFileExtension(resource.name))
+                preview?.fileNames?.includes(
+                  clearFileExtension(resource.name)?.toLowerCase()
+                )
             );
             console.log(preview);
             if (preview) {
@@ -230,17 +269,40 @@ const ImageCard = ({ activeImgNum }) => {
           });
           console.log(resources);
 
+          //Remove not uniq items from the end of array//////
+          const reversedArr = resources.toReversed();
+          const ids = reversedArr
+            .map((resource) => resource?.preview?.id)
+            .filter(Boolean);
+
+          const filteredNewResult = reversedArr
+            .filter((resource, index) => {
+              if (!resource?.preview?.id) {
+                return true;
+              } else {
+                return !ids.includes(resource?.preview?.id, index + 1);
+              }
+            })
+            .toReversed();
+          console.log(filteredNewResult);
+          ////////////////////////////////////////////////////
+
           if (!!modelInfoData?.length) {
             setModelInfo(modelInfoData[0]);
           }
-          setImageResources(resources || []);
+          // setImageResources(resources || []);
+          if (curImageData?.id === imageData?.id) {
+            setImageResources(filteredNewResult || []);
+          }
+          // setImageResources(filteredNewResult || []);
+          // console.log(curImageData);
           setIsLoading(false);
 
           // let modelHash = "";
-          // if (imageData?.meta?.hasOwnProperty("Model hash")) {
-          //   modelHash = imageData?.meta["Model hash"];
-          // } else if (imageData?.meta?.hasOwnProperty("Modelhash")) {
-          //   modelHash = imageData?.meta["Modelhash"];
+          // if (curImageData?.meta?.hasOwnProperty("Model hash")) {
+          //   modelHash = curImageData?.meta["Model hash"];
+          // } else if (curImageData?.meta?.hasOwnProperty("Modelhash")) {
+          //   modelHash = curImageData?.meta["Modelhash"];
           // }
 
           // const modelQ = query(
@@ -257,11 +319,11 @@ const ImageCard = ({ activeImgNum }) => {
           // console.log(modelHash);
           // console.log(modelInfoData);
 
-          // const modelData = await getModelInfo(imageData?.meta);
+          // const modelData = await getModelInfo(curImageData?.meta);
           // console.log(modelData);
 
           // const curImgResources =
-          //   imageData?.meta?.civitaiResources || imageData?.meta?.resources;
+          //   curImageData?.meta?.civitaiResources || curImageData?.meta?.resources;
 
           // const modelVersionIds = curImgResources
           //   ?.map((resource) => resource?.modelVersionId || resource?.versionId)
@@ -288,8 +350,8 @@ const ImageCard = ({ activeImgNum }) => {
           // console.log(modelVersionIds);
 
           // if (!!modelVersionIds?.length || !!modelHashes?.length) {
-          //   console.log(imageData);
-          //   const imageWithResCiv = await getImageInfo(imageData);
+          //   console.log(curImageData);
+          //   const imageWithResCiv = await getImageInfo(curImageData);
           //   console.log(imageWithResCiv);
           //   const resourcesInfoCiv =
           //     imageWithResCiv.meta?.civitaiResources ||
@@ -375,16 +437,22 @@ const ImageCard = ({ activeImgNum }) => {
           // }
           // setIsLoading(false);
         } catch (err) {
-          const defResources = !!imageData?.meta?.civitaiResources?.length
-            ? imageData.meta?.civitaiResources
-            : imageData.meta?.resources;
-          setImageResources(defResources);
+          const defResources = !!curImageData?.meta?.civitaiResources?.length
+            ? curImageData.meta?.civitaiResources
+            : curImageData.meta?.resources;
+          if (curImageData?.id === imageData?.id) {
+            setImageResources(defResources);
+          }
           console.log(err);
           setErrorMessage(err);
           setIsLoading(false);
         }
       };
-      loadResoursesInfo();
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        console.log("FETCH TIMEOUT");
+        loadResoursesInfo(imageData);
+      }, timeoutDelay);
     }
     return () => {
       console.log("CLEAN");
@@ -494,7 +562,7 @@ const ImageCard = ({ activeImgNum }) => {
             />
           </>
         )}
-        {!resource?.preview &&
+        {/* {!resource?.preview &&
           (resource?.modelId || resource?.modelVersionId || resource?.name) && (
             <div
               className={classes["resource__name"]}
@@ -504,14 +572,17 @@ const ImageCard = ({ activeImgNum }) => {
                 resource?.modelVersionName ||
                 resource.modelVersionId}
             </div>
-          )}
+          )} */}
 
-        {!resource?.modelId && !versionName && (
+        {!resource?.preview && !versionName && (
           <div
             className={classes["resource__name"]}
             title={resource?.name || resource.modelVersionId}
           >
-            {resource?.name || resource.modelVersionId}
+            {resource?.name ||
+              resource?.modelVersionName ||
+              resource?.modelVersionId ||
+              resource?.hash}
           </div>
         )}
         <div className={classes["resource__version"]}>

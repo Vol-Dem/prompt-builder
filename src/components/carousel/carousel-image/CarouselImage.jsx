@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import classes from "./CarouselImage.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -21,6 +21,7 @@ const CarouselImage = ({
   src,
   alt,
   onClick,
+  onDelete,
   dataset,
   postId,
   versionId,
@@ -247,20 +248,17 @@ const CarouselImage = ({
 
   const showDeleteReqeustHandler = (e) => {
     console.log(id);
-    setDeleteRequestIsOpen(true);
+    // setDeleteRequestIsOpen(true);
+    onDelete();
   };
 
   const closeDeleteReqeustHandler = () => {
     setDeleteRequestIsOpen(false);
   };
 
-  const closeMenu = (e) => {
-    console.log("CLOSE");
-    console.log(classes.menu);
-    console.log(e.target.classList);
-
+  const closeMenuHandler = useCallback((e) => {
     if (!e.target.closest(`.${classes.menu}`)) setMenuIsOpen(false);
-  };
+  }, []);
 
   const openFullViewHandler = () => {
     console.log(activeCarouselData);
@@ -273,15 +271,16 @@ const CarouselImage = ({
   useEffect(() => {
     if (menuIsOpen) {
       console.log("MENU");
-      document.addEventListener("click", closeMenu);
+      document.removeEventListener("click", closeMenuHandler);
+      document.addEventListener("click", closeMenuHandler);
     } else {
-      document.removeEventListener("click", closeMenu);
+      document.removeEventListener("click", closeMenuHandler);
     }
 
     return () => {
-      document.removeEventListener("click", closeMenu);
+      document.removeEventListener("click", closeMenuHandler);
     };
-  }, [menuIsOpen]);
+  }, [menuIsOpen, closeMenuHandler]);
 
   return (
     <div

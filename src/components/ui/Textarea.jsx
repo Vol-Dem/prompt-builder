@@ -29,13 +29,13 @@ const Textarea = (props) => {
   }, [showError]);
 
   useEffect(() => {
-    if (validation) {
+    if (!!validation) {
       const { isValid, errorMessage } = validateInput(validation, value);
 
       // onChange(e, isValid, errorMessage);
       setInputErrorMessage(errorMessage);
     }
-  }, [value]);
+  }, [value, validation]);
 
   return (
     <div>

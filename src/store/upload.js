@@ -6,8 +6,16 @@ import {
   getFirestore,
   writeBatch,
 } from "firebase/firestore";
-import { addDelayPromise, clearObjectKeys } from "../utils/generalUtils";
-import { getImagesInfo, makeBatchRequest } from "../utils/fetchUtils";
+import {
+  addDelayPromise,
+  clearObjectKeys,
+  transformImageData,
+} from "../utils/generalUtils";
+import {
+  getImagesInfo,
+  makeBatchRequest,
+  updateImagePostData,
+} from "../utils/fetchUtils";
 import firebaseApp from "../firebase-config";
 
 const firestore = getFirestore(firebaseApp);
@@ -67,113 +75,119 @@ export const savePost = (postInfo) => {
   return async (dispatch, getState) => {
     try {
       const { postId, modelId, versionId, nsfwMode, postData } = postInfo;
-      //   if (savingImages) return;
+
       dispatch(uploadActions.setIsUploading(true));
       dispatch(uploadActions.setCurPostId(postId));
 
-      const uid = getState().auth.user.uid;
       const imgExampleResponse = await fetch(
         `https://civitai.com/api/v1/images?postId=${postId}&modelId=${modelId}&modelVersionId=${versionId}${
           nsfwMode ? `&nsfw=X` : `&nsfw=None`
         }`
       );
 
-      // const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
-      //     versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
-      //   }${amountPerPage ? `&limit=${amountPerPage}` : ""}${
-      //     imagesSortValue ? `&sort=${imagesSortValue}` : ""
-      //   }${cursor ? `&cursor=${cursor}` : ""}${
-      //     nsfwMode ? `&nsfw=X` : `&nsfw=None`
-      //   }`;
       const data = await imgExampleResponse.json();
       console.log(data);
-      if (!data.items.length) {
+      if (!data?.items?.length) {
         throw new Error("0 items");
       }
-      data.items.forEach((image) => {
-        if (image.meta) {
-          image.meta.comfy = "";
-          image.meta = clearObjectKeys(image.meta);
-          if (image.meta.hashes)
-            image.meta.hashes = clearObjectKeys(image.meta.hashes);
-        }
-      });
 
-      // const examplesDataWithRes = await makeBatchRequest(
-      //   data.items.sort((a, b) => {
-      //     return b.createdAt - a.createdAt;
-      //   }),
-      //   getImagesInfo,
-      //   5,
-      //   true,
-      //   500
-      // );
-      const examplesDataWithRes = data.items.sort((a, b) => {
-        return b.createdAt - a.createdAt;
-      });
-      console.log(examplesDataWithRes);
-      examplesDataWithRes.versionId = versionId;
-
-      const modelRef = doc(firestore, "users", uid, "models", modelId + "");
-      const modelImagesRef = doc(
-        firestore,
-        "users",
-        uid,
-        "models",
-        modelId + "",
-        "images",
-        postId + ""
-      );
-
-      const newImgData = { postId: +postId, amount: data.items.length };
-      console.log("LENGTH");
-      console.log(data.items.length);
-      console.log(examplesDataWithRes.length);
-
-      await addDelayPromise(delayTime);
-
-      const batch = writeBatch(firestore);
-
-      const nsfw = [...new Set(examplesDataWithRes.map((image) => image.nsfw))];
-
-      batch.set(
-        modelImagesRef,
-        {
-          items: examplesDataWithRes,
-          versionId,
-          createdAt: examplesDataWithRes[0].createdAt,
-          savedAt: new Date().toISOString(),
-          nsfw: examplesDataWithRes[0].nsfw,
-          nsfwTypes: nsfw,
-          nsfwLevel: examplesDataWithRes[0]?.nsfwLevel || "",
-        },
-        { merge: true }
-      );
-
-      //   const postData =
-      //     model.hasOwnProperty("savedImages") &&
-      //     model?.savedImages[versionId]?.find((post) => post.postId === +postId);
-      //   console.log(postData);
-      //   console.log(versionId);
-      //   console.log(postId);
-      if (postData) {
-        batch.update(modelRef, {
-          [`savedImages.${versionId}`]: arrayRemove(postData),
+      const examplesDataWithRes = data.items
+        .filter((image) =>
+          !!postInfo?.ids?.length ? postInfo.ids.includes(image?.id) : true
+        )
+        .sort((a, b) => {
+          return b.createdAt - a.createdAt;
+        })
+        .map((imageData) => {
+          return transformImageData(imageData);
         });
-      }
 
-      batch.set(
-        modelRef,
-        {
-          savedImages: {
-            [`${versionId}`]: arrayUnion(newImgData),
-          },
-        },
-        { merge: true }
-      );
+      await updateImagePostData(postInfo, examplesDataWithRes);
+      // const uid = getState().auth.user.uid;
+      // const imgExampleResponse = await fetch(
+      //   `https://civitai.com/api/v1/images?postId=${postId}&modelId=${modelId}&modelVersionId=${versionId}${
+      //     nsfwMode ? `&nsfw=X` : `&nsfw=None`
+      //   }`
+      // );
 
-      // Commit the batch
-      await batch.commit();
+      // const data = await imgExampleResponse.json();
+      // console.log(data);
+      // if (!data.items.length) {
+      //   throw new Error("0 items");
+      // }
+
+      // const examplesDataWithRes = data.items
+      //   .filter((image) =>
+      //     !!postInfo?.ids?.length ? postInfo.ids.includes(image?.id) : true
+      //   )
+      //   .sort((a, b) => {
+      //     return b.createdAt - a.createdAt;
+      //   })
+      //   .map((imageData) => {
+      //     return transformImageData(imageData);
+      //   });
+
+      // console.log(postInfo?.ids);
+      // console.log(examplesDataWithRes);
+      // // examplesDataWithRes.versionId = versionId;
+
+      // const modelRef = doc(firestore, "users", uid, "models", modelId + "");
+      // const modelImagesRef = doc(
+      //   firestore,
+      //   "users",
+      //   uid,
+      //   "models",
+      //   modelId + "",
+      //   "images",
+      //   postId + ""
+      // );
+
+      // const newImgData = {
+      //   postId: +postId,
+      //   amount: examplesDataWithRes.length,
+      // };
+      // console.log("LENGTH");
+      // console.log(examplesDataWithRes.length);
+
+      // await addDelayPromise(delayTime);
+
+      // const batch = writeBatch(firestore);
+
+      // const nsfw = [...new Set(examplesDataWithRes.map((image) => image.nsfw))];
+
+      // batch.set(
+      //   modelImagesRef,
+      //   {
+      //     items: examplesDataWithRes,
+      //     versionId,
+      //     default: false,
+      //     createdAt: examplesDataWithRes[0].createdAt,
+      //     savedAt: new Date().toISOString(),
+      //     nsfw: examplesDataWithRes[0].nsfw,
+      //     nsfwTypes: nsfw,
+      //     nsfwLevel: examplesDataWithRes[0]?.nsfwLevel || "",
+      //   },
+      //   { merge: true }
+      // );
+
+      // if (postData) {
+      //   batch.update(modelRef, {
+      //     [`savedImages.${versionId}`]: arrayRemove(postData),
+      //   });
+      // }
+
+      // batch.set(
+      //   modelRef,
+      //   {
+      //     savedImages: {
+      //       [`${versionId}`]: arrayUnion(newImgData),
+      //     },
+      //   },
+      //   { merge: true }
+      // );
+
+      // // Commit the batch
+      // await batch.commit();
 
       dispatch(uploadActions.setCurPostId(null));
       dispatch(uploadActions.removeFromQueue({ postId, versionId }));

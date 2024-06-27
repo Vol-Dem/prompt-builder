@@ -180,6 +180,10 @@ export const liveSearch = (
         and(
           where("versionIds", "array-contains-any", [+searchString]),
           where("nsfw", "in", nsfwFilter)
+        ),
+        and(
+          where("authorTags", "array-contains-any", [searchString]),
+          where("nsfw", "in", nsfwFilter)
         )
       );
 

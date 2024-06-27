@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 
 export const useIntersection = (ref, once = true) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const observerRef = useRef(null);
 
-  useEffect(() => {
+  useMemo(() => {
     observerRef.current = new IntersectionObserver(
       ([entry]) => {
         if (!once) {

@@ -21,7 +21,7 @@ const ActiveCarousel = () => {
 
   useEffect(() => {
     if (!!activeCarouselData?.images?.length) {
-      console.log(activeCarouselData?.images);
+      console.log("ACTIVE CAR", activeCarouselData);
       setActiveImageNumber(activeCarouselData.currImgNum);
       document.body.style.overflow = "hidden";
     } else {
@@ -69,7 +69,7 @@ const ActiveCarousel = () => {
         >
           {!!activeCarouselData?.images?.length && (
             <Carousel
-              images={activeCarouselData?.images}
+              imagesData={activeCarouselData?.images}
               versionId={activeCarouselData?.versionId}
               existedImgsAmount={activeCarouselData?.existedImgsAmount || null}
               postId={!isSaved ? activeCarouselData?.postId : null}

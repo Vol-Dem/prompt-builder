@@ -3,6 +3,8 @@ import classes from "./UpdateModelForm.module.scss";
 import {
   // getImagesInfo,
   getModelData,
+  makeBatchRequest,
+  saveVersionImages,
   // makeBatchRequest,
   // makeBatchRequest,
 } from "../../../utils/fetchUtils";
@@ -210,7 +212,7 @@ const UpdateModelForm = ({ modelData, id }) => {
 
   useEffect(() => {
     if (!modelData) return;
-    const versionStatusInputData = modelData.data.modelVersions.map(
+    const versionStatusInputData = modelData?.data?.modelVersions?.map(
       (version, i) => {
         if (modelData?.modelVersionsCustomData.hasOwnProperty(version.id)) {
           const versionsCustomData =
@@ -548,10 +550,11 @@ const UpdateModelForm = ({ modelData, id }) => {
             .images?.filter((img, i) => img.type === "image")[0]?.url) ||
         "";
 
-      const previewImgDefault =
-        data.modelVersions[0].images?.filter(
-          (img, i) => img.type === "image"
-        )[0]?.url || "";
+      // const previewImgDefault =
+      //   data.modelVersions[0].images?.filter(
+      //     (img, i) => img.type === "image"
+      //   )[0]?.url || "";
+      const previewImgDefault = data.modelVersions[0]?.images[0]?.url || "";
 
       const previewImg = activePreviewImg || previewImgDefault;
 
@@ -754,21 +757,29 @@ const UpdateModelForm = ({ modelData, id }) => {
           }
         );
 
+        let createdAt;
+        if (modelData?.createdAt) {
+          createdAt = Number.isFinite(modelData?.createdAt)
+            ? modelData?.createdAt
+            : Date.parse(modelData?.createdAt);
+        } else {
+          createdAt = Date.parse(modelData?.downloadedAt) || Date.now();
+        }
+
         const modelInfo = {
           ...modelData,
           id: modelData?.id || +modelId,
           versionIds,
           modelType,
-          baseModels: [...baseModels],
+          // baseModels: [...baseModels],
           main: mainId,
           sub: subIds,
           data,
           name: modelName || data.name,
-          fileName,
           mainTag,
-          nsfw: nsfwInput || false,
-          nsfwLevel: data?.nsfwLevel || null,
-          hashes,
+          // nsfw: nsfwInput || false,
+          // nsfwLevel: data?.nsfwLevel || null,
+          // hashes,
           src: "civitai.com",
           defaultCustomData: {
             description: description || data.description,
@@ -777,6 +788,7 @@ const UpdateModelForm = ({ modelData, id }) => {
             minWeight: minWeight || null,
             maxWeight: maxWeight || null,
             size,
+            fileName,
             helperTags,
             negativeTags,
             ...(modelType === "checkpoint" && {
@@ -792,10 +804,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           },
           modelVersionsCustomData,
           updatedAt: new Date().toISOString(),
-          createdAt:
-            modelData?.createdAt ||
-            Date.parse(modelData?.downloadedAt) ||
-            Date.now(),
+          createdAt,
         };
 
         const loraPrevData = {
@@ -809,6 +818,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           nameArr,
           imgUrl: previewImg || "",
           type: data.type,
+          creator: data?.creator?.username || "",
           nsfw: nsfwInput || false,
           nsfwLevel: data?.nsfwLevel || "",
           baseModel: data.modelVersions[0].baseModel,
@@ -826,13 +836,10 @@ const UpdateModelForm = ({ modelData, id }) => {
           tags: data.modelVersions[0].trainedWords || "",
           authorTags: data.tags || [],
           tagSetsData,
-          helperTags,
+          // helperTags,
           modelVersionsCustomData,
           updatedAt: new Date().toISOString(),
-          createdAt:
-            modelData?.createdAt ||
-            Date.parse(modelData?.downloadedAt) ||
-            Date.now(),
+          createdAt,
         };
         console.log(loraPrevData);
 
@@ -877,6 +884,19 @@ const UpdateModelForm = ({ modelData, id }) => {
       //   // doc.data() is never undefined for query doc snapshots
       //   console.log(doc.id);
       // });
+
+      /////////Save modelImages with gen info ///////////
+      if (data?.creator?.username && !modelData) {
+        const versionsWithUserName = data?.modelVersions?.map((version) => {
+          return {
+            ...version,
+            modelId,
+            username: data.creator.username,
+          };
+        });
+
+        await makeBatchRequest(versionsWithUserName, saveVersionImages);
+      }
 
       setModelIsSaving(false);
       seteSuccessMessage(SAVED_SUCCESS_MESSAGE);

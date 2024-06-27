@@ -8,7 +8,12 @@ import Buttton from "../../ui/Button";
 import VersionStatusForm from "../../forms/version-status-form/VersionStatusForm";
 import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
 // import { updateModel } from "../../../store/model";
-import { deleteModelDoc, getModelData } from "../../../utils/fetchUtils";
+import {
+  deleteModelDoc,
+  getModelData,
+  makeBatchRequest,
+  saveVersionImages,
+} from "../../../utils/fetchUtils";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
 import { deleteModel } from "../../../store/model";
@@ -40,7 +45,7 @@ const ModelSettings = () => {
 
   useEffect(() => {
     const customData = model.modelVersionsCustomData[curTab];
-    const defData = model.data.modelVersions.find(
+    const defData = model.data?.modelVersions?.find(
       (version) => version.id === +curTab
     );
 
@@ -64,14 +69,18 @@ const ModelSettings = () => {
       seteErrorMessage("");
       seteSuccessMessage("");
       console.log("UPD");
-      const newModelData = await getModelData(model.id);
+      const newModelData = await getModelData(
+        model.id,
+        model.data.modelVersions
+      );
 
       const newVersions = newModelData.modelVersions.filter(
         (version) =>
-          !model.data.modelVersions.some(
-            (oldVersions) => version.id === oldVersions.id
+          !model?.data?.modelVersions?.some(
+            (oldVersions) => version?.id === oldVersions?.id
           )
       );
+
       // newVersions.forEach((version) => {
       //   version.images.forEach((image) => {
       //     const metaArr = Object.entries(image?.meta).filter(
@@ -95,7 +104,7 @@ const ModelSettings = () => {
       newModelData.modelVersions = [
         ...newVersions,
         // newVersions[newVersions.length - 1],
-        ...model.data.modelVersions,
+        ...(model?.data?.modelVersions || []),
       ].filter(Boolean);
       console.log(newModelData);
 
@@ -182,9 +191,25 @@ const ModelSettings = () => {
           fileNames,
           hashes,
           versionIds,
+          tags: newModelData.tags,
         },
         { merge: true }
       );
+
+      if (newModelData?.creator?.username && !!newVersions.length) {
+        const versionsWithUserName = newModelData?.modelVersions?.map(
+          (version) => {
+            return {
+              ...version,
+              modelId: newModelData.id,
+              username: newModelData.creator.username,
+            };
+          }
+        );
+
+        await makeBatchRequest(versionsWithUserName, saveVersionImages);
+      }
+
       seteSuccessMessage("Updated");
       setIsLoading(false);
     } catch (err) {
@@ -211,28 +236,30 @@ const ModelSettings = () => {
     navigate("/");
   };
 
-  const modelVersionsHtml = model?.data?.modelVersions.flatMap((version, i) => {
-    const versionIsSaved =
-      model.modelVersionsCustomData[version.id]?.downloadStatus;
-    const modelName = model.modelVersionsCustomData[version.id]?.name;
+  const modelVersionsHtml = model?.data?.modelVersions?.flatMap(
+    (version, i) => {
+      const versionIsSaved =
+        model.modelVersionsCustomData[version.id]?.downloadStatus;
+      const modelName = model.modelVersionsCustomData[version.id]?.name;
 
-    if (!versionIsSaved) {
-      return [];
+      if (!versionIsSaved) {
+        return [];
+      }
+      return (
+        <li
+          key={i}
+          id={version.id}
+          data-version={i}
+          onClick={switchTabHandler}
+          className={`${classes["menu-item"]} ${
+            curTab === version.id + "" ? classes["menu-item--active"] : ""
+          }`}
+        >
+          {modelName || version.name}
+        </li>
+      );
     }
-    return (
-      <li
-        key={i}
-        id={version.id}
-        data-version={i}
-        onClick={switchTabHandler}
-        className={`${classes["menu-item"]} ${
-          curTab === version.id + "" ? classes["menu-item--active"] : ""
-        }`}
-      >
-        {modelName || version.name}
-      </li>
-    );
-  });
+  );
 
   const openMenuHandler = () => {
     setMobileMenuIsOpen((prevState) => !prevState);
@@ -283,6 +310,7 @@ const ModelSettings = () => {
               <Buttton
                 type="button"
                 onClick={updateModelHandler}
+                className={classes["btn-update"]}
                 disabled={isLoading}
               >
                 {!isLoading ? "Update" : <Spinner size="small" />}

@@ -17,10 +17,23 @@ import { getModelsPreview, tabActions } from "../../store/tabs";
 import Spinner from "../ui/Spinner";
 import useIntersection from "../../hooks/use-intersection";
 import Select from "../ui/Select";
+import usePageEnd from "../../hooks/use-page-end";
 
 const firestore = getFirestore(firebaseApp);
 
 const amountPerPage = 4;
+const sortTypes = [
+  { name: "Newest", value: "createdAt" },
+  { name: "Name", value: "name" },
+];
+const modelTypes = [
+  { name: "-", value: "-" },
+  { name: "SD 3", value: "SD 3" },
+  { name: "Pony", value: "Pony" },
+  { name: "SDXL", value: "SDXL 1.0" },
+  { name: "SD 1.5", value: "SD 1.5" },
+  { name: "Other", value: "Other" },
+];
 
 const ModelsList = () => {
   // const [sortType, setSortType] = useState("createdAt");
@@ -35,14 +48,22 @@ const ModelsList = () => {
   const activeSubcategory = useSelector((state) => state.tabs.currSubcategory);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const endPage = useRef(null);
-  const isIntersecting = useIntersection(endPage, false);
+  // const isIntersecting = useIntersection(endPage, false);
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const isPageEnd = usePageEnd(100);
+  const timeoutRef = useRef(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log(activeTab, modelsData.tab);
-    console.log(activeCategory, modelsData.category);
-    console.log(activeSubcategory, modelsData.subcategory);
-    console.log(nsfwMode, modelsData.nsfw);
+    console.log("MPAGE", isPageEnd);
+    setIsIntersecting(isPageEnd);
+  }, [isPageEnd]);
+
+  useEffect(() => {
+    // console.log(activeTab, modelsData.tab);
+    // console.log(activeCategory, modelsData.category);
+    // console.log(activeSubcategory, modelsData.subcategory);
+    // console.log(nsfwMode, modelsData.nsfw);
     if (
       activeTab === modelsData.tab &&
       activeCategory === modelsData.category &&
@@ -72,7 +93,12 @@ const ModelsList = () => {
 
   useEffect(() => {
     if (!isLastPage && isIntersecting && !!modelsData?.previews?.length) {
-      dispatch(getModelsPreview(true, nsfwMode));
+      clearTimeout(timeoutRef.current);
+      setIsIntersecting(false);
+      timeoutRef.current = setTimeout(() => {
+        console.log("START FETCH");
+        dispatch(getModelsPreview(true, nsfwMode));
+      }, 1000);
       console.log("INT", isIntersecting, nsfwMode);
     }
   }, [isIntersecting, dispatch, isLastPage, modelsData, nsfwMode]);
@@ -80,19 +106,6 @@ const ModelsList = () => {
   const loraHtml = modelsData?.previews?.map((item, i) => {
     return <PreviewCard previewData={item} key={i} />;
   });
-
-  const sortTypes = [
-    { name: "Newest", value: "createdAt" },
-    { name: "Name", value: "name" },
-  ];
-  const modelTypes = [
-    { name: "-", value: "" },
-    { name: "SD 3", value: "SD 3" },
-    { name: "Pony", value: "Pony" },
-    { name: "SDXL", value: "SDXL 1.0" },
-    { name: "SD 1.5", value: "SD 1.5" },
-    { name: "Other", value: "Other" },
-  ];
 
   let sortSelectOption = sortTypes.map((version) => {
     return {
@@ -126,6 +139,7 @@ const ModelsList = () => {
           // id={id}
           selected={modelType}
           onChange={(value) => {
+            console.log("TYPE", modelType, "-------");
             // setModelType(value);
             dispatch(tabActions.setModelType(value));
             dispatch(tabActions.setModelsData([]));

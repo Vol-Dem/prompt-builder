@@ -54,7 +54,7 @@ const TagList = forwardRef(function TagList(props, ref) {
         </span>
       </div>
       <ul className={classes.tags}>
-        {props?.tags?.length &&
+        {!!props?.tags?.length &&
           props?.tags?.map((tag, i) => {
             return (
               <li key={i}>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 // import Input from "../ui/Input";
 import classes from "./Search.module.scss";
 import {
@@ -33,7 +33,7 @@ import ErrorMessage from "../ui/ErrorMessage";
 import ButtonTertiary from "../ui/ButtonTertiary";
 
 const firestore = getFirestore(firebaseApp);
-let searchTimeout;
+// let timeoutRef.current;
 const amountPerPage = 3;
 const searchTimeoutMs = 1000;
 // const routes = [{ path: "/search" }];
@@ -61,6 +61,7 @@ const Search = ({ className }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const timeoutRef = useRef(null);
   //   const matches = useMatches();
   //   const [{ route }] = matchRoutes(routes, location);
 
@@ -309,7 +310,7 @@ const Search = ({ className }) => {
       setShowMore(false);
       // dispatch(searchActions.setSearchIsLoading(true));
       dispatch(searchActions.setErrorMessage(""));
-      clearTimeout(searchTimeout);
+      clearTimeout(timeoutRef.current);
       const getModelsPreview = async () => {
         let serachResult = [];
         try {
@@ -348,20 +349,20 @@ const Search = ({ className }) => {
         }
       };
 
-      searchTimeout = setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         getModelsPreview();
       }, searchTimeoutMs);
 
       subcategoriesSearch();
     } else {
-      clearTimeout(searchTimeout);
+      clearTimeout(timeoutRef.current);
       setSubcategoriesSearchResult([]);
       // setSearchResult([]);
       dispatch(searchActions.setSearchIsLoading(false));
     }
 
     return () => {
-      clearTimeout(searchTimeout);
+      clearTimeout(timeoutRef.current);
     };
   }, [
     searchInput,
@@ -476,6 +477,8 @@ const Search = ({ className }) => {
             onClick={() => {
               dispatch(tabActions.setCurrentTab(result.type));
               dispatch(tabActions.setCurrentCategory(result.id));
+              dispatch(searchActions.setSearchQuery(""));
+              dispatch(searchActions.setSearchResult([]));
             }}
           >
             {result.name}
@@ -488,6 +491,8 @@ const Search = ({ className }) => {
               dispatch(tabActions.setCurrentTab(result.type));
               dispatch(tabActions.setCurrentCategory(result.id));
               dispatch(tabActions.setCurrentSubcategory(result.subId));
+              dispatch(searchActions.setSearchQuery(""));
+              dispatch(searchActions.setSearchResult([]));
               // dispatch(getModelsPreview());
             }}
           >
@@ -505,8 +510,8 @@ const Search = ({ className }) => {
     if (location.pathname !== "/search") {
       navigate("search");
     }
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(async () => {
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(async () => {
       // const serachResult = await liveSearch(
       //   searchInput.trim(),
       //   nsfwMode,

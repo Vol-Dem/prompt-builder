@@ -10,7 +10,8 @@ const Image = forwardRef(({ id, src, type, alt, onClick, className }, ref) => {
   const [imgIsLoaded, setiImgIsLoaded] = useState(false);
   const [imgSrc, setImgSrc] = useState("#");
   const imageRef = useRef();
-  const imageIsVisible = useIntersection(imageRef);
+  const imageIsVisible = true;
+  // const imageIsVisible = useIntersection(imageRef);
 
   useEffect(() => {
     // if (!imgIsLoaded) setImgIsLoading(true);
@@ -38,6 +39,7 @@ const Image = forwardRef(({ id, src, type, alt, onClick, className }, ref) => {
         className={`${classes.img} ${className || ""}`}
         onClick={onClick}
         ref={imageRef}
+        id={id}
       >
         {type && <span className={classes.type}>{type}</span>}
         <div className={classes.preloader}>

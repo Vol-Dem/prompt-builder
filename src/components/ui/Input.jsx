@@ -37,13 +37,13 @@ const Input = (props) => {
   }, [showError]);
 
   useEffect(() => {
-    if (validation) {
+    if (!!validation) {
       const { isValid, errorMessage } = validateInput(validation, value);
 
       // onChange(e, isValid, errorMessage);
       setInputErrorMessage(errorMessage);
     }
-  }, [value]);
+  }, [value, validation]);
 
   // useEffect(() => {
   //   if (onChange && validation) {

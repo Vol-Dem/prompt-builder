@@ -314,6 +314,18 @@ export const deleteModel = (modelId) => {
       await makeBatchRequest(postsData, deleteImagePostDoc, 5, false);
     });
 
+    // model.modelVersions.forEach(async version=>{
+    //   const postsData = versionData.map((post) => {
+    //     return {
+    //       ...post,
+    //       uid,
+    //       modelId: model.id,
+    //     };
+    //   });
+    //   // console.log(postsData);
+    //   await makeBatchRequest(postsData, deleteImagePostDoc, 5, false);
+    // })
+
     const modelRef = doc(firestore, "users", uid, "models", model.id + "");
     const modelPreviewRef = doc(
       firestore,

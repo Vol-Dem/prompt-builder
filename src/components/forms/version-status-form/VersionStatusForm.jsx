@@ -137,7 +137,7 @@ const VersionStatusForm = ({ modelData }) => {
     });
   };
 
-  let versionStatusHtml = versionsDownloadStatus?.map((version) => {
+  const versionStatusHtml = versionsDownloadStatus?.map((version) => {
     return (
       <div className={classes["example-field"]} key={version.id}>
         <Checkbox

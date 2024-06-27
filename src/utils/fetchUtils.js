@@ -1,8 +1,24 @@
-import { deleteDoc, doc, getFirestore } from "firebase/firestore";
-import { addDelayPromise, clearObjectKeys } from "./generalUtils";
+import {
+  arrayRemove,
+  arrayUnion,
+  deleteDoc,
+  doc,
+  getFirestore,
+  setDoc,
+  writeBatch,
+} from "firebase/firestore";
+import {
+  addDelayPromise,
+  clearObjectKeys,
+  transformImageData,
+  transformModelData,
+} from "./generalUtils";
 import firebaseApp from "../firebase-config";
+import { getAuth } from "firebase/auth";
 
 const firestore = getFirestore(firebaseApp);
+const auth = getAuth(firebaseApp);
+const delayTime = 4000;
 
 export const makeBatchRequest = async (
   data,
@@ -123,6 +139,54 @@ export const getImageInfo = async (image) => {
         civitaiResources: updatedCivRes,
       };
     }
+    if (image.meta?.additionalResources) {
+      const updatedCivRes = await makeBatchRequest(
+        image.meta.additionalResources,
+        addResourcesInfo
+      );
+      console.log(updatedCivRes);
+      if (!updatedCivRes) {
+        throw new Error("failed to update res");
+      }
+      updatedImgData.meta = {
+        ...updatedImgData.meta,
+        additionalResources: updatedCivRes,
+      };
+    }
+    if (image.meta?.hashes) {
+      const hashes = { ...image.meta?.hashes, vae: null };
+      const hashesData = Object.values(hashes)
+        .filter(Boolean)
+        .flatMap((hash) => {
+          const isInRes = image.meta?.resources?.find(
+            (res) => res.hash === hash
+          );
+          const isInCivRes = image.meta?.civitaiResources?.find(
+            (res) => res.hash === hash
+          );
+          const isInAddRes = image.meta?.additionalResources?.find(
+            (res) => res.hash === hash
+          );
+
+          if (!isInRes && !isInCivRes && !isInAddRes) {
+            return { hash };
+          }
+          return [];
+        });
+
+      const updatedCivRes = await makeBatchRequest(
+        hashesData,
+        addResourcesInfo
+      );
+      console.log(updatedCivRes);
+      if (!updatedCivRes) {
+        throw new Error("failed to update res");
+      }
+      updatedImgData.meta = {
+        ...updatedImgData.meta,
+        hashResources: updatedCivRes,
+      };
+    }
     // console.log(updatedImgData);
     return await updatedImgData;
   } catch (err) {
@@ -195,6 +259,7 @@ export const addResourcesInfo = async (resourcesData) => {
         ...(modelsData[i]?.modelId && { modelId: modelsData[i]?.modelId }),
         ...(modelsData[i]?.name && { versionName: modelsData[i]?.name }),
         ...(modelsData[i]?.id && { versionId: modelsData[i]?.id }),
+        ...(modelsData[i]?.model?.type && { type: modelsData[i]?.model?.type }),
       };
     });
     // console.log(updatedResources);
@@ -205,7 +270,7 @@ export const addResourcesInfo = async (resourcesData) => {
   }
 };
 
-export const getModelData = async (modelId) => {
+export const getModelData = async (modelId, curModelVersionsData) => {
   try {
     const response = await fetch(
       `https://civitai.com/api/v1/models/${modelId}`
@@ -228,39 +293,35 @@ export const getModelData = async (modelId) => {
     //     }
     //   });
     // });
+    let newVersions = responseData?.modelVersions;
 
-    let updatedModelversions = responseData?.modelVersions;
-
-    if (responseData?.creator?.username) {
-      updatedModelversions = await Promise.all(
-        responseData?.modelVersions?.map(async (version) => {
-          const versionImagesRequest = await fetch(
-            `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${responseData.creator.username}&nsfw=X`
-          );
-          const versionImages = await versionImagesRequest.json();
-          console.log(versionImages);
-          const updatedImages = version?.images?.map((image) => {
-            const fullImgData =
-              versionImages?.items?.find(
-                (verImg) => verImg.hash === image.hash
-              ) || [];
-            // if (fullImgData?.meta) {
-            //   fullImgData.meta.comfy = "";
-            //   fullImgData.meta = clearObjectKeys(fullImgData.meta);
-            //   if (fullImgData.meta?.hashes)
-            //     fullImgData.meta.hashes = clearObjectKeys(
-            //       fullImgData.meta.hashes
-            //     );
-            // }
-            return { ...image, ...fullImgData };
-          });
-          return {
-            ...version,
-            images: updatedImages.filter(Boolean),
-          };
-        })
+    if (!!curModelVersionsData) {
+      newVersions = responseData?.modelVersions?.filter(
+        (version) =>
+          !curModelVersionsData.some(
+            (oldVersions) => version.id === oldVersions.id
+          )
       );
     }
+
+    console.log("NEW", newVersions);
+
+    let updatedModelversions = newVersions;
+
+    // if (responseData?.creator?.username && !!newVersions.length) {
+    //   const versionsWithUserName = newVersions?.map((version) => {
+    //     return {
+    //       ...version,
+    //       modelId,
+    //       username: responseData.creator.username,
+    //     };
+    //   });
+    //   updatedModelversions = await makeBatchRequest(
+    //     versionsWithUserName,
+    //     updatedModelVersionsImageData
+    //   );
+    //   console.log(updatedModelversions);
+    // }
 
     // clear empty keys
     updatedModelversions?.forEach((version) => {
@@ -282,7 +343,9 @@ export const getModelData = async (modelId) => {
 
     const updatedModelData = {
       ...responseData,
-      modelVersions: updatedModelversions,
+      modelVersions: !curModelVersionsData
+        ? updatedModelversions
+        : [...updatedModelversions, ...curModelVersionsData],
     };
 
     console.log(updatedModelData);
@@ -300,25 +363,197 @@ export const getModelData = async (modelId) => {
 
     // console.log(imagesDataWithRes);
 
-    return updatedModelData;
+    return transformModelData(updatedModelData);
   } catch (err) {
     // console.log(err);
     throw new Error(err);
   }
 };
 
-export const deleteModelDoc = async (uid, model) => {
-  Object.values(model.savedImages).forEach(async (versionData) => {
-    const postsData = versionData.map((post) => {
+const updatedModelVersionsImageData = async (versionsData) => {
+  console.log(versionsData);
+  const updatedModelversions = await Promise.all(
+    versionsData?.map(async (version) => {
+      const versionImagesRequest = await fetch(
+        `https://civitai.com/api/v1/images?modelId=${version.modelId}&modelVersionId=${version.id}&username=${version.username}&nsfw=X`
+      );
+      const versionImages = await versionImagesRequest.json();
+      console.log(versionImages);
+      const updatedImages = version?.images?.map((image) => {
+        const fullImgData =
+          versionImages?.items?.find((verImg) => verImg.hash === image.hash) ||
+          [];
+        if (fullImgData?.meta) {
+          fullImgData.meta.comfy = "";
+          fullImgData.meta = clearObjectKeys(fullImgData.meta);
+          if (fullImgData.meta?.hashes)
+            fullImgData.meta.hashes = clearObjectKeys(fullImgData.meta.hashes);
+        }
+        return { ...image, ...fullImgData };
+      });
       return {
-        ...post,
-        uid,
-        modelId: model.id,
+        ...version,
+        username: null,
+        images: updatedImages.filter(Boolean),
       };
+    })
+  );
+
+  return updatedModelversions;
+};
+
+export const saveVersionImages = async (versionsData) => {
+  console.log(versionsData);
+  const updatedModelversions = await Promise.all(
+    versionsData?.map(async (version) => {
+      const versionImagesRequest = await fetch(
+        `https://civitai.com/api/v1/images?modelId=${version.modelId}&modelVersionId=${version.id}&username=${version.username}&nsfw=X`
+      );
+      const versionImages = await versionImagesRequest.json();
+      console.log(versionImages);
+      const updatedImages = version?.images?.map((image) => {
+        const fullImgData =
+          versionImages?.items?.find((verImg) => verImg.hash === image.hash) ||
+          [];
+        const transformedImgData = transformImageData(fullImgData);
+        // if (fullImgData?.meta) {
+        //   fullImgData.meta.comfy = "";
+        //   fullImgData.meta = clearObjectKeys(fullImgData.meta);
+        //   if (fullImgData.meta?.hashes)
+        //     fullImgData.meta.hashes = clearObjectKeys(fullImgData.meta.hashes);
+        // }
+        return { ...image, ...transformedImgData };
+      });
+
+      const uid = auth.currentUser.uid;
+
+      console.log(uid);
+      console.log(versionsData[0].modelId);
+      console.log(versionsData[0].id);
+
+      const modelImagesRef = doc(
+        firestore,
+        "users",
+        uid,
+        "models",
+        versionsData[0].modelId + "",
+        "defaultImages",
+        version.id + ""
+      );
+
+      // await addDelayPromise(delayTime);
+
+      const nsfw = [...new Set(updatedImages.map((image) => image.nsfw))];
+
+      await setDoc(
+        modelImagesRef,
+        {
+          items: updatedImages.filter(Boolean),
+          versionId: versionsData[0].id,
+          default: true,
+          createdAt: updatedImages[0].createdAt,
+          savedAt: new Date().toISOString(),
+          nsfw: updatedImages[0].nsfw,
+          nsfwTypes: nsfw,
+          nsfwLevel: updatedImages[0]?.nsfwLevel || null,
+        },
+        { merge: true }
+      );
+
+      return {
+        images: updatedImages.filter(Boolean),
+      };
+    })
+  );
+  console.log(updatedModelversions);
+  return updatedModelversions;
+};
+
+// const saveVersionImages = async (
+//   modelId,
+//   versionData,
+//   creatorUsername,
+//   uid,
+//   delayTime = 500
+// ) => {
+//   try {
+//     const imgExampleResponse = await fetch(
+//       `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${versionData.id}&username=${creatorUsername}&nsfw=X`
+//     );
+
+//     const data = await imgExampleResponse.json();
+
+//     const examplesDataWithRes = data.items.sort((a, b) => {
+//       return b.createdAt - a.createdAt;
+//     });
+//     console.log(examplesDataWithRes);
+//     examplesDataWithRes.versionId = versionData.id;
+
+//     const modelImagesRef = doc(
+//       firestore,
+//       "users",
+//       uid,
+//       "models",
+//       modelId + "",
+//       "images",
+//       "default"
+//     );
+
+//     // await addDelayPromise(delayTime);
+
+//     const nsfw = [...new Set(examplesDataWithRes.map((image) => image.nsfw))];
+
+//     await setDoc(
+//       modelImagesRef,
+//       {
+//         items: examplesDataWithRes,
+//         versionId: versionData.id,
+//         default: true,
+//         createdAt: examplesDataWithRes[0].createdAt,
+//         savedAt: new Date().toISOString(),
+//         nsfw: examplesDataWithRes[0].nsfw,
+//         nsfwTypes: nsfw,
+//         nsfwLevel: examplesDataWithRes[0]?.nsfwLevel || "",
+//       },
+//       { merge: true }
+//     );
+//   } catch (err) {
+//     console.log(err.message);
+//     console.log(err);
+//     throw new Error(err);
+//   }
+// };
+
+export const deleteModelDoc = async (uid, model) => {
+  if (!!model?.savedImages) {
+    Object.values(model.savedImages).forEach(async (versionData) => {
+      const postsData = versionData.map((post) => {
+        return {
+          ...post,
+          uid,
+          modelId: model.id,
+          type: "images",
+        };
+      });
+      if (postsData?.length) {
+        await makeBatchRequest(postsData, deleteImagePostDoc, 50, false);
+      }
+      // console.log(postsData);
     });
-    // console.log(postsData);
-    await makeBatchRequest(postsData, deleteImagePostDoc, 5, false);
+  }
+
+  const defaultImagePosts = model.data.modelVersions.map((version) => {
+    return {
+      postId: version.id,
+      uid,
+      modelId: model.id,
+      type: "defaultImages",
+    };
   });
+
+  // console.log(defaultImagePosts);
+
+  await makeBatchRequest(defaultImagePosts, deleteImagePostDoc, 50, false);
 
   const modelRef = doc(firestore, "users", uid, "models", model.id + "");
   const modelPreviewRef = doc(
@@ -334,32 +569,117 @@ export const deleteModelDoc = async (uid, model) => {
 };
 
 export const deleteImagePostDoc = async (posts) => {
-  await Promise.all(
-    posts.map(async (post) => {
-      const imgPostRef = doc(
-        firestore,
-        "users",
-        post.uid,
-        "models",
-        post.modelId + "",
-        "images",
-        post.postId + ""
-      );
+  const batch = writeBatch(firestore);
 
-      return await deleteDoc(imgPostRef);
-    })
-  );
-  // const imgPostRef = doc(
-  //   firestore,
-  //   "users",
-  //   data.uid,
-  //   "models",
-  //   data.modelId + "",
-  //   "images",
-  //   data.postId + ""
+  posts.forEach((post) => {
+    const imgPostRef = doc(
+      firestore,
+      "users",
+      post.uid,
+      "models",
+      post.modelId + "",
+      post.type,
+      post.postId + ""
+    );
+
+    batch.delete(imgPostRef);
+  });
+
+  // // Commit the batch
+  await batch.commit();
+
+  // await Promise.all(
+  //   posts.map(async (post) => {
+  //     const imgPostRef = doc(
+  //       firestore,
+  //       "users",
+  //       post.uid,
+  //       "models",
+  //       post.modelId + "",
+  //       post.type,
+  //       post.postId + ""
+  //     );
+
+  //     return await deleteDoc(imgPostRef);
+  //   })
   // );
+};
 
-  // const del = await deleteDoc(imgPostRef);
+export const updateImagePostData = async (
+  postInfo,
+  imagesData,
+  replace = false
+) => {
+  try {
+    const { postId, modelId, versionId, nsfwMode, postData } = postInfo;
+    const uid = auth.currentUser.uid;
 
-  // console.log(del);
+    console.log(postInfo?.ids);
+    console.log(imagesData);
+
+    const modelRef = doc(firestore, "users", uid, "models", modelId + "");
+    const modelImagesRef = doc(
+      firestore,
+      "users",
+      uid,
+      "models",
+      modelId + "",
+      "images",
+      postId + ""
+    );
+
+    const newImgData = {
+      postId: +postId,
+      amount: imagesData.length,
+    };
+    console.log("LENGTH");
+    console.log(imagesData.length);
+
+    await addDelayPromise(delayTime);
+
+    const batch = writeBatch(firestore);
+
+    const nsfw = [...new Set(imagesData.map((image) => image.nsfw))];
+    console.log(imagesData);
+    console.log(modelId);
+    console.log(postId);
+    console.log(versionId);
+    batch.set(
+      modelImagesRef,
+      {
+        items: imagesData,
+        versionId,
+        default: false,
+        createdAt: imagesData[0].createdAt,
+        savedAt: new Date().toISOString(),
+        nsfw: imagesData[0].nsfw,
+        nsfwTypes: nsfw,
+        nsfwLevel: imagesData[0]?.nsfwLevel || "",
+      },
+      { merge: true }
+    );
+
+    if (postData) {
+      batch.update(modelRef, {
+        [`savedImages.${versionId}`]: arrayRemove(postData),
+      });
+    }
+
+    batch.set(
+      modelRef,
+      {
+        savedImages: {
+          [`${versionId}`]: arrayUnion(newImgData),
+        },
+      },
+      { merge: true }
+    );
+
+    // Commit the batch
+    await batch.commit();
+  } catch (err) {
+    console.log(err.message);
+    console.log(err);
+    // throw new Error(err);
+  }
 };

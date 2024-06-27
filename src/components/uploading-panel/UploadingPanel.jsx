@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import classes from "./UploadingPanel.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { savePost, uploadActions } from "../../store/upload";
@@ -8,7 +8,7 @@ import UploadingItem from "./uploading-item/UploadingItem";
 import ButtonTertiary from "../ui/ButtonTertiary";
 
 const UploadingPanel = () => {
-  const [uploadingLIstIsOpen, setUploadingLIstIsOpen] = useState(false);
+  const [uploadingListIsOpen, setUploadingLIstIsOpen] = useState(false);
   const uid = useSelector((state) => state.auth.user.uid);
   const queue = useSelector((state) => state.upload.queue);
   const rejected = useSelector((state) => state.upload.rejected);
@@ -16,17 +16,18 @@ const UploadingPanel = () => {
   const isUploading = useSelector((state) => state.upload.isUploading);
   const dispatch = useDispatch();
 
-  const beforeUnloadHandler = (event) => {
+  const beforeUnloadHandler = useCallback((event) => {
     // Recommended
     event.preventDefault();
     setUploadingLIstIsOpen(true);
 
     // Included for legacy support, e.g. Chrome/Edge < 119
     event.returnValue = true;
-  };
+  }, []);
 
   useEffect(() => {
     if (!!queue.length) {
+      window.removeEventListener("beforeunload", beforeUnloadHandler);
       window.addEventListener("beforeunload", beforeUnloadHandler);
     } else {
       window.removeEventListener("beforeunload", beforeUnloadHandler);
@@ -35,7 +36,7 @@ const UploadingPanel = () => {
     return () => {
       window.removeEventListener("beforeunload", beforeUnloadHandler);
     };
-  }, [queue]);
+  }, [queue, beforeUnloadHandler]);
 
   useEffect(() => {
     if (
@@ -75,37 +76,39 @@ const UploadingPanel = () => {
     );
   });
 
-  useEffect(() => {
-    const closeMenu = (e) => {
-      console.log("CLOSE");
-      console.log(uploadingLIstIsOpen);
-      // console.log(classes["search"]);
-      // console.log(e.target);
-      // console.log(e.target.closest(`.${classes.search}`));
-      console.log(e.target.closest(`.${classes.uploading}`));
+  const closeMenuHandler = useCallback((e) => {
+    console.log("CLOSE");
+    // console.log(uploadingListIsOpen);
+    // console.log(classes["search"]);
+    // console.log(e.target);
+    // console.log(e.target.closest(`.${classes.search}`));
+    console.log(e.target.closest(`.${classes.uploading}`));
 
-      if (!e.target.closest(`.${classes.uploading}`)) {
-        setUploadingLIstIsOpen(false);
-      }
-    };
-    if (uploadingLIstIsOpen) {
+    if (!e.target.closest(`.${classes.uploading}`)) {
+      setUploadingLIstIsOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (uploadingListIsOpen) {
       console.log("MENU");
-      console.log(uploadingLIstIsOpen);
-      document.addEventListener("click", closeMenu);
+      console.log(uploadingListIsOpen);
+      document.removeEventListener("click", closeMenuHandler);
+      document.addEventListener("click", closeMenuHandler);
     } else {
-      document.removeEventListener("click", closeMenu);
+      document.removeEventListener("click", closeMenuHandler);
     }
 
     return () => {
-      document.removeEventListener("click", closeMenu);
+      document.removeEventListener("click", closeMenuHandler);
     };
-  }, [uploadingLIstIsOpen]);
+  }, [uploadingListIsOpen, closeMenuHandler]);
 
   return (
     <div className={classes.uploading}>
       <div
         className={`${classes["uploading__btn"]} ${
-          uploadingLIstIsOpen ? classes["uploading__btn--active"] : ""
+          uploadingListIsOpen ? classes["uploading__btn--active"] : ""
         }`}
         onClick={openUploadingLIstHandler}
       >
@@ -140,7 +143,7 @@ const UploadingPanel = () => {
         )}
         {/* , Re: {rejected.length} */}
       </div>
-      {uploadingLIstIsOpen && (
+      {uploadingListIsOpen && (
         <div>
           <DropDownList
             className={classes["uploading-dropdown"]}
