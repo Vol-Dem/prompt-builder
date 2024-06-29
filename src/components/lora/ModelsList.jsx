@@ -18,6 +18,9 @@ import Spinner from "../ui/Spinner";
 import useIntersection from "../../hooks/use-intersection";
 import Select from "../ui/Select";
 import usePageEnd from "../../hooks/use-page-end";
+import { useOnlineStatus } from "../../hooks/use-online-status";
+import ErrorMessage from "../ui/ErrorMessage";
+import { OFFLINE_ERROR_MESSAGE } from "../../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -51,6 +54,7 @@ const ModelsList = () => {
   // const isIntersecting = useIntersection(endPage, false);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const isPageEnd = usePageEnd(100);
+  const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
   const dispatch = useDispatch();
 
@@ -86,13 +90,18 @@ const ModelsList = () => {
 
   useEffect(() => {
     console.log(modelsData);
-    if (!modelsData?.previews?.length && !isLastPage) {
+    if (!modelsData?.previews?.length && !isLastPage && isOnline) {
       dispatch(getModelsPreview(false, nsfwMode));
     }
-  }, [dispatch, modelsData, nsfwMode, isLastPage]);
+  }, [dispatch, modelsData, nsfwMode, isLastPage, isOnline]);
 
   useEffect(() => {
-    if (!isLastPage && isIntersecting && !!modelsData?.previews?.length) {
+    if (
+      !isLastPage &&
+      isIntersecting &&
+      !!modelsData?.previews?.length &&
+      isOnline
+    ) {
       clearTimeout(timeoutRef.current);
       setIsIntersecting(false);
       timeoutRef.current = setTimeout(() => {
@@ -101,7 +110,7 @@ const ModelsList = () => {
       }, 1000);
       console.log("INT", isIntersecting, nsfwMode);
     }
-  }, [isIntersecting, dispatch, isLastPage, modelsData, nsfwMode]);
+  }, [isIntersecting, dispatch, isLastPage, modelsData, nsfwMode, isOnline]);
 
   const loraHtml = modelsData?.previews?.map((item, i) => {
     return <PreviewCard previewData={item} key={i} />;
@@ -152,10 +161,10 @@ const ModelsList = () => {
 
       <div className={classes["category"]}>{loraHtml}</div>
 
-      {!loraHtml?.length && !isLoading && (
+      {!loraHtml?.length && !isLoading && isOnline && (
         <div className={classes.empty}>This category is empty</div>
       )}
-
+      {!isOnline && <ErrorMessage>{OFFLINE_ERROR_MESSAGE}</ErrorMessage>}
       <div ref={endPage}></div>
       {/* {!isLoading && !isLastPage && (
         <button
@@ -167,6 +176,7 @@ const ModelsList = () => {
           more
         </button>
       )} */}
+
       {isLoading && (
         <div className={classes["spiner-container"]}>
           <Spinner size="medium" />

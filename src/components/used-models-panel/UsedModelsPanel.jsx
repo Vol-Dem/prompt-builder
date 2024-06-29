@@ -15,6 +15,7 @@ import CrossSvg from "../../assets/CrossSvg";
 import Image from "../ui/image/Image";
 import { modelActions } from "../../store/model";
 import ImageSvg from "../../assets/ImageSvg";
+import { authActions } from "../../store/auth";
 
 const UsedModelsPanel = () => {
   // const [panelIsOpen, setPanelIsOpen] = useState(true);
@@ -25,6 +26,7 @@ const UsedModelsPanel = () => {
   const usedImages = useSelector((state) => state.used.images);
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
   const fullCardView = useSelector((state) => state.used.fullCardView);
+  const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const dispatch = useDispatch();
 
   // useEffect(() => {
@@ -42,7 +44,11 @@ const UsedModelsPanel = () => {
     // setPanelIsOpen((prevState) => !prevState);
   };
   const openFormHandler = () => {
-    setFormIsOpen((prevState) => !prevState);
+    if (!isAuth) {
+      dispatch(authActions.openAuthForm(true));
+    } else {
+      setFormIsOpen((prevState) => !prevState);
+    }
   };
 
   const chageCardViewHandler = () => {
@@ -200,7 +206,7 @@ const UsedModelsPanel = () => {
                     d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
                   />
                 </svg>
-                New resourse
+                New resource
               </>
             ) : (
               <>
@@ -223,7 +229,7 @@ const UsedModelsPanel = () => {
               </>
             )}
           </Buttton>
-          <UpdateDb />
+          {/* <UpdateDb /> */}
           {formIsOpen && (
             <div className={classes.forms}>
               <UpdateModelForm id="side-form" />

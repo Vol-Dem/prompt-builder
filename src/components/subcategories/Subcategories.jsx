@@ -80,7 +80,7 @@ const Subcategories = () => {
       {activeSubcategory && <ModelsList />}
       {editIsOpen && (
         <Modal
-          title="Categories"
+          title="Subcategories"
           onClose={() => {
             setEditIsOpen(false);
           }}

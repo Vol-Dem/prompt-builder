@@ -13,9 +13,11 @@ import {
   CATEGORY_NAME_MAX_LENGTH,
   DEF_INPUT_ERROR_MESSAGE,
   NAME_MAX_LENGTH,
+  OFFLINE_ERROR_MESSAGE,
   TRIGER_WORDS_MAX_LENGTH,
   UNIQUE_ERROR_MESSAGE,
 } from "../../../variables/constants";
+import { useOnlineStatus } from "../../../hooks/use-online-status";
 
 const promptTypes = [
   { name: "Positive", value: "positive" },
@@ -100,6 +102,10 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
         throw new Error(DEF_INPUT_ERROR_MESSAGE);
       }
 
+      if (!navigator?.onLine) {
+        throw new Error(OFFLINE_ERROR_MESSAGE);
+      }
+
       if (!id) {
         updatedPresets = [
           ...curPresets,
@@ -171,7 +177,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
           // error={showErrorMessage ? nameErrorMessage : ""}
         />
         <Textarea
-          placeholder="Triger words"
+          placeholder="Trigger words"
           value={presetWords.value}
           onChange={(e, isValid) => {
             // validateTrigerWords(e.target.value);

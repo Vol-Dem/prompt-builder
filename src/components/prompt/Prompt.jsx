@@ -5,14 +5,15 @@ import { promptActions } from "../../store/prompt";
 import TagsTextarea from "../ui/TagsTextarea";
 import Arrow from "../ui/Arrow";
 import ButtonTertiary from "../ui/ButtonTertiary";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Presets from "../presets/Presets";
 import ArrowDownSvg from "../../assets/ArrowDownSvg";
 import ArrowUp from "../../assets/ArrowUp";
+import { authActions } from "../../store/auth";
 // import Buttton from "../ui/Button";
 
 const Prompt = () => {
-  const [copiedId, setCopiedId] = useState("");
+  const [copiedType, setCopiedType] = useState("");
   const [presetsIsOpen, setPresetsIsOpen] = useState(false);
   // const [promptIsOpen, setPromptIsOpen] = useState(true);
   // const [promptTextMode, setPromptTextMode] = useState(false);
@@ -20,7 +21,11 @@ const Prompt = () => {
   const curNegPrompt = useSelector((state) => state.prompt.curNegPrompt);
   const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
   const promptTextMode = useSelector((state) => state.prompt.isTextMode);
+  const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const dispatch = useDispatch();
+  const timeoutCopiedRef = useRef(null);
+  const timeoutPositiveRef = useRef(null);
+  const timeoutNegativeRef = useRef(null);
 
   const openPromptHandler = () => {
     // setPromptIsOpen((prevState) => !prevState);
@@ -39,9 +44,12 @@ const Prompt = () => {
     const type = e.target.closest(`.${classes["btn-copy"]}`).dataset.type;
     const promptData = type === "positive" ? curPrompt : curNegPrompt;
     navigator.clipboard.writeText(promptData);
-    setCopiedId(type);
-    setTimeout(() => {
-      setCopiedId("");
+    setCopiedType(type);
+    if (timeoutCopiedRef.current) {
+      clearTimeout(timeoutCopiedRef.current);
+    }
+    timeoutCopiedRef.current = setTimeout(() => {
+      setCopiedType("");
     }, 1000);
   };
 
@@ -55,7 +63,11 @@ const Prompt = () => {
   };
 
   const openPresetsHandler = () => {
-    setPresetsIsOpen(true);
+    if (!isAuth) {
+      dispatch(authActions.openAuthForm(true));
+    } else {
+      setPresetsIsOpen(true);
+    }
   };
 
   return (
@@ -108,7 +120,7 @@ const Prompt = () => {
               <TagsTextarea
                 data={curPrompt}
                 promptType="positive"
-                placeholder="Prompt (tags mode)"
+                placeholder="Prompt (tags mode - add tags from the model or image tag list, or switch view to text mode to enter manually)"
                 className={classes["tagarea"]}
               />
             )}
@@ -129,7 +141,7 @@ const Prompt = () => {
               className={classes["btn-copy"]}
               title="Copy"
             >
-              {copiedId !== "positive" && (
+              {copiedType !== "positive" && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -145,14 +157,14 @@ const Prompt = () => {
                   />
                 </svg>
               )}
-              {copiedId === "positive" && (
+              {copiedType === "positive" && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="w-6 h-6"
+                  className={classes.copied}
                 >
                   <path
                     strokeLinecap="round"
@@ -190,7 +202,7 @@ const Prompt = () => {
               className={classes["btn-copy"]}
               title="Copy"
             >
-              {copiedId !== "negative" && (
+              {copiedType !== "negative" && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -206,14 +218,14 @@ const Prompt = () => {
                   />
                 </svg>
               )}
-              {copiedId === "negative" && (
+              {copiedType === "negative" && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="w-6 h-6"
+                  className={classes.copied}
                 >
                   <path
                     strokeLinecap="round"

@@ -56,7 +56,8 @@ const usedModelsSlice = createSlice({
       .addMatcher(
         (action) => action.type.startsWith("used/"),
         (state, action) => {
-          const uid = auth.currentUser.uid;
+          const uid = auth?.currentUser?.uid;
+          if (!uid) return;
           saveToStorage(`${uid}-side`, state.models);
           saveToStorage(`${uid}-side-img`, state.images);
           saveToStorage(`${uid}-side-state`, {

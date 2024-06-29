@@ -107,40 +107,45 @@ const Layout = () => {
                 <MobileNavigation />
                 <div className={classes.logo}>LOGO</div>
                 <MainNavigation />
-                <Search
-                  className={`${
-                    location.pathname === "/search"
-                      ? ""
-                      : classes["search-hidden"]
-                  }`}
-                />
-                <span
-                  className={classes["btn-search"]}
-                  onClick={openMobileSearch}
-                >
-                  <SearchSvg />
-                </span>
-                <UploadingPanel />
-                <div className={classes["mode-switch"]}>
-                  <button
-                    type="button"
-                    onClick={nsfwSwitchHandler}
-                    className={`${classes["btn-mode"]} ${
-                      !isNsfwMode ? classes["btn-mode--active"] : ""
-                    }`}
-                  >
-                    SFW
-                  </button>
-                  <button
-                    type="button"
-                    onClick={nsfwSwitchHandler}
-                    className={`${classes["btn-mode"]} ${
-                      isNsfwMode ? classes["btn-mode--active"] : ""
-                    }`}
-                  >
-                    NSFW
-                  </button>
-                </div>
+                {isAuth && (
+                  <>
+                    <Search
+                      className={`${
+                        location.pathname === "/search"
+                          ? ""
+                          : classes["search-hidden"]
+                      }`}
+                    />
+                    <span
+                      className={classes["btn-search"]}
+                      onClick={openMobileSearch}
+                    >
+                      <SearchSvg />
+                    </span>
+                    <UploadingPanel />
+
+                    <div className={classes["mode-switch"]}>
+                      <button
+                        type="button"
+                        onClick={nsfwSwitchHandler}
+                        className={`${classes["btn-mode"]} ${
+                          !isNsfwMode ? classes["btn-mode--active"] : ""
+                        }`}
+                      >
+                        SFW
+                      </button>
+                      <button
+                        type="button"
+                        onClick={nsfwSwitchHandler}
+                        className={`${classes["btn-mode"]} ${
+                          isNsfwMode ? classes["btn-mode--active"] : ""
+                        }`}
+                      >
+                        NSFW
+                      </button>
+                    </div>
+                  </>
+                )}
 
                 {isAuth && <UserNavigation />}
                 {!isAuth && (

@@ -14,18 +14,20 @@ import SuccessMessage from "../../ui/SuccessMessage";
 import {
   DEF_INPUT_ERROR_MESSAGE,
   NAME_MAX_LENGTH,
+  OFFLINE_ERROR_MESSAGE,
   SAVED_SUCCESS_MESSAGE,
   TRIGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
 import { validateInput } from "../../../utils/generalUtils";
+import { useOnlineStatus } from "../../../hooks/use-online-status";
 
 const firestore = getFirestore(firebaseApp);
 
 const TagsForm = ({ versionData, defaultData, modelId }) => {
   const [isSaving, setIsSaving] = useState(false);
-  const [errorMessage, seteErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const [successMessage, seteSuccessMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [mainTagInput, setMainTagInput] = useState({
     value: "",
     isValid: true,
@@ -115,72 +117,75 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
   }, [versionData]);
 
   const saveVersionHandler = async (e) => {
-    e.preventDefault();
-    seteErrorMessage("");
-    seteSuccessMessage("");
-    setShowErrorMessage(true);
-    const tagsetsIsNotValid = !!tagSetsInputs.find(
-      (input) => input[0].isValid === false || input[1].isValid === false
-    );
-    console.log(tagsetsIsNotValid);
-    console.log(mainTagInput.isValid);
-    console.log(trigerInput.isValid);
-    console.log(helperTagsInput.isValid);
-    console.log(negativeTagsInput.isValid);
-    if (
-      !mainTagInput.isValid ||
-      !trigerInput.isValid ||
-      !helperTagsInput.isValid ||
-      !negativeTagsInput.isValid ||
-      tagsetsIsNotValid
-    ) {
-      throw new Error(DEF_INPUT_ERROR_MESSAGE);
-    }
-    // return;
-    setIsSaving(true);
-
-    const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
-
-    const formdata = new FormData(e.target);
-    const mainTag = formdata.get("main-tag").trim();
-    const tagSetsValues = formdata.getAll("set-value");
-    const trainedWords = formdata
-      .get("triger")
-      .trim()
-      .split(splitRegEx)
-      .filter(Boolean)
-      .map((tag) => tag.trim());
-    const tagSetNames = formdata.getAll("set-name");
-    const tagSetsInputData = tagSetNames.flatMap((setName, i) => {
-      if (!setName && !tagSetsValues[i]) return [];
-      return [{ name: setName, value: tagSetsValues[i] }];
-    });
-    const helperTags = formdata
-      .get("helper-tags")
-      .trim()
-      .split(splitRegEx)
-      .filter(Boolean)
-      .map((tag) => tag.trim());
-    const negativeTags = formdata
-      .get("negative-tags")
-      .trim()
-      .split(splitRegEx)
-      .filter(Boolean)
-      .map((tag) => tag.trim());
-
-    let tagSetsData;
-    if (!versionData?.tagSetsData?.length) {
-      tagSetsData = tagSetsInputData;
-    } else {
-      tagSetsData = tagSetsInputData.map((tagSet, i) => {
-        return {
-          ...versionData.tagSetsData[i],
-          ...tagSet,
-        };
-      });
-    }
-
     try {
+      e.preventDefault();
+      setErrorMessage("");
+      setSuccessMessage("");
+      setShowErrorMessage(true);
+      const tagsetsIsNotValid = !!tagSetsInputs.find(
+        (input) => input[0].isValid === false || input[1].isValid === false
+      );
+      console.log(tagsetsIsNotValid);
+      console.log(mainTagInput.isValid);
+      console.log(trigerInput.isValid);
+      console.log(helperTagsInput.isValid);
+      console.log(negativeTagsInput.isValid);
+      if (
+        !mainTagInput.isValid ||
+        !trigerInput.isValid ||
+        !helperTagsInput.isValid ||
+        !negativeTagsInput.isValid ||
+        tagsetsIsNotValid
+      ) {
+        throw new Error(DEF_INPUT_ERROR_MESSAGE);
+      }
+      if (!navigator?.onLine) {
+        throw new Error(OFFLINE_ERROR_MESSAGE);
+      }
+      // return;
+      setIsSaving(true);
+
+      const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
+
+      const formdata = new FormData(e.target);
+      const mainTag = formdata.get("main-tag").trim();
+      const tagSetsValues = formdata.getAll("set-value");
+      const trainedWords = formdata
+        .get("triger")
+        .trim()
+        .split(splitRegEx)
+        .filter(Boolean)
+        .map((tag) => tag.trim());
+      const tagSetNames = formdata.getAll("set-name");
+      const tagSetsInputData = tagSetNames.flatMap((setName, i) => {
+        if (!setName && !tagSetsValues[i]) return [];
+        return [{ name: setName, value: tagSetsValues[i] }];
+      });
+      const helperTags = formdata
+        .get("helper-tags")
+        .trim()
+        .split(splitRegEx)
+        .filter(Boolean)
+        .map((tag) => tag.trim());
+      const negativeTags = formdata
+        .get("negative-tags")
+        .trim()
+        .split(splitRegEx)
+        .filter(Boolean)
+        .map((tag) => tag.trim());
+
+      let tagSetsData;
+      if (!versionData?.tagSetsData?.length) {
+        tagSetsData = tagSetsInputData;
+      } else {
+        tagSetsData = tagSetsInputData.map((tagSet, i) => {
+          return {
+            ...versionData.tagSetsData[i],
+            ...tagSet,
+          };
+        });
+      }
+
       const updatedVersionData = {
         ...versionData,
         mainTag,
@@ -219,11 +224,11 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
         },
         { merge: true }
       );
-      seteSuccessMessage(SAVED_SUCCESS_MESSAGE);
+      setSuccessMessage(SAVED_SUCCESS_MESSAGE);
       setIsSaving(false);
     } catch (err) {
       console.log(err.message);
-      seteErrorMessage(err.message);
+      setErrorMessage(err.message);
       setIsSaving(false);
     }
   };
@@ -346,7 +351,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
               showError={showErrorMessage}
             />
             <Textarea
-              label="Triger word"
+              label="Trigger words"
               name="triger"
               type="text"
               rows="4"

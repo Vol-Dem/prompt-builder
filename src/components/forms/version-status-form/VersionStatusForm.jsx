@@ -9,7 +9,11 @@ import firebaseApp from "../../../firebase-config";
 import { useSelector } from "react-redux";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
-import { SAVED_SUCCESS_MESSAGE } from "../../../variables/constants";
+import {
+  OFFLINE_ERROR_MESSAGE,
+  SAVED_SUCCESS_MESSAGE,
+} from "../../../variables/constants";
+import { useOnlineStatus } from "../../../hooks/use-online-status";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -56,6 +60,10 @@ const VersionStatusForm = ({ modelData }) => {
       setIsSaving(true);
       seteErrorMessage("");
       seteSuccessMessage("");
+
+      if (!navigator?.onLine) {
+        throw new Error(OFFLINE_ERROR_MESSAGE);
+      }
 
       const updatedVersionData = { ...modelData.modelVersionsCustomData };
       versionsDownloadStatus.forEach((version) => {

@@ -11,9 +11,13 @@ import { updateCategories } from "../../../store/model";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import DeleteRequest from "../../ui/DeleteRequest";
 import SuccessMessage from "../../ui/SuccessMessage";
-import { CATEGORY_NAME_MAX_LENGTH } from "../../../variables/constants";
+import {
+  CATEGORY_NAME_MAX_LENGTH,
+  OFFLINE_ERROR_MESSAGE,
+} from "../../../variables/constants";
 import { useValidation } from "../../../hooks/use-validation";
 import { validateInput } from "../../../utils/generalUtils";
+import { useOnlineStatus } from "../../../hooks/use-online-status";
 
 const categoryNameMaxLength = 50;
 
@@ -161,6 +165,11 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
         // setErrorMessage(`The "${categoryName}" category already exists`);
         // return;
         throw new Error(`The "${categoryName}" category already exists`);
+      }
+      if (!navigator?.onLine) {
+        // setErrorMessage(`The "${categoryName}" category already exists`);
+        // return;
+        throw new Error(OFFLINE_ERROR_MESSAGE);
       }
 
       // if (!categoryIsValid) {
@@ -322,8 +331,8 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
       </div>
       {deleteRequestIsOpen && (
         <DeleteRequest
-          message={`Are you sure that you want to delete "${deleteCategoryData.name}" category? This action can't
-        be reverted`}
+          message={`Are you sure you want to delete "${deleteCategoryData.name}" category? This action can't
+        be undone`}
           onSubmit={deleteCategoryHandler}
           onClose={closeDeleteReqeustHandler}
         />

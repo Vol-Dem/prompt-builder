@@ -45,6 +45,7 @@ import {
   ID_MAX_LENGTH,
   NAME_MAX_LENGTH,
   NUMBER_MAX_LENGTH,
+  OFFLINE_ERROR_MESSAGE,
   SAVED_SUCCESS_MESSAGE,
   TITLE_MAX_LENGTH,
   TRIGER_WORDS_MAX_LENGTH,
@@ -53,6 +54,7 @@ import {
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import InputNumber from "../../ui/InputNumber";
+import { useOnlineStatus } from "../../../hooks/use-online-status";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -69,7 +71,7 @@ const tagSetsDefData = [
   {
     id: "set-value-def",
     name: "set-value",
-    placeholder: "Triger words",
+    placeholder: "Trigger words",
     value: "",
     isValid: true,
     errorMessage: "",
@@ -103,9 +105,9 @@ const UpdateModelForm = ({ modelData, id }) => {
   // const [updateInput, setUpdateInput] = useState(false);
   const [advancedSettings, setAdvancedSettings] = useState(false);
   const [modelIsSaving, setModelIsSaving] = useState(false);
-  const [errorMessage, seteErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const [successMessage, seteSuccessMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [modelTypeInput, setModelTypeInput] = useState(
     modelData?.modelType || "lora"
   );
@@ -319,8 +321,8 @@ const UpdateModelForm = ({ modelData, id }) => {
   const saveModelHandler = async (e, update) => {
     try {
       e.preventDefault();
-      seteErrorMessage("");
-      seteSuccessMessage("");
+      setErrorMessage("");
+      setSuccessMessage("");
       setShowErrorMessage(true);
       const tagsetsIsNotValid = !!tagSetsInputs.find(
         (input) => input[0].isValid === false || input[1].isValid === false
@@ -399,6 +401,9 @@ const UpdateModelForm = ({ modelData, id }) => {
           aditionalInputsIsNotValid)
       ) {
         throw new Error(DEF_INPUT_ERROR_MESSAGE);
+      }
+      if (!navigator?.onLine) {
+        throw new Error(OFFLINE_ERROR_MESSAGE);
       }
 
       // return;
@@ -646,7 +651,7 @@ const UpdateModelForm = ({ modelData, id }) => {
             const categories = sfDoc.data().categoriesById;
 
             if (!categories) {
-              throw new Error("Can't update, try a bit later");
+              throw new Error("Can't update, try again later");
             }
 
             let updatedCategories;
@@ -818,7 +823,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           nameArr,
           imgUrl: previewImg || "",
           type: data.type,
-          creator: data?.creator?.username || "",
+          creator: data?.creator || "",
           nsfw: nsfwInput || false,
           nsfwLevel: data?.nsfwLevel || "",
           baseModel: data.modelVersions[0].baseModel,
@@ -865,7 +870,7 @@ const UpdateModelForm = ({ modelData, id }) => {
       // get(modelsRef).then((snapshot) => {
       //   if (snapshot.exists()) {
       //     if (!modelData) {
-      //       seteSuccessMessage("Exists");
+      //       setSuccessMessage("Exists");
       //       return;
       //     }
       //     set(modelsRef, modelInfo);
@@ -899,12 +904,12 @@ const UpdateModelForm = ({ modelData, id }) => {
       }
 
       setModelIsSaving(false);
-      seteSuccessMessage(SAVED_SUCCESS_MESSAGE);
+      setSuccessMessage(SAVED_SUCCESS_MESSAGE);
       setSavedModel(modelId);
     } catch (err) {
       setModelIsSaving(false);
       console.log(err);
-      seteErrorMessage(err.message);
+      setErrorMessage(err.message);
     }
   };
 
@@ -1205,7 +1210,7 @@ const UpdateModelForm = ({ modelData, id }) => {
             label="Description"
             name="description"
             rows="5"
-            placeholder="description"
+            placeholder="Description"
             value={descriptionInput.value}
             onChange={(e, isValid) => {
               setDescriptionInput({ value: e.target.value, isValid });
@@ -1318,7 +1323,7 @@ const UpdateModelForm = ({ modelData, id }) => {
         </FieldCategory>
         {(modelData || advancedSettings) && (
           <>
-            <FieldCategory title="Triger words">
+            <FieldCategory title="Trigger words">
               <Input
                 label="Activation tag"
                 name="main-tag"
@@ -1337,7 +1342,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                 // label="Triger word"
                 name="triger"
                 type="text"
-                placeholder="Triger word"
+                placeholder="Trigger word"
                 textarea={{ hidden: true }}
                 value={trigerInput.value}
                 onChange={(e, isValid) => {
@@ -1407,7 +1412,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                 label="File"
                 name="file-name"
                 type="text"
-                placeholder="file name"
+                placeholder="File name"
                 value={fileNameInput.value}
                 onChange={(e, isValid) => {
                   setFileNameInput({ value: e.target.value, isValid });
@@ -1454,7 +1459,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                     name="weight"
                     type="number"
                     step={0.1}
-                    placeholder="Recomended"
+                    placeholder="Best"
                     value={weightInput.value}
                     onChange={(e, isValid) => {
                       setWeightInput({ value: e.target.value, isValid });
@@ -1468,10 +1473,10 @@ const UpdateModelForm = ({ modelData, id }) => {
                 </div>
               </div>
               <Input
-                label="Image resolution"
+                label="Image size"
                 name="size"
                 type="text"
-                placeholder="Image resolution"
+                placeholder="Image size"
                 value={sizetInput.value}
                 onChange={(e, isValid) => {
                   setSizeInput({ value: e.target.value, isValid });
@@ -1609,16 +1614,17 @@ const UpdateModelForm = ({ modelData, id }) => {
           </>
         )}
       </div>
-      <Buttton
-        type="submit"
-        disabled={modelIsSaving}
-        className={classes.submit}
-      >
-        {!modelIsSaving ? "Save" : <Spinner size="small" />}
-      </Buttton>
       <div className={classes.status}>
-        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-        {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
+        {errorMessage && (
+          <ErrorMessage className={classes["status__message"]}>
+            {errorMessage}
+          </ErrorMessage>
+        )}
+        {successMessage && (
+          <SuccessMessage className={classes["status__message"]}>
+            {successMessage}
+          </SuccessMessage>
+        )}
         {successMessage && !modelData && (
           <>
             {"-"}
@@ -1628,6 +1634,13 @@ const UpdateModelForm = ({ modelData, id }) => {
           </>
         )}
       </div>
+      <Buttton
+        type="submit"
+        disabled={modelIsSaving}
+        className={classes.submit}
+      >
+        {!modelIsSaving ? "Save" : <Spinner size="small" />}
+      </Buttton>
     </form>
   );
 };

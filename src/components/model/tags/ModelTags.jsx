@@ -96,7 +96,7 @@ const ModelTags = ({ customData, modelPreview }) => {
             <>
               {/* <div className={classes.title}>Trigger Words:</div> */}
               <TagList
-                name="Trigger Words"
+                name="Trigger words"
                 tags={
                   customData?.trainedWords?.length
                     ? customData?.trainedWords
@@ -112,7 +112,7 @@ const ModelTags = ({ customData, modelPreview }) => {
             <>
               {/* <div className={classes.title}>Helper Words:</div> */}
               <TagList
-                name="Helper Words"
+                name="Helper words"
                 coment={
                   !customData?.helperTags &&
                   model?.defaultCustomData.helperTags &&
@@ -133,7 +133,7 @@ const ModelTags = ({ customData, modelPreview }) => {
             <>
               {/* <div className={classes.title}>Negative Words:</div> */}
               <TagList
-                name="Negative Words"
+                name="Negative words"
                 coment={
                   !customData?.negativeTags &&
                   model?.defaultCustomData.negativeTags &&

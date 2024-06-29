@@ -201,7 +201,7 @@ const PreviewCard = ({ previewData }) => {
           previewData?.fileName ||
           currVersion?.defFileName) && (
           <div className={classes["text"]}>
-            File:{" "}
+            File name:{" "}
             <span className={classes["text-secondary"]}>
               {currVersion?.fileName ||
                 previewData?.fileName ||

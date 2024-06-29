@@ -19,9 +19,11 @@ import {
   EMPTY_ERROR_MESSAGE,
   EXISTS_ERROR_MESSAGE,
   ID_MAX_LENGTH,
+  OFFLINE_ERROR_MESSAGE,
   SAVED_SUCCESS_MESSAGE,
 } from "../../../variables/constants";
 import { validateInput } from "../../../utils/generalUtils";
+import { useOnlineStatus } from "../../../hooks/use-online-status";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -78,6 +80,9 @@ const SaveImageForm = ({ modelData, curVersion }) => {
 
       if (!postIdInput.isValid || imagesIdInputsIsNotValid) {
         throw new Error(DEF_INPUT_ERROR_MESSAGE);
+      }
+      if (!navigator?.onLine) {
+        throw new Error(OFFLINE_ERROR_MESSAGE);
       }
       // return;
       setImageIsSaving(true);
@@ -344,7 +349,7 @@ const SaveImageForm = ({ modelData, curVersion }) => {
       <div className={classes.filter}>
         <Checkbox
           id="filter"
-          label="Only related to this model"
+          label="Save only images related to this model"
           value={filterDisabledInput}
           checked={filterDisabledInput}
           className={classes["checkbox"]}

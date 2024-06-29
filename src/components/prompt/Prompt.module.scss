@@ -199,6 +199,11 @@
   margin-left: 1rem;
 }
 
+.copied {
+  // color: #27bb2c;
+  color: var.$color-text-green;
+}
+
 @media (max-width: 1024px) {
   .btn-open {
     right: 50%;

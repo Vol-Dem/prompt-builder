@@ -25,6 +25,7 @@ import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import Spinner from "../../ui/Spinner";
+import { OFFLINE_ERROR_MESSAGE } from "../../../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -69,6 +70,11 @@ const ModelSettings = () => {
       seteErrorMessage("");
       seteSuccessMessage("");
       console.log("UPD");
+
+      if (!navigator.onLine) {
+        throw new Error(OFFLINE_ERROR_MESSAGE);
+      }
+
       const newModelData = await getModelData(
         model.id,
         model.data.modelVersions
@@ -228,12 +234,16 @@ const ModelSettings = () => {
   };
 
   const deleteModelHandler = async () => {
-    console.log("DEL");
-    setIsDeleting(true);
-    // dispatch(deleteModel());
-    await deleteModelDoc(uid, model);
-    setIsDeleting(false);
-    navigate("/");
+    try {
+      console.log("DEL");
+      setIsDeleting(true);
+      // dispatch(deleteModel());
+      await deleteModelDoc(uid, model);
+      setIsDeleting(false);
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const modelVersionsHtml = model?.data?.modelVersions?.flatMap(
@@ -351,8 +361,8 @@ const ModelSettings = () => {
       </div>
       {deleteRequestIsOpen && (
         <DeleteRequest
-          message="Are you sure that you want to delete this resource? This action
-        can't be reverted"
+          message="Are you sure you want to delete this resource? This action
+        can't be undone"
           onSubmit={deleteModelHandler}
           onClose={closeDeleteReqeustHandler}
           isDeleting={isDeleting}

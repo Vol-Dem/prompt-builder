@@ -31,6 +31,8 @@ import Spinner from "../ui/Spinner";
 import ButtonAdd from "../ui/ButtonAdd";
 import ErrorMessage from "../ui/ErrorMessage";
 import ButtonTertiary from "../ui/ButtonTertiary";
+import { useOnlineStatus } from "../../hooks/use-online-status";
+import { OFFLINE_ERROR_MESSAGE } from "../../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 // let timeoutRef.current;
@@ -61,6 +63,7 @@ const Search = ({ className }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
   //   const matches = useMatches();
   //   const [{ route }] = matchRoutes(routes, location);
@@ -294,7 +297,7 @@ const Search = ({ className }) => {
 
   useEffect(() => {
     // console.log(location);
-    if (uid && searchInput.length >= 3) {
+    if (uid && searchInput.length >= 3 && isOnline) {
       if (
         location.pathname !== "/search" &&
         searchResult.query === searchInput.trim() &&
@@ -374,6 +377,7 @@ const Search = ({ className }) => {
     location?.pathname,
     searchResult?.query,
     searchResult?.nsfw,
+    isOnline,
   ]);
 
   const addToSidePanelHandler = (e) => {
@@ -576,8 +580,10 @@ const Search = ({ className }) => {
               <button
                 className={classes["search__btn-close"]}
                 onClick={() => {
-                  setSearchResultIsOpen(false);
+                  // dispatch(searchActions.resetSearchData());
+                  setSearchResult({});
                   dispatch(searchActions.setSearchQuery(""));
+                  setSearchResultIsOpen(false);
                 }}
               >
                 <span className={classes["search__cross"]}></span>
@@ -600,9 +606,13 @@ const Search = ({ className }) => {
               {!searchIsLoading &&
                 !errorMessage &&
                 !searchResult?.result?.length &&
-                !!searchResult?.query && (
+                !!searchResult?.query &&
+                isOnline && (
                   <div className={classes.error}>No resources found</div>
                 )}
+              {!isOnline && (
+                <ErrorMessage>{OFFLINE_ERROR_MESSAGE}</ErrorMessage>
+              )}
               {!searchIsLoading && !!searchResult?.result?.length && (
                 <ul className={classes["search__models"]}>
                   {searchResultHtml}

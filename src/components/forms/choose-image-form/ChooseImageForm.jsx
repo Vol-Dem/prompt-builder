@@ -9,6 +9,9 @@ import { useSelector } from "react-redux";
 import Spinner from "../../ui/Spinner";
 import CheckSvg from "../../../assets/CheckSvg";
 import DownloadArrowSvg from "../../../assets/DownloadArrowSvg";
+import { useOnlineStatus } from "../../../hooks/use-online-status";
+import ErrorMessage from "../../ui/ErrorMessage";
+import { OFFLINE_ERROR_MESSAGE } from "../../../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -23,9 +26,11 @@ const ChooseImageForm = ({
   isDeleting,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, seteErrorMessage] = useState("");
   const [savedImagesIds, setSavedImagesIds] = useState([]);
   const [imagesInputs, setImagesInputs] = useState([]);
   const uid = useSelector((state) => state.auth.user.uid);
+  const isOnline = useOnlineStatus();
 
   useEffect(() => {
     if (!images.length) return;
@@ -89,6 +94,7 @@ const ChooseImageForm = ({
       } catch (err) {
         console.log(err);
         setIsLoading(false);
+        seteErrorMessage(err.message);
       }
     };
     loadSavedPost();
@@ -180,7 +186,7 @@ const ChooseImageForm = ({
         // onSave()
       }}
     >
-      {!isLoading && (
+      {!isLoading && isOnline && (
         <ul className={classes["images-list"]}>{imagesListHtml}</ul>
       )}
       {isLoading && (
@@ -188,6 +194,10 @@ const ChooseImageForm = ({
           <Spinner size="medium" />
         </div>
       )}
+      {!!errorMessage && isOnline && (
+        <ErrorMessage>{errorMessage}</ErrorMessage>
+      )}
+      {!isOnline && <ErrorMessage>{OFFLINE_ERROR_MESSAGE}</ErrorMessage>}
       <div className={classes["btns"]}>
         <Buttton
           className={`${type === "del" ? classes["btn-del"] : ""}`}
@@ -195,14 +205,14 @@ const ChooseImageForm = ({
           onClick={(e) => {
             onSave(e);
           }}
-          disabled={!!isDeleting}
+          disabled={!!isDeleting || !isOnline}
         >
           {type === "save" ? "Save all" : "Delete all"}
         </Buttton>
         <Buttton
           className={`${type === "del" ? classes["btn-del"] : ""}`}
           type="submit"
-          disabled={isLoading || !!isDeleting}
+          disabled={isLoading || !!isDeleting || !!errorMessage || !isOnline}
         >
           {type === "save" ? "Save selected" : ""}
           {type === "del" && !isLoading && !isDeleting ? "Delete selected" : ""}

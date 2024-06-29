@@ -200,8 +200,8 @@ const Presets = ({ onClose }) => {
       )}
       {deleteRequestIsOpen && (
         <DeleteRequest
-          message={`Are you sure that you want to delete "${presetToDel.name}" preset? This action can't
-        be reverted`}
+          message={`Are you sure you want to delete "${presetToDel.name}" preset? This action can't
+        be undone`}
           onSubmit={deleteHandler}
           onClose={closeDeleteReqeustHandler}
         />

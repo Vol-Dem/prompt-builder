@@ -7,6 +7,8 @@ import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import useIntersection from "../../hooks/use-intersection";
 import usePageEnd from "../../hooks/use-page-end";
+import { OFFLINE_ERROR_MESSAGE } from "../../variables/constants";
+import { useOnlineStatus } from "../../hooks/use-online-status";
 
 // let initial = true;
 const amountPerPage = 10;
@@ -22,6 +24,7 @@ const SearchPage = ({ title }) => {
   const endPage = useRef(null);
   // const isIntersecting = useIntersection(endPage, false);
   const isPageEnd = usePageEnd(600);
+  const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
 
   useEffect(() => {
@@ -39,7 +42,12 @@ const SearchPage = ({ title }) => {
   }, [title, searchQuery]);
 
   useEffect(() => {
-    if (!isLastPage && isIntersecting && !!searchResult?.result?.length) {
+    if (
+      !isLastPage &&
+      isIntersecting &&
+      !!searchResult?.result?.length &&
+      isOnline
+    ) {
       console.log("INERS");
       console.log(isIntersecting);
       setIsIntersecting(false);
@@ -56,19 +64,20 @@ const SearchPage = ({ title }) => {
     dispatch,
     isLastPage,
     searchResult,
+    isOnline,
   ]);
 
   useEffect(() => {
     return () => {
-      if (initial) {
+      if (initial && isOnline) {
         // initial = false;
         setInitial(false);
-      } else {
+      } else if (!initial && !isOnline) {
         dispatch(searchActions.setSearchQuery(""));
         // dispatch(searchActions.setSearchResult([]));
       }
     };
-  }, [dispatch, initial]);
+  }, [dispatch, initial, isOnline]);
 
   // useEffect(() => {
   //   if (!isLastPage && isIntersecting && !!loraItems.length) {
@@ -87,13 +96,15 @@ const SearchPage = ({ title }) => {
           Search result for "{searchResult.query}"
         </div>
       )}
-      {!searchIsLoading && searchResult?.query && !searchResultHtml?.length && (
-        <div className={classes["title"]}>No resources found</div>
-      )}
+      {!searchIsLoading &&
+        searchResult?.query &&
+        !searchResultHtml?.length &&
+        isOnline && <div className={classes["title"]}>No resources found</div>}
       {!!searchResult?.result?.length && (
         <ul className={classes["result-list"]}>{searchResultHtml}</ul>
       )}
       {searchIsLoading && <Spinner />}
+      {!isOnline && <ErrorMessage>{OFFLINE_ERROR_MESSAGE}</ErrorMessage>}
       <div ref={endPage}></div>
     </div>
   );

@@ -84,6 +84,7 @@
 .link {
   @include var.linkA;
   font-size: 1.4rem;
+  flex-shrink: 0;
 }
 
 .status {
@@ -91,6 +92,10 @@
   gap: 1rem;
   align-items: center;
   // justify-content: space-between;
+
+  &__message {
+    width: 100%;
+  }
 }
 
 @include var.animation-show;

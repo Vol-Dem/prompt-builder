@@ -897,7 +897,7 @@ const ImageCard = ({ activeImgNum }) => {
                 )}
                 {!isLoading && !!resourcesHtml?.length && (
                   <div>
-                    Resourses:
+                    Resources:
                     <ul className={classes["example__resourses"]}>
                       {resourcesHtml}
                     </ul>

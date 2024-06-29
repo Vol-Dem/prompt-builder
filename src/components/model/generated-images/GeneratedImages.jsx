@@ -21,6 +21,8 @@ import Buttton from "../../ui/Button";
 import ErrorMessage from "../../ui/ErrorMessage";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import usePageEnd from "../../../hooks/use-page-end";
+import { useOnlineStatus } from "../../../hooks/use-online-status";
+import { OFFLINE_ERROR_MESSAGE } from "../../../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -55,6 +57,7 @@ const GeneratedImages = ({ customData }) => {
   const abortControlerRef = useRef(null);
   const intersecting = useIntersection(endPageRef, false);
   const isPageEnd = usePageEnd(600);
+  const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
 
   useEffect(() => {
@@ -471,6 +474,7 @@ const GeneratedImages = ({ customData }) => {
       isIntersecting &&
       !!examplesImgData.length &&
       !errorMessage &&
+      isOnline &&
       !examplesIsLoading;
     if (true) {
       // if (!!examplesImgData.length) {
@@ -514,6 +518,7 @@ const GeneratedImages = ({ customData }) => {
     model.id,
     nextCursor,
     currCursor,
+    isOnline,
   ]);
 
   // useEffect(sortExampleImages, [
@@ -784,6 +789,7 @@ const GeneratedImages = ({ customData }) => {
       {!examplesIsLoading && !examplesHtml.length && !errorMessage && (
         <div>No images found</div>
       )}
+      {!isOnline && <ErrorMessage>{OFFLINE_ERROR_MESSAGE}</ErrorMessage>}
       <div ref={endPageRef}></div>
       {addImgModalIsOpen && (
         <Modal

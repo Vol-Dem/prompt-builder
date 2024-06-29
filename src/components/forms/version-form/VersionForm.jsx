@@ -17,17 +17,19 @@ import {
   DESCRIPTION_MAX_LENGTH,
   NAME_MAX_LENGTH,
   NUMBER_MAX_LENGTH,
+  OFFLINE_ERROR_MESSAGE,
   SAVED_SUCCESS_MESSAGE,
   TITLE_MAX_LENGTH,
   TRIGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
 import InputNumber from "../../ui/InputNumber";
+import { useOnlineStatus } from "../../../hooks/use-online-status";
 
 const firestore = getFirestore(firebaseApp);
 
 const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
   const [isSaving, setIsSaving] = useState(false);
-  const [errorMessage, seteErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [successMessage, seteSuccessMessage] = useState("");
   const [mainTagInput, setMainTagInput] = useState({
@@ -112,7 +114,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         type: "text",
         id: "set-name-def",
         name: "set-name",
-        placeholder: "set name",
+        placeholder: "Set name",
         value: "",
         isValid: true,
         errorMessage: "",
@@ -120,7 +122,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
       {
         id: "set-value-def",
         name: "set-value",
-        placeholder: "set value",
+        placeholder: "Trigger words",
         value: "",
         isValid: true,
         errorMessage: "",
@@ -134,6 +136,8 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
   const model = useSelector((state) => state.model.model);
 
   useEffect(() => {
+    setErrorMessage("");
+    seteSuccessMessage("");
     setMainTagInput({ value: versionData?.mainTag || "", isValid: true });
     setTitleInput({
       value: versionData?.name || defaultData.name || "",
@@ -192,7 +196,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
           type: "text",
           id: "set-name" + i,
           name: "set-name",
-          placeholder: "set name",
+          placeholder: "Set name",
           value: tagSet.name,
           isValid: true,
           errorMessage: "",
@@ -200,7 +204,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         {
           id: "set-value" + i,
           name: "set-value",
-          placeholder: "set value",
+          placeholder: "Trigger words",
           value: tagSet.value,
           isValid: true,
           errorMessage: "",
@@ -213,7 +217,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
   const saveVersionHandler = async (e) => {
     try {
       e.preventDefault();
-      seteErrorMessage("");
+      setErrorMessage("");
       seteSuccessMessage("");
       setShowErrorMessage(true);
       const tagsetsIsNotValid = !!tagSetsInputs.find(
@@ -277,6 +281,9 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
       ) {
         console.log("NO");
         throw new Error(DEF_INPUT_ERROR_MESSAGE);
+      }
+      if (!navigator?.onLine) {
+        throw new Error(OFFLINE_ERROR_MESSAGE);
       }
       console.log("YES");
       // return;
@@ -412,7 +419,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
       setIsSaving(false);
     } catch (err) {
       console.log(err.message);
-      seteErrorMessage(err.message);
+      setErrorMessage(err.message);
       setIsSaving(false);
     }
   };
@@ -424,7 +431,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         type: "text",
         id: `set-name-${Date.now()}`,
         name: "set-name",
-        placeholder: "set name",
+        placeholder: "Set name",
         value: "",
         isValid: true,
       },
@@ -432,7 +439,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         type: "text",
         id: `set-value-${Date.now()}`,
         name: "set-value",
-        placeholder: "set value",
+        placeholder: "Trigger words",
         value: "",
         isValid: true,
       },
@@ -534,7 +541,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         label="Description"
         name="description"
         rows="5"
-        placeholder="description"
+        placeholder="Description"
         value={descriptionInput.value}
         onChange={(e, isValid) => {
           setDescriptionInput({ value: e.target.value, isValid });
@@ -545,7 +552,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         showError={showErrorMessage}
       ></Textarea>
       <div className={classes.fields}>
-        <FieldCategory title="Triger words">
+        <FieldCategory title="Trigger words">
           <Input
             label="Activation tag"
             name="main-tag"
@@ -562,10 +569,10 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
           />
 
           <Textarea
-            label="Triger word"
+            label="Trigger words"
             name="triger"
             type="text"
-            placeholder="Triger word"
+            placeholder="Trigger words"
             value={trigerInput.value}
             onChange={(e, isValid) => {
               setTrigerInput({ value: e.target.value, isValid });
@@ -633,7 +640,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
             showError={showErrorMessage}
           />
           <div>
-            <span className={classes["weight__label"]}>Strength (weight)</span>
+            <span className={classes["weight__label"]}>Weight</span>
             <div className={classes.weight}>
               <InputNumber
                 name="minWeight"
@@ -683,10 +690,10 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
             </div>
           </div>
           <Input
-            label="Image resolution"
+            label="Image size"
             name="size"
             type="text"
-            placeholder="Image resolution"
+            placeholder="Image size"
             value={sizetInput.value}
             onChange={(e, isValid) => {
               setSizeInput({ value: e.target.value, isValid });

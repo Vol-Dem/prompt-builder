@@ -2,7 +2,7 @@ import classes from "./SuccessMessage.module.scss";
 
 const SuccessMessage = (props) => {
   return (
-    <div className={classes["success"]}>
+    <div className={`${classes["success"]} ${props?.className || ""}`}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"

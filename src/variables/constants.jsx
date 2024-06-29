@@ -14,6 +14,7 @@ export const modelTypes = [
   { name: "Other", value: "other", position: 10 },
 ];
 export const CATEGORY_NAME_MAX_LENGTH = 70;
+export const USERNAME_MAX_LENGTH = 100;
 export const NAME_MAX_LENGTH = 300;
 export const TITLE_MAX_LENGTH = 500;
 export const DESCRIPTION_MAX_LENGTH = 100000;
@@ -29,3 +30,5 @@ export const UNIQUE_ERROR_MESSAGE = "This name already exists";
 export const EXISTS_ERROR_MESSAGE = "This resource already exists";
 export const EMPTY_ERROR_MESSAGE =
   "No matching images found. Try to switch the NSFW filter or the related checkbox.";
+export const OFFLINE_ERROR_MESSAGE =
+  "Internet connection lost. Check your connection settings";

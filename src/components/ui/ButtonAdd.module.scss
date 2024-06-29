@@ -21,12 +21,7 @@
   transition: all 0.3s;
   flex-shrink: 0;
 
-  &--disabled {
-    background-color: var.$color-text-gray;
-    cursor: default;
-  }
-
-  &:not(&--disabled):hover {
+  &:hover {
     background-color: var.$color-primary;
   }
 
@@ -52,6 +47,14 @@
     }
     &:hover .plus--active {
       clip-path: polygon(10% 40%, 90% 40%, 90% 60%, 10% 60%);
+    }
+  }
+
+  &--disabled {
+    background-color: var.$color-text-gray;
+    cursor: default;
+    &:hover {
+      background-color: var.$color-text-gray;
     }
   }
 

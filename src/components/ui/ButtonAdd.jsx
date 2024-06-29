@@ -80,7 +80,9 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
       className={`${classes["resource__add"]} ${
         isInPanel ? classes["resource__add--active"] : ""
       } ${
-        imagesInPanel?.length === 3 ? classes["resource__add--disabled"] : ""
+        imagesInPanel?.length >= 3 && !isInPanel && type === "image"
+          ? classes["resource__add--disabled"]
+          : ""
       } ${className || ""}`}
       onClick={addToSidePanelHandler}
     >

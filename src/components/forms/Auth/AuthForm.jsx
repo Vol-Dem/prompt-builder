@@ -13,6 +13,7 @@ import {
   DEF_INPUT_ERROR_MESSAGE,
   EMAIL_MAX_LENGTH,
   NAME_MAX_LENGTH,
+  OFFLINE_ERROR_MESSAGE,
   PASSWORD_MAX_LENGTH,
 } from "../../../variables/constants";
 
@@ -71,7 +72,7 @@ const AuthForm = () => {
   //   setShowPasswordError(true);
   // };
 
-  const signIn = async (e) => {
+  const authHandler = async (e) => {
     e.preventDefault();
     dispatch(authActions.setErrorMessage(""));
     setShowErrorMessage(true);
@@ -80,6 +81,10 @@ const AuthForm = () => {
     // setShowEmailError(true);
     // setShowPasswordError(true);
     // console.log("WTF", emailErrorMessage);
+    if (!navigator?.onLine) {
+      dispatch(authActions.setErrorMessage(OFFLINE_ERROR_MESSAGE));
+      return;
+    }
 
     if (!email.isValid || !password.isValid) {
       dispatch(authActions.setErrorMessage(DEF_INPUT_ERROR_MESSAGE));
@@ -88,7 +93,7 @@ const AuthForm = () => {
     }
   };
 
-  const signUp = () => {
+  const switchSignType = () => {
     dispatch(authActions.setErrorMessage(""));
     setIsLogin((state) => !state);
     setEmail({
@@ -107,7 +112,7 @@ const AuthForm = () => {
       <h3 className={classes["auth__title"]}>
         {isLogin ? "Log in" : "Sign Up"}
       </h3>
-      <form onSubmit={signIn} className={classes["auth__form"]}>
+      <form onSubmit={authHandler} className={classes["auth__form"]}>
         <Input
           label="Email"
           name="email"
@@ -159,7 +164,7 @@ const AuthForm = () => {
         <div className={classes["auth__controls"]}>
           <ButttonSecondary
             type="button"
-            onClick={signUp}
+            onClick={switchSignType}
             disabled={isLoading}
             className={classes["auth__btn--switch"]}
           >

@@ -12,7 +12,7 @@ const DeleteRequest = ({ message, onSubmit, onClose, isDeleting }) => {
         )}
         {isDeleting && (
           <div className={classes["del-request__message"]}>
-            Don't close this window until deleting is complete
+            Don't close this window until the deletion is complete
           </div>
         )}
         {!isDeleting && (
@@ -23,7 +23,11 @@ const DeleteRequest = ({ message, onSubmit, onClose, isDeleting }) => {
             <Buttton onClick={onClose}>Cancel</Buttton>
           </div>
         )}
-        {isDeleting && <Spinner size="medium" />}
+        {isDeleting && (
+          <div className={classes["spinner-container"]}>
+            <Spinner size="medium" />
+          </div>
+        )}
       </div>
     </Modal>
   );

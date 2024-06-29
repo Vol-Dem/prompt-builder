@@ -2,16 +2,36 @@ import Card from "../../components/ui/Card";
 import Input from "../../components/ui/Input";
 import classes from "./Profile.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { changeUserName, changeUserPassword } from "../../store/auth";
+import {
+  authActions,
+  changeUserName,
+  changeUserPassword,
+} from "../../store/auth";
 import ErrorMessage from "../../components/ui/ErrorMessage";
 import { useEffect, useState } from "react";
 // import ButttonSecondary from "../../components/ui/ButtonSecondary";
 import { ReactComponent as UserIcon } from "./../../assets/user.svg";
 import ButtonTertiary from "../ui/ButtonTertiary";
+import {
+  DEF_INPUT_ERROR_MESSAGE,
+  OFFLINE_ERROR_MESSAGE,
+  PASSWORD_MAX_LENGTH,
+  USERNAME_MAX_LENGTH,
+} from "../../variables/constants";
 
 const Profile = ({ title }) => {
+  const [userName, setUserName] = useState({
+    value: "",
+    isValid: false,
+  });
+  const [password, setPassword] = useState({
+    value: "",
+    isValid: false,
+  });
   const [changeNameIsActive, setChangeNameIsActive] = useState(false);
   const [changePassIsActive, setChangePassIsActive] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
   const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
   const userData = useSelector((state) => state.auth.user);
@@ -22,28 +42,60 @@ const Profile = ({ title }) => {
 
   //Switch visibility of change name form
   const changeNameIsActiveHandler = () => {
+    setUserName({
+      value: "",
+      isValid: false,
+    });
     setChangeNameIsActive((prevState) => !prevState);
   };
 
   //Switch visibility of change password form
   const changePassIsActiveHandler = () => {
+    setPassword({
+      value: "",
+      isValid: false,
+    });
     setChangePassIsActive((prevState) => !prevState);
   };
 
   //Retrive data from form and dispatch changeUserPassword action with new password
   const changePasswordHandler = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const password = formData.get("pass");
-    dispatch(changeUserPassword(password));
+    setErrorMessage("");
+    dispatch(authActions.setErrorMessage(""));
+    if (!password.isValid) {
+      setErrorMessage(DEF_INPUT_ERROR_MESSAGE);
+      setShowErrorMessage(true);
+      return;
+    }
+
+    if (!navigator?.onLine) {
+      setErrorMessage(OFFLINE_ERROR_MESSAGE);
+      setShowErrorMessage(true);
+      return;
+    }
+
+    dispatch(changeUserPassword(password.value));
   };
 
   //Retrive data from form and dispatch changeUserName action with new name
   const changeNameHandler = (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const name = formData.get("name");
-    dispatch(changeUserName(name));
+    setErrorMessage("");
+    dispatch(authActions.setErrorMessage(""));
+    if (!userName.isValid) {
+      setErrorMessage(DEF_INPUT_ERROR_MESSAGE);
+      setShowErrorMessage(true);
+      return;
+    }
+
+    if (!navigator?.onLine) {
+      setErrorMessage(OFFLINE_ERROR_MESSAGE);
+      setShowErrorMessage(true);
+      return;
+    }
+
+    dispatch(changeUserName(userName.value));
     setChangeNameIsActive(false);
   };
 
@@ -59,17 +111,33 @@ const Profile = ({ title }) => {
         {changeNameIsActive && (
           <>
             <Input
-              input={{
-                type: "text",
-                name: "name",
-                placeholder: `${userData.userName || ""}`,
+              name="name"
+              type="text"
+              // input={{ disabled: isLoading }}
+              className={`${classes["auth__input"]} ${
+                showErrorMessage && !userName.isValid ? classes.invalid : ""
+              }`}
+              // onBlur={showPasswordErrorHandler}
+              // error={showPasswordError && passwordErrorMessage}
+              onChange={(e, isValid) => {
+                setUserName({ value: e.target.value, isValid });
               }}
+              validation={{
+                required: true,
+                maxLength: USERNAME_MAX_LENGTH,
+              }}
+              showError={showErrorMessage}
+              value={userName.value}
               autoFocus={true}
             />
-            <ButtonTertiary>Submit</ButtonTertiary>
+            <ButtonTertiary className={classes["btn"]}>Submit</ButtonTertiary>
           </>
         )}
-        <ButtonTertiary type="button" onClick={changeNameIsActiveHandler}>
+        <ButtonTertiary
+          className={classes["btn"]}
+          type="button"
+          onClick={changeNameIsActiveHandler}
+        >
           {!changeNameIsActive ? "Change" : "Cancel"}
         </ButtonTertiary>
       </div>
@@ -83,13 +151,35 @@ const Profile = ({ title }) => {
         {changePassIsActive && (
           <>
             <Input
-              input={{ type: "password", name: "pass" }}
+              // label="Password"
+              name="password"
+              type="password"
+              // input={{ disabled: isLoading }}
+              className={`${classes["auth__input"]} ${
+                showErrorMessage && !password.isValid ? classes.invalid : ""
+              }`}
+              // onBlur={showPasswordErrorHandler}
+              // error={showPasswordError && passwordErrorMessage}
+              onChange={(e, isValid) => {
+                setPassword({ value: e.target.value, isValid });
+              }}
+              validation={{
+                required: true,
+                password: true,
+                maxLength: PASSWORD_MAX_LENGTH,
+              }}
+              showError={showErrorMessage}
+              value={password.value}
               autoFocus={true}
             />
-            <ButtonTertiary>Submit</ButtonTertiary>
+            <ButtonTertiary className={classes["btn"]}>Submit</ButtonTertiary>
           </>
         )}
-        <ButtonTertiary type="button" onClick={changePassIsActiveHandler}>
+        <ButtonTertiary
+          className={classes["btn"]}
+          type="button"
+          onClick={changePassIsActiveHandler}
+        >
           {!changePassIsActive ? "Change" : "Cancel"}
         </ButtonTertiary>
       </div>
@@ -115,6 +205,11 @@ const Profile = ({ title }) => {
               {errorMessageAuth && (
                 <ErrorMessage className={classes["auth__error"]}>
                   {errorMessageAuth}
+                </ErrorMessage>
+              )}
+              {errorMessage && (
+                <ErrorMessage className={classes["auth__error"]}>
+                  {errorMessage}
                 </ErrorMessage>
               )}
             </div>

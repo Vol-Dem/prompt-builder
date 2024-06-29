@@ -142,8 +142,8 @@
 //   }
 
 //   &:active {
-//     color: #49ab6b;
-//     border-color: #49ab6b;
+//     color: var.$color-text-green;
+//     border-color: var.$color-text-green;
 //     transform: translateY(1px);
 //   }
 // }
@@ -247,7 +247,7 @@
   }
 
   &__type {
-    color: #49ab6b;
+    color: var.$color-text-green;
   }
 
   &__version {
@@ -257,7 +257,7 @@
     color: var.$color-text-gray;
     & svg {
       width: 1.6rem;
-      color: #49ab6b;
+      color: var.$color-text-green;
       flex-shrink: 0;
     }
   }

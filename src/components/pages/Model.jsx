@@ -568,7 +568,7 @@ const Model = ({ title }) => {
             </span>
           )}
 
-          <h2 className={classes["h2"]}>Exapmles:</h2>
+          <h2 className={classes["h2"]}>Generated images:</h2>
           <GeneratedImages customData={curCustomVersionData} />
         </>
       )}
