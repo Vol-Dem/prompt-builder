@@ -120,7 +120,8 @@ const Prompt = () => {
               <TagsTextarea
                 data={curPrompt}
                 promptType="positive"
-                placeholder="Prompt (tags mode - add tags from the model or image tag list, or switch view to text mode to enter manually)"
+                aditionalPlacegholder="Add tags from the model or image tag list, or switch view to text mode to enter manually"
+                placeholder="Prompt (tags mode)"
                 className={classes["tagarea"]}
               />
             )}

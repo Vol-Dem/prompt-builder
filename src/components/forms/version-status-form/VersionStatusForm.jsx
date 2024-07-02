@@ -137,10 +137,10 @@ const VersionStatusForm = ({ modelData }) => {
       const curIndex = newState.findIndex(
         (version) => version.id === e.target.id
       );
-      console.log(e.target.checked);
+      // console.log(e.target.checked);
 
       newState[curIndex].value = e.target.checked;
-      console.log(newState);
+      // console.log(newState);
       return newState;
     });
   };

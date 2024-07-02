@@ -72,11 +72,11 @@ const SaveImageForm = ({ modelData, curVersion }) => {
       setErrorMessage("");
       seteSuccessMessage("");
       setShowErrorMessage(true);
-      console.log("INV", postIdInput.isValid);
+      // console.log("INV", postIdInput.isValid);
       const imagesIdInputsIsNotValid = imagesIdInputs
         .map((imageInput) => imageInput.isValid)
         .includes(false);
-      console.log("IMG INP VAL", imagesIdInputsIsNotValid);
+      // console.log("IMG INP VAL", imagesIdInputsIsNotValid);
 
       if (!postIdInput.isValid || imagesIdInputsIsNotValid) {
         throw new Error(DEF_INPUT_ERROR_MESSAGE);
@@ -157,7 +157,7 @@ const SaveImageForm = ({ modelData, curVersion }) => {
 
       examplesDataWithRes.curVersionId = curVersionId;
 
-      console.log(examplesDataWithRes);
+      // console.log(examplesDataWithRes);
 
       const modelRef = doc(
         firestore,

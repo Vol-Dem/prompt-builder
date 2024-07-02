@@ -38,7 +38,7 @@ const ActivationTag = ({ tag, modelData, strength }) => {
     setCurTagStrength((prevState) => {
       const strenghth =
         e.target.dataset.type === "inc" ? prevState + 0.1 : prevState - 0.1;
-      console.log(strenghth);
+      // console.log(strenghth);
       dispatch(
         promptActions.changeActivationTag({
           prevTag: curTagName,

@@ -190,7 +190,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
     if (!versionData) return;
     if (!versionData.tagSetsData?.length) return;
     const tagSets = versionData.tagSetsData.map((tagSet, i) => {
-      console.log(tagSet);
+      // console.log(tagSet);
       return [
         {
           type: "text",
@@ -224,30 +224,30 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         (input) => input[0].isValid === false || input[1].isValid === false
       );
 
-      console.log("TAG", tagsetsIsNotValid);
+      // console.log("TAG", tagsetsIsNotValid);
 
-      console.log(
-        !titleInput.isValid,
-        !descriptionInput.isValid,
-        !mainTagInput.isValid,
-        !trigerInput.isValid,
-        !helperTagsInput.isValid,
-        !negativeTagsInput.isValid,
-        tagsetsIsNotValid,
-        !fileNameInput.isValid,
-        !weightInput.isValid,
-        !minWeightInput.isValid,
-        !maxWeightInput.isValid,
-        !sizetInput.isValid,
-        !vaeInput.isValid,
-        !denoisingStrengthtInput.isValid,
-        !hiresUpscaleInput.isValid,
-        !hiresUpscaleStepsInput.isValid,
-        !hiresUpscalerInput.isValid,
-        !cfgScaleInput.isValid,
-        !samplerInput.isValid,
-        !stepsInput.isValid
-      );
+      // console.log(
+      //   !titleInput.isValid,
+      //   !descriptionInput.isValid,
+      //   !mainTagInput.isValid,
+      //   !trigerInput.isValid,
+      //   !helperTagsInput.isValid,
+      //   !negativeTagsInput.isValid,
+      //   tagsetsIsNotValid,
+      //   !fileNameInput.isValid,
+      //   !weightInput.isValid,
+      //   !minWeightInput.isValid,
+      //   !maxWeightInput.isValid,
+      //   !sizetInput.isValid,
+      //   !vaeInput.isValid,
+      //   !denoisingStrengthtInput.isValid,
+      //   !hiresUpscaleInput.isValid,
+      //   !hiresUpscaleStepsInput.isValid,
+      //   !hiresUpscalerInput.isValid,
+      //   !cfgScaleInput.isValid,
+      //   !samplerInput.isValid,
+      //   !stepsInput.isValid
+      // );
 
       const baseInputsIsNotValid =
         !titleInput.isValid ||
@@ -273,19 +273,19 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         !samplerInput.isValid ||
         !stepsInput.isValid;
 
-      console.log("ALL INP", baseInputsIsNotValid, aditionalInputsIsNotValid);
+      // console.log("ALL INP", baseInputsIsNotValid, aditionalInputsIsNotValid);
 
       if (
         baseInputsIsNotValid ||
         (modelType === "checkpoint" && aditionalInputsIsNotValid)
       ) {
-        console.log("NO");
+        // console.log("NO");
         throw new Error(DEF_INPUT_ERROR_MESSAGE);
       }
       if (!navigator?.onLine) {
         throw new Error(OFFLINE_ERROR_MESSAGE);
       }
-      console.log("YES");
+      // console.log("YES");
       // return;
 
       setIsSaving(true);
@@ -364,7 +364,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         }),
       };
 
-      console.log(updatedVersionData);
+      // console.log(updatedVersionData);
 
       const allUpdatedVersions = {
         ...model.modelVersionsCustomData,
@@ -396,9 +396,9 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         modelId + ""
       );
 
-      console.log(updatedVersionData);
+      // console.log(updatedVersionData);
       const versionPath = `modelVersionsCustomData.${versionData.versionId}`;
-      console.log(versionPath);
+      // console.log(versionPath);
       await updateDoc(
         modelsRef,
         {
@@ -444,7 +444,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         isValid: true,
       },
     ]);
-    console.log(newFields);
+    // console.log(newFields);
     setTagSetsInputs(newFields);
   };
 

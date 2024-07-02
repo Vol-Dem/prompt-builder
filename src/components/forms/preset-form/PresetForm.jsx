@@ -91,7 +91,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
       const nameExists = curPresets?.find(
         (preset) => preset.name === presetName.value
       );
-      console.log(presetName, name);
+      // console.log(presetName, name);
       if (nameExists && presetName.value !== name) {
         // setErrorMessage("Name must be unique");
         // return;
@@ -129,7 +129,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
         });
       }
 
-      console.log(presetName.value, presetWords.value);
+      // console.log(presetName.value, presetWords.value);
       dispatch(updatePresets(promptType, updatedPresets));
       onClose();
     } catch (err) {

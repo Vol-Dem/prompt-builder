@@ -4,7 +4,13 @@ import { promptActions } from "../../store/prompt";
 
 const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
 
-const TagsTextarea = ({ data, className, placeholder, promptType }) => {
+const TagsTextarea = ({
+  data,
+  className,
+  placeholder,
+  aditionalPlacegholder,
+  promptType,
+}) => {
   const dispatch = useDispatch();
 
   const removeTagHandler = (e) => {
@@ -45,6 +51,13 @@ const TagsTextarea = ({ data, className, placeholder, promptType }) => {
     <ul className={`${classes.field} ${className || ""}`}>
       {!tagItemsHtml.length && (
         <li className={classes.placeholder}>{placeholder}</li>
+      )}
+      {!tagItemsHtml.length && (
+        <li
+          className={`${classes.placeholder} ${classes["placeholder--aditional"]}`}
+        >
+          {aditionalPlacegholder}
+        </li>
       )}
       {tagItemsHtml}
     </ul>

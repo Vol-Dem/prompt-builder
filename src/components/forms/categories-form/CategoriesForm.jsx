@@ -118,7 +118,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
     const categoryId = e.target.dataset.id;
 
     setCategoriesInputs((prevState) => {
-      console.log(prevState);
+      // console.log(prevState);
       return prevState.map((category) => {
         if (category.id === categoryId) {
           return {
@@ -199,7 +199,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
             return category;
           });
 
-      console.log(categoriesData);
+      // console.log(categoriesData);
 
       dispatch(updateCategories(modelType, categoriesData));
       // setChangeNameIsActive(false);
@@ -230,10 +230,10 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
         updatedMainCategory,
         ...categories.slice(mainCategoryIndex + 1),
       ];
-      console.log(updatedAllCategories);
+      // console.log(updatedAllCategories);
       dispatch(updateCategories(modelType, updatedAllCategories));
     } else {
-      console.log(updatedCategories);
+      // console.log(updatedCategories);
       dispatch(updateCategories(modelType, updatedCategories));
     }
 
@@ -246,7 +246,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
     const categoryName = categoriesToUpdate.find(
       (category) => category.id === categoryId
     ).name;
-    console.log(categoryName);
+    // console.log(categoryName);
     setDeleteCategoryData({ id: categoryId, name: categoryName });
     setDeleteRequestIsOpen(true);
   };

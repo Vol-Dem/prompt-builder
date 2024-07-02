@@ -386,12 +386,12 @@ const UpdateModelForm = ({ modelData, id }) => {
         !samplerInput.isValid ||
         !stepsInput.isValid;
 
-      console.log(
-        "ALL INP",
-        mainInputsIsNotValid,
-        baseInputsIsNotValid,
-        aditionalInputsIsNotValid
-      );
+      // console.log(
+      //   "ALL INP",
+      //   mainInputsIsNotValid,
+      //   baseInputsIsNotValid,
+      //   aditionalInputsIsNotValid
+      // );
 
       if (
         mainInputsIsNotValid ||

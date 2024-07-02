@@ -416,6 +416,8 @@ export const saveVersionImages = async (versionsData) => {
           versionImages?.items?.find((verImg) => verImg.hash === image.hash) ||
           [];
         const transformedImgData = transformImageData(fullImgData);
+        console.log(fullImgData);
+        console.log(transformedImgData);
         // if (fullImgData?.meta) {
         //   fullImgData.meta.comfy = "";
         //   fullImgData.meta = clearObjectKeys(fullImgData.meta);
@@ -424,6 +426,10 @@ export const saveVersionImages = async (versionsData) => {
         // }
         return { ...image, ...transformedImgData };
       });
+
+      console.log(versionsData);
+      console.log(versionImages);
+      console.log(updatedImages);
 
       const uid = auth.currentUser.uid;
 
@@ -449,11 +455,11 @@ export const saveVersionImages = async (versionsData) => {
         modelImagesRef,
         {
           items: updatedImages.filter(Boolean),
-          versionId: versionsData[0].id,
+          versionId: versionsData[0]?.id || null,
           default: true,
-          createdAt: updatedImages[0].createdAt,
+          createdAt: updatedImages[0]?.createdAt || null,
           savedAt: new Date().toISOString(),
-          nsfw: updatedImages[0].nsfw,
+          nsfw: updatedImages[0]?.nsfw || false,
           nsfwTypes: nsfw,
           nsfwLevel: updatedImages[0]?.nsfwLevel || null,
         },

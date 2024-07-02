@@ -47,7 +47,7 @@ const ImageCard = ({ activeImgNum }) => {
   useEffect(() => {
     if (!!activeCarouselData?.images?.length) {
       // console.log(activeCarouselData?.images[activeCarouselData.currImgNum]);
-      console.log(activeCarouselData?.images[activeImgNum || 0]);
+      // console.log(activeCarouselData?.images[activeImgNum || 0]);
       setImageData(activeCarouselData?.images[activeImgNum || 0]);
     } else {
       setImageData({});
@@ -55,7 +55,7 @@ const ImageCard = ({ activeImgNum }) => {
   }, [activeCarouselData, activeImgNum]);
 
   useEffect(() => {
-    console.log("IMGCARD");
+    // console.log("IMGCARD");
     setImageResources([]);
     setModelInfoCiv({});
     setModelInfo({});
@@ -72,7 +72,7 @@ const ImageCard = ({ activeImgNum }) => {
       const loadResoursesInfo = async (curImageData) => {
         try {
           setIsLoading(true);
-          console.log(curImageData);
+          // console.log(curImageData);
 
           //MODEL
           let modelHash = "";
@@ -106,7 +106,7 @@ const ImageCard = ({ activeImgNum }) => {
             // doc.data() is never undefined for query doc snapshots
             return doc.data();
           });
-          console.log(modelHash);
+          // console.log(modelHash);
           console.log(modelInfoData);
 
           // const modelData = await getModelInfo(curImageData?.meta);
@@ -222,9 +222,32 @@ const ImageCard = ({ activeImgNum }) => {
           if (!!modelsNames.length) {
             const uniqModelsNames = modelsNames.filter(
               (name) =>
-                !allModelsPreviews.find((model) =>
-                  model?.fileNames?.includes(name.toLowerCase())
-                )
+                !allModelsPreviews.find((model) => {
+                  const nameArr = name.split("-");
+                  console.log(nameArr);
+                  if (Number.isFinite(+nameArr[nameArr?.length - 1])) {
+                    console.log(nameArr[nameArr?.length - 1]);
+                    console.log(
+                      name
+                        .replace(`-${nameArr[nameArr?.length - 1]}`, "")
+                        .toLowerCase()
+                    );
+                    console.log(
+                      model?.fileNames?.includes(
+                        name
+                          .replace(`-${nameArr[nameArr?.length - 1]}`, "")
+                          .toLowerCase()
+                      )
+                    );
+                    return model?.fileNames?.includes(
+                      name
+                        .replace(`-${nameArr[nameArr?.length - 1]}`, "")
+                        .toLowerCase()
+                    );
+                  } else {
+                    return model?.fileNames?.includes(name.toLowerCase());
+                  }
+                })
             );
 
             if (!!uniqModelsNames.length) {
@@ -509,6 +532,17 @@ const ImageCard = ({ activeImgNum }) => {
     let versionIsSaved;
     let versionName;
     let versionIdByName;
+    let modelType;
+
+    if (resource?.type?.includes("{")) {
+      modelType = resource.type
+        .replace(/[{}]/g, "")
+        .split(",")
+        .find((field) => field.includes("Type"))
+        .split("=")[1];
+    } else {
+      modelType = resource.type;
+    }
 
     if (
       versiondId &&
@@ -524,7 +558,7 @@ const ImageCard = ({ activeImgNum }) => {
       const curVersion =
         resource?.preview?.modelVersionsCustomData &&
         Object.values(resource?.preview?.modelVersionsCustomData).find(
-          (version) => version.defFileName === resource.name
+          (version) => version.defFileName === resource?.name?.toLowerCase()
         );
       versionIsSaved = curVersion?.downloadStatus;
       versionName = curVersion?.versionName;
@@ -624,7 +658,9 @@ const ImageCard = ({ activeImgNum }) => {
           </div>
         )}
         <div className={classes["resource__info"]}>
-          <div className={classes["resource__type"]}>{resource.type}</div>
+          <div className={classes["resource__type"]}>
+            {modelType || resource?.type}
+          </div>
           {resource?.weight && <div>weight: {resource?.weight || ""}</div>}
         </div>
       </li>

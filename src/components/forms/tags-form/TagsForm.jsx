@@ -92,7 +92,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
     if (!versionData) return;
     if (!versionData.tagSetsData?.length) return;
     const tagSets = versionData.tagSetsData.map((tagSet, i) => {
-      console.log(tagSet);
+      // console.log(tagSet);
       return [
         {
           type: "text",
@@ -125,11 +125,11 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
       const tagsetsIsNotValid = !!tagSetsInputs.find(
         (input) => input[0].isValid === false || input[1].isValid === false
       );
-      console.log(tagsetsIsNotValid);
-      console.log(mainTagInput.isValid);
-      console.log(trigerInput.isValid);
-      console.log(helperTagsInput.isValid);
-      console.log(negativeTagsInput.isValid);
+      // console.log(tagsetsIsNotValid);
+      // console.log(mainTagInput.isValid);
+      // console.log(trigerInput.isValid);
+      // console.log(helperTagsInput.isValid);
+      // console.log(negativeTagsInput.isValid);
       if (
         !mainTagInput.isValid ||
         !trigerInput.isValid ||
@@ -195,7 +195,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
         tagSetsData,
       };
 
-      console.log(updatedVersionData);
+      // console.log(updatedVersionData);
 
       const modelsRef = doc(firestore, "users", uid, "models", modelId + "");
       const modelsPrevRef = doc(
@@ -206,10 +206,10 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
         modelId + ""
       );
 
-      console.log(updatedVersionData);
-      console.log(versionData);
+      // console.log(updatedVersionData);
+      // console.log(versionData);
       const versionPath = `modelVersionsCustomData.${versionData.versionId}`;
-      console.log(versionPath);
+      // console.log(versionPath);
       await updateDoc(
         modelsRef,
         {
@@ -255,7 +255,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
         errorMessage: "",
       },
     ]);
-    console.log(newFields);
+    // console.log(newFields);
     setTagSetsInputs(newFields);
   };
 
@@ -268,8 +268,8 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
       const curSetTagsIndex = newState.findIndex((imageId) => {
         return imageId[1].id + "" === e.target.id;
       });
-      console.log(curSetNameIndex, curSetTagsIndex);
-      console.log(newState);
+      // console.log(curSetNameIndex, curSetTagsIndex);
+      // console.log(newState);
       // const { isValid, errorMessage } = validateInput(
       //   {
       //     maxLength:
@@ -277,7 +277,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
       //   },
       //   e.target.value
       // );
-      console.log("TAGSEDTS", isValid, errorMessage);
+      // console.log("TAGSEDTS", isValid, errorMessage);
       if (curSetNameIndex !== -1) {
         newState[curSetNameIndex][0].value = e.target.value;
         newState[curSetNameIndex][0].isValid = isValid;
@@ -290,7 +290,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
       }
 
       // newState[curIndex] = [];
-      console.log(newState);
+      // console.log(newState);
       return newState;
     });
   };

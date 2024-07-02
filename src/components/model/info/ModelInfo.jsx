@@ -75,15 +75,15 @@ const ModelInfo = ({ customData }) => {
           {")"}
         </div>
       </div>
-      {customData?.fileName ||
-        (curVersion.hasOwnProperty("files") && !!curVersion?.files?.length && (
+      {(customData?.fileName || curVersion.hasOwnProperty("files")) &&
+        !!curVersion?.files?.length && (
           <div>
             <span className={classes["info__name"]}>File:</span>{" "}
             {customData?.fileName ||
               (curVersion.hasOwnProperty("files") &&
                 curVersion?.files.find((file) => file?.primary)?.name)}
           </div>
-        ))}
+        )}
       {viersionVAE && (
         <div>
           <span className={classes["info__name"]}>VAE:</span> {viersionVAE}

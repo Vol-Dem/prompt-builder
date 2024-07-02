@@ -18,7 +18,7 @@ const firestore = getFirestore(firebaseApp);
 
 let lastVisible = "";
 
-const amountPerPage = 6;
+const amountPerPage = 12;
 
 const tabsSlice = createSlice({
   name: "tabs",

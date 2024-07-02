@@ -76,9 +76,16 @@
 }
 
 .placeholder {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   color: var.$color-text-gray-dark;
+  color: #777777;
   cursor: default;
   //   word-spacing: 0.3rem;
   //   letter-spacing: 0.4px;
+
+  &--aditional {
+    display: flex;
+    justify-content: center;
+    margin: auto;
+  }
 }

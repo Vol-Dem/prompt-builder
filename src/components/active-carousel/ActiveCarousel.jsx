@@ -21,7 +21,7 @@ const ActiveCarousel = () => {
 
   useEffect(() => {
     if (!!activeCarouselData?.images?.length) {
-      console.log("ACTIVE CAR", activeCarouselData);
+      // console.log("ACTIVE CAR", activeCarouselData);
       setActiveImageNumber(activeCarouselData.currImgNum);
       document.body.style.overflow = "hidden";
     } else {
