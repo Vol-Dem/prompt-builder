@@ -16,8 +16,8 @@ import firebaseApp from "../firebase-config";
 
 const firestore = getFirestore(firebaseApp);
 
-let lastVisible = {};
-let lastVisibleSub = {};
+let lastVisible = "";
+let lastVisibleSub = "";
 
 const searchSlice = createSlice({
   name: "search",
@@ -86,9 +86,15 @@ export const liveSearch = (
 ) => {
   return async (dispatch, getState) => {
     try {
+      console.log("FETCH");
+      const isLastPage = getState().search.isLastPage;
+      const isLastSubPage = getState().search.isLastSubPage;
+      const searchResult = getState().search.searchResult;
+      if (isLastPage && isLastSubPage) return;
+
       if (!loadMore) {
-        lastVisible = {};
-        lastVisibleSub = {};
+        lastVisible = "";
+        lastVisibleSub = "";
         dispatch(
           searchActions.setSearchResult({
             query: "",
@@ -97,11 +103,6 @@ export const liveSearch = (
           })
         );
       }
-      console.log("FETCH");
-      const isLastPage = getState().search.isLastPage;
-      const isLastSubPage = getState().search.isLastSubPage;
-      const searchResult = getState().search.searchResult;
-      if (isLastPage && isLastSubPage) return;
 
       dispatch(searchActions.setSearchIsLoading(true));
       // const searchString = searchInput.trim();
@@ -138,6 +139,12 @@ export const liveSearch = (
           where("name", ">=", searchString.toLowerCase()),
           where("name", "<=", searchString.toLowerCase() + "\uf8ff"),
           where("nsfw", "in", nsfwFilter)
+        ),
+        and(
+          where("nameArr", "array-contains-any", [
+            clearFileExtension(searchString).toLowerCase(),
+          ]),
+          where("nsfw", "in", nsfwFilter)
         )
         // and(where("fileNames", "array-contains-any", [searchString]))
       );
@@ -147,18 +154,18 @@ export const liveSearch = (
         queryRule,
         // where("fileNames", "array-contains-any", [searchString])
         //   where("nsfw", "==", nsfwMode),
-        orderBy("name", "desc"),
+        orderBy("name", "asc"),
         startAfter(lastVisible),
         limit(limitAmount)
       );
 
       const queryRuleSub = or(
-        and(
-          where("nameArr", "array-contains-any", [
-            clearFileExtension(searchString).toLowerCase(),
-          ]),
-          where("nsfw", "in", nsfwFilter)
-        ),
+        // and(
+        //   where("nameArr", "array-contains-any", [
+        //     clearFileExtension(searchString).toLowerCase(),
+        //   ]),
+        //   where("nsfw", "in", nsfwFilter)
+        // ),
         and(
           where("fileNames", "array-contains-any", [
             clearFileExtension(searchString).toLowerCase(),
@@ -196,7 +203,7 @@ export const liveSearch = (
         //   where("main", "==", activeCategory),
         //   where("fileNames", "array-contains-any", [searchString]),
         // orderBy("name", "desc")
-        orderBy("name", "desc"),
+        orderBy("name", "asc"),
         startAfter(lastVisibleSub),
         limit(limitAmount)
       );
@@ -215,7 +222,10 @@ export const liveSearch = (
       let modelsDataSub = [];
       let querySnapshotSub = {};
 
-      if (!isLastSubPage) {
+      if (
+        (isLastPage || querySnapshot.docs.length < limitAmount) &&
+        !isLastSubPage
+      ) {
         querySnapshotSub = await getDocs(querySub);
         modelsDataSub = querySnapshotSub.docs.map((doc) => {
           // doc.data() is never undefined for query doc snapshots
@@ -229,14 +239,15 @@ export const liveSearch = (
       const isLast =
         !querySnapshot?.docs?.length || querySnapshot.docs.length < limitAmount;
       const isLastSub =
-        !querySnapshotSub?.docs?.length ||
-        querySnapshotSub.docs.length < limitAmount;
+        isLast &&
+        (!querySnapshotSub?.docs?.length ||
+          querySnapshotSub?.docs?.length < limitAmount);
       // console.log(isLast);
 
       if (!isLast) {
         lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
       }
-      if (!isLastSub) {
+      if (isLast && !isLastSub) {
         lastVisibleSub =
           querySnapshotSub.docs[querySnapshotSub.docs.length - 1];
       }

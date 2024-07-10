@@ -95,7 +95,7 @@
 .btn-del {
   background-color: var.$color-background-red;
 
-  &:hover {
+  &:hover:enabled {
     background-color: lighten(var.$color-background-red, 5%);
     background-color: darken(var.$color-background-red, 5%);
   }

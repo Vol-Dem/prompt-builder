@@ -105,7 +105,13 @@ const Layout = () => {
             <div className="wrapper">
               <div className={classes.menu}>
                 <MobileNavigation />
-                <div className={classes.logo}>LOGO</div>
+                <div className={classes.logo}>
+                  {" "}
+                  <img
+                    src={require("../../../assets/logo5.png")}
+                    alt="Logo"
+                  />{" "}
+                </div>
                 <MainNavigation />
                 {isAuth && (
                   <>

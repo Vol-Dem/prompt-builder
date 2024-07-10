@@ -9,7 +9,7 @@
   top: 0;
   background-color: rgba(darken(var.$color-background-secondary, 5%), 0.7);
   // background-color: rgb(23 26 32 / 72%);
-  z-index: 10;
+  z-index: 25;
 }
 
 .panel {
@@ -243,8 +243,11 @@
 }
 
 .support {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   width: 28rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.4rem;
 }
 
 @media (max-width: 1024px) {

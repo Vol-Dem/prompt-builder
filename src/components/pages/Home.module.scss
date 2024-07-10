@@ -26,7 +26,7 @@
   margin-top: 2rem;
   gap: 1.6rem;
   height: 100%;
-  flex-grow: 1;
+  // flex-grow: 1;
 
   & > div:first-child {
     width: 100%;
@@ -59,4 +59,24 @@
   &--active {
     background-color: blueviolet;
   }
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+  font-size: 1.6rem;
+  margin: 2rem auto;
+  max-width: 52rem;
+  text-align: center;
+  color: #ccc;
+
+  &__text {
+    margin-bottom: 1.6rem;
+  }
+}
+
+.link {
+  @include var.linkA;
 }

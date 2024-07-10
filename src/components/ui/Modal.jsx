@@ -5,10 +5,17 @@ import { createPortal } from "react-dom";
 
 const Modal = (props) => {
   useEffect(() => {
-    document.body.style.overflow = "hidden";
-
+    const scrollTop = document.documentElement.scrollTop;
+    const disableScrollHandler = (e) => {
+      window.scrollTo(0, scrollTop);
+    };
+    window.addEventListener("scroll", disableScrollHandler);
+    // document.body.style.overflow = "hidden";
+    // document.body.style.marginRight = "8px";
     return () => {
-      document.body.style.overflow = null;
+      window.removeEventListener("scroll", disableScrollHandler);
+      // document.body.style.overflow = null;
+      // document.body.style.marginRight = "0";
     };
   }, []);
 

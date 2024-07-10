@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import classes from "./Home.module.scss";
 // import Prompt from "../../components/prompt/Prompt";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { authActions } from "../../store/auth";
 // import UsedModelsPanel from "../used-models-panel/UsedModelsPanel";
 // import { useDispatch, useSelector } from "react-redux";
 // import { modelActions } from "../../store/model";
@@ -13,6 +15,11 @@ import { Outlet } from "react-router-dom";
 // const firestore = getFirestore(firebaseApp);
 
 function Home({ title }) {
+  const isAuth = useSelector((state) => state.auth.isLoggedIn);
+  const location = useLocation();
+  const dispatch = useDispatch();
+  console.log(location);
+
   useEffect(() => {
     document.title = title;
   }, [title]);
@@ -34,20 +41,67 @@ function Home({ title }) {
   //   };
   // }, [uid, dispatch]);
 
+  const openAuthHandler = () => {
+    dispatch(authActions.openAuthForm(true));
+  };
+
   return (
     <div className={classes["wrap"]}>
-      <header className="Home-header"></header>
-      {/* <button
-        onClick={nsfwSwitchHandler}
-        className={`${classes["mode-switch"]} ${
-          isNsfwMode ? classes["mode-switch--active"] : ""
-        }`}
-      >{`H: ${isNsfwMode ? "ON" : "OFF"}`}</button> */}
-      {/* <Prompt /> */}
       <div className={classes["config"]}>
         <Outlet />
-        {/* <UsedModelsPanel /> */}
       </div>
+      {!isAuth && location?.pathname === "/" && (
+        <div className={classes["intro"]}>
+          <p className={classes["intro__text"]}>
+            Welcome to AIDE-TOOLS – a platform that will allow you to create
+            your own collection of models for generating images and easily work
+            with prompts.
+          </p>
+          <p className={classes["intro__text"]}>
+            I created this project for personal use to make prompt building fast
+            and convenient, developed and added here many features that create a
+            comfortable space for working with models, references and images and
+            greatly simplify the work of building prompts for generating images.
+            And now I am sharing this convenient tool with you.
+          </p>
+          <p className={classes["intro__text"]}>
+            You can learn about the capabilities of the service in the{" "}
+            <Link className={classes.link} to="about">
+              "About"
+            </Link>{" "}
+            section.
+          </p>
+          <p className={classes["intro__text"]}>
+            This is a non-commercial project, so if you like using this
+            platform, support me on{" "}
+            <a
+              className={classes.link}
+              href="https://www.patreon.com/aidetools"
+              target="_blank"
+              rel="noreferrer nofollow"
+            >
+              Patreon
+            </a>{" "}
+            and{" "}
+            <a
+              className={classes.link}
+              href="https://ko-fi.com/J3J31052RE"
+              target="_blank"
+              rel="noreferrer nofollow"
+            >
+              Ko-fi
+            </a>
+            . There you can also leave your suggestions for this project.
+          </p>
+          <p className={classes["intro__text"]}>
+            To get started,{" "}
+            <span className={classes.link} onClick={openAuthHandler}>
+              create an account or log in
+            </span>
+            .
+          </p>
+        </div>
+      )}
     </div>
   );
 }

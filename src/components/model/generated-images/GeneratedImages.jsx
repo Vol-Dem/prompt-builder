@@ -47,6 +47,7 @@ const GeneratedImages = ({ customData }) => {
   const [amountPerPage, setAmountPerPage] = useState(100);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
+  const [isShowAll, setIsShowAll] = useState(false);
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
@@ -64,6 +65,18 @@ const GeneratedImages = ({ customData }) => {
     // setIsIntersecting(intersecting);
     setIsIntersecting(isPageEnd);
   }, [isPageEnd]);
+  useEffect(() => {
+    console.log("LIST", versionsListRef?.current?.offsetHeight);
+    console.log("ITEM", versionsItemRef?.current?.offsetHeight);
+    const showAll = versionsListRef?.current?.offsetHeight > 32;
+    // const showAll =
+    //   versionsListRef?.current?.offsetHeight >
+    //   versionsItemRef?.current?.offsetHeight + 2;
+    setIsShowAll(showAll);
+  }, [
+    versionsListRef?.current?.offsetHeight,
+    versionsItemRef?.current?.offsetHeight,
+  ]);
 
   const resetExamples = () => {
     console.log("RESET");
@@ -109,6 +122,8 @@ const GeneratedImages = ({ customData }) => {
   }, [curImagesModelVersionId, curVersion, customData]);
 
   const openSavedVersionImagesHandler = (e) => {
+    console.log("LIST", versionsListRef?.current?.offsetHeight);
+    console.log("ITEM", versionsItemRef?.current?.offsetHeight);
     resetExamples();
     //Temp
     if (e.target.id === "unsorted") {
@@ -199,9 +214,13 @@ const GeneratedImages = ({ customData }) => {
 
       const sortedExamplesArr = Object.keys(sortedExamples).sort((a, b) => {
         return (
-          Date.parse(sortedExamples[b][0].createdAt) -
-          Date.parse(sortedExamples[a][0].createdAt)
+          Date.parse(sortedExamples[b].slice(-1).pop().createdAt) -
+          Date.parse(sortedExamples[a].slice(-1).pop().createdAt)
         );
+        // return (
+        //   Date.parse(sortedExamples[b][0].createdAt) -
+        //   Date.parse(sortedExamples[a][0].createdAt)
+        // );
       });
 
       const examples = sortedExamplesArr.map((key, i) => {
@@ -210,14 +229,31 @@ const GeneratedImages = ({ customData }) => {
 
       const sortedExamplesArrWithSortedImgs = examples.map((post) => {
         // console.log(post);
-        return post.sort((a, b) => {
-          return Date.parse(a.createdAt) - Date.parse(b.createdAt);
-        });
+        return (
+          post
+            // .map((image) => {
+            //   return {
+            //     id: image?.id || null,
+            //     url: image?.url || "",
+            //     postId: image?.postId || null,
+            //     hash: image?.hash || "",
+            //     height: image?.height || null,
+            //     width: image?.width || null,
+            //     nsfw: image?.nsfw || false,
+            //     nsfwLevel: image?.nsfwLevel || "",
+            //     createdAt: image?.createdAt || "",
+            //   };
+            // })
+            .sort((a, b) => {
+              return Date.parse(a.createdAt) - Date.parse(b.createdAt);
+            })
+        );
       });
       // console.log(Object.values(sortedExamples));
       // console.log("SORT", versionId, curImagesModelVersionId);
       // console.log("SORTED", sortedExamplesArrWithSortedImgs);
       if (versionId === curImagesModelVersionId) {
+        console.log(sortedExamplesArrWithSortedImgs);
         setExamplesImgData(sortedExamplesArrWithSortedImgs);
       }
       // setExamplesImgData(sortedExamplesArrWithSortedImgs);
@@ -377,7 +413,7 @@ const GeneratedImages = ({ customData }) => {
       //     />
       //   );
       // });
-
+      console.log(examples);
       setExamplesImgData((prevState) => [...prevState, ...examples]);
 
       const lastVisiblePost =
@@ -537,7 +573,7 @@ const GeneratedImages = ({ customData }) => {
 
   const retryImageLoadingHandler = () => {
     setErrorMessage("");
-    getallExamples(model.id, curImagesModelVersionId, currCursor);
+    getallExamples(model.id, curImagesModelVersionId, nextCursor);
   };
 
   const modelImageVersionsHtml = model?.data?.modelVersions.flatMap(
@@ -764,8 +800,7 @@ const GeneratedImages = ({ customData }) => {
           {modelImageVersionsHtml}
         </ul>
       </div>
-      {versionsListRef?.current?.offsetHeight >
-        versionsItemRef?.current?.offsetHeight + 2 && (
+      {isShowAll && (
         <ButtonTertiary onClick={showAllVersionsHandler}>
           {showAllVersions ? "Hide" : "Show All"}
         </ButtonTertiary>

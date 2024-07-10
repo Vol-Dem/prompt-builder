@@ -3,13 +3,22 @@ import Categories from "../categories/Categories";
 import { useDispatch, useSelector } from "react-redux";
 import { tabActions } from "../../store/tabs";
 import { modelTypes } from "../../variables/constants";
+import Spinner from "../ui/Spinner";
+import ErrorMessage from "../ui/ErrorMessage";
 // import LoraForm from "../forms/lora/LoraForm";
 // import GeneralForm from "../forms/general/GeneralForm";
 // import EmbeddingsForm from "../forms/embeddings/EmbeddingsForm";
 
 const Tabs = () => {
+  const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const activeCategory = useSelector((state) => state.tabs.currTab);
   const categories = useSelector((state) => state.tabs.categoriesData);
+  const userDataIsLoading = useSelector(
+    (state) => state.auth.userDataIsLoading
+  );
+  const userDataLoadError = useSelector(
+    (state) => state.auth.userDataLoadError
+  );
   const dispatch = useDispatch();
 
   const categorySwitchHandler = (e) => {
@@ -49,46 +58,71 @@ const Tabs = () => {
   return (
     <>
       <div className={classes["tag-menu"]}>
-        <ul className={classes["tag-menu__labels"]}>
-          {/* <div
-            id="general"
-            onClick={categorySwitchHandler}
-            className={`${classes[`category__link`]} ${
-              activeCategory === "general" ? classes.active : ""
-            }`}
-          >
-            General tags
-          </div> */}
-          {modelTypesHtml}
-          {/* <div
-            id="lora"
-            onClick={categorySwitchHandler}
-            className={`${classes[`category__link`]} ${
-              activeCategory === "lora" ? classes.active : ""
-            }`}
-          >
-            Lora
+        {!!modelTypesHtml?.length && (
+          <ul className={classes["tag-menu__labels"]}>{modelTypesHtml}</ul>
+        )}
+        {activeCategory && (
+          <div>
+            <Categories category={activeCategory} />
           </div>
-          <div
-            id="embedding"
-            onClick={categorySwitchHandler}
-            className={`${classes[`category__link`]} ${
-              activeCategory === "embedding" ? classes.active : ""
-            }`}
-          >
-            Embeddings
+        )}
+        {!userDataIsLoading &&
+          !modelTypesHtml?.length &&
+          !userDataLoadError &&
+          isAuth && (
+            <span className={classes.tip}>
+              Use "New resource" button at the top right to add your first model
+            </span>
+          )}
+        {/* {!isAuth && (
+          <div className={classes["intro"]}>
+            <p className={classes["intro__text"]}>
+              Welcome to AIDE-TOOLS – a platform that will allow you to create
+              your own collection of models for generating images and easily
+              work with prompts.
+            </p>
+            <p className={classes["intro__text"]}>
+              I created this project for personal use to make prompt building
+              fast and convenient, developed and added here many features that
+              create a comfortable space for working with models, references and
+              images and greatly simplify the work of building prompts for
+              generating images. And now I am sharing this convenient tool with
+              you.
+            </p>
+            <p className={classes["intro__text"]}>
+              You can learn about the capabilities of the service in the{" "}
+              <a className={classes.link} href="">
+                "About"
+              </a>{" "}
+              section.
+            </p>
+            <p className={classes["intro__text"]}>
+              This is a non-commercial project, so if you like using this
+              platform, support me on{" "}
+              <a className={classes.link} href="">
+                Patreon
+              </a>{" "}
+              and{" "}
+              <a className={classes.link} href="">
+                Ko-fi
+              </a>
+              . There you can also leave your suggestions for this project.
+            </p>
+            <p className={classes["intro__text"]}>
+              To get started,{" "}
+              <a className={classes.link} href="">
+                create an account or log in
+              </a>
+              .
+            </p>
           </div>
-          <div
-            id="checkpoint"
-            onClick={categorySwitchHandler}
-            className={`${classes[`category__link`]} ${
-              activeCategory === "checkpoint" ? classes.active : ""
-            }`}
-          >
-            Checkpoint
-          </div> */}
-        </ul>
-        <div>{activeCategory && <Categories category={activeCategory} />}</div>
+        )} */}
+        {userDataIsLoading && (
+          <div>
+            <Spinner size="medium" />
+          </div>
+        )}
+        {userDataLoadError && <ErrorMessage>{userDataLoadError}</ErrorMessage>}
       </div>
     </>
   );

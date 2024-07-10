@@ -30,6 +30,7 @@ import Modal from "../ui/Modal";
 import Buttton from "../ui/Button";
 import Image from "../ui/image/Image";
 import ChooseImageForm from "../forms/choose-image-form/ChooseImageForm";
+import ImageFullView from "../ui/ImageFullView";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -47,6 +48,7 @@ const Carousel = ({
   saved,
   active,
   onActiveNumChange,
+  side,
 }) => {
   const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount);
   const [initial, setInitial] = useState(true);
@@ -58,6 +60,7 @@ const Carousel = ({
   const [translate, setTranslate] = useState(0);
   const [curTransitionDur, setCurTransitionDur] = useState("0ms");
   const [imagesListIsOpen, setImagesListIsOpen] = useState(false);
+  const [fullViewIsOpen, setFullViewIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [imagesHtml, setImagesHtml] = useState([]);
   const [transitionEnd, setTransitionEnd] = useState(true);
@@ -77,11 +80,13 @@ const Carousel = ({
   const transitionDuration = 300;
   const caruselIsVisible = true;
   // const caruselIsVisible = useIntersection(carouselRef);
-  const uid = useSelector((state) => state.auth.user.uid);
+  // const nsfwMode = true;
+  // const model = {};
+  // const queue = useSelector((state) => state.upload.queue);
+  // const isUploading = queue.find((item) => item.postId === postId);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const model = useSelector((state) => state.model.model);
   const queue = useSelector((state) => state.upload.queue);
-  const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
   const isUploading = queue.find((item) => item.postId === postId);
   const dispatch = useDispatch();
 
@@ -137,7 +142,7 @@ const Carousel = ({
   //   }
   // },[])
 
-  const openImagesListHandler = () => {
+  const openSaveImagesListHandler = () => {
     if (images.length === 1) {
       saveExampleHandler();
     } else {
@@ -151,12 +156,17 @@ const Carousel = ({
     setImagesListIsOpen(true);
   };
 
+  const openFullViewHandler = () => {
+    // console.log(activeCarouselData);
+    setFullViewIsOpen(true);
+  };
+
   const openCarouselHandler = useCallback(
     (e) => {
       if (imgIsOpen) return;
       console.log("open");
 
-      document.body.style.overflow = "hidden";
+      // document.body.style.overflow = "hidden";
       const imgNum = e.target.dataset.position - visibleAmount;
       const currImg = imgNum >= 0 ? imgNum : images?.length + imgNum;
       // console.log(e.target.dataset.position);
@@ -270,11 +280,13 @@ const Carousel = ({
           versionId={versionId}
           onClick={openCarouselHandler}
           onDelete={openDeleteListHandler}
+          onOpen={openFullViewHandler}
           // // onDelete={onDelete}
           id={image?.hash}
           dataset={i + visibleAmount}
           src={src}
           alt="example image"
+          side={side}
           nsfw={
             image?.nsfw === false ||
             image?.nsfw === "None" ||
@@ -306,11 +318,13 @@ const Carousel = ({
             versionId={versionId}
             onClick={openCarouselHandler}
             onDelete={openDeleteListHandler}
+            onOpen={openFullViewHandler}
             // // onDelete={onDelete}
             id={image?.hash}
             dataset={i + visibleAmount}
             src={src}
             alt="example image"
+            side={side}
             nsfw={
               image?.nsfw === false ||
               image?.nsfw === "None" ||
@@ -339,11 +353,13 @@ const Carousel = ({
             versionId={versionId}
             onClick={openCarouselHandler}
             onDelete={openDeleteListHandler}
+            onOpen={openFullViewHandler}
             // // onDelete={onDelete}
             id={image?.hash}
             dataset={i}
             src={src}
             alt="example image"
+            side={side}
             nsfw={
               image?.nsfw === false ||
               image?.nsfw === "None" ||
@@ -460,7 +476,7 @@ const Carousel = ({
     if (imgNum > images?.length - 1) imgNum = 0;
     const activeImage = imgNum >= 0 ? imgNum : images?.length + imgNum;
     setCurrImgNum(activeImage);
-    if (!!onActiveNumChange) {
+    if (!!onActiveNumChange && !fullViewIsOpen) {
       onActiveNumChange(activeImage);
     }
 
@@ -490,7 +506,7 @@ const Carousel = ({
     const imgNum = visibleImages[0] - 1 - visibleAmount;
     const activeImage = imgNum >= 0 ? imgNum : images?.length + imgNum;
     setCurrImgNum(activeImage);
-    if (!!onActiveNumChange) {
+    if (!!onActiveNumChange && !fullViewIsOpen) {
       onActiveNumChange(activeImage);
     }
     // if (imgIsOpen) {
@@ -616,17 +632,17 @@ const Carousel = ({
     }
   };
 
-  const imagesListHtml = images.map((image, i) => {
-    return (
-      <li key={i}>
-        <Image
-          className={classes["image"]}
-          src={image.url}
-          alt={`Image-${i}`}
-        />
-      </li>
-    );
-  });
+  // const imagesListHtml = images.map((image, i) => {
+  //   return (
+  //     <li key={i}>
+  //       <Image
+  //         className={classes["image"]}
+  //         src={image.url}
+  //         alt={`Image-${i}`}
+  //       />
+  //     </li>
+  //   );
+  // });
 
   const updateExampleHandler = () => {
     onUpdate(images[0].postId);
@@ -794,13 +810,13 @@ const Carousel = ({
         previewData={images[currImgNum]}
         type="image"
       /> */}
-      {postId && (
+      {!saved && !!postId && (
         <span className={classes["btn-save-container"]}>
           <button
             className={`${classes["btn-save"]} ${
               isUploading ? classes["btn-save--saving"] : ""
             }`}
-            onClick={openImagesListHandler}
+            onClick={openSaveImagesListHandler}
           >
             {!isUploading ? (
               <svg
@@ -834,6 +850,17 @@ const Carousel = ({
         </span>
       )}
       {/* <span className={classes["amount"]}>{images?.length}</span> */}
+      {fullViewIsOpen && (
+        <ImageFullView
+          src={images[currImgNum]?.url}
+          onClose={() => {
+            setFullViewIsOpen(false);
+            onActiveNumChange(currImgNum);
+          }}
+          nextSlide={slideNextHandler}
+          prevSlide={slidePrevHandler}
+        ></ImageFullView>
+      )}
       {imagesListIsOpen && (
         <Modal
           onClose={() => {

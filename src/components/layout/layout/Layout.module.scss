@@ -6,9 +6,11 @@
 }
 
 .menu-container {
+  position: relative;
   background-color: var.$color-background-secondary;
   box-shadow: var.$box-shadow;
   width: 100%;
+  z-index: 20;
 }
 
 .menu {
@@ -24,6 +26,12 @@
 
 .logo {
   display: block;
+  width: 12rem;
+  flex-shrink: 0;
+
+  & img {
+    width: 100%;
+  }
 }
 
 .content {

@@ -1,3 +1,5 @@
+@use "./../../variables/variables.scss" as var;
+
 .container {
   display: flex;
   justify-content: space-between;
@@ -48,4 +50,9 @@
 .category__link {
   transition: all 0.3s;
   cursor: pointer;
+}
+
+.tip {
+  color: var.$color-text-gray;
+  text-align: center;
 }

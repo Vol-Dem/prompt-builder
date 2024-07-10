@@ -100,7 +100,7 @@ const ModelSettings = () => {
       // return;
       if (!newVersions.length) {
         console.log("NO UPDATEDS");
-        seteSuccessMessage("No new wersion found");
+        seteSuccessMessage("No new versions found");
         setIsLoading(false);
         return;
       }

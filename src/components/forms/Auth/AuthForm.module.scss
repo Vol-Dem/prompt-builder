@@ -64,3 +64,7 @@
   background-color: lighten(var.$color-red, 55%);
   border-color: var.$color-red;
 }
+
+.link {
+  @include var.linkA;
+}

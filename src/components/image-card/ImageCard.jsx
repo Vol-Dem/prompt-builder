@@ -320,145 +320,6 @@ const ImageCard = ({ activeImgNum }) => {
           // setImageResources(filteredNewResult || []);
           // console.log(curImageData);
           setIsLoading(false);
-
-          // let modelHash = "";
-          // if (curImageData?.meta?.hasOwnProperty("Model hash")) {
-          //   modelHash = curImageData?.meta["Model hash"];
-          // } else if (curImageData?.meta?.hasOwnProperty("Modelhash")) {
-          //   modelHash = curImageData?.meta["Modelhash"];
-          // }
-
-          // const modelQ = query(
-          //   collection(firestore, "users", uid, `preview`),
-          //   where("hashes", "array-contains", modelHash)
-          // );
-
-          // const modelQuerySnapshot = await getDocs(modelQ);
-
-          // const modelInfoData = modelQuerySnapshot.docs.map((doc) => {
-          //   // doc.data() is never undefined for query doc snapshots
-          //   return doc.data();
-          // });
-          // console.log(modelHash);
-          // console.log(modelInfoData);
-
-          // const modelData = await getModelInfo(curImageData?.meta);
-          // console.log(modelData);
-
-          // const curImgResources =
-          //   curImageData?.meta?.civitaiResources || curImageData?.meta?.resources;
-
-          // const modelVersionIds = curImgResources
-          //   ?.map((resource) => resource?.modelVersionId || resource?.versionId)
-          //   ?.filter(Boolean);
-
-          // const modelHashes = curImgResources
-          //   ?.map((resource) => resource?.hash)
-          //   ?.filter(Boolean);
-
-          // const modelNames = curImgResources
-          //   ?.flatMap((resource) => {
-          //     if (
-          //       !resource?.modelVersionId &&
-          //       !resource?.versionId &&
-          //       !resource?.hash
-          //     ) {
-          //       return resource?.name;
-          //     }
-          //     return [];
-          //   })
-          //   ?.filter(Boolean);
-
-          // console.log(curImgResources);
-          // console.log(modelVersionIds);
-
-          // if (!!modelVersionIds?.length || !!modelHashes?.length) {
-          //   console.log(curImageData);
-          //   const imageWithResCiv = await getImageInfo(curImageData);
-          //   console.log(imageWithResCiv);
-          //   const resourcesInfoCiv =
-          //     imageWithResCiv.meta?.civitaiResources ||
-          //     imageWithResCiv.meta?.resources;
-          //   console.log(resourcesInfoCiv);
-
-          //   let q;
-
-          //   let modelsPrewiewByFileNames = [];
-
-          //   if (!!modelVersionIds.length) {
-          //     q = query(
-          //       collection(firestore, "users", uid, `preview`),
-          //       where("versionIds", "array-contains-any", modelVersionIds)
-          //     );
-          //   } else if (!!modelHashes.length) {
-          //     q = query(
-          //       collection(firestore, "users", uid, `preview`),
-          //       where("hashes", "array-contains-any", modelHashes)
-          //     );
-          //   }
-          //   if (!!modelNames.length) {
-          //     const qFileNames = query(
-          //       collection(firestore, "users", uid, `preview`),
-          //       where("fileNames", "array-contains-any", modelNames)
-          //     );
-
-          //     const queryFileNamesSnapshot = await getDocs(qFileNames);
-
-          //     modelsPrewiewByFileNames = queryFileNamesSnapshot.docs.map(
-          //       (doc) => {
-          //         // doc.data() is never undefined for query doc snapshots
-          //         return doc.data();
-          //       }
-          //     );
-          //   }
-
-          //   // const q = query(
-          //   //   collection(firestore, "users", uid, `preview`),
-          //   //   // where("versionIds", "array-contains-any", modelVersionIds),
-          //   //   where("hashes", "array-contains-any", modelHashes)
-          //   // );
-          //   const querySnapshot = await getDocs(q);
-
-          //   const modelsPrewiew = querySnapshot.docs.map((doc) => {
-          //     // doc.data() is never undefined for query doc snapshots
-          //     return doc.data();
-          //   });
-          //   console.log(modelsPrewiew);
-
-          //   const allModelsPrewiew = [
-          //     ...modelsPrewiew,
-          //     ...modelsPrewiewByFileNames,
-          //   ];
-
-          //   const resources = resourcesInfoCiv.map((resource) => {
-          //     const versionId = resource?.modelVersionId || resource?.versionId;
-          //     const preview = allModelsPrewiew.find(
-          //       (preview) =>
-          //         preview?.versionIds?.includes(versionId) ||
-          //         preview?.hashes?.includes(resource.hash) ||
-          //         preview?.fileNames?.includes(resource.name)
-          //     );
-
-          //     if (preview) {
-          //       return {
-          //         ...resource,
-          //         preview,
-          //       };
-          //     }
-          //     return resource;
-          //   });
-
-          //   console.log(resources);
-
-          //   if (!!modelInfoData?.length) {
-          //     setModelInfo(modelInfoData[0]);
-          //   }
-          //   setModelInfoCiv(modelData);
-          //   setImageResources(resources);
-          // } else {
-          //   setImageResources(curImgResources);
-          // }
-          // setIsLoading(false);
         } catch (err) {
           const defResources = !!curImageData?.meta?.civitaiResources?.length
             ? curImageData.meta?.civitaiResources
@@ -489,42 +350,6 @@ const ImageCard = ({ activeImgNum }) => {
   const negativeWordsArr = imageData?.meta?.negativePrompt
     ?.split(splitRegEx)
     ?.flatMap((tag) => tag.trim() || []);
-
-  // const addToSidePanelHandler = (e) => {
-  //   const modelId = e.target.closest(`.${classes["resource__add"]}`)?.dataset
-  //     ?.id;
-  //   console.log(modelId);
-  //   const previewData = imageResources.find(
-  //     (resource) => resource?.preview?.id === +modelId
-  //   )?.preview;
-  //   let curVersionData =
-  //     previewData?.modelVersionsCustomData &&
-  //     Object.values(previewData.modelVersionsCustomData)
-  //       .filter((data) => data.downloadStatus)
-  //       .toSorted((a, b) => b.versionId - a.versionId)[0];
-  //   console.log(previewData);
-  //   const sidePanelData = {
-  //     id: previewData?.id,
-  //     src: previewData?.src,
-  //     main: previewData?.main,
-  //     sub: previewData?.sub,
-  //     title: previewData?.name || previewData.title,
-  //     versionName: curVersionData?.name,
-  //     imgUrl: previewData?.imgUrl,
-  //     nsfwPreviewImgUrl: previewData?.nsfwPreviewImgUrl,
-  //     type: previewData?.modelType,
-  //     baseModel: curVersionData?.baseModel || previewData?.baseModel,
-  //     mainTag: curVersionData?.mainTag || previewData?.mainTag,
-  //     weight: curVersionData?.weight || previewData?.weight,
-  //     minWeight: curVersionData?.minWeight || previewData?.minWeight,
-  //     maxWeight: curVersionData?.maxWeight || previewData?.maxWeight,
-  //     size: curVersionData?.size || previewData?.size,
-  //     tags: curVersionData?.trainedWords || previewData?.tags,
-  //     helperTags: curVersionData?.helperTags || previewData?.helperTags,
-  //     updatedAt: previewData?.updatedAt,
-  //   };
-  //   dispatch(addModelToPanel(sidePanelData));
-  // };
 
   const resourcesHtml = imageResources?.map((resource, i) => {
     const versiondId = resource?.modelVersionId || resource?.versionId;
@@ -558,7 +383,9 @@ const ImageCard = ({ activeImgNum }) => {
       const curVersion =
         resource?.preview?.modelVersionsCustomData &&
         Object.values(resource?.preview?.modelVersionsCustomData).find(
-          (version) => version.defFileName === resource?.name?.toLowerCase()
+          (version) =>
+            clearFileExtension(version.defFileName) ===
+            clearFileExtension(resource?.name)?.toLowerCase()
         );
       versionIsSaved = curVersion?.downloadStatus;
       versionName = curVersion?.versionName;
@@ -620,6 +447,22 @@ const ImageCard = ({ activeImgNum }) => {
           </div>
         )}
         <div className={classes["resource__version"]}>
+          {!versionIsSaved && !!resource?.preview && (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className={classes["resource__version-svg"]}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
+              />
+            </svg>
+          )}
           {versionIsSaved && (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -627,7 +470,7 @@ const ImageCard = ({ activeImgNum }) => {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="size-6"
+              className={`${classes["resource__version-svg"]} ${classes["resource__version-svg--saved"]}`}
             >
               <path
                 strokeLinecap="round"
@@ -667,40 +510,6 @@ const ImageCard = ({ activeImgNum }) => {
     );
   });
 
-  // const copyAllPromptHandler = (e) => {
-  //   const promt = imageData?.meta[e.target.id];
-  //   navigator.clipboard.writeText(promt);
-  // };
-
-  // const addAllPromptHandler = (e) => {
-  //   // const prompt = imageData?.meta[e.target.id];
-  //   const prompt =
-  //     e.target.dataset.type === "positive"
-  //       ? positiveWordsArr
-  //       : negativeWordsArr;
-
-  //   dispatch(
-  //     promptActions.addAllTagsToPrompt({
-  //       type: e.target.dataset.type,
-  //       value: prompt,
-  //     })
-  //   );
-  // };
-
-  // const removeAllPromptHandler = (e) => {
-  //   const prompt =
-  //     e.target.dataset.type === "positive"
-  //       ? positiveWordsArr
-  //       : negativeWordsArr;
-
-  //   dispatch(
-  //     promptActions.removeAllTags({
-  //       type: e.target.dataset.type,
-  //       value: prompt,
-  //     })
-  //   );
-  // };
-
   const copyHandler = (e) => {
     navigator.clipboard.writeText(e.target.innerText);
     setCopied(true);
@@ -732,28 +541,6 @@ const ImageCard = ({ activeImgNum }) => {
               <div className={classes["example__config"]}>
                 <div className={classes["example__config-block"]}>
                   {/* <button onClick={closeImg}>Close</button> */}
-                  <div
-                    className={classes["btn__close"]}
-                    onClick={() => {
-                      dispatch(modelActions.setActiveCarouselData({}));
-                    }}
-                  >
-                    {/* <span className={classes["btn__cross"]}></span> */}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-6 h-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18 18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </div>
 
                   {!!imageData?.postId && (
                     <div className={classes["example__info-item"]}>

@@ -20,6 +20,7 @@ const SearchPage = ({ title }) => {
   const searchResult = useSelector((state) => state.search.searchResult);
   const searchIsLoading = useSelector((state) => state.search.isLoading);
   const isLastPage = useSelector((state) => state.search.isLastPage);
+  const isLastSubPage = useSelector((state) => state.search.isLastSubPage);
   const errorMessage = useSelector((state) => state.search.errorMessage);
   const endPage = useRef(null);
   // const isIntersecting = useIntersection(endPage, false);
@@ -43,7 +44,7 @@ const SearchPage = ({ title }) => {
 
   useEffect(() => {
     if (
-      !isLastPage &&
+      (!isLastPage || !isLastSubPage) &&
       isIntersecting &&
       !!searchResult?.result?.length &&
       isOnline
@@ -63,16 +64,17 @@ const SearchPage = ({ title }) => {
     searchResult?.result?.length,
     dispatch,
     isLastPage,
+    isLastSubPage,
     searchResult,
     isOnline,
   ]);
 
   useEffect(() => {
     return () => {
-      if (initial && isOnline) {
+      if (initial) {
         // initial = false;
         setInitial(false);
-      } else if (!initial && !isOnline) {
+      } else if (!initial) {
         dispatch(searchActions.setSearchQuery(""));
         // dispatch(searchActions.setSearchResult([]));
       }

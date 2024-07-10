@@ -16,15 +16,16 @@ const Image = forwardRef(({ id, src, type, alt, onClick, className }, ref) => {
   useEffect(() => {
     // if (!imgIsLoaded) setImgIsLoading(true);
     if (imageIsVisible) {
-      setImgSrc(src);
       setImgError(false);
       setImgIsLoading(true);
+      setImgSrc(src);
     }
   }, [src, imageIsVisible]);
 
   const imgLoadHandler = () => {
     setImgIsLoading(false);
     setiImgIsLoaded(true);
+    setImgError("");
   };
 
   const imgErrorHandler = () => {
@@ -53,6 +54,7 @@ const Image = forwardRef(({ id, src, type, alt, onClick, className }, ref) => {
           onLoad={imgLoadHandler}
           onError={imgErrorHandler}
           className={`${
+            // imgIsLoading ? classes["img--hidden"] : ""
             imgIsLoading || imgError ? classes["img--hidden"] : ""
           }`}
         />

@@ -8,6 +8,7 @@
   transition: all 0.3s;
   color: #fff;
   width: 100%;
+  will-change: grid-template-rows;
   // padding: 0 2rem;
 
   &--open {
@@ -158,10 +159,9 @@
   border: none;
   border-radius: 0 0 1rem 1rem;
   cursor: pointer;
-  position: absolute;
-  top: 100%;
-  right: 2%;
-  z-index: 20;
+  margin-bottom: -100%;
+  position: relative;
+  z-index: 19;
 
   & svg {
     width: 1.8rem;
@@ -206,7 +206,8 @@
 
 @media (max-width: 1024px) {
   .btn-open {
-    right: 50%;
+    // right: 50%;
+    margin-right: 50%;
     transform: translateX(50%);
   }
 }

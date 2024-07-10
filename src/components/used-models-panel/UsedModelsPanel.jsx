@@ -16,6 +16,8 @@ import Image from "../ui/image/Image";
 import { modelActions } from "../../store/model";
 import ImageSvg from "../../assets/ImageSvg";
 import { authActions } from "../../store/auth";
+import ArrowLeftSvg from "../../assets/ArrowLeft";
+import ArrowRightSvg from "../../assets/ArrowRight";
 
 const UsedModelsPanel = () => {
   // const [panelIsOpen, setPanelIsOpen] = useState(true);
@@ -151,36 +153,11 @@ const UsedModelsPanel = () => {
       >
         {/* <Arrow direction={panelIsOpen ? "right" : "left"} /> */}
         {!panelIsOpen && (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.75 19.5 8.25 12l7.5-7.5"
-            />
-          </svg>
+          <ArrowLeftSvg/>
         )}
         {panelIsOpen && (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m8.25 4.5 7.5 7.5-7.5 7.5"
-            />
-          </svg>
+          
+          <ArrowRightSvg/>
         )}
       </button>
       <div
@@ -325,7 +302,36 @@ const UsedModelsPanel = () => {
             )}
           </ul>
         </>
-        <div className={classes["support"]}>Support project: patreon ko-fi</div>
+        <div className={classes["support"]}>
+          Support project:{" "}
+          <a
+            href="https://www.patreon.com/aidetools"
+            target="_blank"
+            rel="noreferrer nofollow"
+          >
+            <img
+              height="16"
+              src={require("../../assets/patreon-w.png")}
+              border="0"
+              alt="patreon"
+            />
+          </a>
+          <a
+            href="https://ko-fi.com/J3J31052RE"
+            target="_blank"
+            rel="noreferrer nofollow"
+          >
+            <img
+              height="28"
+              // style="border:0px;height:36px;"
+              // src="https://storage.ko-fi.com/cdn/brandasset/kofi_s_tag_white.png?"
+              src="https://storage.ko-fi.com/cdn/brandasset/kofi_bg_tag_dark.png"
+              // src="https://storage.ko-fi.com/cdn/brandasset/logo_white_stroke.png?"
+              border="0"
+              alt="ko-fi"
+            />
+          </a>
+        </div>
       </div>
     </aside>
   );

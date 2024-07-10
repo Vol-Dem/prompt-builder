@@ -325,3 +325,7 @@ export const transformImageData = (imageData) => {
 
   return newImageData;
 };
+
+export const disableScrollHandler = (scrollTop, e) => {
+  window.scrollTo(0, scrollTop);
+};

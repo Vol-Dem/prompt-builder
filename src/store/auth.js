@@ -22,6 +22,8 @@ const authInitialState = {
   isLoggedIn: false,
   authFormIsOpen: false,
   isLoading: false,
+  userDataIsLoading: false,
+  userDataLoadError: "",
   errorMessage: "",
   categories: [],
   user: {
@@ -65,6 +67,12 @@ const authSlice = createSlice({
     },
     setIsLoading(state, actions) {
       state.isLoading = actions.payload;
+    },
+    setUserDataIsLoading(state, actions) {
+      state.userDataIsLoading = actions.payload;
+    },
+    setUserDataLoadError(state, actions) {
+      state.userDataIsLoading = actions.payload;
     },
   },
 });
@@ -181,6 +189,8 @@ export const changeUserName = (name) => {
 export const getUserData = (uid) => {
   return async (dispatch, getState) => {
     try {
+      dispatch(authActions.setUserDataLoadError(""));
+      dispatch(authActions.setUserDataIsLoading(true));
       const userRef = doc(firestore, "users", uid);
 
       const userDataDoc = await getDoc(userRef);
@@ -190,8 +200,10 @@ export const getUserData = (uid) => {
         dispatch(promptActions.setPresets(userData.presets));
         dispatch(modelActions.setNsfwMode(userData.nsfwMode));
       }
+      dispatch(authActions.setUserDataIsLoading(false));
     } catch (err) {
       console.log(err);
+      dispatch(authActions.setUserDataLoadError(err.message));
     }
     // const uid = getState().auth.user.uid;
   };

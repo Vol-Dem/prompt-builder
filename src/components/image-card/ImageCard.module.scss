@@ -150,22 +150,22 @@
 // }
 
 .btn {
-  &__close {
-    position: absolute;
-    cursor: pointer;
-    top: 0.4rem;
-    right: 1rem;
-    color: #a8a8a8;
-    transition: all 0.3s;
+  // &__close {
+  //   position: absolute;
+  //   cursor: pointer;
+  //   top: 0.4rem;
+  //   right: 1rem;
+  //   color: #a8a8a8;
+  //   transition: all 0.3s;
 
-    & svg {
-      width: 2.6rem;
-    }
+  //   & svg {
+  //     width: 2.6rem;
+  //   }
 
-    &:hover {
-      color: lighten(#a8a8a8, 20%);
-    }
-  }
+  //   &:hover {
+  //     color: lighten(#a8a8a8, 20%);
+  //   }
+  // }
 
   &__cross {
     display: inline-block;
@@ -256,10 +256,15 @@
     align-items: center;
     gap: 0.4rem;
     color: var.$color-text-gray;
-    & svg {
+
+    &-svg {
       width: 1.6rem;
-      color: var.$color-text-green;
+      color: var.$color-text-yellow;
       flex-shrink: 0;
+
+      &--saved {
+        color: var.$color-text-green;
+      }
     }
   }
 

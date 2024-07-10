@@ -92,24 +92,26 @@ const TagSets = ({ customData, defaultData }) => {
   return (
     <div>
       {!!tagSets?.length && <div className={classes.title}>Tag sets:</div>}
-      <div
-        className={classes["tag-sets__container"]}
-        style={{
-          maxHeight: `${
-            !tagSetsIsOpen ? tagsetItemHeight : tagsetListHeight
-          }px`,
-          overflow: "hidden",
-        }}
-      >
-        <ul
-          className={`${classes["tag-sets__list"]} ${
-            tagSetsIsOpen ? classes["tag-sets__list--open"] : ""
-          }`}
-          ref={tagSetListRef}
+      {!!tagSets?.length && (
+        <div
+          className={classes["tag-sets__container"]}
+          style={{
+            maxHeight: `${
+              !tagSetsIsOpen ? tagsetItemHeight : tagsetListHeight
+            }px`,
+            overflow: "hidden",
+          }}
         >
-          {tagSetsHtml}
-        </ul>
-      </div>
+          <ul
+            className={`${classes["tag-sets__list"]} ${
+              tagSetsIsOpen ? classes["tag-sets__list--open"] : ""
+            }`}
+            ref={tagSetListRef}
+          >
+            {tagSetsHtml}
+          </ul>
+        </div>
+      )}
 
       {allTagSets.length > defVisibleTags && (
         <Buttton

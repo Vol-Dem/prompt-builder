@@ -57,6 +57,23 @@
   // }
 }
 
+.btn__close {
+  position: absolute;
+  cursor: pointer;
+  top: 0.4rem;
+  right: 1rem;
+  color: #a8a8a8;
+  transition: all 0.3s;
+
+  & svg {
+    width: 2.6rem;
+  }
+
+  &:hover {
+    color: lighten(#a8a8a8, 20%);
+  }
+}
+
 @keyframes open {
   0% {
     opacity: 0;

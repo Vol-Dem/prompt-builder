@@ -23,6 +23,8 @@ import Buttton from "../ui/Button";
 import CrossSvg from "../../assets/CrossSvg";
 import ErrorMessage from "../ui/ErrorMessage";
 import ButtonTertiary from "../ui/ButtonTertiary";
+import ErrorPage from "./ErrorPage";
+import { AUTH_ERROR_MESSAGE } from "../../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -130,7 +132,7 @@ const Model = ({ title }) => {
                 image?.nsfw === false
             );
 
-        // setCurVersionImages(modelImages);
+        console.log(modelImages);
         setCurVersionImages({ items: modelImages, versionId: curVersion?.id });
       }
     };
@@ -385,6 +387,7 @@ const Model = ({ title }) => {
     <div className={classes.model}>
       {/* <ImageCard /> */}
       {isLoading && <Spinner />}
+      {!isAuth && <ErrorMessage>{AUTH_ERROR_MESSAGE}</ErrorMessage>}
       {!isLoading && errorMessage && (
         <ErrorMessage>{errorMessage}</ErrorMessage>
       )}

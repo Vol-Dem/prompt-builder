@@ -3,7 +3,6 @@
 .modal {
   position: fixed;
   animation: show 0.3s ease;
-  box-shadow: var.$box-shadow;
 
   &--backdrop {
     top: 0;
@@ -11,7 +10,7 @@
     height: 100vh;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 20;
+    z-index: 30;
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
@@ -22,7 +21,7 @@
     // height: auto;
     height: auto;
     transform: translate(-50%, -50%);
-    z-index: 30;
+    z-index: 40;
     max-width: 90vw;
     min-width: 20rem;
     max-height: 95vh;
@@ -31,15 +30,16 @@
   }
 
   &__close {
-    position: absolute;
+    position: fixed;
     cursor: pointer;
     top: 0.6rem;
     right: 0.6rem;
     color: #a8a8a8;
     transition: all 0.3s;
+    z-index: 50;
 
     & svg {
-      width: 2.4rem;
+      width: 3.4rem;
     }
 
     &:hover {
@@ -69,10 +69,10 @@
   }
 }
 
-.test {
-  position: relative;
-  z-index: 20;
-}
+// .test {
+//   position: relative;
+//   // z-index: 20;
+// }
 
 .title {
   margin-bottom: 1rem;
@@ -91,6 +91,7 @@
   justify-content: center;
   background-color: #383838;
   //   cursor: pointer;
+  box-shadow: var.$box-shadow;
   overflow: hidden;
 
   & img {
@@ -104,6 +105,36 @@
   &--hidden {
     opacity: 0;
   }
+}
+
+.btn-slide {
+  position: fixed;
+  width: 4rem;
+  height: 4rem;
+  top: 50%;
+  z-index: 50;
+  transition: all 0.3s;
+  cursor: pointer;
+
+  &:hover {
+    color: var.$color-primary;
+  }
+
+  &--next {
+    left: 1rem;
+  }
+  &--prev {
+    right: 1rem;
+  }
+}
+
+.spiner-container {
+  position: absolute;
+  height: 5rem;
+  z-index: 60;
+  top: 50%;
+  left: 50%;
+  // transform: translate(-50% -50%);
 }
 
 @keyframes show {

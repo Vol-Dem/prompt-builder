@@ -26,7 +26,7 @@ import ErrorPage from "./components/pages/ErrorPage";
 const firestore = getFirestore(firebaseApp);
 
 function App() {
-  // const isAuth = useSelector((state) => state.auth.isLoggedIn);
+  const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const uid = useSelector((state) => state.auth.user.uid);
   // const queue = useSelector((state) => state.upload.queue);
   const dispatch = useDispatch();

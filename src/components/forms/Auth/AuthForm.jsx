@@ -16,6 +16,7 @@ import {
   OFFLINE_ERROR_MESSAGE,
   PASSWORD_MAX_LENGTH,
 } from "../../../variables/constants";
+import Checkbox from "../../ui/Checkbox";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -27,6 +28,7 @@ const AuthForm = () => {
     value: "",
     isValid: false,
   });
+  const [agreement, setAgreement] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   // const [showEmailError, setShowEmailError] = useState(false);
   // const [showPasswordError, setShowPasswordError] = useState(false);
@@ -86,6 +88,11 @@ const AuthForm = () => {
       return;
     }
 
+    if (!agreement && !isLogin) {
+      dispatch(authActions.setErrorMessage("agreement"));
+      return;
+    }
+
     if (!email.isValid || !password.isValid) {
       dispatch(authActions.setErrorMessage(DEF_INPUT_ERROR_MESSAGE));
     } else {
@@ -105,6 +112,10 @@ const AuthForm = () => {
       isValid: false,
     });
     setShowErrorMessage(false);
+  };
+
+  const agreementHandler = () => {
+    setAgreement((prevState) => !prevState);
   };
 
   return (
@@ -156,6 +167,23 @@ const AuthForm = () => {
           showError={showErrorMessage}
           value={password.value}
         />
+
+        {!isLogin && (
+          <Checkbox
+            id="agreement"
+            name="agreement"
+            checked={agreement}
+            label={
+              <div>
+                I have read and agree to the{" "}
+                <a className={classes.link} href="#" target="blank">
+                  Terms of service
+                </a>
+              </div>
+            }
+            onChange={agreementHandler}
+          />
+        )}
         {errorMessageAuth && (
           <ErrorMessage className={classes["auth__error"]}>
             {errorMessageAuth}

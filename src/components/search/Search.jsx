@@ -36,7 +36,8 @@ import { OFFLINE_ERROR_MESSAGE } from "../../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 // let timeoutRef.current;
-const amountPerPage = 3;
+const amountPerPage = 10;
+const amountPerPageQuick = 3;
 const searchTimeoutMs = 1000;
 // const routes = [{ path: "/search" }];
 
@@ -324,7 +325,7 @@ const Search = ({ className }) => {
               liveSearch(
                 searchInput.trim(),
                 nsfwMode,
-                amountPerPage,
+                amountPerPageQuick,
                 false,
                 true
               )
@@ -514,6 +515,7 @@ const Search = ({ className }) => {
     if (location.pathname !== "/search") {
       navigate("search");
     }
+
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(async () => {
       // const serachResult = await liveSearch(
@@ -521,6 +523,7 @@ const Search = ({ className }) => {
       //   nsfwMode,
       //   amountPerPage
       // );
+      // dispatch(searchActions.setSearchQuery(""));
       dispatch(liveSearch(searchInput.trim(), nsfwMode, amountPerPage));
       // dispatch(searchActions.setSearchResult(serachResult));
       // dispatch(searchActions.setSearchIsLoading(false));

@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { ReactComponent as UserIcon } from "./../../assets/user.svg";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import {
+  AUTH_ERROR_MESSAGE,
   DEF_INPUT_ERROR_MESSAGE,
   OFFLINE_ERROR_MESSAGE,
   PASSWORD_MAX_LENGTH,
@@ -35,6 +36,7 @@ const Profile = ({ title }) => {
   const dispatch = useDispatch();
   const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
   const userData = useSelector((state) => state.auth.user);
+  const isAuth = useSelector((state) => state.auth.isLoggedIn);
 
   useEffect(() => {
     document.title = title;
@@ -186,36 +188,41 @@ const Profile = ({ title }) => {
     </form>
   );
 
-  return (
-    <section className={classes.profile}>
-      <Card>
-        <div className={classes["profile__container"]}>
-          <div className={classes["profile__img"]}>
-            <UserIcon />
-          </div>
-          <div>
-            <h1 className={classes["profile__title"]}>Profile</h1>
-            <div className={classes["profile__info"]}>
-              <div className={classes["profile__element"]}>{nameForm}</div>
-              <div className={classes["profile__element"]}>
-                <div>Email: {userData.email}</div>
-              </div>
-              <div className={classes["profile__element"]}>{passForm}</div>
-
-              {errorMessageAuth && (
-                <ErrorMessage className={classes["auth__error"]}>
-                  {errorMessageAuth}
-                </ErrorMessage>
-              )}
-              {errorMessage && (
-                <ErrorMessage className={classes["auth__error"]}>
-                  {errorMessage}
-                </ErrorMessage>
-              )}
+  const profileHtml = (
+    <Card>
+      <div className={classes["profile__container"]}>
+        <div className={classes["profile__img"]}>
+          <UserIcon />
+        </div>
+        <div>
+          <h1 className={classes["profile__title"]}>Profile</h1>
+          <div className={classes["profile__info"]}>
+            <div className={classes["profile__element"]}>{nameForm}</div>
+            <div className={classes["profile__element"]}>
+              <div>Email: {userData.email}</div>
             </div>
+            <div className={classes["profile__element"]}>{passForm}</div>
+
+            {errorMessageAuth && (
+              <ErrorMessage className={classes["auth__error"]}>
+                {errorMessageAuth}
+              </ErrorMessage>
+            )}
+            {errorMessage && (
+              <ErrorMessage className={classes["auth__error"]}>
+                {errorMessage}
+              </ErrorMessage>
+            )}
           </div>
         </div>
-      </Card>
+      </div>
+    </Card>
+  );
+
+  return (
+    <section className={classes.profile}>
+      {isAuth && profileHtml}
+      {!isAuth && <ErrorMessage>{AUTH_ERROR_MESSAGE}</ErrorMessage>}
     </section>
   );
 };

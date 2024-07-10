@@ -13,6 +13,9 @@ const Categories = () => {
   const activeCategory = useSelector((state) => state.tabs.currCategory);
   const activeTab = useSelector((state) => state.tabs.currTab);
   const categories = useSelector((state) => state.tabs.categoriesData);
+  const userDataIsLoading = useSelector(
+    (state) => state.auth.userDataIsLoading
+  );
   const dispatch = useDispatch();
 
   const categorySwitchHandler = (e) => {
@@ -95,7 +98,7 @@ const Categories = () => {
           activeCategory={activeCategory}
         />
       )}
-      {!categories && <div>Nothing is here...</div>}
+      {!categories && !userDataIsLoading && <div>Nothing is here...</div>}
       {editIsOpen && (
         <Modal
           title="Categories"

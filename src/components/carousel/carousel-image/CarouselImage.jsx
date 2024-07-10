@@ -28,8 +28,10 @@ const CarouselImage = ({
   saved,
   nsfw,
   imageData,
+  onOpen,
   // onDelete,
   active,
+  side,
 }) => {
   const [imgIsLoading, setImgIsLoading] = useState(false);
   const [imgIsLoaded, setImgIsLoaded] = useState(false);
@@ -43,12 +45,12 @@ const CarouselImage = ({
   const [showNsfwPreview, setShowNsfwPreview] = useState(false);
   const [curTagSetVersionId, setCurTagSetVersionId] = useState("tsv-def");
   const dispatch = useDispatch();
+  // const model = {};
+  // const curVersion = {};
+  // const nsfwMode = true;
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
-  const activeCarouselData = useSelector(
-    (state) => state.model.activeCarouselData
-  );
 
   useEffect(() => {
     // if (imgError) setImgIsLoading(true);
@@ -171,13 +173,15 @@ const CarouselImage = ({
               >
                 Set as preview
               </ButttonTertiary>
-              <ButttonTertiary
-                type="button"
-                onClick={setTagSetPreviwImgHandler}
-                button={{ "data-id": i, "data-nsfw": "nsfw" }}
-              >
-                Set as NSFW preview
-              </ButttonTertiary>
+              {nsfwMode && (
+                <ButttonTertiary
+                  type="button"
+                  onClick={setTagSetPreviwImgHandler}
+                  button={{ "data-id": i, "data-nsfw": "nsfw" }}
+                >
+                  Set as NSFW preview
+                </ButttonTertiary>
+              )}
             </div>
           </div>
         </li>
@@ -211,13 +215,15 @@ const CarouselImage = ({
                 >
                   Set as preview
                 </ButttonTertiary>
-                <ButttonTertiary
-                  type="button"
-                  onClick={setTagSetPreviwImgHandler}
-                  button={{ "data-id": i, "data-nsfw": "nsfw" }}
-                >
-                  Set as NSFW preview
-                </ButttonTertiary>
+                {nsfwMode && (
+                  <ButttonTertiary
+                    type="button"
+                    onClick={setTagSetPreviwImgHandler}
+                    button={{ "data-id": i, "data-nsfw": "nsfw" }}
+                  >
+                    Set as NSFW preview
+                  </ButttonTertiary>
+                )}
               </div>
             </div>
           </li>
@@ -260,8 +266,8 @@ const CarouselImage = ({
   }, []);
 
   const openFullViewHandler = () => {
-    console.log(activeCarouselData);
-    setFullViewIsOpen(true);
+    // console.log(activeCarouselData);
+    onOpen(true);
   };
   const closeFullViewHandler = () => {
     setFullViewIsOpen(false);
@@ -298,7 +304,7 @@ const CarouselImage = ({
         ></div>
       )}
       <ImageSvg className={classes["image-svg"]} />
-      {!imgIsLoading && !activeCarouselData?.side && imgSrc !== "#" && (
+      {!imgIsLoading && !side && imgSrc !== "#" && (
         <>
           <div className={classes.menu}>
             <ButttonTertiary
@@ -335,12 +341,14 @@ const CarouselImage = ({
                 >
                   Set as tag set preview
                 </li>
-                <li
-                  className={classes["menu__item"]}
-                  onClick={setNsfwPreviwImgHandler}
-                >
-                  Set as NSFW preview
-                </li>
+                {nsfwMode && (
+                  <li
+                    className={classes["menu__item"]}
+                    onClick={setNsfwPreviwImgHandler}
+                  >
+                    Set as NSFW preview
+                  </li>
+                )}
                 {imgIsSaved && (
                   <li
                     className={`${classes["menu__item"]} ${classes["menu__item--del"]}`}
@@ -413,39 +421,43 @@ const CarouselImage = ({
         <Modal onClose={closeTagSetMenuHandler}>
           <div className={classes["tag-sets-head"]}>
             <div className={classes["tag-sets-title"]}>Tag sets</div>
-            <div className={classes["mode-switch"]}>
-              <button
-                type="button"
-                onClick={nsfwSwitchHandler}
-                className={`${classes["btn-mode"]} ${
-                  !showNsfwPreview ? classes["btn-mode--active"] : ""
-                }`}
-              >
-                SFW
-              </button>
-              <button
-                type="button"
-                onClick={nsfwSwitchHandler}
-                className={`${classes["btn-mode"]} ${
-                  showNsfwPreview ? classes["btn-mode--active"] : ""
-                }`}
-              >
-                NSFW
-              </button>
-            </div>
+            {nsfwMode && (
+              <div className={classes["mode-switch"]}>
+                <button
+                  type="button"
+                  onClick={nsfwSwitchHandler}
+                  className={`${classes["btn-mode"]} ${
+                    !showNsfwPreview ? classes["btn-mode--active"] : ""
+                  }`}
+                >
+                  SFW
+                </button>
+                <button
+                  type="button"
+                  onClick={nsfwSwitchHandler}
+                  className={`${classes["btn-mode"]} ${
+                    showNsfwPreview ? classes["btn-mode--active"] : ""
+                  }`}
+                >
+                  NSFW
+                </button>
+              </div>
+            )}
           </div>
           <ul className={classes["tag-sets-versions"]}>
-            <li
-              id={`tsv-def`}
-              className={`${classes["tag-sets-versions__item"]} ${
-                curTagSetVersionId === "tsv-def"
-                  ? classes["tag-sets-versions__item--active"]
-                  : ""
-              }`}
-              onClick={openTagSetVersionHandler}
-            >
-              Default
-            </li>
+            {!!model.defaultCustomData?.tagSetsData?.length && (
+              <li
+                id={`tsv-def`}
+                className={`${classes["tag-sets-versions__item"]} ${
+                  curTagSetVersionId === "tsv-def"
+                    ? classes["tag-sets-versions__item--active"]
+                    : ""
+                }`}
+                onClick={openTagSetVersionHandler}
+              >
+                Default
+              </li>
+            )}
             {tagSetVersionsHtml}
           </ul>
           {curTagSetVersionId === "tsv-def" && (
@@ -456,13 +468,18 @@ const CarouselImage = ({
           )}
         </Modal>
       )}
-      {fullViewIsOpen && (
-        <ImageFullView src={src} onClose={closeFullViewHandler}></ImageFullView>
-      )}
+      {/* {fullViewIsOpen && (
+          <ImageFullView
+            src={src}
+            onClose={closeFullViewHandler}
+            nextSlide={nextSlide}
+            prevSlide={prevSlide}
+          ></ImageFullView>
+        )} */}
       {deleteRequestIsOpen && (
         <DeleteRequest
           message={`Are you sure that you want to delete this post? This action can't
-        be reverted`}
+          be reverted`}
           onSubmit={deleteImgPostHandler}
           onClose={closeDeleteReqeustHandler}
         />
