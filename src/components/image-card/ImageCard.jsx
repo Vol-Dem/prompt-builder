@@ -170,9 +170,11 @@ const ImageCard = ({ activeImgNum }) => {
 
           if (!!modelsIds.length) {
             console.log(modelsIds);
+
             const q = query(
               collection(firestore, "users", uid, `preview`),
-              where("id", "in", modelsIds)
+              //firestore query limit 30
+              where("id", "in", modelsIds.slice(0, 29))
             );
             const querySnapshot = await getDocs(q);
 

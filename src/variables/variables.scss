@@ -141,6 +141,13 @@ $clip-path-arrow-down: polygon(
   }
 }
 
+@mixin wrapper {
+  width: 100%;
+  max-width: 116rem;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
 @mixin ellipsis($line: 2) {
   display: -webkit-box;
   overflow: hidden;

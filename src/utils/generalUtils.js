@@ -63,7 +63,7 @@ export const validateInput = (rules, value) => {
   Object.keys(validTypes).forEach((type) => {
     if (!!validTypes[type] && type === "email") {
       const isValid = value.split("").includes("@");
-      const errorMessage = isValid ? "" : "Email must includes @";
+      const errorMessage = isValid ? "" : "Please enter a valid email address";
       if (!!errorMessage) {
         errorMessages.push(errorMessage);
       }
@@ -71,7 +71,9 @@ export const validateInput = (rules, value) => {
     }
     if (!!validTypes[type] && type === "password") {
       const isValid = value.length >= 6;
-      const errorMessage = isValid ? "" : "Password needs to be 6+ characters";
+      const errorMessage = isValid
+        ? ""
+        : "Password must be 6 or more characters";
       console.log(isValid);
       if (!!errorMessage) {
         errorMessages.push(errorMessage);
@@ -89,7 +91,7 @@ export const validateInput = (rules, value) => {
     }
     if (!!validTypes[type] && type === "number") {
       const isValid = Number.isFinite(+value);
-      const errorMessage = isValid ? "" : `Value has to be a number`;
+      const errorMessage = isValid ? "" : `Value must be a number`;
       if (!!errorMessage) {
         errorMessages.push(errorMessage);
       }

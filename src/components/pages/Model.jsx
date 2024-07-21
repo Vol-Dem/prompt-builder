@@ -99,7 +99,7 @@ const Model = ({ title }) => {
             image?.nsfwLevel <= 1 ||
             image?.nsfw === false
         );
-    setCurVersionImages({ items: modelImages, versionId: curVersion?.id });
+    // setCurVersionImages({ items: modelImages, versionId: curVersion?.id });
 
     const getCurVersionImages = async () => {
       console.log("GET CUR VER IMAGES");
@@ -133,6 +133,8 @@ const Model = ({ title }) => {
             );
 
         console.log(modelImages);
+        setCurVersionImages({ items: modelImages, versionId: curVersion?.id });
+      } else {
         setCurVersionImages({ items: modelImages, versionId: curVersion?.id });
       }
     };
@@ -307,7 +309,7 @@ const Model = ({ title }) => {
     <div id={curVersion?.name}>
       <Carousel
         imagesData={curVersionImages.items}
-        versionId={curVersion}
+        versionId={curVersion.id}
         saved={false}
       />
     </div>

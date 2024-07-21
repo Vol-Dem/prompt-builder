@@ -25,7 +25,7 @@ const validationReducer = (state, action) => {
   Object.keys(validTypes).forEach((type) => {
     if (!!validTypes[type] && type === "email") {
       const isValid = action.value.split("").includes("@");
-      const errorMessage = isValid ? "" : "Email must includes @";
+      const errorMessage = isValid ? "" : "Incorrect email";
       if (!!errorMessage) {
         errorMessages.push(errorMessage);
       }
@@ -33,7 +33,9 @@ const validationReducer = (state, action) => {
     }
     if (!!validTypes[type] && type === "password") {
       const isValid = action.value.length >= 6;
-      const errorMessage = isValid ? "" : "Password needs to be 6+ characters";
+      const errorMessage = isValid
+        ? ""
+        : "Passwords must contain more than 5 characters";
       console.log(isValid);
       if (!!errorMessage) {
         errorMessages.push(errorMessage);

@@ -1614,26 +1614,28 @@ const UpdateModelForm = ({ modelData, id }) => {
           </>
         )}
       </div>
-      <div className={classes.status}>
-        {errorMessage && (
-          <ErrorMessage className={classes["status__message"]}>
-            {errorMessage}
-          </ErrorMessage>
-        )}
-        {successMessage && (
-          <SuccessMessage className={classes["status__message"]}>
-            {successMessage}
-          </SuccessMessage>
-        )}
-        {successMessage && !modelData && (
-          <>
-            {"-"}
-            <Link to={`/model/${savedModel}`} className={classes.link}>
-              Show model
-            </Link>
-          </>
-        )}
-      </div>
+      {(errorMessage || successMessage) && (
+        <div className={classes.status}>
+          {errorMessage && (
+            <ErrorMessage className={classes["status__message"]}>
+              {errorMessage}
+            </ErrorMessage>
+          )}
+          {successMessage && (
+            <SuccessMessage className={classes["status__message"]}>
+              {successMessage}
+            </SuccessMessage>
+          )}
+          {successMessage && !modelData && (
+            <>
+              {"-"}
+              <Link to={`/model/${savedModel}`} className={classes.link}>
+                Show model
+              </Link>
+            </>
+          )}
+        </div>
+      )}
       <Buttton
         type="submit"
         disabled={modelIsSaving}

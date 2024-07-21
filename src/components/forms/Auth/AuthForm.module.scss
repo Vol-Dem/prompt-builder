@@ -2,6 +2,7 @@
 
 .auth {
   margin: 0 3.6rem;
+  max-width: 36rem;
 
   &__title {
     font-size: 3.6rem;
@@ -25,11 +26,11 @@
   &__controls {
     display: flex;
     justify-content: space-between;
-    margin-top: 2rem;
+    margin-top: 1rem;
   }
 
   &__error {
-    font-size: 2rem !important;
+    // font-size: 2rem !important;
   }
 
   &__btn--switch {
@@ -67,4 +68,21 @@
 
 .link {
   @include var.linkA;
+}
+
+.privacy {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(var.$color-text-white, 60%);
+}
+
+.icon {
+  width: 2rem;
+  margin-right: 1rem;
+}
+
+.reset {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -10px;
 }

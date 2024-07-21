@@ -5,6 +5,11 @@
   // overflow: hidden;
 }
 
+.wrap {
+  @include var.wrapper;
+  background-color: rgb(var.$color-background-primary, 0.9);
+}
+
 .menu-container {
   position: relative;
   background-color: var.$color-background-secondary;

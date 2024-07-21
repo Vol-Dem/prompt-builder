@@ -50,7 +50,7 @@ const Carousel = ({
   onActiveNumChange,
   side,
 }) => {
-  const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount || 0);
+  const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount);
   const [initial, setInitial] = useState(true);
   const [images, setImages] = useState(imagesData);
   const [imageFormType, setImageFormType] = useState("");
@@ -94,17 +94,6 @@ const Carousel = ({
     // console.log("WTF ImgData");
     setImages(imagesData);
   }, [imagesData]);
-
-  useEffect(() => {
-    if (!visibleImgAmount) {
-      console.log("RESET VIS");
-      setVisibleAmount(0);
-      setCurVisibleAmount(0);
-    }
-    setCurrImgNum(0);
-    setTranslate(0);
-    setInitial(true);
-  }, [versionId, visibleImgAmount]);
 
   useEffect(() => {
     setInitial(true);
@@ -213,20 +202,27 @@ const Carousel = ({
       dimensions.wrapWidth / dimensions.imgWidthWithGap
     );
     if (!visibleImgAmount && curVisibleImgAmount <= images?.length) {
-      console.log("SET CURENT VIS", curVisibleImgAmount);
+      console.log("VIS", curVisibleImgAmount);
+      console.log(versionId);
+      console.log(initial);
       setVisibleAmount(curVisibleImgAmount);
       setCurVisibleAmount(curVisibleImgAmount);
-      setTranslate(0);
-      setInitial(true);
     }
     if (!visibleImgAmount && curVisibleImgAmount > images?.length) {
-      console.log("SET CURENT VIS IM", images?.length);
+      console.log("VIS", images?.length);
+      console.log(versionId);
+      console.log(initial);
       setVisibleAmount(images?.length);
       setCurVisibleAmount(images?.length);
-      setTranslate(0);
-      setInitial(true);
     }
   }, [dimensions, visibleImgAmount, images]);
+
+  useEffect(() => {
+    setVisibleAmount(0);
+    setCurrImgNum(0);
+    setTranslate(0);
+    setInitial(true);
+  }, [versionId]);
 
   useEffect(() => {
     if (initial && !!images?.length && !!visibleAmount) {
@@ -234,13 +230,13 @@ const Carousel = ({
         { length: visibleAmount },
         (_, i) => visibleAmount + i
       );
-      if (!saved) {
-        console.log("SET AM", visibleAmount);
-        console.log("SET VISIBLE", visibleImg);
-      }
+      console.log(visibleImg);
+      console.log(visibleAmount);
+      console.log(curVisibleAmount);
+      console.log("NUM", currImgNum);
       setVisibleImages(visibleImg);
-      setTranslate(0);
       setCurTransitionDur("0ms");
+      setCurrImgNum(0);
       setInitial(false);
     }
   }, [visibleAmount, images, initial]);
@@ -274,7 +270,7 @@ const Carousel = ({
   };
 
   useEffect(() => {
-    if (!images?.length || !visibleImages?.length || !visibleAmount) return;
+    if (!images?.length || !visibleImages?.length) return;
     // console.log(currImgNum);
 
     const imagesFiltered = images.filter((image) => true);
@@ -430,7 +426,7 @@ const Carousel = ({
 
   useEffect(() => {
     if (images?.length > curVisibleAmount) {
-      setTranslate(-dimensions.imgWidthWithGap * visibleImages[0] || 0);
+      setTranslate(-dimensions.imgWidthWithGap * visibleImages[0]);
     }
   }, [dimensions.imgWidthWithGap, curVisibleAmount, visibleImages, images]);
 
@@ -673,7 +669,7 @@ const Carousel = ({
   //   };
   // }, []);
   useEffect(() => {
-    if (activeImgNum && !!visibleAmount) {
+    if (activeImgNum) {
       console.log(activeImgNum);
       setCurrImgNum(activeImgNum);
       setVisibleImages((prevState) => {

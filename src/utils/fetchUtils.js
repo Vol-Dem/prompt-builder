@@ -414,7 +414,7 @@ export const saveVersionImages = async (versionsData) => {
       const updatedImages = version?.images?.map((image) => {
         const fullImgData =
           versionImages?.items?.find((verImg) => verImg.hash === image.hash) ||
-          [];
+          image;
         const transformedImgData = transformImageData(fullImgData);
         console.log(fullImgData);
         console.log(transformedImgData);

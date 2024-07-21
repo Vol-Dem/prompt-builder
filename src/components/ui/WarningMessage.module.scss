@@ -1,0 +1,23 @@
+@use "./../../variables/variables.scss" as var;
+
+.warning {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 1.6rem;
+  line-height: 1.5;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid rgba(170, 133, 0, 0.8);
+  border-radius: 10px;
+  margin: 0.8rem 0 0.5rem 0;
+  background-color: var.$color-background-secondary;
+  word-break: break-word;
+  // box-shadow: var.$box-shadow;
+
+  & svg {
+    width: 2.6rem;
+    color: rgba(170, 133, 0, 0.8);
+    flex-shrink: 0;
+  }
+}

@@ -1,7 +1,8 @@
 @use "./../../variables/variables.scss" as var;
 
 .card {
-  background-color: var.$color-background-primary;
+  // background-color: var.$color-background-primary;
+  background-color: rgba(var.$color-background-primary, 80%);
   border-radius: 20px;
   overflow: hidden;
   padding: 2.8rem;

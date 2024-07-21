@@ -34,6 +34,7 @@ import UploadingPanel from "../../uploading-panel/UploadingPanel";
 import Carousel from "../../carousel/Carousel";
 import ActiveCarousel from "../../active-carousel/ActiveCarousel";
 import SearchSvg from "../../../assets/SearchSvg";
+import ReAuthForm from "../../forms/ReAuth/ReAuthForm";
 
 const Layout = () => {
   // const [mobileSearchIsOpen, setMobileSea  rchIsOpen] = useState(false);
@@ -162,7 +163,7 @@ const Layout = () => {
               </div>
             </div>
           </div>
-          <div className="wrapper">
+          <div className={classes.wrap}>
             <Prompt />
           </div>
           {/* {!!activeCarouselData?.images?.length && (
@@ -185,6 +186,7 @@ const Layout = () => {
             <AuthForm />
           </Modal>
         )}
+
         {notificationIsShown && (
           <Notification
             title={notificationTitle}

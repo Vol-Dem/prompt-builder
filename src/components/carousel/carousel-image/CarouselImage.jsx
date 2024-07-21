@@ -354,7 +354,7 @@ const CarouselImage = ({
                     className={`${classes["menu__item"]} ${classes["menu__item--del"]}`}
                     onClick={showDeleteReqeustHandler}
                   >
-                    Delete post
+                    Delete
                   </li>
                 )}
               </menu>
@@ -403,18 +403,6 @@ const CarouselImage = ({
             src={imgSrc}
             alt={alt}
           />
-          {/* <span
-            className={`${classes["btn__set"]} ${classes["btn__set--previw"]}`}
-            onClick={setPreviwImgHandler}
-          >
-            Set
-          </span>
-          <span
-            className={`${classes["btn__set"]} ${classes["btn__set--nsfw-previw"]}`}
-            onClick={setNsfwPreviwImgHandler}
-          >
-            Set H
-          </span> */}
         </>
       )}
       {tagSetMenuIsOpen && (

@@ -67,7 +67,7 @@ const Input = (props) => {
           if (onBlur) {
             onBlur(e);
           }
-          if (validation) {
+          if (!validation?.disableErrorOnBlur) {
             setShowErrorMessage(true);
           }
         }}

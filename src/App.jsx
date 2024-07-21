@@ -12,7 +12,7 @@ import Tabs from "./components/tabs/Tabs";
 import Layout from "./components/layout/layout/Layout";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { initAuth } from "./store/auth";
+import { authFromRedirect, initAuth } from "./store/auth";
 import SearchPage from "./components/pages/SearchPage";
 import { doc, getFirestore, onSnapshot } from "firebase/firestore";
 import firebaseApp from "./firebase-config";
@@ -22,6 +22,8 @@ import About from "./components/pages/About";
 import { savePost } from "./store/upload";
 import Edit from "./components/pages/Edit";
 import ErrorPage from "./components/pages/ErrorPage";
+import { getAuth, getRedirectResult } from "firebase/auth";
+const auth = getAuth(firebaseApp);
 
 const firestore = getFirestore(firebaseApp);
 
@@ -34,6 +36,34 @@ function App() {
   //Authorizes user on application load
   useEffect(() => {
     dispatch(initAuth());
+    // dispatch(authFromRedirect());
+    // getRedirectResult(auth)
+    //   .then((result) => {
+    //     // This gives you a Google Access Token. You can use it to access Google APIs.
+    //     // const credential = GoogleAuthProvider.credentialFromResult(result);
+    //     // const token = credential.accessToken;
+
+    //     // The signed-in user info.
+    //     const user = result?.user;
+    //     console.log(result);
+    //     console.log(user);
+    //     // IdP data available using getAdditionalUserInfo(result)
+    //     // ...
+    //   })
+    //   .catch((error) => {
+    //     // Handle Errors here.
+    //     console.log(error);
+    //     console.log(error.code);
+    //     console.log(error.message);
+    //     const errorCode = error.code;
+    //     const errorMessage = error.message;
+    //     // The email of the user's account used.
+    //     // const email = error?.customData?.email;
+    //     // The AuthCredential type that was used.
+    //     // const credential = GoogleAuthProvider.credentialFromError(error);
+    //     // console.log(credential);
+    //     // ...
+    //   });
   }, [dispatch]);
 
   useEffect(() => {

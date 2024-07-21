@@ -7,6 +7,16 @@ import {
   onAuthStateChanged,
   updatePassword,
   updateProfile,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signInWithRedirect,
+  getRedirectResult,
+  sendPasswordResetEmail,
+  sendEmailVerification,
+  reauthenticateWithCredential,
+  updateEmail,
+  reauthenticateWithPopup,
+  EmailAuthProvider,
 } from "firebase/auth";
 import firebaseApp from "../firebase-config";
 import { uploadPanelStateFromStorage } from "./usedModels";
@@ -17,14 +27,18 @@ import { modelActions } from "./model";
 
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
+const provider = new GoogleAuthProvider();
 
 const authInitialState = {
   isLoggedIn: false,
   authFormIsOpen: false,
+  reAuthFormIsOpen: false,
+  showResetPassword: false,
   isLoading: false,
   userDataIsLoading: false,
   userDataLoadError: "",
   errorMessage: "",
+  successMessage: "",
   categories: [],
   user: {
     idToken: "",
@@ -32,6 +46,7 @@ const authInitialState = {
     uid: "",
     email: "",
     userName: "",
+    emailVerified: false,
   },
 };
 
@@ -46,6 +61,7 @@ const authSlice = createSlice({
         uid: actions.payload.uid,
         email: actions.payload.email,
         userName: actions.payload.displayName,
+        emailVerified: actions.payload.emailVerified,
       };
     },
     logout(state) {
@@ -62,8 +78,18 @@ const authSlice = createSlice({
     closeAuthForm(state) {
       state.authFormIsOpen = false;
     },
+    setReauthFormIsOpen(state, actions) {
+      state.reAuthFormIsOpen = actions.payload;
+    },
+    setShowResetPassword(state, actions) {
+      console.log(actions.payload);
+      state.showResetPassword = actions.payload;
+    },
     setErrorMessage(state, actions) {
       state.errorMessage = actions.payload;
+    },
+    setSuccessMessage(state, actions) {
+      state.successMessage = actions.payload;
     },
     setIsLoading(state, actions) {
       state.isLoading = actions.payload;
@@ -85,12 +111,14 @@ export const initAuth = () => {
   return (dispatch) => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        console.log(user);
         dispatch(
           authActions.login({
             accessToken: user.accessToken,
             uid: user.uid,
             email: user.email,
             displayName: user.displayName,
+            emailVerified: user.emailVerified,
           })
         );
         dispatch(uploadPanelStateFromStorage(user.uid));
@@ -126,38 +154,295 @@ export const authRequest = (isLogin, email, password) => {
           email,
           password
         );
+
+        await sendEmailVerification(auth.currentUser);
       }
 
       const user = userCredential.user;
+
       dispatch(
         authActions.login({
           accessToken: user.accessToken,
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,
+          emailVerified: user.emailVerified,
         })
       );
       dispatch(authActions.closeAuthForm());
     } catch (error) {
-      dispatch(authActions.setErrorMessage(error.message));
+      console.log(error.code);
+      if (error.code === "auth/invalid-login-credentials") {
+        dispatch(authActions.setErrorMessage("Invalid login credentials"));
+        // dispatch(authActions.setShowResetPassword(true));
+      } else if (error.code === "auth/too-many-requests") {
+        dispatch(
+          authActions.setErrorMessage(
+            "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later"
+          )
+        );
+        // dispatch(authActions.setShowResetPassword(true));
+      } else {
+        dispatch(authActions.setErrorMessage(error.message));
+      }
     }
     dispatch(authActions.setIsLoading(false));
   };
 };
+
+export const authWithGoogle = () => {
+  return (dispatch, getState) => {
+    // signInWithRedirect(auth, provider);
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        console.log(user);
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+        dispatch(
+          authActions.login({
+            accessToken: user.accessToken,
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            emailVerified: user.emailVerified,
+          })
+        );
+        dispatch(authActions.closeAuthForm());
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode);
+        console.log(errorMessage);
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+        dispatch(authActions.setErrorMessage(error.message));
+      });
+  };
+};
+
+export const authFromRedirect = () => {
+  return async (dispatch, getState) => {
+    const result = await getRedirectResult(auth);
+    const user = result?.user;
+    console.log(result);
+    console.log(user);
+    // getRedirectResult(auth)
+    //   .then((result) => {
+    //     // This gives you a Google Access Token. You can use it to access Google APIs.
+    //     // const credential = GoogleAuthProvider.credentialFromResult(result);
+    //     // const token = credential.accessToken;
+
+    //     // The signed-in user info.
+    //     const user = result?.user;
+    //     console.log(user);
+    //     // IdP data available using getAdditionalUserInfo(result)
+    //     // ...
+    //     if (result?.user) {
+    //       dispatch(
+    //         authActions.login({
+    //           accessToken: user.accessToken,
+    //           uid: user.uid,
+    //           email: user.email,
+    //           displayName: user.displayName,
+    //         })
+    //       );
+    //       // dispatch(authActions.closeAuthForm());
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     // Handle Errors here.
+    //     console.log(error);
+    //     console.log(error.message);
+    //     const errorCode = error.code;
+    //     const errorMessage = error.message;
+    //     // The email of the user's account used.
+    //     const email = error?.customData?.email;
+    //     // The AuthCredential type that was used.
+    //     const credential = GoogleAuthProvider.credentialFromError(error);
+    //     console.log(credential);
+    //     // ...
+    //     dispatch(authActions.setErrorMessage(error.message));
+    //   });
+  };
+};
+
+/**
+ * Change user email
+ * @param {string} email - User email
+ * @returns
+ */
+export const changeUserEmail = (email) => {
+  return async (dispatch) => {
+    try {
+      const user = auth.currentUser;
+      await updateEmail(user, email);
+      dispatch(
+        authActions.login({
+          accessToken: user.accessToken,
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          emailVerified: user.emailVerified,
+        })
+      );
+      dispatch(authActions.setSuccessMessage("Email changed successfully"));
+    } catch (error) {
+      if (error.code === "auth/requires-recent-login") {
+        dispatch(authActions.setReauthFormIsOpen(true));
+      } else if (error.code === "auth/operation-not-allowed") {
+        dispatch(
+          authActions.setErrorMessage(
+            "Please verify the new email before changing email"
+          )
+        );
+      } else {
+        dispatch(authActions.setErrorMessage(error.message));
+      }
+      console.log(error);
+      console.log(error.message);
+      console.log(error.code);
+    }
+  };
+};
+
+export const promptForCredentials = async (password) => {
+  try {
+    const credential = EmailAuthProvider.credential(
+      auth.currentUser.email,
+      password
+    );
+
+    return credential;
+  } catch (error) {
+    console.log(error);
+    console.log(error.message);
+    console.log(error.code);
+    if (error.code === "auth/invalid-login-credentials") {
+      throw new Error(
+        "The current password you entered did not match our records"
+      );
+    } else if (error.code === "auth/too-many-requests") {
+      throw new Error(
+        "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later"
+      );
+    } else {
+      throw new Error(error.message);
+    }
+  }
+};
+
+export const reAuthUser = async (type, password) => {
+  try {
+    console.log("REAUTH");
+    const user = auth.currentUser;
+
+    if (type === "pass") {
+      const credential = await promptForCredentials(password);
+      console.log(credential);
+      const result = await reauthenticateWithCredential(user, credential);
+    }
+    if (type === "popup") {
+      const resultPopup = await reauthenticateWithPopup(user, provider);
+    }
+  } catch (error) {
+    if (error.code === "auth/invalid-login-credentials") {
+      throw new Error(
+        "The current password you entered did not match our records"
+      );
+    } else if (error.code === "auth/too-many-requests") {
+      throw new Error(
+        "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later"
+      );
+    } else {
+      throw new Error(error.message);
+    }
+  }
+};
+// export const reAuthUser = (type, password) => {
+//   return async (dispatch, getState) => {
+//     try {
+//       const user = auth.currentUser;
+
+//       if (type === "pass") {
+//         const credential = await promptForCredentials(password);
+//         console.log(credential);
+//         const result = await reauthenticateWithCredential(user, credential);
+//       }
+//       if (type === "popup") {
+//         const resultPopup = await reauthenticateWithPopup(user, provider);
+//       }
+
+//       dispatch(authActions.setReauthFormIsOpen(false));
+//     } catch (error) {
+//       dispatch(authActions.setErrorMessage(error.message));
+//       console.log(error.message);
+//     }
+//   };
+// };
 
 /**
  * Change user password
  * @param {string} password - User password
  * @returns
  */
-export const changeUserPassword = (password) => {
+export const changeUserPassword = (password, oldPassword) => {
   return async (dispatch) => {
     try {
       const user = auth.currentUser;
-      await updatePassword(user, password);
+      if (!oldPassword) {
+        await updatePassword(user, password);
+      } else {
+        await reAuthUser("pass", oldPassword);
+        await updatePassword(user, password);
+      }
+
+      dispatch(authActions.setSuccessMessage("Password changed successfully"));
     } catch (error) {
+      // if (error.code === "auth/requires-recent-login") {
+      //   dispatch(authActions.setReauthFormIsOpen(true));
+      // } else {
+      //   dispatch(authActions.setErrorMessage(error.message));
+      // }
       dispatch(authActions.setErrorMessage(error.message));
+      console.log(error.message);
     }
+  };
+};
+
+export const resetUserPassword = (email) => {
+  return async (dispatch) => {
+    console.log(email);
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        // Password reset email sent!
+        dispatch(authActions.setSuccessMessage("Password reset email sent!"));
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error.code === "auth/invalid-email") {
+          dispatch(authActions.setErrorMessage("Invalid email"));
+        } else {
+          dispatch(authActions.setErrorMessage(error.message));
+        }
+        // ..
+      });
+    // try {
+    //   const user = auth.currentUser;
+    //   await updatePassword(user, password);
+    // } catch (error) {
+    //   dispatch(authActions.setErrorMessage(error.message));
+    //   console.log(error.message);
+    // }
   };
 };
 
@@ -177,8 +462,10 @@ export const changeUserName = (name) => {
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,
+          emailVerified: user.emailVerified,
         })
       );
+      dispatch(authActions.setSuccessMessage("Name changed successfully"));
       console.log(user);
     } catch (error) {
       dispatch(authActions.setErrorMessage(error.message));
