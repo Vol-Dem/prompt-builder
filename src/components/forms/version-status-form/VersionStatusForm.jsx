@@ -27,29 +27,31 @@ const VersionStatusForm = ({ modelData }) => {
 
   useEffect(() => {
     if (!modelData) return;
-    const versionStatusInputData = modelData.data.modelVersions.map(
-      (version, i) => {
-        if (modelData?.modelVersionsCustomData.hasOwnProperty(version.id)) {
-          const versionsCustomData =
-            modelData?.modelVersionsCustomData[version.id];
-          return {
-            type: "checkbox",
-            id: versionsCustomData.versionId + "in",
-            name: versionsCustomData.versionName,
-            label: versionsCustomData.versionName,
-            value: versionsCustomData.downloadStatus,
-          };
-        } else {
-          return {
-            type: "checkbox",
-            id: version.id + "in",
-            name: version.id,
-            label: version.name,
-            value: false,
-          };
-        }
-      }
-    );
+    const versionStatusInputData = Object.values(
+      modelData?.modelVersionsCustomData
+    )
+      ?.sort((a, b) => a?.index - b?.index)
+      .map((version, i) => {
+        // if (modelData?.modelVersionsCustomData.hasOwnProperty(version.versionId)) {
+        // const versionsCustomData =
+        //   modelData?.modelVersionsCustomData[version.versionId];
+        return {
+          type: "checkbox",
+          id: version.versionId + "in",
+          name: version.versionName,
+          label: version.name,
+          value: version.downloadStatus,
+        };
+        // } else {
+        //   return {
+        //     type: "checkbox",
+        //     id: version.versionId + "in",
+        //     name: version.versionId,
+        //     label: version.name,
+        //     value: false,
+        //   };
+        // }
+      });
 
     setVersionsDownloadStatus(versionStatusInputData || []);
   }, [modelData]);
@@ -73,10 +75,11 @@ const VersionStatusForm = ({ modelData }) => {
           downloadStatus: version.value,
         };
       });
-
-      const activePreviewId = modelData.data.modelVersions.find(
-        (version) => updatedVersionData[version.id].downloadStatus === true
-      )?.id;
+      console.log(updatedVersionData);
+      const activePreviewId = modelData.data.modelVersions.find((version) => {
+        console.log(updatedVersionData[version.id]);
+        return updatedVersionData[version.id]?.downloadStatus === true;
+      })?.id;
       const activePreviewImg =
         (activePreviewId &&
           modelData.data.modelVersions
@@ -125,6 +128,7 @@ const VersionStatusForm = ({ modelData }) => {
       seteSuccessMessage(SAVED_SUCCESS_MESSAGE);
       setIsSaving(false);
     } catch (err) {
+      console.log(err);
       console.log(err.message);
       seteErrorMessage(err.message);
       setIsSaving(false);

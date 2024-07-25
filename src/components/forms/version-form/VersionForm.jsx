@@ -140,17 +140,17 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
     seteSuccessMessage("");
     setMainTagInput({ value: versionData?.mainTag || "", isValid: true });
     setTitleInput({
-      value: versionData?.name || defaultData.name || "",
+      value: versionData?.name || defaultData?.name || "",
       isValid: true,
     });
     setDescriptionInput({
-      value: versionData?.description || defaultData.description || "",
+      value: versionData?.description || defaultData?.description || "",
       isValid: true,
     });
     setTrigerInput({
       value:
         versionData?.trainedWords?.join(", ") ||
-        defaultData.trainedWords?.join(", ") ||
+        defaultData?.trainedWords?.join(", ") ||
         [],
       isValid: true,
     });
@@ -520,7 +520,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
   return (
     <form onSubmit={saveVersionHandler} className={classes["form"]}>
       <div className={classes.subtitle}>
-        Version ID: {versionData.id || defaultData.id}
+        Version ID: {versionData?.id || defaultData?.id}
       </div>
       <Input
         label="Version name"

@@ -121,7 +121,7 @@ const UpdateModelForm = ({ modelData, id }) => {
     isValid: true,
   });
   const [descriptionInput, setDescriptionInput] = useState({
-    value: modelData?.data.description || "",
+    value: modelData?.defaultCustomData?.description || "",
     isValid: true,
   });
   const [idInput, setIdInput] = useState({
@@ -144,7 +144,7 @@ const UpdateModelForm = ({ modelData, id }) => {
     isValid: true,
   });
   const [fileNameInput, setFileNameInput] = useState({
-    value: modelData?.fileName || "",
+    value: modelData?.defaultCustomData?.fileName || "",
     isValid: true,
   });
   const [weightInput, setWeightInput] = useState({
@@ -214,29 +214,31 @@ const UpdateModelForm = ({ modelData, id }) => {
 
   useEffect(() => {
     if (!modelData) return;
-    const versionStatusInputData = modelData?.data?.modelVersions?.map(
-      (version, i) => {
-        if (modelData?.modelVersionsCustomData.hasOwnProperty(version.id)) {
-          const versionsCustomData =
-            modelData?.modelVersionsCustomData[version.id];
-          return {
-            type: "checkbox",
-            id: versionsCustomData.versionId + "in",
-            name: versionsCustomData.versionName,
-            label: versionsCustomData.versionName,
-            value: versionsCustomData.downloadStatus,
-          };
-        } else {
-          return {
-            type: "checkbox",
-            id: version.id + "in",
-            name: version.id,
-            label: version.name,
-            value: false,
-          };
-        }
-      }
-    );
+    const versionStatusInputData = Object.values(
+      modelData?.modelVersionsCustomData
+    )
+      ?.sort((a, b) => a?.index - b?.index)
+      .map((version, i) => {
+        // if (modelData?.modelVersionsCustomData.hasOwnProperty(version.id)) {
+        // const versionsCustomData =
+        //   modelData?.modelVersionsCustomData[version.id];
+        return {
+          type: "checkbox",
+          id: version.versionId + "in",
+          name: version.versionName,
+          label: version.name,
+          value: version.downloadStatus,
+        };
+        // } else {
+        //   return {
+        //     type: "checkbox",
+        //     id: version.id + "in",
+        //     name: version.id,
+        //     label: version.name,
+        //     value: false,
+        //   };
+        // }
+      });
 
     setVersionsDownloadStatus(versionStatusInputData || []);
 
@@ -482,146 +484,7 @@ const UpdateModelForm = ({ modelData, id }) => {
 
       let data = {};
 
-      if (!modelData || update) {
-        data = await getModelData(modelData?.id || modelId);
-      } else {
-        data = modelData.data;
-      }
-
-      if (modelData && update) {
-        const newVerison = data.modelVersions.filter(
-          (version) =>
-            !modelData.data.modelVersions.some(
-              (oldVersions) => version.id === oldVersions.id
-            )
-        );
-        data.modelVersions = [...newVerison, ...modelData.data.modelVersions];
-      }
-
-      if (!data.id) return;
-
-      let modelVersionsCustomData = modelData?.modelVersionsCustomData || {};
-
-      data.modelVersions.forEach((version, i) => {
-        // const isSingle = data.modelVersions.length === 1;
-        const isSingle = !Object.keys(modelVersionsCustomData).length;
-        const curVersionDlStatus = versionsDownloadStatus.find(
-          (dlData) => Number.parseInt(dlData.id) === version.id
-        )?.value;
-        const dlStatus = versionsDownloadStatus.length
-          ? !!curVersionDlStatus
-          : false;
-        const currVersionData = modelVersionsCustomData.hasOwnProperty(
-          version.id
-        )
-          ? modelVersionsCustomData[version.id]
-          : {};
-
-        let fileName;
-        if (version.hasOwnProperty("files") && version?.files) {
-          fileName = clearFileExtension(
-            version.files.find((file) => file?.primary).name
-          ).toLowerCase();
-        }
-
-        modelVersionsCustomData = {
-          ...modelVersionsCustomData,
-          [version.id]: {
-            versionId: version.id,
-            versionName: version.name,
-            baseModel: version.baseModel,
-            trainedWords:
-              version?.trainedWords?.flatMap((word) => {
-                return splitTags(word);
-              }) || [],
-            defFileName: fileName || "",
-            versionImageUrl:
-              version.images?.filter((img, i) => img.type === "image")[0]
-                ?.url || "",
-            ...currVersionData,
-            downloadStatus: isSingle && !i ? true : dlStatus,
-          },
-        };
-      });
-
-      const activePreviewId = data.modelVersions.find(
-        (version) => modelVersionsCustomData[version.id].downloadStatus === true
-      )?.id;
-
-      const activePreviewImg =
-        (activePreviewId &&
-          data.modelVersions
-            ?.find((version) => version.id === activePreviewId)
-            .images?.filter((img, i) => img.type === "image")[0]?.url) ||
-        "";
-
-      // const previewImgDefault =
-      //   data.modelVersions[0].images?.filter(
-      //     (img, i) => img.type === "image"
-      //   )[0]?.url || "";
-      const previewImgDefault = data.modelVersions[0]?.images[0]?.url || "";
-
-      const previewImg = activePreviewImg || previewImgDefault;
-
-      const baseModels = new Set(
-        data.modelVersions?.flatMap((version) => version?.baseModel || [])
-      );
-
-      const fileNames = data.modelVersions?.flatMap((version) => {
-        // version.files.map((file) => file.name)
-        if (version.hasOwnProperty("files") && version?.files) {
-          return [
-            ...new Set(
-              version.files
-                .filter((file) => file?.type === "Model")
-                .map((file) => clearFileExtension(file?.name).toLowerCase())
-            ),
-          ];
-
-          // return clearFileExtension(
-          //   version.files.find((file) => file?.primary).name
-          // ).toLowerCase();
-        }
-        return [];
-      });
-
-      const hashes = data.modelVersions
-        ?.flatMap((version) => {
-          // version.files.map((file) => file.name)
-          if (version.hasOwnProperty("files") && version?.files) {
-            //   const primaryFileHashes = version?.files.find(
-            //     (file) => file?.primary
-            //   )?.hashes;
-            return version?.files
-              .filter((file) => file?.type === "Model")
-              .flatMap((file) => Object.values(file?.hashes).filter(Boolean))
-              .map((hash) => hash.toLowerCase());
-            // return version?.files
-            //   .flatMap((file) => Object.values(file?.hashes).filter(Boolean))
-            //   .map((hash) => hash.toLowerCase());
-            // if (primaryFileHashes) {
-            //   return Object.values(primaryFileHashes)?.map((hash) =>
-            //     hash.toLowerCase()
-            //   );
-            // }
-          }
-          return [];
-        })
-        .filter(Boolean);
-
-      const customFileNames = Object.values(modelVersionsCustomData)
-        ?.map((version) => {
-          return clearFileExtension(version?.fileName)?.toLowerCase();
-        })
-        .filter(Boolean);
-
-      const nameArr =
-        (modelName || data.name)
-          .replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, "")
-          .toLowerCase()
-          .split(" ") || [];
-
-      const versionIds = data.modelVersions?.map((version) => version.id) || [];
+      let modelVersions = [];
 
       const modelsRef = doc(firestore, "users", uid, "models", modelId + "");
       const userRef = doc(firestore, "users", uid);
@@ -640,19 +503,188 @@ const UpdateModelForm = ({ modelData, id }) => {
       if (modelSnap.exists() && modelsPrevRefSnap.exists() && !modelData) {
         throw new Error(EXISTS_ERROR_MESSAGE);
       } else {
+        if (!modelData) {
+          // data = await getModelData(modelData?.id || modelId);
+          //Upload model to database
+          const saveModelRes = await fetch(
+            `http://127.0.0.1:5001/aide-tools/us-central1/updateModel?modelId=${
+              modelData?.id || modelId
+            }`
+          );
+
+          const saveModelResData = await saveModelRes.json();
+
+          if (!saveModelResData.modelId) {
+            throw new Error("Failed to upload");
+          }
+
+          const modelDefDataRef = doc(firestore, "models", `${modelId}`);
+
+          const docSnap = await getDoc(modelDefDataRef);
+
+          if (docSnap.exists()) {
+            data = docSnap.data();
+            modelVersions = data?.modelVersions;
+          }
+        } else {
+          data = modelData.data;
+          modelVersions = data?.modelVersions.filter((version) =>
+            Object.keys(modelData?.modelVersionsCustomData).includes(
+              `${version.id}`
+            )
+          );
+        }
+
+        // if (modelData && update) {
+        //   const newVerison = modelVersions.filter(
+        //     (version) =>
+        //       !modelData.modelVersions.some(
+        //         (oldVersions) => version.id === oldVersions.id
+        //       )
+        //   );
+        //   modelVersions = [...newVerison, ...modelData.modelVersions];
+        // }
+        console.log(data);
+        console.log(modelData);
+        if (!data.id) return;
+
+        let modelVersionsCustomData = modelData?.modelVersionsCustomData || {};
+
+        modelVersions.forEach((version, i) => {
+          // const isSingle = modelVersions.length === 1;
+          const isSingle = !Object.keys(modelVersionsCustomData).length;
+          const curVersionDlStatus = versionsDownloadStatus.find(
+            (dlData) => Number.parseInt(dlData.id) === version.id
+          )?.value;
+          const dlStatus = versionsDownloadStatus.length
+            ? !!curVersionDlStatus
+            : false;
+          const currVersionData = modelVersionsCustomData.hasOwnProperty(
+            version.id
+          )
+            ? modelVersionsCustomData[version.id]
+            : {};
+
+          let fileName;
+          if (version.hasOwnProperty("files") && version?.files) {
+            fileName = clearFileExtension(
+              version.files.find((file) => file?.primary).name
+            ).toLowerCase();
+          }
+
+          modelVersionsCustomData = {
+            ...modelVersionsCustomData,
+            [version.id]: {
+              versionId: version.id,
+              index: version.index,
+              name: version.name,
+              versionName: version.name,
+              baseModel: version.baseModel,
+              trainedWords:
+                version?.trainedWords?.flatMap((word) => {
+                  return splitTags(word);
+                }) || [],
+              defFileName: fileName || "",
+              versionImageUrl: version.images[0]?.url || "",
+              ...currVersionData,
+              downloadStatus: isSingle && !i ? true : dlStatus,
+            },
+          };
+        });
+
+        const activePreviewId = modelVersions.find(
+          (version) =>
+            modelVersionsCustomData[version.id].downloadStatus === true
+        )?.id;
+
+        const activePreviewImg =
+          (activePreviewId &&
+            modelVersions
+              ?.find((version) => version.id === activePreviewId)
+              .images?.filter((img, i) => img.type === "image")[0]?.url) ||
+          "";
+
+        // const previewImgDefault =
+        //   modelVersions[0].images?.filter(
+        //     (img, i) => img.type === "image"
+        //   )[0]?.url || "";
+        const previewImgDefault = modelVersions[0]?.images[0]?.url || "";
+
+        const previewImg = activePreviewImg || previewImgDefault;
+
+        const baseModels = new Set(
+          modelVersions?.flatMap((version) => version?.baseModel || [])
+        );
+
+        const fileNames = modelVersions?.flatMap((version) => {
+          // version.files.map((file) => file.name)
+          if (version.hasOwnProperty("files") && version?.files) {
+            return [
+              ...new Set(
+                version.files
+                  .filter((file) => file?.type === "Model")
+                  .map((file) => clearFileExtension(file?.name).toLowerCase())
+              ),
+            ];
+
+            // return clearFileExtension(
+            //   version.files.find((file) => file?.primary).name
+            // ).toLowerCase();
+          }
+          return [];
+        });
+
+        const hashes = modelVersions
+          ?.flatMap((version) => {
+            // version.files.map((file) => file.name)
+            if (version.hasOwnProperty("files") && version?.files) {
+              //   const primaryFileHashes = version?.files.find(
+              //     (file) => file?.primary
+              //   )?.hashes;
+              return version?.files
+                .filter((file) => file?.type === "Model")
+                .flatMap((file) => Object.values(file?.hashes).filter(Boolean))
+                .map((hash) => hash.toLowerCase());
+              // return version?.files
+              //   .flatMap((file) => Object.values(file?.hashes).filter(Boolean))
+              //   .map((hash) => hash.toLowerCase());
+              // if (primaryFileHashes) {
+              //   return Object.values(primaryFileHashes)?.map((hash) =>
+              //     hash.toLowerCase()
+              //   );
+              // }
+            }
+            return [];
+          })
+          .filter(Boolean);
+
+        const customFileNames = Object.values(modelVersionsCustomData)
+          ?.map((version) => {
+            return clearFileExtension(version?.fileName)?.toLowerCase();
+          })
+          .filter(Boolean);
+
+        const nameArr =
+          (modelName || data.name)
+            .replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, "")
+            .toLowerCase()
+            .split(" ") || [];
+
+        const versionIds = modelVersions?.map((version) => version.id) || [];
+
         const { mainId, subIds } = await runTransaction(
           firestore,
           async (transaction) => {
             const sfDoc = await transaction.get(userRef);
-            if (!sfDoc.exists()) {
-              throw new Error("Resource does not exist!");
-            }
+            // if (!sfDoc.exists()) {
+            //   throw new Error("Resource does not exist!");
+            // }
 
-            const categories = sfDoc.data().categoriesById;
+            const categories = sfDoc?.data()?.categoriesById || {};
 
-            if (!categories) {
-              throw new Error("Can't update, try again later");
-            }
+            // if (!categories) {
+            //   throw new Error("Can't update, try again later");
+            // }
 
             let updatedCategories;
             // if (categories && categories[modelType]?.hasOwnProperty(`${main}`)) {
@@ -744,13 +776,23 @@ const UpdateModelForm = ({ modelData, id }) => {
             //   { merge: true }
             // );
 
-            transaction.update(
-              userRef,
-              {
-                [categoryField]: updatedCategories,
-              },
-              { merge: true }
-            );
+            if (!sfDoc.exists()) {
+              transaction.set(
+                userRef,
+                {
+                  categoriesById: { [modelType]: updatedCategories },
+                },
+                { merge: true }
+              );
+            } else {
+              transaction.update(
+                userRef,
+                {
+                  [categoryField]: updatedCategories,
+                },
+                { merge: true }
+              );
+            }
 
             return { mainId, subIds };
             // if (newPop <= 1000000) {
@@ -772,22 +814,23 @@ const UpdateModelForm = ({ modelData, id }) => {
         }
 
         const modelInfo = {
-          ...modelData,
+          // ...modelData,
+          // data: null,
           id: modelData?.id || +modelId,
           versionIds,
           modelType,
           // baseModels: [...baseModels],
           main: mainId,
           sub: subIds,
-          data,
           name: modelName || data.name,
           mainTag,
+          nsfw: nsfwInput || false,
           // nsfw: nsfwInput || false,
           // nsfwLevel: data?.nsfwLevel || null,
           // hashes,
           src: "civitai.com",
           defaultCustomData: {
-            description: description || data.description,
+            description: !!modelData ? description : data.description,
             tagSetsData,
             weight,
             minWeight: minWeight || null,
@@ -808,6 +851,7 @@ const UpdateModelForm = ({ modelData, id }) => {
             }),
           },
           modelVersionsCustomData,
+          savedImages: modelData?.savedImages || {},
           updatedAt: new Date().toISOString(),
           createdAt,
         };
@@ -826,7 +870,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           creator: data?.creator || "",
           nsfw: nsfwInput || false,
           nsfwLevel: data?.nsfwLevel || "",
-          baseModel: data.modelVersions[0].baseModel,
+          baseModel: modelVersions[0].baseModel,
           baseModels: [...baseModels],
           mainTag,
           fileName,
@@ -838,7 +882,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           minWeight,
           maxWeight,
           size,
-          tags: data.modelVersions[0].trainedWords || "",
+          tags: modelVersions[0].trainedWords || "",
           authorTags: data.tags || [],
           tagSetsData,
           // helperTags,
@@ -890,18 +934,18 @@ const UpdateModelForm = ({ modelData, id }) => {
       //   console.log(doc.id);
       // });
 
-      /////////Save modelImages with gen info ///////////
-      if (data?.creator?.username && !modelData) {
-        const versionsWithUserName = data?.modelVersions?.map((version) => {
-          return {
-            ...version,
-            modelId,
-            username: data.creator.username,
-          };
-        });
+      // /////////Save modelImages with gen info ///////////
+      // if (data?.creator?.username && !modelData) {
+      //   const versionsWithUserName = data?.modelVersions?.map((version) => {
+      //     return {
+      //       ...version,
+      //       modelId,
+      //       username: data.creator.username,
+      //     };
+      //   });
 
-        await makeBatchRequest(versionsWithUserName, saveVersionImages);
-      }
+      //   await makeBatchRequest(versionsWithUserName, saveVersionImages);
+      // }
 
       setModelIsSaving(false);
       setSuccessMessage(SAVED_SUCCESS_MESSAGE);
@@ -917,9 +961,9 @@ const UpdateModelForm = ({ modelData, id }) => {
   //   console.log("UPD");
   //   const data = await getModelData(modelData?.id);
 
-  //   const newVerison = data.modelVersions.filter(
+  //   const newVerison = modelVersions.filter(
   //     (version) =>
-  //       !modelData.data.modelVersions.some(
+  //       !modelData.modelVersions.some(
   //         (oldVersions) => version.id === oldVersions.id
   //       )
   //   );
@@ -929,7 +973,7 @@ const UpdateModelForm = ({ modelData, id }) => {
   //     return;
   //   }
 
-  //   data.modelVersions = [...newVerison, ...modelData.data.modelVersions];
+  //   modelVersions = [...newVerison, ...modelData.modelVersions];
   //   console.log(data);
 
   //   const newVersionsCustomData = {};

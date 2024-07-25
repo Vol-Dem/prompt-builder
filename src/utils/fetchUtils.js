@@ -548,18 +548,18 @@ export const deleteModelDoc = async (uid, model) => {
     });
   }
 
-  const defaultImagePosts = model.data.modelVersions.map((version) => {
-    return {
-      postId: version.id,
-      uid,
-      modelId: model.id,
-      type: "defaultImages",
-    };
-  });
+  // const defaultImagePosts = model.data.modelVersions.map((version) => {
+  //   return {
+  //     postId: version.id,
+  //     uid,
+  //     modelId: model.id,
+  //     type: "defaultImages",
+  //   };
+  // });
 
-  // console.log(defaultImagePosts);
+  // // console.log(defaultImagePosts);
 
-  await makeBatchRequest(defaultImagePosts, deleteImagePostDoc, 50, false);
+  // await makeBatchRequest(defaultImagePosts, deleteImagePostDoc, 50, false);
 
   const modelRef = doc(firestore, "users", uid, "models", model.id + "");
   const modelPreviewRef = doc(

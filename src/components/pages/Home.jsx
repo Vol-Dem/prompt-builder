@@ -53,16 +53,27 @@ function Home({ title }) {
       {!isAuth && location?.pathname === "/" && (
         <div className={classes["intro"]}>
           <p className={classes["intro__text"]}>
-            Welcome to AIDE-TOOLS – a platform that will allow you to create
-            your own collection of models for generating images and easily work
-            with prompts.
+            Welcome to <strong>AI</strong>DE-TOOLS – a platform that will allow
+            you to create your own collection of models for generating images
+            and easily work with prompts.
           </p>
           <p className={classes["intro__text"]}>
-            I created this project for personal use to make prompt building fast
+            This platform offers a variety of features, such as the using
+            trigger words from models and images as tags for quick and easy
+            modification of prompts, adding current models and image references
+            to the sidebar for quick access, and extended configuration options,
+            etc.
+            {/* I created this project for personal use to make prompt building fast
             and convenient, developed and added here many features that create a
             comfortable space for working with models, references and images and
             greatly simplify the work of building prompts for generating images.
-            And now I am sharing this convenient tool with you.
+            And now I am sharing this convenient tool with you. */}
+          </p>
+          <p className={classes["intro__text"]}>
+            <strong>AI</strong>DE-TOOLS provides a centralized solution for
+            storing and managing collections. It is versatile and independent of
+            popular web interfaces, so, you can use the generated prompt in any
+            web interface or for online generation on Civitai.
           </p>
           <p className={classes["intro__text"]}>
             You can learn about the capabilities of the service in the{" "}
@@ -72,8 +83,7 @@ function Home({ title }) {
             section.
           </p>
           <p className={classes["intro__text"]}>
-            This is a non-commercial project, so if you like using this
-            platform, support me on{" "}
+            If you like using this platform, support it on{" "}
             <a
               className={classes.link}
               href="https://www.patreon.com/aidetools"

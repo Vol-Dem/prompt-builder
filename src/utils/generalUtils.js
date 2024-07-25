@@ -190,14 +190,6 @@ export const transformFilesData = (fileData) => {
 };
 
 export const transformImageData = (imageData) => {
-  // {
-  //   ...resource,
-  //   ...(modelsData[i].model?.name && { name: modelsData[i].model?.name }),
-  //   ...(modelsData[i]?.modelId && { modelId: modelsData[i]?.modelId }),
-  //   ...(modelsData[i]?.name && { versionName: modelsData[i]?.name }),
-  //   ...(modelsData[i]?.id && { versionId: modelsData[i]?.id }),
-  //   ...(modelsData[i]?.model?.type && { type: modelsData[i]?.model?.type }),
-  // }
   const newImageData = {
     // id: imageData?.id || "",
     ...(imageData?.id && { id: imageData?.id }),

@@ -16,13 +16,20 @@ const ModelInfo = ({ customData }) => {
     customData?.maxWeight || model?.defaultCustomData?.maxWeight || null;
   const weightRange = `${minWeight?.toFixed(1)} - ${maxWeight?.toFixed(1)}`;
   const weight = customData?.weight || model?.defaultCustomData?.weight;
+  const versionFileName =
+    curVersion.hasOwnProperty("files") &&
+    curVersion?.files.find((file) => file?.primary)?.name;
+  const fileName =
+    customData?.fileName ||
+    model?.defaultCustomData?.fileName ||
+    versionFileName;
 
   return (
     <div className={classes?.info}>
       <div className={classes.type}>{model?.data?.type}</div>
       <div>
         <span className={classes["info__name"]}>Version ID:</span>{" "}
-        {curVersion.id}
+        {curVersion?.id}
       </div>
       <div>
         <span className={classes["info__name"]}>Base model: </span>
@@ -46,14 +53,14 @@ const ModelInfo = ({ customData }) => {
       )}
       <div>
         <span className={classes["info__name"]}>Version:</span>{" "}
-        {curVersion?.name}
+        {customData?.name || curVersion?.name}
         <div>
           {" "}
           {" ("}
           <LinkA
             // target="blank"
             external={true}
-            href={`https://${model?.src}/models/${model?.id}?modelVersionId=${curVersion.id}`}
+            href={`https://${model?.src}/models/${model?.id}?modelVersionId=${curVersion?.id}`}
             className={classes.link}
           >
             civitai
@@ -75,15 +82,11 @@ const ModelInfo = ({ customData }) => {
           {")"}
         </div>
       </div>
-      {(customData?.fileName || curVersion.hasOwnProperty("files")) &&
-        !!curVersion?.files?.length && (
-          <div>
-            <span className={classes["info__name"]}>File:</span>{" "}
-            {customData?.fileName ||
-              (curVersion.hasOwnProperty("files") &&
-                curVersion?.files.find((file) => file?.primary)?.name)}
-          </div>
-        )}
+      {fileName && (
+        <div>
+          <span className={classes["info__name"]}>File:</span> {fileName}
+        </div>
+      )}
       {viersionVAE && (
         <div>
           <span className={classes["info__name"]}>VAE:</span> {viersionVAE}

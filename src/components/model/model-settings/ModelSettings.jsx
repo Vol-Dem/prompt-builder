@@ -14,7 +14,7 @@ import {
   makeBatchRequest,
   saveVersionImages,
 } from "../../../utils/fetchUtils";
-import { doc, getFirestore, updateDoc } from "firebase/firestore";
+import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
 import { deleteModel } from "../../../store/model";
 // import Modal from "../../ui/Modal";
@@ -75,17 +75,46 @@ const ModelSettings = () => {
         throw new Error(OFFLINE_ERROR_MESSAGE);
       }
 
-      const newModelData = await getModelData(
-        model.id,
-        model.data.modelVersions
+      const updateModelRes = await fetch(
+        `http://127.0.0.1:5001/aide-tools/us-central1/updateModel?modelId=${model.id}`
       );
+      const updateModelResData = await updateModelRes.json();
 
-      const newVersions = newModelData.modelVersions.filter(
+      if (!updateModelResData?.modelId) {
+        throw new Error("Failed to update");
+      }
+
+      console.log("MESSSSS", updateModelResData.message);
+
+      let newModelData;
+
+      const modelDefDataRef = doc(firestore, "models", `${model.id}`);
+
+      const docSnap = await getDoc(modelDefDataRef);
+
+      if (docSnap.exists()) {
+        newModelData = docSnap.data();
+      }
+
+      // if (!updateModelResData?.updated) {
+      //   const modelDefDataRef = doc(firestore, "models", `${model.id}`);
+
+      //   const docSnap = await getDoc(modelDefDataRef);
+
+      //   if (docSnap.exists()) {
+      //     newModelData = docSnap.data();
+      //   }
+      // } else {
+      //   newModelData = await getModelData(model.id, model.data.modelVersions);
+      // }
+
+      const newVersions = newModelData?.modelVersions?.filter(
         (version) =>
-          !model?.data?.modelVersions?.some(
-            (oldVersions) => version?.id === oldVersions?.id
+          !Object.values(model?.modelVersionsCustomData)?.some(
+            (oldVersions) => version?.id === oldVersions?.versionId
           )
       );
+      console.log("NEW VER", newVersions);
 
       // newVersions.forEach((version) => {
       //   version.images.forEach((image) => {
@@ -128,8 +157,10 @@ const ModelSettings = () => {
 
         newVersionsCustomData[version.id] = {
           versionId: version.id,
+          name: version.name,
           versionName: version.name,
           baseModel: version.baseModel,
+          index: version.index,
           defFileName: fileName || "",
           versionImageUrl:
             version.images?.filter((img, i) => img.type === "image")[0]?.url ||
@@ -185,7 +216,7 @@ const ModelSettings = () => {
       await updateDoc(
         modelsRef,
         {
-          data: newModelData,
+          // data: newModelData,
           modelVersionsCustomData: modelVersionsCustomData,
         },
         { merge: true }
@@ -202,19 +233,19 @@ const ModelSettings = () => {
         { merge: true }
       );
 
-      if (newModelData?.creator?.username && !!newVersions.length) {
-        const versionsWithUserName = newModelData?.modelVersions?.map(
-          (version) => {
-            return {
-              ...version,
-              modelId: newModelData.id,
-              username: newModelData.creator.username,
-            };
-          }
-        );
+      // if (newModelData?.creator?.username && !!newVersions.length) {
+      //   const versionsWithUserName = newModelData?.modelVersions?.map(
+      //     (version) => {
+      //       return {
+      //         ...version,
+      //         modelId: newModelData.id,
+      //         username: newModelData.creator.username,
+      //       };
+      //     }
+      //   );
 
-        await makeBatchRequest(versionsWithUserName, saveVersionImages);
-      }
+      //   await makeBatchRequest(versionsWithUserName, saveVersionImages);
+      // }
 
       seteSuccessMessage("Updated");
       setIsLoading(false);
@@ -246,30 +277,30 @@ const ModelSettings = () => {
     }
   };
 
-  const modelVersionsHtml = model?.data?.modelVersions?.flatMap(
-    (version, i) => {
-      const versionIsSaved =
-        model.modelVersionsCustomData[version.id]?.downloadStatus;
-      const modelName = model.modelVersionsCustomData[version.id]?.name;
+  const modelVersionsHtml = Object.values(
+    model?.modelVersionsCustomData
+  )?.flatMap((version, i) => {
+    const versionIsSaved =
+      model.modelVersionsCustomData[version.id]?.downloadStatus;
+    // const modelName = model.modelVersionsCustomData[version.id]?.name;
 
-      if (!versionIsSaved) {
-        return [];
-      }
-      return (
-        <li
-          key={i}
-          id={version.id}
-          data-version={i}
-          onClick={switchTabHandler}
-          className={`${classes["menu-item"]} ${
-            curTab === version.id + "" ? classes["menu-item--active"] : ""
-          }`}
-        >
-          {modelName || version.name}
-        </li>
-      );
+    if (!version.downloadStatus) {
+      return [];
     }
-  );
+    return (
+      <li
+        key={i}
+        id={version.versionId}
+        data-version={i}
+        onClick={switchTabHandler}
+        className={`${classes["menu-item"]} ${
+          curTab === version.versionId + "" ? classes["menu-item--active"] : ""
+        }`}
+      >
+        {version.name}
+      </li>
+    );
+  });
 
   const openMenuHandler = () => {
     setMobileMenuIsOpen((prevState) => !prevState);

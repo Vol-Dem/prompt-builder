@@ -447,10 +447,14 @@ const GeneratedImages = ({ customData }) => {
 
     if (!curImagesModelVersionId) return;
     if (!model.savedImages.hasOwnProperty(curImagesModelVersionId)) {
-      const latesVersionId = model.data.modelVersions.find((version) =>
-        model.savedImages.hasOwnProperty(version.id)
-      ).id;
-      setCurImagesModelVersionId(latesVersionId);
+      const latesVersionId = Object.values(model.modelVersionsCustomData)
+        .sort((a, b) => a?.index - b?.index)
+        .find((version) =>
+          model.savedImages.hasOwnProperty(version.versionId)
+        )?.versionId;
+      if (latesVersionId) {
+        setCurImagesModelVersionId(latesVersionId);
+      }
     }
     if (!!examplesImgData.length) return;
 
@@ -576,36 +580,37 @@ const GeneratedImages = ({ customData }) => {
     getallExamples(model.id, curImagesModelVersionId, nextCursor);
   };
 
-  const modelImageVersionsHtml = model?.data?.modelVersions.flatMap(
-    (version, i) => {
-      const isSaved =
-        model?.savedImages &&
-        Object.keys(model.savedImages).includes(`${version.id}`);
-      const versionIsSaved =
-        model.modelVersionsCustomData[version.id]?.downloadStatus;
+  const modelImageVersionsHtml =
+    model?.modelVersionsCustomData &&
+    Object.values(model?.modelVersionsCustomData)
+      ?.sort((a, b) => a?.index - b?.index)
+      .flatMap((version, i) => {
+        const isSaved =
+          model?.savedImages &&
+          Object.keys(model.savedImages).includes(`${version.versionId}`);
+        const versionIsSaved = version.downloadStatus;
 
-      if (curExampleImgsType === "saved" && !isSaved) {
-        return [];
-      }
-      return (
-        <li
-          key={i}
-          ref={versionsItemRef}
-          id={version.id}
-          data-version={i}
-          onClick={openSavedVersionImagesHandler}
-          className={`${classes.version} ${
-            curImagesModelVersionId === version.id
-              ? classes["version--active"]
-              : ""
-          }
+        if (curExampleImgsType === "saved" && !isSaved) {
+          return [];
+        }
+        return (
+          <li
+            key={i}
+            ref={versionsItemRef}
+            id={version.versionId}
+            data-version={i}
+            onClick={openSavedVersionImagesHandler}
+            className={`${classes.version} ${
+              curImagesModelVersionId === version.versionId
+                ? classes["version--active"]
+                : ""
+            }
         ${versionIsSaved ? classes["version--downloaded"] : ""}`}
-        >
-          {version.name}
-        </li>
-      );
-    }
-  );
+          >
+            {version.name}
+          </li>
+        );
+      });
 
   // const deletePostHandler = useCallback(
   //   (id) => {

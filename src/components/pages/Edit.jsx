@@ -4,7 +4,7 @@ import classes from "./Edit.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { modelActions } from "../../store/model";
 import { useEffect, useState } from "react";
-import { doc, getFirestore, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
 import firebaseApp from "../../firebase-config";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
@@ -48,6 +48,7 @@ const Edit = ({ title }) => {
           if (!data) {
             setErrorMessage("Failed to load model");
             setIsLoading(false);
+            unsub();
             return;
           }
           dispatch(modelActions.setModelData(data));
@@ -71,6 +72,30 @@ const Edit = ({ title }) => {
       }
     };
   }, [modelId, isAuth, dispatch, uid]);
+
+  useEffect(() => {
+    if (!modelId) return;
+
+    const getDefModelData = async () => {
+      console.log(model.id);
+      const modelDefDataRef = doc(firestore, "models", `${modelId}`);
+
+      const docSnap = await getDoc(modelDefDataRef);
+
+      if (docSnap.exists()) {
+        const modelDefData = docSnap.data();
+        console.log(modelDefData);
+
+        dispatch(
+          modelActions.setModelData({
+            data: modelDefData,
+          })
+        );
+      }
+    };
+
+    getDefModelData();
+  }, [model?.id, dispatch]);
 
   return (
     <div>

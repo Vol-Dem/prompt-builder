@@ -39,11 +39,11 @@ const modelSlice = createSlice({
   initialState: initialModelState,
   reducers: {
     setModelData(state, actions) {
-      if (actions.payload?.id) {
-        state.model = actions.payload;
-      } else {
-        state.model = { ...state.model, ...actions.payload };
-      }
+      // if (actions.payload?.id) {
+      //   state.model = actions.payload;
+      // } else {
+      state.model = { ...state.model, ...actions.payload };
+      // }
     },
     resetModelData(state, actions) {
       state.model = {};

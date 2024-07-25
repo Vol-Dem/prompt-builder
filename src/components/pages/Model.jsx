@@ -102,40 +102,56 @@ const Model = ({ title }) => {
     // setCurVersionImages({ items: modelImages, versionId: curVersion?.id });
 
     const getCurVersionImages = async () => {
-      console.log("GET CUR VER IMAGES");
-      console.log(uid);
-      console.log(model?.id);
-      console.log(curVersion?.id);
-      const modelDefImagesRef = doc(
-        firestore,
-        "users",
-        uid,
-        "models",
-        model?.id + "",
-        "defaultImages",
-        curVersion?.id + ""
-      );
+      try {
+        console.log("GET CUR VER IMAGES");
+        console.log(uid);
+        console.log(model?.id);
+        console.log(curVersion?.id);
+        const modelDefImagesRef = doc(
+          firestore,
+          "models",
+          model?.id + "",
+          "defaultImages",
+          curVersion?.id + ""
+        );
 
-      const docSnap = await getDoc(modelDefImagesRef);
+        const docSnap = await getDoc(modelDefImagesRef);
 
-      if (docSnap.exists()) {
-        console.log("Document data:", docSnap.data());
-        const curImages = docSnap.data().items;
-        console.log(curImages);
+        if (docSnap.exists()) {
+          console.log("Document data:", docSnap.data());
+          const curImages = docSnap.data().items;
+          console.log(curImages);
 
-        const modelImages = nsfwMode
-          ? curImages
-          : curImages?.filter(
-              (image) =>
-                image?.nsfw === "None" ||
-                image?.nsfwLevel <= 1 ||
-                image?.nsfw === false
-            );
+          const modelImages = nsfwMode
+            ? curImages
+            : curImages?.filter(
+                (image) =>
+                  image?.nsfw === "None" ||
+                  image?.nsfwLevel <= 1 ||
+                  image?.nsfw === false
+              );
 
-        console.log(modelImages);
-        setCurVersionImages({ items: modelImages, versionId: curVersion?.id });
-      } else {
-        setCurVersionImages({ items: modelImages, versionId: curVersion?.id });
+          console.log(modelImages);
+          setCurVersionImages({
+            items: modelImages,
+            versionId: curVersion?.id,
+          });
+        } else {
+          console.log("NO DEF IMAGES");
+          console.log(curVersion);
+          console.log(curVersion.images);
+          const defVersionImages = model?.data?.modelVersions.find(
+            (version) => version?.id === curVersion?.id
+          ).images;
+          if (!!defVersionImages?.length) {
+            setCurVersionImages({
+              items: defVersionImages,
+              versionId: curVersion?.id,
+            });
+          }
+        }
+      } catch (err) {
+        console.log(err.message);
       }
     };
 
@@ -173,6 +189,7 @@ const Model = ({ title }) => {
           if (!data) {
             setErrorMessage("Failed to load model");
             setIsLoading(false);
+            unsub();
             return;
           }
           dispatch(modelActions.setModelData(data));
@@ -188,6 +205,7 @@ const Model = ({ title }) => {
     return () => {
       // console.log("MODEL RESET");
       setErrorMessage("");
+      setCurVersionImages({});
       dispatch(modelActions.setCurVersion({}));
       dispatch(modelActions.setModelData({}));
       dispatch(modelActions.setActiveCarouselData({}));
@@ -199,18 +217,61 @@ const Model = ({ title }) => {
   }, [modelId, isAuth, dispatch, uid]);
 
   useEffect(() => {
-    if (!Object.keys(model).length) return;
+    if (!model?.id) return;
+
+    const getDefModelData = async () => {
+      console.log(model.id);
+      const modelDefDataRef = doc(firestore, "models", `${model.id}`);
+
+      const docSnap = await getDoc(modelDefDataRef);
+
+      if (docSnap.exists()) {
+        const modelDefData = docSnap.data();
+        console.log(modelDefData);
+
+        dispatch(
+          modelActions.setModelData({
+            data: modelDefData,
+          })
+        );
+      }
+    };
+
+    getDefModelData();
+  }, [model?.id, dispatch]);
+
+  useEffect(() => {
+    if (
+      !Object.keys(model).length ||
+      !model?.modelVersionsCustomData ||
+      !model?.data
+    )
+      return;
     console.log(state?.versionId);
     let curVersionId;
+    // const modelVersions = Object.values(model?.modelVersionsCustomData)
+    const modelVersions = model?.data?.modelVersions
+      .filter((version) =>
+        Object.keys(model?.modelVersionsCustomData).includes(`${version.id}`)
+      )
+      .sort((a, b) => a?.index - b?.index)
+      .map((version) => {
+        return {
+          ...version,
+          // modelId: model.id,
+          id: version.id,
+          name: version.name,
+        };
+      });
+    console.log(modelVersions);
+    console.log(model?.data?.modelVersions);
     if (
       state?.versionId &&
-      !!model.data.modelVersions.find(
-        (version) => version.id === state?.versionId
-      )
+      !!modelVersions?.find((version) => version.id === state?.versionId)
     ) {
       curVersionId = state?.versionId;
     } else {
-      curVersionId = model.data.modelVersions.find(
+      curVersionId = modelVersions?.find(
         (version) =>
           model?.modelVersionsCustomData.hasOwnProperty(version.id) &&
           model.modelVersionsCustomData[version.id].downloadStatus
@@ -218,18 +279,18 @@ const Model = ({ title }) => {
     }
     //  const curVersionId =
     //   state?.versionId ||
-    //   model.data.modelVersions.find(
+    //   modelVersions.find(
     //     (version) =>
     //       model?.modelVersionsCustomData.hasOwnProperty(version.id) &&
     //       model.modelVersionsCustomData[version.id].downloadStatus
     //   )?.id;
     console.log(state?.versionId);
     const curVersionData = curVersionId
-      ? model.data.modelVersions.find((version) => version.id === curVersionId)
-      : model.data.modelVersions[0];
+      ? modelVersions?.find((version) => version.id === curVersionId)
+      : modelVersions[0];
     console.log(curVersionData);
-    console.log(model.data.modelVersions);
-    if (model.data.id !== curVersion?.modelId)
+    console.log(modelVersions);
+    if (model.id !== curVersion?.modelId)
       dispatch(modelActions.setCurVersion(curVersionData));
   }, [model, dispatch, curVersion?.modelId, state?.versionId]);
 
@@ -247,7 +308,10 @@ const Model = ({ title }) => {
         curVersionCustomData?.name ||
         curVersionCustomData?.versionName ||
         curVersion.name,
-      imgUrl: curVersion?.images ? curVersion?.images[0]?.url : "",
+      // imgUrl: curVersion?.images ? curVersion?.images[0]?.url : "",
+      imgUrl: curVersionImages?.items?.length
+        ? curVersionImages?.items[0]?.url
+        : "",
       modelType: model?.data?.type,
       baseModel: curVersion?.baseModel,
       mainTag: curVersionCustomData?.mainTag || model?.mainTag,
@@ -275,7 +339,7 @@ const Model = ({ title }) => {
 
     if (!curImagesModelVersionId)
       setCurImagesModelVersionId(curCustomVersion?.versionId || curVersion.id);
-  }, [model, curVersion, curImagesModelVersionId]);
+  }, [model, curVersion, curImagesModelVersionId, curVersionImages]);
 
   useEffect(() => {
     console.log(state);
@@ -308,31 +372,39 @@ const Model = ({ title }) => {
   const modelImagesHtml = (
     <div id={curVersion?.name}>
       <Carousel
-        imagesData={curVersionImages.items}
-        versionId={curVersion.id}
+        imagesData={curVersionImages?.items}
+        versionId={curVersion?.id}
         saved={false}
       />
     </div>
   );
 
-  const modelVersionsHtml = model?.data?.modelVersions.map((version, i) => {
-    const isSaved = model.modelVersionsCustomData[version.id]?.downloadStatus;
-    return (
-      <li
-        key={i}
-        ref={versionsItemRef}
-        id={version.id}
-        data-version={i}
-        onClick={openVersionHandler}
-        className={`${classes.version} ${
-          curVersion?.id === version.id ? classes["version--active"] : ""
-        }
-        ${isSaved ? classes["version--downloaded"] : ""}`}
-      >
-        {version.name}
-      </li>
-    );
-  });
+  const modelVersionsHtml =
+    model?.modelVersionsCustomData &&
+    Object.values(model?.modelVersionsCustomData)
+      ?.sort((a, b) => a?.index - b?.index)
+      .map((version, i) => {
+        // const isSaved =
+        //   model?.modelVersionsCustomData?.hasOwnProperty(version.id) &&
+        //   model?.modelVersionsCustomData[version.id]?.downloadStatus;
+        return (
+          <li
+            key={i}
+            ref={versionsItemRef}
+            id={version.versionId}
+            data-version={i}
+            onClick={openVersionHandler}
+            className={`${classes.version} ${
+              curVersion?.id === version.versionId
+                ? classes["version--active"]
+                : ""
+            }
+        ${version?.downloadStatus ? classes["version--downloaded"] : ""}`}
+          >
+            {version.name}
+          </li>
+        );
+      });
 
   const subCatsHtml = useMemo(() => {
     return model?.sub?.map((sub, i) => {
@@ -555,9 +627,7 @@ const Model = ({ title }) => {
             <div
               ref={descriptionRef}
               dangerouslySetInnerHTML={{
-                __html:
-                  model?.defaultCustomData?.description ||
-                  model?.data?.description,
+                __html: model?.defaultCustomData?.description,
               }}
             />
 
