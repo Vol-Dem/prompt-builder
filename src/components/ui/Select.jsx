@@ -102,55 +102,60 @@ const Select = ({
   });
 
   return (
-    <div onClick={onShowSelect}>
-      <div className={`${classes["select"]} ${className || ""}`}>
-        {label && (
-          <label htmlFor={id} className={classes.label}>
-            {label}
-          </label>
-        )}
-        <div className={classes["select__input"]}>
-          {/* <span
+    <div>
+      {label && (
+        <label htmlFor={id} className={classes.label}>
+          {label}
+        </label>
+      )}
+      <div className={classes["container"]}>
+        {/* <span
+        onClick={onShowSelect}
+        className={`${classes["select__arrow"]} ${
+          selectIsOpen ? classes["select__arrow--open"] : ""
+        }`}
+      ></span> */}
+        <ArrowDownSvg
           className={`${classes["select__arrow"]} ${
             selectIsOpen ? classes["select__arrow--open"] : ""
           }`}
-        ></span> */}
-          <ArrowDownSvg
-            className={`${classes["select__arrow"]} ${
-              selectIsOpen ? classes["select__arrow--open"] : ""
-            }`}
-            // onClick={onShowSelect}
-          />
-          <Input
-            id={id}
-            className={classes["select__input-field"]}
-            type="text"
-            placeholder="-"
-            input={{ readOnly: true }}
-            value={selectedFieldName}
-          />
-        </div>
-        <fieldset
-          style={
-            optionsFieldHeight && selectIsOpen
-              ? { height: `${optionsFieldHeight}px` }
-              : {}
-          }
-          className={`${classes["select__field"]} ${
-            !selectIsOpen ? classes["select__field--hide"] : ""
-          }`}
+        />
+        <div
+          onClick={onShowSelect}
+          className={`${classes["select"]} ${className || ""}`}
         >
-          <div
-            className={classes["select__field-container"]}
+          <div className={classes["select__input"]}>
+            <Input
+              id={id}
+              className={classes["select__input-field"]}
+              type="text"
+              placeholder="-"
+              input={{ readOnly: true }}
+              value={selectedFieldName}
+            />
+          </div>
+          <fieldset
             style={
-              options.length <= visibleOptionsAmount
-                ? { overflowY: `unset` }
+              optionsFieldHeight && selectIsOpen
+                ? { height: `${optionsFieldHeight}px` }
                 : {}
             }
+            className={`${classes["select__field"]} ${
+              !selectIsOpen ? classes["select__field--hide"] : ""
+            }`}
           >
-            {selectOptions}
-          </div>
-        </fieldset>
+            <div
+              className={classes["select__field-container"]}
+              style={
+                options.length <= visibleOptionsAmount
+                  ? { overflowY: `unset` }
+                  : {}
+              }
+            >
+              {selectOptions}
+            </div>
+          </fieldset>
+        </div>
       </div>
     </div>
   );

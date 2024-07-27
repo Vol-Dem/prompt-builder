@@ -1,5 +1,11 @@
 @use "../../variables/variables.scss" as var;
 
+.container {
+  position: relative;
+  background-color: var.$color-input-bg;
+  border-radius: 10px;
+}
+
 .select {
   position: relative;
   &__arrow {
@@ -8,11 +14,12 @@
     right: 0.6rem;
     top: 50%;
     transform: translateY(-50%);
-    width: 1.6rem;
+    width: 1.4rem;
     color: var.$color-text-gray;
-    // height: 50%;
+    height: 1.4rem;
+    margin-top: 0.1rem;
     // background-color: var.$color-text-gray;
-    clip-path: polygon(0 25%, 50% 60%, 100% 25%, 100% 40%, 50% 80%, 0 40%);
+    // clip-path: polygon(0 25%, 50% 60%, 100% 25%, 100% 40%, 50% 80%, 0 40%);
     transition: all 0.3s;
     cursor: pointer;
 
@@ -28,6 +35,7 @@
 
   &__input-field {
     padding-left: 1.2rem;
+    background-color: transparent;
     cursor: pointer;
   }
 

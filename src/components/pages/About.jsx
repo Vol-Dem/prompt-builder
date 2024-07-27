@@ -20,6 +20,20 @@ const About = ({ title }) => {
         so, you can use the generated prompt in any web interface or for online
         generation on Civitai.
       </p>
+
+      <div className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}>
+        <img
+          className={classes["img"]}
+          src={require("../../assets/about/1-start-1.png")}
+          alt=""
+        />
+
+        <img
+          className={classes["img"]}
+          src={require("../../assets/about/1-start-2.png")}
+          alt=""
+        />
+      </div>
       <p className={classes["about__text"]}>
         With the help of the AIde-tools platform you can create your own
         collection of your favorite models and easily work with them:
@@ -198,21 +212,7 @@ const About = ({ title }) => {
             </a>
           </li>
         </ul>
-        <div
-          className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}
-        >
-          <img
-            className={classes["img"]}
-            src={require("../../assets/about/1-start-1.png")}
-            alt=""
-          />
 
-          <img
-            className={classes["img"]}
-            src={require("../../assets/about/1-start-2.png")}
-            alt=""
-          />
-        </div>
         {/* <p className={classes["about__text"]}>
           Below is a guide to the main features of the platform.
         </p> */}
@@ -276,13 +276,12 @@ const About = ({ title }) => {
           Prompt input is available in two modes: tag mode and text mode.
         </p>
         <p className={classes["about__text"]}>
-          When adding a model, the trigger words used in the prompt are
-          automatically converted into tags and displayed as such in the model
-          or image card. The tag system allows you to add and remove trigger
-          words from the prompt with one click, easily match your prompt with
-          the prompt of a generated reference image by seeing which trigger
-          words are already used and which need to be added. Tags that are
-          already added will be highlighted.
+          Trigger words of each model, as well as generation prompt of all
+          images, are displayed as tags. The tag system allows you to add and
+          remove trigger words from the prompt with one click, easily match your
+          prompt with the prompt of a generated reference image by seeing which
+          trigger words are already used and which need to be added. Tags that
+          are already added will be highlighted.
         </p>
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}

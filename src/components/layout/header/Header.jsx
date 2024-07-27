@@ -41,7 +41,6 @@ const Header = (props) => {
     <header
       ref={headerRef}
       className={`${classes.header}
-       ${classes["header--sticky"]} 
        ${isFixed ? classes["header--fixed"] : ""} 
        ${isFixed && promptIsOpen ? classes["header--fixed-open"] : ""} 
       ${isFixed && !promptIsOpen ? classes["header--fixed-closed"] : ""} 
