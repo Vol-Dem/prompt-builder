@@ -1,0 +1,119 @@
+@use "./../../variables/variables.scss" as var;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section {
+  //   display: flex;
+  //   align-items: center;
+  gap: 4rem;
+  width: 100%;
+  //   justify-content: center;
+  flex-grow: 1;
+  //   font-size: 1.6rem;
+  margin: 1rem auto;
+  margin-bottom: 2rem;
+  padding: 6rem 6rem;
+  border-radius: 10px;
+  background-color: rgba(var.$color-background-tertiary, 0.7);
+  background-color: #1f1931;
+  background: linear-gradient(to top left, #1f1931, #5a3ab2);
+  background: linear-gradient(to top left, #1f1931, #382a5f);
+  background: linear-gradient(to bottom right, #1f1931, #382a5f);
+  background: linear-gradient(to bottom right, #1f1931, #291f44);
+  background: linear-gradient(
+    to bottom right,
+    var.$color-background-tertiary,
+    #291f44
+  );
+  background: linear-gradient(
+    to bottom right,
+    var.$color-background-secondary,
+    #232835
+  );
+  // background: linear-gradient(to top left, #1f1931, #3e255a);
+  // background-color: rgba(var.$color-background-tertiary, 1);
+  box-shadow: var.$box-shadow;
+  box-shadow: var.$box-shadow-inset;
+
+  &__title {
+    font-size: 2.8rem;
+    padding-left: 1rem;
+    border-left: 5px solid var.$color-primary;
+    margin-bottom: 2.8rem;
+  }
+
+  &__content {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+    margin-top: 2rem;
+
+    &__text {
+      margin-bottom: 1.6rem;
+      font-size: 1.6rem;
+    }
+  }
+
+  &__img-wrap {
+    width: 50rem;
+    flex-shrink: 0;
+  }
+
+  &__img {
+    width: 100%;
+    box-shadow: var.$box-shadow;
+  }
+}
+
+.section--hero {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+  justify-content: center;
+  flex-grow: 1;
+  font-size: 1.6rem;
+  padding: 12rem 7rem;
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    max-width: 44rem;
+    text-align: center;
+  }
+
+  &__text {
+    margin-bottom: 1.6rem;
+    font-size: 1.8rem;
+  }
+}
+
+.logo {
+  width: 30rem;
+  margin-bottom: 1rem;
+
+  & img {
+    width: 100%;
+  }
+}
+
+.section--hero__content .btn-hero {
+  width: 20rem;
+  width: 100%;
+  padding: 1rem 2rem;
+  // align-self: flex-end;
+  // margin-right: 4rem;
+  margin-top: 1rem;
+  font-size: 1.6rem;
+}
+
+.link {
+  @include var.linkA;
+}

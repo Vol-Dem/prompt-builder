@@ -95,7 +95,7 @@ const Edit = ({ title }) => {
     };
 
     getDefModelData();
-  }, [model?.id, dispatch]);
+  }, [model?.id, dispatch, modelId]);
 
   return (
     <div>

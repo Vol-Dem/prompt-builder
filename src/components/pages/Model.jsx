@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import classes from "./Model.module.scss";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Carousel from "../carousel/Carousel";
@@ -89,16 +95,38 @@ const Model = ({ title }) => {
     }
   }, [model?.id]);
 
+  const filterNsfwImages = useCallback((images) => {
+    return images?.filter(
+      (image) =>
+        image?.nsfw === "None" || image?.nsfwLevel <= 1 || image?.nsfw === false
+    );
+  }, []);
+
+  useEffect(() => {
+    if (
+      curVersionImages?.versionId === curVersion?.id &&
+      curVersionImages?.nsfw !== !!nsfwMode
+    ) {
+      const filteredModelImages = !!nsfwMode
+        ? curVersionImages?.items
+        : filterNsfwImages(curVersionImages?.items);
+      console.log("FILETRED IMAGES", filteredModelImages);
+      console.log(curVersionImages);
+      setCurVersionImages({
+        items: curVersionImages?.items,
+        filteredItems: filteredModelImages,
+        versionId: curVersion?.id,
+        nsfw: !!nsfwMode,
+      });
+    }
+  }, [curVersionImages, curVersion?.id, nsfwMode, filterNsfwImages]);
+
   useEffect(() => {
     if (curVersionImages?.versionId === curVersion?.id) return;
-    const modelImages = nsfwMode
-      ? curVersion?.images
-      : curVersion?.images?.filter(
-          (image) =>
-            image?.nsfw === "None" ||
-            image?.nsfwLevel <= 1 ||
-            image?.nsfw === false
-        );
+    // const modelImages = nsfwMode
+    //   ? curVersion?.images
+    //   : filterNsfwImages(curVersion?.images);
+
     // setCurVersionImages({ items: modelImages, versionId: curVersion?.id });
 
     const getCurVersionImages = async () => {
@@ -119,22 +147,19 @@ const Model = ({ title }) => {
 
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
-          const curImages = docSnap.data().items;
+          const curImages = docSnap.data()?.items;
           console.log(curImages);
 
           const modelImages = nsfwMode
             ? curImages
-            : curImages?.filter(
-                (image) =>
-                  image?.nsfw === "None" ||
-                  image?.nsfwLevel <= 1 ||
-                  image?.nsfw === false
-              );
+            : filterNsfwImages(curImages);
 
           console.log(modelImages);
           setCurVersionImages({
-            items: modelImages,
+            items: curImages,
+            filteredItems: modelImages,
             versionId: curVersion?.id,
+            nsfw: !!nsfwMode,
           });
         } else {
           console.log("NO DEF IMAGES");
@@ -142,11 +167,17 @@ const Model = ({ title }) => {
           console.log(curVersion.images);
           const defVersionImages = model?.data?.modelVersions.find(
             (version) => version?.id === curVersion?.id
-          ).images;
+          )?.images;
+          const modelImages = nsfwMode
+            ? defVersionImages
+            : filterNsfwImages(defVersionImages);
+
           if (!!defVersionImages?.length) {
             setCurVersionImages({
-              items: defVersionImages,
+              items: defVersionImages || [],
+              filteredItems: modelImages,
               versionId: curVersion?.id,
+              nsfw: !!nsfwMode,
             });
           }
         }
@@ -158,7 +189,14 @@ const Model = ({ title }) => {
     if (!!model?.id && !!curVersion?.id) {
       getCurVersionImages();
     }
-  }, [model?.id, curVersion, nsfwMode, uid, curVersionImages?.versionId]);
+  }, [
+    model,
+    curVersion,
+    nsfwMode,
+    uid,
+    curVersionImages?.versionId,
+    filterNsfwImages,
+  ]);
 
   useEffect(() => {
     if (!descHeight && descriptionRef?.current?.offsetHeight !== descHeight) {
@@ -372,7 +410,7 @@ const Model = ({ title }) => {
   const modelImagesHtml = (
     <div id={curVersion?.name}>
       <Carousel
-        imagesData={curVersionImages?.items}
+        imagesData={curVersionImages?.filteredItems}
         versionId={curVersion?.id}
         saved={false}
       />

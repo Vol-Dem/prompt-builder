@@ -20,6 +20,8 @@ const Carousel3d = () => {
 
   const transitionEndHandler = useCallback(() => {
     setTransitionEnd(true);
+    document.removeEventListener("transitionstart", transitionStartHandler);
+    document.removeEventListener("transitionend", transitionEndHandler);
     console.log("STRAT");
 
     if (curSlideIndex === carouselImages?.length) {
@@ -27,7 +29,7 @@ const Carousel3d = () => {
       setTransitionSec(0);
       setCurSlideIndex(0);
     }
-  }, [curSlideIndex]);
+  }, [curSlideIndex, transitionStartHandler]);
 
   useEffect(() => {
     if (curSlideIndex > 2 && !!carouselImages?.length) {
@@ -43,14 +45,14 @@ const Carousel3d = () => {
       document.removeEventListener("transitionstart", transitionStartHandler);
       document.removeEventListener("transitionend", transitionEndHandler);
     };
-  }, [transitionStartHandler, transitionEndHandler]);
+  }, [transitionStartHandler, transitionEndHandler, curSlideIndex]);
 
   useEffect(() => {
     if (carouselImages?.length) {
       clearInterval(intervalRef?.current);
       intervalRef.current = setInterval(() => {
         setCurSlideIndex((prevState) => {
-          if (prevState > carouselImages.length) {
+          if (prevState > carouselImages?.length) {
             return 0;
           }
           setTransitionSec(0.9);
@@ -62,13 +64,13 @@ const Carousel3d = () => {
     return () => {
       clearInterval(intervalRef.current);
     };
-  }, [carouselImages?.length]);
+  }, []);
 
   const imagesHtml = useMemo(
     () =>
       carouselImages.map((image, i) => {
         const trans = curSlideIndex - i;
-        console.log(`Image ${i}`, `Cur ${curSlideIndex}`, trans);
+        // console.log(`Image ${i}`, `Cur ${curSlideIndex}`, trans);
 
         return (
           <li
@@ -81,11 +83,11 @@ const Carousel3d = () => {
               zIndex: carouselImages.length * 2 - i,
             }}
           >
-            <img className={classes.image} src={image} alt={`image${i + 1}`} />
+            <img className={classes.image} src={image} alt={`slide${i + 1}`} />
           </li>
         );
       }),
-    [carouselImages, curSlideIndex]
+    [curSlideIndex, transitionSec]
   );
 
   const imagesHtmlLeft = useMemo(
@@ -106,11 +108,11 @@ const Carousel3d = () => {
               zIndex: carouselImages.length - i,
             }}
           >
-            <img className={classes.image} src={image} alt={`image${i + 1}`} />
+            <img className={classes.image} src={image} alt={`slide${i + 1}`} />
           </li>
         );
       }),
-    [carouselImages, curSlideIndex]
+    [curSlideIndex, transitionSec]
   );
 
   return (

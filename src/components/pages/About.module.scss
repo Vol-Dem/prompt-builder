@@ -16,7 +16,6 @@
     margin-top: 4rem;
     margin-bottom: 2rem;
     padding-left: 1rem;
-    // margin-left: -1.4rem;
     border-left: 5px solid var.$color-primary;
   }
   &__h3 {
@@ -69,7 +68,6 @@
 
 .img-block {
   display: grid;
-
   margin: 4rem 0;
 
   &--col-1 {
@@ -94,10 +92,13 @@
 }
 
 .img {
-  //   width: 55rem;
   display: block;
   width: 100%;
-  //   max-width: 80%;
-  //   margin-right: 1rem;
   box-shadow: var.$box-shadow-dark;
+  transition: all 0.2s ease-in;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.005);
+  }
 }

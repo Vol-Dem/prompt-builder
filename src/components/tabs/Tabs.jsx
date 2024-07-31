@@ -74,49 +74,6 @@ const Tabs = () => {
               Use "New resource" button at the top right to add your first model
             </span>
           )}
-        {/* {!isAuth && (
-          <div className={classes["intro"]}>
-            <p className={classes["intro__text"]}>
-              Welcome to AIDE-TOOLS – a platform that will allow you to create
-              your own collection of models for generating images and easily
-              work with prompts.
-            </p>
-            <p className={classes["intro__text"]}>
-              I created this project for personal use to make prompt building
-              fast and convenient, developed and added here many features that
-              create a comfortable space for working with models, references and
-              images and greatly simplify the work of building prompts for
-              generating images. And now I am sharing this convenient tool with
-              you.
-            </p>
-            <p className={classes["intro__text"]}>
-              You can learn about the capabilities of the service in the{" "}
-              <a className={classes.link} href="">
-                "About"
-              </a>{" "}
-              section.
-            </p>
-            <p className={classes["intro__text"]}>
-              This is a non-commercial project, so if you like using this
-              platform, support me on{" "}
-              <a className={classes.link} href="">
-                Patreon
-              </a>{" "}
-              and{" "}
-              <a className={classes.link} href="">
-                Ko-fi
-              </a>
-              . There you can also leave your suggestions for this project.
-            </p>
-            <p className={classes["intro__text"]}>
-              To get started,{" "}
-              <a className={classes.link} href="">
-                create an account or log in
-              </a>
-              .
-            </p>
-          </div>
-        )} */}
         {userDataIsLoading && (
           <div>
             <Spinner size="medium" />

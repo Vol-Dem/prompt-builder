@@ -49,6 +49,7 @@ const ModelsList = () => {
   const activeTab = useSelector((state) => state.tabs.currTab);
   const activeCategory = useSelector((state) => state.tabs.currCategory);
   const activeSubcategory = useSelector((state) => state.tabs.currSubcategory);
+  const errorMessage = useSelector((state) => state.tabs.errorMessage);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const endPage = useRef(null);
   // const isIntersecting = useIntersection(endPage, false);
@@ -161,9 +162,10 @@ const ModelsList = () => {
 
       <div className={classes["category"]}>{loraHtml}</div>
 
-      {!loraHtml?.length && !isLoading && isOnline && (
+      {!loraHtml?.length && !errorMessage && !isLoading && isOnline && (
         <div className={classes.empty}>This category is empty</div>
       )}
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {!isOnline && <ErrorMessage>{OFFLINE_ERROR_MESSAGE}</ErrorMessage>}
       <div ref={endPage}></div>
       {/* {!isLoading && !isLastPage && (

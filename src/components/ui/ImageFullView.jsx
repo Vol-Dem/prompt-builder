@@ -49,18 +49,22 @@ const ImageFullView = (props) => {
             {/* <span className={classes["modal__cross"]}></span> */}
             <CrossSvg />
           </div>
-          <div
-            className={`${classes["btn-slide"]} ${classes["btn-slide--next"]}`}
-            onClick={props.prevSlide}
-          >
-            <ArrowLeftSvg />
-          </div>
-          <div
-            onClick={props.nextSlide}
-            className={`${classes["btn-slide"]} ${classes["btn-slide--prev"]}`}
-          >
-            <ArrowRightSvg />
-          </div>
+          {props.prevSlide && (
+            <div
+              className={`${classes["btn-slide"]} ${classes["btn-slide--next"]}`}
+              onClick={props.prevSlide}
+            >
+              <ArrowLeftSvg />
+            </div>
+          )}
+          {props.nextSlide && (
+            <div
+              onClick={props.nextSlide}
+              className={`${classes["btn-slide"]} ${classes["btn-slide--prev"]}`}
+            >
+              <ArrowRightSvg />
+            </div>
+          )}
         </div>,
         document.body
       )}

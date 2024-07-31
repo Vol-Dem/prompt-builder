@@ -1,10 +1,24 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "./About.module.scss";
+import ImageFullView from "../ui/ImageFullView";
+import Image1 from "../../assets/about/1-start-1.png";
+import Image2 from "../../assets/about/1-start-2.png";
 
 const About = ({ title }) => {
+  const [fullViewIsOpen, setFullViewIsOpen] = useState(false);
+  const [currImageUrl, setCurrImageUrl] = useState("#");
   useEffect(() => {
     document.title = title;
   }, [title]);
+
+  const openFullVeiwHandler = (e) => {
+    // if (!e.target?.data?.url) return;
+    console.log(e.target);
+    console.log(e.target?.src);
+    setCurrImageUrl(e.target?.src);
+    setFullViewIsOpen(true);
+  };
+
   return (
     <div className={classes.about}>
       <h1 className={classes["about__h1"]}>About</h1>
@@ -23,14 +37,17 @@ const About = ({ title }) => {
 
       <div className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}>
         <img
+          onClick={openFullVeiwHandler}
           className={classes["img"]}
-          src={require("../../assets/about/1-start-1.png")}
+          src={Image1}
+          data-url={Image1}
           alt=""
         />
 
         <img
+          onClick={openFullVeiwHandler}
           className={classes["img"]}
-          src={require("../../assets/about/1-start-2.png")}
+          src={Image2}
           alt=""
         />
       </div>
@@ -227,6 +244,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/3-new-resource.png")}
             alt=""
@@ -242,6 +260,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/4-add-model.png")}
             alt=""
@@ -264,6 +283,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/5-added-models.png")}
             alt=""
@@ -287,6 +307,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/6-prompt.png")}
             alt=""
@@ -307,6 +328,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/7-tags.png")}
             alt=""
@@ -335,16 +357,19 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-3"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/8-presets-1.png")}
             alt=""
           />
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/8-presets-2.png")}
             alt=""
           />
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/8-presets-3.png")}
             alt=""
@@ -362,6 +387,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/9-model-settings.png")}
             alt=""
@@ -380,6 +406,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/10-general-settings.png")}
             alt=""
@@ -397,17 +424,21 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/11-versions-settings-1.png")}
             alt=""
           />
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/11-versions-settings-2.png")}
             alt=""
           />
         </div>
-        <h3 className={classes["about__h3"]}>Tag Sets</h3>
+      </div>
+      <h2 className={classes["about__h2"]}>Tag Sets</h2>
+      <div className={classes["about__content-block"]}>
         <p className={classes["about__text"]}>
           The tag sets feature allows you to create a set of trigger words for
           generating specific outfits, appearances, or other image variations.
@@ -418,16 +449,46 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/12-tag-sets-1.png")}
             alt=""
           />
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/12-tag-sets-2.png")}
             alt=""
           />
         </div>
+        <p className={classes["about__text"]}>
+          The "Edit..." button in the top right corner of the block gives you
+          quick access to editing tag sets of the current version.
+        </p>
+        <div
+          className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}
+        >
+          <img
+            onClick={openFullVeiwHandler}
+            className={classes["img"]}
+            src={require("../../assets/about/12-tag-sets-12.png")}
+            alt=""
+          />
+          <img
+            onClick={openFullVeiwHandler}
+            className={classes["img"]}
+            src={require("../../assets/about/12-tag-sets-22.png")}
+            alt=""
+          />
+        </div>
+        <p className={classes["about__text"]}>
+          When building a prompt, you can add all tags from a set with one click
+          using the "Add All" button, or add individual tags from the set. Words
+          already present in the prompt will be highlighted. Pressing the
+          "Remove All" button will only remove tags from that set in the prompt;
+          the rest of the prompt will remain unchanged.
+        </p>
+        <h3 className={classes["about__h3"]}>Tag Set Preview</h3>
         <p className={classes["about__text"]}>
           To easily understand what the tag set represents, you can add a
           preview image for it. To do this, you can use any image available in
@@ -442,11 +503,13 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/12-tag-sets-3.png")}
             alt=""
           />
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/12-tag-sets-4.png")}
             alt=""
@@ -458,13 +521,6 @@ const About = ({ title }) => {
           model as a generation example (then it will appear in the list of
           generated images) or upload it as a standalone post and add it to
           saved images using the "Add Image by ID" button.
-        </p>
-        <p className={classes["about__text"]}>
-          When building a prompt, you can add all tags from a set with one click
-          using the "Add All" button, or add individual tags from the set. Words
-          already present in the prompt will be highlighted. Pressing the
-          "Remove All" button will only remove tags from that set in the prompt;
-          the rest of the prompt will remain unchanged.
         </p>
       </div>
       <h2 className={classes["about__h2"]}>Model Page</h2>
@@ -478,6 +534,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/13-model-page-1.png")}
             alt=""
@@ -492,6 +549,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/13-model-page-2.png")}
             alt=""
@@ -506,8 +564,9 @@ const About = ({ title }) => {
           will remain unchanged.
         </p>
         <p className={classes["about__text"]}>
-          The "Edit..." button in the top right corner of the block allows you
-          to edit trigger words and tag sets of the current version.
+          The "Edit..." button in the top right corner of the block gives you
+          quick access to editing trigger words and tag sets of the current
+          version.
         </p>
         <h3 className={classes["about__h3"]}>Generated Images</h3>
         <p className={classes["about__text"]}>
@@ -519,6 +578,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-1.png")}
             alt=""
@@ -534,6 +594,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-2.png")}
             alt=""
@@ -551,6 +612,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-5.png")}
             alt=""
@@ -570,11 +632,13 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-3.png")}
             alt=""
           />
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-4.png")}
             alt=""
@@ -628,6 +692,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-resources.png")}
             alt=""
@@ -650,6 +715,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/15-queue.png")}
             alt=""
@@ -673,6 +739,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/16-nsfw.png")}
             alt=""
@@ -698,6 +765,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/17-search.png")}
             alt=""
@@ -721,6 +789,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/18-sidebar-1.png")}
             alt=""
@@ -734,6 +803,7 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/18-sidebar-2.png")}
             alt=""
@@ -762,11 +832,13 @@ const About = ({ title }) => {
           className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}
         >
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/19-category-edit-1.png")}
             alt=""
           />
           <img
+            onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/19-category-edit-2.png")}
             alt=""
@@ -778,6 +850,14 @@ const About = ({ title }) => {
           reappear in the new category.
         </p>
       </div>
+      {fullViewIsOpen && (
+        <ImageFullView
+          src={currImageUrl}
+          onClose={() => {
+            setFullViewIsOpen(false);
+          }}
+        ></ImageFullView>
+      )}
     </div>
   );
 };

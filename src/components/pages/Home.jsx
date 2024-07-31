@@ -5,6 +5,8 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { authActions } from "../../store/auth";
 import Carousel3d from "../carousel3d/Carousel3d";
+import Buttton from "../ui/Button";
+import Landing from "../landing/Landing";
 // import UsedModelsPanel from "../used-models-panel/UsedModelsPanel";
 // import { useDispatch, useSelector } from "react-redux";
 // import { modelActions } from "../../store/model";
@@ -48,74 +50,8 @@ function Home({ title }) {
 
   return (
     <div className={classes["wrap"]}>
-      <div className={classes["config"]}>
-        <Outlet />
-      </div>
-      {!isAuth && location?.pathname === "/" && (
-        <div className={classes["intro"]}>
-          <Carousel3d />
-          <div>
-            <p className={classes["intro__text"]}>
-              Welcome to <strong>AI</strong>DE-TOOLS – a dynamic platform where
-              you can create your own collection of image generation models and
-              seamlessly build and manage prompts.
-            </p>
-            <p className={classes["intro__text"]}>
-              This platform offers a variety of features, such as the using
-              trigger words from models and images as tags for quick and easy
-              modification of prompts, adding current models and image
-              references to the sidebar for quick access, and extended
-              configuration options, etc.
-              {/* I created this project for personal use to make prompt building fast
-            and convenient, developed and added here many features that create a
-            comfortable space for working with models, references and images and
-            greatly simplify the work of building prompts for generating images.
-            And now I am sharing this convenient tool with you. */}
-            </p>
-            <p className={classes["intro__text"]}>
-              <strong>AI</strong>DE-TOOLS provides a centralized solution for
-              storing and managing collections. It is versatile and independent
-              of popular web interfaces, so, you can use the generated prompt in
-              any web interface or for online generation on Civitai.
-            </p>
-            <p className={classes["intro__text"]}>
-              You can learn about the capabilities of the service in the{" "}
-              <Link className={classes.link} to="about">
-                "About"
-              </Link>{" "}
-              section.
-            </p>
-            <p className={classes["intro__text"]}>
-              If you like using this platform, support it on{" "}
-              <a
-                className={classes.link}
-                href="https://www.patreon.com/aidetools"
-                target="_blank"
-                rel="noreferrer nofollow"
-              >
-                Patreon
-              </a>{" "}
-              and{" "}
-              <a
-                className={classes.link}
-                href="https://ko-fi.com/J3J31052RE"
-                target="_blank"
-                rel="noreferrer nofollow"
-              >
-                Ko-fi
-              </a>
-              . There you can also leave your suggestions for this project.
-            </p>
-            <p className={classes["intro__text"]}>
-              To get started,{" "}
-              <span className={classes.link} onClick={openAuthHandler}>
-                create an account or log in
-              </span>
-              .
-            </p>
-          </div>
-        </div>
-      )}
+      <div className={classes["config"]}>{isAuth && <Outlet />}</div>
+      {!isAuth && location?.pathname === "/" && <Landing />}
     </div>
   );
 }

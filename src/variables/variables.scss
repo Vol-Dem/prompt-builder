@@ -131,7 +131,7 @@ $clip-path-arrow-down: polygon(
 @mixin linkA {
   display: inline-block;
   color: #7278f0;
-  font-size: 1.6rem;
+  // font-size: 1.6rem;
   text-decoration: none;
   cursor: pointer;
   transition: all 0.3s;

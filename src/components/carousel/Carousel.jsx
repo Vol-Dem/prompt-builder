@@ -58,7 +58,7 @@ const Carousel = ({
   // const [isUploading, setSavingImages] = useState(false);
   const [currImgNum, setCurrImgNum] = useState(0);
   const [translate, setTranslate] = useState(0);
-  const [curTransitionDur, setCurTransitionDur] = useState("0ms");
+  const [curTransitionDur, setCurTransitionDur] = useState(0);
   const [imagesListIsOpen, setImagesListIsOpen] = useState(false);
   const [fullViewIsOpen, setFullViewIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -234,20 +234,16 @@ const Carousel = ({
         { length: visibleAmount },
         (_, i) => visibleAmount + i
       );
-      if (!saved) {
-        console.log("SET AM", visibleAmount);
-        console.log("SET VISIBLE", visibleImg);
-      }
       setVisibleImages(visibleImg);
       setTranslate(0);
-      setCurTransitionDur("0ms");
+      setCurTransitionDur(0);
       setInitial(false);
     }
   }, [visibleAmount, images, initial]);
 
   const openImgHandler = useCallback(
     (e) => {
-      // setCurTransitionDur("0ms");
+      // setCurTransitionDur(0);
       // setImgIsOpen((prevState) => !prevState);
       const imgNum = e.target.dataset.position - visibleAmount;
       setCurrImgNum(imgNum >= 0 ? imgNum : images?.length + imgNum);
@@ -440,10 +436,12 @@ const Carousel = ({
 
   const transitionEndHandler = useCallback(() => {
     setTransitionEnd(true);
+    document.removeEventListener("transitionstart", transitionStartHandler);
+    document.removeEventListener("transitionend", transitionEndHandler);
     if (!imagesRef?.current) return;
 
     if (visibleImages[0] === 0) {
-      setCurTransitionDur("0ms");
+      setCurTransitionDur(0);
       setVisibleImages((prevState) =>
         prevState.map((el, i) => images?.length + i)
       );
@@ -453,20 +451,32 @@ const Carousel = ({
       setTranslate(-dimensions.imgWidthWithGap * images?.length);
     }
     if (visibleImages[0] === images?.length + curVisibleAmount) {
-      setCurTransitionDur("0ms");
+      setCurTransitionDur(0);
       setVisibleImages((prevState) =>
         prevState.map((el, i) => curVisibleAmount + i)
       );
       setTranslate(-dimensions.imgWidthWithGap * curVisibleAmount);
     }
     if (visibleImages[0] > images?.length + curVisibleAmount) {
-      setCurTransitionDur("0ms");
+      setCurTransitionDur(0);
       setVisibleImages((prevState) =>
         prevState.map((el, i) => visibleImages[0] - images?.length)
       );
     }
-  }, [curVisibleAmount, visibleImages, images, dimensions.imgWidthWithGap]);
+  }, [
+    curVisibleAmount,
+    visibleImages,
+    images,
+    dimensions.imgWidthWithGap,
+    transitionStartHandler,
+  ]);
 
+  // useEffect(() => {
+  //   return () => {
+  //     document.removeEventListener("transitionstart", transitionStartHandler);
+  //     document.removeEventListener("transitionend", transitionEndHandler);
+  //   };
+  // }, []);
   useEffect(() => {
     if (images?.length > curVisibleAmount) {
       setTransitionEnd(true);
@@ -484,8 +494,10 @@ const Carousel = ({
 
   const slideNextHandler = () => {
     // console.log(images);
+    // document.addEventListener("transitionstart", transitionStartHandler);
+    // document.addEventListener("transitionend", transitionEndHandler);
     if (!transitionEnd || images.length <= 1) return;
-    setCurTransitionDur(`${transitionDuration}ms`);
+    setCurTransitionDur(transitionDuration);
     const curImg = visibleImages[0] + 1;
     setVisibleImages((prevState) => prevState.map((el) => el + 1));
     setTranslate(-dimensions.imgWidthWithGap * curImg);
@@ -516,7 +528,7 @@ const Carousel = ({
   const slidePrevHandler = () => {
     console.log(images);
     if (!transitionEnd || images.length <= 1) return;
-    setCurTransitionDur(`${transitionDuration}ms`);
+    setCurTransitionDur(transitionDuration);
     const curImg = visibleImages[0] - 1;
     setVisibleImages((prevState) => prevState.map((el) => el - 1));
     setTranslate(-dimensions.imgWidthWithGap * curImg);
@@ -554,7 +566,7 @@ const Carousel = ({
           isActive ? classes["pagination__item--active"] : ""
         }`}
         onClick={() => {
-          setCurTransitionDur(`${transitionDuration}ms`);
+          setCurTransitionDur(transitionDuration);
           setCurrImgNum(i);
           if (!!onActiveNumChange) {
             onActiveNumChange(i);
@@ -765,7 +777,7 @@ const Carousel = ({
         className={`${classes["carousel__images"]} `}
         style={{
           transform: `translate3D(${translate}px, 0, 0)`,
-          transitionDuration: curTransitionDur,
+          transitionDuration: `${curTransitionDur}ms`,
         }}
         ref={imagesRef}
       >

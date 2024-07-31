@@ -13,6 +13,7 @@ import {
   where,
 } from "firebase/firestore";
 import firebaseApp from "../firebase-config";
+import { authActions } from "./auth";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -28,6 +29,7 @@ const tabsSlice = createSlice({
     currSubcategory: "",
     allCategories: [],
     categoriesData: "",
+    errorMessage: "",
     // modelsData: [],
     modelsData: {
       tab: "",
@@ -70,6 +72,9 @@ const tabsSlice = createSlice({
     setModelType(state, actions) {
       state.modelType = actions.payload;
     },
+    setErrorMessage(state, actions) {
+      state.errorMessage = actions.payload;
+    },
     // setModelsData(state, actions) {
     //   console.log("P", actions.payload);
     //   state.modelsData = !actions.payload.length
@@ -109,6 +114,14 @@ const tabsSlice = createSlice({
       state.currCategory = "";
       state.currSubcategory = "";
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(authActions.logout, (state, actions) => {
+      state.currCategory = "";
+      state.currSubcategory = "";
+      state.categoriesData = [];
+      state.subcategories = [];
+    });
   },
 });
 
@@ -229,6 +242,8 @@ export const getModelsPreview = (loadMore = false, nsfwMode) => {
       dispatch(tabActions.setIsLoading(false));
     } catch (err) {
       console.log(err);
+      dispatch(tabActions.setIsLoading(false));
+      dispatch(tabActions.setErrorMessage(err.message));
     }
   };
 };
