@@ -10,6 +10,7 @@
   border-radius: 0.4rem;
   display: grid;
   place-content: center;
+  flex-shrink: 0;
   cursor: pointer;
 }
 

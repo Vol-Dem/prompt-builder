@@ -15,14 +15,14 @@ const Carousel3d = () => {
 
   const transitionStartHandler = useCallback(() => {
     setTransitionEnd(false);
-    console.log("END");
+    // console.log("END");
   }, []);
 
   const transitionEndHandler = useCallback(() => {
     setTransitionEnd(true);
     document.removeEventListener("transitionstart", transitionStartHandler);
     document.removeEventListener("transitionend", transitionEndHandler);
-    console.log("STRAT");
+    // console.log("STRAT");
 
     if (curSlideIndex === carouselImages?.length) {
       console.log("RESET");
@@ -41,7 +41,7 @@ const Carousel3d = () => {
     }
 
     return () => {
-      console.log("RESET TRANSITION");
+      // console.log("RESET TRANSITION");
       document.removeEventListener("transitionstart", transitionStartHandler);
       document.removeEventListener("transitionend", transitionEndHandler);
     };

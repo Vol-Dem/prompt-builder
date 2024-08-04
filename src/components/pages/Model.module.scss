@@ -149,6 +149,10 @@
     font-size: 12px;
     border: 1px solid var.$color-background-tertiary;
   }
+
+  & * {
+    max-width: 100%;
+  }
 }
 
 // .info {

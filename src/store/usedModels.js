@@ -11,7 +11,7 @@ const usedModelsSlice = createSlice({
   initialState: {
     models: [],
     images: [],
-    panelIsOpen: true,
+    panelIsOpen: false,
     fullCardView: true,
   },
   reducers: {
@@ -19,7 +19,7 @@ const usedModelsSlice = createSlice({
       state.models = actions.payload;
     },
     addImagesToPanel(state, actions) {
-      console.log(actions.payload);
+      // console.log(actions.payload);
       state.images = actions.payload;
     },
     panelState(state, actions) {
@@ -50,7 +50,7 @@ const usedModelsSlice = createSlice({
       })
       .addCase(usedModelsActions.panelState, (state, actions) => {
         const uid = auth.currentUser.uid;
-        console.log("SAVE");
+        // console.log("SAVE");
         saveToStorage(`${uid}-side-state`, `${state.panelIsOpen}`);
       })
       .addMatcher(
@@ -132,13 +132,16 @@ export const uploadPanelStateFromStorage = () => {
     const storageImgData = uploadStorage(`${uid}-side-img`);
     const storagePanelState = uploadStorage(`${uid}-side-state`);
     const storageViewState = uploadStorage(`${uid}-side-view`);
-    // console.log(storageData);
+    console.log(storagePanelState);
 
     if (storageData) dispatch(usedModelsActions.addModelsToPanel(storageData));
     if (storageImgData)
       dispatch(usedModelsActions.addImagesToPanel(storageImgData));
-    if (storagePanelState)
+    if (storagePanelState?.hasOwnProperty("panelIsOpen")) {
       dispatch(usedModelsActions.panelState(storagePanelState));
+    } else {
+      dispatch(usedModelsActions.panelState({ panelIsOpen: true }));
+    }
     if (storageViewState)
       dispatch(usedModelsActions.cardViewState(storageViewState));
   };

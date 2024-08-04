@@ -104,14 +104,15 @@ const Model = ({ title }) => {
 
   useEffect(() => {
     if (
+      curVersion?.id &&
       curVersionImages?.versionId === curVersion?.id &&
       curVersionImages?.nsfw !== !!nsfwMode
     ) {
       const filteredModelImages = !!nsfwMode
         ? curVersionImages?.items
         : filterNsfwImages(curVersionImages?.items);
-      console.log("FILETRED IMAGES", filteredModelImages);
-      console.log(curVersionImages);
+      // console.log("FILETRED IMAGES", filteredModelImages);
+      // console.log(curVersionImages);
       setCurVersionImages({
         items: curVersionImages?.items,
         filteredItems: filteredModelImages,
@@ -131,10 +132,10 @@ const Model = ({ title }) => {
 
     const getCurVersionImages = async () => {
       try {
-        console.log("GET CUR VER IMAGES");
-        console.log(uid);
-        console.log(model?.id);
-        console.log(curVersion?.id);
+        // console.log("GET CUR VER IMAGES");
+        // console.log(uid);
+        // console.log(model?.id);
+        // console.log(curVersion?.id);
         const modelDefImagesRef = doc(
           firestore,
           "models",
@@ -146,7 +147,7 @@ const Model = ({ title }) => {
         const docSnap = await getDoc(modelDefImagesRef);
 
         if (docSnap.exists()) {
-          console.log("Document data:", docSnap.data());
+          // console.log("Document data:", docSnap.data());
           const curImages = docSnap.data()?.items;
           console.log(curImages);
 
@@ -154,7 +155,7 @@ const Model = ({ title }) => {
             ? curImages
             : filterNsfwImages(curImages);
 
-          console.log(modelImages);
+          // console.log(modelImages);
           setCurVersionImages({
             items: curImages,
             filteredItems: modelImages,
@@ -162,9 +163,9 @@ const Model = ({ title }) => {
             nsfw: !!nsfwMode,
           });
         } else {
-          console.log("NO DEF IMAGES");
-          console.log(curVersion);
-          console.log(curVersion.images);
+          // console.log("NO DEF IMAGES");
+          // console.log(curVersion);
+          // console.log(curVersion.images);
           const defVersionImages = model?.data?.modelVersions.find(
             (version) => version?.id === curVersion?.id
           )?.images;
@@ -200,7 +201,7 @@ const Model = ({ title }) => {
 
   useEffect(() => {
     if (!descHeight && descriptionRef?.current?.offsetHeight !== descHeight) {
-      console.log(descriptionRef?.current?.offsetHeight);
+      // console.log(descriptionRef?.current?.offsetHeight);
       setDescHeight(descriptionRef?.current?.offsetHeight);
     }
 
@@ -258,7 +259,7 @@ const Model = ({ title }) => {
     if (!model?.id) return;
 
     const getDefModelData = async () => {
-      console.log(model.id);
+      // console.log(model.id);
       const modelDefDataRef = doc(firestore, "models", `${model.id}`);
 
       const docSnap = await getDoc(modelDefDataRef);
@@ -285,7 +286,7 @@ const Model = ({ title }) => {
       !model?.data
     )
       return;
-    console.log(state?.versionId);
+    // console.log(state?.versionId);
     let curVersionId;
     // const modelVersions = Object.values(model?.modelVersionsCustomData)
     const modelVersions = model?.data?.modelVersions
@@ -301,8 +302,8 @@ const Model = ({ title }) => {
           name: version.name,
         };
       });
-    console.log(modelVersions);
-    console.log(model?.data?.modelVersions);
+    // console.log(modelVersions);
+    // console.log(model?.data?.modelVersions);
     if (
       state?.versionId &&
       !!modelVersions?.find((version) => version.id === state?.versionId)
@@ -322,19 +323,19 @@ const Model = ({ title }) => {
     //       model?.modelVersionsCustomData.hasOwnProperty(version.id) &&
     //       model.modelVersionsCustomData[version.id].downloadStatus
     //   )?.id;
-    console.log(state?.versionId);
+    // console.log(state?.versionId);
     const curVersionData = curVersionId
       ? modelVersions?.find((version) => version.id === curVersionId)
       : modelVersions[0];
-    console.log(curVersionData);
-    console.log(modelVersions);
+    // console.log(curVersionData);
+    // console.log(modelVersions);
     if (model.id !== curVersion?.modelId)
       dispatch(modelActions.setCurVersion(curVersionData));
   }, [model, dispatch, curVersion?.modelId, state?.versionId]);
 
   useEffect(() => {
     if (!curVersion?.baseModel || !model.id) return;
-    console.log(model);
+    // console.log(model);
     const curVersionCustomData = model.modelVersionsCustomData[curVersion.id];
     const modelPreviewData = {
       id: model?.id,
@@ -366,7 +367,7 @@ const Model = ({ title }) => {
       updatedAt: model?.updatedAt,
     };
     // console.log(curVersionCustomData);
-    console.log(modelPreviewData);
+    // console.log(modelPreviewData);
 
     setModelPreview(modelPreviewData);
     const curCustomVersion = model.modelVersionsCustomData[curVersion.id];
@@ -379,9 +380,9 @@ const Model = ({ title }) => {
       setCurImagesModelVersionId(curCustomVersion?.versionId || curVersion.id);
   }, [model, curVersion, curImagesModelVersionId, curVersionImages]);
 
-  useEffect(() => {
-    console.log(state);
-  }, [state]);
+  // useEffect(() => {
+  //   console.log(state);
+  // }, [state]);
 
   // useEffect(() => {
   //   if (currVersionIndex === null) return;
@@ -400,8 +401,8 @@ const Model = ({ title }) => {
     const curVer = model?.data?.modelVersions.find(
       (version) => version.id === id
     );
-    console.log(id);
-    console.log(curVer);
+    // console.log(id);
+    // console.log(curVer);
     // resetExamples();
     dispatch(modelActions.setCurVersion(curVer));
     // setCurrVersionIndex(e.target.dataset.version);

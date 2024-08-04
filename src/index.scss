@@ -1,5 +1,12 @@
 @use "../src/variables/variables.scss" as var;
 
+// @font-face {
+//   font-family: 'MyFont';
+//   src: local('MyFont'), url(./fonts/MyFont.woff) format('woff');
+//   /* other formats include: 'woff2', 'truetype, 'opentype',
+//                             'embedded-opentype', and 'svg' */
+// }
+
 body {
   margin: 0;
   font-size: 1.4rem;
@@ -70,6 +77,14 @@ main {
 .scroll-off {
   overflow: hidden;
   padding-right: 8px;
+}
+
+@-moz-document url-prefix() {
+  @media (max-width: 1160px) {
+    body {
+      padding-right: 1.2rem;
+    }
+  }
 }
 
 @media (max-width: 560px) {

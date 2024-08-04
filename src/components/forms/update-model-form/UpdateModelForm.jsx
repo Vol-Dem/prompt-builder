@@ -830,15 +830,39 @@ const UpdateModelForm = ({ modelData, id }) => {
           // hashes,
           src: "civitai.com",
           defaultCustomData: {
-            description: !!modelData ? description : data.description,
-            tagSetsData,
-            weight,
-            minWeight: minWeight || null,
-            maxWeight: maxWeight || null,
-            size,
-            fileName,
-            helperTags,
-            negativeTags,
+            description: !!modelData ? description : data?.description,
+            ...(tagSetsData?.length && {
+              tagSetsData,
+            }),
+            // tagSetsData,
+            ...(weight && {
+              weight,
+            }),
+            // weight,
+            ...(minWeight && {
+              minWeight,
+            }),
+            // minWeight: minWeight || null,
+            ...(maxWeight && {
+              maxWeight,
+            }),
+            // maxWeight: maxWeight || null,
+            ...(size && {
+              size,
+            }),
+            // size,
+            ...(fileName && {
+              fileName,
+            }),
+            // fileName,
+            ...(helperTags?.length && {
+              helperTags,
+            }),
+            // helperTags,
+            ...(negativeTags?.length && {
+              negativeTags,
+            }),
+            // negativeTags,
             ...(modelType === "checkpoint" && {
               steps,
               sampler,

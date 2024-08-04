@@ -21,7 +21,7 @@ function Home({ title }) {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const location = useLocation();
   const dispatch = useDispatch();
-  console.log(location);
+  // console.log(location);
 
   useEffect(() => {
     document.title = title;

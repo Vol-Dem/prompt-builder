@@ -16,7 +16,7 @@ const promptSlice = createSlice({
     curPrompt: "",
     curNegPrompt: "",
     presets: { positive: [], negative: [] },
-    promptIsOpen: true,
+    promptIsOpen: false,
     isTextMode: false,
   },
   reducers: {
@@ -31,7 +31,7 @@ const promptSlice = createSlice({
       state.curNegPrompt = "";
     },
     setPresets(state, actions) {
-      console.log(actions.payload);
+      // console.log(actions.payload);
       if (actions?.payload) state.presets = actions.payload;
     },
     setPromptIsOpen(state, actions) {
@@ -191,10 +191,12 @@ export const uploadPromptFromStorage = () => {
     const isTextMode = uploadStorage(`${uid}-prompt-text`);
 
     if (prompt) dispatch(promptActions.setCurrentPrompt(prompt));
-
     if (negPrompt) dispatch(promptActions.setCurrentNegPrompt(negPrompt));
-    if (promptState)
+    if (promptState) {
       dispatch(promptActions.setPromptIsOpen(promptState.promptIsOpen));
+    } else {
+      dispatch(promptActions.setPromptIsOpen(true));
+    }
     if (isTextMode) dispatch(promptActions.setTextMode(isTextMode.isTextMode));
   };
 };

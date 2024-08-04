@@ -24,7 +24,7 @@ function MainNavigation() {
               Home
             </NavLink>
           </li>
-          {isAuth && (
+          {/* {isAuth && (
             <>
               <li>
                 <NavLink
@@ -36,7 +36,7 @@ function MainNavigation() {
                 </NavLink>
               </li>
             </>
-          )}
+          )} */}
           <li>
             <NavLink
               to="about"

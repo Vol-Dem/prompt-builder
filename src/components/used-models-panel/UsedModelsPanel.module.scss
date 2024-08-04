@@ -269,3 +269,11 @@
     margin-top: 5rem;
   }
 }
+
+@-moz-document url-prefix() {
+  @media (min-width: 768px) {
+    .container {
+      padding-right: 1.2rem;
+    }
+  }
+}

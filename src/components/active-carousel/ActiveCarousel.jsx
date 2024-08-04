@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Carousel from "../carousel/Carousel";
 import ImageCard from "../image-card/ImageCard";
 import { modelActions } from "../../store/model";
+import CrossSvg from "../../assets/CrossSvg";
 
 const ActiveCarousel = () => {
   const [activeImageNumber, setActiveImageNumber] = useState(null);
@@ -108,7 +109,7 @@ const ActiveCarousel = () => {
             }}
           >
             {/* <span className={classes["btn__cross"]}></span> */}
-            <svg
+            {/* <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -121,7 +122,8 @@ const ActiveCarousel = () => {
                 strokeLinejoin="round"
                 d="M6 18 18 6M6 6l12 12"
               />
-            </svg>
+            </svg> */}
+            {!!activeCarouselData?.images?.length && <CrossSvg />}
           </div>
         </div>
       </div>

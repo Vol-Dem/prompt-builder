@@ -66,8 +66,8 @@ const GeneratedImages = ({ customData }) => {
     setIsIntersecting(isPageEnd);
   }, [isPageEnd]);
   useEffect(() => {
-    console.log("LIST", versionsListRef?.current?.offsetHeight);
-    console.log("ITEM", versionsItemRef?.current?.offsetHeight);
+    // console.log("LIST", versionsListRef?.current?.offsetHeight);
+    // console.log("ITEM", versionsItemRef?.current?.offsetHeight);
     const showAll = versionsListRef?.current?.offsetHeight > 32;
     // const showAll =
     //   versionsListRef?.current?.offsetHeight >
@@ -117,13 +117,12 @@ const GeneratedImages = ({ customData }) => {
     if (curImagesModelVersionId) return;
     if (curImagesModelVersionId === curVersion?.id) return;
     // setCurImagesModelVersionId(customData?.versionId || curVersion.id);
-
-    setCurImagesModelVersionId(curVersion.id);
+    if (curVersion?.id) setCurImagesModelVersionId(curVersion.id);
   }, [curImagesModelVersionId, curVersion, customData]);
 
   const openSavedVersionImagesHandler = (e) => {
-    console.log("LIST", versionsListRef?.current?.offsetHeight);
-    console.log("ITEM", versionsItemRef?.current?.offsetHeight);
+    // console.log("LIST", versionsListRef?.current?.offsetHeight);
+    // console.log("ITEM", versionsItemRef?.current?.offsetHeight);
     resetExamples();
     //Temp
     if (e.target.id === "unsorted") {
@@ -456,9 +455,10 @@ const GeneratedImages = ({ customData }) => {
         setCurImagesModelVersionId(latesVersionId);
       }
     }
-    if (!!examplesImgData.length) return;
+    if (!examplesImgData.length && !examplesIsLoading && !errorMessage) {
+      getImagesFromFirestore();
+    }
 
-    getImagesFromFirestore();
     //Temp
     // if (curImagesModelVersionId === "unsorted") {
     //   const examples = model.examplesData.map((item, i) => {
@@ -484,6 +484,8 @@ const GeneratedImages = ({ customData }) => {
     model,
     examplesImgData,
     getImagesFromFirestore,
+    examplesIsLoading,
+    errorMessage,
   ]);
 
   useEffect(() => {
@@ -539,6 +541,9 @@ const GeneratedImages = ({ customData }) => {
         clearTimeout(timeoutRef.current);
         setIsIntersecting(false);
         // console.log("START INTERSECTING FETCH");
+        // console.log(!!examplesImgData.length);
+        // console.log(examplesImgData.length);
+        // console.log(examplesImgData);
         timeoutRef.current = setTimeout(() => {
           getImagesFromFirestore();
         }, 1000);

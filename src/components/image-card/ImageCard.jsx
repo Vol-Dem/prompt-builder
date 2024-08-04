@@ -341,7 +341,7 @@ const ImageCard = ({ activeImgNum }) => {
       }, timeoutDelay);
     }
     return () => {
-      console.log("CLEAN");
+      // console.log("CLEAN");
     };
   }, [imageData, uid]);
 

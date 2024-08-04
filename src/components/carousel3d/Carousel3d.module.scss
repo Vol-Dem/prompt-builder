@@ -2,7 +2,10 @@
 
 .container {
   position: relative;
-  margin-left: 7rem;
+  // margin-left: 7rem;
+  width: 100%;
+  max-width: 43rem;
+  // height: 24rem;
   //   padding: 2rem 3rem;
   //   border-radius: 10px;
   //   background-color: var.$color-background-tertiary;
@@ -13,9 +16,23 @@
 .list {
   position: relative;
   list-style: none;
-  width: 44rem;
-  height: 24rem;
+  padding-bottom: 50%;
+  margin-left: 15%;
+  // width: 43rem;
+  // height: 24rem;
   //   margin: 2rem;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 40%;
+    left: -10%;
+    width: 100%;
+    padding-bottom: 100%;
+    border-radius: 50%;
+    background: radial-gradient(rgba(0, 0, 0, 0.2) 1%, transparent 60%);
+    transform: rotateX(80deg);
+  }
 }
 
 .item {
@@ -31,17 +48,6 @@
   //   transform: scale3d(0.5, 1, 1.7);
   transform: perspective(11cm) rotateX(-7deg) rotateY(34deg);
   //   border: 1px solid #fff;
-}
-
-.shadow {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 46rem;
-  height: 30rem;
-  border-radius: 50%;
-  background: radial-gradient(rgba(0, 0, 0, 0.2) 1%, transparent 60%);
-  transform: rotateX(80deg) translate(-7rem, 93rem);
 }
 
 @keyframes slideUp {

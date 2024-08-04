@@ -2,8 +2,16 @@ import Carousel3d from "../carousel3d/Carousel3d";
 import Buttton from "../ui/Button";
 import classes from "./Landing.module.scss";
 import carouselImage1 from "../../assets/about/1-start-1.png";
+import { useDispatch } from "react-redux";
+import { authActions } from "../../store/auth";
+import LinkA from "../ui/LinkA";
 
 const Landing = () => {
+  const dispatch = useDispatch();
+  const openAuthFormHandler = () => {
+    dispatch(authActions.openAuthForm(true));
+  };
+
   return (
     <div className={classes["landing"]}>
       <section className={`${classes["section"]} ${classes["section--hero"]}`}>
@@ -16,66 +24,20 @@ const Landing = () => {
             <p className={classes["section--hero__text"]}>
               Welcome to <strong>AI</strong>DE-TOOLS – a platform where you can
               create your own collection of models from{" "}
-              <a className={classes.link} href="#">
+              <LinkA external href="https://civitai.com">
                 Civitai
-              </a>
+              </LinkA>
               , take advantage of advanced customization and data management,
               and use a variety of tools that simplify the prompt building
               process.
             </p>
-            {/* <p className={classes["section--hero__text"]}>
-              Welcome to <strong>AI</strong>DE-TOOLS – a dynamic platform where
-              you can create your own collection of image generation models and
-              seamlessly build and manage prompts.
-            </p> */}
-            {/* <p className={classes["section--hero__text"]}>
-      This platform offers a variety of features, such as the using
-      trigger words from models and images as tags for quick and easy
-      modification of prompts, adding current models and image
-      references to the sidebar for quick access, and extended
-      configuration options, etc. //////////////////////////////// I
-      created this project for personal use to make prompt building fast
-      and convenient, developed and added here many features that create
-      a comfortable space for working with models, references and images
-      and greatly simplify the work of building prompts for generating
-      images. And now I am sharing this convenient tool with you.
-    </p> */}
-            {/* <p className={classes["section--hero__text"]}>
-              <strong>AI</strong>DE-TOOLS provides a centralized solution for
-              storing and managing collections. It is versatile and independent
-              of popular web interfaces, so, you can use the generated prompt in
-              any web interface or for online generation on Civitai.
-            </p> */}
-            {/* <p className={classes["section--hero__text"]}>
-        You can learn about the capabilities of the service in the{" "}
-        <Link className={classes.link} to="about">
-          "About"
-        </Link>{" "}
-        section.
-      </p> */}
-            {/* <p className={classes["section--hero__text"]}>
-        If you like using this platform, support it on{" "}
-        <a
-          className={classes.link}
-          href="https://www.patreon.com/aidetools"
-          target="_blank"
-          rel="noreferrer nofollow"
-        >
-          Patreon
-        </a>{" "}
-        and{" "}
-        <a
-          className={classes.link}
-          href="https://ko-fi.com/J3J31052RE"
-          target="_blank"
-          rel="noreferrer nofollow"
-        >
-          Ko-fi
-        </a>
-        . There you can also leave your suggestions for this project.
-      </p> */}
           </div>
-          <Buttton className={classes["btn-hero"]}>Get started</Buttton>
+          <Buttton
+            className={classes["btn-hero"]}
+            onClick={openAuthFormHandler}
+          >
+            Get started
+          </Buttton>
         </div>
       </section>
       <section className={classes["section"]}>
@@ -131,8 +93,8 @@ const Landing = () => {
               trigger words, helping you avoid adding duplicates.
             </p>
             <p className={classes["section__content__text"]}>
-              Switch between text and tag modes to add new trigger words and
-              edit prompt.
+              Switch between text and tag modes to add new trigger words or edit
+              prompt.
             </p>
           </div>
         </div>
@@ -140,11 +102,14 @@ const Landing = () => {
       <section className={classes["section"]}>
         <div className={classes["section__content"]}>
           <div>
-            <h2 className={classes["section__title"]}>
-              Edit and organize model information
-            </h2>
+            <h2 className={classes["section__title"]}>Edit and organize</h2>
             {/* <h2 className={classes["section__title"]}>Resource management</h2> */}
 
+            <p className={classes["section__content__text"]}>
+              Organize information about the model: edit existing model
+              information and add additional, set the weight and image size, and
+              choose a preview from the generated images.
+            </p>
             <p className={classes["section__content__text"]}>
               Split trigger words by related groups (positive, negative, helper,
               sets) to easily work with them. Add or remove an entire group of
@@ -175,17 +140,72 @@ const Landing = () => {
             />
           </div>
           <div>
-            <h2 className={classes["section__title"]}>
-              Sidebar for quick access to models and references
-            </h2>
+            <h2 className={classes["section__title"]}>Quick access tools</h2>
 
             <p className={classes["section__content__text"]}>
-              Add used models and image references to the sidebar with a single
-              click. The sidebar provides quick access to generation data,
-              allowing you to easily switch between resources, view necessary
-              information, and add or remove tags from the prompt.
+              Add models and up to three reference images to sidebar, combine
+              their prompts and quickly switch between them to create unique and
+              original content without losing much time.
+            </p>
+            <p className={classes["section__content__text"]}>
+              Switch to extended view to access the model's base trigger words
+              and weight directly from the sidebar.
+            </p>
+            <p className={classes["section__content__text"]}>
+              Save your favorite combinations of quality trigger words as
+              presets for positive and negative prompts, and easily add them to
+              your prompt from the Presets window.
             </p>
           </div>
+        </div>
+      </section>
+      <section className={classes["section"]}>
+        <div className={classes["section__content"]}>
+          <div>
+            <h2 className={classes["section__title"]}>Quick search</h2>
+
+            <p className={classes["section__content__text"]}>
+              Search for models by name, activation tag, or file name and easily
+              add them to the sidebar directly from the search results.
+            </p>
+            <p className={classes["section__content__text"]}>
+              Get quick access to desired subcategories through quick search
+              field — no need to look for them manually.
+            </p>
+          </div>
+          <div className={classes["section__img-wrap"]}>
+            <img
+              className={classes["section__img"]}
+              src={carouselImage1}
+              alt=""
+            />
+          </div>
+        </div>
+      </section>
+      <section className={`${classes["section"]} ${classes["section--cta"]}`}>
+        <div
+          className={`${classes["section__content"]} ${classes["section--cta__content"]}`}
+        >
+          <div>
+            <h2 className={classes["section__title"]}>
+              Discover the possibilities of the AIDE-TOOLS
+            </h2>
+
+            <p
+              className={`${classes["section__content__text"]} ${classes["section--cta__text"]}`}
+            >
+              Create a collection of your favorite models and streamline your
+              prompt building with our intuitive tag system. Start creating
+              stunning images effortlessly — try <strong>AI</strong>DE-TOOLS
+              today!
+            </p>
+          </div>
+          <Buttton
+            className={classes["section--cta__btn"]}
+            onClick={openAuthFormHandler}
+          >
+            Get started
+          </Buttton>
         </div>
       </section>
     </div>

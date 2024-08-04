@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux";
 import classes from "./TagsTextarea.module.scss";
 import { promptActions } from "../../store/prompt";
+import CrossSvg from "../../assets/CrossSvg";
 
 const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
 
@@ -40,7 +41,10 @@ const TagsTextarea = ({
               data-value={item.trim()}
               data-type=""
             >
-              <span className={classes["tag__cross"]}></span>
+              <span className={classes["tag__cross"]}>
+                {" "}
+                <CrossSvg />{" "}
+              </span>
             </button>
           </div>
         </li>

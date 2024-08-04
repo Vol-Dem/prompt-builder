@@ -97,7 +97,7 @@ const Carousel = ({
 
   useEffect(() => {
     if (!visibleImgAmount) {
-      console.log("RESET VIS");
+      // console.log("RESET VIS");
       setVisibleAmount(0);
       setCurVisibleAmount(0);
     }
@@ -171,7 +171,7 @@ const Carousel = ({
   const openCarouselHandler = useCallback(
     (e) => {
       if (imgIsOpen) return;
-      console.log("open");
+      // console.log("open");
 
       // document.body.style.overflow = "hidden";
       const imgNum = e.target.dataset.position - visibleAmount;
@@ -213,14 +213,14 @@ const Carousel = ({
       dimensions.wrapWidth / dimensions.imgWidthWithGap
     );
     if (!visibleImgAmount && curVisibleImgAmount <= images?.length) {
-      console.log("SET CURENT VIS", curVisibleImgAmount);
+      // console.log("SET CURENT VIS", curVisibleImgAmount);
       setVisibleAmount(curVisibleImgAmount);
       setCurVisibleAmount(curVisibleImgAmount);
       setTranslate(0);
       setInitial(true);
     }
     if (!visibleImgAmount && curVisibleImgAmount > images?.length) {
-      console.log("SET CURENT VIS IM", images?.length);
+      // console.log("SET CURENT VIS IM", images?.length);
       setVisibleAmount(images?.length);
       setCurVisibleAmount(images?.length);
       setTranslate(0);
@@ -526,7 +526,7 @@ const Carousel = ({
   };
 
   const slidePrevHandler = () => {
-    console.log(images);
+    // console.log(images);
     if (!transitionEnd || images.length <= 1) return;
     setCurTransitionDur(transitionDuration);
     const curImg = visibleImages[0] - 1;
@@ -600,7 +600,7 @@ const Carousel = ({
     const postData =
       model.hasOwnProperty("savedImages") &&
       model?.savedImages[versionId]?.find((post) => post.postId === +postId);
-    console.log(queue);
+    // console.log(queue);
     dispatch(
       uploadActions.addToQueue({
         postId,
@@ -633,7 +633,7 @@ const Carousel = ({
       if (!!ids?.length && ids?.length !== postData.amount) {
         const newImages = images.filter((image) => !ids?.includes(image.id));
         // console.log(newImages);
-        console.log("UPDATE");
+        // console.log("UPDATE");
         await updateImagePostData(
           {
             postId: curPostId,
@@ -650,7 +650,7 @@ const Carousel = ({
         );
         setImages(newImages);
       } else {
-        console.log("DELETE");
+        // console.log("DELETE");
         dispatch(deleteImgPost(versionId, curPostId, postData));
       }
       setIsDeleting(false);
@@ -686,7 +686,7 @@ const Carousel = ({
   // }, []);
   useEffect(() => {
     if (activeImgNum && !!visibleAmount) {
-      console.log(activeImgNum);
+      // console.log(activeImgNum);
       setCurrImgNum(activeImgNum);
       setVisibleImages((prevState) => {
         const newVisibleImages = prevState.map(
@@ -700,7 +700,7 @@ const Carousel = ({
 
   const moveElement = (e) => {
     const clientX = Math.round(e.clientX || e.touches[0].clientX);
-    console.log(clientX);
+    // console.log(clientX);
     setCursorCurX(clientX);
   };
 
@@ -715,17 +715,17 @@ const Carousel = ({
     // console.log(e);
     // console.log(e?.clientX);
     // console.log(e?.touches[0]?.clientX);
-    console.log(cursorInitialX, cursorCurX);
+    // console.log(cursorInitialX, cursorCurX);
     // console.log(cursorInitialX - clientX);
     if (!cursorInitialX || !cursorCurX) return;
     const offcet = Math.round(cursorInitialX) - Math.round(cursorCurX);
     setCursorCurX(null);
     setCursorInitialX(null);
     if (!!offcet && offcet > 0 && Math.abs(offcet) > 40) {
-      console.log("NEXT T");
+      // console.log("NEXT T");
       slideNextHandler();
     } else if (!!offcet && offcet < 0 && Math.abs(offcet) > 40) {
-      console.log("PREV T");
+      // console.log("PREV T");
       slidePrevHandler();
     }
   };

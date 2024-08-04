@@ -17,7 +17,7 @@ const ModelInfo = ({ customData }) => {
   const weightRange = `${minWeight?.toFixed(1)} - ${maxWeight?.toFixed(1)}`;
   const weight = customData?.weight || model?.defaultCustomData?.weight;
   const versionFileName =
-    curVersion.hasOwnProperty("files") &&
+    curVersion?.hasOwnProperty("files") &&
     curVersion?.files.find((file) => file?.primary)?.name;
   const fileName =
     customData?.fileName ||

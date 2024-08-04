@@ -70,10 +70,10 @@ function App() {
     if (!uid) return;
     const unsub = onSnapshot(doc(firestore, "users", uid), (doc) => {
       const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
-      console.log(source);
+      // console.log(source);
       const data = doc.data();
-      console.log(data);
-      console.log(data?.categoriesById);
+      // console.log(data);
+      // console.log(data?.categoriesById);
       if (data?.categoriesById) {
         dispatch(tabActions.setCategories(data?.categoriesById));
       }
