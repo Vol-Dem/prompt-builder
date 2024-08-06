@@ -3,6 +3,12 @@
 .card {
   // background-color: var.$color-background-primary;
   background-color: rgba(var.$color-background-primary, 80%);
+  background-color: rgb(34 39 51);
+  // background: linear-gradient(
+  //   to bottom right,
+  //   var.$color-background-secondary,
+  //   #232835
+  // );
   border-radius: 20px;
   overflow: hidden;
   padding: 2.8rem;

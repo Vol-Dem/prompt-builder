@@ -25,6 +25,23 @@
       outline: none;
       border: 1px solid rgba(255, 255, 255, 0.5);
     }
+
+    &:active,
+    &:focus,
+    &:visited,
+    &:target,
+    &:focus-within,
+    &:focus-visible {
+      background: #323148;
+    }
+
+    &[type="search"] {
+      -webkit-appearance: textfield;
+    }
+
+    &[type="search"]::-webkit-search-decoration {
+      -webkit-appearance: none;
+    }
   }
 
   &__btn {

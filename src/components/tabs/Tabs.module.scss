@@ -53,6 +53,102 @@
 }
 
 .tip {
-  color: var.$color-text-gray;
-  text-align: center;
+  //   display: flex;
+  //   align-items: center;
+  gap: 4rem;
+  width: 100%;
+  //   justify-content: center;
+  flex-grow: 1;
+  //   font-size: 1.6rem;
+  margin: 1rem auto;
+  margin-bottom: 2rem;
+  padding: 2rem 2rem;
+  border-radius: 10px;
+  background-color: rgba(var.$color-background-tertiary, 0.7);
+  background-color: #1f1931;
+  background: linear-gradient(to top left, #1f1931, #5a3ab2);
+  background: linear-gradient(to top left, #1f1931, #382a5f);
+  background: linear-gradient(to bottom right, #1f1931, #382a5f);
+  background: linear-gradient(to bottom right, #1f1931, #291f44);
+  background: linear-gradient(
+    to bottom right,
+    var.$color-background-tertiary,
+    #291f44
+  );
+  background: linear-gradient(
+    to bottom right,
+    var.$color-background-secondary,
+    #232835
+  );
+  //   background: linear-gradient(
+  //     to bottom right,
+  //     var.$color-background-secondary,
+  //     #262335
+  //   );
+  // background: linear-gradient(to top left, #1f1931, #3e255a);
+  // background-color: rgba(var.$color-background-tertiary, 1);
+  box-shadow: var.$box-shadow;
+  box-shadow: var.$box-shadow-inset;
+
+  &__title {
+    font-size: 2.8rem;
+    padding-left: 1rem;
+    border-left: 5px solid var.$color-primary;
+    margin-bottom: 2.8rem;
+  }
+
+  &__content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 4rem;
+    margin-top: 2rem;
+    font-size: 1.6rem;
+
+    &__text {
+      font-size: 1.6rem;
+      // margin-bottom: 1.6rem;
+    }
+
+    &__list {
+      display: flex;
+      flex-direction: column;
+      list-style: none;
+      font-size: 1.6rem;
+      gap: 3.8rem;
+    }
+
+    &__item {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      text-align: right;
+      gap: 1rem;
+      font-size: 1.6rem;
+      // margin-bottom: 3.4rem;
+
+      & svg {
+        flex-shrink: 0;
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+  }
+
+  &__img-wrap {
+    width: 100%;
+    // min-width: 30rem;
+    flex-shrink: 0;
+  }
+
+  &__img {
+    width: 100%;
+    box-shadow: var.$box-shadow;
+  }
+}
+
+@media (max-width: 600px) {
+  .guide {
+    display: none;
+  }
 }

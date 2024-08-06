@@ -12,6 +12,7 @@ const usedModelsSlice = createSlice({
     models: [],
     images: [],
     panelIsOpen: false,
+    formIsOpen: false,
     fullCardView: true,
   },
   reducers: {
@@ -21,6 +22,10 @@ const usedModelsSlice = createSlice({
     addImagesToPanel(state, actions) {
       // console.log(actions.payload);
       state.images = actions.payload;
+    },
+    setFormIsOpen(state, actions) {
+      // console.log(actions.payload);
+      state.formIsOpen = actions.payload;
     },
     panelState(state, actions) {
       if (actions.payload) {
@@ -138,8 +143,10 @@ export const uploadPanelStateFromStorage = () => {
     if (storageImgData)
       dispatch(usedModelsActions.addImagesToPanel(storageImgData));
     if (storagePanelState?.hasOwnProperty("panelIsOpen")) {
+      console.log(document.body.offsetWidth);
       dispatch(usedModelsActions.panelState(storagePanelState));
-    } else {
+    } else if (document.body.offsetWidth > 600) {
+      console.log(document.offsetWidth);
       dispatch(usedModelsActions.panelState({ panelIsOpen: true }));
     }
     if (storageViewState)

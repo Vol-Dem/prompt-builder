@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import classes from "./Layout.module.scss";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Footer from "../footer/Footer";
 
 // const Layout = () => {
@@ -35,6 +35,7 @@ import Carousel from "../../carousel/Carousel";
 import ActiveCarousel from "../../active-carousel/ActiveCarousel";
 import SearchSvg from "../../../assets/SearchSvg";
 import ReAuthForm from "../../forms/ReAuth/ReAuthForm";
+import { tabActions } from "../../../store/tabs";
 
 const Layout = () => {
   // const [mobileSearchIsOpen, setMobileSea  rchIsOpen] = useState(false);
@@ -107,7 +108,18 @@ const Layout = () => {
               <div className={classes.menu}>
                 <MobileNavigation />
                 <div className={classes.logo}>
-                  <img src={require("../../../assets/logo5.png")} alt="Logo" />
+                  <NavLink
+                    to="/"
+                    className={(nav) => (nav.isActive ? classes.active : "")}
+                    onClick={() => {
+                      dispatch(tabActions.resetActiveTabs());
+                    }}
+                  >
+                    <img
+                      src={require("../../../assets/logo5.png")}
+                      alt="Logo"
+                    />
+                  </NavLink>
                 </div>
                 <MainNavigation />
                 {isAuth && (

@@ -1,0 +1,176 @@
+@use "./../../../variables/variables.scss" as var;
+
+.guide {
+  position: fixed;
+  animation: show 0.3s ease;
+
+  &__backdrop-left {
+    top: 0;
+    height: 100vh;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 30;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(4px);
+
+    &--1 {
+      right: 17rem;
+    }
+
+    &--2 {
+      right: 30rem;
+    }
+  }
+
+  &__backdrop-bottom {
+    right: 0;
+    height: 100vh;
+
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 30;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(4px);
+    // transition: all 0.3s ease-in;
+
+    &--1 {
+      top: 6rem;
+      width: 17rem;
+    }
+
+    &--2 {
+      display: none;
+      top: 40rem;
+      width: 30rem;
+    }
+  }
+
+  &__arrow-up {
+    position: absolute;
+    top: -2rem;
+    right: 2rem;
+  }
+
+  &__content {
+    // height: auto;
+    height: auto;
+    // transform: translate(-50%, -50%);
+    z-index: 40;
+    // width: 28rem;
+    max-width: 95vw;
+    // min-width: 40rem;
+    max-height: 95vh;
+    // overflow-y: scroll;
+    // @include var.custom-scroll;
+    // box-shadow: var.$box-shadow;
+    transition: all 0.3s ease-in;
+
+    &--1 {
+      top: 8rem;
+      right: 8rem;
+    }
+
+    &--2 {
+      top: 6.8rem;
+      right: 30rem;
+    }
+
+    &__text {
+      //   margin-bottom: 1.6rem;
+      font-size: 1.6rem;
+      background-color: var.$color-background-primary;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      box-shadow: var.$box-shadow;
+    }
+
+    &__list {
+      display: flex;
+      flex-direction: column;
+      list-style: none;
+      font-size: 1.6rem;
+      gap: 1.8rem;
+    }
+
+    &__item {
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      text-align: right;
+      gap: 1rem;
+      font-size: 1.6rem;
+
+      // margin-bottom: 3.4rem;
+
+      & svg {
+        flex-shrink: 0;
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+  }
+
+  &__close {
+    position: fixed;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    top: 0.6rem;
+    right: 32rem;
+    color: #a8a8a8;
+    transition: all 0.3s;
+
+    & svg {
+      width: 2.4rem;
+    }
+
+    &:hover {
+      color: lighten(#a8a8a8, 20%);
+    }
+  }
+
+  &__cross {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: rgb(168, 168, 168);
+    clip-path: polygon(
+      10% 0,
+      0 10%,
+      40% 50%,
+      0 90%,
+      10% 100%,
+      50% 60%,
+      90% 100%,
+      100% 90%,
+      60% 50%,
+      100% 10%,
+      90% 0,
+      50% 40%
+    );
+  }
+}
+
+.test {
+  position: relative;
+  // z-index: 20;
+}
+
+.title {
+  margin-bottom: 1rem;
+}
+
+@keyframes show {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 1160px) {
+  .guide__content--2 {
+    top: 7.6rem;
+  }
+}

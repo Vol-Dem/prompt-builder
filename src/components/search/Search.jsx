@@ -557,6 +557,7 @@ const Search = ({ className }) => {
     <div className={`${classes["search"]} ${className || ""}`}>
       <form onSubmit={submitSearchHandler} className={classes["search__field"]}>
         <input
+          // type="search"
           type="search"
           onChange={searchInputHandler}
           value={searchInput}

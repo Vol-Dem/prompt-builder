@@ -3,6 +3,7 @@ import classes from "./About.module.scss";
 import ImageFullView from "../ui/ImageFullView";
 import Image1 from "../../assets/about/1-start-1.png";
 import Image2 from "../../assets/about/1-start-2.png";
+import LinkA from "../ui/LinkA";
 
 const About = ({ title }) => {
   const [fullViewIsOpen, setFullViewIsOpen] = useState(false);
@@ -252,9 +253,13 @@ const About = ({ title }) => {
         </div>
         <p className={classes["about__text"]}>
           Select the model type in the "Type" field, enter the model ID or URL
-          hosted on the civitai website, and enter the main category and
-          subcategory where you want to add the model. You can add multiple
-          subcategories to which the model will be linked.
+          hosted on the{" "}
+          <LinkA external href="https://civitai.com">
+            Civitai
+          </LinkA>{" "}
+          website, and enter the main category and subcategory where you want to
+          add the model. You can add multiple subcategories to which the model
+          will be linked.
         </p>
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}

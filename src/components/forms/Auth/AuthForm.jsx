@@ -15,6 +15,7 @@ import { useValidation } from "../../../hooks/use-validation";
 import { useEffect } from "react";
 import ButttonSecondary from "../../ui/ButtonSecondary";
 import {
+  AGREEMENT_MESSAGE,
   DEF_INPUT_ERROR_MESSAGE,
   EMAIL_MAX_LENGTH,
   NAME_MAX_LENGTH,
@@ -109,7 +110,7 @@ const AuthForm = () => {
     }
 
     if (!agreement && !isLogin) {
-      dispatch(authActions.setErrorMessage("agreement"));
+      dispatch(authActions.setErrorMessage(AGREEMENT_MESSAGE));
       return;
     }
 

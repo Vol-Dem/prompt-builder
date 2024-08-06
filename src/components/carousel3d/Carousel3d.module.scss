@@ -46,7 +46,9 @@
   box-shadow: var.$box-shadow;
   //   transform: skew(3deg, -9deg);
   //   transform: scale3d(0.5, 1, 1.7);
+  -webkit-transform: perspective(11cm) rotateX(-7deg) rotateY(34deg);
   transform: perspective(11cm) rotateX(-7deg) rotateY(34deg);
+  // transform: rotateX(-7deg) rotateY(34deg);
   //   border: 1px solid #fff;
 }
 

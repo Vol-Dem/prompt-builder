@@ -5,14 +5,22 @@ import { tabActions } from "../../store/tabs";
 import { modelTypes } from "../../variables/constants";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
+import LinkA from "../ui/LinkA";
+import Guide from "../ui/guide/Guide";
+import Modal from "../ui/Modal";
+import ArrowRightSvg from "../../assets/ArrowRight";
+import { useState } from "react";
 // import LoraForm from "../forms/lora/LoraForm";
 // import GeneralForm from "../forms/general/GeneralForm";
 // import EmbeddingsForm from "../forms/embeddings/EmbeddingsForm";
 
 const Tabs = () => {
+  const [guideIsOpen, setGuideIsOpen] = useState(true);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const activeCategory = useSelector((state) => state.tabs.currTab);
   const categories = useSelector((state) => state.tabs.categoriesData);
+  const formIsOpen = useSelector((state) => state.used.formIsOpen);
+  const sidepanelIsOpen = useSelector((state) => state.used.panelIsOpen);
   const userDataIsLoading = useSelector(
     (state) => state.auth.userDataIsLoading
   );
@@ -70,15 +78,33 @@ const Tabs = () => {
           !modelTypesHtml?.length &&
           !userDataLoadError &&
           isAuth && (
-            <span className={classes.tip}>
-              Use "New resource" button at the top right to add your first model
-            </span>
+            <div className={classes.tip}>
+              <p className={classes["tip__content__text"]}>
+                To add a model, open the side panel using the button on the
+                right and click "New resource". Copy the model ID or URL from
+                the{" "}
+                <LinkA external href="https://civitai.com">
+                  Civitai
+                </LinkA>{" "}
+                , fill in the remaining fields and click "Save".
+              </p>
+              {guideIsOpen && sidepanelIsOpen && (
+                <Guide
+                  className={classes.guide}
+                  stage={formIsOpen ? 2 : 1}
+                  onClose={() => {
+                    setGuideIsOpen(false);
+                  }}
+                ></Guide>
+              )}
+            </div>
           )}
         {userDataIsLoading && (
           <div>
             <Spinner size="medium" />
           </div>
         )}
+
         {userDataLoadError && <ErrorMessage>{userDataLoadError}</ErrorMessage>}
       </div>
     </>

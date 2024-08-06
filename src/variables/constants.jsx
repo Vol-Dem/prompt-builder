@@ -26,8 +26,12 @@ export const PASSWORD_MAX_LENGTH = 100;
 export const DEF_SUCCESS_MESSAGE = "Saved successfully";
 export const SAVED_SUCCESS_MESSAGE = "Upload complete";
 export const DEF_INPUT_ERROR_MESSAGE = "Invalid input data";
+export const AGREEMENT_MESSAGE =
+  "You have to accept our Terms of Service and Privacy Policy";
 export const UNIQUE_ERROR_MESSAGE = "This name already exists";
 export const EXISTS_ERROR_MESSAGE = "This resource already exists";
+export const LONG_LOADING_WARNING_MESSAGE =
+  "Something went wrong. Loading time is unexpectedly long, try refreshing the page";
 export const AUTH_ERROR_MESSAGE = "You have to be logged in to view this page";
 export const EMPTY_ERROR_MESSAGE =
   "No matching images found. Try to switch the NSFW filter or the related checkbox.";

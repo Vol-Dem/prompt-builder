@@ -21,12 +21,13 @@ import ArrowRightSvg from "../../assets/ArrowRight";
 
 const UsedModelsPanel = () => {
   // const [panelIsOpen, setPanelIsOpen] = useState(true);
-  const [formIsOpen, setFormIsOpen] = useState(false);
+  // const [formIsOpen, setFormIsOpen] = useState(false);
   // const [fullCardView, setFullCardView] = useState(true);
   const usedModels = useSelector((state) => state.used.models);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const usedImages = useSelector((state) => state.used.images);
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
+  const formIsOpen = useSelector((state) => state.used.formIsOpen);
   const fullCardView = useSelector((state) => state.used.fullCardView);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const dispatch = useDispatch();
@@ -49,7 +50,8 @@ const UsedModelsPanel = () => {
     if (!isAuth) {
       dispatch(authActions.openAuthForm(true));
     } else {
-      setFormIsOpen((prevState) => !prevState);
+      // setFormIsOpen((prevState) => !prevState);
+      dispatch(usedModelsActions.setFormIsOpen(!formIsOpen));
     }
   };
 
@@ -152,13 +154,8 @@ const UsedModelsPanel = () => {
         className={classes["btn__open"]}
       >
         {/* <Arrow direction={panelIsOpen ? "right" : "left"} /> */}
-        {!panelIsOpen && (
-          <ArrowLeftSvg/>
-        )}
-        {panelIsOpen && (
-          
-          <ArrowRightSvg/>
-        )}
+        {!panelIsOpen && <ArrowLeftSvg />}
+        {panelIsOpen && <ArrowRightSvg />}
       </button>
       <div
         className={`${classes.panel} ${

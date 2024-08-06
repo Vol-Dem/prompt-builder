@@ -277,30 +277,32 @@ const ModelSettings = () => {
     }
   };
 
-  const modelVersionsHtml = Object.values(
-    model?.modelVersionsCustomData
-  )?.flatMap((version, i) => {
-    const versionIsSaved =
-      model.modelVersionsCustomData[version.id]?.downloadStatus;
-    // const modelName = model.modelVersionsCustomData[version.id]?.name;
+  const modelVersionsHtml = Object.values(model?.modelVersionsCustomData)
+    ?.sort((a, b) => a?.index - b?.index)
+    .flatMap((version, i) => {
+      const versionIsSaved =
+        model.modelVersionsCustomData[version.id]?.downloadStatus;
+      // const modelName = model.modelVersionsCustomData[version.id]?.name;
 
-    if (!version.downloadStatus) {
-      return [];
-    }
-    return (
-      <li
-        key={i}
-        id={version.versionId}
-        data-version={i}
-        onClick={switchTabHandler}
-        className={`${classes["menu-item"]} ${
-          curTab === version.versionId + "" ? classes["menu-item--active"] : ""
-        }`}
-      >
-        {version.name}
-      </li>
-    );
-  });
+      if (!version.downloadStatus) {
+        return [];
+      }
+      return (
+        <li
+          key={i}
+          id={version.versionId}
+          data-version={i}
+          onClick={switchTabHandler}
+          className={`${classes["menu-item"]} ${
+            curTab === version.versionId + ""
+              ? classes["menu-item--active"]
+              : ""
+          }`}
+        >
+          {version.name}
+        </li>
+      );
+    });
 
   const openMenuHandler = () => {
     setMobileMenuIsOpen((prevState) => !prevState);

@@ -203,6 +203,10 @@
   background-color: #756b76;
   color: var.$color-text-white;
   cursor: pointer;
+  & svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
 }
 
 .btn-forms {
@@ -223,6 +227,7 @@
 
   & svg {
     width: 2rem;
+    height: 2rem;
   }
 }
 
@@ -239,6 +244,7 @@
   padding: 0.3rem 0.4rem;
   & svg {
     width: 1.4rem;
+    height: 1.4rem;
   }
 }
 

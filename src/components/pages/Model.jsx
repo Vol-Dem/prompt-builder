@@ -30,11 +30,15 @@ import CrossSvg from "../../assets/CrossSvg";
 import ErrorMessage from "../ui/ErrorMessage";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import ErrorPage from "./ErrorPage";
-import { AUTH_ERROR_MESSAGE } from "../../variables/constants";
+import {
+  AUTH_ERROR_MESSAGE,
+  LONG_LOADING_WARNING_MESSAGE,
+} from "../../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 
 const minDescriptionHeight = 300;
+const defImagesTimeotSec = 10;
 
 const Model = ({ title }) => {
   const [modelPreview, setModelPreview] = useState({});
@@ -45,9 +49,12 @@ const Model = ({ title }) => {
   // const [currVersionIndex, setCurrVersionIndex] = useState(null);
   const [curCustomVersionData, setCurCustomVersionData] = useState({});
   const [curImagesModelVersionId, setCurImagesModelVersionId] = useState(null);
+  const [curVersionImagesIsLoading, setCurVersionImagesIsLoading] =
+    useState(false);
   const [curVersionImages, setCurVersionImages] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [warningMessage, setWarningMessage] = useState("");
   const { modelId } = useParams();
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
@@ -78,6 +85,8 @@ const Model = ({ title }) => {
   const categories = useSelector((state) => state.tabs.categoriesData);
   const dispatch = useDispatch();
   const descriptionRef = useRef();
+  const loadingModelTimeoutRef = useRef();
+  const loadingImagesTimeoutRef = useRef();
   // const descriptionHeight = useRef()
 
   useEffect(() => {
@@ -96,10 +105,13 @@ const Model = ({ title }) => {
   }, [model?.id]);
 
   const filterNsfwImages = useCallback((images) => {
-    return images?.filter(
-      (image) =>
-        image?.nsfw === "None" || image?.nsfwLevel <= 1 || image?.nsfw === false
-    );
+    return images?.filter((image) => {
+      if (image?.nsfwLevel) {
+        return image?.nsfwLevel <= 1;
+      } else {
+        return image?.nsfw === "None" || image?.nsfw === false;
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -122,6 +134,27 @@ const Model = ({ title }) => {
     }
   }, [curVersionImages, curVersion?.id, nsfwMode, filterNsfwImages]);
 
+  const setDefaultVersionImages = useCallback(() => {
+    const defVersionImages = model?.data?.modelVersions.find(
+      (version) => version?.id === curVersion?.id
+    )?.images;
+    const modelImages = nsfwMode
+      ? defVersionImages
+      : filterNsfwImages(defVersionImages);
+
+    console.log(model);
+    console.log(modelImages);
+
+    if (!!defVersionImages?.length) {
+      setCurVersionImages({
+        items: defVersionImages || [],
+        filteredItems: modelImages,
+        versionId: curVersion?.id,
+        nsfw: !!nsfwMode,
+      });
+    }
+  }, [model, curVersion, nsfwMode, filterNsfwImages]);
+
   useEffect(() => {
     if (curVersionImages?.versionId === curVersion?.id) return;
     // const modelImages = nsfwMode
@@ -132,7 +165,8 @@ const Model = ({ title }) => {
 
     const getCurVersionImages = async () => {
       try {
-        // console.log("GET CUR VER IMAGES");
+        console.log("GET CUR VER IMAGES");
+        setCurVersionImagesIsLoading(true);
         // console.log(uid);
         // console.log(model?.id);
         // console.log(curVersion?.id);
@@ -143,8 +177,20 @@ const Model = ({ title }) => {
           "defaultImages",
           curVersion?.id + ""
         );
+        if (loadingImagesTimeoutRef?.current) {
+          clearTimeout(loadingImagesTimeoutRef.current);
+        }
+
+        loadingImagesTimeoutRef.current = setTimeout(() => {
+          // setDefaultVersionImages();
+          setWarningMessage(LONG_LOADING_WARNING_MESSAGE);
+        }, defImagesTimeotSec * 1000);
 
         const docSnap = await getDoc(modelDefImagesRef);
+
+        if (loadingImagesTimeoutRef?.current) {
+          clearTimeout(loadingImagesTimeoutRef.current);
+        }
 
         if (docSnap.exists()) {
           // console.log("Document data:", docSnap.data());
@@ -162,32 +208,43 @@ const Model = ({ title }) => {
             versionId: curVersion?.id,
             nsfw: !!nsfwMode,
           });
+
+          setCurVersionImagesIsLoading(false);
         } else {
           // console.log("NO DEF IMAGES");
           // console.log(curVersion);
           // console.log(curVersion.images);
-          const defVersionImages = model?.data?.modelVersions.find(
-            (version) => version?.id === curVersion?.id
-          )?.images;
-          const modelImages = nsfwMode
-            ? defVersionImages
-            : filterNsfwImages(defVersionImages);
+          // const defVersionImages = model?.data?.modelVersions.find(
+          //   (version) => version?.id === curVersion?.id
+          // )?.images;
+          // const modelImages = nsfwMode
+          //   ? defVersionImages
+          //   : filterNsfwImages(defVersionImages);
 
-          if (!!defVersionImages?.length) {
-            setCurVersionImages({
-              items: defVersionImages || [],
-              filteredItems: modelImages,
-              versionId: curVersion?.id,
-              nsfw: !!nsfwMode,
-            });
-          }
+          // console.log(modelImages);
+
+          // if (!!defVersionImages?.length) {
+          //   setCurVersionImages({
+          //     items: defVersionImages || [],
+          //     filteredItems: modelImages,
+          //     versionId: curVersion?.id,
+          //     nsfw: !!nsfwMode,
+          //   });
+          // }
+          setDefaultVersionImages();
+          setCurVersionImagesIsLoading(false);
         }
       } catch (err) {
+        if (loadingImagesTimeoutRef?.current) {
+          clearTimeout(loadingImagesTimeoutRef.current);
+        }
+        setDefaultVersionImages();
+        setCurVersionImagesIsLoading(false);
         console.log(err.message);
       }
     };
 
-    if (!!model?.id && !!curVersion?.id) {
+    if (!!model?.id && !!curVersion?.id && !!model?.data) {
       getCurVersionImages();
     }
   }, [
@@ -197,6 +254,7 @@ const Model = ({ title }) => {
     uid,
     curVersionImages?.versionId,
     filterNsfwImages,
+    setDefaultVersionImages,
   ]);
 
   useEffect(() => {
@@ -249,6 +307,7 @@ const Model = ({ title }) => {
       dispatch(modelActions.setModelData({}));
       dispatch(modelActions.setActiveCarouselData({}));
       dispatch(modelActions.resetModelData());
+      clearTimeout(loadingImagesTimeoutRef?.current);
       if (unsub) {
         unsub();
       }
@@ -626,7 +685,10 @@ const Model = ({ title }) => {
               {showAllVersions ? "Hide" : "Show All"}
             </ButtonTertiary>
           )}
-          {!!curVersionImages.items?.length && modelImagesHtml}
+          {!!curVersionImages.filteredItems?.length &&
+            !curVersionImagesIsLoading &&
+            modelImagesHtml}
+          {curVersionImagesIsLoading && <Spinner />}
           <div className={classes["info-container"]}>
             <ModelInfo customData={curCustomVersionData} />
             <ModelTags
