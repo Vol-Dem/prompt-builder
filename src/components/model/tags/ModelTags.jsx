@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import classes from "./ModelTags.module.scss";
 // import Tag from "../../tag/Tag";
 import TagList from "../../tag-list/TagList";
@@ -10,6 +10,8 @@ import ActivationTag from "../../activation-tag/ActivationTag";
 import Modal from "../../ui/Modal";
 import TagsForm from "../../forms/tags-form/TagsForm";
 import EditSvg from "../../../assets/EditSvg";
+import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
+import Tooltip from "../../ui/Tooltip";
 
 // const defVisibleTags = 2;
 
@@ -58,28 +60,46 @@ const ModelTags = ({ customData, modelPreview }) => {
   const openEditHandler = () => {
     setModalIsOpen(true);
   };
-
+  console.log(customData);
   return (
     <>
       <div className={classes["tags"]}>
         {/* <h2 className={classes.title}>Main</h2> */}
         <div className={classes["tags__container"]}>
           <div className={classes["tags__param"]}>
-            {(customData?.mainTag || model?.mainTag) && (
+            {(customData?.mainTag ||
+              model?.mainTag ||
+              customData?.defActTag) && (
               <div className={classes["activation-tag"]}>
                 <h3 className={classes["tags__subtitle"]}>Activation tag:</h3>
-                <ActivationTag
-                  tag={customData?.mainTag || model?.mainTag}
-                  modelData={modelPreview}
-                  strength={
-                    customData?.weight || model.defaultCustomData?.weight
-                  }
-                />
-                {/* <Tag
-                tag={customData?.mainTag || model?.mainTag}
-                promptType="positive"
-                modelData={modelPreview}
-              /> */}
+                <div className={classes["activation-tag__container"]}>
+                  <ActivationTag
+                    tag={
+                      customData?.mainTag ||
+                      model?.mainTag ||
+                      customData?.defActTag
+                    }
+                    modelData={modelPreview}
+                    strength={
+                      customData?.weight || model.defaultCustomData?.weight
+                    }
+                  />
+                  {(!customData?.mainTag ||
+                    !model?.mainTag ||
+                    customData?.defActTag) && (
+                    <Tooltip>
+                      <p className={classes["tags__notification-text"]}>
+                        The activation tag is generated automatically based on
+                        the file name.
+                      </p>
+                      <p className={classes["tags__notification-text"]}>
+                        It should work in most cases, but we advise you to
+                        replace it with an appropriate name from your local
+                        web-UI.
+                      </p>
+                    </Tooltip>
+                  )}
+                </div>
               </div>
             )}
             <button

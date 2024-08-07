@@ -63,7 +63,7 @@ html {
 
 main {
   display: flex;
-  // padding: 0 2rem;
+  // padding: 0 2rem 0 0;
 }
 
 .wrapper {
@@ -84,6 +84,10 @@ main {
     body {
       padding-right: 1.2rem;
     }
+    main {
+      display: flex;
+      padding-right: 1.2rem;
+    }
   }
 }
 
@@ -93,8 +97,8 @@ main {
   }
 }
 
-@media (max-width: 430px) {
-  main {
-    // padding: 0 2rem 0 1rem;
-  }
-}
+// @media (max-width: 430px) {
+//   main {
+//     // padding: 0 2rem 0 1rem;
+//   }
+// }

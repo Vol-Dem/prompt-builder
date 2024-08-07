@@ -1,0 +1,54 @@
+@use "./../../variables/variables.scss" as var;
+
+.tooltip {
+  position: relative;
+  height: 2.5rem;
+  color: #898996;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  & svg {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  &:hover {
+    color: #aeaebc;
+  }
+
+  &:hover &-content {
+    display: block;
+    z-index: 1;
+    animation: show 0.2s ease-in;
+  }
+
+  &-content {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(100%, -100%);
+    font-size: 1.4rem;
+    width: 30rem;
+    padding: 1rem;
+    border-radius: 10px 10px 10px 0;
+    border: 1px solid var.$color-text-gray-dark;
+    background-color: var.$color-background-tertiary;
+    // opacity: 0;
+    z-index: -1;
+  }
+}
+
+@keyframes show {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .tooltip-content {
+    width: 20rem;
+  }
+}

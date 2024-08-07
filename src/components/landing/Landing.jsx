@@ -82,8 +82,8 @@ const Landing = () => {
 
             <p className={classes["section__content__text"]}>
               Make your prompt building fast and simple: built-in tag system
-              allows you to add and remove trigger words from prompt with just
-              one click.
+              allows you to add trigger words to prompt with just one click from
+              models and prompt of generated images.
             </p>
             <p className={classes["section__content__text"]}>
               Easily track which trigger words are already in the prompt: each

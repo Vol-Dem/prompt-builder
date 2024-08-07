@@ -852,7 +852,8 @@ const About = ({ title }) => {
         <p className={classes["about__text"]}>
           If you accidentally delete a category, you can create a new one with
           the same name, and all the models previously linked to it will
-          reappear in the new category.
+          reappear in the new category. This works if you didn't rename it
+          before.
         </p>
       </div>
       {fullViewIsOpen && (

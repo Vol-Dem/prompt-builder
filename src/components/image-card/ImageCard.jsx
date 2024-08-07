@@ -19,6 +19,8 @@ import { Link } from "react-router-dom";
 import { modelActions } from "../../store/model";
 import LinkA from "../ui/LinkA";
 import { clearFileExtension } from "../../utils/generalUtils";
+import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
+import CheckCircleSvg from "../../assets/CheckCircleSvg";
 // import { promptActions } from "../../store/prompt";
 
 const firestore = getFirestore(firebaseApp);
@@ -450,36 +452,14 @@ const ImageCard = ({ activeImgNum }) => {
         )}
         <div className={classes["resource__version"]}>
           {!versionIsSaved && !!resource?.preview && (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
+            <ExclamationCircleSvg
               className={classes["resource__version-svg"]}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
-              />
-            </svg>
+            />
           )}
           {versionIsSaved && (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
+            <CheckCircleSvg
               className={`${classes["resource__version-svg"]} ${classes["resource__version-svg--saved"]}`}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-              />
-            </svg>
+            />
           )}{" "}
           <span className={classes["resource__version-name"]}>
             {versionName || resource?.versionName}

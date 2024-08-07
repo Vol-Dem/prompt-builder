@@ -45,7 +45,7 @@
     }
 
     &:disabled {
-      color: var.$color-grey;
+      color: var.$color-gray;
     }
   }
 
@@ -55,7 +55,7 @@
 
     &:disabled {
       color: transparent;
-      background-color: var.$color-grey;
+      background-color: var.$color-gray;
       box-shadow: none;
     }
   }

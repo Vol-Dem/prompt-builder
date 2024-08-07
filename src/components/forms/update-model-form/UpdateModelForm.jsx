@@ -572,6 +572,9 @@ const UpdateModelForm = ({ modelData, id }) => {
             ).toLowerCase();
           }
 
+          const defActTag =
+            fileName && data?.type == "LORA" ? `<lora:${fileName}:1>` : "";
+
           modelVersionsCustomData = {
             ...modelVersionsCustomData,
             [version.id]: {
@@ -580,6 +583,7 @@ const UpdateModelForm = ({ modelData, id }) => {
               name: version.name,
               versionName: version.name,
               baseModel: version.baseModel,
+              defActTag,
               trainedWords:
                 version?.trainedWords?.flatMap((word) => {
                   return splitTags(word);
@@ -864,14 +868,38 @@ const UpdateModelForm = ({ modelData, id }) => {
             }),
             // negativeTags,
             ...(modelType === "checkpoint" && {
-              steps,
-              sampler,
-              cfgScale,
-              hiresUpscaler,
-              hiresUpscaleBy,
-              hiresUpscaleSteps,
-              denoisingStrength,
-              vae,
+              ...(steps &&
+                {
+                  // steps,
+                }),
+              ...(sampler && {
+                sampler,
+              }),
+              // sampler,
+              ...(cfgScale && {
+                cfgScale,
+              }),
+              // cfgScale,
+              ...(hiresUpscaler && {
+                hiresUpscaler,
+              }),
+              // hiresUpscaler,
+              ...(hiresUpscaleBy && {
+                hiresUpscaleBy,
+              }),
+              // hiresUpscaleBy,
+              ...(hiresUpscaleSteps && {
+                hiresUpscaleSteps,
+              }),
+              // hiresUpscaleSteps,
+              ...(denoisingStrength && {
+                denoisingStrength,
+              }),
+              // denoisingStrength,
+              ...(vae && {
+                vae,
+              }),
+              // vae,
             }),
           },
           modelVersionsCustomData,
