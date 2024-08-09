@@ -39,6 +39,7 @@ const tabsSlice = createSlice({
       previews: [],
     },
     subcategories: [],
+    baseModels: [],
     sortBy: "createdAt",
     // sortBy: "name",
     modelType: "",
@@ -64,7 +65,14 @@ const tabsSlice = createSlice({
       state.currSubcategory = actions.payload;
     },
     setCategories(state, actions) {
-      state.categoriesData = actions.payload;
+      if (actions.payload) {
+        state.categoriesData = actions.payload;
+      }
+    },
+    setBaseModels(state, actions) {
+      if (actions.payload) {
+        state.baseModels = actions.payload.sort();
+      }
     },
     setSortBy(state, actions) {
       state.sortBy = actions.payload;

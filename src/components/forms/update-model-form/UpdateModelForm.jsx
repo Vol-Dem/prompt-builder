@@ -10,6 +10,7 @@ import {
 } from "../../../utils/fetchUtils";
 // import { clearObjectKeys } from "../../../utils/generalUtils";
 import {
+  arrayUnion,
   // collection,
   doc,
   getDoc,
@@ -21,7 +22,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Input from "../../ui/Input";
 import Buttton from "../../ui/Button";
 import Textarea from "../../ui/Textarea";
@@ -55,6 +56,7 @@ import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import InputNumber from "../../ui/InputNumber";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
+import { tabActions } from "../../../store/tabs";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -211,6 +213,8 @@ const UpdateModelForm = ({ modelData, id }) => {
 
   const uid = useSelector((state) => state.auth.user.uid);
   const categories = useSelector((state) => state.tabs.categoriesData);
+  const curBaseModels = useSelector((state) => state.tabs.baseModels);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!modelData) return;
@@ -616,10 +620,6 @@ const UpdateModelForm = ({ modelData, id }) => {
 
         const previewImg = activePreviewImg || previewImgDefault;
 
-        const baseModels = new Set(
-          modelVersions?.flatMap((version) => version?.baseModel || [])
-        );
-
         const fileNames = modelVersions?.flatMap((version) => {
           // version.files.map((file) => file.name)
           if (version.hasOwnProperty("files") && version?.files) {
@@ -676,6 +676,26 @@ const UpdateModelForm = ({ modelData, id }) => {
 
         const versionIds = modelVersions?.map((version) => version.id) || [];
 
+        const baseModels = new Set(
+          modelVersions?.flatMap((version) => version?.baseModel || [])
+        );
+
+        // if (!curBaseModels?.length) {
+        //   newBaseModel = true;
+        // } else {
+        //   baseModels.forEach((baseModel) => {
+        //     const exists = curBaseModels.some(
+        //       (curBaseModel) => curBaseModel === baseModel
+        //     );
+        //     if (!exists) {
+        //       newBaseModel = true;
+        //     }
+        //   });
+        // }
+        let newCategory = false;
+        let newSubcategory = false;
+        let newBaseModel = false;
+
         const { mainId, subIds } = await runTransaction(
           firestore,
           async (transaction) => {
@@ -685,6 +705,20 @@ const UpdateModelForm = ({ modelData, id }) => {
             // }
 
             const categories = sfDoc?.data()?.categoriesById || {};
+            const curUserBaseModels = sfDoc?.data()?.baseModels || [];
+
+            if (!curUserBaseModels?.length) {
+              newBaseModel = true;
+            } else {
+              baseModels.forEach((baseModel) => {
+                const exists = curUserBaseModels.some(
+                  (curBaseModel) => curBaseModel === baseModel
+                );
+                if (!exists) {
+                  newBaseModel = true;
+                }
+              });
+            }
 
             // if (!categories) {
             //   throw new Error("Can't update, try again later");
@@ -714,6 +748,7 @@ const UpdateModelForm = ({ modelData, id }) => {
             );
 
             if (!mainCategoryData) {
+              newCategory = true;
               const currCategories = categories[modelType] || [];
               mainId = createCategoryId(main, categories[modelType]);
               // console.log(mainId)
@@ -737,6 +772,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                 );
 
                 if (!subExists) {
+                  newSubcategory = true;
                   const categoryId = createCategoryId(
                     subcategory,
                     mainCategoryData.subcategories
@@ -780,24 +816,28 @@ const UpdateModelForm = ({ modelData, id }) => {
             //   { merge: true }
             // );
 
-            if (!sfDoc.exists()) {
-              transaction.set(
-                userRef,
-                {
-                  categoriesById: { [modelType]: updatedCategories },
-                },
-                { merge: true }
-              );
-            } else {
-              transaction.update(
-                userRef,
-                {
-                  [categoryField]: updatedCategories,
-                },
-                { merge: true }
-              );
+            if (newBaseModel || newCategory || newSubcategory) {
+              console.log("RUN TRANS");
+              if (!sfDoc.exists()) {
+                transaction.set(
+                  userRef,
+                  {
+                    categoriesById: { [modelType]: updatedCategories },
+                    baseModels: baseModels,
+                  },
+                  { merge: true }
+                );
+              } else {
+                transaction.update(
+                  userRef,
+                  {
+                    [categoryField]: updatedCategories,
+                    baseModels: arrayUnion(...baseModels),
+                  },
+                  { merge: true }
+                );
+              }
             }
-
             return { mainId, subIds };
             // if (newPop <= 1000000) {
             //   transaction.update(sfDocRef, { population: newPop });
@@ -949,59 +989,65 @@ const UpdateModelForm = ({ modelData, id }) => {
         const curPrevData = modelsPrevRefSnap.data() || {};
         console.log(curPrevData);
         await setDoc(modelsPrevRef, { ...curPrevData, ...loraPrevData });
+
+        ///////////////////
+        // const modelsRef = ref(db, "models/" + (modelData?.id || modelId));
+        // let modelsPrevRef;
+        // if (formType === "Checkpoint") {
+        //   modelsPrevRef = ref(db, "checkpoint preview/" + main);
+        // } else {
+        //   modelsPrevRef = ref(
+        //     db,
+        //     "models preview/" + (modelData?.main || main)
+        //   );
+        // }
+
+        // get(modelsRef).then((snapshot) => {
+        //   if (snapshot.exists()) {
+        //     if (!modelData) {
+        //       setSuccessMessage("Exists");
+        //       return;
+        //     }
+        //     set(modelsRef, modelInfo);
+        //     savePreview(modelsPrevRef, loraPrevData, modelId);
+        //   } else {
+        //     set(modelsRef, modelInfo);
+        //     savePreview(modelsPrevRef, loraPrevData, modelId);
+        //   }
+        // });
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        // const modelDlsRef = collection(firestore, "users", uid, "models");
+        // const modelDlSnap = await getDocs(modelDlsRef);
+        // console.log(modelDlSnap);
+        // modelDlSnap.forEach((doc) => {
+        //   // doc.data() is never undefined for query doc snapshots
+        //   console.log(doc.id);
+        // });
+
+        // /////////Save modelImages with gen info ///////////
+        // if (data?.creator?.username && !modelData) {
+        //   const versionsWithUserName = data?.modelVersions?.map((version) => {
+        //     return {
+        //       ...version,
+        //       modelId,
+        //       username: data.creator.username,
+        //     };
+        //   });
+
+        //   await makeBatchRequest(versionsWithUserName, saveVersionImages);
+        // }
+        if (newBaseModel) {
+          const updatedBaseModels = [
+            ...new Set([...baseModels, ...curBaseModels]),
+          ];
+          dispatch(tabActions.setBaseModels(updatedBaseModels));
+        }
+
+        setModelIsSaving(false);
+        setSuccessMessage(SAVED_SUCCESS_MESSAGE);
+        setSavedModel(modelId);
       }
-
-      ///////////////////
-      // const modelsRef = ref(db, "models/" + (modelData?.id || modelId));
-      // let modelsPrevRef;
-      // if (formType === "Checkpoint") {
-      //   modelsPrevRef = ref(db, "checkpoint preview/" + main);
-      // } else {
-      //   modelsPrevRef = ref(
-      //     db,
-      //     "models preview/" + (modelData?.main || main)
-      //   );
-      // }
-
-      // get(modelsRef).then((snapshot) => {
-      //   if (snapshot.exists()) {
-      //     if (!modelData) {
-      //       setSuccessMessage("Exists");
-      //       return;
-      //     }
-      //     set(modelsRef, modelInfo);
-      //     savePreview(modelsPrevRef, loraPrevData, modelId);
-      //   } else {
-      //     set(modelsRef, modelInfo);
-      //     savePreview(modelsPrevRef, loraPrevData, modelId);
-      //   }
-      // });
-
-      ///////////////////////////////////////////////////////////////////////////////////////////////////
-      // const modelDlsRef = collection(firestore, "users", uid, "models");
-      // const modelDlSnap = await getDocs(modelDlsRef);
-      // console.log(modelDlSnap);
-      // modelDlSnap.forEach((doc) => {
-      //   // doc.data() is never undefined for query doc snapshots
-      //   console.log(doc.id);
-      // });
-
-      // /////////Save modelImages with gen info ///////////
-      // if (data?.creator?.username && !modelData) {
-      //   const versionsWithUserName = data?.modelVersions?.map((version) => {
-      //     return {
-      //       ...version,
-      //       modelId,
-      //       username: data.creator.username,
-      //     };
-      //   });
-
-      //   await makeBatchRequest(versionsWithUserName, saveVersionImages);
-      // }
-
-      setModelIsSaving(false);
-      setSuccessMessage(SAVED_SUCCESS_MESSAGE);
-      setSavedModel(modelId);
     } catch (err) {
       setModelIsSaving(false);
       console.log(err);

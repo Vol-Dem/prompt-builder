@@ -29,13 +29,13 @@ const sortTypes = [
   { name: "Newest", value: "createdAt" },
   { name: "Name", value: "name" },
 ];
-const modelTypes = [
+const baseModelsDef = [
   { name: "-", value: "-" },
-  { name: "SD 3", value: "SD 3" },
-  { name: "Pony", value: "Pony" },
-  { name: "SDXL", value: "SDXL 1.0" },
-  { name: "SD 1.5", value: "SD 1.5" },
-  { name: "Other", value: "Other" },
+  // { name: "SD 3", value: "SD 3" },
+  // { name: "Pony", value: "Pony" },
+  // { name: "SDXL", value: "SDXL 1.0" },
+  // { name: "SD 1.5", value: "SD 1.5" },
+  // { name: "Other", value: "Other" },
 ];
 
 const ModelsList = () => {
@@ -50,6 +50,7 @@ const ModelsList = () => {
   const activeCategory = useSelector((state) => state.tabs.currCategory);
   const activeSubcategory = useSelector((state) => state.tabs.currSubcategory);
   const errorMessage = useSelector((state) => state.tabs.errorMessage);
+  const baseModels = useSelector((state) => state.tabs.baseModels);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const endPage = useRef(null);
   // const isIntersecting = useIntersection(endPage, false);
@@ -58,6 +59,16 @@ const ModelsList = () => {
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
   const dispatch = useDispatch();
+
+  console.log(baseModels);
+  const baseModelsData = !baseModels?.length
+    ? baseModelsDef
+    : [
+        ...baseModelsDef,
+        ...baseModels?.map((model) => {
+          return { name: model, value: model };
+        }),
+      ];
 
   useEffect(() => {
     console.log("MPAGE", isPageEnd);
@@ -155,7 +166,7 @@ const ModelsList = () => {
             dispatch(tabActions.setModelsData([]));
             dispatch(getModelsPreview(false, nsfwMode));
           }}
-          options={modelTypes}
+          options={baseModelsData}
           className={classes.select}
         />
       </div>

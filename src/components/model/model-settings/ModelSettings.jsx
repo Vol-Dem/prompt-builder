@@ -14,7 +14,13 @@ import {
   makeBatchRequest,
   saveVersionImages,
 } from "../../../utils/fetchUtils";
-import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
+import {
+  arrayUnion,
+  doc,
+  getDoc,
+  getFirestore,
+  updateDoc,
+} from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
 import { deleteModel } from "../../../store/model";
 // import Modal from "../../ui/Modal";
@@ -41,6 +47,7 @@ const ModelSettings = () => {
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
   const model = useSelector((state) => state.model.model);
   const uid = useSelector((state) => state.auth.user.uid);
+  const curBaseModels = useSelector((state) => state.tabs.baseModels);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -204,6 +211,25 @@ const ModelSettings = () => {
       const versionIds =
         newModelData.modelVersions?.map((version) => version.id) || [];
 
+      const baseModels = new Set(
+        newModelData.modelVersions?.flatMap(
+          (version) => version?.baseModel || []
+        )
+      );
+
+      let newBaseModel = false;
+
+      if (curBaseModels?.length) {
+        baseModels?.forEach((baseModel) => {
+          const exists = curBaseModels?.some(
+            (curBaseModel) => curBaseModel === baseModel
+          );
+          if (!exists) {
+            newBaseModel = true;
+          }
+        });
+      }
+
       const modelsRef = doc(firestore, "users", uid, "models", model?.id + "");
       const modelsPrevRef = doc(
         firestore,
@@ -212,6 +238,17 @@ const ModelSettings = () => {
         "preview",
         model?.id + ""
       );
+      const userRef = doc(firestore, "users", uid);
+
+      if (newBaseModel) {
+        await updateDoc(
+          userRef,
+          {
+            baseModels: arrayUnion(...baseModels),
+          },
+          { merge: true }
+        );
+      }
 
       await updateDoc(
         modelsRef,
@@ -229,6 +266,7 @@ const ModelSettings = () => {
           hashes,
           versionIds,
           tags: newModelData.tags,
+          baseModels: arrayUnion(...baseModels),
         },
         { merge: true }
       );

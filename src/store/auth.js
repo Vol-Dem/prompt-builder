@@ -483,7 +483,8 @@ export const getUserData = (uid) => {
       const userDataDoc = await getDoc(userRef);
       if (userDataDoc.exists()) {
         const userData = userDataDoc.data();
-        dispatch(tabActions.setCategories(userData.categoriesById));
+        dispatch(tabActions.setCategories(userData?.categoriesById));
+        dispatch(tabActions.setBaseModels(userData?.baseModels));
         dispatch(promptActions.setPresets(userData.presets));
         dispatch(modelActions.setNsfwMode(userData.nsfwMode));
       }
