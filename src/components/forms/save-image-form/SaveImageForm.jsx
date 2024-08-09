@@ -3,7 +3,7 @@ import classes from "./SaveImageForm.module.scss";
 import { getImagesInfo, makeBatchRequest } from "../../../utils/fetchUtils";
 import firebaseApp from "../../../firebase-config";
 import { arrayUnion, doc, getFirestore, setDoc } from "firebase/firestore";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Input from "../../ui/Input";
 import Select from "../../ui/Select";
 import { useValidation } from "../../../hooks/use-validation";
@@ -24,12 +24,19 @@ import {
 } from "../../../variables/constants";
 import { validateInput } from "../../../utils/generalUtils";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
+import ChooseImageForm from "../choose-image-form/ChooseImageForm";
+import Modal from "../../ui/Modal";
+import { uploadActions } from "../../../store/upload";
+import BackSvg from "../../../assets/BackSvg";
 
 const firestore = getFirestore(firebaseApp);
 
 const SaveImageForm = ({ modelData, curVersion }) => {
   const [filterDisabledInput, setFilterDisabledInput] = useState(true);
+  const [imagesListIsOpen, setImagesListIsOpen] = useState(false);
+  const [images, setImages] = useState([]);
   const [imageIsSaving, setImageIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [successMessage, seteSuccessMessage] = useState("");
@@ -58,6 +65,7 @@ const SaveImageForm = ({ modelData, curVersion }) => {
 
   const uid = useSelector((state) => state.auth.user.uid);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const dispatch = useDispatch();
 
   // const [postIdState, validatePostId] = useValidation({
   //   required: true,
@@ -65,6 +73,45 @@ const SaveImageForm = ({ modelData, curVersion }) => {
   // });
   // const { isValid: postIdIsValid, errorMessage: postIdErrorMessage } =
   //   postIdState;
+
+  const loadPostImagesHandler = async () => {
+    try {
+      setErrorMessage("");
+      seteSuccessMessage("");
+      setShowErrorMessage(true);
+
+      if (!postIdInput.isValid) {
+        throw new Error(DEF_INPUT_ERROR_MESSAGE);
+      }
+      if (!navigator?.onLine) {
+        throw new Error(OFFLINE_ERROR_MESSAGE);
+      }
+
+      if (!postIdInput?.value) return;
+
+      setIsLoading(true);
+
+      const imgExampleResponse = await fetch(
+        `https://civitai.com/api/v1/images?postId=${postIdInput.value}${
+          filterDisabledInput ? `&modelId=${modelData?.id}` : ""
+        }${nsfwMode ? `&nsfw=X` : `&nsfw=None`}`
+      );
+      const data = await imgExampleResponse.json();
+      console.log(data);
+      setImages(data.items);
+
+      if (!data.items.length) {
+        throw new Error(EMPTY_ERROR_MESSAGE);
+      }
+
+      setImagesListIsOpen(true);
+      setIsLoading(false);
+    } catch (err) {
+      console.log(err.message);
+      setErrorMessage(err.message);
+      setIsLoading(false);
+    }
+  };
 
   const saveImagesHandler = async (e) => {
     try {
@@ -295,79 +342,136 @@ const SaveImageForm = ({ modelData, curVersion }) => {
     };
   });
 
+  const saveExampleHandler = async (e, ids) => {
+    const postData =
+      modelData.hasOwnProperty("savedImages") &&
+      modelData?.savedImages[versionIdInput?.value]?.find(
+        (post) => post.postId === +postIdInput?.value
+      );
+    // console.log(postIdInput?.value);
+    // console.log(modelData?.id);
+    // console.log(versionIdInput);
+    // return;
+    dispatch(
+      uploadActions.addToQueue({
+        postId: +postIdInput?.value,
+        modelId: +modelData?.id,
+        modelName: modelData?.name,
+        versionId: +versionIdInput,
+        nsfwMode,
+        postData: postData || null,
+        imgUrl: images[0].url,
+        ids: ids || [],
+        images,
+        // existedAmount: existedImgsAmount,
+      })
+    );
+    seteSuccessMessage("Added to download queue");
+    setPostIdInput({ value: "", isValid: false });
+    setShowErrorMessage(false);
+    setImagesListIsOpen(false);
+  };
+
   return (
-    <form onSubmit={saveImagesHandler} className={classes["form"]}>
-      {/* <label htmlFor="version-select">Select version:</label> */}
-
-      <Select
-        label="Select version:"
-        name="curVersionId"
-        id="version-select"
-        selected={versionIdInput}
-        onChange={(value) => {
-          setVersionIdInput(value);
-        }}
-        options={versionSelectOption}
-      />
-
-      <Input
-        name="post-id"
-        type="text"
-        label="Post ID"
-        placeholder="post id"
-        input={{ disabled: imageIsSaving }}
-        value={postIdInput.value}
-        onChange={(e, isValid) => {
-          // validatePostId(e.target.value);
-          setPostIdInput({ value: e.target.value, isValid });
-          // setPostIdIsValid(isValid);
-        }}
-        className={`${classes["auth__input"]} ${
-          !postIdInput.isValid ? classes.invalid : ""
-        }`}
-        // error={postIdErrorMessage}
-        validation={{
-          required: true,
-          maxLength: ID_MAX_LENGTH,
-          number: true,
-        }}
-        showError={showErrorMessage}
-      />
-      <div className={classes["imputs-container"]}>
-        <Fieldset legend="Image IDs" className={classes.fieldset}>
-          {imagesIdInputsHtml}
-          <ButttonSecondary
-            type="button"
-            onClick={addExampleInputHandler}
-            disabled={imageIsSaving}
-            className={classes["btn-secondary"]}
-          >
-            + add image ID
-          </ButttonSecondary>
-        </Fieldset>
-      </div>
-      <div className={classes.filter}>
-        <Checkbox
-          id="filter"
-          label="Save only images related to this model"
-          value={filterDisabledInput}
-          checked={filterDisabledInput}
-          className={classes["checkbox"]}
-          onChange={(e) => {
-            setFilterDisabledInput(e.target.checked);
+    <>
+      {imagesListIsOpen && (
+        <button
+          className={classes["btn-back"]}
+          onClick={() => {
+            setImagesListIsOpen(false);
           }}
+        >
+          <BackSvg />
+        </button>
+      )}
+      <div
+        className={`${classes["form"]} ${
+          imagesListIsOpen ? classes["hidden"] : ""
+        }`}
+      >
+        <Select
+          label="Select version:"
+          name="curVersionId"
+          id="version-select"
+          selected={versionIdInput}
+          onChange={(value) => {
+            setVersionIdInput(value);
+          }}
+          options={versionSelectOption}
         />
-      </div>
-      <Buttton
+        <Input
+          name="post-id"
+          type="text"
+          label="Post ID"
+          placeholder="post id"
+          input={{ disabled: isLoading }}
+          value={postIdInput.value}
+          onChange={(e, isValid) => {
+            setPostIdInput({ value: e.target.value, isValid });
+          }}
+          className={`${classes["auth__input"]} ${
+            !postIdInput.isValid ? classes.invalid : ""
+          }`}
+          validation={{
+            required: true,
+            maxLength: ID_MAX_LENGTH,
+            number: true,
+          }}
+          showError={showErrorMessage}
+        />
+        {/* <div className={classes["imputs-container"]}>
+        
+      </div> */}
+        <div className={classes.filter}>
+          <Checkbox
+            id="filter"
+            label="Show only images related to this model"
+            value={filterDisabledInput}
+            checked={filterDisabledInput}
+            className={classes["checkbox"]}
+            onChange={(e) => {
+              setFilterDisabledInput(e.target.checked);
+            }}
+          />
+        </div>
+        {/* <Buttton
         type="submit"
         disabled={imageIsSaving}
         className={classes.submit}
       >
         {!imageIsSaving ? "Save" : <Spinner size="small" />}
-      </Buttton>
-      {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
-      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-    </form>
+      </Buttton> */}
+        <Buttton
+          type="button"
+          disabled={isLoading}
+          className={classes.submit}
+          onClick={() => {
+            loadPostImagesHandler();
+          }}
+        >
+          {!isLoading ? "Select images" : <Spinner size="small" />}
+        </Buttton>
+        {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      </div>
+      {imagesListIsOpen && (
+        // <Modal
+        //   onClose={() => {
+        //     setImagesListIsOpen(false);
+        //   }}
+        // >
+        <ChooseImageForm
+          type="save"
+          modelId={modelData?.id}
+          images={images}
+          onSave={saveExampleHandler}
+          onClose={() => {
+            setImagesListIsOpen(false);
+          }}
+        />
+        // </Modal>
+      )}
+    </>
   );
 };
 

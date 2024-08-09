@@ -90,7 +90,7 @@ function App() {
         <Route
           path="/"
           errorElement={<ErrorPage />}
-          element={<Home title="Prompt builder" />}
+          element={<Home title="AIDE-TOOLS" />}
         >
           <Route
             path="/"

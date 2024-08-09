@@ -181,7 +181,8 @@ const ChooseImageForm = ({
         if (!!imagesId?.filter((id) => !savedImagesIds.includes(id))?.length) {
           onSave(e, imagesId);
         } else {
-          onClose();
+          seteErrorMessage("Select at least one image");
+          // onClose();
         }
         // onSave()
       }}
@@ -212,7 +213,7 @@ const ChooseImageForm = ({
         <Buttton
           className={`${type === "del" ? classes["btn-del"] : ""}`}
           type="submit"
-          disabled={isLoading || !!isDeleting || !!errorMessage || !isOnline}
+          disabled={isLoading || !!isDeleting || !isOnline}
         >
           {type === "save" ? "Save selected" : ""}
           {type === "del" && !isLoading && !isDeleting ? "Delete selected" : ""}

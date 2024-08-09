@@ -34,6 +34,7 @@ import {
   AUTH_ERROR_MESSAGE,
   LONG_LOADING_WARNING_MESSAGE,
 } from "../../variables/constants";
+import BackSvg from "../../assets/BackSvg";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -570,7 +571,7 @@ const Model = ({ title }) => {
         <>
           <div className={classes["panel"]}>
             <Buttton className={classes["btn-back"]} onClick={backHandler}>
-              <svg
+              {/* <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -583,7 +584,8 @@ const Model = ({ title }) => {
                   strokeLinejoin="round"
                   d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
                 />
-              </svg>
+              </svg> */}
+              <BackSvg />
 
               <span>Back</span>
             </Buttton>

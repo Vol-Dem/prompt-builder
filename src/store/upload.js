@@ -74,18 +74,26 @@ const uploadSlice = createSlice({
 export const savePost = (postInfo) => {
   return async (dispatch, getState) => {
     try {
-      const { postId, modelId, versionId, nsfwMode, postData } = postInfo;
+      const { postId, modelId, versionId, nsfwMode, postData, images } =
+        postInfo;
 
       dispatch(uploadActions.setIsUploading(true));
       dispatch(uploadActions.setCurPostId(postId));
 
-      const imgExampleResponse = await fetch(
-        `https://civitai.com/api/v1/images?postId=${postId}&modelId=${modelId}&modelVersionId=${versionId}${
-          nsfwMode ? `&nsfw=X` : `&nsfw=None`
-        }`
-      );
+      let data = { items: [] };
 
-      const data = await imgExampleResponse.json();
+      if (!images?.length) {
+        const imgExampleResponse = await fetch(
+          `https://civitai.com/api/v1/images?postId=${postId}&modelId=${modelId}&modelVersionId=${versionId}${
+            nsfwMode ? `&nsfw=X` : `&nsfw=None`
+          }`
+        );
+
+        data = await imgExampleResponse.json();
+      } else {
+        data = { items: images };
+      }
+
       console.log(data);
       if (!data?.items?.length) {
         throw new Error("0 items");

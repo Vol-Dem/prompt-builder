@@ -31,11 +31,13 @@
   }
 
   &__close {
+    background: none;
+    border: none;
     position: absolute;
     cursor: pointer;
     top: 0.6rem;
     right: 0.6rem;
-    color: #a8a8a8;
+    color: var.$color-text-gray;
     transition: all 0.3s;
 
     & svg {
@@ -43,29 +45,8 @@
     }
 
     &:hover {
-      color: lighten(#a8a8a8, 20%);
+      color: lighten(var.$color-text-gray, 20%);
     }
-  }
-
-  &__cross {
-    display: inline-block;
-    width: 1.5rem;
-    height: 1.5rem;
-    background-color: rgb(168, 168, 168);
-    clip-path: polygon(
-      10% 0,
-      0 10%,
-      40% 50%,
-      0 90%,
-      10% 100%,
-      50% 60%,
-      90% 100%,
-      100% 90%,
-      60% 50%,
-      100% 10%,
-      90% 0,
-      50% 40%
-    );
   }
 }
 

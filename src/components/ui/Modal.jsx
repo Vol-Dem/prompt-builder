@@ -30,7 +30,7 @@ const Modal = (props) => {
           <Card className={`${classes.modal} ${classes["modal--content"]}`}>
             {props.title && <h2 className={classes.title}>{props.title}</h2>}
             {props.children}
-            <div className={classes["modal__close"]} onClick={props.onClose}>
+            <button className={classes["modal__close"]} onClick={props.onClose}>
               {/* <span className={classes["modal__cross"]}></span> */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -46,7 +46,7 @@ const Modal = (props) => {
                   d="M6 18 18 6M6 6l12 12"
                 />
               </svg>
-            </div>
+            </button>
           </Card>
         </div>,
         document.body
