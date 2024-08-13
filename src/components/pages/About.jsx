@@ -614,12 +614,18 @@ const About = ({ title }) => {
           version. This way you can build your own collection of examples.
         </p>
         <div
-          className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
+          className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}
         >
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-5.png")}
+            alt=""
+          />
+          <img
+            onClick={openFullVeiwHandler}
+            className={classes["img"]}
+            src={require("../../assets/about/14-img-examples-52.png")}
             alt=""
           />
         </div>
