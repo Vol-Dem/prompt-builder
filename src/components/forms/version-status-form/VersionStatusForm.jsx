@@ -14,6 +14,7 @@ import {
   SAVED_SUCCESS_MESSAGE,
 } from "../../../variables/constants";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
+import Spinner from "../../ui/Spinner";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -175,9 +176,8 @@ const VersionStatusForm = ({ modelData }) => {
         </FieldCategory>
       </div>
       <Buttton type="submit" disabled={isSaving} className={classes.submit}>
-        {!isSaving ? "Save" : "Saving..."}
+        {!isSaving ? "Save" : <Spinner size="small" />}
       </Buttton>
-
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
     </form>

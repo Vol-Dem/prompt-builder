@@ -466,10 +466,22 @@ const UpdateModelForm = ({ modelData, id }) => {
 
       const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
 
-      const tagSetsData = tagSetNames.flatMap((setName, i) => {
+      const tagSetsInputData = tagSetNames.flatMap((setName, i) => {
         if (!setName && !tagSetsValues[i]) return [];
         return [{ name: setName, value: tagSetsValues[i] }];
       });
+
+      let tagSetsData;
+      if (!modelData?.defaultCustomData?.tagSetsData?.length) {
+        tagSetsData = tagSetsInputData;
+      } else {
+        tagSetsData = tagSetsInputData.map((tagSet, i) => {
+          return {
+            ...modelData?.defaultCustomData?.tagSetsData[i],
+            ...tagSet,
+          };
+        });
+      }
 
       const helperTags =
         formdata

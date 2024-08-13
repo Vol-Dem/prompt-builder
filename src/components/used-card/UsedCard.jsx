@@ -179,7 +179,7 @@ const UsedCard = ({ previewData, fullView }) => {
       </div>
       {fullView &&
         (previewData?.minWeight ||
-          previewData.mainTag ||
+          previewData?.mainTag ||
           !!previewData?.tags?.length) && (
           <div className={`${fullView ? classes.content : ""}`}>
             {(!!previewData?.minWeight || !!previewData?.weight) && (

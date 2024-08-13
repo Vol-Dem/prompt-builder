@@ -24,6 +24,7 @@ import {
 } from "../../../variables/constants";
 import InputNumber from "../../ui/InputNumber";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
+import Spinner from "../../ui/Spinner";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -321,10 +322,23 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         .filter(Boolean)
         .map((tag) => tag.trim());
       const tagSetNames = formdata.getAll("set-name");
-      const tagSetsData = tagSetNames.flatMap((setName, i) => {
+      const tagSetsInputData = tagSetNames.flatMap((setName, i) => {
         if (!setName && !tagSetsValues[i]) return [];
         return [{ name: setName, value: tagSetsValues[i] }];
       });
+
+      let tagSetsData;
+      if (!versionData?.tagSetsData?.length) {
+        tagSetsData = tagSetsInputData;
+      } else {
+        tagSetsData = tagSetsInputData.map((tagSet, i) => {
+          return {
+            ...versionData.tagSetsData[i],
+            ...tagSet,
+          };
+        });
+      }
+
       const helperTags = formdata
         .get("helper-tags")
         .trim()
@@ -823,7 +837,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         </FieldCategory>
       </div>
       <Buttton type="submit" disabled={isSaving} className={classes.submit}>
-        Save
+        {!isSaving ? "Save" : <Spinner size="small" />}
       </Buttton>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}

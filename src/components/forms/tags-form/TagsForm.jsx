@@ -20,6 +20,7 @@ import {
 } from "../../../variables/constants";
 import { validateInput } from "../../../utils/generalUtils";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
+import Spinner from "../../ui/Spinner";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -410,7 +411,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
         </div>
       </div>
       <Buttton type="submit" disabled={isSaving} className={classes.submit}>
-        Save
+        {!isSaving ? "Save" : <Spinner size="small" />}
       </Buttton>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}

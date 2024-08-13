@@ -413,7 +413,10 @@ const Model = ({ title }) => {
         : "",
       modelType: model?.data?.type,
       baseModel: curVersion?.baseModel,
-      mainTag: curVersionCustomData?.mainTag || model?.mainTag,
+      mainTag:
+        curVersionCustomData?.mainTag ||
+        model?.mainTag ||
+        curVersionCustomData?.defActTag,
       weight: curVersionCustomData?.weight || model?.defaultCustomData?.weight,
       minWeight:
         curVersionCustomData?.minWeight || model?.defaultCustomData?.minWeight,

@@ -193,7 +193,7 @@ const PreviewCard = ({ previewData }) => {
           <div className={classes["text"]}>
             Version:{" "}
             <span className={classes["text-secondary"]}>
-              {currVersion.versionName}
+              {currVersion.name}
             </span>
           </div>
         )}
@@ -214,11 +214,17 @@ const PreviewCard = ({ previewData }) => {
             Files: {previewData?.fileNames?.join(", ")}
           </div>
         )} */}
-        {(currVersion?.mainTag || previewData?.mainTag) && (
+        {(currVersion?.mainTag ||
+          previewData?.mainTag ||
+          currVersion?.defActTag) && (
           <ul className={classes["main-tag"]}>
             {/* Activation tag: */}
             <ActivationTag
-              tag={currVersion?.mainTag || previewData?.mainTag}
+              tag={
+                currVersion?.mainTag ||
+                previewData?.mainTag ||
+                currVersion?.defActTag
+              }
               modelData={currSidePanelData}
               strength={currVersion?.weight || previewData?.weight}
             />

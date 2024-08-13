@@ -5,7 +5,7 @@ const UploadingItem = ({ data, curPostId, rejected }) => {
   return (
     <li
       className={`${classes["uploading-list__item"]} ${
-        data.postId === curPostId ? classes["uploading-list__item--active"] : ""
+        data.postId === 5366719 ? classes["uploading-list__item--active"] : ""
       } ${rejected ? classes["uploading-list__item--rejected"] : ""}`}
     >
       <div className={classes["uploading-list__link"]}>

@@ -34,3 +34,6 @@ yarn-error.log*
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+#temp img
+/src/assets/img-tmp/

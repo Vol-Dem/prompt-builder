@@ -133,23 +133,25 @@ const CarouselImage = ({
 
   const tagSetVersionsHtml =
     model?.modelVersionsCustomData &&
-    Object.values(model?.modelVersionsCustomData).flatMap((version, i) => {
-      if (!version?.tagSetsData?.length) return [];
-      return (
-        <li
-          key={i}
-          id={`${version.versionId}`}
-          className={`${classes["tag-sets-versions__item"]} ${
-            curTagSetVersionId === `${version.versionId}`
-              ? classes["tag-sets-versions__item--active"]
-              : ""
-          }`}
-          onClick={openTagSetVersionHandler}
-        >
-          {version.versionName}
-        </li>
-      );
-    });
+    Object.values(model?.modelVersionsCustomData)
+      ?.sort((a, b) => a?.index - b?.index)
+      .flatMap((version, i) => {
+        if (!version?.tagSetsData?.length) return [];
+        return (
+          <li
+            key={i}
+            id={`${version.versionId}`}
+            className={`${classes["tag-sets-versions__item"]} ${
+              curTagSetVersionId === `${version.versionId}`
+                ? classes["tag-sets-versions__item--active"]
+                : ""
+            }`}
+            onClick={openTagSetVersionHandler}
+          >
+            {version.name}
+          </li>
+        );
+      });
 
   const defTagSetsHtml = model?.defaultCustomData?.tagSetsData?.map(
     (tagSet, i) => {

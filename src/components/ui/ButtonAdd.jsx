@@ -60,7 +60,10 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
         nsfwPreviewImgUrl: previewData?.nsfwPreviewImgUrl || null,
         type: previewData?.modelType,
         baseModel: curVersionData?.baseModel || previewData?.baseModel,
-        mainTag: curVersionData?.mainTag || previewData?.mainTag,
+        mainTag:
+          curVersionData?.mainTag ||
+          previewData?.mainTag ||
+          curVersionData?.defActTag,
         weight: curVersionData?.weight || previewData?.weight,
         minWeight: curVersionData?.minWeight || previewData?.minWeight,
         maxWeight: curVersionData?.maxWeight || previewData?.maxWeight,

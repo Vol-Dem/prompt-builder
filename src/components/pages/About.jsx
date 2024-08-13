@@ -856,6 +856,84 @@ const About = ({ title }) => {
           before.
         </p>
       </div>
+      {/* <img
+        onClick={openFullVeiwHandler}
+        className={classes["img"]}
+        src={require("../../assets/img-tmp/vic (4).png")}
+        alt=""
+      />
+      <img
+        onClick={openFullVeiwHandler}
+        className={classes["img"]}
+        src={require("../../assets/img-tmp/vic (5).png")}
+        alt=""
+      />
+      <img
+        onClick={openFullVeiwHandler}
+        className={classes["img"]}
+        src={require("../../assets/img-tmp/vic (25).png")}
+        alt=""
+      />
+      <img
+        onClick={openFullVeiwHandler}
+        className={classes["img"]}
+        src={require("../../assets/img-tmp/vic (29).png")}
+        alt=""
+      />
+      <img
+        onClick={openFullVeiwHandler}
+        className={classes["img"]}
+        src={require("../../assets/img-tmp/vic (10).png")}
+        alt=""
+      />
+      <img
+        onClick={openFullVeiwHandler}
+        className={classes["img"]}
+        src={require("../../assets/img-tmp/vic (1).png")}
+        alt=""
+      />
+      <img
+        onClick={openFullVeiwHandler}
+        className={classes["img"]}
+        src={require("../../assets/img-tmp/vic (2).png")}
+        alt=""
+      />
+      <img
+        onClick={openFullVeiwHandler}
+        className={classes["img"]}
+        src={require("../../assets/img-tmp/vic (26).png")}
+        alt=""
+      />
+      <img
+        onClick={openFullVeiwHandler}
+        className={classes["img"]}
+        src={require("../../assets/img-tmp/vic (19).png")}
+        alt=""
+      />
+      <img
+        onClick={openFullVeiwHandler}
+        className={classes["img"]}
+        src={require("../../assets/img-tmp/cat-baget.png")}
+        alt=""
+      />
+      <img
+        onClick={openFullVeiwHandler}
+        className={classes["img"]}
+        src={require("../../assets/img-tmp/pbg (1).png")}
+        alt=""
+      />
+      <img
+        onClick={openFullVeiwHandler}
+        className={classes["img"]}
+        src={require("../../assets/img-tmp/pbg (2).png")}
+        alt=""
+      />
+      <img
+        onClick={openFullVeiwHandler}
+        className={classes["img"]}
+        src={require("../../assets/img-tmp/pbg (3).png")}
+        alt=""
+      /> */}
       {fullViewIsOpen && (
         <ImageFullView
           src={currImageUrl}
