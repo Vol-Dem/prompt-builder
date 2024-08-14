@@ -90,7 +90,7 @@
   flex-grow: 1;
   font-family: "Segoe UI", sans-serif;
   word-spacing: 0.4rem;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.1px;
 
   @include var.custom-scroll;
 
@@ -224,5 +224,3 @@
     gap: 0.6rem;
   }
 }
-
-

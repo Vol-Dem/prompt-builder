@@ -1,7 +1,7 @@
 import classes from "./Carousel3d.module.scss";
-import carouselImage1 from "../../assets/about/1-start-1.png";
-import carouselImage2 from "../../assets/about/1-start-2.png";
-import carouselImage3 from "../../assets/about/13-model-page-2.png";
+import carouselImage1 from "../../assets/about/1-start-1.webp";
+import carouselImage2 from "../../assets/about/1-start-2.webp";
+import carouselImage3 from "../../assets/about/5-added-models.webp";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const carouselImages = [carouselImage1, carouselImage2, carouselImage3];

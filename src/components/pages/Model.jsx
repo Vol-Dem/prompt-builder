@@ -108,7 +108,7 @@ const Model = ({ title }) => {
   const filterNsfwImages = useCallback((images) => {
     return images?.filter((image) => {
       if (image?.nsfwLevel) {
-        return image?.nsfwLevel <= 1;
+        return image?.nsfwLevel <= 1 || image?.nsfwLevel === "None";
       } else {
         return image?.nsfw === "None" || image?.nsfw === false;
       }

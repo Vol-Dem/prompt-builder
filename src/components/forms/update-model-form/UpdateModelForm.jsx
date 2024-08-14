@@ -960,6 +960,34 @@ const UpdateModelForm = ({ modelData, id }) => {
           createdAt,
         };
 
+        let previewModelVersionsCustomData = {};
+
+        Object.values(modelVersionsCustomData).forEach((version) => {
+          if (version?.versionId) {
+            previewModelVersionsCustomData[version.versionId] = {
+              size: version?.size || "",
+              weight: version?.weight || null,
+              minWeight: version?.minWeight || null,
+              maxWeight: version?.maxWeight || null,
+              fileName: version?.fileName || "",
+              name: version?.name || "",
+              mainTag: version?.mainTag || "",
+              index: version?.index || null,
+              downloadStatus: version?.downloadStatus || false,
+              trainedWords: version?.trainedWords || [],
+              defActTag: version?.defActTag || "",
+              versionId: version?.versionId || null,
+              defFileName: version?.defFileName || "",
+              versionImageUrl: version?.versionImageUrl || "",
+              baseModel: version?.baseModel || "",
+              versionName: version?.versionName || "",
+            };
+          }
+        });
+
+        console.log(Object.values(modelVersionsCustomData));
+        console.log(previewModelVersionsCustomData);
+
         const loraPrevData = {
           id: modelData?.id || modelId,
           versionIds,
@@ -986,11 +1014,11 @@ const UpdateModelForm = ({ modelData, id }) => {
           minWeight,
           maxWeight,
           size,
-          tags: modelVersions[0].trainedWords || "",
+          // tags: modelVersions[0].trainedWords || "",
           authorTags: data.tags || [],
-          tagSetsData,
+          // tagSetsData,
           // helperTags,
-          modelVersionsCustomData,
+          modelVersionsCustomData: previewModelVersionsCustomData,
           updatedAt: new Date().toISOString(),
           createdAt,
         };

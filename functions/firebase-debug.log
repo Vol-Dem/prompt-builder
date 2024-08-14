@@ -864,3 +864,191 @@ Issues? Report them at https://github.com/firebase/firebase-tools/issues and att
 [info] >      downloadUrl: 'https://civitai.com/api/download/models/155808' {"user":"    downloadUrl: 'https://civitai.com/api/download/models/155808'","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     downloadUrl: 'https://civitai.com/api/download/models/155808'"}}
 [info] >    } {"user":"  }","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m   }"}}
 [info] >  ] {"user":"]","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m ]"}}
+[debug] [2024-08-14T12:54:18.415Z] ----------------------------------------------------------------------
+[debug] [2024-08-14T12:54:18.417Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Asus\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start --only functions
+[debug] [2024-08-14T12:54:18.417Z] CLI Version:   13.13.3
+[debug] [2024-08-14T12:54:18.417Z] Platform:      win32
+[debug] [2024-08-14T12:54:18.418Z] Node Version:  v18.14.0
+[debug] [2024-08-14T12:54:18.419Z] Time:          Wed Aug 14 2024 15:54:18 GMT+0300 (Eastern European Summer Time)
+[debug] [2024-08-14T12:54:18.419Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-08-14T12:54:18.423Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2024-08-14T12:54:18.556Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-08-14T12:54:18.557Z] > authorizing via signed-in user (volodymyr.demin@gmail.com)
+[info] i  emulators: Starting emulators: functions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions"}}
+[debug] [2024-08-14T12:54:18.571Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-08-14T12:54:18.571Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2024-08-14T12:54:18.576Z] [hub] writing locator at C:\Users\Asus\AppData\Local\Temp\hub-aide-tools.json
+[debug] [2024-08-14T12:54:18.600Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-08-14T12:54:18.600Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-08-14T12:54:18.600Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] !  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: auth, firestore, database, hosting, pubsub, storage, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mauth, firestore, database, hosting, pubsub, storage, dataconnect\u001b[22m"}}
+[debug] [2024-08-14T12:54:18.604Z] defaultcredentials: writing to file C:\Users\Asus\AppData\Roaming\firebase\volodymyr_demin_gmail.com_application_default_credentials.json
+[debug] [2024-08-14T12:54:18.606Z] Setting GAC to C:\Users\Asus\AppData\Roaming\firebase\volodymyr_demin_gmail.com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to C:\\Users\\Asus\\AppData\\Roaming\\firebase\\volodymyr_demin_gmail.com_application_default_credentials.json"}}
+[debug] [2024-08-14T12:54:18.608Z] > refreshing access token with scopes: []
+[debug] [2024-08-14T12:54:18.610Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2024-08-14T12:54:18.610Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-08-14T12:54:18.913Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2024-08-14T12:54:18.913Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-08-14T12:54:18.922Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/aide-tools/adminSdkConfig [none]
+[debug] [2024-08-14T12:54:18.999Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2024-08-14T12:54:18.999Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2024-08-14T12:54:19.508Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/aide-tools/adminSdkConfig 200
+[debug] [2024-08-14T12:54:19.508Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/aide-tools/adminSdkConfig {"projectId":"aide-tools","storageBucket":"aide-tools.appspot.com"}
+[debug] [2024-08-14T12:54:19.529Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2024-08-14T12:54:19.530Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2024-08-14T12:54:19.530Z] Starting Emulator UI with command {"binary":"node","args":["C:\\Users\\Asus\\.cache\\firebase\\emulators\\ui-v1.12.1\\server\\server.mjs"],"optionalArgs":[],"joinArgs":false,"shell":false} {"metadata":{"emulator":{"name":"ui"},"message":"Starting Emulator UI with command {\"binary\":\"node\",\"args\":[\"C:\\\\Users\\\\Asus\\\\.cache\\\\firebase\\\\emulators\\\\ui-v1.12.1\\\\server\\\\server.mjs\"],\"optionalArgs\":[],\"joinArgs\":false,\"shell\":false}"}}
+[info] i  ui: Emulator UI logging to ui-debug.log {"metadata":{"emulator":{"name":"ui"},"message":"Emulator UI logging to \u001b[1mui-debug.log\u001b[22m"}}
+[debug] [2024-08-14T12:54:19.732Z] Web / API server started at 127.0.0.1:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at 127.0.0.1:4000\n"}}
+[debug] [2024-08-14T12:54:19.733Z] Web / API server started at ::1:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at ::1:4000\n"}}
+[info] i  functions: Watching "C:\Users\Asus\Documents\Edu\react\prompt-generator\functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"C:\\Users\\Asus\\Documents\\Edu\\react\\prompt-generator\\functions\" for Cloud Functions..."}}
+[debug] [2024-08-14T12:54:19.759Z] Validating nodejs source
+[debug] [2024-08-14T12:54:21.512Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "lint": "eslint .",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.15.0",
+    "eslint-config-google": "^0.14.0",
+    "firebase-functions-test": "^3.1.0"
+  },
+  "private": true
+}
+[debug] [2024-08-14T12:54:21.513Z] Building nodejs source
+[debug] [2024-08-14T12:54:21.514Z] Failed to find version of module node: reached end of search path C:\Users\Asus\Documents\Edu\react\prompt-generator\functions\node_modules
+[info] +  functions: Using node@18 from host. 
+[debug] [2024-08-14T12:54:21.517Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-08-14T12:54:21.524Z] Found firebase-functions binary at 'C:\Users\Asus\Documents\Edu\react\prompt-generator\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8326
+
+[debug] [2024-08-14T12:54:22.410Z] Got response from /__/functions.yaml {"endpoints":{"uploadModel":{"availableMemoryMb":null,"timeoutSeconds":120,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"uploadModel"},"updateModel":{"availableMemoryMb":null,"timeoutSeconds":120,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"updateModel"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] +  functions: Loaded functions definitions from source: uploadModel, updateModel. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: uploadModel, updateModel."}}
+[info] +  functions[us-central1-uploadModel]: http function initialized (http://127.0.0.1:5001/aide-tools/us-central1/uploadModel). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/aide-tools/us-central1/uploadModel)."}}
+[info] +  functions[us-central1-updateModel]: http function initialized (http://127.0.0.1:5001/aide-tools/us-central1/updateModel). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/aide-tools/us-central1/updateModel)."}}
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌───────────┬────────────────┬─────────────────────────────────┐
+│ Emulator  │ Host:Port      │ View in Emulator UI             │
+├───────────┼────────────────┼─────────────────────────────────┤
+│ Functions │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions │
+└───────────┴────────────────┴─────────────────────────────────┘
+  Emulator Hub running at 127.0.0.1:4400
+  Other reserved ports: 4500
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[debug] [2024-08-14T12:55:06.412Z] [work-queue] {"queuedWork":["/aide-tools/us-central1/updateModel-2024-08-14T12:55:06.412Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2024-08-14T12:55:06.413Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/aide-tools/us-central1/updateModel-2024-08-14T12:55:06.412Z"],"workRunningCount":1}
+[debug] [2024-08-14T12:55:06.413Z] Accepted request GET /aide-tools/us-central1/updateModel?modelId=638817 --> us-central1-updateModel
+[debug] [2024-08-14T12:55:06.414Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2024-08-14T12:55:06.415Z] [functions] Got req.url=/aide-tools/us-central1/updateModel?modelId=638817, mapping to path=/?modelId=638817 {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/aide-tools/us-central1/updateModel?modelId=638817, mapping to path=/?modelId=638817"}}
+[debug] [2024-08-14T12:55:06.425Z] [worker-pool] addWorker(us-central1-updateModel) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] addWorker(us-central1-updateModel)"}}
+[debug] [2024-08-14T12:55:06.426Z] [worker-pool] Adding worker with key us-central1-updateModel, total=1 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Adding worker with key us-central1-updateModel, total=1"}}
+[debug] [2024-08-14T12:55:08.411Z] [runtime-status] [20472] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.2.0","resolution":"C:\\Users\\Asus\\Documents\\Edu\\react\\prompt-generator\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[runtime-status] [20472] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.2.0\",\"resolution\":\"C:\\\\Users\\\\Asus\\\\Documents\\\\Edu\\\\react\\\\prompt-generator\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2024-08-14T12:55:08.413Z] [runtime-status] [20472] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\Asus\\Documents\\Edu\\react\\prompt-generator\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[runtime-status] [20472] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\Asus\\\\Documents\\\\Edu\\\\react\\\\prompt-generator\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2024-08-14T12:55:08.414Z] [runtime-status] [20472] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[runtime-status] [20472] Outgoing network have been stubbed. [{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"net\",\"status\":\"mocked\"}]"}}
+[debug] [2024-08-14T12:55:08.415Z] [runtime-status] [20472] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\Asus\\Documents\\Edu\\react\\prompt-generator\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[runtime-status] [20472] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\Asus\\\\Documents\\\\Edu\\\\react\\\\prompt-generator\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2024-08-14T12:55:08.827Z] [runtime-status] [20472] Checked functions.config() {"config":{}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[runtime-status] [20472] Checked functions.config() {\"config\":{}}"}}
+[debug] [2024-08-14T12:55:08.827Z] [runtime-status] [20472] firebase-functions has been stubbed. {"functionsResolution":{"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\Asus\\Documents\\Edu\\react\\prompt-generator\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[runtime-status] [20472] firebase-functions has been stubbed. {\"functionsResolution\":{\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\Asus\\\\Documents\\\\Edu\\\\react\\\\prompt-generator\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}}"}}
+[debug] [2024-08-14T12:55:08.828Z] [runtime-status] [20472] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\Asus\\Documents\\Edu\\react\\prompt-generator\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[runtime-status] [20472] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\Asus\\\\Documents\\\\Edu\\\\react\\\\prompt-generator\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2024-08-14T12:55:08.829Z] [runtime-status] [20472] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.2.0","resolution":"C:\\Users\\Asus\\Documents\\Edu\\react\\prompt-generator\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[runtime-status] [20472] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.2.0\",\"resolution\":\"C:\\\\Users\\\\Asus\\\\Documents\\\\Edu\\\\react\\\\prompt-generator\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2024-08-14T12:55:08.834Z] [runtime-status] [20472] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\Asus\\Documents\\Edu\\react\\prompt-generator\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[runtime-status] [20472] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\Asus\\\\Documents\\\\Edu\\\\react\\\\prompt-generator\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2024-08-14T12:55:08.834Z] [runtime-status] [20472] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"12.2.0","resolution":"C:\\Users\\Asus\\Documents\\Edu\\react\\prompt-generator\\functions\\node_modules\\firebase-admin\\lib\\index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[runtime-status] [20472] firebase-admin has been stubbed. {\"adminResolution\":{\"declared\":true,\"installed\":true,\"version\":\"12.2.0\",\"resolution\":\"C:\\\\Users\\\\Asus\\\\Documents\\\\Edu\\\\react\\\\prompt-generator\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}}"}}
+[debug] [2024-08-14T12:55:08.847Z] [runtime-status] [20472] Functions runtime initialized. {"cwd":"C:\\Users\\Asus\\Documents\\Edu\\react\\prompt-generator\\functions","node_version":"18.14.0"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[runtime-status] [20472] Functions runtime initialized. {\"cwd\":\"C:\\\\Users\\\\Asus\\\\Documents\\\\Edu\\\\react\\\\prompt-generator\\\\functions\",\"node_version\":\"18.14.0\"}"}}
+[debug] [2024-08-14T12:55:08.848Z] [runtime-status] [20472] Listening to port: \\?\pipe\fire_emu_c5ec5491105f0329 {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[runtime-status] [20472] Listening to port: \\\\?\\pipe\\fire_emu_c5ec5491105f0329"}}
+[debug] [2024-08-14T12:55:08.948Z] [worker-us-central1-updateModel-bee92b43-bee6-475f-b41e-240ddfd052a0]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[worker-us-central1-updateModel-bee92b43-bee6-475f-b41e-240ddfd052a0]: IDLE"}}
+[debug] [2024-08-14T12:55:08.949Z] [worker-pool] submitRequest(triggerId=us-central1-updateModel) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-updateModel)"}}
+[info] i  functions: Beginning execution of "us-central1-updateModel" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Beginning execution of \"us-central1-updateModel\""}}
+[debug] [2024-08-14T12:55:08.950Z] [worker-us-central1-updateModel-bee92b43-bee6-475f-b41e-240ddfd052a0]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[worker-us-central1-updateModel-bee92b43-bee6-475f-b41e-240ddfd052a0]: BUSY"}}
+[warn] !  Google API requested!
+   - URL: "https://oauth2.googleapis.com/token"
+   - Be careful, this may be a production service. {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Google API requested!\n   - URL: \"https://oauth2.googleapis.com/token\"\n   - Be careful, this may be a production service."}}
+[debug] [2024-08-14T12:55:12.486Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-updateModel" in 3536.9791ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Finished \"us-central1-updateModel\" in 3536.9791ms"}}
+[debug] [2024-08-14T12:55:12.488Z] [worker-us-central1-updateModel-bee92b43-bee6-475f-b41e-240ddfd052a0]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[worker-us-central1-updateModel-bee92b43-bee6-475f-b41e-240ddfd052a0]: IDLE"}}
+[debug] [2024-08-14T12:55:12.488Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2024-08-14T12:55:12.488Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2024-08-14T12:55:12.489Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  [ {"user":"[","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m ["}}
+[info] >    { {"user":"  {","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m   {"}}
+[info] >      id: 714372, {"user":"    id: 714372,","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     id: 714372,"}}
+[info] >      index: 0, {"user":"    index: 0,","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     index: 0,"}}
+[info] >      name: 'v1.0', {"user":"    name: 'v1.0',","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     name: 'v1.0',"}}
+[info] >      baseModel: 'Pony', {"user":"    baseModel: 'Pony',","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     baseModel: 'Pony',"}}
+[info] >      createdAt: '2024-08-11T16:44:10.049Z', {"user":"    createdAt: '2024-08-11T16:44:10.049Z',","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     createdAt: '2024-08-11T16:44:10.049Z',"}}
+[info] >      publishedAt: '2024-08-11T16:46:37.641Z', {"user":"    publishedAt: '2024-08-11T16:46:37.641Z',","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     publishedAt: '2024-08-11T16:46:37.641Z',"}}
+[info] >      status: 'Published', {"user":"    status: 'Published',","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     status: 'Published',"}}
+[info] >      availability: 'Public', {"user":"    availability: 'Public',","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     availability: 'Public',"}}
+[info] >      nsfwLevel: 6, {"user":"    nsfwLevel: 6,","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     nsfwLevel: 6,"}}
+[info] >      trainedWords: [ {"user":"    trainedWords: [","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     trainedWords: ["}}
+[info] >        'yellow eyes, blunt bangs, grey hair, long hair, sidelocks, french braid, folded ponytail, crop top, underboob, shorts, gauntlets, claws, waist cape, thighhighs, fur trim, ', {"user":"      'yellow eyes, blunt bangs, grey hair, long hair, sidelocks, french braid, folded ponytail, crop top, underboob, shorts, gauntlets, claws, waist cape, thighhighs, fur trim, ',","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m       'yellow eyes, blunt bangs, grey hair, long hair, sidelocks, french braid, folded ponytail, crop top, underboob, shorts, gauntlets, claws, waist cape, thighhighs, fur trim, ',"}}
+[info] >        'yellow eyes, blunt bangs, grey hair, long hair, sidelocks, french braid, folded ponytail, crop top, underboob, shorts, gauntlets, glasses, necktie', {"user":"      'yellow eyes, blunt bangs, grey hair, long hair, sidelocks, french braid, folded ponytail, crop top, underboob, shorts, gauntlets, glasses, necktie',","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m       'yellow eyes, blunt bangs, grey hair, long hair, sidelocks, french braid, folded ponytail, crop top, underboob, shorts, gauntlets, glasses, necktie',"}}
+[info] >        'yellow eyes, blunt bangs, grey hair, long hair, sidelocks, french braid, folded ponytail, night dress, cleavage, necklace, armlet, bridal gauntlets, bracelet, jewelry, fur coat' {"user":"      'yellow eyes, blunt bangs, grey hair, long hair, sidelocks, french braid, folded ponytail, night dress, cleavage, necklace, armlet, bridal gauntlets, bracelet, jewelry, fur coat'","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m       'yellow eyes, blunt bangs, grey hair, long hair, sidelocks, french braid, folded ponytail, night dress, cleavage, necklace, armlet, bridal gauntlets, bracelet, jewelry, fur coat'"}}
+[info] >      ], {"user":"    ],","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     ],"}}
+[info] >      stats: { {"user":"    stats: {","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     stats: {"}}
+[info] >        downloadCount: 197, {"user":"      downloadCount: 197,","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m       downloadCount: 197,"}}
+[info] >        ratingCount: 0, {"user":"      ratingCount: 0,","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m       ratingCount: 0,"}}
+[info] >        rating: 0, {"user":"      rating: 0,","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m       rating: 0,"}}
+[info] >        thumbsUpCount: 59, {"user":"      thumbsUpCount: 59,","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m       thumbsUpCount: 59,"}}
+[info] >        thumbsDownCount: 0 {"user":"      thumbsDownCount: 0","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m       thumbsDownCount: 0"}}
+[info] >      }, {"user":"    },","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     },"}}
+[info] >      files: [ [Object] ], {"user":"    files: [ [Object] ],","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     files: [ [Object] ],"}}
+[info] >      images: [ {"user":"    images: [","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     images: ["}}
+[info] >        [Object], [Object], {"user":"      [Object], [Object],","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m       [Object], [Object],"}}
+[info] >        [Object], [Object], {"user":"      [Object], [Object],","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m       [Object], [Object],"}}
+[info] >        [Object], [Object], {"user":"      [Object], [Object],","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m       [Object], [Object],"}}
+[info] >        [Object], [Object], {"user":"      [Object], [Object],","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m       [Object], [Object],"}}
+[info] >        [Object] {"user":"      [Object]","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m       [Object]"}}
+[info] >      ], {"user":"    ],","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     ],"}}
+[info] >      downloadUrl: 'https://civitai.com/api/download/models/714372' {"user":"    downloadUrl: 'https://civitai.com/api/download/models/714372'","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     downloadUrl: 'https://civitai.com/api/download/models/714372'"}}
+[info] >    } {"user":"  }","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m   }"}}
+[info] >  ] {"user":"]","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m ]"}}
+[debug] [2024-08-14T12:58:18.805Z] [work-queue] {"queuedWork":["/aide-tools/us-central1/updateModel-2024-08-14T12:58:18.805Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2024-08-14T12:58:18.806Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/aide-tools/us-central1/updateModel-2024-08-14T12:58:18.805Z"],"workRunningCount":1}
+[debug] [2024-08-14T12:58:18.806Z] Accepted request GET /aide-tools/us-central1/updateModel?modelId=638817 --> us-central1-updateModel
+[debug] [2024-08-14T12:58:18.809Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2024-08-14T12:58:18.809Z] [functions] Got req.url=/aide-tools/us-central1/updateModel?modelId=638817, mapping to path=/?modelId=638817 {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/aide-tools/us-central1/updateModel?modelId=638817, mapping to path=/?modelId=638817"}}
+[debug] [2024-08-14T12:58:18.809Z] [worker-pool] submitRequest(triggerId=us-central1-updateModel) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-updateModel)"}}
+[info] i  functions: Beginning execution of "us-central1-updateModel" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Beginning execution of \"us-central1-updateModel\""}}
+[debug] [2024-08-14T12:58:18.810Z] [worker-us-central1-updateModel-bee92b43-bee6-475f-b41e-240ddfd052a0]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[worker-us-central1-updateModel-bee92b43-bee6-475f-b41e-240ddfd052a0]: BUSY"}}
+[debug] [2024-08-14T12:58:19.158Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-updateModel" in 348.163ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Finished \"us-central1-updateModel\" in 348.163ms"}}
+[debug] [2024-08-14T12:58:19.159Z] [worker-us-central1-updateModel-bee92b43-bee6-475f-b41e-240ddfd052a0]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[worker-us-central1-updateModel-bee92b43-bee6-475f-b41e-240ddfd052a0]: IDLE"}}
+[debug] [2024-08-14T12:58:19.159Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2024-08-14T12:58:19.159Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2024-08-14T12:58:19.160Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2024-08-14T13:09:18.160Z] [work-queue] {"queuedWork":["/aide-tools/us-central1/updateModel-2024-08-14T13:09:18.159Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2024-08-14T13:09:18.161Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/aide-tools/us-central1/updateModel-2024-08-14T13:09:18.159Z"],"workRunningCount":1}
+[debug] [2024-08-14T13:09:18.162Z] Accepted request GET /aide-tools/us-central1/updateModel?modelId=638817 --> us-central1-updateModel
+[debug] [2024-08-14T13:09:18.169Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2024-08-14T13:09:18.170Z] [functions] Got req.url=/aide-tools/us-central1/updateModel?modelId=638817, mapping to path=/?modelId=638817 {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/aide-tools/us-central1/updateModel?modelId=638817, mapping to path=/?modelId=638817"}}
+[debug] [2024-08-14T13:09:18.170Z] [worker-pool] submitRequest(triggerId=us-central1-updateModel) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-updateModel)"}}
+[info] i  functions: Beginning execution of "us-central1-updateModel" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Beginning execution of \"us-central1-updateModel\""}}
+[debug] [2024-08-14T13:09:18.173Z] [worker-us-central1-updateModel-bee92b43-bee6-475f-b41e-240ddfd052a0]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[worker-us-central1-updateModel-bee92b43-bee6-475f-b41e-240ddfd052a0]: BUSY"}}
+[debug] [2024-08-14T13:09:21.261Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-updateModel" in 3088.6403ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Finished \"us-central1-updateModel\" in 3088.6403ms"}}
+[debug] [2024-08-14T13:09:21.263Z] [worker-us-central1-updateModel-bee92b43-bee6-475f-b41e-240ddfd052a0]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"[worker-us-central1-updateModel-bee92b43-bee6-475f-b41e-240ddfd052a0]: IDLE"}}
+[debug] [2024-08-14T13:09:21.263Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2024-08-14T13:09:21.264Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2024-08-14T13:09:21.265Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}

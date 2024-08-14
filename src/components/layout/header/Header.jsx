@@ -22,7 +22,7 @@ const Header = (props) => {
     const scrollHandler = () => {
       const scrollToTop = document.documentElement.scrollTop;
       // headerRef.current.style.transition = "all 0s";
-      setIsFixed(scrollToTop > 1000);
+      setIsFixed(scrollToTop > 255);
 
       // if (scrollToTop > 1000) {
       //   document.querySelector("main").style.paddingTop = "255.2px";

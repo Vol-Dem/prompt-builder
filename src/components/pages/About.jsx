@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import classes from "./About.module.scss";
 import ImageFullView from "../ui/ImageFullView";
-import Image1 from "../../assets/about/1-start-1.png";
-import Image2 from "../../assets/about/1-start-2.png";
+import Image1 from "../../assets/about/1-start-1.webp";
+import Image2 from "../../assets/about/1-start-2.webp";
 import LinkA from "../ui/LinkA";
 
 const About = ({ title }) => {
@@ -99,13 +99,13 @@ const About = ({ title }) => {
       <div className={classes["about__content-block"]}>
         <ul className={classes["about__list"]}>
           <li className={classes["about__list-item"]}>
-            <a href="#" className={classes["about__link"]}>
+            <a href="#start" className={classes["about__link"]}>
               Start: Adding Models
             </a>
           </li>
 
           <li className={classes["about__list-item"]}>
-            <a href="#" className={classes["about__link"]}>
+            <a href="#prompt" className={classes["about__link"]}>
               Working with Prompts
             </a>
           </li>
@@ -114,12 +114,7 @@ const About = ({ title }) => {
           >
             <ul className={classes["about__sub-list"]}>
               <li className={classes["about__list-item"]}>
-                <a href="#" className={classes["about__link"]}>
-                  Tag System: Adding and Removing Tags
-                </a>
-              </li>
-              <li className={classes["about__list-item"]}>
-                <a href="#" className={classes["about__link"]}>
+                <a href="#preset" className={classes["about__link"]}>
                   Adding Presets
                 </a>
               </li>
@@ -127,7 +122,7 @@ const About = ({ title }) => {
           </li>
 
           <li className={classes["about__list-item"]}>
-            <a href="#" className={classes["about__link"]}>
+            <a href="#settings" className={classes["about__link"]}>
               Model Settings
             </a>
           </li>
@@ -136,17 +131,17 @@ const About = ({ title }) => {
           >
             <ul className={classes["about__sub-list"]}>
               <li className={classes["about__list-item"]}>
-                <a href="#" className={classes["about__link"]}>
+                <a href="#gsettings" className={classes["about__link"]}>
                   General Settings
                 </a>
               </li>
               <li className={classes["about__list-item"]}>
-                <a href="#" className={classes["about__link"]}>
+                <a href="#vsettings" className={classes["about__link"]}>
                   Version Settings
                 </a>
               </li>
               <li className={classes["about__list-item"]}>
-                <a href="#" className={classes["about__link"]}>
+                <a href="#sets" className={classes["about__link"]}>
                   Tag Sets
                 </a>
               </li>
@@ -154,7 +149,7 @@ const About = ({ title }) => {
           </li>
 
           <li className={classes["about__list-item"]}>
-            <a href="#" className={classes["about__link"]}>
+            <a href="#model" className={classes["about__link"]}>
               Model Page
             </a>
           </li>
@@ -163,7 +158,7 @@ const About = ({ title }) => {
           >
             <ul className={classes["about__sub-list"]}>
               <li className={classes["about__list-item"]}>
-                <a href="#" className={classes["about__link"]}>
+                <a href="#images" className={classes["about__link"]}>
                   Generated Images
                 </a>
               </li>
@@ -171,7 +166,7 @@ const About = ({ title }) => {
           </li>
 
           <li className={classes["about__list-item"]}>
-            <a href="#" className={classes["about__link"]}>
+            <a href="#top" className={classes["about__link"]}>
               Top Bar
             </a>
           </li>
@@ -180,17 +175,17 @@ const About = ({ title }) => {
           >
             <ul className={classes["about__sub-list"]}>
               <li className={classes["about__list-item"]}>
-                <a href="#" className={classes["about__link"]}>
+                <a href="#queue" className={classes["about__link"]}>
                   Download Queue
                 </a>
               </li>
               <li className={classes["about__list-item"]}>
-                <a href="#" className={classes["about__link"]}>
+                <a href="#nsfw" className={classes["about__link"]}>
                   SFW and NSFW Modes
                 </a>
               </li>
               <li className={classes["about__list-item"]}>
-                <a href="#" className={classes["about__link"]}>
+                <a href="#search" className={classes["about__link"]}>
                   Search
                 </a>
               </li>
@@ -198,7 +193,7 @@ const About = ({ title }) => {
           </li>
 
           <li className={classes["about__list-item"]}>
-            <a href="#" className={classes["about__link"]}>
+            <a href="#sidebar" className={classes["about__link"]}>
               Sidebar
             </a>
           </li>
@@ -207,17 +202,17 @@ const About = ({ title }) => {
           >
             <ul className={classes["about__sub-list"]}>
               <li className={classes["about__list-item"]}>
-                <a href="#" className={classes["about__link"]}>
+                <a href="#references" className={classes["about__link"]}>
                   Adding References
                 </a>
               </li>
               <li className={classes["about__list-item"]}>
-                <a href="#" className={classes["about__link"]}>
+                <a href="#addmodels" className={classes["about__link"]}>
                   Adding Models
                 </a>
               </li>
               <li className={classes["about__list-item"]}>
-                <a href="#" className={classes["about__link"]}>
+                <a href="#expanded" className={classes["about__link"]}>
                   Expanded and Compact View
                 </a>
               </li>
@@ -225,7 +220,7 @@ const About = ({ title }) => {
           </li>
 
           <li className={classes["about__list-item"]}>
-            <a href="#" className={classes["about__link"]}>
+            <a href="#category" className={classes["about__link"]}>
               Category edit
             </a>
           </li>
@@ -235,7 +230,9 @@ const About = ({ title }) => {
           Below is a guide to the main features of the platform.
         </p> */}
       </div>
-      <h2 className={classes["about__h2"]}>Start: Adding Models</h2>
+      <h2 id="start" className={classes["about__h2"]}>
+        Start: Adding Models
+      </h2>
       <div className={classes["about__content-block"]}>
         <p className={classes["about__text"]}>
           To get started with the platform, add a model using the "New Resource"
@@ -247,7 +244,7 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/3-new-resource.png")}
+            src={require("../../assets/about/3-new-resource.webp")}
             alt=""
           />
         </div>
@@ -267,7 +264,7 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/4-add-model.png")}
+            src={require("../../assets/about/4-add-model.webp")}
             alt=""
           />
         </div>
@@ -290,12 +287,14 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/5-added-models.png")}
+            src={require("../../assets/about/5-added-models.webp")}
             alt=""
           />
         </div>
       </div>
-      <h2 className={classes["about__h2"]}>Working with Prompts</h2>
+      <h2 id="prompt" className={classes["about__h2"]}>
+        Working with Prompts
+      </h2>
       <div className={classes["about__content-block"]}>
         <p className={classes["about__text"]}>
           Prompt input is available in two modes: tag mode and text mode.
@@ -314,7 +313,7 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/6-prompt.png")}
+            src={require("../../assets/about/6-prompt.webp")}
             alt=""
           />
         </div>
@@ -335,7 +334,7 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/7-tags.png")}
+            src={require("../../assets/about/7-tags.webp")}
             alt=""
           />
         </div>
@@ -350,7 +349,9 @@ const About = ({ title }) => {
         <p className={classes["about__text"]}>
           The "Clear" button will clear all prompt input fields.
         </p>
-        <h3 className={classes["about__h3"]}>Adding Presets</h3>
+        <h3 id="preset" className={classes["about__h3"]}>
+          Adding Presets
+        </h3>
         <p className={classes["about__text"]}>
           You can add commonly used trigger words into presets (for example,
           quality tags or a standard set of negative words). To do this, use the
@@ -364,26 +365,30 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/8-presets-1.png")}
+            src={require("../../assets/about/8-presets-1.webp")}
             alt=""
           />
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/8-presets-2.png")}
+            src={require("../../assets/about/8-presets-2.webp")}
             alt=""
           />
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/8-presets-3.png")}
+            src={require("../../assets/about/8-presets-3.webp")}
             alt=""
           />
         </div>
       </div>
-      <h2 className={classes["about__h2"]}>Model Settings</h2>
+      <h2 id="settings" className={classes["about__h2"]}>
+        Model Settings
+      </h2>
       <div className={classes["about__content-block"]}>
-        <h3 className={classes["about__h3"]}>General Settings</h3>
+        <h3 id="gsettings" className={classes["about__h3"]}>
+          General Settings
+        </h3>
         <p className={classes["about__text"]}>
           General settings for the uploaded model are accessible via the "Edit"
           button.
@@ -394,7 +399,7 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/9-model-settings.png")}
+            src={require("../../assets/about/9-model-settings.webp")}
             alt=""
           />
         </div>
@@ -413,11 +418,13 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/10-general-settings.png")}
+            src={require("../../assets/about/10-general-settings.webp")}
             alt=""
           />
         </div>
-        <h3 className={classes["about__h3"]}>Version Settings</h3>
+        <h3 id="vsettings" className={classes["about__h3"]}>
+          Version Settings
+        </h3>
         <p className={classes["about__text"]}>
           In the "Version Settings" tab, you can mark downloaded versions. For
           each marked version, a separate tab with the version's name will
@@ -431,18 +438,20 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/11-versions-settings-1.png")}
+            src={require("../../assets/about/11-versions-settings-1.webp")}
             alt=""
           />
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/11-versions-settings-2.png")}
+            src={require("../../assets/about/11-versions-settings-2.webp")}
             alt=""
           />
         </div>
       </div>
-      <h2 className={classes["about__h2"]}>Tag Sets</h2>
+      <h2 id="sets" className={classes["about__h2"]}>
+        Tag Sets
+      </h2>
       <div className={classes["about__content-block"]}>
         <p className={classes["about__text"]}>
           The tag sets feature allows you to create a set of trigger words for
@@ -456,13 +465,13 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-1.png")}
+            src={require("../../assets/about/12-tag-sets-1.webp")}
             alt=""
           />
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-2.png")}
+            src={require("../../assets/about/12-tag-sets-2.webp")}
             alt=""
           />
         </div>
@@ -476,13 +485,13 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-12.png")}
+            src={require("../../assets/about/12-tag-sets-12.webp")}
             alt=""
           />
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-22.png")}
+            src={require("../../assets/about/12-tag-sets-22.webp")}
             alt=""
           />
         </div>
@@ -510,13 +519,13 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-3.png")}
+            src={require("../../assets/about/12-tag-sets-3.webp")}
             alt=""
           />
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-4.png")}
+            src={require("../../assets/about/12-tag-sets-4.webp")}
             alt=""
           />
         </div>
@@ -528,7 +537,9 @@ const About = ({ title }) => {
           saved images using the "Add Image by ID" button.
         </p>
       </div>
-      <h2 className={classes["about__h2"]}>Model Page</h2>
+      <h2 id="model" className={classes["about__h2"]}>
+        Model Page
+      </h2>
       <div className={classes["about__content-block"]}>
         <p className={classes["about__text"]}>
           Under model's name, there are tabs for model versions. The names of
@@ -541,7 +552,7 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/13-model-page-1.png")}
+            src={require("../../assets/about/13-model-page-1.webp")}
             alt=""
           />
         </div>
@@ -556,7 +567,7 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/13-model-page-2.png")}
+            src={require("../../assets/about/13-model-page-2.webp")}
             alt=""
           />
         </div>
@@ -573,7 +584,9 @@ const About = ({ title }) => {
           quick access to editing trigger words and tag sets of the current
           version.
         </p>
-        <h3 className={classes["about__h3"]}>Generated Images</h3>
+        <h3 id="images" className={classes["about__h3"]}>
+          Generated Images
+        </h3>
         <p className={classes["about__text"]}>
           On the model page, after the basic information and description, you
           will find examples of images generated by users with this model. You
@@ -585,7 +598,7 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-1.png")}
+            src={require("../../assets/about/14-img-examples-1.webp")}
             alt=""
           />
         </div>
@@ -601,7 +614,7 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-2.png")}
+            src={require("../../assets/about/14-img-examples-2.webp")}
             alt=""
           />
         </div>
@@ -619,13 +632,13 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-5.png")}
+            src={require("../../assets/about/14-img-examples-5.webp")}
             alt=""
           />
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-52.png")}
+            src={require("../../assets/about/14-img-examples-52.webp")}
             alt=""
           />
         </div>
@@ -645,13 +658,13 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-3.png")}
+            src={require("../../assets/about/14-img-examples-3.webp")}
             alt=""
           />
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-4.png")}
+            src={require("../../assets/about/14-img-examples-4.webp")}
             alt=""
           />
         </div>
@@ -705,14 +718,18 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-resources.png")}
+            src={require("../../assets/about/14-img-examples-resources.webp")}
             alt=""
           />
         </div>
       </div>
-      <h2 className={classes["about__h2"]}>Top Bar</h2>
+      <h2 id="top" className={classes["about__h2"]}>
+        Top Bar
+      </h2>
       <div className={classes["about__content-block"]}>
-        <h3 className={classes["about__h3"]}>Download Queue</h3>
+        <h3 id="queue" className={classes["about__h3"]}>
+          Download Queue
+        </h3>
         <p className={classes["about__text"]}>
           When you click the image "Download" button, the image is added to the
           download queue in the Top Bar. If there are any connection issues with
@@ -728,11 +745,13 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/15-queue.png")}
+            src={require("../../assets/about/15-queue.webp")}
             alt=""
           />
         </div>
-        <h3 className={classes["about__h3"]}>SFW and NSFW Modes</h3>
+        <h3 id="nsfw" className={classes["about__h3"]}>
+          SFW and NSFW Modes
+        </h3>
         <p className={classes["about__text"]}>
           You can use the toggle switch to change between SFW and NSFW modes.
           Models marked by the author on Civitai as NSFW will not be displayed
@@ -752,7 +771,7 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/16-nsfw.png")}
+            src={require("../../assets/about/16-nsfw.webp")}
             alt=""
           />
         </div>
@@ -760,7 +779,9 @@ const About = ({ title }) => {
           ! If you have SFW mode enabled, images marked by the author as NSFW
           will not be displayed among the model images and generation examples.
         </p>
-        <h3 className={classes["about__h3"]}>Search</h3>
+        <h3 id="search" className={classes["about__h3"]}>
+          Search
+        </h3>
         <p className={classes["about__text"]}>
           The quick search shows the first five results and allows you to search
           not only for models but also for categories or subcategories, and open
@@ -778,14 +799,16 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/17-search.png")}
+            src={require("../../assets/about/17-search.webp")}
             alt=""
           />
         </div>
       </div>
-      <h2 className={classes["about__h2"]}>Sidebar</h2>
+      <h2 id="sidebar" className={classes["about__h2"]}>
+        Sidebar
+      </h2>
       <div className={classes["about__content-block"]}>
-        <p className={classes["about__text"]}>
+        <p id="references" className={classes["about__text"]}>
           To add an image as a reference, go to the model page and click the "+"
           on the desired image. The "+" will turn into a "v", you can click it
           again to remove the image from the sidebar. You can also remove an
@@ -802,11 +825,11 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/18-sidebar-1.png")}
+            src={require("../../assets/about/18-sidebar-1.webp")}
             alt=""
           />
         </div>
-        <p className={classes["about__text"]}>
+        <p id="addmodels" className={classes["about__text"]}>
           To add a model to the sidebar, click the "+" on the model card or the
           "+" next to the name on the model page.
         </p>
@@ -816,11 +839,11 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/18-sidebar-2.png")}
+            src={require("../../assets/about/18-sidebar-2.webp")}
             alt=""
           />
         </div>
-        <p className={classes["about__text"]}>
+        <p id="expanded" className={classes["about__text"]}>
           You can toggle the model info display in the sidebar between compact
           and expanded views using the "=" and "==" buttons. In the compact
           view, you&rsquo;ll see the image, name, version, and model type. In
@@ -833,7 +856,9 @@ const About = ({ title }) => {
           button.
         </p>
       </div>
-      <h2 className={classes["about__h2"]}>Category edit</h2>
+      <h2 id="category" className={classes["about__h2"]}>
+        Category edit
+      </h2>
       <div className={classes["about__content-block"]}>
         <p className={classes["about__text"]}>
           You can edit the name of a category or subcategory or delete it if
@@ -845,13 +870,13 @@ const About = ({ title }) => {
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/19-category-edit-1.png")}
+            src={require("../../assets/about/19-category-edit-1.webp")}
             alt=""
           />
           <img
             onClick={openFullVeiwHandler}
             className={classes["img"]}
-            src={require("../../assets/about/19-category-edit-2.png")}
+            src={require("../../assets/about/19-category-edit-2.webp")}
             alt=""
           />
         </div>
@@ -865,79 +890,79 @@ const About = ({ title }) => {
       {/* <img
         onClick={openFullVeiwHandler}
         className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (4).png")}
+        src={require("../../assets/img-tmp/vic (4).webp")}
         alt=""
       />
       <img
         onClick={openFullVeiwHandler}
         className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (5).png")}
+        src={require("../../assets/img-tmp/vic (5).webp")}
         alt=""
       />
       <img
         onClick={openFullVeiwHandler}
         className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (25).png")}
+        src={require("../../assets/img-tmp/vic (25).webp")}
         alt=""
       />
       <img
         onClick={openFullVeiwHandler}
         className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (29).png")}
+        src={require("../../assets/img-tmp/vic (29).webp")}
         alt=""
       />
       <img
         onClick={openFullVeiwHandler}
         className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (10).png")}
+        src={require("../../assets/img-tmp/vic (10).webp")}
         alt=""
       />
       <img
         onClick={openFullVeiwHandler}
         className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (1).png")}
+        src={require("../../assets/img-tmp/vic (1).webp")}
         alt=""
       />
       <img
         onClick={openFullVeiwHandler}
         className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (2).png")}
+        src={require("../../assets/img-tmp/vic (2).webp")}
         alt=""
       />
       <img
         onClick={openFullVeiwHandler}
         className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (26).png")}
+        src={require("../../assets/img-tmp/vic (26).webp")}
         alt=""
       />
       <img
         onClick={openFullVeiwHandler}
         className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (19).png")}
+        src={require("../../assets/img-tmp/vic (19).webp")}
         alt=""
       />
       <img
         onClick={openFullVeiwHandler}
         className={classes["img"]}
-        src={require("../../assets/img-tmp/cat-baget.png")}
+        src={require("../../assets/img-tmp/cat-baget.webp")}
         alt=""
       />
       <img
         onClick={openFullVeiwHandler}
         className={classes["img"]}
-        src={require("../../assets/img-tmp/pbg (1).png")}
+        src={require("../../assets/img-tmp/pbg (1).webp")}
         alt=""
       />
       <img
         onClick={openFullVeiwHandler}
         className={classes["img"]}
-        src={require("../../assets/img-tmp/pbg (2).png")}
+        src={require("../../assets/img-tmp/pbg (2).webp")}
         alt=""
       />
       <img
         onClick={openFullVeiwHandler}
         className={classes["img"]}
-        src={require("../../assets/img-tmp/pbg (3).png")}
+        src={require("../../assets/img-tmp/pbg (3).webp")}
         alt=""
       /> */}
       {fullViewIsOpen && (

@@ -1,7 +1,7 @@
 import Carousel3d from "../carousel3d/Carousel3d";
 import Buttton from "../ui/Button";
 import classes from "./Landing.module.scss";
-import carouselImage1 from "../../assets/about/1-start-1.png";
+import carouselImage1 from "../../assets/about/1-start-1.webp";
 import { useDispatch } from "react-redux";
 import { authActions } from "../../store/auth";
 import LinkA from "../ui/LinkA";
@@ -60,7 +60,7 @@ const Landing = () => {
           <div className={classes["section__img-wrap"]}>
             <img
               className={classes["section__img"]}
-              src={carouselImage1}
+              src={require("../../assets/home/keep-safe.jpg")}
               alt=""
             />
           </div>
@@ -71,7 +71,7 @@ const Landing = () => {
           <div className={classes["section__img-wrap"]}>
             <img
               className={classes["section__img"]}
-              src={carouselImage1}
+              src={require("../../assets/home/tag-system.jpg")}
               alt=""
             />
           </div>
@@ -124,7 +124,7 @@ const Landing = () => {
           <div className={classes["section__img-wrap"]}>
             <img
               className={classes["section__img"]}
-              src={carouselImage1}
+              src={require("../../assets/home/keep-safe.jpg")}
               alt=""
             />
           </div>
@@ -135,7 +135,7 @@ const Landing = () => {
           <div className={classes["section__img-wrap"]}>
             <img
               className={classes["section__img"]}
-              src={carouselImage1}
+              src={require("../../assets/home/quick-tools.jpg")}
               alt=""
             />
           </div>
@@ -176,7 +176,7 @@ const Landing = () => {
           <div className={classes["section__img-wrap"]}>
             <img
               className={classes["section__img"]}
-              src={carouselImage1}
+              src={require("../../assets/home/search.jpg")}
               alt=""
             />
           </div>

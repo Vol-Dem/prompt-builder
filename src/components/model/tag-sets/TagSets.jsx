@@ -32,8 +32,8 @@ const TagSets = ({ customData, defaultData }) => {
 
   useEffect(() => {
     const tagSetsData = customData?.length ? customData : defaultData;
-    // console.log(tagSetsData);
-    // console.log(customData, defaultData);
+    console.log(tagSetsData);
+    console.log(customData, defaultData);
     if (!tagSetsData) return;
     setAllTagSets(tagSetsData);
     setTagSets(tagSetsData);
@@ -44,6 +44,13 @@ const TagSets = ({ customData, defaultData }) => {
     // setTagSets(
     //   tagSetsData.slice(0, tagSetsIsOpen ? tagSetsData.length : defVisibleTags)
     // );
+
+    return () => {
+      setAllTagSets([]);
+      setTagSets([]);
+      setTagsetItemHeight(500);
+      setTagsetListHeight(500);
+    };
   }, [
     customData,
     defaultData,
