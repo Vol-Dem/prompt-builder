@@ -18,6 +18,9 @@ import ImageSvg from "../../assets/ImageSvg";
 import { authActions } from "../../store/auth";
 import ArrowLeftSvg from "../../assets/ArrowLeft";
 import ArrowRightSvg from "../../assets/ArrowRight";
+import PlusSvg from "../../assets/PlusSvg";
+import Bars2Svg from "../../assets/Bars2Svg";
+import Bars4Svg from "../../assets/Bars4Svg";
 
 const UsedModelsPanel = () => {
   // const [panelIsOpen, setPanelIsOpen] = useState(true);
@@ -225,20 +228,7 @@ const UsedModelsPanel = () => {
                 }`}
                 onClick={chageCardViewHandler}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2.4}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3.75 9h16.5m-16.5 6.75h16.5"
-                  />
-                </svg>
+                <Bars2Svg />
               </ButtonTertiary>
               <ButtonTertiary
                 type="button"
@@ -247,20 +237,7 @@ const UsedModelsPanel = () => {
                 }`}
                 onClick={chageCardViewHandler}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"
-                  />
-                </svg>
+                <Bars4Svg />
               </ButtonTertiary>
             </div>
           </div>
@@ -279,20 +256,7 @@ const UsedModelsPanel = () => {
               <div className={classes["model-cards__tip"]}>
                 Press{" "}
                 <span className={classes.plus}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 4.5v15m7.5-7.5h-15"
-                    />
-                  </svg>
+                  <PlusSvg />
                 </span>{" "}
                 to add model or image to side panel
               </div>

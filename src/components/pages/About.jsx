@@ -4,6 +4,14 @@ import ImageFullView from "../ui/ImageFullView";
 import Image1 from "../../assets/about/1-start-1.webp";
 import Image2 from "../../assets/about/1-start-2.webp";
 import LinkA from "../ui/LinkA";
+import PlusSvg from "../../assets/PlusSvg";
+import EditSvg from "../../assets/EditSvg";
+import FolderSvg from "../../assets/FolderSvg";
+import DotsSvg from "../../assets/DotsSvg";
+import CheckUp from "../../assets/CheckSvg";
+import CrossSvg from "../../assets/CrossSvg";
+import Bars2Svg from "../../assets/Bars2Svg";
+import Bars4Svg from "../../assets/Bars4Svg";
 
 const About = ({ title }) => {
   const [fullViewIsOpen, setFullViewIsOpen] = useState(false);
@@ -99,130 +107,130 @@ const About = ({ title }) => {
       <div className={classes["about__content-block"]}>
         <ul className={classes["about__list"]}>
           <li className={classes["about__list-item"]}>
-            <a href="#start" className={classes["about__link"]}>
+            <LinkA href="#start" smoothScroll>
               Start: Adding Models
-            </a>
+            </LinkA>
           </li>
 
           <li className={classes["about__list-item"]}>
-            <a href="#prompt" className={classes["about__link"]}>
+            <LinkA href="#prompt" smoothScroll>
               Working with Prompts
-            </a>
+            </LinkA>
           </li>
           <li
             className={`${classes["about__list-item"]} ${classes["about__list-item--sub"]}`}
           >
             <ul className={classes["about__sub-list"]}>
               <li className={classes["about__list-item"]}>
-                <a href="#preset" className={classes["about__link"]}>
+                <LinkA href="#preset" smoothScroll>
                   Adding Presets
-                </a>
+                </LinkA>
               </li>
             </ul>
           </li>
 
           <li className={classes["about__list-item"]}>
-            <a href="#settings" className={classes["about__link"]}>
+            <LinkA href="#settings" smoothScroll>
               Model Settings
-            </a>
+            </LinkA>
           </li>
           <li
             className={`${classes["about__list-item"]} ${classes["about__list-item--sub"]}`}
           >
             <ul className={classes["about__sub-list"]}>
               <li className={classes["about__list-item"]}>
-                <a href="#gsettings" className={classes["about__link"]}>
+                <LinkA href="#gsettings" smoothScroll>
                   General Settings
-                </a>
+                </LinkA>
               </li>
               <li className={classes["about__list-item"]}>
-                <a href="#vsettings" className={classes["about__link"]}>
+                <LinkA href="#vsettings" smoothScroll>
                   Version Settings
-                </a>
+                </LinkA>
               </li>
               <li className={classes["about__list-item"]}>
-                <a href="#sets" className={classes["about__link"]}>
+                <LinkA href="#sets" smoothScroll>
                   Tag Sets
-                </a>
+                </LinkA>
               </li>
             </ul>
           </li>
 
           <li className={classes["about__list-item"]}>
-            <a href="#model" className={classes["about__link"]}>
+            <LinkA href="#model" smoothScroll>
               Model Page
-            </a>
+            </LinkA>
           </li>
           <li
             className={`${classes["about__list-item"]} ${classes["about__list-item--sub"]}`}
           >
             <ul className={classes["about__sub-list"]}>
               <li className={classes["about__list-item"]}>
-                <a href="#images" className={classes["about__link"]}>
+                <LinkA href="#images" smoothScroll>
                   Generated Images
-                </a>
+                </LinkA>
               </li>
             </ul>
           </li>
 
           <li className={classes["about__list-item"]}>
-            <a href="#top" className={classes["about__link"]}>
+            <LinkA href="#top" smo>
               Top Bar
-            </a>
+            </LinkA>
           </li>
           <li
             className={`${classes["about__list-item"]} ${classes["about__list-item--sub"]}`}
           >
             <ul className={classes["about__sub-list"]}>
               <li className={classes["about__list-item"]}>
-                <a href="#queue" className={classes["about__link"]}>
+                <LinkA href="#queue" smoothScroll>
                   Download Queue
-                </a>
+                </LinkA>
               </li>
               <li className={classes["about__list-item"]}>
-                <a href="#nsfw" className={classes["about__link"]}>
+                <LinkA href="#nsfw" smoothScroll>
                   SFW and NSFW Modes
-                </a>
+                </LinkA>
               </li>
               <li className={classes["about__list-item"]}>
-                <a href="#search" className={classes["about__link"]}>
+                <LinkA href="#search" smoothScroll>
                   Search
-                </a>
+                </LinkA>
               </li>
             </ul>
           </li>
 
           <li className={classes["about__list-item"]}>
-            <a href="#sidebar" className={classes["about__link"]}>
+            <LinkA href="#sidebar" smoothScroll>
               Sidebar
-            </a>
+            </LinkA>
           </li>
           <li
             className={`${classes["about__list-item"]} ${classes["about__list-item--sub"]}`}
           >
             <ul className={classes["about__sub-list"]}>
               <li className={classes["about__list-item"]}>
-                <a href="#references" className={classes["about__link"]}>
+                <LinkA href="#references" smoothScroll>
                   Adding References
-                </a>
+                </LinkA>
               </li>
               <li className={classes["about__list-item"]}>
-                <a href="#addmodels" className={classes["about__link"]}>
+                <LinkA href="#addmodels" smoothScroll>
                   Adding Models
-                </a>
+                </LinkA>
               </li>
               <li className={classes["about__list-item"]}>
-                <a href="#expanded" className={classes["about__link"]}>
+                <LinkA href="#expanded" smoothScroll>
                   Expanded and Compact View
-                </a>
+                </LinkA>
               </li>
             </ul>
           </li>
 
           <li className={classes["about__list-item"]}>
-            <a href="#category" className={classes["about__link"]}>
+            <LinkA href="#category" smoothScroll>
               Category edit
-            </a>
+            </LinkA>
           </li>
         </ul>
 
@@ -241,12 +249,18 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/3-new-resource.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/3-new-resource.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/3-new-resource.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p className={classes["about__text"]}>
           Select the model type in the "Type" field, enter the model ID or URL
@@ -261,12 +275,18 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/4-add-model.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/4-add-model.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/4-add-model.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p className={classes["about__text"]}>
           After saving, the platform will automatically gather all the
@@ -276,20 +296,29 @@ const About = ({ title }) => {
         </p>
         <p className={classes["about__text"]}>
           You will gain access to tags (trigger words) and other data related to
-          the model, be able <u>to edit them</u> and add additional information.
-          You also can view all images generated by users with this model, and
-          add to your collection those you want to use as references in the
-          future.
+          the model, be able{" "}
+          <LinkA className={classes.link} href="#gsettings" smoothScroll>
+            to edit them
+          </LinkA>{" "}
+          and add additional information. You also can view all images generated
+          by users with this model, and add to your collection those you want to
+          use as references in the future.
         </p>
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/5-added-models.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/5-added-models.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/5-added-models.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
       </div>
       <h2 id="prompt" className={classes["about__h2"]}>
@@ -310,12 +339,18 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/6-prompt.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/6-prompt.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/6-prompt.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p className={classes["about__text"]}>
           Trigger words received with the model can be divided into groups:
@@ -331,12 +366,18 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/7-tags.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/7-tags.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/7-tags.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p className={classes["about__text"]}>
           This way, you can easily manage the prompt by adding the necessary
@@ -362,24 +403,42 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-3"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/8-presets-1.webp")}
-            alt=""
-          />
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/8-presets-2.webp")}
-            alt=""
-          />
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/8-presets-3.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/8-presets-1.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/8-presets-1.jpg")}
+              alt=""
+            />
+          </picture>
+          <picture>
+            <source
+              srcSet={require("../../assets/about/8-presets-2.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/8-presets-2.jpg")}
+              alt=""
+            />
+          </picture>
+          <picture>
+            <source
+              srcSet={require("../../assets/about/8-presets-3.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/8-presets-3.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
       </div>
       <h2 id="settings" className={classes["about__h2"]}>
@@ -396,12 +455,18 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/9-model-settings.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/9-model-settings.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/9-model-settings.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p className={classes["about__text"]}>
           In the "General Settings" tab, you can change the model's name and
@@ -415,12 +480,18 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/10-general-settings.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/10-general-settings.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/10-general-settings.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <h3 id="vsettings" className={classes["about__h3"]}>
           Version Settings
@@ -435,18 +506,30 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/11-versions-settings-1.webp")}
-            alt=""
-          />
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/11-versions-settings-2.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/11-versions-settings-1.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/11-versions-settings-1.jpg")}
+              alt=""
+            />
+          </picture>
+          <picture>
+            <source
+              srcSet={require("../../assets/about/11-versions-settings-2.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/11-versions-settings-2.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
       </div>
       <h2 id="sets" className={classes["about__h2"]}>
@@ -462,38 +545,63 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-1.webp")}
-            alt=""
-          />
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-2.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/12-tag-sets-1.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/12-tag-sets-1.jpg")}
+              alt=""
+            />
+          </picture>
+          <picture>
+            <source
+              srcSet={require("../../assets/about/12-tag-sets-2.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/12-tag-sets-2.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p className={classes["about__text"]}>
-          The "Edit..." button in the top right corner of the block gives you
-          quick access to editing tag sets of the current version.
+          The "Edit... <EditSvg className={classes["svg"]} />" button in the top
+          right corner of the block gives you quick access to editing tag sets
+          of the current version.
         </p>
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-12.webp")}
-            alt=""
-          />
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-22.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/12-tag-sets-12.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/12-tag-sets-12.jpg")}
+              alt=""
+            />
+          </picture>
+          <picture>
+            <source
+              srcSet={require("../../assets/about/12-tag-sets-22.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/12-tag-sets-22.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p className={classes["about__text"]}>
           When building a prompt, you can add all tags from a set with one click
@@ -516,25 +624,40 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-3.webp")}
-            alt=""
-          />
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-4.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/12-tag-sets-3.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/12-tag-sets-3.jpg")}
+              alt=""
+            />
+          </picture>
+          <picture>
+            <source
+              srcSet={require("../../assets/about/12-tag-sets-4.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/12-tag-sets-4.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p className={classes["about__text"]}>
           Directly uploading your own image for a preview is not possible on the
           site, but you can upload it to Civitai as part of a corresponding
           model as a generation example (then it will appear in the list of
-          generated images) or upload it as a standalone post and add it to
-          saved images using the "Add Image by ID" button.
+          generated images) or upload it as a standalone post and{" "}
+          <LinkA className={classes.link} href="#addbyid" smoothScroll>
+            add it to saved
+          </LinkA>{" "}
+          images using the "Add Image by ID" button.
         </p>
       </div>
       <h2 id="model" className={classes["about__h2"]}>
@@ -549,12 +672,18 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/13-model-page-1.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/13-model-page-1.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/13-model-page-1.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p className={classes["about__text"]}>
           Below the model images, there is an information block about the model.
@@ -564,12 +693,18 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/13-model-page-2.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/13-model-page-2.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/13-model-page-2.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p className={classes["about__text"]}>
           Clicking on a tag will add it to the prompt, and clicking again on an
@@ -580,9 +715,9 @@ const About = ({ title }) => {
           will remain unchanged.
         </p>
         <p className={classes["about__text"]}>
-          The "Edit..." button in the top right corner of the block gives you
-          quick access to editing trigger words and tag sets of the current
-          version.
+          The "Edit... <EditSvg className={classes["svg"]} />" button in the top
+          right corner of the block gives you quick access to editing trigger
+          words and tag sets of the current version.
         </p>
         <h3 id="images" className={classes["about__h3"]}>
           Generated Images
@@ -595,52 +730,79 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-1.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/14-img-examples-1.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/14-img-examples-1.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p className={classes["about__text"]}>
-          The "Download" button will add the image and generation data to
-          "Saved." If there is more than one image, a popup window will open
-          where you can select the images you want to download or download all
-          of them at once.
+          The{" "}
+          <FolderSvg
+            className={`${classes["svg"]} ${classes["svg--medium"]}`}
+          />{" "}
+          button will add the image generation data to "Saved" tab. If there is
+          more than one image, a popup window will open where you can select the
+          images you want to download or download all of them at once.
         </p>
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-2.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/14-img-examples-2.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/14-img-examples-2.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
-        <p className={classes["about__text"]}>
+        <p id="addbyid" className={classes["about__text"]}>
           If you want to add a specific image or post from the Civitai site to
           avoid searching through the general list of examples, click the "Add
           by ID" button. A popup window will appear where you can enter the post
-          ID and image IDs, select the model version, and save them. Saved
-          images will be displayed under the tab corresponding to the model
-          version. This way you can build your own collection of examples.
+          ID, select the model version, and select images you want to save.
+          Saved images will be displayed under the tab corresponding to the
+          model version. This way you can build your own collection of examples.
         </p>
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-5.webp")}
-            alt=""
-          />
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-52.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/14-img-examples-5.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/14-img-examples-5.jpg")}
+              alt=""
+            />
+          </picture>
+          <picture>
+            <source
+              srcSet={require("../../assets/about/14-img-examples-52.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/14-img-examples-52.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p className={classes["about__text"]}>
           Note: Saved images are not stored on the server; only generation data
@@ -649,36 +811,55 @@ const About = ({ title }) => {
           available for use.
         </p>
         <p className={classes["about__text"]}>
-          In the "Saved" tab, the image menu "..." includes an option to delete
-          images. You can delete either selected images or all of them at once.
+          In the "Saved" tab, the image menu{" "}
+          <DotsSvg className={`${classes["svg"]} ${classes["svg--medium"]}`} />{" "}
+          includes an option to delete images. You can delete either selected
+          images or all of them at once.
         </p>
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-3.webp")}
-            alt=""
-          />
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-4.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/14-img-examples-3.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/14-img-examples-3.jpg")}
+              alt=""
+            />
+          </picture>
+          <picture>
+            <source
+              srcSet={require("../../assets/about/14-img-examples-4.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/14-img-examples-4.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p className={classes["about__text"]}>
-          With the "+" button, any image can be added to the sidebar as a
-          reference (no more than three images). Clicking the image again will
-          remove it from the sidebar.
+          With the{" "}
+          <span className={classes["btn-container"]}>
+            <PlusSvg />
+          </span>{" "}
+          button, any image can be added to the sidebar as a reference (no more
+          than three images). Clicking the image again will remove it from the
+          sidebar.
         </p>
         <p className={classes["about__text"]}>
           Any image on the model page can be set as the model preview. To do
-          this, in the image menu "..." select "Set as Preview." If the NSFW
-          mode is enabled in the Top Bar, the menu will also include the option
-          "Set as NSFW Preview." Each model can have two previews: one for SFW
-          and one for NSFW mode.
+          this, in the image menu{" "}
+          <DotsSvg className={`${classes["svg"]} ${classes["svg--medium"]}`} />{" "}
+          select "Set as Preview." If the NSFW mode is enabled in the Top Bar,
+          the menu will also include the option "Set as NSFW Preview." Each
+          model can have two previews: one for SFW and one for NSFW mode.
         </p>
         <p className={classes["about__text"]}>
           You cannot upload your own image directly to the site, but you can
@@ -697,9 +878,12 @@ const About = ({ title }) => {
         </p>
         <p className={classes["about__text"]}>
           Saved models are highlighted in blue &mdash; clicking on their name
-          will open the page for that model. You can also use the "+" button to
-          add the model to the sidebar for quick access. Unsaved models will be
-          white.
+          will open the page for that model. You can also use the{" "}
+          <span className={classes["btn-container"]}>
+            <PlusSvg />
+          </span>{" "}
+          button to add the model to the sidebar for quick access. Unsaved
+          models will be white.
         </p>
         <p className={classes["about__text"]}>
           You can also track whether you have the necessary model version:
@@ -715,12 +899,18 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-resources.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/14-img-examples-resources.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/14-img-examples-resources.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
       </div>
       <h2 id="top" className={classes["about__h2"]}>
@@ -742,12 +932,18 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/15-queue.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/15-queue.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/15-queue.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <h3 id="nsfw" className={classes["about__h3"]}>
           SFW and NSFW Modes
@@ -761,19 +957,26 @@ const About = ({ title }) => {
         <p className={classes["about__text"]}>
           For each model or tag set you can set two versions of the preview: SFW
           and NSFW. They will be displayed depending on the current mode. To do
-          this, on the Model page use the image menu "..." and select "Set as
-          Preview." If the NSFW mode is enabled, the menu will also include the
-          option "Set as NSFW Preview."
+          this, on the Model page use the image menu{" "}
+          <DotsSvg className={`${classes["svg"]} ${classes["svg--medium"]}`} />{" "}
+          and select "Set as Preview." If the NSFW mode is enabled, the menu
+          will also include the option "Set as NSFW Preview."
         </p>
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/16-nsfw.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/16-nsfw.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/16-nsfw.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p className={classes["about__text"]}>
           ! If you have SFW mode enabled, images marked by the author as NSFW
@@ -796,12 +999,18 @@ const About = ({ title }) => {
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/17-search.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/17-search.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/17-search.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
       </div>
       <h2 id="sidebar" className={classes["about__h2"]}>
@@ -809,47 +1018,88 @@ const About = ({ title }) => {
       </h2>
       <div className={classes["about__content-block"]}>
         <p id="references" className={classes["about__text"]}>
-          To add an image as a reference, go to the model page and click the "+"
-          on the desired image. The "+" will turn into a "v", you can click it
-          again to remove the image from the sidebar. You can also remove an
-          image directly from the sidebar by clicking "x". If you've already
-          added three images, the "+" button on other images will be inactive
-          until you remove at least one from the sidebar. To view information
-          about an added reference image, click on it in the sidebar. A pop-up
-          window will show details about the generation, including the prompt,
-          used resources, and more.
+          To add an image as a reference, go to the model page and click the{" "}
+          <span className={classes["btn-container"]}>
+            <PlusSvg />
+          </span>{" "}
+          on the desired image. The{" "}
+          <span className={classes["btn-container"]}>
+            <PlusSvg />
+          </span>{" "}
+          will turn into a{" "}
+          <span className={classes["btn-container"]}>
+            <CheckUp />
+          </span>
+          , you can click it again to remove the image from the sidebar. You can
+          also remove an image directly from the sidebar by clicking{" "}
+          <CrossSvg className={`${classes["svg"]} ${classes["svg--medium"]}`} />
+          . If you've already added three images, the{" "}
+          <span className={classes["btn-container"]}>
+            <PlusSvg />
+          </span>{" "}
+          button on other images will be inactive until you remove at least one
+          from the sidebar. To view information about an added reference image,
+          click on it in the sidebar. A pop-up window will show details about
+          the generation, including the prompt, used resources, and more.
         </p>
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/18-sidebar-1.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/18-sidebar-1.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/18-sidebar-1.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p id="addmodels" className={classes["about__text"]}>
-          To add a model to the sidebar, click the "+" on the model card or the
-          "+" next to the name on the model page.
+          To add a model to the sidebar, click the{" "}
+          <span className={classes["btn-container"]}>
+            <PlusSvg />
+          </span>{" "}
+          on the model card or the{" "}
+          <span className={classes["btn-container"]}>
+            <PlusSvg />
+          </span>{" "}
+          next to the name on the model page.
         </p>
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-1"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/18-sidebar-2.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/18-sidebar-2.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/18-sidebar-2.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p id="expanded" className={classes["about__text"]}>
           You can toggle the model info display in the sidebar between compact
-          and expanded views using the "=" and "==" buttons. In the compact
-          view, you&rsquo;ll see the image, name, version, and model type. In
-          the expanded view, you&rsquo;ll also see the weight, activation tag,
-          and trigger words. You can add or remove trigger words from the prompt
-          by clicking them in the sidebar, just like on the model page.
+          and expanded views using the{" "}
+          <span className={classes["btn-container"]}>
+            <Bars2Svg className={classes["svg"]} />
+          </span>{" "}
+          and{" "}
+          <span className={classes["btn-container"]}>
+            <Bars4Svg className={classes["svg"]} />
+          </span>{" "}
+          buttons. In the compact view, you&rsquo;ll see the image, name,
+          version, and model type. In the expanded view, you&rsquo;ll also see
+          the weight, activation tag, and trigger words. You can add or remove
+          trigger words from the prompt by clicking them in the sidebar, just
+          like on the model page.
         </p>
         <p className={classes["about__text"]}>
           To clear all references and models from the sidebar, use the "Clear"
@@ -862,23 +1112,37 @@ const About = ({ title }) => {
       <div className={classes["about__content-block"]}>
         <p className={classes["about__text"]}>
           You can edit the name of a category or subcategory or delete it if
-          needed. To do this, go to the category list and click the "/" button.
+          needed. To do this, go to the category list and click the{" "}
+          <EditSvg className={`${classes["svg"]} ${classes["svg--medium"]}`} />{" "}
+          button.
         </p>
         <div
           className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}
         >
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/19-category-edit-1.webp")}
-            alt=""
-          />
-          <img
-            onClick={openFullVeiwHandler}
-            className={classes["img"]}
-            src={require("../../assets/about/19-category-edit-2.webp")}
-            alt=""
-          />
+          <picture>
+            <source
+              srcSet={require("../../assets/about/19-category-edit-1.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/19-category-edit-1.jpg")}
+              alt=""
+            />
+          </picture>
+          <picture>
+            <source
+              srcSet={require("../../assets/about/19-category-edit-2.webp")}
+              type="image/webp"
+            />
+            <img
+              onClick={openFullVeiwHandler}
+              className={classes["img"]}
+              src={require("../../assets/about/19-category-edit-2.jpg")}
+              alt=""
+            />
+          </picture>
         </div>
         <p className={classes["about__text"]}>
           If you accidentally delete a category, you can create a new one with

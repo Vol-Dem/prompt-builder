@@ -60,7 +60,7 @@ const Landing = () => {
           <div className={classes["section__img-wrap"]}>
             <img
               className={classes["section__img"]}
-              src={require("../../assets/home/keep-safe.jpg")}
+              src={require("../../assets/about/5-added-models.jpg")}
               alt=""
             />
           </div>
