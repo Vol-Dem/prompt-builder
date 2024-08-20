@@ -1,16 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Buttton from "../ui/Button";
-import Fieldset from "../ui/Fieldset";
-import Input from "../ui/Input";
 import Modal from "../ui/Modal";
-import Textarea from "../ui/Textarea";
 import classes from "./Presets.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { promptActions, updatePresets } from "../../store/prompt";
-import TagList from "../tag-list/TagList";
 import { splitTags } from "../../utils/generalUtils";
 import ButtonTertiary from "../ui/ButtonTertiary";
-import { doc, onSnapshot } from "firebase/firestore";
 import PresetForm from "../forms/preset-form/PresetForm";
 import DeleteRequest from "../ui/DeleteRequest";
 
@@ -23,10 +18,6 @@ const Presets = ({ onClose }) => {
   const dispatch = useDispatch();
 
   const deleteHandler = () => {
-    // e.preventDefault();
-    // const type = e.target.closest(`.${classes.preset}`).dataset.type;
-    // const id = e.target.closest(`.${classes.preset}`).dataset.id;
-
     const updatedPresets = presets[presetToDel?.type].filter(
       (preset) => preset.id !== presetToDel.id
     );
@@ -66,8 +57,7 @@ const Presets = ({ onClose }) => {
     const type = e.target.closest(`.${classes.preset}`).dataset.type;
     const id = e.target.closest(`.${classes.preset}`).dataset.id;
     const presetName = presets[type].find((preset) => preset.id === id).name;
-    console.log(presets);
-    console.log(presetName);
+
     setPresetToDel({ id, type, name: presetName });
     setDeleteRequestIsOpen(true);
   };
@@ -76,19 +66,6 @@ const Presets = ({ onClose }) => {
     setDeleteRequestIsOpen(false);
   };
 
-  //   const positivePresetsHtml = presets?.positive?.map((preset, i) => {
-  //     return (
-  //       <li key={i}>
-  //         {/* {preset.name} */}
-  //         <TagList
-  //           name={preset.name}
-  //           tags={splitTags(preset.words)}
-  //           promptType="positive"
-  //           className={classes["tag-sets__tags"]}
-  //         />
-  //       </li>
-  //     );
-  //   });
   const positivePresetsHtml = presets?.positive?.map((preset, i) => {
     return (
       <li
@@ -97,12 +74,7 @@ const Presets = ({ onClose }) => {
         data-id={preset.id}
         data-type="positive"
       >
-        <span
-          className={classes["preset__name"]}
-          onClick={aplyPreset}
-          //   data-type="positive"
-          //   data-name={preset.name}
-        >
+        <span className={classes["preset__name"]} onClick={aplyPreset}>
           {preset.name}
         </span>
         <div className={classes["preset__btns-container"]}>
@@ -126,12 +98,7 @@ const Presets = ({ onClose }) => {
         data-id={preset.id}
         data-type="negative"
       >
-        <span
-          className={classes["preset__name"]}
-          onClick={aplyPreset}
-          //   data-type="positive"
-          //   data-name={preset.name}
-        >
+        <span className={classes["preset__name"]} onClick={aplyPreset}>
           {preset.name}
         </span>
         <div className={classes["preset__btns-container"]}>
@@ -152,7 +119,6 @@ const Presets = ({ onClose }) => {
       <Buttton
         className={classes["btn-from"]}
         onClick={() => {
-          //   setFormIsOpen(true);
           setPresetData({});
           setFormIsOpen((prevState) => !prevState);
         }}

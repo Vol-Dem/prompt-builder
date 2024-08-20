@@ -1,11 +1,11 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useReducer } from "react";
 
-const defaultState = {
-  inputValue: "",
-  isValid: false,
-  errorMessage: "",
-};
+// const defaultState = {
+//   inputValue: "",
+//   isValid: false,
+//   errorMessage: "",
+// };
 
 const validationReducer = (state, action) => {
   const validTypes = action.type;
@@ -36,7 +36,7 @@ const validationReducer = (state, action) => {
       const errorMessage = isValid
         ? ""
         : "Passwords must contain more than 5 characters";
-      console.log(isValid);
+
       if (!!errorMessage) {
         errorMessages.push(errorMessage);
       }
@@ -44,7 +44,7 @@ const validationReducer = (state, action) => {
     }
     if (!!validTypes[type] && type === "required") {
       const isValid = !!action.value;
-      console.log(action.value);
+
       const errorMessage = isValid ? "" : "This field is required";
       if (!!errorMessage) {
         errorMessages.push(errorMessage);
@@ -62,7 +62,6 @@ const validationReducer = (state, action) => {
       // return { inputValue: action.value, isValid, errorMessage };
     }
     if (!!validTypes[type] && type === "minLength") {
-      console.log(action.value.length, action.options.minLength);
       const isValid = action.value.length >= validTypes[type];
       const errorMessage = isValid
         ? ""
@@ -75,9 +74,6 @@ const validationReducer = (state, action) => {
   });
   const isValid = !errorMessages.length;
   const errorMessage = !isValid ? errorMessages[0] : "";
-  console.log("VAL", action.value);
-  console.log("WTF", isValid);
-  console.log("WTFM", errorMessages);
   return { inputValue: action.value, isValid, errorMessage };
 };
 

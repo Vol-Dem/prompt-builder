@@ -372,8 +372,21 @@ exports.updateModel = onRequest(
             return;
           }
 
+          const newVersionsWithIndex = [
+            ...newVersions,
+            ...curModelData?.modelVersions,
+          ].map((version) => {
+            const index = responseData?.modelVersions?.find(
+              (newVersion) => newVersion?.id === version?.id
+            )?.index;
+            return {
+              ...version,
+              index,
+            };
+          });
+
           const writeResult = await modelDataRef.update({
-            modelVersions: [...newVersions, ...curModelData.modelVersions],
+            modelVersions: newVersionsWithIndex,
             description: responseData.description,
             updatedAt: timeNow,
           });

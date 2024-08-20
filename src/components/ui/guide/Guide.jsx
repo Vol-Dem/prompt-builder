@@ -1,6 +1,5 @@
 import classes from "./Guide.module.scss";
 import { useEffect } from "react";
-import Card from "./../Card";
 import { createPortal } from "react-dom";
 import LinkA from "../LinkA";
 import ArrowRightSvg from "../../../assets/ArrowRight";
@@ -13,12 +12,8 @@ const Guide = (props) => {
       window.scrollTo(0, scrollTop);
     };
     window.addEventListener("scroll", disableScrollHandler);
-    // document.body.style.overflow = "hidden";
-    // document.body.style.marginRight = "8px";
     return () => {
       window.removeEventListener("scroll", disableScrollHandler);
-      // document.body.style.overflow = null;
-      // document.body.style.marginRight = "0";
     };
   }, []);
 
@@ -30,13 +25,11 @@ const Guide = (props) => {
             className={`${classes.guide} ${classes["guide__backdrop-left"]} ${
               classes[`guide__backdrop-left--${props.stage}`]
             }`}
-            // onClick={props.onClose}
           ></div>
           <div
             className={`${classes.guide} ${classes["guide__backdrop-bottom"]} ${
               classes[`guide__backdrop-bottom--${props.stage}`]
             }`}
-            // onClick={props.onClose}
           ></div>
           <div
             className={`${classes.guide} ${classes["guide__content"]} ${
@@ -85,16 +78,10 @@ const Guide = (props) => {
 
                   <ArrowRightSvg />
                 </li>
-                {/* <li className={classes["guide__content__item"]}>
-                  <p className={classes["guide__content__text"]}>
-                    Click save. It's done!
-                  </p>
-                </li> */}
               </ul>
             )}
             {true && (
               <div className={classes["guide__close"]} onClick={props.onClose}>
-                {/* <span className={classes["modal__cross"]}></span> */}
                 <span>Close guide</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

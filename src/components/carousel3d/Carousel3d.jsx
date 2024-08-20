@@ -10,42 +10,27 @@ const slideDelaySec = 4;
 const Carousel3d = () => {
   const [curSlideIndex, setCurSlideIndex] = useState(0);
   const [transitionSec, setTransitionSec] = useState(0.9);
-  const [transitionEnd, setTransitionEnd] = useState(true);
   const intervalRef = useRef(null);
 
-  const transitionStartHandler = useCallback(() => {
-    setTransitionEnd(false);
-    // console.log("END");
-  }, []);
-
   const transitionEndHandler = useCallback(() => {
-    setTransitionEnd(true);
-    document.removeEventListener("transitionstart", transitionStartHandler);
     document.removeEventListener("transitionend", transitionEndHandler);
-    // console.log("STRAT");
 
     if (curSlideIndex === carouselImages?.length) {
-      console.log("RESET");
       setTransitionSec(0);
       setCurSlideIndex(0);
     }
-  }, [curSlideIndex, transitionStartHandler]);
+  }, [curSlideIndex]);
 
   useEffect(() => {
     if (curSlideIndex > 2 && !!carouselImages?.length) {
-      setTransitionEnd(true);
-      document.removeEventListener("transitionstart", transitionStartHandler);
       document.removeEventListener("transitionend", transitionEndHandler);
-      document.addEventListener("transitionstart", transitionStartHandler);
       document.addEventListener("transitionend", transitionEndHandler);
     }
 
     return () => {
-      // console.log("RESET TRANSITION");
-      document.removeEventListener("transitionstart", transitionStartHandler);
       document.removeEventListener("transitionend", transitionEndHandler);
     };
-  }, [transitionStartHandler, transitionEndHandler, curSlideIndex]);
+  }, [transitionEndHandler, curSlideIndex]);
 
   useEffect(() => {
     if (carouselImages?.length) {
@@ -70,7 +55,6 @@ const Carousel3d = () => {
     () =>
       carouselImages.map((image, i) => {
         const trans = curSlideIndex - i;
-        // console.log(`Image ${i}`, `Cur ${curSlideIndex}`, trans);
 
         return (
           <li

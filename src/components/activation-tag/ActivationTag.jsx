@@ -11,12 +11,9 @@ const ActivationTag = ({ tag, modelData, strength }) => {
   const curPrompt = useSelector((state) => state.prompt.curPrompt);
 
   useEffect(() => {
-    // console.log(tag);
     const tagName = tag.split(":").slice(0, -1).join(":");
     const curStr = parseFloat(tag?.split(":")?.slice(-1));
-    // console.log(tag.split(":"));
-    // console.log(tagName);
-    // console.log(curStr || null);
+
     setCurTagName(tagName);
     if (curStr) {
       setCurTagStrength(curStr);
@@ -38,7 +35,7 @@ const ActivationTag = ({ tag, modelData, strength }) => {
     setCurTagStrength((prevState) => {
       const strenghth =
         e.target.dataset.type === "inc" ? prevState + 0.1 : prevState - 0.1;
-      // console.log(strenghth);
+
       dispatch(
         promptActions.changeActivationTag({
           prevTag: curTagName,

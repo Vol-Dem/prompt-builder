@@ -18,7 +18,6 @@ const TagsTextarea = ({
     const value = e.target.closest(`.${classes.btn}`).dataset.value;
     dispatch(
       promptActions.removeTag({
-        //   type: props.promptType,
         type: promptType,
         value: value,
       })

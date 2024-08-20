@@ -9,7 +9,6 @@ import {
 } from "firebase/firestore";
 import {
   addDelayPromise,
-  clearObjectKeys,
   transformImageData,
   transformModelData,
 } from "./generalUtils";
@@ -30,8 +29,7 @@ export const makeBatchRequest = async (
   try {
     let result = [];
     const queue = data.slice();
-    // const concurrencyLimit = 5;
-    // console.log(queue);
+
     const processQueue = async () => {
       while (queue.length > 0) {
         const curBatch = [];
@@ -42,16 +40,15 @@ export const makeBatchRequest = async (
         await addDelayPromise(delay);
 
         const batchResults = await fetchFunc(curBatch);
-        // console.log(batchResults);
-        // console.log(queue);
+
         if (returnResult) result = [...result, ...batchResults];
       }
     };
-    // console.log("END");
+
     await processQueue();
     return result;
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     throw new Error(err);
   }
 };
@@ -70,7 +67,7 @@ export const getImagesInfo = async (images) => {
             item.meta.resources,
             addResourcesInfo
           );
-          console.log(updatedRes);
+
           if (!updatedRes) {
             throw new Error("failed to update res");
           }
@@ -84,7 +81,7 @@ export const getImagesInfo = async (images) => {
             item.meta.civitaiResources,
             addResourcesInfo
           );
-          console.log(updatedCivRes);
+
           if (!updatedCivRes) {
             throw new Error("failed to update res");
           }
@@ -93,13 +90,13 @@ export const getImagesInfo = async (images) => {
             civitaiResources: updatedCivRes,
           };
         }
-        console.log(updatedImgData);
+
         return await updatedImgData;
       })
     );
     return examplesDataWithRes;
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     throw new Error(err);
   }
 };
@@ -107,16 +104,13 @@ export const getImagesInfo = async (images) => {
 export const getImageInfo = async (image) => {
   try {
     const updatedImgData = { ...image };
-    // const newMeta = image?.meta && (await getModelInfo(image.meta));
-    // // console.log(newMeta);
-    // if (newMeta) updatedImgData.meta = newMeta;
 
     if (image.meta?.resources) {
       const updatedRes = await makeBatchRequest(
         image.meta.resources,
         addResourcesInfo
       );
-      console.log(updatedRes);
+      // console.log(updatedRes);
       if (!updatedRes) {
         throw new Error("failed to update res");
       }
@@ -130,7 +124,7 @@ export const getImageInfo = async (image) => {
         image.meta.civitaiResources,
         addResourcesInfo
       );
-      console.log(updatedCivRes);
+      // console.log(updatedCivRes);
       if (!updatedCivRes) {
         throw new Error("failed to update res");
       }
@@ -144,7 +138,7 @@ export const getImageInfo = async (image) => {
         image.meta.additionalResources,
         addResourcesInfo
       );
-      console.log(updatedCivRes);
+      // console.log(updatedCivRes);
       if (!updatedCivRes) {
         throw new Error("failed to update res");
       }
@@ -178,7 +172,7 @@ export const getImageInfo = async (image) => {
         hashesData,
         addResourcesInfo
       );
-      console.log(updatedCivRes);
+      // console.log(updatedCivRes);
       if (!updatedCivRes) {
         throw new Error("failed to update res");
       }
@@ -190,14 +184,13 @@ export const getImageInfo = async (image) => {
     // console.log(updatedImgData);
     return await updatedImgData;
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     throw new Error(err);
   }
 };
 
 export const getModelInfo = async (resourcesData) => {
   try {
-    console.log(resourcesData);
     let modelHash;
     if (resourcesData?.hasOwnProperty("Model hash")) {
       modelHash = resourcesData["Model hash"];
@@ -224,10 +217,10 @@ export const getModelInfo = async (resourcesData) => {
       versionId: data.id,
     };
 
-    console.log(updatedResources);
     return updatedResources;
   } catch (err) {
-    console.log(err.message);
+    // console.log(err.message);
+    throw new Error(err);
   }
 };
 
@@ -250,7 +243,7 @@ export const addResourcesInfo = async (resourcesData) => {
         return await response.json();
       })
     );
-    console.log(modelsData);
+    // console.log(modelsData);
 
     const updatedResources = resourcesData.map((resource, i) => {
       return {
@@ -262,10 +255,10 @@ export const addResourcesInfo = async (resourcesData) => {
         ...(modelsData[i]?.model?.type && { type: modelsData[i]?.model?.type }),
       };
     });
-    // console.log(updatedResources);
+
     return updatedResources;
   } catch (err) {
-    console.log(err.message);
+    // console.log(err.message);
     throw new Error(err);
   }
 };
@@ -277,22 +270,12 @@ export const getModelData = async (modelId, curModelVersionsData) => {
     );
 
     const responseData = await response.json();
-    console.log(response);
 
     if (!response.ok) {
       throw new Error(`Error status (${response.status})`);
     }
-    console.log(responseData);
-    // responseData?.modelVersions?.forEach((version) => {
-    //   version.images.forEach((image) => {
-    //     if (image?.meta) {
-    //       image.meta.comfy = "";
-    //       image.meta = clearObjectKeys(image.meta);
-    //       if (image.meta?.hashes)
-    //         image.meta.hashes = clearObjectKeys(image.meta.hashes);
-    //     }
-    //   });
-    // });
+    // console.log(responseData);
+
     let newVersions = responseData?.modelVersions;
 
     if (!!curModelVersionsData) {
@@ -304,24 +287,7 @@ export const getModelData = async (modelId, curModelVersionsData) => {
       );
     }
 
-    console.log("NEW", newVersions);
-
     let updatedModelversions = newVersions;
-
-    // if (responseData?.creator?.username && !!newVersions.length) {
-    //   const versionsWithUserName = newVersions?.map((version) => {
-    //     return {
-    //       ...version,
-    //       modelId,
-    //       username: responseData.creator.username,
-    //     };
-    //   });
-    //   updatedModelversions = await makeBatchRequest(
-    //     versionsWithUserName,
-    //     updatedModelVersionsImageData
-    //   );
-    //   console.log(updatedModelversions);
-    // }
 
     // clear empty keys
     updatedModelversions?.forEach((version) => {
@@ -348,21 +314,6 @@ export const getModelData = async (modelId, curModelVersionsData) => {
         : [...updatedModelversions, ...curModelVersionsData],
     };
 
-    console.log(updatedModelData);
-
-    // const modelImages = await fetch(`https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId={versionId}&username=${userName}`)
-
-    // const imagesDataWithRes = await Promise.all(
-    //   responseData.modelVersions.map(async (image) => {
-    //     const updImg = await makeBatchRequest(image.images, getImagesInfo);
-    //     //Temp
-    //     image.images = updImg;
-    //     return updImg;
-    //   })
-    // );
-
-    // console.log(imagesDataWithRes);
-
     return transformModelData(updatedModelData);
   } catch (err) {
     // console.log(err);
@@ -370,72 +321,24 @@ export const getModelData = async (modelId, curModelVersionsData) => {
   }
 };
 
-const updatedModelVersionsImageData = async (versionsData) => {
-  console.log(versionsData);
-  const updatedModelversions = await Promise.all(
-    versionsData?.map(async (version) => {
-      const versionImagesRequest = await fetch(
-        `https://civitai.com/api/v1/images?modelId=${version.modelId}&modelVersionId=${version.id}&username=${version.username}&nsfw=X`
-      );
-      const versionImages = await versionImagesRequest.json();
-      console.log(versionImages);
-      const updatedImages = version?.images?.map((image) => {
-        const fullImgData =
-          versionImages?.items?.find((verImg) => verImg.hash === image.hash) ||
-          [];
-        if (fullImgData?.meta) {
-          fullImgData.meta.comfy = "";
-          fullImgData.meta = clearObjectKeys(fullImgData.meta);
-          if (fullImgData.meta?.hashes)
-            fullImgData.meta.hashes = clearObjectKeys(fullImgData.meta.hashes);
-        }
-        return { ...image, ...fullImgData };
-      });
-      return {
-        ...version,
-        username: null,
-        images: updatedImages.filter(Boolean),
-      };
-    })
-  );
-
-  return updatedModelversions;
-};
-
 export const saveVersionImages = async (versionsData) => {
-  console.log(versionsData);
   const updatedModelversions = await Promise.all(
     versionsData?.map(async (version) => {
       const versionImagesRequest = await fetch(
         `https://civitai.com/api/v1/images?modelId=${version.modelId}&modelVersionId=${version.id}&username=${version.username}&nsfw=X`
       );
       const versionImages = await versionImagesRequest.json();
-      console.log(versionImages);
+      // console.log(versionImages);
       const updatedImages = version?.images?.map((image) => {
         const fullImgData =
           versionImages?.items?.find((verImg) => verImg.hash === image.hash) ||
           image;
         const transformedImgData = transformImageData(fullImgData);
-        console.log(fullImgData);
-        console.log(transformedImgData);
-        // if (fullImgData?.meta) {
-        //   fullImgData.meta.comfy = "";
-        //   fullImgData.meta = clearObjectKeys(fullImgData.meta);
-        //   if (fullImgData.meta?.hashes)
-        //     fullImgData.meta.hashes = clearObjectKeys(fullImgData.meta.hashes);
-        // }
+
         return { ...image, ...transformedImgData };
       });
 
-      console.log(versionsData);
-      console.log(versionImages);
-      console.log(updatedImages);
-
       const uid = auth.currentUser.uid;
-
-      console.log(uid);
-      console.log(versionsData[0].modelId);
-      console.log(versionsData[0].id);
 
       const modelImagesRef = doc(
         firestore,
@@ -471,64 +374,9 @@ export const saveVersionImages = async (versionsData) => {
       };
     })
   );
-  console.log(updatedModelversions);
+
   return updatedModelversions;
 };
-
-// const saveVersionImages = async (
-//   modelId,
-//   versionData,
-//   creatorUsername,
-//   uid,
-//   delayTime = 500
-// ) => {
-//   try {
-//     const imgExampleResponse = await fetch(
-//       `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${versionData.id}&username=${creatorUsername}&nsfw=X`
-//     );
-
-//     const data = await imgExampleResponse.json();
-
-//     const examplesDataWithRes = data.items.sort((a, b) => {
-//       return b.createdAt - a.createdAt;
-//     });
-//     console.log(examplesDataWithRes);
-//     examplesDataWithRes.versionId = versionData.id;
-
-//     const modelImagesRef = doc(
-//       firestore,
-//       "users",
-//       uid,
-//       "models",
-//       modelId + "",
-//       "images",
-//       "default"
-//     );
-
-//     // await addDelayPromise(delayTime);
-
-//     const nsfw = [...new Set(examplesDataWithRes.map((image) => image.nsfw))];
-
-//     await setDoc(
-//       modelImagesRef,
-//       {
-//         items: examplesDataWithRes,
-//         versionId: versionData.id,
-//         default: true,
-//         createdAt: examplesDataWithRes[0].createdAt,
-//         savedAt: new Date().toISOString(),
-//         nsfw: examplesDataWithRes[0].nsfw,
-//         nsfwTypes: nsfw,
-//         nsfwLevel: examplesDataWithRes[0]?.nsfwLevel || "",
-//       },
-//       { merge: true }
-//     );
-//   } catch (err) {
-//     console.log(err.message);
-//     console.log(err);
-//     throw new Error(err);
-//   }
-// };
 
 export const deleteModelDoc = async (uid, model) => {
   if (!!model?.savedImages) {
@@ -544,22 +392,8 @@ export const deleteModelDoc = async (uid, model) => {
       if (postsData?.length) {
         await makeBatchRequest(postsData, deleteImagePostDoc, 50, false);
       }
-      // console.log(postsData);
     });
   }
-
-  // const defaultImagePosts = model.data.modelVersions.map((version) => {
-  //   return {
-  //     postId: version.id,
-  //     uid,
-  //     modelId: model.id,
-  //     type: "defaultImages",
-  //   };
-  // });
-
-  // // console.log(defaultImagePosts);
-
-  // await makeBatchRequest(defaultImagePosts, deleteImagePostDoc, 50, false);
 
   const modelRef = doc(firestore, "users", uid, "models", model.id + "");
   const modelPreviewRef = doc(
@@ -593,22 +427,6 @@ export const deleteImagePostDoc = async (posts) => {
 
   // // Commit the batch
   await batch.commit();
-
-  // await Promise.all(
-  //   posts.map(async (post) => {
-  //     const imgPostRef = doc(
-  //       firestore,
-  //       "users",
-  //       post.uid,
-  //       "models",
-  //       post.modelId + "",
-  //       post.type,
-  //       post.postId + ""
-  //     );
-
-  //     return await deleteDoc(imgPostRef);
-  //   })
-  // );
 };
 
 export const updateImagePostData = async (
@@ -617,12 +435,8 @@ export const updateImagePostData = async (
   replace = false
 ) => {
   try {
-    const { postId, modelId, versionId, nsfwMode, postData } = postInfo;
+    const { postId, modelId, versionId, postData } = postInfo;
     const uid = auth.currentUser.uid;
-
-    console.log(postInfo?.ids);
-    console.log(imagesData);
-
     const modelRef = doc(firestore, "users", uid, "models", modelId + "");
     const modelImagesRef = doc(
       firestore,
@@ -638,18 +452,12 @@ export const updateImagePostData = async (
       postId: +postId,
       amount: imagesData.length,
     };
-    console.log("LENGTH");
-    console.log(imagesData.length);
 
     await addDelayPromise(delayTime);
 
     const batch = writeBatch(firestore);
-
     const nsfw = [...new Set(imagesData.map((image) => image.nsfw))];
-    console.log(imagesData);
-    console.log(modelId);
-    console.log(postId);
-    console.log(versionId);
+
     batch.set(
       modelImagesRef,
       {
@@ -684,8 +492,8 @@ export const updateImagePostData = async (
     // Commit the batch
     await batch.commit();
   } catch (err) {
-    console.log(err.message);
-    console.log(err);
+    console.error(err.message);
+    // console.log(err);
     // throw new Error(err);
   }
 };

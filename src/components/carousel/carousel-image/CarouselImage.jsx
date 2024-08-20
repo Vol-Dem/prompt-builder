@@ -3,7 +3,6 @@ import classes from "./CarouselImage.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteImgPost,
-  // modelActions,
   setPreviewImg,
   setTagSetPreviewImg,
 } from "../../../store/model";
@@ -13,9 +12,7 @@ import Image from "../../ui/image/Image";
 import DeleteRequest from "../../ui/DeleteRequest";
 import ButtonAdd from "../../ui/ButtonAdd";
 import ImageSvg from "../../../assets/ImageSvg";
-import ImageFullView from "../../ui/ImageFullView";
 import DotsSvg from "../../../assets/DotsSvg";
-// import Buttton from "../../ui/Button";
 
 const CarouselImage = ({
   id,
@@ -30,7 +27,6 @@ const CarouselImage = ({
   nsfw,
   imageData,
   onOpen,
-  // onDelete,
   active,
   side,
 }) => {
@@ -41,20 +37,15 @@ const CarouselImage = ({
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState("#");
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  const [fullViewIsOpen, setFullViewIsOpen] = useState(false);
   const [tagSetMenuIsOpen, settagSetMenuIsOpen] = useState(false);
   const [showNsfwPreview, setShowNsfwPreview] = useState(false);
   const [curTagSetVersionId, setCurTagSetVersionId] = useState("tsv-def");
   const dispatch = useDispatch();
-  // const model = {};
-  // const curVersion = {};
-  // const nsfwMode = true;
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
 
   useEffect(() => {
-    // if (imgError) setImgIsLoading(true);
     if (src && !imgIsLoaded && !imgError) {
       setImgSrc(src);
       setImgIsLoading(true);
@@ -81,9 +72,7 @@ const CarouselImage = ({
   };
 
   const openMenuHandler = () => {
-    console.log(curVersion);
     if (!!model?.modelVersionsCustomData[curVersion.id]?.tagSetsData?.length) {
-      console.log("TEST");
       setCurTagSetVersionId(`${curVersion.id}`);
     }
     setMenuIsOpen((prevState) => !prevState);
@@ -96,7 +85,7 @@ const CarouselImage = ({
     } else {
       curtagSet = model.modelVersionsCustomData[curTagSetVersionId].tagSetsData;
     }
-    // const urlField = isNsfw ? "nsfwPreviewImgUrl" : "customPreviewImgUrl";
+
     const imgKey = e.target.dataset.nsfw === "nsfw" ? "nsfwImgUrl" : "imgUrl";
 
     const updatedTagSet = curtagSet.map((tagSet, i) => {
@@ -109,13 +98,6 @@ const CarouselImage = ({
       return tagSet;
     });
 
-    // const tagSetData = {
-    //   id: e.target.dataset.id,
-    //   versionId: curTagSetVersionId,
-    // };
-    // console.log(tagSetData);
-
-    console.log(updatedTagSet);
     dispatch(setTagSetPreviewImg(curTagSetVersionId, updatedTagSet));
   };
 
@@ -157,12 +139,7 @@ const CarouselImage = ({
   const defTagSetsHtml = model?.defaultCustomData?.tagSetsData?.map(
     (tagSet, i) => {
       return (
-        <li
-          key={i}
-          data-id={i}
-          className={classes["tag-sets__item"]}
-          // onClick={setTagSetPreviwImgHandler}
-        >
+        <li key={i} data-id={i} className={classes["tag-sets__item"]}>
           <div className={classes["tag-sets__img"]}>
             <Image src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl} />
           </div>
@@ -197,12 +174,7 @@ const CarouselImage = ({
     model?.modelVersionsCustomData[curTagSetVersionId]?.tagSetsData.map(
       (tagSet, i) => {
         return (
-          <li
-            key={i}
-            data-id={i}
-            className={classes["tag-sets__item"]}
-            // onClick={setTagSetPreviwImgHandler}
-          >
+          <li key={i} data-id={i} className={classes["tag-sets__item"]}>
             <div className={classes["tag-sets__img"]}>
               <Image
                 src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl}
@@ -242,21 +214,14 @@ const CarouselImage = ({
     const postData = model?.savedImages[versionId]?.find(
       (post) => post.postId === imgPostId
     );
-    // console.log(versionId);
-    // console.log(postData);
 
     dispatch(deleteImgPost(versionId, imgPostId, postData));
-    // if (onDelete) {
-    //   onDelete(imgPostId);
-    // }
     setDeleteRequestIsOpen(false);
     setMenuIsOpen(false);
     setImgIsSaved(false);
   };
 
   const showDeleteReqeustHandler = (e) => {
-    console.log(id);
-    // setDeleteRequestIsOpen(true);
     onDelete();
   };
 
@@ -269,16 +234,11 @@ const CarouselImage = ({
   }, []);
 
   const openFullViewHandler = () => {
-    // console.log(activeCarouselData);
     onOpen(true);
-  };
-  const closeFullViewHandler = () => {
-    setFullViewIsOpen(false);
   };
 
   useEffect(() => {
     if (menuIsOpen) {
-      console.log("MENU");
       document.removeEventListener("click", closeMenuHandler);
       document.addEventListener("click", closeMenuHandler);
     } else {
@@ -446,14 +406,6 @@ const CarouselImage = ({
           )}
         </Modal>
       )}
-      {/* {fullViewIsOpen && (
-          <ImageFullView
-            src={src}
-            onClose={closeFullViewHandler}
-            nextSlide={nextSlide}
-            prevSlide={prevSlide}
-          ></ImageFullView>
-        )} */}
       {deleteRequestIsOpen && (
         <DeleteRequest
           message={`Are you sure that you want to delete this post? This action can't

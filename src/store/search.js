@@ -59,16 +59,12 @@ const searchSlice = createSlice({
       state.isLastSubPage = actions.payload;
     },
     resetSearchData(state) {
-      console.log("SEATCH RESET FUNC");
       state.searchResult = { query: "", result: [], nsfw: false };
-      // state.quickSerchResult = { query: "", result: [], nsfw: false };
       state.errorMessage = "";
       state.isLastPage = false;
       state.isLastSubPage = false;
     },
     resetQuickSearchData(state) {
-      console.log("SEATCH RESET FUNC");
-      // state.searchResult = { query: "", result: [], nsfw: false };
       state.quickSerchResult = { query: "", result: [], nsfw: false };
       state.errorMessage = "";
       state.isLastPage = false;
@@ -86,7 +82,6 @@ export const liveSearch = (
 ) => {
   return async (dispatch, getState) => {
     try {
-      console.log("FETCH");
       const isLastPage = getState().search.isLastPage;
       const isLastSubPage = getState().search.isLastSubPage;
       const searchResult = getState().search.searchResult;
@@ -105,9 +100,7 @@ export const liveSearch = (
       }
 
       dispatch(searchActions.setSearchIsLoading(true));
-      // const searchString = searchInput.trim();
       const uid = getState().auth.user.uid;
-
       const collectionRef = collection(firestore, "users", uid, `preview`);
       const nsfwFilter = !nsfw ? [false] : [true, false];
 
@@ -146,26 +139,17 @@ export const liveSearch = (
           ]),
           where("nsfw", "in", nsfwFilter)
         )
-        // and(where("fileNames", "array-contains-any", [searchString]))
       );
 
       const queryByName = query(
         collectionRef,
         queryRule,
-        // where("fileNames", "array-contains-any", [searchString])
-        //   where("nsfw", "==", nsfwMode),
         orderBy("name", "asc"),
         startAfter(lastVisible),
         limit(limitAmount)
       );
 
       const queryRuleSub = or(
-        // and(
-        //   where("nameArr", "array-contains-any", [
-        //     clearFileExtension(searchString).toLowerCase(),
-        //   ]),
-        //   where("nsfw", "in", nsfwFilter)
-        // ),
         and(
           where("fileNames", "array-contains-any", [
             clearFileExtension(searchString).toLowerCase(),
@@ -197,12 +181,6 @@ export const liveSearch = (
       const querySub = query(
         collectionRef,
         queryRuleSub,
-        // where("fileNames", "array-contains-any", [searchString])
-
-        //   where("nsfw", "==", nsfwMode),
-        //   where("main", "==", activeCategory),
-        //   where("fileNames", "array-contains-any", [searchString]),
-        // orderBy("name", "desc")
         orderBy("name", "asc"),
         startAfter(lastVisibleSub),
         limit(limitAmount)
@@ -233,16 +211,12 @@ export const liveSearch = (
         });
       }
 
-      console.log(modelsDataName);
-      console.log(modelsDataSub);
-
       const isLast =
         !querySnapshot?.docs?.length || querySnapshot.docs.length < limitAmount;
       const isLastSub =
         isLast &&
         (!querySnapshotSub?.docs?.length ||
           querySnapshotSub?.docs?.length < limitAmount);
-      // console.log(isLast);
 
       if (!isLast) {
         lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
@@ -253,25 +227,8 @@ export const liveSearch = (
       }
 
       const newSearchResults = [...modelsDataName, ...modelsDataSub];
-
-      // console.log(newSearchResults);
-
-      // let ids = [];
-
-      // if (!loadMore) {
-      //   ids = newSearchResults.map(({ id }) => id);
-      // } else {
-      //   ids = searchResult?.result.map(({ id }) => id);
-      // }
-
-      // const filteredNewResult = newSearchResults.filter(
-      //   ({ id }, index) => !ids.includes(id, index + 1)
-      // );
-
       const newIds = newSearchResults.map(({ id }) => id);
-
       const ids = searchResult?.result.map(({ id }) => id);
-
       const filteredNewResult = newSearchResults.filter(
         ({ id }, index) => !newIds.includes(id, index + 1)
       );
@@ -286,9 +243,6 @@ export const liveSearch = (
         finalResult = filteredNewResult;
       }
 
-      // setSearchResult(filteredResult);
-      // dispatch(searchActions.setSearchResult(filteredResult));
-      // return { query: searchString, nsfw, result: filteredResult };
       if (quickSerch) {
         dispatch(
           searchActions.setQuickSearchResult({
@@ -310,7 +264,7 @@ export const liveSearch = (
       }
       dispatch(searchActions.setSearchIsLoading(false));
     } catch (err) {
-      console.log(err);
+      console.error(err.message);
     }
   };
 };

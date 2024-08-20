@@ -10,7 +10,6 @@ import {
 } from "../../store/auth";
 import ErrorMessage from "../../components/ui/ErrorMessage";
 import { useEffect, useState } from "react";
-// import ButttonSecondary from "../../components/ui/ButtonSecondary";
 import { ReactComponent as UserIcon } from "./../../assets/user.svg";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import {
@@ -144,7 +143,6 @@ const Profile = ({ title }) => {
       value: "",
       isValid: false,
     });
-    // setChangePassIsActive(false);
   };
 
   //Retrive data from form and dispatch changeUserName action with new name
@@ -183,12 +181,9 @@ const Profile = ({ title }) => {
             <Input
               name="name"
               type="text"
-              // input={{ disabled: isLoading }}
               className={`${classes["auth__input"]} ${
                 showErrorMessage && !userName.isValid ? classes.invalid : ""
               }`}
-              // onBlur={showPasswordErrorHandler}
-              // error={showPasswordError && passwordErrorMessage}
               onChange={(e, isValid) => {
                 setUserName({ value: e.target.value, isValid });
               }}
@@ -222,15 +217,11 @@ const Profile = ({ title }) => {
         {changeEmailIsActive && (
           <>
             <Input
-              // label="Password"
               name="email"
               type="email"
-              // input={{ disabled: isLoading }}
               className={`${classes["auth__input"]} ${
                 showErrorMessage && !email.isValid ? classes.invalid : ""
               }`}
-              // onBlur={showPasswordErrorHandler}
-              // error={showPasswordError && passwordErrorMessage}
               onChange={(e, isValid) => {
                 setEmail({ value: e.target.value, isValid });
               }}
@@ -247,20 +238,14 @@ const Profile = ({ title }) => {
               label="Password"
               name="cur-password"
               type="password"
-              // input={{ disabled: isLoading }}
               className={`${classes["auth__input"]} ${
                 showErrorMessage && !password.isValid ? classes.invalid : ""
               }`}
-              // onBlur={showPasswordErrorHandler}
-              // error={showPasswordError && passwordErrorMessage}
               onChange={(e, isValid) => {
                 setOldPassword({ value: e.target.value, isValid });
               }}
               validation={{
                 disableErrorOnBlur: true,
-                // required: true,
-                // password: true,
-                // maxLength: PASSWORD_MAX_LENGTH,
               }}
               showError={showErrorMessage}
               value={oldPassword.value}
@@ -284,7 +269,6 @@ const Profile = ({ title }) => {
 
   const passForm = (
     <form onSubmit={changePasswordHandler} className={classes["profile__form"]}>
-      {/* <div>Password: {!changePassIsActive && <span>********</span>}</div> */}
       <div className={classes["profile__pass-field"]}>
         {changePassIsActive && (
           <>
@@ -292,20 +276,14 @@ const Profile = ({ title }) => {
               label="Current password"
               name="cur-password"
               type="password"
-              // input={{ disabled: isLoading }}
               className={`${classes["auth__input"]} ${
                 showErrorMessage && !password.isValid ? classes.invalid : ""
               }`}
-              // onBlur={showPasswordErrorHandler}
-              // error={showPasswordError && passwordErrorMessage}
               onChange={(e, isValid) => {
                 setOldPassword({ value: e.target.value, isValid });
               }}
               validation={{
                 disableErrorOnBlur: true,
-                // required: true,
-                // password: true,
-                // maxLength: PASSWORD_MAX_LENGTH,
               }}
               showError={showErrorMessage}
               value={oldPassword.value}
@@ -329,7 +307,6 @@ const Profile = ({ title }) => {
               }}
               showError={showErrorMessage}
               value={password.value}
-              // autoFocus={true}
             />
             <ButtonTertiary className={classes["btn"]}>Submit</ButtonTertiary>
           </>
@@ -360,9 +337,6 @@ const Profile = ({ title }) => {
           <h1 className={classes["profile__title"]}>Profile</h1>
           <div className={classes["profile__info"]}>
             <div className={classes["profile__element"]}>{nameForm}</div>
-            {/* <div className={classes["profile__element"]}>
-              <div>Email: {userData.email}</div>
-            </div> */}
             <div className={classes["profile__element"]}>{emailForm}</div>
             <div className={classes["profile__element"]}>{passForm}</div>
 

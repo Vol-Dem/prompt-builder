@@ -1,33 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import classes from "./PreviewCard.module.scss";
-// import Tag from "../tag/Tag";
-// import { ReactComponent as StarImg } from "../../assets/star.svg";
 import { Link } from "react-router-dom";
-// import TagList from "../tag-list/TagList";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Image from "../ui/image/Image";
-import { addModelToPanel } from "../../store/usedModels";
 import ActivationTag from "../activation-tag/ActivationTag";
 import ButtonAdd from "../ui/ButtonAdd";
 
 const PreviewCard = ({ previewData }) => {
-  // const [tagsIsOpen, setTagsIsOpen] = useState(false);
-  // const [tagsHeight, setTagsHeight] = useState(null);
   const [currVersion, setCurrVersion] = useState({});
   const [currSidePanelData, setCurrSidePanelData] = useState({});
-  // const [taglistHeight, setTaglistHeight] = useState(null);
-  // const [helperTagsIsOpen, setHelperTagsIsOpen] = useState(false);
-  // const [helpertagsHeight, setHelperTagsHeight] = useState(null);
-  const dispatch = useDispatch();
-  // const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
-  // const navigate = useNavigate();
-  // const tagsRef = useRef();
-  // const tagsListRef = useRef();
-  // const helperTagsRef = useRef();
   const imgRef = useRef();
-  // const taglistItemHeight = tagsListRef?.current?.offsetHeight;
-  // const taglistItemHeight = 34;
 
   useEffect(() => {
     const curVersionData =
@@ -61,76 +44,13 @@ const PreviewCard = ({ previewData }) => {
     setCurrSidePanelData(sidePanelData);
   }, [previewData, isNsfwMode]);
 
-  // useEffect(() => {
-  //   const taglistHeight = tagsRef?.current?.clientHeight;
-  //   if (taglistHeight) setTaglistHeight(taglistHeight);
-  // }, [tagsRef, panelIsOpen, previewData]);
-
-  // useEffect(() => {
-  //   if (taglistHeight === taglistItemHeight) setTagsHeight(taglistItemHeight);
-  //   if (tagsIsOpen) setTagsHeight(taglistHeight);
-  //   if (helperTagsIsOpen)
-  //     setHelperTagsHeight(helperTagsRef.current.clientHeight);
-  // }, [
-  //   previewData,
-  //   taglistHeight,
-  //   taglistItemHeight,
-  //   panelIsOpen,
-  //   tagsIsOpen,
-  //   helperTagsIsOpen,
-  // ]);
-
-  // const openHelperTagsHandler = () => {
-  //   setHelperTagsIsOpen((prev) => {
-  //     if (prev) {
-  //       setHelperTagsHeight(0);
-  //       if (tagsHeight > 300)
-  //         imgRef.current.scrollIntoView({
-  //           behavior: "smooth",
-  //         });
-  //     } else {
-  //       setHelperTagsHeight(helperTagsRef.current.clientHeight);
-  //     }
-  //     return !prev;
-  //   });
-  // };
-
-  // const openTagsHandler = () => {
-  //   setTagsIsOpen((prev) => {
-  //     if (prev) {
-  //       setTagsHeight(null);
-  //       if (tagsHeight > 300)
-  //         imgRef.current.scrollIntoView({
-  //           behavior: "smooth",
-  //         });
-  //     } else {
-  //       setTagsHeight(taglistHeight);
-  //     }
-  //     return !prev;
-  //   });
-  // };
-
-  // const openLoraHandler = (e) => {
-  //   const modelId = e.target.closest(`.card`).id;
-  //   navigate(`/model/${modelId}`);
-  // };
-
-  const addToSidePanelHandler = () => {
-    dispatch(addModelToPanel(currSidePanelData));
-  };
-
   return (
     <div id={previewData.id} className={`${classes.card} card`}>
-      {/* <span className={classes["btn-add"]} onClick={addToSidePanelHandler}>
-        +
-      </span> */}
       <div className={classes["image-container"]}>
         <ButtonAdd previewData={previewData} className={classes["btn-add"]} />
 
         <Link to={`/model/${previewData.id}`}>
           <Image
-            // onClick={openLoraHandler}
-            // type={previewData.type}
             ref={imgRef}
             src={
               isNsfwMode
@@ -143,12 +63,7 @@ const PreviewCard = ({ previewData }) => {
           />
         </Link>
       </div>
-      <div
-        className={`${classes.content}`}
-        // className={`${classes.content} ${
-        //   helperTagsIsOpen ? classes["content--open"] : ""
-        // } `}
-      >
+      <div className={`${classes.content}`}>
         <div className={classes["title-container"]}>
           <Link to={`/model/${previewData.id}`} className={classes.link}>
             <h4
@@ -176,19 +91,6 @@ const PreviewCard = ({ previewData }) => {
               previewData?.baseModel}
           </ul>
         </div>
-        {/* {(currVersion?.minWeight || previewData?.minWeight) && (
-          <span className={classes["text"]}>
-            Weight: {currVersion?.minWeight || previewData?.minWeight} -{" "}
-            {currVersion?.maxWeight || previewData?.maxWeight}
-          </span>
-        )}
-        {!currVersion?.minWeight &&
-          !previewData?.minWeight &&
-          (currVersion?.weight || previewData?.weight) && (
-            <span className={classes["text"]}>
-              Weight: {currVersion?.weight || previewData?.weight}
-            </span>
-          )} */}
         {currVersion?.versionName && (
           <div className={classes["text"]}>
             Version:{" "}
@@ -209,16 +111,10 @@ const PreviewCard = ({ previewData }) => {
             </span>
           </div>
         )}
-        {/* {previewData?.fileNames && (
-          <div className={classes["main-tag"]}>
-            Files: {previewData?.fileNames?.join(", ")}
-          </div>
-        )} */}
         {(currVersion?.mainTag ||
           previewData?.mainTag ||
           currVersion?.defActTag) && (
           <ul className={classes["main-tag"]}>
-            {/* Activation tag: */}
             <ActivationTag
               tag={
                 currVersion?.mainTag ||
@@ -230,64 +126,6 @@ const PreviewCard = ({ previewData }) => {
             />
           </ul>
         )}
-        {/* <div className={classes["tags-container"]}>
-          {previewData?.tags?.length !== 0 && (
-            <>
-              <span>Tags: </span>
-              <div
-                className={`${classes.tags}`}
-                style={tagsHeight ? { height: `${tagsHeight}px` } : {}}
-              >
-                <div
-                  ref={tagsRef}
-                  className={`${classes["tags__list"]} ${
-                    taglistHeight > taglistItemHeight ? classes.shadow : ""
-                  }`}
-                >
-                  <TagList
-                    ref={tagsListRef}
-                    tags={previewData.tags}
-                    promptType="positive"
-                  />
-                </div>
-              </div>
-              {taglistHeight > taglistItemHeight && (
-                <button
-                  className={`${classes["tags__btn"]} ${
-                    !tagsIsOpen ? classes["tags__btn--closed"] : ""
-                  }`}
-                  onClick={openTagsHandler}
-                >
-                  {tagsIsOpen ? "A" : "V"}
-                </button>
-              )}
-            </>
-          )}
-        </div> */}
-        {/* {previewData?.helperTags?.length !== 0 && (
-          <>
-            <div
-              className={`${classes[["helper-tags"]]} ${
-                helperTagsIsOpen ? classes["helper-tags--open"] : ""
-              }`}
-              style={
-                helpertagsHeight ? { height: `${helpertagsHeight}px` } : {}
-              }
-            >
-              <div ref={helperTagsRef} className={classes["helper-tags__list"]}>
-                <span>Helper tags:</span>
-                <TagList tags={previewData.helperTags} promptType="positive" />
-              </div>
-            </div>
-            <button
-              className={classes.btn}
-              type="button"
-              onClick={openHelperTagsHandler}
-            >
-              {`${helperTagsIsOpen ? "Hide" : "Show"} helper tags`}
-            </button>
-          </>
-        )} */}
       </div>
     </div>
   );

@@ -9,20 +9,9 @@ const Header = (props) => {
   const headerRef = useRef(null);
   const transitionRef = useRef(null);
 
-  // useEffect(() => {
-  //   if (isFixed) {
-  //     // setTimeout(() => {
-  //     // }, 100);
-  //     headerRef.current.style.transition = "all 0.4s";
-  //   } else {
-  //     headerRef.current.style.transition = "all 0s";
-  //   }
-  // }, [isFixed]);
-
   useEffect(() => {
     const scrollHandler = () => {
       const scrollToTop = document.documentElement.scrollTop;
-      // headerRef.current.style.transition = "all 0s";
       setIsFixed(scrollToTop > 255);
 
       if (scrollToTop > 255) {
@@ -36,12 +25,6 @@ const Header = (props) => {
       } else {
         headerRef.current.style.transition = "all 0s";
       }
-
-      // if (scrollToTop > 1000) {
-      //   document.querySelector("main").style.paddingTop = "255.2px";
-      // } else {
-      //   document.querySelector("main").style.paddingTop = "0";
-      // }
     };
     document.addEventListener("scroll", scrollHandler);
 

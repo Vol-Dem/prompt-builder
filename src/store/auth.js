@@ -9,8 +9,7 @@ import {
   updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
-  signInWithRedirect,
-  getRedirectResult,
+  // getRedirectResult,
   sendPasswordResetEmail,
   sendEmailVerification,
   reauthenticateWithCredential,
@@ -21,7 +20,7 @@ import {
 import firebaseApp from "../firebase-config";
 import { uploadPanelStateFromStorage } from "./usedModels";
 import { promptActions, uploadPromptFromStorage } from "./prompt";
-import { getUserCategories, tabActions } from "./tabs";
+import { tabActions } from "./tabs";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { modelActions } from "./model";
 
@@ -82,7 +81,6 @@ const authSlice = createSlice({
       state.reAuthFormIsOpen = actions.payload;
     },
     setShowResetPassword(state, actions) {
-      console.log(actions.payload);
       state.showResetPassword = actions.payload;
     },
     setErrorMessage(state, actions) {
@@ -111,7 +109,6 @@ export const initAuth = () => {
   return (dispatch) => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log(user);
         dispatch(
           authActions.login({
             accessToken: user.accessToken,
@@ -123,7 +120,6 @@ export const initAuth = () => {
         );
         dispatch(uploadPanelStateFromStorage(user.uid));
         dispatch(uploadPromptFromStorage(user.uid));
-        // dispatch(getUserCategories(user.uid));
         dispatch(getUserData(user.uid));
       }
     });
@@ -171,17 +167,14 @@ export const authRequest = (isLogin, email, password) => {
       );
       dispatch(authActions.closeAuthForm());
     } catch (error) {
-      console.log(error.code);
       if (error.code === "auth/invalid-login-credentials") {
         dispatch(authActions.setErrorMessage("Invalid login credentials"));
-        // dispatch(authActions.setShowResetPassword(true));
       } else if (error.code === "auth/too-many-requests") {
         dispatch(
           authActions.setErrorMessage(
             "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later"
           )
         );
-        // dispatch(authActions.setShowResetPassword(true));
       } else {
         dispatch(authActions.setErrorMessage(error.message));
       }
@@ -196,11 +189,11 @@ export const authWithGoogle = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
+        // const credential = GoogleAuthProvider.credentialFromResult(result);
+        // const token = credential.accessToken;
         // The signed-in user info.
         const user = result.user;
-        console.log(user);
+        // console.log(user);
         // IdP data available using getAdditionalUserInfo(result)
         // ...
         dispatch(
@@ -216,65 +209,61 @@ export const authWithGoogle = () => {
       })
       .catch((error) => {
         // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
+        // const errorCode = error.code;
+        // const errorMessage = error.message;
         // The email of the user's account used.
-        const email = error.customData.email;
+        // const email = error.customData.email;
         // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
+        // const credential = GoogleAuthProvider.credentialFromError(error);
         // ...
         dispatch(authActions.setErrorMessage(error.message));
       });
   };
 };
 
-export const authFromRedirect = () => {
-  return async (dispatch, getState) => {
-    const result = await getRedirectResult(auth);
-    const user = result?.user;
-    console.log(result);
-    console.log(user);
-    // getRedirectResult(auth)
-    //   .then((result) => {
-    //     // This gives you a Google Access Token. You can use it to access Google APIs.
-    //     // const credential = GoogleAuthProvider.credentialFromResult(result);
-    //     // const token = credential.accessToken;
+// export const authFromRedirect = () => {
+//   return async (dispatch, getState) => {
+//     // const result = await getRedirectResult(auth);
+//     // const user = result?.user;
+//     // getRedirectResult(auth)
+//     //   .then((result) => {
+//     //     // This gives you a Google Access Token. You can use it to access Google APIs.
+//     //     // const credential = GoogleAuthProvider.credentialFromResult(result);
+//     //     // const token = credential.accessToken;
 
-    //     // The signed-in user info.
-    //     const user = result?.user;
-    //     console.log(user);
-    //     // IdP data available using getAdditionalUserInfo(result)
-    //     // ...
-    //     if (result?.user) {
-    //       dispatch(
-    //         authActions.login({
-    //           accessToken: user.accessToken,
-    //           uid: user.uid,
-    //           email: user.email,
-    //           displayName: user.displayName,
-    //         })
-    //       );
-    //       // dispatch(authActions.closeAuthForm());
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     // Handle Errors here.
-    //     console.log(error);
-    //     console.log(error.message);
-    //     const errorCode = error.code;
-    //     const errorMessage = error.message;
-    //     // The email of the user's account used.
-    //     const email = error?.customData?.email;
-    //     // The AuthCredential type that was used.
-    //     const credential = GoogleAuthProvider.credentialFromError(error);
-    //     console.log(credential);
-    //     // ...
-    //     dispatch(authActions.setErrorMessage(error.message));
-    //   });
-  };
-};
+//     //     // The signed-in user info.
+//     //     const user = result?.user;
+//     //     console.log(user);
+//     //     // IdP data available using getAdditionalUserInfo(result)
+//     //     // ...
+//     //     if (result?.user) {
+//     //       dispatch(
+//     //         authActions.login({
+//     //           accessToken: user.accessToken,
+//     //           uid: user.uid,
+//     //           email: user.email,
+//     //           displayName: user.displayName,
+//     //         })
+//     //       );
+//     //       // dispatch(authActions.closeAuthForm());
+//     //     }
+//     //   })
+//     //   .catch((error) => {
+//     //     // Handle Errors here.
+//     //     console.log(error);
+//     //     console.log(error.message);
+//     //     const errorCode = error.code;
+//     //     const errorMessage = error.message;
+//     //     // The email of the user's account used.
+//     //     const email = error?.customData?.email;
+//     //     // The AuthCredential type that was used.
+//     //     const credential = GoogleAuthProvider.credentialFromError(error);
+//     //     console.log(credential);
+//     //     // ...
+//     //     dispatch(authActions.setErrorMessage(error.message));
+//     //   });
+//   };
+// };
 
 /**
  * Change user email
@@ -308,9 +297,6 @@ export const changeUserEmail = (email) => {
       } else {
         dispatch(authActions.setErrorMessage(error.message));
       }
-      console.log(error);
-      console.log(error.message);
-      console.log(error.code);
     }
   };
 };
@@ -324,9 +310,6 @@ export const promptForCredentials = async (password) => {
 
     return credential;
   } catch (error) {
-    console.log(error);
-    console.log(error.message);
-    console.log(error.code);
     if (error.code === "auth/invalid-login-credentials") {
       throw new Error(
         "The current password you entered did not match our records"
@@ -343,16 +326,14 @@ export const promptForCredentials = async (password) => {
 
 export const reAuthUser = async (type, password) => {
   try {
-    console.log("REAUTH");
     const user = auth.currentUser;
 
     if (type === "pass") {
       const credential = await promptForCredentials(password);
-      console.log(credential);
-      const result = await reauthenticateWithCredential(user, credential);
+      await reauthenticateWithCredential(user, credential);
     }
     if (type === "popup") {
-      const resultPopup = await reauthenticateWithPopup(user, provider);
+      await reauthenticateWithPopup(user, provider);
     }
   } catch (error) {
     if (error.code === "auth/invalid-login-credentials") {
@@ -414,21 +395,18 @@ export const changeUserPassword = (password, oldPassword) => {
       //   dispatch(authActions.setErrorMessage(error.message));
       // }
       dispatch(authActions.setErrorMessage(error.message));
-      console.log(error.message);
     }
   };
 };
 
 export const resetUserPassword = (email) => {
   return async (dispatch) => {
-    console.log(email);
     sendPasswordResetEmail(auth, email)
       .then(() => {
         // Password reset email sent!
         dispatch(authActions.setSuccessMessage("Password reset email sent!"));
       })
       .catch((error) => {
-        console.log(error);
         if (error.code === "auth/invalid-email") {
           dispatch(authActions.setErrorMessage("Invalid email"));
         } else {
@@ -466,7 +444,6 @@ export const changeUserName = (name) => {
         })
       );
       dispatch(authActions.setSuccessMessage("Name changed successfully"));
-      console.log(user);
     } catch (error) {
       dispatch(authActions.setErrorMessage(error.message));
     }
@@ -490,10 +467,9 @@ export const getUserData = (uid) => {
       }
       dispatch(authActions.setUserDataIsLoading(false));
     } catch (err) {
-      console.log(err);
+      console.error(err.message);
       dispatch(authActions.setUserDataLoadError(err.message));
     }
-    // const uid = getState().auth.user.uid;
   };
 };
 

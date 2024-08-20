@@ -7,9 +7,9 @@ export const useIntersection = (ref, once = true) => {
   useMemo(() => {
     observerRef.current = new IntersectionObserver(
       ([entry]) => {
-        if (!once) {
-          console.log("Int", entry.isIntersecting);
-        }
+        // if (!once) {
+        //   console.log("Int", entry.isIntersecting);
+        // }
         setIsIntersecting(entry.isIntersecting);
         if (entry.isIntersecting && once) observerRef.current.disconnect();
       }

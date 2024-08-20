@@ -1,22 +1,17 @@
-// import React, { useState } from "react";
 import classes from "./Prompt.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { promptActions } from "../../store/prompt";
 import TagsTextarea from "../ui/TagsTextarea";
-import Arrow from "../ui/Arrow";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import { useRef, useState } from "react";
 import Presets from "../presets/Presets";
 import ArrowDownSvg from "../../assets/ArrowDownSvg";
 import ArrowUp from "../../assets/ArrowUp";
 import { authActions } from "../../store/auth";
-// import Buttton from "../ui/Button";
 
 const Prompt = () => {
   const [copiedType, setCopiedType] = useState("");
   const [presetsIsOpen, setPresetsIsOpen] = useState(false);
-  // const [promptIsOpen, setPromptIsOpen] = useState(true);
-  // const [promptTextMode, setPromptTextMode] = useState(false);
   const curPrompt = useSelector((state) => state.prompt.curPrompt);
   const curNegPrompt = useSelector((state) => state.prompt.curNegPrompt);
   const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
@@ -24,11 +19,8 @@ const Prompt = () => {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const dispatch = useDispatch();
   const timeoutCopiedRef = useRef(null);
-  const timeoutPositiveRef = useRef(null);
-  const timeoutNegativeRef = useRef(null);
 
   const openPromptHandler = () => {
-    // setPromptIsOpen((prevState) => !prevState);
     dispatch(promptActions.setPromptIsOpen(!promptIsOpen));
   };
 
@@ -176,7 +168,6 @@ const Prompt = () => {
               )}
             </button>
           </div>
-          {/* <label htmlFor="neg-prompt">Neg Prompt</label> */}
           <div className={`${classes.field} ${classes["field--neg"]}`}>
             {!promptTextMode && (
               <TagsTextarea
@@ -246,13 +237,11 @@ const Prompt = () => {
       >
         {promptIsOpen ? (
           <>
-            {/* <Arrow direction="up" /> */}
             <ArrowUp />
             Hide prompt
           </>
         ) : (
           <>
-            {/* <Arrow direction="down" /> */}
             <ArrowDownSvg />
             Show prompt
           </>

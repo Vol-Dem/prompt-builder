@@ -1,32 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {
-  arrayRemove,
-  arrayUnion,
-  doc,
-  getFirestore,
-  writeBatch,
-} from "firebase/firestore";
-import {
-  addDelayPromise,
-  clearObjectKeys,
-  transformImageData,
-} from "../utils/generalUtils";
-import {
-  getImagesInfo,
-  makeBatchRequest,
-  updateImagePostData,
-} from "../utils/fetchUtils";
-import firebaseApp from "../firebase-config";
-
-const firestore = getFirestore(firebaseApp);
-
-const delayTime = 1000;
-
-// const myPromise = new Promise((resolve, reject) => {
-//     setTimeout(() => {
-//       resolve("foo");
-//     }, 300);
-//   });
+import { transformImageData } from "../utils/generalUtils";
+import { updateImagePostData } from "../utils/fetchUtils";
 
 const uploadSlice = createSlice({
   name: "upload",
@@ -74,8 +48,7 @@ const uploadSlice = createSlice({
 export const savePost = (postInfo) => {
   return async (dispatch, getState) => {
     try {
-      const { postId, modelId, versionId, nsfwMode, postData, images } =
-        postInfo;
+      const { postId, modelId, versionId, nsfwMode, images } = postInfo;
 
       dispatch(uploadActions.setIsUploading(true));
       dispatch(uploadActions.setCurPostId(postId));
@@ -94,7 +67,7 @@ export const savePost = (postInfo) => {
         data = { items: images };
       }
 
-      console.log(data);
+      // console.log(data);
       if (!data?.items?.length) {
         throw new Error("0 items");
       }
@@ -111,91 +84,6 @@ export const savePost = (postInfo) => {
         });
 
       await updateImagePostData(postInfo, examplesDataWithRes);
-      // const uid = getState().auth.user.uid;
-      // const imgExampleResponse = await fetch(
-      //   `https://civitai.com/api/v1/images?postId=${postId}&modelId=${modelId}&modelVersionId=${versionId}${
-      //     nsfwMode ? `&nsfw=X` : `&nsfw=None`
-      //   }`
-      // );
-
-      // const data = await imgExampleResponse.json();
-      // console.log(data);
-      // if (!data.items.length) {
-      //   throw new Error("0 items");
-      // }
-
-      // const examplesDataWithRes = data.items
-      //   .filter((image) =>
-      //     !!postInfo?.ids?.length ? postInfo.ids.includes(image?.id) : true
-      //   )
-      //   .sort((a, b) => {
-      //     return b.createdAt - a.createdAt;
-      //   })
-      //   .map((imageData) => {
-      //     return transformImageData(imageData);
-      //   });
-
-      // console.log(postInfo?.ids);
-      // console.log(examplesDataWithRes);
-      // // examplesDataWithRes.versionId = versionId;
-
-      // const modelRef = doc(firestore, "users", uid, "models", modelId + "");
-      // const modelImagesRef = doc(
-      //   firestore,
-      //   "users",
-      //   uid,
-      //   "models",
-      //   modelId + "",
-      //   "images",
-      //   postId + ""
-      // );
-
-      // const newImgData = {
-      //   postId: +postId,
-      //   amount: examplesDataWithRes.length,
-      // };
-      // console.log("LENGTH");
-      // console.log(examplesDataWithRes.length);
-
-      // await addDelayPromise(delayTime);
-
-      // const batch = writeBatch(firestore);
-
-      // const nsfw = [...new Set(examplesDataWithRes.map((image) => image.nsfw))];
-
-      // batch.set(
-      //   modelImagesRef,
-      //   {
-      //     items: examplesDataWithRes,
-      //     versionId,
-      //     default: false,
-      //     createdAt: examplesDataWithRes[0].createdAt,
-      //     savedAt: new Date().toISOString(),
-      //     nsfw: examplesDataWithRes[0].nsfw,
-      //     nsfwTypes: nsfw,
-      //     nsfwLevel: examplesDataWithRes[0]?.nsfwLevel || "",
-      //   },
-      //   { merge: true }
-      // );
-
-      // if (postData) {
-      //   batch.update(modelRef, {
-      //     [`savedImages.${versionId}`]: arrayRemove(postData),
-      //   });
-      // }
-
-      // batch.set(
-      //   modelRef,
-      //   {
-      //     savedImages: {
-      //       [`${versionId}`]: arrayUnion(newImgData),
-      //     },
-      //   },
-      //   { merge: true }
-      // );
-
-      // // Commit the batch
-      // await batch.commit();
 
       dispatch(uploadActions.setCurPostId(null));
       dispatch(uploadActions.removeFromQueue({ postId, versionId }));
@@ -210,8 +98,7 @@ export const savePost = (postInfo) => {
       );
       dispatch(uploadActions.setCurPostId(null));
       dispatch(uploadActions.setIsUploading(false));
-      console.log(err.message);
-      console.log(err);
+      console.error(err.message);
     }
   };
 };

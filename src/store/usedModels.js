@@ -20,11 +20,9 @@ const usedModelsSlice = createSlice({
       state.models = actions.payload;
     },
     addImagesToPanel(state, actions) {
-      // console.log(actions.payload);
       state.images = actions.payload;
     },
     setFormIsOpen(state, actions) {
-      // console.log(actions.payload);
       state.formIsOpen = actions.payload;
     },
     panelState(state, actions) {
@@ -55,7 +53,6 @@ const usedModelsSlice = createSlice({
       })
       .addCase(usedModelsActions.panelState, (state, actions) => {
         const uid = auth.currentUser.uid;
-        // console.log("SAVE");
         saveToStorage(`${uid}-side-state`, `${state.panelIsOpen}`);
       })
       .addMatcher(
@@ -78,18 +75,15 @@ const usedModelsSlice = createSlice({
 
 export const removeModelFromPanel = (id) => {
   return (dispatch, getState) => {
-    // const uid = getState().auth.user.uid;
     const curModels = getState().used.models;
     const newModels = curModels.filter((model) => model.id !== id);
 
-    // saveToStorage(`${uid}-side`, newModels);
     dispatch(usedModelsActions.addModelsToPanel(newModels));
   };
 };
 
 export const addModelToPanel = (data) => {
   return (dispatch, getState) => {
-    // const uid = getState().auth.user.uid;
     const curModels = getState().used.models;
     const modelIsInPanel = getState().used.models.some(
       (model) => model.id === data.id
@@ -97,7 +91,7 @@ export const addModelToPanel = (data) => {
 
     if (!modelIsInPanel) {
       const newModels = [...curModels, data];
-      // saveToStorage(`${uid}-side`, newModels);
+
       dispatch(usedModelsActions.addModelsToPanel(newModels));
     }
   };
@@ -108,12 +102,10 @@ export const addImageToPanel = (data) => {
     const curImages = getState().used.images;
     const imageIsInPanel = getState().used.images.some(
       (image) => image.hash === data.hash
-      // (image) => image.id === data.id
     );
 
     if (!imageIsInPanel && curImages?.length < 3) {
       const newImages = [...curImages, data];
-      // saveToStorage(`${uid}-side`, newModels);
       dispatch(usedModelsActions.addImagesToPanel(newImages));
     }
   };
@@ -121,11 +113,9 @@ export const addImageToPanel = (data) => {
 
 export const removeImageFromPanel = (hash) => {
   return (dispatch, getState) => {
-    // const uid = getState().auth.user.uid;
     const curImages = getState().used.images;
     const newImages = curImages.filter((image) => image.hash !== hash);
 
-    // saveToStorage(`${uid}-side`, newModels);
     dispatch(usedModelsActions.addImagesToPanel(newImages));
   };
 };
@@ -137,16 +127,13 @@ export const uploadPanelStateFromStorage = () => {
     const storageImgData = uploadStorage(`${uid}-side-img`);
     const storagePanelState = uploadStorage(`${uid}-side-state`);
     const storageViewState = uploadStorage(`${uid}-side-view`);
-    console.log(storagePanelState);
 
     if (storageData) dispatch(usedModelsActions.addModelsToPanel(storageData));
     if (storageImgData)
       dispatch(usedModelsActions.addImagesToPanel(storageImgData));
     if (storagePanelState?.hasOwnProperty("panelIsOpen")) {
-      console.log(document.body.offsetWidth);
       dispatch(usedModelsActions.panelState(storagePanelState));
     } else if (document.body.offsetWidth > 600) {
-      console.log(document.offsetWidth);
       dispatch(usedModelsActions.panelState({ panelIsOpen: true }));
     }
     if (storageViewState)

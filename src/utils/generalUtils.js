@@ -50,15 +50,7 @@ export const validateInput = (rules, value) => {
   if (!validTypes) {
     return;
   }
-  // const validTypes = {
-  //   required: "",
-  //   maxLength: "",
-  //   minLength: "",
-  //   email: "",
-  //   password: true,
-  //   number: "",
-  //   string: "",
-  // };
+
   const errorMessages = [];
   Object.keys(validTypes).forEach((type) => {
     if (!!validTypes[type] && type === "email") {
@@ -67,27 +59,24 @@ export const validateInput = (rules, value) => {
       if (!!errorMessage) {
         errorMessages.push(errorMessage);
       }
-      // return { inputValue: value, isValid, errorMessage };
     }
     if (!!validTypes[type] && type === "password") {
       const isValid = value.length >= 6;
       const errorMessage = isValid
         ? ""
         : "Password must be 6 or more characters";
-      console.log(isValid);
+
       if (!!errorMessage) {
         errorMessages.push(errorMessage);
       }
-      // return { inputValue: value, isValid, errorMessage };
     }
     if (!!validTypes[type] && type === "required") {
       const isValid = !!value;
-      console.log(value);
+
       const errorMessage = isValid ? "" : "This field is required";
       if (!!errorMessage) {
         errorMessages.push(errorMessage);
       }
-      // return { inputValue: value, isValid, errorMessage };
     }
     if (!!validTypes[type] && type === "number") {
       const isValid = Number.isFinite(+value);
@@ -95,20 +84,8 @@ export const validateInput = (rules, value) => {
       if (!!errorMessage) {
         errorMessages.push(errorMessage);
       }
-      // return { inputValue: value, isValid, errorMessage };
     }
     if (!!validTypes[type] && type === "maxLength") {
-      // let isValid;
-
-      // if (
-      //   validTypes.hasOwnProperty("number") &&
-      //   validTypes["number"] === true &&
-      //   Number.isFinite(+value)
-      // ) {
-      //   isValid = !(+value > 9999);
-      // } else {
-      //   isValid = !(value.length > validTypes[type]);
-      // }
       const isValid = !(value.length > validTypes[type]);
       const errorMessage = isValid
         ? ""
@@ -116,7 +93,6 @@ export const validateInput = (rules, value) => {
       if (!!errorMessage) {
         errorMessages.push(errorMessage);
       }
-      // return { inputValue: value, isValid, errorMessage };
     }
     if (!!validTypes[type] && type === "minLength") {
       const isValid = value.length >= validTypes[type];
@@ -126,14 +102,11 @@ export const validateInput = (rules, value) => {
       if (!!errorMessage) {
         errorMessages.push(errorMessage);
       }
-      // return { inputValue: value, isValid, errorMessage };
     }
   });
   const isValid = !errorMessages.length;
   const errorMessage = !isValid ? errorMessages[0] : "";
-  // console.log("VAL", value);
-  // console.log("WTF", isValid);
-  // console.log("WTFM", errorMessages);
+
   return { inputValue: value, isValid, errorMessage };
 };
 
@@ -191,21 +164,15 @@ export const transformFilesData = (fileData) => {
 
 export const transformImageData = (imageData) => {
   const newImageData = {
-    // id: imageData?.id || "",
     ...(imageData?.id && { id: imageData?.id }),
-    // postId: imageData?.postId || null,
     ...(imageData?.postId && { postId: imageData?.postId }),
     url: imageData?.url || "",
-    // createdAt: imageData?.createdAt || "",
     ...(imageData?.createdAt && { createdAt: imageData?.createdAt }),
     nsfw: imageData?.nsfw || false,
-    // hash: imageData?.hash || "",
     ...(imageData?.hash && { hash: imageData?.hash }),
-    // browsingLevel: imageData?.browsingLevel || null,
     ...(imageData?.browsingLevel && {
       browsingLevel: imageData?.browsingLevel,
     }),
-    // nsfwLevel: imageData?.nsfwLevel || null,
     ...(imageData?.nsfwLevel && { nsfwLevel: imageData?.nsfwLevel }),
     ...(imageData?.meta && {
       meta: {
@@ -244,70 +211,50 @@ export const transformImageData = (imageData) => {
         ...(imageData?.meta?.cfgScale && {
           cfgScale: imageData?.meta?.cfgScale,
         }),
-        // Hiresupscaler: imageData?.meta?.Hiresupscaler || "",
         ...(imageData?.meta?.Hiresupscaler && {
           Hiresupscaler: imageData?.meta?.Hiresupscaler,
         }),
-        // clipSkip: imageData?.meta?.clipSkip || null,
         ...(imageData?.meta?.clipSkip && {
           clipSkip: imageData?.meta?.clipSkip,
         }),
-        // Modelhash: imageData?.meta?.Modelhash || "",
         ...(imageData?.meta?.Modelhash && {
           Modelhash: imageData?.meta?.Modelhash,
         }),
         ...(imageData?.meta?.hasOwnProperty("Model hash") && {
           "Model hash": imageData?.meta["Model hash"],
         }),
-        // Version: imageData?.meta?.Version || "",
         ...(imageData?.meta?.Version && { Version: imageData?.meta?.Version }),
-        // Model: imageData?.meta?.Model || "",
         ...(imageData?.meta?.Model && { Model: imageData?.meta?.Model }),
-        // Denoisingstrength: imageData?.meta?.Denoisingstrength || null,
         ...(imageData?.meta?.Denoisingstrength && {
           Denoisingstrength: imageData?.meta?.Denoisingstrength,
         }),
-        // prompt: imageData?.meta?.prompt || "",
         ...(imageData?.meta?.prompt && { prompt: imageData?.meta?.prompt }),
-        // hashes: imageData?.meta?.hashes || "",
         ...(imageData?.meta?.hashes && {
           hashes: clearObjectKeys(imageData?.meta?.hashes),
         }),
-        // steps: imageData?.meta?.steps || null,
         ...(imageData?.meta?.steps && { steps: imageData?.meta?.steps }),
-        // seed: imageData?.meta?.seed || null,
         ...(imageData?.meta?.seed && { seed: imageData?.meta?.seed }),
-        // TIhashes: imageData?.meta?.TIhashes || "",
         ...(imageData?.meta?.TIhashes && {
           TIhashes: imageData?.meta?.TIhashes,
         }),
-        // sampler: imageData?.meta?.sampler || "",
         ...(imageData?.meta?.sampler && { sampler: imageData?.meta?.sampler }),
-        // Hiresupscale: imageData?.meta?.Hiresupscale || null,
         ...(imageData?.meta?.Hiresupscale && {
           Hiresupscale: imageData?.meta?.Hiresupscale,
         }),
-        // VAE: imageData?.meta?.VAE || "",
         ...(imageData?.meta?.VAE && { VAE: imageData?.meta?.VAE }),
-        // negativePrompt: imageData?.meta?.negativePrompt || "",
         ...(imageData?.meta?.negativePrompt && {
           negativePrompt: imageData?.meta?.negativePrompt,
         }),
-        // Scheduletype: imageData?.meta?.Scheduletype || "",
         ...(imageData?.meta?.Scheduletype && {
           Scheduletype: imageData?.meta?.Scheduletype,
         }),
-        // Size: imageData?.meta?.Size || "",
         ...(imageData?.meta?.Size && { Size: imageData?.meta?.Size }),
-        // resources: imageData?.meta?.resources || [],
         ...(imageData?.meta?.resources && {
           resources: imageData?.meta?.resources,
         }),
-        // civitaiResources: imageData?.meta?.civitaiResources || [],
         ...(imageData?.meta?.civitaiResources && {
           civitaiResources: imageData?.meta?.civitaiResources,
         }),
-        // additionalResources: imageData?.meta?.additionalResources || [],
         ...(imageData?.meta?.additionalResources && {
           additionalResources: imageData?.meta?.additionalResources,
         }),

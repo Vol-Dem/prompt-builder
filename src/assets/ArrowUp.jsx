@@ -1,5 +1,3 @@
-import React from "react";
-
 const ArrowUp = ({ className, onClick }) => {
   return (
     <svg

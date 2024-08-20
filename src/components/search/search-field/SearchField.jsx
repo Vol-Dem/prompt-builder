@@ -57,15 +57,13 @@ const SearchField = ({ onSubmit, onChange }) => {
   }, [categories]);
 
   const subcategoriesSearch = useCallback(() => {
-    // console.log(categoriesSearchData);
     const subcats = categoriesSearchData.flatMap((category) => {
-      //   console.log(category);
       const subcategory = category?.subcategories?.find((subcategory) => {
         return subcategory.name
           .toLowerCase()
           .includes(`${searchInput.toLowerCase()}`);
       });
-      console.log(subcategory);
+
       if (subcategory) {
         return {
           type: category.type,
@@ -77,7 +75,7 @@ const SearchField = ({ onSubmit, onChange }) => {
       }
       return [];
     });
-    console.log(subcats);
+
     setSubcategoriesSearchResult(subcats);
   }, [categoriesSearchData, searchInput]);
 
@@ -111,10 +109,7 @@ const SearchField = ({ onSubmit, onChange }) => {
           where("name", ">=", searchInput.toLowerCase()),
           where("name", "<=", searchInput.toLowerCase() + "\uf8ff")
         )
-        // and(where("fileNames", "array-contains-any", [searchInput]))
       ),
-      // where("fileNames", "array-contains-any", [searchInput])
-      //   where("nsfw", "==", nsfwMode),
       limit(5)
     );
     const queryByOther = query(
@@ -144,17 +139,7 @@ const SearchField = ({ onSubmit, onChange }) => {
           ]),
           where("nsfw", "==", nsfwMode)
         )
-        // and(
-        //   where("versionIds", "array-contains-any", [parseInt(searchInput)]),
-        //   where("nsfw", "==", nsfwMode)
-        // )
       ),
-      // where("fileNames", "array-contains-any", [searchInput])
-
-      //   where("nsfw", "==", nsfwMode),
-      //   where("main", "==", activeCategory),
-      //   where("fileNames", "array-contains-any", [searchInput]),
-      // orderBy("id", "desc")
       limit(3)
     );
     const querySnapshot = await getDocs(queryByName);
@@ -167,10 +152,8 @@ const SearchField = ({ onSubmit, onChange }) => {
       // doc.data() is never undefined for query doc snapshots
       return doc.data();
     });
-    console.log(modelsDataName);
 
     const allSearchResults = [...modelsDataName, ...modelsDataOther];
-
     const ids = allSearchResults.map(({ id }) => id);
     const filteredResult = allSearchResults.filter(
       ({ id }, index) => !ids.includes(id, index + 1)
@@ -204,12 +187,6 @@ const SearchField = ({ onSubmit, onChange }) => {
       clearTimeout(searchTimeout);
     };
   }, [searchInput, nsfwMode, uid, liveSearch, subcategoriesSearch]);
-
-  //   const submitSearchHandler = (e) => {
-  //     e.preventDefault();
-  //     navigate("search");
-  //     console.log(searchInput);
-  //   };
 
   return (
     <div className={classes["search"]}>

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import classes from "./ImageFullView.module.scss";
 import { createPortal } from "react-dom";
-import Card from "./Card";
 import ArrowLeftSvg from "../../assets/ArrowLeft";
 import ArrowRightSvg from "../../assets/ArrowRight";
 import CrossSvg from "../../assets/CrossSvg";
@@ -11,13 +10,11 @@ const ImageFullView = (props) => {
   const [imgIsLoading, setImgIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log(props?.src);
     setImgIsLoading(true);
   }, [props.src]);
 
   const imgLoadHandler = () => {
     setImgIsLoading(false);
-    // setiImgIsLoaded(true);
   };
 
   return (
@@ -46,7 +43,6 @@ const ImageFullView = (props) => {
             {props.children}
           </div>
           <div className={classes["modal__close"]} onClick={props.onClose}>
-            {/* <span className={classes["modal__cross"]}></span> */}
             <CrossSvg />
           </div>
           {props.prevSlide && (

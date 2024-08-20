@@ -2,7 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   collection,
   doc,
-  endBefore,
   getDoc,
   getDocs,
   getFirestore,
@@ -30,7 +29,6 @@ const tabsSlice = createSlice({
     allCategories: [],
     categoriesData: "",
     errorMessage: "",
-    // modelsData: [],
     modelsData: {
       tab: "",
       category: "",
@@ -41,7 +39,6 @@ const tabsSlice = createSlice({
     subcategories: [],
     baseModels: [],
     sortBy: "createdAt",
-    // sortBy: "name",
     modelType: "",
     isLoading: false,
     isLastPage: false,
@@ -83,14 +80,7 @@ const tabsSlice = createSlice({
     setErrorMessage(state, actions) {
       state.errorMessage = actions.payload;
     },
-    // setModelsData(state, actions) {
-    //   console.log("P", actions.payload);
-    //   state.modelsData = !actions.payload.length
-    //     ? []
-    //     : [...state.modelsData, ...actions.payload];
-    // },
     setModelsData(state, actions) {
-      console.log("P", actions.payload);
       state.modelsData = actions.payload;
     },
     resetModelsData(state, actions) {
@@ -144,9 +134,8 @@ export const getUserCategories = (uid) => {
         dispatch(tabActions.setCategories(categoriesData.categoriesById));
       }
     } catch (err) {
-      console.log(err);
+      console.error(err.message);
     }
-    // const uid = getState().auth.user.uid;
   };
 };
 
@@ -165,26 +154,12 @@ export const getModelsPreview = (loadMore = false, nsfwMode) => {
       const sortBy = getState().tabs.sortBy;
       const baseModel = getState().tabs.modelType;
       const curModelsData = getState().tabs.modelsData.previews;
-      // const nsfwMode = getState().model.nsfwMode;
-      console.log("GET");
-      console.log(uid);
-      console.log(activeTab);
-      console.log(activeCategory);
-      console.log(activeSubcategory);
-      console.log(isLastPage);
-      console.log("LAST", lastVisible);
-      console.log(sortBy);
-      console.log(baseModel);
+
       if (isLastPage) return;
 
       dispatch(tabActions.setIsLoading(true));
-      // console.log(sortBy);
       const direction = sortBy === "name" ? "asc" : "desc";
-      // const direction = "desc";
-      console.log(direction);
       const order = orderBy(sortBy, direction);
-      // const order = orderBy("name", "asc");
-      // const modelTypeBy = orderBy(sortBy, "desc");
       let q;
 
       const nsfwFilter = !nsfwMode ? [false] : [true, false];
@@ -197,11 +172,8 @@ export const getModelsPreview = (loadMore = false, nsfwMode) => {
           where("baseModel", "==", baseModel),
           where("nsfw", "in", nsfwFilter),
           where("sub", "array-contains", activeSubcategory),
-          // where("baseModels", "array-contains-any", ["SD 1.5"]),
-          // orderBy("id", "desc"),
           order,
           startAfter(lastVisible),
-          // endBefore(lastVisible),
           limit(amountPerPage)
         );
       } else {
@@ -211,11 +183,8 @@ export const getModelsPreview = (loadMore = false, nsfwMode) => {
           where("main", "==", activeCategory),
           where("nsfw", "in", nsfwFilter),
           where("sub", "array-contains", activeSubcategory),
-          // where("baseModels", "array-contains-any", ["SD 1.5"]),
-          // orderBy("id", "desc"),
           order,
           startAfter(lastVisible),
-          // endBefore(lastVisible),
           limit(amountPerPage)
         );
       }
@@ -226,12 +195,10 @@ export const getModelsPreview = (loadMore = false, nsfwMode) => {
         // doc.data() is never undefined for query doc snapshots
         return doc.data();
       });
-      console.log(modelsData);
+      // console.log(modelsData);
 
-      // const isLast = querySnapshot.docs.length <= amountPerPage;
       const isLast =
         !querySnapshot.docs.length || querySnapshot.docs.length < amountPerPage;
-      console.log(isLast);
 
       if (!isLast) {
         lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
@@ -249,7 +216,6 @@ export const getModelsPreview = (loadMore = false, nsfwMode) => {
       dispatch(tabActions.setIsLastPage(isLast));
       dispatch(tabActions.setIsLoading(false));
     } catch (err) {
-      console.log(err);
       dispatch(tabActions.setIsLoading(false));
       dispatch(tabActions.setErrorMessage(err.message));
     }

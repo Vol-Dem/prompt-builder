@@ -1,16 +1,5 @@
 //COLORS
-// $color-background-primary: rgba(255, 255, 255, 0.75);
-// $color-background-primary: #282c34;
-// $color-background-primary: #1f2530;
-// $color-background-secondary: #302838;
-// $color-background-tertiary: #201f2f;
-$color-background-primary: #282c34;
-$color-background-primary: #272939;
 $color-background-primary: #262c39;
-// $color-background-primary: #272939;
-// $color-background-secondary: #28212f;
-// $color-background-secondary: #302838;
-// $color-background-secondary: #21242b;
 $color-background-secondary: #1a1e27;
 $color-background-tertiary: #201f2f;
 $color-background-light: #fff;
@@ -27,8 +16,6 @@ $color-text-dark: #2a1976;
 $color-text-violet: #7d6b9a;
 $color-text-red: #e54d4d;
 $color-text-green: #49ab6b;
-// $color-text-white: #e1e1e1;
-// $color-text-white: #efefef;
 $color-text-white: #e8e8e8;
 $color-text-gray: #acacac;
 $color-text-gray-dark: #808080;
@@ -48,8 +35,6 @@ $color-violet-dark: #8a2be2;
 $color-violet-light: #e9d8f6;
 $color-violet-grey: #696976;
 $color-green: #2abead;
-// $color-input-bg: lighten($color-background-tertiary, 3%);
-// $color-input-bg: lighten($color-background-secondary, 5%);
 $color-input-bg: #212b3a;
 
 //FONTS
@@ -131,7 +116,6 @@ $clip-path-arrow-down: polygon(
 @mixin linkA {
   display: inline-block;
   color: #7278f0;
-  // font-size: 1.6rem;
   text-decoration: none;
   cursor: pointer;
   transition: all 0.3s;

@@ -16,7 +16,6 @@ const LinkA = (props) => {
       target={props.external ? "_blank" : ""}
       rel="noreferrer"
       href={props.href}
-      // onClick={props.onClick}
       onClick={(e) => {
         if (props?.onClick) {
           props.onClick(e);

@@ -1,7 +1,6 @@
 import Carousel3d from "../carousel3d/Carousel3d";
 import Buttton from "../ui/Button";
 import classes from "./Landing.module.scss";
-import carouselImage1 from "../../assets/about/1-start-1.webp";
 import { useDispatch } from "react-redux";
 import { authActions } from "../../store/auth";
 import LinkA from "../ui/LinkA";
@@ -103,8 +102,6 @@ const Landing = () => {
         <div className={classes["section__content"]}>
           <div>
             <h2 className={classes["section__title"]}>Edit and organize</h2>
-            {/* <h2 className={classes["section__title"]}>Resource management</h2> */}
-
             <p className={classes["section__content__text"]}>
               Organize information about the model: edit existing model
               information and add additional, set the weight and image size, and

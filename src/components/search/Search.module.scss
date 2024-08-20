@@ -162,6 +162,7 @@
     // overflow: hidden;
     margin-bottom: 0.6rem;
     margin-right: 1rem;
+    transition: all 0.3s ease;
 
     &:hover {
       background-color: lighten(var.$color-background-tertiary, 5%);

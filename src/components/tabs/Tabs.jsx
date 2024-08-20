@@ -7,12 +7,7 @@ import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import LinkA from "../ui/LinkA";
 import Guide from "../ui/guide/Guide";
-import Modal from "../ui/Modal";
-import ArrowRightSvg from "../../assets/ArrowRight";
 import { useState } from "react";
-// import LoraForm from "../forms/lora/LoraForm";
-// import GeneralForm from "../forms/general/GeneralForm";
-// import EmbeddingsForm from "../forms/embeddings/EmbeddingsForm";
 
 const Tabs = () => {
   const [guideIsOpen, setGuideIsOpen] = useState(true);
@@ -30,9 +25,7 @@ const Tabs = () => {
   const dispatch = useDispatch();
 
   const categorySwitchHandler = (e) => {
-    // dispatch(tabActions.reset());
     dispatch(tabActions.setCurrentTab(e.target.id));
-    // dispatch(tabActions.setCurrentSubcategory(""));
   };
 
   const modelTypesHtml = Object.keys(categories)

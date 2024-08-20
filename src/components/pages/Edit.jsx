@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom";
 import ModelSettings from "../model/model-settings/ModelSettings";
-import classes from "./Edit.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { modelActions } from "../../store/model";
 import { useEffect, useState } from "react";
@@ -18,7 +17,6 @@ const Edit = ({ title }) => {
   const model = useSelector((state) => state.model.model);
   const isAuth = useSelector((state) => state.auth.user.uid);
   const uid = useSelector((state) => state.auth.user.uid);
-  const categories = useSelector((state) => state.tabs.categoriesData);
   const dispatch = useDispatch();
 
   const { modelId } = useParams();
@@ -31,7 +29,6 @@ const Edit = ({ title }) => {
   }, [title, model?.name]);
 
   useEffect(() => {
-    // if (!isAuth || model?.id === +modelId) return;
     if (!isAuth) return;
     let unsub;
     try {
@@ -41,10 +38,9 @@ const Edit = ({ title }) => {
         doc(firestore, "users", uid, "models", modelId),
         (doc) => {
           setErrorMessage("");
-          const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
-          console.log(source);
           const data = doc.data();
-          console.log(data);
+
+          // console.log(data);
           if (!data) {
             setErrorMessage("Failed to load model");
             setIsLoading(false);
@@ -62,7 +58,6 @@ const Edit = ({ title }) => {
       setIsLoading(false);
     }
     return () => {
-      // console.log("MODEL RESET");
       setErrorMessage("");
       dispatch(modelActions.setCurVersion({}));
       dispatch(modelActions.setModelData({}));
@@ -77,14 +72,13 @@ const Edit = ({ title }) => {
     if (!modelId) return;
 
     const getDefModelData = async () => {
-      console.log(model.id);
       const modelDefDataRef = doc(firestore, "models", `${modelId}`);
 
       const docSnap = await getDoc(modelDefDataRef);
 
       if (docSnap.exists()) {
         const modelDefData = docSnap.data();
-        console.log(modelDefData);
+        // console.log(modelDefData);
 
         dispatch(
           modelActions.setModelData({

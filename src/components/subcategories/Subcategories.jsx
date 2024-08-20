@@ -1,7 +1,7 @@
 import classes from "./Subcategories.module.scss";
 import ModelsList from "../lora/ModelsList";
 import { useDispatch, useSelector } from "react-redux";
-import { getModelsPreview, tabActions } from "../../store/tabs";
+import { tabActions } from "../../store/tabs";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import { useState } from "react";
 import Modal from "../ui/Modal";
@@ -14,17 +14,12 @@ const Subcategories = () => {
   const activeCategory = useSelector((state) => state.tabs.currCategory);
   const activeTab = useSelector((state) => state.tabs.currTab);
   const categories = useSelector((state) => state.tabs.categoriesData);
-  // const subcats = useSelector((state) => state.tabs.subcategories);
-  // const subcategories = categories[activeCategory];
-  // const uid = useSelector((state) => state.auth.user.uid);
 
   const dispatch = useDispatch();
 
   const categorySwitchHandler = (e) => {
     dispatch(tabActions.setCurrentSubcategory(e.target.id));
     dispatch(tabActions.resetModelsData());
-    // dispatch(getModelsPreview());
-    // console.log("SCSC");
   };
 
   const subcategoriesData = categories[activeTab].find(

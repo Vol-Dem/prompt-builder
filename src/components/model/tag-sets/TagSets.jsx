@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import classes from "./TagSets.module.scss";
-// import Tag from "../../tag/Tag";
 import TagList from "../../tag-list/TagList";
 import { useSelector } from "react-redux";
 import Image from "../../ui/image/Image";
@@ -32,8 +31,7 @@ const TagSets = ({ customData, defaultData }) => {
 
   useEffect(() => {
     const tagSetsData = customData?.length ? customData : defaultData;
-    console.log(tagSetsData);
-    console.log(customData, defaultData);
+
     if (!tagSetsData) return;
     setAllTagSets(tagSetsData);
     setTagSets(tagSetsData);
@@ -41,9 +39,6 @@ const TagSets = ({ customData, defaultData }) => {
     const listHeight = tagSetListRef?.current?.offsetHeight;
     setTagsetItemHeight(itemHeight);
     setTagsetListHeight(listHeight);
-    // setTagSets(
-    //   tagSetsData.slice(0, tagSetsIsOpen ? tagSetsData.length : defVisibleTags)
-    // );
 
     return () => {
       setAllTagSets([]);
@@ -71,7 +66,6 @@ const TagSets = ({ customData, defaultData }) => {
       ref={i === 0 ? tagSetItemRef : null}
       className={classes["tag-sets"]}
     >
-      {/* <span className={classes["tag-sets__name"]}>{tagSet.name}:</span> */}
       <div className={classes["tag-sets__img"]}>
         <Image
           src={

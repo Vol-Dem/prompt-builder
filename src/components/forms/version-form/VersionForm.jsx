@@ -9,7 +9,7 @@ import Input from "../../ui/Input";
 import ButttonSecondary from "../../ui/ButtonSecondary";
 import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
-import { clearFileExtension, validateInput } from "../../../utils/generalUtils";
+import { clearFileExtension } from "../../../utils/generalUtils";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
 import {
@@ -23,7 +23,7 @@ import {
   TRIGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
 import InputNumber from "../../ui/InputNumber";
-import { useOnlineStatus } from "../../../hooks/use-online-status";
+// import { useOnlineStatus } from "../../../hooks/use-online-status";
 import Spinner from "../../ui/Spinner";
 
 const firestore = getFirestore(firebaseApp);
@@ -130,9 +130,6 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
       },
     ],
   ]);
-  // console.log(versionData);
-  // console.log(defaultData);
-  // console.log(modelType);
   const uid = useSelector((state) => state.auth.user.uid);
   const model = useSelector((state) => state.model.model);
 
@@ -191,7 +188,6 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
     if (!versionData) return;
     if (!versionData.tagSetsData?.length) return;
     const tagSets = versionData.tagSetsData.map((tagSet, i) => {
-      // console.log(tagSet);
       return [
         {
           type: "text",
@@ -225,31 +221,6 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         (input) => input[0].isValid === false || input[1].isValid === false
       );
 
-      // console.log("TAG", tagsetsIsNotValid);
-
-      // console.log(
-      //   !titleInput.isValid,
-      //   !descriptionInput.isValid,
-      //   !mainTagInput.isValid,
-      //   !trigerInput.isValid,
-      //   !helperTagsInput.isValid,
-      //   !negativeTagsInput.isValid,
-      //   tagsetsIsNotValid,
-      //   !fileNameInput.isValid,
-      //   !weightInput.isValid,
-      //   !minWeightInput.isValid,
-      //   !maxWeightInput.isValid,
-      //   !sizetInput.isValid,
-      //   !vaeInput.isValid,
-      //   !denoisingStrengthtInput.isValid,
-      //   !hiresUpscaleInput.isValid,
-      //   !hiresUpscaleStepsInput.isValid,
-      //   !hiresUpscalerInput.isValid,
-      //   !cfgScaleInput.isValid,
-      //   !samplerInput.isValid,
-      //   !stepsInput.isValid
-      // );
-
       const baseInputsIsNotValid =
         !titleInput.isValid ||
         !descriptionInput.isValid ||
@@ -274,20 +245,15 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         !samplerInput.isValid ||
         !stepsInput.isValid;
 
-      // console.log("ALL INP", baseInputsIsNotValid, aditionalInputsIsNotValid);
-
       if (
         baseInputsIsNotValid ||
         (modelType === "checkpoint" && aditionalInputsIsNotValid)
       ) {
-        // console.log("NO");
         throw new Error(DEF_INPUT_ERROR_MESSAGE);
       }
       if (!navigator?.onLine) {
         throw new Error(OFFLINE_ERROR_MESSAGE);
       }
-      // console.log("YES");
-      // return;
 
       setIsSaving(true);
 
@@ -378,8 +344,6 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         }),
       };
 
-      // console.log(updatedVersionData);
-
       const allUpdatedVersions = {
         ...model.modelVersionsCustomData,
         [versionData.versionId]: updatedVersionData,
@@ -410,9 +374,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         modelId + ""
       );
 
-      // console.log(updatedVersionData);
       const versionPath = `modelVersionsCustomData.${versionData.versionId}`;
-      // console.log(versionPath);
       await updateDoc(
         modelsRef,
         {
@@ -432,7 +394,6 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
       seteSuccessMessage(SAVED_SUCCESS_MESSAGE);
       setIsSaving(false);
     } catch (err) {
-      console.log(err.message);
       setErrorMessage(err.message);
       setIsSaving(false);
     }
@@ -458,7 +419,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         isValid: true,
       },
     ]);
-    // console.log(newFields);
+
     setTagSetsInputs(newFields);
   };
 
@@ -472,25 +433,14 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         return imageId[1].id + "" === e.target.id;
       });
 
-      // const { isValid, errorMessage } = validateInput(
-      //   {
-      //     maxLength:
-      //       curSetNameIndex !== -1 ? NAME_MAX_LENGTH : TRIGER_WORDS_MAX_LENGTH,
-      //   },
-      //   e.target.value
-      // );
-
       if (curSetNameIndex !== -1) {
         newState[curSetNameIndex][0].value = e.target.value;
         newState[curSetNameIndex][0].isValid = isValid;
-        // newState[curSetNameIndex][0].errorMessage = errorMessage;
       }
       if (curSetTagsIndex !== -1) {
         newState[curSetTagsIndex][1].value = e.target.value;
         newState[curSetTagsIndex][1].isValid = isValid;
-        // newState[curSetTagsIndex][1].errorMessage = errorMessage;
       }
-      // newState[curIndex] = [];
 
       return newState;
     });
@@ -507,7 +457,6 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
           onChange={tagSetsHandler}
           value={tagSet[0].value}
           isValid={tagSet[0].isValid}
-          // error={tagSet[0].errorMessage}
           showError={showErrorMessage}
           validation={{
             maxLength: NAME_MAX_LENGTH,
@@ -521,7 +470,6 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
           onChange={tagSetsHandler}
           value={tagSet[1].value}
           isValid={tagSet[1].isValid}
-          // error={tagSet[1].errorMessage}
           showError={showErrorMessage}
           validation={{
             maxLength: TRIGER_WORDS_MAX_LENGTH,

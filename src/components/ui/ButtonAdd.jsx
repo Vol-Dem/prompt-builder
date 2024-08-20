@@ -6,28 +6,18 @@ import {
   removeImageFromPanel,
   removeModelFromPanel,
 } from "../../store/usedModels";
-import { useState } from "react";
 
 const ButtonAdd = ({ previewData, type, className, versionId }) => {
-  // const [isInPanel, setIsInPanel] = useState()
   const modelsInPanel = useSelector((state) => state.used.models);
   const imagesInPanel = useSelector((state) => state.used.images);
   const isInPanel =
     type === "image"
       ? imagesInPanel?.find((image) => image?.hash === previewData?.hash)
-      : // ? imagesInPanel?.find((image) => image?.id === previewData?.id)
-        modelsInPanel?.find((model) => model?.id === previewData?.id);
+      : modelsInPanel?.find((model) => model?.id === previewData?.id);
 
-  // const isInPanel = modelsInPanel?.find(
-  //   (model) => model?.id === previewData?.id
-  // );
-  const imageIsInPanel = imagesInPanel?.find(
-    (image) => image?.id === previewData?.id
-  );
   const dispatch = useDispatch();
 
   const addToSidePanelHandler = (e) => {
-    console.log(previewData);
     if (!isInPanel && type === "image" && imagesInPanel?.length < 3) {
       dispatch(addImageToPanel(previewData));
       return;
@@ -35,12 +25,7 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
       dispatch(removeImageFromPanel(previewData.hash));
       return;
     }
-    // const modelId = e.target.closest(`.${classes["resource__add"]}`)?.dataset
-    //   ?.id;
-    // console.log(modelId);
-    // const previewData = imageResources.find(
-    //   (resource) => resource?.preview?.id === +modelId
-    // )?.preview;
+
     if (!isInPanel && type !== "image") {
       let curVersionData =
         previewData?.modelVersionsCustomData &&
@@ -89,11 +74,6 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
       } ${className || ""}`}
       onClick={addToSidePanelHandler}
     >
-      {/* <span
-        className={`${classes["plus"]} ${
-          isInPanel ? classes["plus--active"] : ""
-        }`}
-      ></span> */}
       {!isInPanel && (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -126,18 +106,6 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
           />
         </svg>
       )}
-      {/* {isInPanel && (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
-        </svg>
-      )} */}
     </div>
   );
 };

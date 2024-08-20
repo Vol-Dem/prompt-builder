@@ -1,19 +1,11 @@
-import { useDispatch, useSelector } from "react-redux";
-// import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
+import { useSelector } from "react-redux";
 import UpdateModelForm from "../../forms/update-model-form/UpdateModelForm";
 import VersionForm from "../../forms/version-form/VersionForm";
 import classes from "./ModelSettings.module.scss";
 import { useEffect, useState } from "react";
 import Buttton from "../../ui/Button";
 import VersionStatusForm from "../../forms/version-status-form/VersionStatusForm";
-import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
-// import { updateModel } from "../../../store/model";
-import {
-  deleteModelDoc,
-  getModelData,
-  makeBatchRequest,
-  saveVersionImages,
-} from "../../../utils/fetchUtils";
+import { deleteModelDoc } from "../../../utils/fetchUtils";
 import {
   arrayUnion,
   doc,
@@ -22,8 +14,6 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
-import { deleteModel } from "../../../store/model";
-// import Modal from "../../ui/Modal";
 import { useNavigate } from "react-router-dom";
 import DeleteRequest from "../../ui/DeleteRequest";
 import { clearFileExtension } from "../../../utils/generalUtils";
@@ -48,7 +38,6 @@ const ModelSettings = () => {
   const model = useSelector((state) => state.model.model);
   const uid = useSelector((state) => state.auth.user.uid);
   const curBaseModels = useSelector((state) => state.tabs.baseModels);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -76,7 +65,6 @@ const ModelSettings = () => {
       setIsLoading(true);
       seteErrorMessage("");
       seteSuccessMessage("");
-      console.log("UPD");
 
       if (!navigator.onLine) {
         throw new Error(OFFLINE_ERROR_MESSAGE);
@@ -91,8 +79,6 @@ const ModelSettings = () => {
         throw new Error("Failed to update");
       }
 
-      console.log("MESSSSS", updateModelResData.message);
-
       let newModelData;
 
       const modelDefDataRef = doc(firestore, "models", `${model.id}`);
@@ -103,52 +89,18 @@ const ModelSettings = () => {
         newModelData = docSnap.data();
       }
 
-      // if (!updateModelResData?.updated) {
-      //   const modelDefDataRef = doc(firestore, "models", `${model.id}`);
-
-      //   const docSnap = await getDoc(modelDefDataRef);
-
-      //   if (docSnap.exists()) {
-      //     newModelData = docSnap.data();
-      //   }
-      // } else {
-      //   newModelData = await getModelData(model.id, model.data.modelVersions);
-      // }
-
       const newVersions = newModelData?.modelVersions?.filter(
         (version) =>
           !Object.values(model?.modelVersionsCustomData)?.some(
             (oldVersions) => version?.id === oldVersions?.versionId
           )
       );
-      console.log("NEW VER", newVersions);
 
-      // newVersions.forEach((version) => {
-      //   version.images.forEach((image) => {
-      //     const metaArr = Object.entries(image?.meta).filter(
-      //       (entry) => !!entry[0]
-      //     );
-      //     image.meta = Object.fromEntries(metaArr);
-      //   });
-      // });
-      // console.log(newVersions);
-      // setIsLoading(false);
-      // return;
       if (!newVersions.length) {
-        console.log("NO UPDATEDS");
         seteSuccessMessage("No new versions found");
         setIsLoading(false);
         return;
       }
-
-      console.log("ONE", newVersions[newVersions.length - 1]);
-
-      newModelData.modelVersions = [
-        ...newVersions,
-        // newVersions[newVersions.length - 1],
-        ...(model?.data?.modelVersions || []),
-      ].filter(Boolean);
-      console.log(newModelData);
 
       const newVersionsCustomData = {};
 
@@ -175,14 +127,18 @@ const ModelSettings = () => {
           downloadStatus: false,
         };
       });
-      const modelVersionsCustomData = {
-        ...newVersionsCustomData,
-        ...model?.modelVersionsCustomData,
-      };
-      console.log(modelVersionsCustomData);
+      const modelVersionsCustomData = { ...newVersionsCustomData };
+
+      Object.values(model?.modelVersionsCustomData).forEach((customVersion) => {
+        modelVersionsCustomData[customVersion.versionId] = {
+          ...customVersion,
+          index: newModelData?.modelVersions?.find(
+            (version) => version.id === customVersion.versionId
+          )?.index,
+        };
+      });
 
       const fileNames = newModelData.modelVersions?.flatMap((version) => {
-        // version.files.map((file) => file.name)
         if (version.hasOwnProperty("files") && version?.files) {
           return clearFileExtension(
             version.files.find((file) => file?.primary).name
@@ -193,7 +149,6 @@ const ModelSettings = () => {
 
       const hashes = newModelData.modelVersions
         ?.flatMap((version) => {
-          // version.files.map((file) => file.name)
           if (version.hasOwnProperty("files") && version?.files) {
             const primaryFileHashes = version?.files.find(
               (file) => file?.primary
@@ -253,7 +208,6 @@ const ModelSettings = () => {
       await updateDoc(
         modelsRef,
         {
-          // data: newModelData,
           modelVersionsCustomData: modelVersionsCustomData,
         },
         { merge: true }
@@ -271,26 +225,11 @@ const ModelSettings = () => {
         { merge: true }
       );
 
-      // if (newModelData?.creator?.username && !!newVersions.length) {
-      //   const versionsWithUserName = newModelData?.modelVersions?.map(
-      //     (version) => {
-      //       return {
-      //         ...version,
-      //         modelId: newModelData.id,
-      //         username: newModelData.creator.username,
-      //       };
-      //     }
-      //   );
-
-      //   await makeBatchRequest(versionsWithUserName, saveVersionImages);
-      // }
-
       seteSuccessMessage("Updated");
       setIsLoading(false);
     } catch (err) {
       seteErrorMessage(err.message);
       setIsLoading(false);
-      console.log(err);
     }
   };
 
@@ -304,24 +243,18 @@ const ModelSettings = () => {
 
   const deleteModelHandler = async () => {
     try {
-      console.log("DEL");
       setIsDeleting(true);
-      // dispatch(deleteModel());
       await deleteModelDoc(uid, model);
       setIsDeleting(false);
       navigate("/");
     } catch (err) {
-      console.log(err);
+      console.error(err.message);
     }
   };
 
   const modelVersionsHtml = Object.values(model?.modelVersionsCustomData)
     ?.sort((a, b) => a?.index - b?.index)
     .flatMap((version, i) => {
-      const versionIsSaved =
-        model.modelVersionsCustomData[version.id]?.downloadStatus;
-      // const modelName = model.modelVersionsCustomData[version.id]?.name;
-
       if (!version.downloadStatus) {
         return [];
       }
@@ -428,7 +361,6 @@ const ModelSettings = () => {
             />
           </div>
         )}
-        {/* <SaveImageForm modelData={model} /> */}
       </div>
       {deleteRequestIsOpen && (
         <DeleteRequest
@@ -438,23 +370,6 @@ const ModelSettings = () => {
           onClose={closeDeleteReqeustHandler}
           isDeleting={isDeleting}
         />
-        // <Modal onClose={closeDeleteReqeustHandler}>
-        //   <div className={classes["del-request"]}>
-        //     <div className={classes["del-request__message"]}>
-        //       Are you sure that you want to delete this resource? This action
-        //       can't be reverted
-        //     </div>
-        //     <div className={classes["del-request__btn-container"]}>
-        //       <Buttton
-        //         className={classes["btn-del"]}
-        //         onClick={deleteModelHandler}
-        //       >
-        //         Delete
-        //       </Buttton>
-        //       <Buttton onClick={closeDeleteReqeustHandler}>Cancel</Buttton>
-        //     </div>
-        //   </div>
-        // </Modal>
       )}
     </div>
   );

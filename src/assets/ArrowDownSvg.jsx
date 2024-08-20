@@ -1,5 +1,3 @@
-import React from "react";
-
 const ArrowDownSvg = ({ className, onClick }) => {
   return (
     <svg

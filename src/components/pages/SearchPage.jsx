@@ -5,12 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { liveSearch, searchActions } from "../../store/search";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
-import useIntersection from "../../hooks/use-intersection";
 import usePageEnd from "../../hooks/use-page-end";
 import { OFFLINE_ERROR_MESSAGE } from "../../variables/constants";
 import { useOnlineStatus } from "../../hooks/use-online-status";
 
-// let initial = true;
 const amountPerPage = 10;
 
 const SearchPage = ({ title }) => {
@@ -23,7 +21,6 @@ const SearchPage = ({ title }) => {
   const isLastSubPage = useSelector((state) => state.search.isLastSubPage);
   const errorMessage = useSelector((state) => state.search.errorMessage);
   const endPage = useRef(null);
-  // const isIntersecting = useIntersection(endPage, false);
   const isPageEnd = usePageEnd(600);
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
@@ -49,8 +46,6 @@ const SearchPage = ({ title }) => {
       !!searchResult?.result?.length &&
       isOnline
     ) {
-      console.log("INERS");
-      console.log(isIntersecting);
       setIsIntersecting(false);
       clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(() => {
@@ -72,21 +67,12 @@ const SearchPage = ({ title }) => {
   useEffect(() => {
     return () => {
       if (initial) {
-        // initial = false;
         setInitial(false);
       } else if (!initial) {
         dispatch(searchActions.setSearchQuery(""));
-        // dispatch(searchActions.setSearchResult([]));
       }
     };
   }, [dispatch, initial, isOnline]);
-
-  // useEffect(() => {
-  //   if (!isLastPage && isIntersecting && !!loraItems.length) {
-  //     dispatch(getModelsPreview());
-  //     console.log("INT", isIntersecting);
-  //   }
-  // }, [isIntersecting, dispatch, isLastPage, loraItems.length]);
 
   return (
     <div className={classes["container"]}>

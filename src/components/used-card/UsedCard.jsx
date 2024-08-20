@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import classes from "./UsedCard.module.scss";
-// import Tag from "../tag/Tag";
-// import { ReactComponent as StarImg } from "../../assets/star.svg";
 import { Link } from "react-router-dom";
 import TagList from "../tag-list/TagList";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,46 +16,22 @@ const UsedCard = ({ previewData, fullView }) => {
   const [tagsIsOpen, setTagsIsOpen] = useState(false);
   const [tagsHeight, setTagsHeight] = useState(null);
   const [taglistHeight, setTaglistHeight] = useState(null);
-  // const [helperTagsIsOpen, setHelperTagsIsOpen] = useState(false);
-  // const [helpertagsHeight, setHelperTagsHeight] = useState(null);
-  // const [imgIsLoading, setImgIsLoading] = useState(false);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const dispatch = useDispatch();
-  // const navigate = useNavigate();
   const tagsRef = useRef();
   const tagsListRef = useRef();
-  // const helperTagsRef = useRef();
   const taglistItemHeight = 68;
-  // const taglistHeight = tagsRef?.current?.clientHeight;
-  // console.log(taglistHeight);
-
-  // useEffect(() => {
-  //   setImgIsLoading(true);
-  // }, []);
-  console.log(previewData);
 
   useEffect(() => {
     if (tagsRef?.current?.clientHeight)
       setTaglistHeight(tagsRef?.current?.clientHeight);
     if (taglistHeight === taglistItemHeight) setTagsHeight(taglistItemHeight);
-    console.log(taglistHeight);
   }, [
     previewData,
     taglistHeight,
     taglistItemHeight,
     tagsRef?.current?.clientHeight,
   ]);
-
-  // const openHelperTagsHandler = () => {
-  //   setHelperTagsIsOpen((prev) => {
-  //     if (prev) {
-  //       setHelperTagsHeight(0);
-  //     } else {
-  //       setHelperTagsHeight(helperTagsRef.current.clientHeight);
-  //     }
-  //     return !prev;
-  //   });
-  // };
 
   const openTagsHandler = () => {
     setTagsIsOpen((prev) => {
@@ -69,15 +43,6 @@ const UsedCard = ({ previewData, fullView }) => {
       return !prev;
     });
   };
-
-  // const openLoraHandler = (e) => {
-  //   const modelId = e.target.closest(`.card`).id;
-  //   navigate(`model/${modelId}`, { state: { type: previewData.type } });
-  // };
-
-  // const imgLoadingHandler = () => {
-  //   setImgIsLoading(false);
-  // };
 
   const closeCardHandler = () => {
     dispatch(removeModelFromPanel(previewData.id));
@@ -108,27 +73,7 @@ const UsedCard = ({ previewData, fullView }) => {
                 : previewData.customPreviewImgUrl || previewData.imgUrl
             }
             alt="Preview"
-            // className={`${imgIsLoading ? classes["img--hidden"] : ""}`}
           />
-          {/* <div className={classes.img} onClick={openLoraHandler}>
-            <img
-              src={
-                isNsfwMode
-                  ? previewData.nsfwPreviewImgUrl ||
-                    previewData.customPreviewImgUrl ||
-                    previewData.imgUrl
-                  : previewData.customPreviewImgUrl || previewData.imgUrl
-              }
-              alt="Preview"
-              onLoad={imgLoadingHandler}
-              className={`${imgIsLoading ? classes["img--hidden"] : ""}`}
-            />
-            {imgIsLoading && (
-              <div className={classes.preloader}>
-                <StarImg />
-              </div>
-            )}
-          </div> */}
         </Link>
         <div className={classes.info}>
           <div className={classes["title-container"]}>
@@ -196,10 +141,8 @@ const UsedCard = ({ previewData, fullView }) => {
                 </span>
               </div>
             )}
-            {/* {previewData.size && <span>S: {previewData.size}</span>} */}
             {!!previewData.mainTag && fullView && (
               <div className={classes["main-tag"]}>
-                {/* Activation tag: */}
                 <ActivationTag
                   tag={previewData.mainTag}
                   modelData={previewData}
@@ -211,7 +154,6 @@ const UsedCard = ({ previewData, fullView }) => {
             <div className={classes["tags-container"]}>
               {!!previewData?.tags?.length && (
                 <>
-                  {/* <span>Tags: </span> */}
                   <div
                     className={`${classes.tags} ${
                       tagsIsOpen ? classes["tags--open"] : ""

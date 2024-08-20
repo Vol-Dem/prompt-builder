@@ -1,25 +1,12 @@
 import React, { useEffect, useState } from "react";
 import classes from "./UpdateModelForm.module.scss";
 import {
-  // getImagesInfo,
-  getModelData,
-  makeBatchRequest,
-  saveVersionImages,
-  // makeBatchRequest,
-  // makeBatchRequest,
-} from "../../../utils/fetchUtils";
-// import { clearObjectKeys } from "../../../utils/generalUtils";
-import {
   arrayUnion,
-  // collection,
   doc,
   getDoc,
-  // getDocs,
   getFirestore,
   runTransaction,
-  // runTransaction,
   setDoc,
-  updateDoc,
 } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,11 +18,7 @@ import Checkbox from "../../ui/Checkbox";
 import Select from "../../ui/Select";
 import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
-import {
-  clearFileExtension,
-  splitTags,
-  validateInput,
-} from "../../../utils/generalUtils";
+import { clearFileExtension, splitTags } from "../../../utils/generalUtils";
 import { Link } from "react-router-dom";
 import Spinner from "../../ui/Spinner";
 import {
@@ -43,7 +26,6 @@ import {
   DEF_INPUT_ERROR_MESSAGE,
   DESCRIPTION_MAX_LENGTH,
   EXISTS_ERROR_MESSAGE,
-  ID_MAX_LENGTH,
   NAME_MAX_LENGTH,
   NUMBER_MAX_LENGTH,
   OFFLINE_ERROR_MESSAGE,
@@ -55,7 +37,6 @@ import {
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import InputNumber from "../../ui/InputNumber";
-import { useOnlineStatus } from "../../../hooks/use-online-status";
 import { tabActions } from "../../../store/tabs";
 
 const firestore = getFirestore(firebaseApp);
@@ -90,21 +71,7 @@ const subCatsDefData = {
   errorMessage: "This field is required",
 };
 
-// const modelTypes = [
-//   { name: "LoRa/LoCon", value: "lora" },
-//   { name: "Checkpoint", value: "checkpoint" },
-//   { name: "Embedding", value: "embedding" },
-//   { name: "Hypernetwork", value: "hypernetwork" },
-//   { name: "Wildcard", value: "wildcard" },
-//   { name: "Motion", value: "motionmodule" },
-//   { name: "Controlnet", value: "controlnet" },
-//   { name: "VAE", value: "vae" },
-//   { name: "Wildcards", value: "wildcards" },
-//   { name: "Other", value: "other" },
-// ];
-
 const UpdateModelForm = ({ modelData, id }) => {
-  // const [updateInput, setUpdateInput] = useState(false);
   const [advancedSettings, setAdvancedSettings] = useState(false);
   const [modelIsSaving, setModelIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -209,7 +176,6 @@ const UpdateModelForm = ({ modelData, id }) => {
   const [subCatInputs, setSubCatInputs] = useState([subCatsDefData]);
   const [tagSetsInputs, setTagSetsInputs] = useState([tagSetsDefData]);
   const [savedModel, setSavedModel] = useState(null);
-  // const [userTags, setUserTags] = useState(modelData?.data?.tags || []);
 
   const uid = useSelector((state) => state.auth.user.uid);
   const categories = useSelector((state) => state.tabs.categoriesData);
@@ -223,9 +189,6 @@ const UpdateModelForm = ({ modelData, id }) => {
     )
       ?.sort((a, b) => a?.index - b?.index)
       .map((version, i) => {
-        // if (modelData?.modelVersionsCustomData.hasOwnProperty(version.id)) {
-        // const versionsCustomData =
-        //   modelData?.modelVersionsCustomData[version.id];
         return {
           type: "checkbox",
           id: version.versionId + "in",
@@ -233,15 +196,6 @@ const UpdateModelForm = ({ modelData, id }) => {
           label: version.name,
           value: version.downloadStatus,
         };
-        // } else {
-        //   return {
-        //     type: "checkbox",
-        //     id: version.id + "in",
-        //     name: version.id,
-        //     label: version.name,
-        //     value: false,
-        //   };
-        // }
       });
 
     setVersionsDownloadStatus(versionStatusInputData || []);
@@ -300,7 +254,6 @@ const UpdateModelForm = ({ modelData, id }) => {
   }, [modelData, categories]);
 
   const createCategoryId = (id, categoriesData) => {
-    console.log("CREATE", id, categoriesData);
     if (!id) {
       return;
     }
@@ -337,33 +290,6 @@ const UpdateModelForm = ({ modelData, id }) => {
         (input) => input.isValid === true
       );
 
-      // console.log(
-      //   !idInput.isValid,
-      //   !srcInput.isValid,
-      //   !mainInput.isValid,
-      //   !subcatsIsValid,
-      //   !titleInput.isValid,
-      //   !descriptionInput.isValid,
-      //   !mainTagInput.isValid,
-      //   !trigerInput.isValid,
-      //   !helperTagsInput.isValid,
-      //   !negativeTagsInput.isValid,
-      //   tagsetsIsNotValid,
-      //   !fileNameInput.isValid,
-      //   !weightInput.isValid,
-      //   !minWeightInput.isValid,
-      //   !maxWeightInput.isValid,
-      //   !sizetInput.isValid,
-      //   !vaeInput.isValid,
-      //   !denoisingStrengthtInput.isValid,
-      //   !hiresUpscaleInput.isValid,
-      //   !hiresUpscaleStepsInput.isValid,
-      //   !hiresUpscalerInput.isValid,
-      //   !cfgScaleInput.isValid,
-      //   !samplerInput.isValid,
-      //   !stepsInput.isValid
-      // );
-
       const mainInputsIsNotValid =
         !idInput.isValid || !mainInput.isValid || !subcatsIsValid;
 
@@ -392,13 +318,6 @@ const UpdateModelForm = ({ modelData, id }) => {
         !samplerInput.isValid ||
         !stepsInput.isValid;
 
-      // console.log(
-      //   "ALL INP",
-      //   mainInputsIsNotValid,
-      //   baseInputsIsNotValid,
-      //   aditionalInputsIsNotValid
-      // );
-
       if (
         mainInputsIsNotValid ||
         (!!modelData && baseInputsIsNotValid) ||
@@ -412,16 +331,10 @@ const UpdateModelForm = ({ modelData, id }) => {
         throw new Error(OFFLINE_ERROR_MESSAGE);
       }
 
-      // return;
       setModelIsSaving(true);
 
       const formdata = new FormData(e.target);
-      // for (const [key, value] of formdata) {
-      //   formObj[key] = value;
-      // }
-      // console.log(formdata);
 
-      // const src = formdata.get("src")?.trim().toLowerCase() || "";
       const modelType = modelTypeInput;
       let modelId;
       if (Number.isFinite(+idInput.value)) {
@@ -520,7 +433,6 @@ const UpdateModelForm = ({ modelData, id }) => {
         throw new Error(EXISTS_ERROR_MESSAGE);
       } else {
         if (!modelData) {
-          // data = await getModelData(modelData?.id || modelId);
           //Upload model to database
           const saveModelRes = await fetch(
             `http://127.0.0.1:5001/aide-tools/us-central1/updateModel?modelId=${
@@ -551,17 +463,8 @@ const UpdateModelForm = ({ modelData, id }) => {
           );
         }
 
-        // if (modelData && update) {
-        //   const newVerison = modelVersions.filter(
-        //     (version) =>
-        //       !modelData.modelVersions.some(
-        //         (oldVersions) => version.id === oldVersions.id
-        //       )
-        //   );
-        //   modelVersions = [...newVerison, ...modelData.modelVersions];
-        // }
-        console.log(data);
-        console.log(modelData);
+        // console.log(data);
+
         if (!data.id) return;
 
         let modelVersionsCustomData = modelData?.modelVersionsCustomData || {};
@@ -589,7 +492,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           }
 
           const defActTag =
-            fileName && data?.type == "LORA" ? `<lora:${fileName}:1>` : "";
+            fileName && data?.type === "LORA" ? `<lora:${fileName}:1>` : "";
 
           modelVersionsCustomData = {
             ...modelVersionsCustomData,
@@ -624,16 +527,11 @@ const UpdateModelForm = ({ modelData, id }) => {
               .images?.filter((img, i) => img.type === "image")[0]?.url) ||
           "";
 
-        // const previewImgDefault =
-        //   modelVersions[0].images?.filter(
-        //     (img, i) => img.type === "image"
-        //   )[0]?.url || "";
         const previewImgDefault = modelVersions[0]?.images[0]?.url || "";
 
         const previewImg = activePreviewImg || previewImgDefault;
 
         const fileNames = modelVersions?.flatMap((version) => {
-          // version.files.map((file) => file.name)
           if (version.hasOwnProperty("files") && version?.files) {
             return [
               ...new Set(
@@ -642,33 +540,17 @@ const UpdateModelForm = ({ modelData, id }) => {
                   .map((file) => clearFileExtension(file?.name).toLowerCase())
               ),
             ];
-
-            // return clearFileExtension(
-            //   version.files.find((file) => file?.primary).name
-            // ).toLowerCase();
           }
           return [];
         });
 
         const hashes = modelVersions
           ?.flatMap((version) => {
-            // version.files.map((file) => file.name)
             if (version.hasOwnProperty("files") && version?.files) {
-              //   const primaryFileHashes = version?.files.find(
-              //     (file) => file?.primary
-              //   )?.hashes;
               return version?.files
                 .filter((file) => file?.type === "Model")
                 .flatMap((file) => Object.values(file?.hashes).filter(Boolean))
                 .map((hash) => hash.toLowerCase());
-              // return version?.files
-              //   .flatMap((file) => Object.values(file?.hashes).filter(Boolean))
-              //   .map((hash) => hash.toLowerCase());
-              // if (primaryFileHashes) {
-              //   return Object.values(primaryFileHashes)?.map((hash) =>
-              //     hash.toLowerCase()
-              //   );
-              // }
             }
             return [];
           })
@@ -692,18 +574,6 @@ const UpdateModelForm = ({ modelData, id }) => {
           modelVersions?.flatMap((version) => version?.baseModel || [])
         );
 
-        // if (!curBaseModels?.length) {
-        //   newBaseModel = true;
-        // } else {
-        //   baseModels.forEach((baseModel) => {
-        //     const exists = curBaseModels.some(
-        //       (curBaseModel) => curBaseModel === baseModel
-        //     );
-        //     if (!exists) {
-        //       newBaseModel = true;
-        //     }
-        //   });
-        // }
         let newCategory = false;
         let newSubcategory = false;
         let newBaseModel = false;
@@ -712,9 +582,6 @@ const UpdateModelForm = ({ modelData, id }) => {
           firestore,
           async (transaction) => {
             const sfDoc = await transaction.get(userRef);
-            // if (!sfDoc.exists()) {
-            //   throw new Error("Resource does not exist!");
-            // }
 
             const categories = sfDoc?.data()?.categoriesById || {};
             const curUserBaseModels = sfDoc?.data()?.baseModels || [];
@@ -732,27 +599,7 @@ const UpdateModelForm = ({ modelData, id }) => {
               });
             }
 
-            // if (!categories) {
-            //   throw new Error("Can't update, try again later");
-            // }
-
             let updatedCategories;
-            // if (categories && categories[modelType]?.hasOwnProperty(`${main}`)) {
-            //   const newCat = new Set([...categories[modelType][`${main}`], ...sub]);
-            //   updatedCategories = {
-            //     ...categories[modelType],
-            //     [`${main}`]: [...newCat],
-            //   };
-            //   console.log("TEST", updatedCategories);
-            // } else if (categories) {
-            //   updatedCategories = {
-            //     ...categories[modelType],
-            //     [`${modelData?.main || main}`]: sub,
-            //   };
-            // } else {
-            //   updatedCategories = { [`${modelData?.main || main}`]: sub };
-            // }
-
             let mainId;
             let subIds;
             const mainCategoryData = categories[modelType]?.find(
@@ -763,7 +610,6 @@ const UpdateModelForm = ({ modelData, id }) => {
               newCategory = true;
               const currCategories = categories[modelType] || [];
               mainId = createCategoryId(main, categories[modelType]);
-              // console.log(mainId)
               subIds = sub;
               updatedCategories = [
                 ...currCategories,
@@ -789,6 +635,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                     subcategory,
                     mainCategoryData.subcategories
                   );
+
                   subIds = [...subIds, categoryId];
                   return {
                     id: categoryId,
@@ -820,16 +667,7 @@ const UpdateModelForm = ({ modelData, id }) => {
 
             const categoryField = `categoriesById.${modelType}`;
 
-            // await updateDoc(
-            //   userRef,
-            //   {
-            //     [categoryField]: updatedCategories,
-            //   },
-            //   { merge: true }
-            // );
-
             if (newBaseModel || newCategory || newSubcategory) {
-              console.log("RUN TRANS");
               if (!sfDoc.exists()) {
                 transaction.set(
                   userRef,
@@ -851,12 +689,6 @@ const UpdateModelForm = ({ modelData, id }) => {
               }
             }
             return { mainId, subIds };
-            // if (newPop <= 1000000) {
-            //   transaction.update(sfDocRef, { population: newPop });
-            //   return newPop;
-            // } else {
-            //   return Promise.reject("Sorry! Population is too big");
-            // }
           }
         );
 
@@ -870,88 +702,66 @@ const UpdateModelForm = ({ modelData, id }) => {
         }
 
         const modelInfo = {
-          // ...modelData,
-          // data: null,
           id: modelData?.id || +modelId,
           versionIds,
           modelType,
-          // baseModels: [...baseModels],
           main: mainId,
           sub: subIds,
           name: modelName || data.name,
           mainTag,
           nsfw: nsfwInput || false,
-          // nsfw: nsfwInput || false,
-          // nsfwLevel: data?.nsfwLevel || null,
-          // hashes,
           src: "civitai.com",
           defaultCustomData: {
             description: !!modelData ? description : data?.description,
             ...(tagSetsData?.length && {
               tagSetsData,
             }),
-            // tagSetsData,
             ...(weight && {
               weight,
             }),
-            // weight,
             ...(minWeight && {
               minWeight,
             }),
-            // minWeight: minWeight || null,
             ...(maxWeight && {
               maxWeight,
             }),
-            // maxWeight: maxWeight || null,
             ...(size && {
               size,
             }),
-            // size,
             ...(fileName && {
               fileName,
             }),
-            // fileName,
             ...(helperTags?.length && {
               helperTags,
             }),
-            // helperTags,
             ...(negativeTags?.length && {
               negativeTags,
             }),
-            // negativeTags,
             ...(modelType === "checkpoint" && {
-              ...(steps &&
-                {
-                  // steps,
-                }),
+              ...(steps && {
+                steps,
+              }),
               ...(sampler && {
                 sampler,
               }),
-              // sampler,
               ...(cfgScale && {
                 cfgScale,
               }),
-              // cfgScale,
               ...(hiresUpscaler && {
                 hiresUpscaler,
               }),
-              // hiresUpscaler,
               ...(hiresUpscaleBy && {
                 hiresUpscaleBy,
               }),
-              // hiresUpscaleBy,
               ...(hiresUpscaleSteps && {
                 hiresUpscaleSteps,
               }),
-              // hiresUpscaleSteps,
               ...(denoisingStrength && {
                 denoisingStrength,
               }),
-              // denoisingStrength,
               ...(vae && {
                 vae,
               }),
-              // vae,
             }),
           },
           modelVersionsCustomData,
@@ -985,9 +795,6 @@ const UpdateModelForm = ({ modelData, id }) => {
           }
         });
 
-        console.log(Object.values(modelVersionsCustomData));
-        console.log(previewModelVersionsCustomData);
-
         const loraPrevData = {
           id: modelData?.id || modelId,
           versionIds,
@@ -1014,69 +821,18 @@ const UpdateModelForm = ({ modelData, id }) => {
           minWeight,
           maxWeight,
           size,
-          // tags: modelVersions[0].trainedWords || "",
           authorTags: data.tags || [],
-          // tagSetsData,
-          // helperTags,
           modelVersionsCustomData: previewModelVersionsCustomData,
           updatedAt: new Date().toISOString(),
           createdAt,
         };
-        console.log(loraPrevData);
 
         await setDoc(modelsRef, modelInfo);
 
         const curPrevData = modelsPrevRefSnap.data() || {};
-        console.log(curPrevData);
+
         await setDoc(modelsPrevRef, { ...curPrevData, ...loraPrevData });
 
-        ///////////////////
-        // const modelsRef = ref(db, "models/" + (modelData?.id || modelId));
-        // let modelsPrevRef;
-        // if (formType === "Checkpoint") {
-        //   modelsPrevRef = ref(db, "checkpoint preview/" + main);
-        // } else {
-        //   modelsPrevRef = ref(
-        //     db,
-        //     "models preview/" + (modelData?.main || main)
-        //   );
-        // }
-
-        // get(modelsRef).then((snapshot) => {
-        //   if (snapshot.exists()) {
-        //     if (!modelData) {
-        //       setSuccessMessage("Exists");
-        //       return;
-        //     }
-        //     set(modelsRef, modelInfo);
-        //     savePreview(modelsPrevRef, loraPrevData, modelId);
-        //   } else {
-        //     set(modelsRef, modelInfo);
-        //     savePreview(modelsPrevRef, loraPrevData, modelId);
-        //   }
-        // });
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////
-        // const modelDlsRef = collection(firestore, "users", uid, "models");
-        // const modelDlSnap = await getDocs(modelDlsRef);
-        // console.log(modelDlSnap);
-        // modelDlSnap.forEach((doc) => {
-        //   // doc.data() is never undefined for query doc snapshots
-        //   console.log(doc.id);
-        // });
-
-        // /////////Save modelImages with gen info ///////////
-        // if (data?.creator?.username && !modelData) {
-        //   const versionsWithUserName = data?.modelVersions?.map((version) => {
-        //     return {
-        //       ...version,
-        //       modelId,
-        //       username: data.creator.username,
-        //     };
-        //   });
-
-        //   await makeBatchRequest(versionsWithUserName, saveVersionImages);
-        // }
         if (newBaseModel) {
           const updatedBaseModels = [
             ...new Set([...baseModels, ...curBaseModels]),
@@ -1090,79 +846,9 @@ const UpdateModelForm = ({ modelData, id }) => {
       }
     } catch (err) {
       setModelIsSaving(false);
-      console.log(err);
       setErrorMessage(err.message);
     }
   };
-
-  // const updateModelHandler = async (e) => {
-  //   console.log("UPD");
-  //   const data = await getModelData(modelData?.id);
-
-  //   const newVerison = modelVersions.filter(
-  //     (version) =>
-  //       !modelData.modelVersions.some(
-  //         (oldVersions) => version.id === oldVersions.id
-  //       )
-  //   );
-  //   console.log(newVerison);
-  //   if (!newVerison.length) {
-  //     console.log("NO UPDATEDS");
-  //     return;
-  //   }
-
-  //   modelVersions = [...newVerison, ...modelData.modelVersions];
-  //   console.log(data);
-
-  //   const newVersionsCustomData = {};
-
-  //   newVerison.forEach((version, i) => {
-  //     newVersionsCustomData[version.id] = {
-  //       versionId: version.id,
-  //       versionName: version.name,
-  //       versionImageUrl:
-  //         version.images?.filter((img, i) => img.type === "image")[0]?.url ||
-  //         "",
-  //       downloadStatus: false,
-  //     };
-  //   });
-  //   const modelVersionsCustomData = {
-  //     ...newVersionsCustomData,
-  //     ...modelData?.modelVersionsCustomData,
-  //   };
-  //   console.log(modelVersionsCustomData);
-
-  //   const modelsRef = doc(
-  //     firestore,
-  //     "users",
-  //     uid,
-  //     "models",
-  //     modelData?.id + ""
-  //   );
-  //   const modelsPrevRef = doc(
-  //     firestore,
-  //     "users",
-  //     uid,
-  //     "preview",
-  //     modelData?.id + ""
-  //   );
-
-  //   await updateDoc(
-  //     modelsRef,
-  //     {
-  //       data: data,
-  //       modelVersionsCustomData: modelVersionsCustomData,
-  //     },
-  //     { merge: true }
-  //   );
-  //   await updateDoc(
-  //     modelsPrevRef,
-  //     {
-  //       modelVersionsCustomData: modelVersionsCustomData,
-  //     },
-  //     { merge: true }
-  //   );
-  // };
 
   const addSubHandler = () => {
     const newFields = [...subCatInputs];
@@ -1213,17 +899,8 @@ const UpdateModelForm = ({ modelData, id }) => {
         return imageId.id + "" === e.target.id;
       });
 
-      // const { isValid, errorMessage } = validateInput(
-      //   {
-      //     required: true,
-      //     maxLength: CATEGORY_NAME_MAX_LENGTH,
-      //   },
-      //   e.target.value
-      // );
-
       newState[curIndex].value = e.target.value;
       newState[curIndex].isValid = isValid;
-      // newState[curIndex].errorMessage = errorMessage;
 
       return newState;
     });
@@ -1237,15 +914,8 @@ const UpdateModelForm = ({ modelData, id }) => {
         name={sub.name}
         type={sub.type}
         placeholder={sub.placeholder}
-        // defaultValue={sub.value}
         onChange={subCatHandler}
         value={sub.value}
-        // isValid={sub.isValid}
-        // error={sub.errorMessage}
-        // showError={showErrorMessage}
-        // onChange={(e, isValid) => {
-        //   setMainInput({ value: e.target.value, isValid });
-        // }}
         validation={{
           required: true,
           maxLength: CATEGORY_NAME_MAX_LENGTH,
@@ -1265,25 +935,14 @@ const UpdateModelForm = ({ modelData, id }) => {
         return imageId[1].id + "" === e.target.id;
       });
 
-      // const { isValid, errorMessage } = validateInput(
-      //   {
-      //     maxLength:
-      //       curSetNameIndex !== -1 ? NAME_MAX_LENGTH : TRIGER_WORDS_MAX_LENGTH,
-      //   },
-      //   e.target.value
-      // );
-
       if (curSetNameIndex !== -1) {
         newState[curSetNameIndex][0].value = e.target.value;
         newState[curSetNameIndex][0].isValid = isValid;
-        // newState[curSetNameIndex][0].errorMessage = errorMessage;
       }
       if (curSetTagsIndex !== -1) {
         newState[curSetTagsIndex][1].value = e.target.value;
         newState[curSetTagsIndex][1].isValid = isValid;
-        // newState[curSetTagsIndex][1].errorMessage = errorMessage;
       }
-      // newState[curIndex] = [];
 
       return newState;
     });
@@ -1300,7 +959,6 @@ const UpdateModelForm = ({ modelData, id }) => {
           onChange={tagSetsHandler}
           value={tagSet[0].value}
           isValid={tagSet[0].isValid}
-          // error={tagSet[0].errorMessage}
           showError={showErrorMessage}
           validation={{
             maxLength: NAME_MAX_LENGTH,
@@ -1360,17 +1018,6 @@ const UpdateModelForm = ({ modelData, id }) => {
 
   return (
     <form onSubmit={saveModelHandler} className={classes["form"]}>
-      {/* <div>{modelIsSaving ? "Saving..." : "Done"}</div> */}
-      {/* {modelData && (
-        <Buttton
-          type="button"
-          disabled={modelIsSaving}
-          onClick={updateModelHandler}
-          // className={classes.submit}
-        >
-          Update
-        </Buttton>
-      )} */}
       {modelData && (
         <FieldCategory>
           <Input
@@ -1417,17 +1064,6 @@ const UpdateModelForm = ({ modelData, id }) => {
         <h3 className={classes.subtitle}>Default data for all versions</h3>
       )}
       <div className={classes.fields}>
-        {/* {modelData && (
-          <Checkbox
-            id="update"
-            value={updateInput}
-            name="update"
-            label="update model"
-            onChange={(e) => {
-              setUpdateInput(e.target.checked);
-            }}
-          />
-        )} */}
         <FieldCategory title={modelData ? "Categories" : ""}>
           <Select
             label="Type"
@@ -1521,7 +1157,6 @@ const UpdateModelForm = ({ modelData, id }) => {
                 showError={showErrorMessage}
               />
               <Textarea
-                // label="Triger word"
                 name="triger"
                 type="text"
                 placeholder="Trigger word"
@@ -1588,7 +1223,6 @@ const UpdateModelForm = ({ modelData, id }) => {
                 validation={{
                   maxLength: NAME_MAX_LENGTH,
                 }}
-                // showError={showErrorMessage}
               />
               <Input
                 label="File"

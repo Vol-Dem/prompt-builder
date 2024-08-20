@@ -20,28 +20,8 @@ const Categories = () => {
 
   const categorySwitchHandler = (e) => {
     dispatch(tabActions.setCurrentCategory(e.target.id));
-    // dispatch(tabActions.setCurrentSubcategory(""));
-    // dispatch(tabActions.setModelsData([]));
   };
 
-  // const catHtml = categories?.hasOwnProperty(activeTab)
-  //   ? Object.keys(categories[activeTab])
-  //       .toSorted()
-  //       .map((key) => {
-  //         return (
-  //           <div
-  //             id={key}
-  //             onClick={categorySwitchHandler}
-  //             key={key}
-  //             className={`${classes[`category__link`]} ${
-  //               activeCategory === key ? classes.active : ""
-  //             }`}
-  //           >
-  //             {key}
-  //           </div>
-  //         );
-  //       })
-  //   : [];
   const catHtml = categories?.hasOwnProperty(activeTab)
     ? categories[activeTab]
         ?.toSorted((a, b) => {

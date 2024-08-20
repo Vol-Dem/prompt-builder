@@ -9,13 +9,11 @@ const Textarea = (props) => {
     label,
     textarea,
     className,
-    // onBlur,
     onChange,
     onBlur,
     error,
     cols,
     rows = 5,
-    // autoFocus,
     value,
     placeholder,
     validation,
@@ -30,9 +28,8 @@ const Textarea = (props) => {
 
   useEffect(() => {
     if (!!validation) {
-      const { isValid, errorMessage } = validateInput(validation, value);
+      const { errorMessage } = validateInput(validation, value);
 
-      // onChange(e, isValid, errorMessage);
       setInputErrorMessage(errorMessage);
     }
   }, [value, validation]);
@@ -62,13 +59,11 @@ const Textarea = (props) => {
           }
         }}
         onChange={(e) => {
-          console.log("CHANGE");
           if (validation) {
             const { isValid, errorMessage } = validateInput(
               validation,
               e.target.value
             );
-            console.log(e.target.value.length);
             onChange(e, isValid, errorMessage);
             setInputErrorMessage(errorMessage);
           } else {

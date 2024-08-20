@@ -14,7 +14,6 @@ import {
 } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
 import Spinner from "../../ui/Spinner";
-import useIntersection from "../../../hooks/use-intersection";
 import Modal from "../../ui/Modal";
 import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
 import Buttton from "../../ui/Button";
@@ -28,7 +27,7 @@ const firestore = getFirestore(firebaseApp);
 
 const postsPerPage = 16;
 
-// let timeoutRef.current;
+const amountPerPage = 100;
 
 const GeneratedImages = ({ customData }) => {
   const [showAllVersions, setShowAllVersions] = useState(false);
@@ -44,7 +43,7 @@ const GeneratedImages = ({ customData }) => {
   const [examplesHtml, setExamplesHtml] = useState([]);
   const [curImagesModelVersionId, setCurImagesModelVersionId] = useState();
   const [imagesSortValue, setImagesSortValue] = useState("Newest");
-  const [amountPerPage, setAmountPerPage] = useState(100);
+  // const [amountPerPage, setAmountPerPage] = useState(100);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
   const [isShowAll, setIsShowAll] = useState(false);
@@ -56,7 +55,6 @@ const GeneratedImages = ({ customData }) => {
   const versionsListRef = useRef(null);
   const versionsItemRef = useRef(null);
   const abortControlerRef = useRef(null);
-  const intersecting = useIntersection(endPageRef, false);
   const isPageEnd = usePageEnd(600);
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
@@ -79,7 +77,6 @@ const GeneratedImages = ({ customData }) => {
   ]);
 
   const resetExamples = () => {
-    console.log("RESET");
     setCurrCursor(null);
     setNextCursor(null);
     setExamplesImages([]);
@@ -90,8 +87,6 @@ const GeneratedImages = ({ customData }) => {
   };
 
   useEffect(() => {
-    // if (Object.keys(model).length === 0) return;
-    // if (!model.savedImages) setCurExampleImgsType("all");
     return () => {
       resetExamples();
       clearTimeout(timeoutRef.current);
@@ -106,23 +101,13 @@ const GeneratedImages = ({ customData }) => {
     resetExamples();
   }, [nsfwMode]);
 
-  // useEffect(() => {
-  //   if (!curVersion?.baseModel) return;
-  //   if (!curImagesModelVersionId) {
-  //     setCurImagesModelVersionId(customData?.versionId || curVersion.id);
-  //   }
-  // }, [model, curVersion, customData, curImagesModelVersionId]);
-
   useEffect(() => {
     if (curImagesModelVersionId) return;
     if (curImagesModelVersionId === curVersion?.id) return;
-    // setCurImagesModelVersionId(customData?.versionId || curVersion.id);
     if (curVersion?.id) setCurImagesModelVersionId(curVersion.id);
   }, [curImagesModelVersionId, curVersion, customData]);
 
   const openSavedVersionImagesHandler = (e) => {
-    // console.log("LIST", versionsListRef?.current?.offsetHeight);
-    // console.log("ITEM", versionsItemRef?.current?.offsetHeight);
     resetExamples();
     //Temp
     if (e.target.id === "unsorted") {
@@ -188,12 +173,6 @@ const GeneratedImages = ({ customData }) => {
 
   const sortExampleImages = useCallback(
     (newExampleImages, versionId) => {
-      // if (curExampleImgsType === "saved") return;
-      // Temp replace with for
-      // console.log(examplesImages);
-      // const sortedImages = examplesImages.toSorted(
-      //   (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
-      // );
       const sortedExamples = {};
       newExampleImages.forEach((image) => {
         if (sortedExamples.hasOwnProperty(image.postId)) {
@@ -202,12 +181,6 @@ const GeneratedImages = ({ customData }) => {
           sortedExamples[image.postId] = [image];
         }
       });
-      // const sortedExamples = examplesImages.reduce((acc, cur) => {
-      //   acc.hasOwnProperty(cur.postId)
-      //     ? acc[cur.postId].push(cur)
-      //     : (acc[cur.postId] = [cur]);
-      //   return acc;
-      // }, {});
 
       if (!sortedExamples) return;
 
@@ -216,10 +189,6 @@ const GeneratedImages = ({ customData }) => {
           Date.parse(sortedExamples[b].slice(-1).pop().createdAt) -
           Date.parse(sortedExamples[a].slice(-1).pop().createdAt)
         );
-        // return (
-        //   Date.parse(sortedExamples[b][0].createdAt) -
-        //   Date.parse(sortedExamples[a][0].createdAt)
-        // );
       });
 
       const examples = sortedExamplesArr.map((key, i) => {
@@ -227,35 +196,14 @@ const GeneratedImages = ({ customData }) => {
       });
 
       const sortedExamplesArrWithSortedImgs = examples.map((post) => {
-        // console.log(post);
-        return (
-          post
-            // .map((image) => {
-            //   return {
-            //     id: image?.id || null,
-            //     url: image?.url || "",
-            //     postId: image?.postId || null,
-            //     hash: image?.hash || "",
-            //     height: image?.height || null,
-            //     width: image?.width || null,
-            //     nsfw: image?.nsfw || false,
-            //     nsfwLevel: image?.nsfwLevel || "",
-            //     createdAt: image?.createdAt || "",
-            //   };
-            // })
-            .sort((a, b) => {
-              return Date.parse(a.createdAt) - Date.parse(b.createdAt);
-            })
-        );
+        return post.sort((a, b) => {
+          return Date.parse(a.createdAt) - Date.parse(b.createdAt);
+        });
       });
-      // console.log(Object.values(sortedExamples));
-      // console.log("SORT", versionId, curImagesModelVersionId);
-      // console.log("SORTED", sortedExamplesArrWithSortedImgs);
+
       if (versionId === curImagesModelVersionId) {
-        console.log(sortedExamplesArrWithSortedImgs);
         setExamplesImgData(sortedExamplesArrWithSortedImgs);
       }
-      // setExamplesImgData(sortedExamplesArrWithSortedImgs);
     },
     [curImagesModelVersionId]
   );
@@ -269,13 +217,9 @@ const GeneratedImages = ({ customData }) => {
         }
         const newAbortControler = new AbortController();
         abortControlerRef.current = newAbortControler;
-        // if (versionId !== curImagesModelVersionId) return;
         clearTimeout(timeoutRef.current);
         setIsIntersecting(false);
         setErrorMessage("");
-        // const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
-        //   versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
-        // }&limit=${amountPerPage}&sort=Newest${cursor ? `&cursor=${cursor}` : ""}`;
         const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
           versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
         }${amountPerPage ? `&limit=${amountPerPage}` : ""}${
@@ -283,20 +227,12 @@ const GeneratedImages = ({ customData }) => {
         }${cursor ? `&cursor=${cursor}` : ""}${
           nsfwMode ? `&nsfw=X` : `&nsfw=None`
         }`;
-        // const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
-        //   versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
-        // }${amountPerPage ? `&limit=${amountPerPage}` : ""}${
-        //   imagesSortValue ? `&sort=${imagesSortValue}` : ""
-        // }${cursor ? `&cursor=${cursor}` : ""}${
-        //   nsfwMode ? `&nsfw=X` : `&nsfw=None`
-        // }`;
 
-        // const imgExampleResponse = await fetch(url);
         const imgExampleResponse = await fetch(url, {
           signal: newAbortControler.signal,
         });
         const data = await imgExampleResponse.json();
-        console.log(data);
+        // console.log(data);
         if (!data?.items) return;
         setCurrCursor(nextCursor || true);
         if (data.metadata?.nextCursor) {
@@ -304,24 +240,17 @@ const GeneratedImages = ({ customData }) => {
         } else {
           setIsLastPage(true);
         }
-        // console.log("TEST", versionId, curImagesModelVersionId);
-        if (true) {
-          setExamplesImages((prevState) => {
-            const newExampleImages = [...data?.items, ...prevState];
-            // console.log("PREV", prevState);
-            // console.log("NEW", newExampleImages);
-            if (versionId === curImagesModelVersionId) {
-              sortExampleImages(newExampleImages, versionId);
-            }
-            return newExampleImages;
-          });
-        }
+
+        setExamplesImages((prevState) => {
+          const newExampleImages = [...data?.items, ...prevState];
+          if (versionId === curImagesModelVersionId) {
+            sortExampleImages(newExampleImages, versionId);
+          }
+          return newExampleImages;
+        });
 
         setExamplesIsLoading(false);
       } catch (err) {
-        console.log(err);
-        // console.log(err.message);
-        // console.log("ERROR NAME", err.name);
         if (err.name !== "AbortError") {
           setErrorMessage(err.message);
         }
@@ -329,7 +258,6 @@ const GeneratedImages = ({ customData }) => {
       }
     },
     [
-      amountPerPage,
       imagesSortValue,
       nextCursor,
       nsfwMode,
@@ -339,16 +267,15 @@ const GeneratedImages = ({ customData }) => {
   );
 
   const getImagesFromFirestore = useCallback(async () => {
-    console.log("START FB FETCH");
     try {
       if (abortControlerRef.current) {
         abortControlerRef.current.abort();
       }
       clearTimeout(timeoutRef.current);
-      // console.log("FB LAST", isLastPage);
+
       if (isLastPage) return;
       setExamplesIsLoading(true);
-      // if (examplesIsLoading) return;
+
       setIsIntersecting(false);
       setErrorMessage("");
 
@@ -359,30 +286,21 @@ const GeneratedImages = ({ customData }) => {
         where("versionId", "==", curImagesModelVersionId),
         where("nsfwTypes", "array-contains-any", nsfwFilter),
         orderBy("createdAt", "desc"),
-        // orderBy("versionId", "desc"),
-        // orderBy("savedAt", "desc"),
         startAfter(lastVisible),
         limit(postsPerPage)
       );
 
       const modelImagesSnap = await getDocs(q);
 
-      // const isLast = modelImagesSnap.docs.length <= postsPerPage;
       const isLast =
         !modelImagesSnap.docs.length ||
         modelImagesSnap.docs.length < postsPerPage;
 
-      // console.log("LAST", isLast);
-
       const data = modelImagesSnap.docs.flatMap((doc, i) => {
-        // doc.data() is never undefined for query doc snapshots
-        // if (i === postsPerPage) {
-        //   return [];
-        // }
         return doc.data();
       });
 
-      console.log(data);
+      // console.log(data);
 
       const examples = data
         .map((post) => {
@@ -398,21 +316,7 @@ const GeneratedImages = ({ customData }) => {
           }
         })
         .filter((item) => !!item.length);
-      // const examples = data.map((item, i) => item.items);
-      // console.log(examples);
-      // const examples = data.flatMap((item, i) => {
-      //   if (!nsfwMode && item.nsfw) return [];
-      //   return (
-      //     <Carousel
-      //       key={i}
-      //       versionId={curImagesModelVersionId}
-      //       images={item.items}
-      //       visibleImgAmount={1}
-      //       // onUpdate={updateImgResData}
-      //     />
-      //   );
-      // });
-      console.log(examples);
+
       setExamplesImgData((prevState) => [...prevState, ...examples]);
 
       const lastVisiblePost =
@@ -422,9 +326,7 @@ const GeneratedImages = ({ customData }) => {
       }
       setIsLastPage(isLast);
       setExamplesIsLoading(false);
-      // const firstVisible = data.docs[0];
     } catch (err) {
-      console.log(err);
       setErrorMessage(err.message);
       setExamplesIsLoading(false);
     }
@@ -458,26 +360,6 @@ const GeneratedImages = ({ customData }) => {
     if (!examplesImgData.length && !examplesIsLoading && !errorMessage) {
       getImagesFromFirestore();
     }
-
-    //Temp
-    // if (curImagesModelVersionId === "unsorted") {
-    //   const examples = model.examplesData.map((item, i) => {
-    //     return (
-    //       <Carousel
-    //         key={i}
-    //         images={item.items}
-    //         visibleImgAmount={1}
-    //         // onUpdate={updateImgResData}
-    //       />
-    //     );
-    //   });
-    //   setExamplesImgData(model.examplesData);
-    //   return;
-    // }
-    // if (!model.savedImages[curImagesModelVersionId]) {
-    //   const latestVersion = Object.keys(model.savedImages)[0];
-    //   if (latestVersion) setCurImagesModelVersionId(+latestVersion);
-    // }
   }, [
     curImagesModelVersionId,
     curExampleImgsType,
@@ -519,15 +401,10 @@ const GeneratedImages = ({ customData }) => {
       isOnline &&
       !examplesIsLoading;
     if (true) {
-      // if (!!examplesImgData.length) {
-      // if ((rule && nextCursor) || (rule && !!examplesImgData.length)) {
-      // setExamplesIsLoading(true);
       if (curExampleImgsType === "all" && rule && !!nextCursor) {
         if (currCursor === nextCursor) return;
         setExamplesIsLoading(true);
         setIsIntersecting(false);
-        // console.log("INTERSECT", isIntersecting);
-        // console.log(nextCursor);
         clearTimeout(timeoutRef.current);
         timeoutRef.current = setTimeout(() => {
           getallExamples(model.id, curImagesModelVersionId, nextCursor);
@@ -540,14 +417,9 @@ const GeneratedImages = ({ customData }) => {
         setExamplesIsLoading(true);
         clearTimeout(timeoutRef.current);
         setIsIntersecting(false);
-        // console.log("START INTERSECTING FETCH");
-        // console.log(!!examplesImgData.length);
-        // console.log(examplesImgData.length);
-        // console.log(examplesImgData);
         timeoutRef.current = setTimeout(() => {
           getImagesFromFirestore();
         }, 1000);
-        console.log("INT", isIntersecting);
       }
     }
   }, [
@@ -566,19 +438,12 @@ const GeneratedImages = ({ customData }) => {
     isOnline,
   ]);
 
-  // useEffect(sortExampleImages, [
-  //   examplesImages,
-  //   model,
-  //   curExampleImgsType,
-  //   curImagesModelVersionId,
-  // ]);
-
-  const nextPageHandler = () => {
-    if (curExampleImgsType === "all") {
-      getallExamples(model.id, curImagesModelVersionId, nextCursor);
-    } else {
-    }
-  };
+  // const nextPageHandler = () => {
+  //   if (curExampleImgsType === "all") {
+  //     getallExamples(model.id, curImagesModelVersionId, nextCursor);
+  //   } else {
+  //   }
+  // };
 
   const retryImageLoadingHandler = () => {
     setErrorMessage("");
@@ -617,16 +482,6 @@ const GeneratedImages = ({ customData }) => {
         );
       });
 
-  // const deletePostHandler = useCallback(
-  //   (id) => {
-  //     // const newExamples = examplesImgData.filter(
-  //     //   (image) => image[0].postId !== id
-  //     // );
-  //     // setExamplesImgData(newExamples);
-  //   },
-  //   [examplesImgData]
-  // );
-
   useEffect(() => {
     if (
       !!model?.savedImages &&
@@ -636,7 +491,7 @@ const GeneratedImages = ({ customData }) => {
       const savedPostsIds = model?.savedImages[curImagesModelVersionId]?.map(
         (post) => post.postId
       );
-      // console.log("IDS", savedPostsIds);
+
       const newExamples = examplesImgData?.filter((image) =>
         savedPostsIds?.includes(image[0]?.postId)
       );
@@ -663,15 +518,12 @@ const GeneratedImages = ({ customData }) => {
             imagesData={item}
             visibleImgAmount={1}
             modelId={model.id}
-            // onDelete={deletePostHandler}
             saved={true}
-            // onUpdate={updateImgResData}
           />
         );
       });
     } else {
       examples = examplesImgData.map((item, i) => {
-        // console.log(item);
         const existedExample =
           model?.savedImages?.hasOwnProperty(curImagesModelVersionId) &&
           model?.savedImages[`${curImagesModelVersionId}`]?.find(
@@ -704,7 +556,6 @@ const GeneratedImages = ({ customData }) => {
     examplesImgData,
     model,
     nsfwMode,
-    // deletePostHandler,
   ]);
 
   const addImgByIdHandler = () => {
@@ -765,22 +616,6 @@ const GeneratedImages = ({ customData }) => {
               <option value="Most Comments">Most Comments</option>
               <option value="Most Reactions">Most Reactions</option>
             </select>
-            {/* <select
-              name="amount-per-page"
-              id="amount-per-page"
-              value={amountPerPage}
-              className={classes.select}
-              onChange={(e) => {
-                resetExamples();
-                setAmountPerPage(e.target.value);
-              }}
-            >
-              <option value="">-</option>
-              <option value="20">20</option>
-              <option value="30">30</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select> */}
           </div>
         )}
       </div>
@@ -793,20 +628,6 @@ const GeneratedImages = ({ customData }) => {
         }}
       >
         <ul ref={versionsListRef} className={classes["versions__list"]}>
-          {/* {curExampleImgsType !== "saved" && (
-            <div
-              className={`${classes.version} ${
-                curImagesModelVersionId === "all-versions"
-                  ? classes["version--active"]
-                  : ""
-              }
-        `}
-              id="all-versions"
-              onClick={openSavedVersionImagesHandler}
-            >
-              All
-            </div>
-          )} */}
           {modelImageVersionsHtml}
         </ul>
       </div>
@@ -820,12 +641,6 @@ const GeneratedImages = ({ customData }) => {
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {!examplesIsLoading && (
         <div>
-          {/* {nextCursor && curExampleImgsType === "all" && (
-            <button onClick={nextPageHandler}>next</button>
-          )}
-          {!isLastPage && curExampleImgsType !== "all" && (
-            <button onClick={getImagesFromFirestore}>more</button>
-          )} */}
           {errorMessage && !!nextCursor && curExampleImgsType === "all" && (
             <Buttton onClick={retryImageLoadingHandler}>Retry</Buttton>
           )}

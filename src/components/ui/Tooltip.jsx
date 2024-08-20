@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 import classes from "./Tooltip.module.scss";
 

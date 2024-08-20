@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useValidation } from "../../hooks/use-validation";
 import classes from "./Input.module.scss";
 import { validateInput } from "../../utils/generalUtils";
 
@@ -22,15 +21,8 @@ const Input = (props) => {
     validation,
     showError,
   } = props;
-  // const [inputValue, setInputValue] = useState(value || "");
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-  // const inputState = useValidation(validation, inputValue);
-  // const {
-  //   inputValue: valueIn,
-  //   isValid: inputIsValid,
-  //   errorMessage: inputErrorMessage,
-  // } = inputState;
 
   useEffect(() => {
     setShowErrorMessage(showError);
@@ -38,19 +30,11 @@ const Input = (props) => {
 
   useEffect(() => {
     if (!!validation) {
-      const { isValid, errorMessage } = validateInput(validation, value);
+      const { errorMessage } = validateInput(validation, value);
 
-      // onChange(e, isValid, errorMessage);
       setInputErrorMessage(errorMessage);
     }
   }, [value, validation]);
-
-  // useEffect(() => {
-  //   if (onChange && validation) {
-  //     console.log("INPUT", valueIn);
-  //     onChange(valueIn, inputIsValid, id);
-  //   }
-  // }, [inputState]);
 
   return (
     <div>

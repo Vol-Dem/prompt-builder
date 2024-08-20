@@ -31,7 +31,6 @@ const Modal = (props) => {
             {props.title && <h2 className={classes.title}>{props.title}</h2>}
             {props.children}
             <button className={classes["modal__close"]} onClick={props.onClose}>
-              {/* <span className={classes["modal__cross"]}></span> */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"

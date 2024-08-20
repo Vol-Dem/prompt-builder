@@ -1,7 +1,7 @@
 import classes from "./ImageCard.module.scss";
 import TagList from "../tag-list/TagList";
 import { useEffect, useRef, useState } from "react";
-import { getImageInfo, getModelInfo } from "../../utils/fetchUtils";
+import { getImageInfo } from "../../utils/fetchUtils";
 import Spinner from "../ui/Spinner";
 import {
   collection,
@@ -12,23 +12,19 @@ import {
 } from "firebase/firestore";
 import firebaseApp from "../../firebase-config";
 import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import { addModelToPanel } from "../../store/usedModels";
 import ButtonAdd from "../ui/ButtonAdd";
 import { Link } from "react-router-dom";
-import { modelActions } from "../../store/model";
 import LinkA from "../ui/LinkA";
 import { clearFileExtension } from "../../utils/generalUtils";
 import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 import CheckCircleSvg from "../../assets/CheckCircleSvg";
-// import { promptActions } from "../../store/prompt";
+import ErrorMessage from "../ui/ErrorMessage";
 
 const firestore = getFirestore(firebaseApp);
 
 const timeoutDelay = 1000;
 
 const ImageCard = ({ activeImgNum }) => {
-  // const [curImgId, setCurImgId] = useState(null);
   const [imageData, setImageData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -42,14 +38,9 @@ const ImageCard = ({ activeImgNum }) => {
   const activeCarouselData = useSelector(
     (state) => state.model.activeCarouselData
   );
-  const dispatch = useDispatch();
-
-  let timeout;
 
   useEffect(() => {
     if (!!activeCarouselData?.images?.length) {
-      // console.log(activeCarouselData?.images[activeCarouselData.currImgNum]);
-      // console.log(activeCarouselData?.images[activeImgNum || 0]);
       setImageData(activeCarouselData?.images[activeImgNum || 0]);
     } else {
       setImageData({});
@@ -57,24 +48,18 @@ const ImageCard = ({ activeImgNum }) => {
   }, [activeCarouselData, activeImgNum]);
 
   useEffect(() => {
-    // console.log("IMGCARD");
     setImageResources([]);
     setModelInfoCiv({});
     setModelInfo({});
   }, [imageData]);
 
   useEffect(() => {
-    // console.log(imageData);
-    // console.log(activeCarouselData);
-    // console.log(currImgNum);
-
     if (imageData?.url) {
-      console.log("START FETCH");
+      setErrorMessage("");
 
       const loadResoursesInfo = async (curImageData) => {
         try {
           setIsLoading(true);
-          // console.log(curImageData);
 
           //MODEL
           let modelHash = "";
@@ -97,26 +82,18 @@ const ImageCard = ({ activeImgNum }) => {
             );
           }
 
-          // const modelQ = query(
-          //   collection(firestore, "users", uid, `preview`),
-          //   where("hashes", "array-contains", modelHash)
-          // );
-
           const modelQuerySnapshot = await getDocs(modelQ);
 
           const modelInfoData = modelQuerySnapshot.docs.map((doc) => {
             // doc.data() is never undefined for query doc snapshots
             return doc.data();
           });
-          // console.log(modelHash);
-          console.log(modelInfoData);
 
-          // const modelData = await getModelInfo(curImageData?.meta);
-          // console.log(modelData);
+          // console.log(modelInfoData);
 
           //RESOURCES
           const imageWithResCiv = await getImageInfo(curImageData);
-          console.log(imageWithResCiv);
+          // console.log(imageWithResCiv);
 
           let resourcesInfoCiv = [];
 
@@ -148,7 +125,7 @@ const ImageCard = ({ activeImgNum }) => {
             ];
           }
 
-          console.log(resourcesInfoCiv);
+          // console.log(resourcesInfoCiv);
 
           let modelsIds = [];
           let modelsVersionIds = [];
@@ -171,7 +148,7 @@ const ImageCard = ({ activeImgNum }) => {
           });
 
           if (!!modelsIds.length) {
-            console.log(modelsIds);
+            // console.log(modelsIds);
 
             const q = query(
               collection(firestore, "users", uid, `preview`),
@@ -184,12 +161,12 @@ const ImageCard = ({ activeImgNum }) => {
               // doc.data() is never undefined for query doc snapshots
               return doc.data();
             });
-            console.log(modelsPrewiewById);
+            // console.log(modelsPrewiewById);
             allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewById];
           }
 
           if (!!modelsVersionIds.length) {
-            console.log(modelsVersionIds);
+            // console.log(modelsVersionIds);
             const q = query(
               collection(firestore, "users", uid, `preview`),
               where("versionIds", "array-contains-any", modelsVersionIds)
@@ -200,7 +177,7 @@ const ImageCard = ({ activeImgNum }) => {
               // doc.data() is never undefined for query doc snapshots
               return doc.data();
             });
-            console.log(modelsPrewiewByVersionId);
+            // console.log(modelsPrewiewByVersionId);
             allModelsPreviews = [
               ...allModelsPreviews,
               ...modelsPrewiewByVersionId,
@@ -208,7 +185,7 @@ const ImageCard = ({ activeImgNum }) => {
           }
 
           if (!!modelsHashes.length) {
-            console.log(modelsHashes);
+            // console.log(modelsHashes);
             const q = query(
               collection(firestore, "users", uid, `preview`),
               where("hashes", "array-contains-any", modelsHashes)
@@ -219,7 +196,7 @@ const ImageCard = ({ activeImgNum }) => {
               // doc.data() is never undefined for query doc snapshots
               return doc.data();
             });
-            console.log(modelsPrewiewByHash);
+            // console.log(modelsPrewiewByHash);
             allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewByHash];
           }
 
@@ -228,21 +205,21 @@ const ImageCard = ({ activeImgNum }) => {
               (name) =>
                 !allModelsPreviews.find((model) => {
                   const nameArr = name.split("-");
-                  console.log(nameArr);
+                  // console.log(nameArr);
                   if (Number.isFinite(+nameArr[nameArr?.length - 1])) {
-                    console.log(nameArr[nameArr?.length - 1]);
-                    console.log(
-                      name
-                        .replace(`-${nameArr[nameArr?.length - 1]}`, "")
-                        .toLowerCase()
-                    );
-                    console.log(
-                      model?.fileNames?.includes(
-                        name
-                          .replace(`-${nameArr[nameArr?.length - 1]}`, "")
-                          .toLowerCase()
-                      )
-                    );
+                    // console.log(nameArr[nameArr?.length - 1]);
+                    // console.log(
+                    //   name
+                    //     .replace(`-${nameArr[nameArr?.length - 1]}`, "")
+                    //     .toLowerCase()
+                    // );
+                    // console.log(
+                    //   model?.fileNames?.includes(
+                    //     name
+                    //       .replace(`-${nameArr[nameArr?.length - 1]}`, "")
+                    //       .toLowerCase()
+                    //   )
+                    // );
                     return model?.fileNames?.includes(
                       name
                         .replace(`-${nameArr[nameArr?.length - 1]}`, "")
@@ -265,7 +242,7 @@ const ImageCard = ({ activeImgNum }) => {
                 // doc.data() is never undefined for query doc snapshots
                 return doc.data();
               });
-              console.log(modelsPrewiewByName);
+              // console.log(modelsPrewiewByName);
               allModelsPreviews = [
                 ...allModelsPreviews,
                 ...modelsPrewiewByName,
@@ -273,7 +250,7 @@ const ImageCard = ({ activeImgNum }) => {
             }
           }
 
-          console.log("All", allModelsPreviews);
+          // console.log("All", allModelsPreviews);
           const resources = resourcesInfoCiv?.map((resource) => {
             const versionId = resource?.modelVersionId || resource?.versionId;
             const preview = allModelsPreviews.find(
@@ -285,7 +262,7 @@ const ImageCard = ({ activeImgNum }) => {
                   clearFileExtension(resource.name)?.toLowerCase()
                 )
             );
-            console.log(preview);
+            // console.log(preview);
             if (preview) {
               return {
                 ...resource,
@@ -294,7 +271,7 @@ const ImageCard = ({ activeImgNum }) => {
             }
             return resource;
           });
-          console.log(resources);
+          // console.log(resources);
 
           //Remove not uniq items from the end of array//////
           const reversedArr = resources.toReversed();
@@ -311,7 +288,7 @@ const ImageCard = ({ activeImgNum }) => {
               }
             })
             .toReversed();
-          console.log(filteredNewResult);
+          // console.log(filteredNewResult);
           ////////////////////////////////////////////////////
 
           if (!!modelInfoData?.length) {
@@ -331,20 +308,15 @@ const ImageCard = ({ activeImgNum }) => {
           if (curImageData?.id === imageData?.id) {
             setImageResources(defResources);
           }
-          console.log(err);
           setErrorMessage(err);
           setIsLoading(false);
         }
       };
       clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(() => {
-        console.log("FETCH TIMEOUT");
         loadResoursesInfo(imageData);
       }, timeoutDelay);
     }
-    return () => {
-      // console.log("CLEAN");
-    };
   }, [imageData, uid]);
 
   const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
@@ -402,21 +374,12 @@ const ImageCard = ({ activeImgNum }) => {
         {resource?.preview && (
           <>
             <Link
-              // href={`/model/${resource?.modelId}`}
               to={`/model/${resource?.preview?.id}`}
               state={{ versionId: version }}
-              // title={resource.preview.name}
               className={`${classes["resource__link"]} ${classes["resource__name"]}`}
             >
               {resource.preview.name}
             </Link>
-            {/* <div
-            className={classes["resource__add"]}
-            data-id={resource.preview.id}
-            onClick={addToSidePanelHandler}
-          >
-            <span className={classes["plus"]}></span>
-          </div> */}
             <ButtonAdd
               previewData={{
                 ...resource.preview,
@@ -427,18 +390,6 @@ const ImageCard = ({ activeImgNum }) => {
             />
           </>
         )}
-        {/* {!resource?.preview &&
-          (resource?.modelId || resource?.modelVersionId || resource?.name) && (
-            <div
-              className={classes["resource__name"]}
-              title={resource?.name || resource.modelVersionId}
-            >
-              {resource?.name ||
-                resource?.modelVersionName ||
-                resource.modelVersionId}
-            </div>
-          )} */}
-
         {!resource?.preview && !versionName && (
           <div
             className={classes["resource__name"]}
@@ -475,9 +426,7 @@ const ImageCard = ({ activeImgNum }) => {
                   ? `?modelVersionId=${resource?.versionId}`
                   : ""
               }`}
-              // className={`${classes["resource__link"]} ${classes["resource__source"]}`}
             >
-              {/* {resource?.name || resource.modelVersionId} */}
               civitai
             </LinkA>
           </div>
@@ -522,8 +471,6 @@ const ImageCard = ({ activeImgNum }) => {
               </div>
               <div className={classes["example__config"]}>
                 <div className={classes["example__config-block"]}>
-                  {/* <button onClick={closeImg}>Close</button> */}
-
                   {!!imageData?.postId && (
                     <div className={classes["example__info-item"]}>
                       <span className={classes["example__info-name"]}>
@@ -604,9 +551,6 @@ const ImageCard = ({ activeImgNum }) => {
                               />
                             </svg>
                           )}
-                          {/* {copied && (
-                      <span className={classes["seed__copied"]}>Copied</span>
-                    )} */}
                         </span>
                       )}
                     </div>
@@ -650,10 +594,7 @@ const ImageCard = ({ activeImgNum }) => {
                                 ? `?modelVersionId=${modelInfoCiv?.versionId}`
                                 : ""
                             }`}
-                            // target="blank"
-                            // className={classes["resource__link"]}
                           >
-                            {/* {modelInfoCiv?.modelName || modelInfoCiv?.modelVersionId} */}
                             civitai
                           </LinkA>
                           {")"}
@@ -686,9 +627,7 @@ const ImageCard = ({ activeImgNum }) => {
                       </span>
                       <LinkA
                         external={true}
-                        // target="blank"
                         href={`https://civitai.com/images/${imageData?.id}`}
-                        // className={`${classes["resource__link"]} ${classes["resource__source"]}`}
                       >
                         civitai
                       </LinkA>
@@ -708,6 +647,7 @@ const ImageCard = ({ activeImgNum }) => {
                     </ul>
                   </div>
                 )}
+                {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
               </div>
             </>
           </div>

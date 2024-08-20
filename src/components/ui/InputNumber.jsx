@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useValidation } from "../../hooks/use-validation";
 import classes from "./InputNumber.module.scss";
 import { validateInput } from "../../utils/generalUtils";
 
@@ -25,12 +24,6 @@ const InputNumber = (props) => {
   } = props;
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-  // const inputState = useValidation(validation, inputValue);
-  // const {
-  //   inputValue: valueIn,
-  //   isValid: inputIsValid,
-  //   errorMessage: inputErrorMessage,
-  // } = inputState;
 
   useEffect(() => {
     setShowErrorMessage(showError);
@@ -38,38 +31,20 @@ const InputNumber = (props) => {
 
   useEffect(() => {
     if (!!validation) {
-      const { isValid, errorMessage } = validateInput(validation, value);
+      const { errorMessage } = validateInput(validation, value);
 
-      // onChange(e, isValid, errorMessage);
       setInputErrorMessage(errorMessage);
     }
   }, [value, validation]);
 
-  // useEffect(() => {
-  //   if (onChange && validation) {
-  //     console.log("INPUT", valueIn);
-  //     onChange(valueIn, inputIsValid, id);
-  //   }
-  // }, [inputState]);
-
   const strengthHandler = (e) => {
-    // setInputValue((prevState) => ((+prevState || 0) + 0.1).toFixed(1));
     const strenghth =
       e.target.dataset.type === "inc"
         ? (+value || 0) + step
         : (+value || 0) - step;
-    console.log(strenghth);
-    const { isValid, errorMessage } = validateInput(validation, strenghth);
-    onChange({ target: { value: strenghth.toFixed(1) } }, isValid);
-    // setInputValue((prevState) => {
-    //   const strenghth =
-    //     e.target.dataset.type === "inc"
-    //       ? (+prevState || 0) + 0.1
-    //       : (+prevState || 0) - 0.1;
-    //   console.log(strenghth);
 
-    //   return +strenghth.toFixed(1);
-    // });
+    const { isValid } = validateInput(validation, strenghth);
+    onChange({ target: { value: strenghth.toFixed(1) } }, isValid);
   };
 
   return (

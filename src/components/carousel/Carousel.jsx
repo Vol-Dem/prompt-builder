@@ -1,39 +1,21 @@
 import React, { useCallback, useState } from "react";
 import classes from "./Carousel.module.scss";
-import ImageCard from "../image-card/ImageCard";
 import { useRef } from "react";
 import { useEffect } from "react";
 import CarouselImage from "./carousel-image/CarouselImage";
-import useIntersection from "../../hooks/use-intersection";
-import { clearObjectKeys } from "../../utils/generalUtils";
-import {
-  getImagesInfo,
-  makeBatchRequest,
-  updateImagePostData,
-} from "../../utils/fetchUtils";
-import firebaseApp from "../../firebase-config";
-import {
-  arrayRemove,
-  arrayUnion,
-  doc,
-  getFirestore,
-  // setDoc,
-  // updateDoc,
-  writeBatch,
-} from "firebase/firestore";
+import { updateImagePostData } from "../../utils/fetchUtils";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../ui/Spinner";
 import { uploadActions } from "../../store/upload";
 import { deleteImgPost, modelActions } from "../../store/model";
-import ButtonAdd from "../ui/ButtonAdd";
 import Modal from "../ui/Modal";
-import Buttton from "../ui/Button";
-import Image from "../ui/image/Image";
 import ChooseImageForm from "../forms/choose-image-form/ChooseImageForm";
 import ImageFullView from "../ui/ImageFullView";
 import FolderSvg from "../../assets/FolderSvg";
 
-const firestore = getFirestore(firebaseApp);
+// const maxCarouselHeight = 390;
+const carouselHeight = 390;
+const transitionDuration = 300;
 
 const Carousel = ({
   imagesData,
@@ -45,7 +27,6 @@ const Carousel = ({
   existedImgsAmount,
   imgIsOpen = false,
   activeImgNum,
-  // onDelete,
   saved,
   active,
   onActiveNumChange,
@@ -55,8 +36,6 @@ const Carousel = ({
   const [initial, setInitial] = useState(true);
   const [images, setImages] = useState(imagesData);
   const [imageFormType, setImageFormType] = useState("");
-  // const [imgIsOpen, setImgIsOpen] = useState(imgIsOpen);
-  // const [isUploading, setSavingImages] = useState(false);
   const [currImgNum, setCurrImgNum] = useState(0);
   const [translate, setTranslate] = useState(0);
   const [curTransitionDur, setCurTransitionDur] = useState(0);
@@ -65,9 +44,8 @@ const Carousel = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [imagesHtml, setImagesHtml] = useState([]);
   const [transitionEnd, setTransitionEnd] = useState(true);
-  const [carouselHeight, setCarouselHeight] = useState(null);
+  // const [carouselHeight, setCarouselHeight] = useState(maxCarouselHeight);
   const [visibleImages, setVisibleImages] = useState([]);
-  const [prevVisibleImages, setPrevVisibleImages] = useState([]);
   const [curVisibleAmount, setCurVisibleAmount] = useState(visibleImgAmount);
   const [carouselWidth, setCarouselWidth] = useState(0);
   const [dimensions, setDimensions] = useState({});
@@ -75,16 +53,8 @@ const Carousel = ({
   const [cursorCurX, setCursorCurX] = useState(null);
   const carouselRef = useRef();
   const imagesRef = useRef();
-  // const wrapRef = useRef();
   const wrapRef = carouselRef;
-  const maxCarouselHeight = 390;
-  const transitionDuration = 300;
   const caruselIsVisible = true;
-  // const caruselIsVisible = useIntersection(carouselRef);
-  // const nsfwMode = true;
-  // const model = {};
-  // const queue = useSelector((state) => state.upload.queue);
-  // const isUploading = queue.find((item) => item.postId === postId);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const model = useSelector((state) => state.model.model);
   const queue = useSelector((state) => state.upload.queue);
@@ -92,13 +62,11 @@ const Carousel = ({
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // console.log("WTF ImgData");
     setImages(imagesData);
   }, [imagesData]);
 
   useEffect(() => {
     if (!visibleImgAmount) {
-      // console.log("RESET VIS");
       setVisibleAmount(0);
       setCurVisibleAmount(0);
     }
@@ -115,10 +83,8 @@ const Carousel = ({
 
   useEffect(() => {
     if (!dimensions?.imgWidthWithGap) return;
-    // console.log(dimensions.imgWidthWithGap);
     const curCarouselWidth =
       dimensions.imgWidthWithGap * curVisibleAmount - dimensions.gap;
-    // console.log(curCarouselWidth);
     setCarouselWidth(curCarouselWidth);
   }, [dimensions.imgWidthWithGap, curVisibleAmount, dimensions.gap]);
 
@@ -139,17 +105,6 @@ const Carousel = ({
     });
   }, [imagesRef, wrapRef]);
 
-  // useEffect(()=> {
-  //   const handleResize = () => {}
-  //   if(visibleImgAmount > 1) {
-  //     window.addEventListener('resize', handleResize)
-  //   }
-
-  //   return ()=> {
-  //     window.removeEventListener('resize', handleResize)
-  //   }
-  // },[])
-
   const openSaveImagesListHandler = () => {
     if (images.length === 1) {
       saveExampleHandler();
@@ -165,22 +120,15 @@ const Carousel = ({
   };
 
   const openFullViewHandler = () => {
-    // console.log(activeCarouselData);
     setFullViewIsOpen(true);
   };
 
   const openCarouselHandler = useCallback(
     (e) => {
       if (imgIsOpen) return;
-      // console.log("open");
-
-      // document.body.style.overflow = "hidden";
       const imgNum = e.target.dataset.position - visibleAmount;
       const currImg = imgNum >= 0 ? imgNum : images?.length + imgNum;
-      // console.log(e.target.dataset.position);
-      // console.log(visibleAmount);
-      // console.log(imgNum);
-      // console.log(currImg);
+
       dispatch(
         modelActions.setActiveCarouselData({
           images,
@@ -188,7 +136,6 @@ const Carousel = ({
           postId,
           modelId,
           saved,
-          // onDelete,
           versionId,
           existedImgsAmount,
           currImgNum: +currImg,
@@ -214,14 +161,12 @@ const Carousel = ({
       dimensions.wrapWidth / dimensions.imgWidthWithGap
     );
     if (!visibleImgAmount && curVisibleImgAmount <= images?.length) {
-      // console.log("SET CURENT VIS", curVisibleImgAmount);
       setVisibleAmount(curVisibleImgAmount);
       setCurVisibleAmount(curVisibleImgAmount);
       setTranslate(0);
       setInitial(true);
     }
     if (!visibleImgAmount && curVisibleImgAmount > images?.length) {
-      // console.log("SET CURENT VIS IM", images?.length);
       setVisibleAmount(images?.length);
       setCurVisibleAmount(images?.length);
       setTranslate(0);
@@ -244,36 +189,16 @@ const Carousel = ({
 
   const openImgHandler = useCallback(
     (e) => {
-      // setCurTransitionDur(0);
-      // setImgIsOpen((prevState) => !prevState);
       const imgNum = e.target.dataset.position - visibleAmount;
       setCurrImgNum(imgNum >= 0 ? imgNum : images?.length + imgNum);
       setCurVisibleAmount(1);
-      setPrevVisibleImages(visibleImages);
       setVisibleImages([+e.target.dataset.position]);
     },
-    [visibleAmount, visibleImages, images]
+    [visibleAmount, images]
   );
-
-  const closeImgHandler = () => {
-    // setImgIsOpen(false);
-    // setCurVisibleAmount(visibleAmount);
-    // if (prevVisibleImages?.length === visibleAmount) {
-    //   setVisibleImages(prevVisibleImages);
-    // } else {
-    //   const visibleImg = Array.from(
-    //     { length: visibleAmount },
-    //     (_, i) => visibleImages[0] + i
-    //   );
-    //   setVisibleImages(visibleImg);
-    // }
-    dispatch(modelActions.setActiveCarouselData({}));
-  };
 
   useEffect(() => {
     if (!images?.length || !visibleImages?.length || !visibleAmount) return;
-    // console.log(currImgNum);
-
     const imagesFiltered = images.filter((image) => true);
     const imagesHtml = imagesFiltered.map((image, i) => {
       const src =
@@ -288,14 +213,12 @@ const Carousel = ({
           key={image?.hash + i}
           imageData={image}
           postId={images}
-          // saved={!postId}
           saved={saved}
           active={!!active}
           versionId={versionId}
           onClick={openCarouselHandler}
           onDelete={openDeleteListHandler}
           onOpen={openFullViewHandler}
-          // // onDelete={onDelete}
           id={image?.hash}
           dataset={i + visibleAmount}
           src={src}
@@ -326,14 +249,12 @@ const Carousel = ({
             key={image?.hash + "r" + i}
             imageData={image}
             postId={images}
-            // saved={!postId}
             saved={saved}
             active={!!active}
             versionId={versionId}
             onClick={openCarouselHandler}
             onDelete={openDeleteListHandler}
             onOpen={openFullViewHandler}
-            // // onDelete={onDelete}
             id={image?.hash}
             dataset={i + visibleAmount}
             src={src}
@@ -361,14 +282,12 @@ const Carousel = ({
             key={image?.hash + "l" + i}
             imageData={image}
             postId={images}
-            // saved={!postId}
             saved={saved}
             active={!!active}
             versionId={versionId}
             onClick={openCarouselHandler}
             onDelete={openDeleteListHandler}
             onOpen={openFullViewHandler}
-            // // onDelete={onDelete}
             id={image?.hash}
             dataset={i}
             src={src}
@@ -396,34 +315,26 @@ const Carousel = ({
     versionId,
     currImgNum,
     openCarouselHandler,
-    // onDelete,
     saved,
     active,
     side,
   ]);
 
-  useEffect(() => {
-    if (!images) return;
-    const bookImages = images.filter((img) => img?.height - img?.width > 0);
-    const imgsToGetSize = !bookImages.length ? images : bookImages;
-    const imgSize = imgsToGetSize?.reduce(
-      (acc, cur) => {
-        return cur?.height > acc[0] ? [cur?.height, cur?.width] : acc;
-      },
-      [0, 0]
-    );
-    const imgHight = Math.floor(
-      (dimensions.imgWidth / imgSize[1]) * imgSize[0]
-    );
-    setCarouselHeight(maxCarouselHeight);
-    // if (curVisibleAmount === 1) {
-    //   setCarouselHeight(maxCarouselHeight);
-    // } else {
-    //   setCarouselHeight(
-    //     imgHight > maxCarouselHeight ? maxCarouselHeight : imgHight
-    //   );
-    // }
-  }, [images, dimensions.imgWidth, curVisibleAmount]);
+  // useEffect(() => {
+  //   if (!images) return;
+  //   const bookImages = images.filter((img) => img?.height - img?.width > 0);
+  //   const imgsToGetSize = !bookImages.length ? images : bookImages;
+  //   const imgSize = imgsToGetSize?.reduce(
+  //     (acc, cur) => {
+  //       return cur?.height > acc[0] ? [cur?.height, cur?.width] : acc;
+  //     },
+  //     [0, 0]
+  //   );
+  //   const imgHight = Math.floor(
+  //     (dimensions.imgWidth / imgSize[1]) * imgSize[0]
+  //   );
+  //   setCarouselHeight(maxCarouselHeight);
+  // }, [images, dimensions.imgWidth, curVisibleAmount]);
 
   useEffect(() => {
     if (images?.length > curVisibleAmount) {
@@ -444,9 +355,6 @@ const Carousel = ({
     if (visibleImages[0] === 0) {
       setCurTransitionDur(0);
       setVisibleImages((prevState) =>
-        prevState.map((el, i) => images?.length + i)
-      );
-      setPrevVisibleImages((prevState) =>
         prevState.map((el, i) => images?.length + i)
       );
       setTranslate(-dimensions.imgWidthWithGap * images?.length);
@@ -472,12 +380,6 @@ const Carousel = ({
     transitionStartHandler,
   ]);
 
-  // useEffect(() => {
-  //   return () => {
-  //     document.removeEventListener("transitionstart", transitionStartHandler);
-  //     document.removeEventListener("transitionend", transitionEndHandler);
-  //   };
-  // }, []);
   useEffect(() => {
     if (images?.length > curVisibleAmount) {
       setTransitionEnd(true);
@@ -494,15 +396,11 @@ const Carousel = ({
   }, [curVisibleAmount, images, transitionStartHandler, transitionEndHandler]);
 
   const slideNextHandler = () => {
-    // console.log(images);
-    // document.addEventListener("transitionstart", transitionStartHandler);
-    // document.addEventListener("transitionend", transitionEndHandler);
     if (!transitionEnd || images.length <= 1) return;
     setCurTransitionDur(transitionDuration);
     const curImg = visibleImages[0] + 1;
     setVisibleImages((prevState) => prevState.map((el) => el + 1));
     setTranslate(-dimensions.imgWidthWithGap * curImg);
-    setPrevVisibleImages(visibleImages.map((el) => el + 1));
     let imgNum = visibleImages[0] + 1 - visibleAmount;
     if (imgNum > images?.length - 1) imgNum = 0;
     const activeImage = imgNum >= 0 ? imgNum : images?.length + imgNum;
@@ -510,49 +408,20 @@ const Carousel = ({
     if (!!onActiveNumChange && !fullViewIsOpen) {
       onActiveNumChange(activeImage);
     }
-
-    // if (imgIsOpen) {
-    //   dispatch(
-    //     modelActions.setActiveCarouselData({
-    //       images,
-    //       visibleImgAmount,
-    //       postId,
-    //       modelId,
-    //       versionId,
-    //       existedImgsAmount,
-    //       currImgNum: imgNum >= 0 ? imgNum : images?.length + imgNum,
-    //     })
-    //   );
-    // }
   };
 
   const slidePrevHandler = () => {
-    // console.log(images);
     if (!transitionEnd || images.length <= 1) return;
     setCurTransitionDur(transitionDuration);
     const curImg = visibleImages[0] - 1;
     setVisibleImages((prevState) => prevState.map((el) => el - 1));
     setTranslate(-dimensions.imgWidthWithGap * curImg);
-    setPrevVisibleImages(visibleImages.map((el) => el - 1));
     const imgNum = visibleImages[0] - 1 - visibleAmount;
     const activeImage = imgNum >= 0 ? imgNum : images?.length + imgNum;
     setCurrImgNum(activeImage);
     if (!!onActiveNumChange && !fullViewIsOpen) {
       onActiveNumChange(activeImage);
     }
-    // if (imgIsOpen) {
-    //   dispatch(
-    //     modelActions.setActiveCarouselData({
-    //       images,
-    //       visibleImgAmount,
-    //       postId,
-    //       modelId,
-    //       versionId,
-    //       existedImgsAmount,
-    //       currImgNum: imgNum >= 0 ? imgNum : images?.length + imgNum,
-    //     })
-    //   );
-    // }
   };
 
   const paginationHtml = images?.map((_, i) => {
@@ -576,22 +445,8 @@ const Carousel = ({
             const newVisibleImages = prevState.map(
               (el, j) => i + j + visibleAmount
             );
-            setPrevVisibleImages(newVisibleImages);
             return newVisibleImages;
           });
-          // if (imgIsOpen) {
-          //   dispatch(
-          //     modelActions.setActiveCarouselData({
-          //       images,
-          //       visibleImgAmount,
-          //       postId,
-          //       modelId,
-          //       versionId,
-          //       existedImgsAmount,
-          //       currImgNum: i,
-          //     })
-          //   );
-          // }
         }}
       ></li>
     );
@@ -601,7 +456,6 @@ const Carousel = ({
     const postData =
       model.hasOwnProperty("savedImages") &&
       model?.savedImages[versionId]?.find((post) => post.postId === +postId);
-    // console.log(queue);
     dispatch(
       uploadActions.addToQueue({
         postId,
@@ -627,14 +481,9 @@ const Carousel = ({
           (post) => post.postId === curPostId
         );
       setIsDeleting(true);
-      // console.log(versionId);
-      // console.log(curPostId);
-      // console.log(postData);
 
       if (!!ids?.length && ids?.length !== postData.amount) {
         const newImages = images.filter((image) => !ids?.includes(image.id));
-        // console.log(newImages);
-        // console.log("UPDATE");
         await updateImagePostData(
           {
             postId: curPostId,
@@ -651,49 +500,27 @@ const Carousel = ({
         );
         setImages(newImages);
       } else {
-        // console.log("DELETE");
         dispatch(deleteImgPost(versionId, curPostId, postData));
       }
       setIsDeleting(false);
       setImagesListIsOpen(false);
     } catch (err) {
-      console.log(err);
+      console.error(err.message);
       setIsDeleting(false);
-      // setImagesListIsOpen(false);
     }
   };
-
-  // const imagesListHtml = images.map((image, i) => {
-  //   return (
-  //     <li key={i}>
-  //       <Image
-  //         className={classes["image"]}
-  //         src={image.url}
-  //         alt={`Image-${i}`}
-  //       />
-  //     </li>
-  //   );
-  // });
 
   const updateExampleHandler = () => {
     onUpdate(images[0].postId);
   };
 
-  // useEffect(() => {
-  //   document.body.style.overflow = "hidden";
-  //   return () => {
-  //     document.body.style.overflow = null;
-  //   };
-  // }, []);
   useEffect(() => {
     if (activeImgNum && !!visibleAmount) {
-      // console.log(activeImgNum);
       setCurrImgNum(activeImgNum);
       setVisibleImages((prevState) => {
         const newVisibleImages = prevState.map(
           (el, j) => activeImgNum + j + visibleAmount
         );
-        setPrevVisibleImages(newVisibleImages);
         return newVisibleImages;
       });
     }
@@ -701,61 +528,27 @@ const Carousel = ({
 
   const moveElement = (e) => {
     const clientX = Math.round(e.clientX || e.touches[0].clientX);
-    // console.log(clientX);
     setCursorCurX(clientX);
   };
 
   const mouseDownHandler = (e) => {
     const clientX = Math.round(e.clientX || e.touches[0].clientX);
-    // setCursorCurX(null);
     setCursorInitialX(clientX);
   };
 
   const mouseUp = (e) => {
-    const clientX = Math.round(e?.clientX || e?.touches[0]?.clientX);
-    // console.log(e);
-    // console.log(e?.clientX);
-    // console.log(e?.touches[0]?.clientX);
-    // console.log(cursorInitialX, cursorCurX);
-    // console.log(cursorInitialX - clientX);
     if (!cursorInitialX || !cursorCurX) return;
     const offcet = Math.round(cursorInitialX) - Math.round(cursorCurX);
     setCursorCurX(null);
     setCursorInitialX(null);
     if (!!offcet && offcet > 0 && Math.abs(offcet) > 40) {
-      // console.log("NEXT T");
       slideNextHandler();
     } else if (!!offcet && offcet < 0 && Math.abs(offcet) > 40) {
-      // console.log("PREV T");
       slidePrevHandler();
     }
   };
 
   return (
-    // <div
-    //   // className={classes.container}
-    //   className={`${classes.container} ${
-    //     imgIsOpen ? classes["container--open"] : ""
-    //   }`}
-    //   style={
-    //     carouselHeight && !imgIsOpen ? { height: `${carouselHeight}px` } : {}
-    //   }
-    //   // onClick={openCarouselHandler}
-    // >
-    //   <div
-    //     ref={wrapRef}
-    //     className={`${classes.wrap}`}
-    //     style={
-    //       imgIsOpen
-    //         ? {
-    //             height: `${
-    //               promptIsOpen ? "calc(100vh - 315px)" : "calc(100vh - 110px)"
-    //             }`,
-    //           }
-    //         : {}
-    //     }
-    //     // className={`${classes.wrap} ${imgIsOpen ? classes["wrap--open"] : ""}`}
-    //   >
     <div
       className={`${classes.carousel}`}
       ref={carouselRef}
@@ -767,11 +560,8 @@ const Carousel = ({
             }
           : {}
       }
-      // onMouseUp={mouseUp}
       onTouchEnd={mouseUp}
-      // onMouseDown={mouseDownHandler}
       onTouchStart={mouseDownHandler}
-      // onPointerMove={moveElement}
       onTouchMove={moveElement}
     >
       <div
@@ -836,11 +626,6 @@ const Carousel = ({
       {images?.length > curVisibleAmount && (
         <ul className={classes.pagination}>{paginationHtml}</ul>
       )}
-      {/* <ButtonAdd
-        className={classes["btn-add"]}
-        previewData={images[currImgNum]}
-        type="image"
-      /> */}
       {!saved && !!postId && (
         <span className={classes["btn-save-container"]}>
           <button
@@ -863,7 +648,6 @@ const Carousel = ({
           UP
         </span>
       )}
-      {/* <span className={classes["amount"]}>{images?.length}</span> */}
       {fullViewIsOpen && (
         <ImageFullView
           src={images[currImgNum]?.url}
@@ -901,15 +685,6 @@ const Carousel = ({
         </Modal>
       )}
     </div>
-    //     {imgIsOpen && (
-    //       <ImageCard
-    //         imageData={images[currImgNum]}
-    //         closeImg={closeImgHandler}
-    //         // isOpen={imgIsOpen}
-    //       />
-    //     )}
-    //   </div>
-    // </div>
   );
 };
 

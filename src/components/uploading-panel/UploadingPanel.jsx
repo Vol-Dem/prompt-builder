@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import classes from "./UploadingPanel.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { savePost, uploadActions } from "../../store/upload";
-import Image from "../ui/image/Image";
 import DropDownList from "../ui/DropDownList";
 import UploadingItem from "./uploading-item/UploadingItem";
 import ButtonTertiary from "../ui/ButtonTertiary";
@@ -13,7 +12,6 @@ const UploadingPanel = () => {
   const queue = useSelector((state) => state.upload.queue);
   const rejected = useSelector((state) => state.upload.rejected);
   const curPostId = useSelector((state) => state.upload.curPostId);
-  const isUploading = useSelector((state) => state.upload.isUploading);
   const dispatch = useDispatch();
 
   const beforeUnloadHandler = useCallback((event) => {
@@ -45,9 +43,6 @@ const UploadingPanel = () => {
       !curPostId &&
       curPostId !== queue[0].curPostId
     ) {
-      console.log(queue);
-      console.log("UPLOAD", queue);
-      console.log("POST", curPostId);
       dispatch(savePost(queue[0]));
     }
   }, [dispatch, uid, queue, curPostId]);
@@ -77,13 +72,6 @@ const UploadingPanel = () => {
   });
 
   const closeMenuHandler = useCallback((e) => {
-    console.log("CLOSE");
-    // console.log(uploadingListIsOpen);
-    // console.log(classes["search"]);
-    // console.log(e.target);
-    // console.log(e.target.closest(`.${classes.search}`));
-    console.log(e.target.closest(`.${classes.uploading}`));
-
     if (!e.target.closest(`.${classes.uploading}`)) {
       setUploadingLIstIsOpen(false);
     }
@@ -91,8 +79,6 @@ const UploadingPanel = () => {
 
   useEffect(() => {
     if (uploadingListIsOpen) {
-      console.log("MENU");
-      console.log(uploadingListIsOpen);
       document.removeEventListener("click", closeMenuHandler);
       document.addEventListener("click", closeMenuHandler);
     } else {
@@ -141,7 +127,6 @@ const UploadingPanel = () => {
             {rejected.length}
           </span>
         )}
-        {/* , Re: {rejected.length} */}
       </div>
       {uploadingListIsOpen && (
         <div>

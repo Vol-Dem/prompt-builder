@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import classes from "./UsedModelsPanel.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import UsedCard from "../used-card/UsedCard";
@@ -7,9 +6,7 @@ import {
   usedModelsActions,
 } from "../../store/usedModels";
 import UpdateModelForm from "../forms/update-model-form/UpdateModelForm";
-import Arrow from "../ui/Arrow";
 import ButtonTertiary from "../ui/ButtonTertiary";
-import UpdateDb from "../update-db/UpdateDb";
 import Buttton from "../ui/Button";
 import CrossSvg from "../../assets/CrossSvg";
 import Image from "../ui/image/Image";
@@ -23,9 +20,6 @@ import Bars2Svg from "../../assets/Bars2Svg";
 import Bars4Svg from "../../assets/Bars4Svg";
 
 const UsedModelsPanel = () => {
-  // const [panelIsOpen, setPanelIsOpen] = useState(true);
-  // const [formIsOpen, setFormIsOpen] = useState(false);
-  // const [fullCardView, setFullCardView] = useState(true);
   const usedModels = useSelector((state) => state.used.models);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const usedImages = useSelector((state) => state.used.images);
@@ -35,40 +29,24 @@ const UsedModelsPanel = () => {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   const transitionEnd = () => {
-  //     dispatch(usedModelsActions.panelState(panelIsOpen));
-  //   };
-  //   document.addEventListener("transitionend", transitionEnd);
-  //   return () => {
-  //     document.removeEventListener("transitionend", transitionEnd);
-  //   };
-  // }, [panelIsOpen, dispatch]);
-
   const openPanelHandler = () => {
     dispatch(usedModelsActions.panelState());
-    // setPanelIsOpen((prevState) => !prevState);
   };
   const openFormHandler = () => {
     if (!isAuth) {
       dispatch(authActions.openAuthForm(true));
     } else {
-      // setFormIsOpen((prevState) => !prevState);
       dispatch(usedModelsActions.setFormIsOpen(!formIsOpen));
     }
   };
 
   const chageCardViewHandler = () => {
-    // setFullCardView((prevState) => !prevState);
     dispatch(usedModelsActions.cardViewState());
   };
 
   const openImageHandler = (e) => {
-    const id = e.target.closest(`.${classes["ref-images__item"]}`).dataset.id;
     const hash = e.target.closest(`.${classes["ref-images__item"]}`).dataset.id;
     const image = usedImages.find((image) => image.hash === hash);
-    // const image = usedImages.find((image) => image.id === +id);
-    console.log(image);
 
     if (hash) {
       dispatch(
@@ -81,7 +59,6 @@ const UsedModelsPanel = () => {
   };
 
   const closeImageHandler = (e) => {
-    // const id = +e.target.closest(`.${classes["ref-images__item"]}`).dataset.id;
     const hash = e.target.closest(`.${classes["ref-images__item"]}`).dataset.id;
 
     if (hash) {
@@ -94,9 +71,6 @@ const UsedModelsPanel = () => {
   });
 
   const usedImagesHtml = [...Array(3).keys()].map((image, i) => {
-    // if (!!usedImages[i]?.id) {
-
-    // const nsfw = !image?.nsfw || image?.nsfw === "None" ? false : true;
     const nsfw =
       usedImages[i]?.nsfw === false ||
       usedImages[i]?.nsfw === "None" ||
@@ -109,7 +83,6 @@ const UsedModelsPanel = () => {
           key={`i${i}`}
           className={classes["ref-images__item"]}
           data-id={usedImages[i]?.hash}
-          // data-id={usedImages[i]?.id}
         >
           <Image
             src={usedImages[i].url}
@@ -132,13 +105,6 @@ const UsedModelsPanel = () => {
       );
     }
   });
-  // const usedImagesHtml = usedImages.map((image, i) => {
-  //   return (
-  //     <li key={i} className={classes["ref-images__item"]}>
-  //       <Image src={image.url} alt={`Reference image ${i++}`} />
-  //     </li>
-  //   );
-  // });
 
   const clearPanelHandler = () => {
     dispatch(usedModelsActions.clearPanel());
@@ -156,7 +122,6 @@ const UsedModelsPanel = () => {
         onClick={openPanelHandler}
         className={classes["btn__open"]}
       >
-        {/* <Arrow direction={panelIsOpen ? "right" : "left"} /> */}
         {!panelIsOpen && <ArrowLeftSvg />}
         {panelIsOpen && <ArrowRightSvg />}
       </button>
@@ -189,20 +154,6 @@ const UsedModelsPanel = () => {
               <>
                 <CrossSvg />
                 Hide form
-                {/* <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
-                  />
-                </svg> */}
               </>
             )}
           </Buttton>
@@ -213,11 +164,7 @@ const UsedModelsPanel = () => {
             </div>
           )}
           <div className={classes["controls"]}>
-            <ButtonTertiary
-              type="button"
-              // className={classes["controls__btn"]}
-              onClick={clearPanelHandler}
-            >
+            <ButtonTertiary type="button" onClick={clearPanelHandler}>
               Clear
             </ButtonTertiary>
             <div>
@@ -243,26 +190,23 @@ const UsedModelsPanel = () => {
           </div>
         </div>
 
-        <>
-          {/* <h3>Used models</h3> */}
-          <ul className={classes["model-cards"]}>
-            {!!usedImages.length && (
-              <li>
-                <ul className={classes["ref-images"]}>{usedImagesHtml}</ul>
-              </li>
-            )}
-            {!!usedModelsHtml.length && usedModelsHtml}
-            {!usedModelsHtml.length && (
-              <div className={classes["model-cards__tip"]}>
-                Press{" "}
-                <span className={classes.plus}>
-                  <PlusSvg />
-                </span>{" "}
-                to add model or image to side panel
-              </div>
-            )}
-          </ul>
-        </>
+        <ul className={classes["model-cards"]}>
+          {!!usedImages.length && (
+            <li>
+              <ul className={classes["ref-images"]}>{usedImagesHtml}</ul>
+            </li>
+          )}
+          {!!usedModelsHtml.length && usedModelsHtml}
+          {!usedModelsHtml.length && (
+            <div className={classes["model-cards__tip"]}>
+              Press{" "}
+              <span className={classes.plus}>
+                <PlusSvg />
+              </span>{" "}
+              to add model or image to side panel
+            </div>
+          )}
+        </ul>
         <div className={classes["support"]}>
           Support project:{" "}
           <a
@@ -284,10 +228,7 @@ const UsedModelsPanel = () => {
           >
             <img
               height="28"
-              // style="border:0px;height:36px;"
-              // src="https://storage.ko-fi.com/cdn/brandasset/kofi_s_tag_white.png?"
               src="https://storage.ko-fi.com/cdn/brandasset/kofi_bg_tag_dark.png"
-              // src="https://storage.ko-fi.com/cdn/brandasset/logo_white_stroke.png?"
               border="0"
               alt="ko-fi"
             />

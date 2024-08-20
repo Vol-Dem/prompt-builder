@@ -49,9 +49,7 @@ const Select = ({
         ? options.length * selectHeight
         : visibleOptionsAmount * selectHeight;
     setOptionsFieldHeight(fieldHeight);
-    // console.log(selectHeight);
-    // console.log(labelStyle);
-    // console.log(labeldRef.current.clientHeight);
+
     if (selected) {
       const selectedData = options.find(
         (option) => option.value + "" === selected + ""
@@ -68,14 +66,10 @@ const Select = ({
   };
 
   const onShowSelect = () => {
-    console.log("click");
     setSelectIsOpen((curState) => !curState);
   };
 
   const selectOptions = options.map((item, i) => {
-    // console.log("SELECTED", selectedFieldValue);
-    // console.log("ITEM", item.value);
-    // console.log(item.value === selectedFieldValue);
     return (
       <div ref={inputRef} key={i} className={classes["select__item"]}>
         <input
@@ -109,12 +103,6 @@ const Select = ({
         </label>
       )}
       <div className={classes["container"]}>
-        {/* <span
-        onClick={onShowSelect}
-        className={`${classes["select__arrow"]} ${
-          selectIsOpen ? classes["select__arrow--open"] : ""
-        }`}
-      ></span> */}
         <ArrowDownSvg
           className={`${classes["select__arrow"]} ${
             selectIsOpen ? classes["select__arrow--open"] : ""

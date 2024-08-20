@@ -13,7 +13,7 @@ import {
   OFFLINE_ERROR_MESSAGE,
   SAVED_SUCCESS_MESSAGE,
 } from "../../../variables/constants";
-import { useOnlineStatus } from "../../../hooks/use-online-status";
+// import { useOnlineStatus } from "../../../hooks/use-online-status";
 import Spinner from "../../ui/Spinner";
 
 const firestore = getFirestore(firebaseApp);
@@ -33,9 +33,6 @@ const VersionStatusForm = ({ modelData }) => {
     )
       ?.sort((a, b) => a?.index - b?.index)
       .map((version, i) => {
-        // if (modelData?.modelVersionsCustomData.hasOwnProperty(version.versionId)) {
-        // const versionsCustomData =
-        //   modelData?.modelVersionsCustomData[version.versionId];
         return {
           type: "checkbox",
           id: version.versionId + "in",
@@ -43,15 +40,6 @@ const VersionStatusForm = ({ modelData }) => {
           label: version.name,
           value: version.downloadStatus,
         };
-        // } else {
-        //   return {
-        //     type: "checkbox",
-        //     id: version.versionId + "in",
-        //     name: version.versionId,
-        //     label: version.name,
-        //     value: false,
-        //   };
-        // }
       });
 
     setVersionsDownloadStatus(versionStatusInputData || []);
@@ -76,9 +64,8 @@ const VersionStatusForm = ({ modelData }) => {
           downloadStatus: version.value,
         };
       });
-      console.log(updatedVersionData);
+
       const activePreviewId = modelData.data.modelVersions.find((version) => {
-        console.log(updatedVersionData[version.id]);
         return updatedVersionData[version.id]?.downloadStatus === true;
       })?.id;
       const activePreviewImg =
@@ -129,8 +116,6 @@ const VersionStatusForm = ({ modelData }) => {
       seteSuccessMessage(SAVED_SUCCESS_MESSAGE);
       setIsSaving(false);
     } catch (err) {
-      console.log(err);
-      console.log(err.message);
       seteErrorMessage(err.message);
       setIsSaving(false);
     }
@@ -142,10 +127,8 @@ const VersionStatusForm = ({ modelData }) => {
       const curIndex = newState.findIndex(
         (version) => version.id === e.target.id
       );
-      // console.log(e.target.checked);
 
       newState[curIndex].value = e.target.checked;
-      // console.log(newState);
       return newState;
     });
   };

@@ -21,9 +21,6 @@ const About = ({ title }) => {
   }, [title]);
 
   const openFullVeiwHandler = (e) => {
-    // if (!e.target?.data?.url) return;
-    console.log(e.target);
-    console.log(e.target?.src);
     setCurrImageUrl(e.target?.src);
     setFullViewIsOpen(true);
   };
@@ -233,10 +230,6 @@ const About = ({ title }) => {
             </LinkA>
           </li>
         </ul>
-
-        {/* <p className={classes["about__text"]}>
-          Below is a guide to the main features of the platform.
-        </p> */}
       </div>
       <h2 id="start" className={classes["about__h2"]}>
         Start: Adding Models
@@ -1151,84 +1144,6 @@ const About = ({ title }) => {
           before.
         </p>
       </div>
-      {/* <img
-        onClick={openFullVeiwHandler}
-        className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (4).webp")}
-        alt=""
-      />
-      <img
-        onClick={openFullVeiwHandler}
-        className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (5).webp")}
-        alt=""
-      />
-      <img
-        onClick={openFullVeiwHandler}
-        className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (25).webp")}
-        alt=""
-      />
-      <img
-        onClick={openFullVeiwHandler}
-        className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (29).webp")}
-        alt=""
-      />
-      <img
-        onClick={openFullVeiwHandler}
-        className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (10).webp")}
-        alt=""
-      />
-      <img
-        onClick={openFullVeiwHandler}
-        className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (1).webp")}
-        alt=""
-      />
-      <img
-        onClick={openFullVeiwHandler}
-        className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (2).webp")}
-        alt=""
-      />
-      <img
-        onClick={openFullVeiwHandler}
-        className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (26).webp")}
-        alt=""
-      />
-      <img
-        onClick={openFullVeiwHandler}
-        className={classes["img"]}
-        src={require("../../assets/img-tmp/vic (19).webp")}
-        alt=""
-      />
-      <img
-        onClick={openFullVeiwHandler}
-        className={classes["img"]}
-        src={require("../../assets/img-tmp/cat-baget.webp")}
-        alt=""
-      />
-      <img
-        onClick={openFullVeiwHandler}
-        className={classes["img"]}
-        src={require("../../assets/img-tmp/pbg (1).webp")}
-        alt=""
-      />
-      <img
-        onClick={openFullVeiwHandler}
-        className={classes["img"]}
-        src={require("../../assets/img-tmp/pbg (2).webp")}
-        alt=""
-      />
-      <img
-        onClick={openFullVeiwHandler}
-        className={classes["img"]}
-        src={require("../../assets/img-tmp/pbg (3).webp")}
-        alt=""
-      /> */}
       {fullViewIsOpen && (
         <ImageFullView
           src={currImageUrl}

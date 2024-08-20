@@ -4,30 +4,14 @@ import classes from "./ReAuthForm.module.scss";
 import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  authActions,
-  authRequest,
-  authWithGoogle,
-  reAuthUser,
-  resetUserPassword,
-} from "../../../store/auth";
+import { authActions, reAuthUser } from "../../../store/auth";
 import Buttton from "../../ui/Button";
-import { useValidation } from "../../../hooks/use-validation";
 import { useEffect } from "react";
-import ButttonSecondary from "../../ui/ButtonSecondary";
 import {
   DEF_INPUT_ERROR_MESSAGE,
-  EMAIL_MAX_LENGTH,
-  NAME_MAX_LENGTH,
   OFFLINE_ERROR_MESSAGE,
   PASSWORD_MAX_LENGTH,
 } from "../../../variables/constants";
-import Checkbox from "../../ui/Checkbox";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import ButtonTertiary from "../../ui/ButtonTertiary";
-
-const provider = new GoogleAuthProvider();
-const auth = getAuth();
 
 const ReAuthForm = () => {
   const [password, setPassword] = useState({
@@ -51,11 +35,6 @@ const ReAuthForm = () => {
     e.preventDefault();
     dispatch(authActions.setErrorMessage(""));
     setShowErrorMessage(true);
-    // validateEmail(email);
-    // validatePassword(password);
-    // setShowEmailError(true);
-    // setShowPasswordError(true);
-    // console.log("WTF", emailErrorMessage);
     if (!navigator?.onLine) {
       dispatch(authActions.setErrorMessage(OFFLINE_ERROR_MESSAGE));
       return;
@@ -72,11 +51,6 @@ const ReAuthForm = () => {
     e.preventDefault();
     dispatch(authActions.setErrorMessage(""));
     setShowErrorMessage(true);
-    // validateEmail(email);
-    // validatePassword(password);
-    // setShowEmailError(true);
-    // setShowPasswordError(true);
-    // console.log("WTF", emailErrorMessage);
     if (!navigator?.onLine) {
       dispatch(authActions.setErrorMessage(OFFLINE_ERROR_MESSAGE));
       return;
@@ -96,8 +70,6 @@ const ReAuthForm = () => {
           className={`${classes["auth__input"]} ${
             showErrorMessage && !password.isValid ? classes.invalid : ""
           }`}
-          // onBlur={showPasswordErrorHandler}
-          // error={showPasswordError && passwordErrorMessage}
           onChange={(e, isValid) => {
             setPassword({ value: e.target.value, isValid });
           }}

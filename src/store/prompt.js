@@ -31,7 +31,6 @@ const promptSlice = createSlice({
       state.curNegPrompt = "";
     },
     setPresets(state, actions) {
-      // console.log(actions.payload);
       if (actions?.payload) state.presets = actions.payload;
     },
     setPromptIsOpen(state, actions) {
@@ -81,7 +80,6 @@ const promptSlice = createSlice({
       }
     },
     addAllTagsToPrompt(state, actions) {
-      console.log(actions.payload);
       const isPositive = actions.payload.type === "positive";
       const prompt = isPositive
         ? state.curPrompt.trim()
@@ -99,7 +97,7 @@ const promptSlice = createSlice({
         );
         return !isInPrompt;
       });
-      console.log(newWords);
+
       if (isPositive && !!newWords?.length) {
         state.curPrompt =
           lastSimbol === "," || !prompt.length
@@ -113,7 +111,6 @@ const promptSlice = createSlice({
       }
     },
     removeAllTags(state, actions) {
-      console.log(actions.payload);
       const curPrompt =
         actions.payload.type === "positive"
           ? state.curPrompt
@@ -124,7 +121,6 @@ const promptSlice = createSlice({
         ?.flatMap((tag) => tag.trim() || []);
 
       let newPromt = promptArr.flatMap((word) => {
-        // const isInPrompt = word === actions.payload.value
         const isInPrompt = actions.payload.value.find(
           (wordToDel) => wordToDel === word
         );
@@ -239,7 +235,7 @@ export const getUserPresets = (uid) => {
         }
       }
     } catch (err) {
-      console.log(err);
+      console.error(err.message);
     }
     // const uid = getState().auth.user.uid;
   };

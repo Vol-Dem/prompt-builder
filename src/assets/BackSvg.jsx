@@ -1,5 +1,3 @@
-import React from "react";
-
 const BackSvg = ({ className, onClick }) => {
   return (
     <svg
