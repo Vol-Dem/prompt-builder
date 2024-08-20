@@ -27,6 +27,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import LinkA from "../../ui/LinkA";
 import SuccessMessage from "../../ui/SuccessMessage";
+import { Link } from "react-router-dom";
 
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
@@ -292,13 +293,13 @@ const AuthForm = () => {
               label={
                 <span>
                   I have read and agree to the{" "}
-                  <a className={classes.link} href="#" target="blank">
+                  <Link className={classes.link} to="tos" target="blank">
                     Terms of Service
-                  </a>{" "}
+                  </Link>{" "}
                   and{" "}
-                  <a className={classes.link} href="#" target="blank">
+                  <Link className={classes.link} to="privacy" target="blank">
                     Privacy Policy
-                  </a>
+                  </Link>
                 </span>
               }
               onChange={agreementHandler}
@@ -347,13 +348,13 @@ const AuthForm = () => {
         <div className={classes["privacy"]}>
           {/* I have read and agree to the{" "} */}
           By continuing, you are indicating that you accept our
-          <a className={classes.link} href="#" target="blank">
+          <Link className={classes.link} to="tos" target="blank">
             Terms of Service
-          </a>{" "}
+          </Link>{" "}
           and{" "}
-          <a className={classes.link} href="#" target="blank">
+          <Link className={classes.link} to="privacy" target="blank">
             Privacy Policy
-          </a>
+          </Link>
         </div>
       )}
     </section>

@@ -23,6 +23,8 @@ import { savePost } from "./store/upload";
 import Edit from "./components/pages/Edit";
 import ErrorPage from "./components/pages/ErrorPage";
 import { getAuth, getRedirectResult } from "firebase/auth";
+import ToS from "./components/pages/ToS";
+import PrivacyPolicy from "./components/pages/PrivacyPolicy";
 const auth = getAuth(firebaseApp);
 
 const firestore = getFirestore(firebaseApp);
@@ -122,6 +124,16 @@ function App() {
           path="about"
           errorElement={<ErrorPage />}
           element={<About title="About" />}
+        ></Route>
+        <Route
+          path="tos"
+          errorElement={<ErrorPage />}
+          element={<ToS title="Terms of Service" />}
+        ></Route>
+        <Route
+          path="privacy"
+          errorElement={<ErrorPage />}
+          element={<PrivacyPolicy title="Privacy Policy" />}
         ></Route>
       </Route>
     )
