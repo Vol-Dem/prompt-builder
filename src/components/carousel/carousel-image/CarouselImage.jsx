@@ -356,7 +356,7 @@ const CarouselImage = ({
         </>
       )}
       {tagSetMenuIsOpen && (
-        <Modal onClose={closeTagSetMenuHandler}>
+        <Modal className={classes['tag-sets__modal']} onClose={closeTagSetMenuHandler}>
           <div className={classes["tag-sets-head"]}>
             <div className={classes["tag-sets-title"]}>Tag sets</div>
             {nsfwMode && (

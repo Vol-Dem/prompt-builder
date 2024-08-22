@@ -209,7 +209,7 @@ const Model = ({ title }) => {
           setErrorMessage("");
           const data = doc.data();
 
-          console.log(data);
+          // console.log(data);
           if (!data) {
             setErrorMessage("Failed to load model");
             setIsLoading(false);

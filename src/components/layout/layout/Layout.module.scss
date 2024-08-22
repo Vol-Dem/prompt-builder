@@ -94,6 +94,10 @@
 // }
 
 @media (max-width: 680px) {
+  .wrap {
+    position: relative;
+    z-index: 40;
+  }
   .logo {
     margin-right: auto;
     // display: none;
@@ -106,6 +110,12 @@
   }
   .search-hidden {
     display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .wrap {
+    padding: 0 2.8rem 0 1rem;
   }
 }
 

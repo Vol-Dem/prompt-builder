@@ -27,7 +27,11 @@ const Modal = (props) => {
             className={`${classes.modal} ${classes["modal--backdrop"]}`}
             onClick={props.onClose}
           ></div>
-          <Card className={`${classes.modal} ${classes["modal--content"]}`}>
+          <Card
+            className={`${classes.modal} ${classes["modal--content"]} ${
+              props?.className ? props.className : ""
+            }`}
+          >
             {props.title && <h2 className={classes.title}>{props.title}</h2>}
             {props.children}
             <button className={classes["modal__close"]} onClick={props.onClose}>

@@ -35,6 +35,7 @@
   background-color: var.$color-background-tertiary;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: var.$box-shadow;
+
   &__img {
     width: 14rem;
     height: 20rem;
@@ -57,11 +58,19 @@
     display: block;
     margin: 2rem auto 1rem;
   }
+
+  &__btn--hidden {
+    display: none;
+  }
 }
 
 @media (max-width: 1250px) {
   .tag-sets__list {
     grid-template-columns: 1fr;
+  }
+
+  .tag-sets__btn--hidden {
+    display: block;
   }
 }
 
@@ -69,6 +78,7 @@
   .tag-sets {
     flex-direction: column;
   }
+
   .tag-sets__img {
     width: 100%;
     height: auto;

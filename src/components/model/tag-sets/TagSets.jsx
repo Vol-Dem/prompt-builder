@@ -114,10 +114,14 @@ const TagSets = ({ customData, defaultData }) => {
         </div>
       )}
 
-      {allTagSets.length > defVisibleTags && (
+      {allTagSets?.length && (
         <Buttton
           type="button"
-          className={classes["tag-sets__btn"]}
+          className={`${classes["tag-sets__btn"]} ${
+            allTagSets.length === defVisibleTags
+              ? classes["tag-sets__btn--hidden"]
+              : ""
+          }`}
           onClick={showAllTagSetsHandler}
         >
           {!tagSetsIsOpen ? "Show All" : "Hide"}

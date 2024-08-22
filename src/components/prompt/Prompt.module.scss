@@ -45,7 +45,7 @@
 }
 
 .mode-switch {
-  display: inline-block;
+  display: flex;
   // font-size: 1.4rem;
   border-radius: var.$border-radius;
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -212,6 +212,13 @@
   }
 }
 
+@media (max-width: 768px) {
+  .btn-open {
+    width: 15rem;
+    height: 2.2rem;
+  }
+}
+
 @media (max-width: 480px) {
   .field {
     height: 17rem;
@@ -222,5 +229,10 @@
 
   .settings {
     gap: 0.6rem;
+  }
+
+  .btn-open {
+    width: 14rem;
+    height: 2.2rem;
   }
 }

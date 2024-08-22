@@ -1,8 +1,10 @@
 @use "./../../../variables/variables.scss" as var;
 
 .auth {
-  margin: 0 3.6rem;
-  max-width: 36rem;
+  // margin: 0 3.6rem;
+  margin: 0;
+  width: 36rem;
+  max-width: 100%;
 
   &__title {
     font-size: 3.6rem;
@@ -14,7 +16,7 @@
   &__form {
     display: flex;
     flex-direction: column;
-    min-width: 36rem;
+    width: 100%;
     gap: 1.6rem;
   }
 

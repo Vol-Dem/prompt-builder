@@ -91,3 +91,10 @@
     @include var.custom-scroll;
   }
 }
+
+@media screen and (max-width: 768px) {
+  .container--open {
+    width: calc(100% - 1rem);
+    margin-right: 1rem;
+  }
+}

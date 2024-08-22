@@ -163,3 +163,9 @@
     opacity: 1;
   }
 }
+
+@media (max-width: 840px) {
+  .presets-container {
+    flex-wrap: wrap;
+  }
+}
