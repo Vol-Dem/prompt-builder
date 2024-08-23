@@ -26,11 +26,7 @@ const usedModelsSlice = createSlice({
       state.formIsOpen = actions.payload;
     },
     panelState(state, actions) {
-      if (actions.payload) {
-        state.panelIsOpen = actions.payload.panelIsOpen;
-      } else {
-        state.panelIsOpen = !state.panelIsOpen;
-      }
+      state.panelIsOpen = actions.payload;
     },
     cardViewState(state, actions) {
       if (actions.payload) {
@@ -132,7 +128,7 @@ export const uploadPanelStateFromStorage = () => {
     if (storageImgData)
       dispatch(usedModelsActions.addImagesToPanel(storageImgData));
     if (storagePanelState?.hasOwnProperty("panelIsOpen")) {
-      dispatch(usedModelsActions.panelState(storagePanelState));
+      dispatch(usedModelsActions.panelState(storagePanelState?.panelIsOpen));
     } else if (document.body.offsetWidth > 600) {
       dispatch(usedModelsActions.panelState({ panelIsOpen: true }));
     }

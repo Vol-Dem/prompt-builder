@@ -657,6 +657,7 @@ const Carousel = ({
           }}
           nextSlide={slideNextHandler}
           prevSlide={slidePrevHandler}
+          controls={images?.length > 1}
         ></ImageFullView>
       )}
       {imagesListIsOpen && (

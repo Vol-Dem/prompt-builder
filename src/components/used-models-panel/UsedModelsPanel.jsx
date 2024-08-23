@@ -18,8 +18,11 @@ import ArrowRightSvg from "../../assets/ArrowRight";
 import PlusSvg from "../../assets/PlusSvg";
 import Bars2Svg from "../../assets/Bars2Svg";
 import Bars4Svg from "../../assets/Bars4Svg";
+import { useState } from "react";
 
 const UsedModelsPanel = () => {
+  const [cursorInitialX, setCursorInitialX] = useState(null);
+  const [cursorCurX, setCursorCurX] = useState(null);
   const usedModels = useSelector((state) => state.used.models);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const usedImages = useSelector((state) => state.used.images);
@@ -30,7 +33,7 @@ const UsedModelsPanel = () => {
   const dispatch = useDispatch();
 
   const openPanelHandler = () => {
-    dispatch(usedModelsActions.panelState());
+    dispatch(usedModelsActions.panelState(!panelIsOpen));
   };
   const openFormHandler = () => {
     if (!isAuth) {
@@ -55,6 +58,9 @@ const UsedModelsPanel = () => {
           side: true,
         })
       );
+      if (document.body.offsetWidth < 1024) {
+        dispatch(usedModelsActions.panelState(false));
+      }
     }
   };
 
@@ -110,11 +116,39 @@ const UsedModelsPanel = () => {
     dispatch(usedModelsActions.clearPanel());
   };
 
+  const moveElement = (e) => {
+    const clientX = Math.round(e.clientX || e.touches[0].clientX);
+    setCursorCurX(clientX);
+  };
+
+  const mouseDownHandler = (e) => {
+    const clientX = Math.round(e.clientX || e.touches[0].clientX);
+    setCursorInitialX(clientX);
+  };
+
+  const mouseUp = (e) => {
+    if (!cursorInitialX || !cursorCurX) return;
+    const offcet = Math.round(cursorInitialX) - Math.round(cursorCurX);
+    setCursorCurX(null);
+    setCursorInitialX(null);
+    console.log(offcet);
+    console.log(cursorInitialX);
+    console.log(cursorCurX);
+    if (!!offcet && offcet > 0 && Math.abs(offcet) > 40) {
+      dispatch(usedModelsActions.panelState(true));
+    } else if (!!offcet && offcet < 0 && Math.abs(offcet) > 40) {
+      dispatch(usedModelsActions.panelState(false));
+    }
+  };
+
   return (
     <aside
       className={`${classes.container} ${
         panelIsOpen ? classes["container--open"] : ""
       }`}
+      onTouchEnd={mouseUp}
+      onTouchStart={mouseDownHandler}
+      onTouchMove={moveElement}
     >
       <button
         type="button"

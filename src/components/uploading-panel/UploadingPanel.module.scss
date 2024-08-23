@@ -3,6 +3,7 @@
 .uploading {
   position: relative;
   display: flex;
+  z-index: 45;
   // padding: 0.8rem;
 
   &__btn {

@@ -45,7 +45,7 @@ const ImageFullView = (props) => {
           <div className={classes["modal__close"]} onClick={props.onClose}>
             <CrossSvg />
           </div>
-          {props.prevSlide && (
+          {props.prevSlide && props?.controls && (
             <div
               className={`${classes["btn-slide"]} ${classes["btn-slide--next"]}`}
               onClick={props.prevSlide}
@@ -53,7 +53,7 @@ const ImageFullView = (props) => {
               <ArrowLeftSvg />
             </div>
           )}
-          {props.nextSlide && (
+          {props.nextSlide && props?.controls && (
             <div
               onClick={props.nextSlide}
               className={`${classes["btn-slide"]} ${classes["btn-slide--prev"]}`}

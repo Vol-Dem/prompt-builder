@@ -114,11 +114,11 @@ const TagSets = ({ customData, defaultData }) => {
         </div>
       )}
 
-      {allTagSets?.length && (
+      {allTagSets?.length > 1 && (
         <Buttton
           type="button"
           className={`${classes["tag-sets__btn"]} ${
-            allTagSets.length === defVisibleTags
+            allTagSets.length <= defVisibleTags
               ? classes["tag-sets__btn--hidden"]
               : ""
           }`}

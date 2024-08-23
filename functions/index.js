@@ -374,7 +374,7 @@ exports.updateModel = onRequest(
 
           const newVersionsWithIndex = [
             ...newVersions,
-            ...curModelData?.modelVersions,
+            ...curModelData.modelVersions,
           ].map((version) => {
             const index = responseData?.modelVersions?.find(
               (newVersion) => newVersion?.id === version?.id
