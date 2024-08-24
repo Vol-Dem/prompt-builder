@@ -3,6 +3,7 @@ import {
   arrayRemove,
   deleteDoc,
   doc,
+  getDoc,
   getFirestore,
   setDoc,
   updateDoc,
@@ -201,17 +202,22 @@ export const deleteImgPost = (versionId, postId, postData) => {
 
     const modelRef = doc(firestore, "users", uid, "models", id + "");
 
-    const imgPostRef = doc(
-      firestore,
-      "users",
-      uid,
-      "models",
-      id + "",
-      "images",
-      postId + ""
-    );
+    const imgPostRef = doc(firestore, "users", uid, "images", postId + "");
 
-    await deleteDoc(imgPostRef);
+    const docSnap = await getDoc(imgPostRef);
+
+    if (docSnap.exists()) {
+      const postVersions = docSnap.data()?.versionsId;
+
+      if (postVersions?.length === 1) {
+        await deleteDoc(imgPostRef);
+      } else {
+        await updateDoc(imgPostRef, {
+          versionsId: arrayRemove(versionId),
+        });
+      }
+    }
+
     await updateDoc(modelRef, {
       [`savedImages.${versionId}`]: arrayRemove(postData),
     });

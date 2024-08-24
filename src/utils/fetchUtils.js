@@ -438,56 +438,77 @@ export const updateImagePostData = async (
     const { postId, modelId, versionId, postData } = postInfo;
     const uid = auth.currentUser.uid;
     const modelRef = doc(firestore, "users", uid, "models", modelId + "");
-    const modelImagesRef = doc(
-      firestore,
-      "users",
-      uid,
-      "models",
-      modelId + "",
-      "images",
-      postId + ""
-    );
+    const modelImagesRef = doc(firestore, "users", uid, "images", postId + "");
+    // const modelImagesRef = doc(
+    //   firestore,
+    //   "users",
+    //   uid,
+    //   "models",
+    //   modelId + "",
+    //   "images",
+    //   postId + ""
+    // );
+
+    console.log(postId, modelId, versionId);
+
+    const newImagesId = imagesData.map((image) => image.id);
+
+    const oldImagesId = postData?.imagesId || [];
+
+    const imagesId = postInfo?.delete
+      ? newImagesId
+      : [...new Set([...oldImagesId, ...newImagesId])];
 
     const newImgData = {
       postId: +postId,
-      amount: imagesData.length,
+      // amount: imagesData.length,
+      imagesId,
     };
+
+    console.log(newImgData);
 
     await addDelayPromise(delayTime);
 
     const batch = writeBatch(firestore);
-    const nsfw = [...new Set(imagesData.map((image) => image.nsfw))];
+    // const nsfw = [...new Set(imagesData.map((image) => image.nsfw))];
+    const hasSfw = imagesData.find((image) => image.nsfw === false);
 
     batch.set(
       modelImagesRef,
       {
-        items: imagesData,
-        versionId,
-        default: false,
+        versionsId: arrayUnion(versionId),
+        items: arrayUnion(...imagesData),
+        // items: imagesData,
+        // versionId,
+        // default: false,
         createdAt: imagesData[0].createdAt,
-        savedAt: new Date().toISOString(),
-        nsfw: imagesData[0].nsfw,
-        nsfwTypes: nsfw,
-        nsfwLevel: imagesData[0]?.nsfwLevel || "",
+        // savedAt: new Date().toISOString(),
+        // nsfw: imagesData[0].nsfw,
+        // nsfwTypes: nsfw,
+        // nsfwLevel: imagesData[0]?.nsfwLevel || "",
+        hasSfw: !!hasSfw,
       },
       { merge: true }
     );
 
+    // if (postInfo?.delete) {
     if (postData) {
       batch.update(modelRef, {
         [`savedImages.${versionId}`]: arrayRemove(postData),
       });
     }
 
-    batch.set(
-      modelRef,
-      {
-        savedImages: {
-          [`${versionId}`]: arrayUnion(newImgData),
+    if (imagesId?.length) {
+      batch.set(
+        modelRef,
+        {
+          savedImages: {
+            [`${versionId}`]: arrayUnion(newImgData),
+          },
         },
-      },
-      { merge: true }
-    );
+        { merge: true }
+      );
+    }
 
     // Commit the batch
     await batch.commit();

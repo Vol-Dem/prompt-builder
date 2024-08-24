@@ -463,7 +463,7 @@ const Carousel = ({
         modelName: model.name,
         versionId,
         nsfwMode,
-        postData: postData || null,
+        postData: postData,
         imgUrl: images[0].url,
         ids: ids || [],
         existedAmount: existedImgsAmount,
@@ -482,7 +482,7 @@ const Carousel = ({
         );
       setIsDeleting(true);
 
-      if (!!ids?.length && ids?.length !== postData.amount) {
+      if (!!ids?.length && ids?.length !== postData?.imagesId?.length) {
         const newImages = images.filter((image) => !ids?.includes(image.id));
         await updateImagePostData(
           {
@@ -491,7 +491,8 @@ const Carousel = ({
             modelName: model.name,
             versionId,
             nsfwMode,
-            postData: postData || null,
+            postData: postData,
+            delete: true,
             imgUrl: images[0].url,
             ids: ids || [],
             existedAmount: existedImgsAmount,
@@ -669,6 +670,7 @@ const Carousel = ({
           <ChooseImageForm
             type={imageFormType}
             modelId={modelId}
+            versionId={versionId}
             images={images}
             activeImageIndex={currImgNum}
             existedImgsAmount={existedImgsAmount}

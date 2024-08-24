@@ -17,6 +17,7 @@ const ChooseImageForm = ({
   type,
   images,
   modelId,
+  versionId,
   activeImageIndex,
   existedImgsAmount,
   onSave,
@@ -27,6 +28,7 @@ const ChooseImageForm = ({
   const [savedImagesIds, setSavedImagesIds] = useState([]);
   const [imagesInputs, setImagesInputs] = useState([]);
   const uid = useSelector((state) => state.auth.user.uid);
+  const model = useSelector((state) => state.model.model);
   const isOnline = useOnlineStatus();
 
   useEffect(() => {
@@ -36,25 +38,34 @@ const ChooseImageForm = ({
       try {
         let savedIds = [];
         if (existedImgsAmount && type === "save") {
-          setIsLoading(true);
-          const postRef = doc(
-            firestore,
-            "users",
-            uid,
-            "models",
-            modelId + "",
-            "images",
-            images[0].postId + ""
-          );
+          // setIsLoading(true);
+          // const postRef = doc(
+          //   firestore,
+          //   "users",
+          //   uid,
+          //   "models",
+          //   modelId + "",
+          //   "images",
+          //   images[0].postId + ""
+          // );
 
-          const postDataSnap = await getDoc(postRef);
-          if (postDataSnap.exists()) {
-            const postData = postDataSnap.data();
-            // console.log(postData);
-            savedIds = postData.items.map((image) => image?.id);
-            setSavedImagesIds(savedIds);
-          }
-          setIsLoading(false);
+          // const postDataSnap = await getDoc(postRef);
+          // if (postDataSnap.exists()) {
+          //   const postData = postDataSnap.data();
+          //   // console.log(postData);
+          //   savedIds = postData.items.map((image) => image?.id);
+          //   setSavedImagesIds(savedIds);
+          // }
+          // setIsLoading(false);
+          const curPostId = images[0].postId;
+          const postData =
+            model.hasOwnProperty("savedImages") &&
+            model?.savedImages[versionId]?.find(
+              (post) => post.postId === curPostId
+            );
+          savedIds = postData.imagesId;
+          console.log(postData.imagesId);
+          setSavedImagesIds(postData.imagesId);
         }
 
         const versionStatusInputData = images?.map((image, i) => {

@@ -279,16 +279,42 @@ const GeneratedImages = ({ customData }) => {
       setIsIntersecting(false);
       setErrorMessage("");
 
-      const nsfwFilter = !nsfwMode ? [false] : [true, false];
+      // const nsfwFilter = !nsfwMode ? [false] : [true, false];
 
-      const q = query(
-        collection(firestore, "users", uid, "models", model.id + "", "images"),
-        where("versionId", "==", curImagesModelVersionId),
-        where("nsfwTypes", "array-contains-any", nsfwFilter),
-        orderBy("createdAt", "desc"),
-        startAfter(lastVisible),
-        limit(postsPerPage)
-      );
+      // {
+      //   images: [image1, image2]
+      //   hasSfw: true,
+      //   // hasNsfw: true,
+      // }
+
+      let q;
+
+      if (nsfwMode) {
+        q = query(
+          // collection(firestore, "users", uid, "models", model.id + "", "images"),
+          collection(firestore, "users", uid, "images"),
+          // where("versionId", "==", curImagesModelVersionId),
+          where("versionsId", "array-contains", curImagesModelVersionId),
+          // where("hasSfw", "==", nsfwFilter),
+          // where("hasNsfw", "==", nsfwFilter),
+          orderBy("createdAt", "desc"),
+          startAfter(lastVisible),
+          limit(postsPerPage)
+        );
+      } else {
+        console.log(curImagesModelVersionId);
+        q = query(
+          // collection(firestore, "users", uid, "models", model.id + "", "images"),
+          collection(firestore, "users", uid, "images"),
+          // where("versionId", "==", curImagesModelVersionId),
+          where("versionsId", "array-contains", curImagesModelVersionId),
+          where("hasSfw", "==", true),
+          // where("hasNsfw", "==", nsfwFilter),
+          orderBy("createdAt", "desc"),
+          startAfter(lastVisible),
+          limit(postsPerPage)
+        );
+      }
 
       const modelImagesSnap = await getDocs(q);
 
@@ -300,20 +326,32 @@ const GeneratedImages = ({ customData }) => {
         return doc.data();
       });
 
-      // console.log(data);
+      console.log(data);
 
       const examples = data
         .map((post) => {
-          if (nsfwMode) {
-            return post.items;
-          } else {
-            return post.items.filter(
-              (item) =>
-                item?.nsfw === "None" ||
-                item?.nsfwLevel <= 1 ||
-                item?.nsfw === false
-            );
-          }
+          return post.items
+            .filter((image) => {
+              const saved =
+                model.savedImages.hasOwnProperty(curImagesModelVersionId) &&
+                model?.savedImages[curImagesModelVersionId]
+                  ?.find((postData) => postData.postId === image.postId)
+                  ?.imagesId?.includes(image.id);
+
+              const safe =
+                image?.nsfw === "None" ||
+                image?.nsfwLevel <= 1 ||
+                image?.nsfw === false;
+
+              if (nsfwMode) {
+                return saved;
+              } else {
+                return saved && safe;
+              }
+            })
+            .sort((a, b) => {
+              return Date.parse(a.createdAt) - Date.parse(b.createdAt);
+            });
         })
         .filter((item) => !!item.length);
 
@@ -334,7 +372,7 @@ const GeneratedImages = ({ customData }) => {
     curImagesModelVersionId,
     isLastPage,
     lastVisible,
-    model.id,
+    model.savedImages,
     nsfwMode,
     uid,
   ]);
@@ -539,7 +577,7 @@ const GeneratedImages = ({ customData }) => {
             key={i}
             imagesData={item}
             visibleImgAmount={1}
-            existedImgsAmount={existedExample?.amount || null}
+            existedImgsAmount={existedExample?.imagesId?.length || null}
             postId={postId}
             saved={!postId}
             modelId={model.id}
