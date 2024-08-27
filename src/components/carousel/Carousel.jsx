@@ -627,7 +627,7 @@ const Carousel = ({
       {images?.length > curVisibleAmount && (
         <ul className={classes.pagination}>{paginationHtml}</ul>
       )}
-      {!saved && !!postId && (
+      {!saved && !!postId && existedImgsAmount < images?.length && (
         <span className={classes["btn-save-container"]}>
           <button
             className={`${classes["btn-save"]} ${

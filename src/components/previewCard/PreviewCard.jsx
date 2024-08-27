@@ -6,7 +6,7 @@ import Image from "../ui/image/Image";
 import ActivationTag from "../activation-tag/ActivationTag";
 import ButtonAdd from "../ui/ButtonAdd";
 
-const PreviewCard = ({ previewData }) => {
+const PreviewCard = ({ previewData, onClick }) => {
   const [currVersion, setCurrVersion] = useState({});
   const [currSidePanelData, setCurrSidePanelData] = useState({});
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
@@ -49,7 +49,7 @@ const PreviewCard = ({ previewData }) => {
       <div className={classes["image-container"]}>
         <ButtonAdd previewData={previewData} className={classes["btn-add"]} />
 
-        <Link to={`/model/${previewData.id}`}>
+        <Link to={`/model/${previewData.id}`} onClick={onClick}>
           <Image
             ref={imgRef}
             src={
@@ -65,7 +65,11 @@ const PreviewCard = ({ previewData }) => {
       </div>
       <div className={`${classes.content}`}>
         <div className={classes["title-container"]}>
-          <Link to={`/model/${previewData.id}`} className={classes.link}>
+          <Link
+            to={`/model/${previewData.id}`}
+            className={classes.link}
+            onClick={onClick}
+          >
             <h4
               className={classes.title}
               title={previewData.name || previewData.title}

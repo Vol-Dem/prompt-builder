@@ -116,35 +116,38 @@ const Presets = ({ onClose }) => {
 
   return (
     <Modal title="Presets" onClose={onClose}>
-      <Buttton
-        className={classes["btn-from"]}
-        onClick={() => {
-          setPresetData({});
-          setFormIsOpen((prevState) => !prevState);
-        }}
-      >
-        Add preset
-      </Buttton>
+      {!formIsOpen && (
+        <>
+          <Buttton
+            className={classes["btn-from"]}
+            onClick={() => {
+              setPresetData({});
+              setFormIsOpen((prevState) => !prevState);
+            }}
+          >
+            Add preset
+          </Buttton>
 
-      <div className={classes["presets-container"]}>
-        {!!presets?.positive?.length && (
-          <div>
-            <div className={classes[`presets__name`]}>Positive:</div>
-            <div className={classes[`presets__bg`]}>
-              <ul className={classes.presets}>{positivePresetsHtml}</ul>
-            </div>
+          <div className={classes["presets-container"]}>
+            {!!presets?.positive?.length && (
+              <div>
+                <div className={classes[`presets__name`]}>Positive:</div>
+                <div className={classes[`presets__bg`]}>
+                  <ul className={classes.presets}>{positivePresetsHtml}</ul>
+                </div>
+              </div>
+            )}
+            {!!presets?.negative?.length && (
+              <div>
+                <div className={classes[`presets__name`]}>Negative:</div>
+                <div className={classes[`presets__bg`]}>
+                  <ul className={classes.presets}>{negativePresetsHtml}</ul>
+                </div>
+              </div>
+            )}
           </div>
-        )}
-        {!!presets?.negative?.length && (
-          <div>
-            <div className={classes[`presets__name`]}>Negative:</div>
-            <div className={classes[`presets__bg`]}>
-              <ul className={classes.presets}>{negativePresetsHtml}</ul>
-            </div>
-          </div>
-        )}
-      </div>
-
+        </>
+      )}
       {formIsOpen && (
         <Modal
           onClose={() => {

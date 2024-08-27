@@ -449,7 +449,7 @@ export const updateImagePostData = async (
     //   postId + ""
     // );
 
-    console.log(postId, modelId, versionId);
+    // console.log(postId, modelId, versionId);
 
     const newImagesId = imagesData.map((image) => image.id);
 
@@ -465,7 +465,7 @@ export const updateImagePostData = async (
       imagesId,
     };
 
-    console.log(newImgData);
+    // console.log(newImgData);
 
     await addDelayPromise(delayTime);
 

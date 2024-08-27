@@ -12,6 +12,7 @@ import CheckUp from "../../assets/CheckSvg";
 import CrossSvg from "../../assets/CrossSvg";
 import Bars2Svg from "../../assets/Bars2Svg";
 import Bars4Svg from "../../assets/Bars4Svg";
+import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 
 const About = ({ title }) => {
   const [fullViewIsOpen, setFullViewIsOpen] = useState(false);
@@ -24,6 +25,10 @@ const About = ({ title }) => {
     setCurrImageUrl(e.target?.src);
     setFullViewIsOpen(true);
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className={classes.about}>
@@ -532,7 +537,7 @@ const About = ({ title }) => {
         <p className={classes["about__text"]}>
           The tag sets feature allows you to create a set of trigger words for
           generating specific outfits, appearances, or other image variations.
-          In both "General Settings" and "Version Settings," you can add a tag
+          In both "General Settings" and "Version Settings", you can add a tag
           sets by specifying their name and trigger words.
         </p>
         <div
@@ -797,12 +802,17 @@ const About = ({ title }) => {
             />
           </picture>
         </div>
-        <p className={classes["about__text"]}>
-          Note: Saved images are not stored on the server; only generation data
-          is stored. If an image is removed from the Civitai site, it will
-          become unavailable, but the generation data will be preserved and
-          available for use.
-        </p>
+        <div className={classes["notification"]}>
+          <ExclamationCircleSvg className={classes["notification__svg"]} />
+
+          <p className={classes["notification__text"]}>
+            Saved images are not stored on the server; only generation data is
+            stored. If an image is removed from the Civitai site, it will become
+            unavailable, but the generation data will be preserved and available
+            for use.
+          </p>
+        </div>
+
         <p className={classes["about__text"]}>
           In the "Saved" tab, the image menu{" "}
           <DotsSvg className={`${classes["svg"]} ${classes["svg--medium"]}`} />{" "}
@@ -971,17 +981,22 @@ const About = ({ title }) => {
             />
           </picture>
         </div>
-        <p className={classes["about__text"]}>
-          ! If you have SFW mode enabled, images marked by the author as NSFW
-          will not be displayed among the model images and generation examples.
-        </p>
+        <div className={classes["notification"]}>
+          <ExclamationCircleSvg className={classes["notification__svg"]} />
+
+          <p className={classes["notification__text"]}>
+            If you have SFW mode enabled, images marked by the author as NSFW
+            will not be displayed among the model images and generation
+            examples.
+          </p>
+        </div>
         <h3 id="search" className={classes["about__h3"]}>
           Search
         </h3>
         <p className={classes["about__text"]}>
           The quick search shows the first five results and allows you to search
           not only for models but also for categories or subcategories, and open
-          them by click. By pressing the Enter button or "Show More," you will
+          them by click. By pressing the Enter button or "Show More", you will
           go to the search page where you can see all results for models.
         </p>
         <p className={classes["about__text"]}>

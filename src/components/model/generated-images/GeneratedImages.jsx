@@ -302,7 +302,7 @@ const GeneratedImages = ({ customData }) => {
           limit(postsPerPage)
         );
       } else {
-        console.log(curImagesModelVersionId);
+        // console.log(curImagesModelVersionId);
         q = query(
           // collection(firestore, "users", uid, "models", model.id + "", "images"),
           collection(firestore, "users", uid, "images"),
@@ -326,7 +326,7 @@ const GeneratedImages = ({ customData }) => {
         return doc.data();
       });
 
-      console.log(data);
+      // console.log(data);
 
       const examples = data
         .map((post) => {

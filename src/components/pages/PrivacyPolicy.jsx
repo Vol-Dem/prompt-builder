@@ -7,6 +7,10 @@ const PrivacyPolicy = ({ title }) => {
     document.title = title;
   }, [title]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className={classes.policy}>
       <h1 className={classes["policy__h1"]}>Privacy Policy</h1>
@@ -20,7 +24,7 @@ const PrivacyPolicy = ({ title }) => {
         Services, you agree to the collection, use, disclosure, and procedures
         this Privacy Policy describes. Beyond the Privacy Policy, your use of
         our Services is also subject to our{" "}
-        <Link className={classes["policy__link"]} to="tos">
+        <Link className={classes["policy__link"]} to="/tos">
           Terms of Service
         </Link>
         .

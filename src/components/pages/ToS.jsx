@@ -8,6 +8,10 @@ const ToS = ({ title }) => {
     document.title = title;
   }, [title]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className={classes.tos}>
       <h1 className={classes["tos__h1"]}>Terms of Service</h1>

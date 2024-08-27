@@ -14,7 +14,7 @@ import { useOnlineStatus } from "../../hooks/use-online-status";
 import { OFFLINE_ERROR_MESSAGE } from "../../variables/constants";
 
 const amountPerPage = 10;
-const amountPerPageQuick = 3;
+const amountPerPageQuick = 4;
 const searchTimeoutMs = 1000;
 
 const Search = ({ className }) => {
@@ -33,12 +33,22 @@ const Search = ({ className }) => {
   const quickSerchResult = useSelector(
     (state) => state.search.quickSerchResult
   );
+  const searchResultFull = useSelector((state) => state.search.searchResult);
   const errorMessage = useSelector((state) => state.search.errorMessage);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    if (
+      location?.pathname !== "/search" &&
+      searchResultFull?.result?.length !== 0
+    ) {
+      dispatch(searchActions.setSearchQuery(""));
+    }
+  }, [location?.pathname, searchResultFull?.result, dispatch]);
 
   const searchInputHandler = (e) => {
     const searchInputValue = e.target.value;
@@ -60,7 +70,7 @@ const Search = ({ className }) => {
   }, [categories]);
 
   useEffect(() => {
-    if (quickSerchResult.result.length > 3) {
+    if (quickSerchResult.result.length > amountPerPageQuick) {
       const newResult = quickSerchResult.result.toSpliced(-1);
       setSearchResult({ ...quickSerchResult, result: newResult });
       setShowMore(true);
@@ -107,7 +117,7 @@ const Search = ({ className }) => {
       } else {
       }
 
-      setShowMore(false);
+      // setShowMore(false);
       dispatch(searchActions.setErrorMessage(""));
       clearTimeout(timeoutRef.current);
       const getModelsPreview = async () => {
@@ -117,7 +127,7 @@ const Search = ({ className }) => {
               liveSearch(
                 searchInput.trim(),
                 nsfwMode,
-                amountPerPageQuick,
+                amountPerPageQuick + 1,
                 false,
                 true
               )
@@ -242,6 +252,7 @@ const Search = ({ className }) => {
   const submitSearchHandler = (e) => {
     e.preventDefault();
     dispatch(searchActions.resetSearchData());
+
     if (location.pathname !== "/search") {
       navigate("search");
     }

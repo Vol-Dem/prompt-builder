@@ -123,8 +123,29 @@
 
   &--medium {
     display: inline-block;
-    margin-bottom: -0.4rem;
+    margin-bottom: -0.5rem;
     width: 2rem;
     height: 2rem;
+  }
+}
+
+.notification {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  margin-bottom: 3rem;
+  background-color: var.$color-background-tertiary;
+  border-radius: 10px;
+  padding: 2rem 1.6rem;
+
+  &__text {
+    color: var.$color-text-gray;
+  }
+
+  &__svg {
+    flex-shrink: 0;
+    width: 3.6rem;
+    height: 3.6rem;
+    color: var.$color-text-gray;
   }
 }

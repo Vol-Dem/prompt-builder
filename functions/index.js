@@ -8,7 +8,7 @@
  */
 
 const { onRequest, HttpsError } = require("firebase-functions/v2/https");
-const logger = require("firebase-functions/logger");
+// const logger = require("firebase-functions/logger");
 
 // The Firebase Admin SDK to access Firestore.
 const { initializeApp } = require("firebase-admin/app");
@@ -97,7 +97,7 @@ const transformImageData = (imageData) => {
         ...(imageData?.meta?.Modelhash && {
           Modelhash: imageData?.meta?.Modelhash,
         }),
-        ...(imageData?.meta?.hasOwnProperty("Model hash") && {
+        ...(Object.hasOwn(imageData, "Model hash") && {
           "Model hash": imageData?.meta["Model hash"],
         }),
         ...(imageData?.meta?.Version && { Version: imageData?.meta?.Version }),
@@ -153,18 +153,15 @@ const saveVersionImages = async (modelId, username, versionsData) => {
       );
       const versionImages = await versionImagesRequest.json();
 
-      const updatedImages = version?.images?.map((image) => {
-        const fullImgData =
-          versionImages?.items?.find((verImg) => verImg.hash === image.hash) ||
-          image;
-        const transformedImgData = transformImageData(fullImgData);
+      const updatedImages = version?.images?.flatMap((image) => {
+        const fullImgData = versionImages?.items?.find(
+          (verImg) => verImg.hash === image.hash
+        );
 
-        // if (fullImgData?.meta) {
-        //   fullImgData.meta.comfy = "";
-        //   fullImgData.meta = clearObjectKeys(fullImgData.meta);
-        //   if (fullImgData.meta?.hashes)
-        //     fullImgData.meta.hashes = clearObjectKeys(fullImgData.meta.hashes);
-        // }
+        if (!fullImgData) return [];
+
+        const transformedImgData = transformImageData(fullImgData || image);
+
         return { ...image, ...transformedImgData };
       });
 
@@ -251,7 +248,7 @@ exports.uploadModel = onRequest(
     //   response.send(`Model name: ${responseData?.name}`);
     // Push the new message into Firestore using the Firebase Admin SDK.
     if (responseData?.id) {
-      const writeResult = await getFirestore()
+      await getFirestore()
         .collection("models")
         .doc(`${responseData?.id}`)
         .set({ ...responseData, updatedAt: Timestamp.now().toMillis() });
@@ -308,7 +305,7 @@ exports.updateModel = onRequest(
         //   response.send(`Model name: ${responseData?.name}`);
         // Push the new message into Firestore using the Firebase Admin SDK.
         if (responseData?.id) {
-          const writeResult = await getFirestore()
+          await getFirestore()
             .collection("models")
             .doc(`${responseData?.id}`)
             .set({ ...responseData, updatedAt: Timestamp.now().toMillis() });
@@ -360,7 +357,7 @@ exports.updateModel = onRequest(
           );
 
           if (!newVersions?.length) {
-            const writeResult = await modelDataRef.update({
+            await modelDataRef.update({
               updatedAt: timeNow,
             });
 
@@ -385,7 +382,7 @@ exports.updateModel = onRequest(
             };
           });
 
-          const writeResult = await modelDataRef.update({
+          await modelDataRef.update({
             modelVersions: newVersionsWithIndex,
             description: responseData.description,
             updatedAt: timeNow,
@@ -408,7 +405,7 @@ exports.updateModel = onRequest(
         }
 
         // Send back a message that we've successfully written the message
-        // response.json({ result: `Message with ID: ${writeResult.id} added.` });
+        // response.json({ result: `Message with ID: ${writeResult.id} added.`});
 
         // response.send(`Model ${modelId} updated`);
       }

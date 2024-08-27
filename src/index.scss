@@ -1,11 +1,30 @@
 @use "../src/variables/variables.scss" as var;
 
-// @font-face {
-//   font-family: 'MyFont';
-//   src: local('MyFont'), url(./fonts/MyFont.woff) format('woff');
-//   /* other formats include: 'woff2', 'truetype, 'opentype',
-//                             'embedded-opentype', and 'svg' */
-// }
+@font-face {
+  font-family: "Nunito";
+  src: url(./assets/fonts/nunito/Nunito-Light.ttf) format("truetype");
+  font-weight: 300;
+}
+@font-face {
+  font-family: "Nunito";
+  src: url(./assets/fonts/nunito/Nunito-Regular.ttf) format("truetype");
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Nunito";
+  src: url(./assets/fonts/nunito/Nunito-Medium.ttf) format("truetype");
+  font-weight: 500;
+}
+@font-face {
+  font-family: "Nunito";
+  src: url(./assets/fonts/nunito/Nunito-SemiBold.ttf) format("truetype");
+  font-weight: 600;
+}
+@font-face {
+  font-family: "Nunito";
+  src: url(./assets/fonts/nunito/Nunito-Bold.ttf) format("truetype");
+  font-weight: 700;
+}
 
 body {
   margin: 0;
@@ -13,7 +32,8 @@ body {
   color: var.$color-text-white;
   overflow-x: hidden;
   background-color: var.$color-background-primary;
-  font-family: var.$font-family-primary;
+  // font-family: var.$font-family-primary;
+  font-family: "Nunito", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   @include var.custom-scroll(#443d62);

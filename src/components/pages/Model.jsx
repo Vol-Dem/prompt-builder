@@ -103,23 +103,24 @@ const Model = ({ title }) => {
     }
   }, [curVersionImages, curVersion?.id, nsfwMode, filterNsfwImages]);
 
-  const setDefaultVersionImages = useCallback(() => {
-    const defVersionImages = model?.data?.modelVersions.find(
-      (version) => version?.id === curVersion?.id
-    )?.images;
-    const modelImages = nsfwMode
-      ? defVersionImages
-      : filterNsfwImages(defVersionImages);
+  ///////////LOAD DEFAULT IMAGES FROM MODEL
+  // const setDefaultVersionImages = useCallback(() => {
+  //   const defVersionImages = model?.data?.modelVersions.find(
+  //     (version) => version?.id === curVersion?.id
+  //   )?.images;
+  //   const modelImages = nsfwMode
+  //     ? defVersionImages
+  //     : filterNsfwImages(defVersionImages);
 
-    if (!!defVersionImages?.length) {
-      setCurVersionImages({
-        items: defVersionImages || [],
-        filteredItems: modelImages,
-        versionId: curVersion?.id,
-        nsfw: !!nsfwMode,
-      });
-    }
-  }, [model, curVersion, nsfwMode, filterNsfwImages]);
+  //   if (!!defVersionImages?.length) {
+  //     setCurVersionImages({
+  //       items: defVersionImages || [],
+  //       filteredItems: modelImages,
+  //       versionId: curVersion?.id,
+  //       nsfw: !!nsfwMode,
+  //     });
+  //   }
+  // }, [model, curVersion, nsfwMode, filterNsfwImages]);
 
   useEffect(() => {
     if (curVersionImages?.versionId === curVersion?.id) return;
@@ -165,14 +166,16 @@ const Model = ({ title }) => {
 
           setCurVersionImagesIsLoading(false);
         } else {
-          setDefaultVersionImages();
+          ///LOAD DEFAULT IMAGES FROM MODEL
+          // setDefaultVersionImages();
           setCurVersionImagesIsLoading(false);
         }
       } catch (err) {
         if (loadingImagesTimeoutRef?.current) {
           clearTimeout(loadingImagesTimeoutRef.current);
         }
-        setDefaultVersionImages();
+        ///LOAD DEFAULT IMAGES FROM MODEL
+        // setDefaultVersionImages();
         setCurVersionImagesIsLoading(false);
         console.error(err.message);
       }
@@ -188,7 +191,7 @@ const Model = ({ title }) => {
     uid,
     curVersionImages?.versionId,
     filterNsfwImages,
-    setDefaultVersionImages,
+    // setDefaultVersionImages,
   ]);
 
   useEffect(() => {

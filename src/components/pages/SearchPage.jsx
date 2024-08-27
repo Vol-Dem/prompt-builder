@@ -20,6 +20,7 @@ const SearchPage = ({ title }) => {
   const isLastPage = useSelector((state) => state.search.isLastPage);
   const isLastSubPage = useSelector((state) => state.search.isLastSubPage);
   const errorMessage = useSelector((state) => state.search.errorMessage);
+  const dispatch = useDispatch();
   const endPage = useRef(null);
   const isPageEnd = usePageEnd(600);
   const isOnline = useOnlineStatus();
@@ -30,10 +31,16 @@ const SearchPage = ({ title }) => {
   }, [isPageEnd]);
 
   const searchResultHtml = searchResult.result?.map((item, i) => {
-    return <PreviewCard key={item.id} previewData={item} />;
+    return (
+      <PreviewCard
+        key={item.id}
+        previewData={item}
+        onClick={() => {
+          dispatch(searchActions.setSearchQuery(""));
+        }}
+      />
+    );
   });
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     document.title = searchQuery ? `${title} - ${searchQuery}` : title;

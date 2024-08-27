@@ -121,7 +121,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
   });
 
   return (
-    <form onSubmit={submitHandler}>
+    <form className={classes["form"]} onSubmit={submitHandler}>
       <Select
         label="Type"
         name="type"

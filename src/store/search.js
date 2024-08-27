@@ -76,7 +76,7 @@ const searchSlice = createSlice({
 export const liveSearch = (
   searchString,
   nsfw,
-  limitAmount = 3,
+  limitAmount = 5,
   loadMore = false,
   quickSerch = false
 ) => {

@@ -1,6 +1,24 @@
 @use "./../../../variables/variables.scss" as var;
 
 .footer {
+  display: flex;
+  align-items: center;
   height: 5rem;
   background-color: var.$color-background-secondary;
+
+  &__copy {
+    font-size: 1.4rem;
+    margin-right: auto;
+  }
+
+  &__content {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    margin-top: auto;
+  }
+}
+
+.link {
+  @include var.linkA;
 }
