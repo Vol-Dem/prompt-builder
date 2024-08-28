@@ -4,6 +4,7 @@ import classes from "./Landing.module.scss";
 import { useDispatch } from "react-redux";
 import { authActions } from "../../store/auth";
 import LinkA from "../ui/LinkA";
+import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 
 const Landing = () => {
   const dispatch = useDispatch();
@@ -43,7 +44,7 @@ const Landing = () => {
         <div className={classes["section__content"]}>
           <div>
             <h2 className={classes["section__title"]}>
-              Keep it safe and in one place
+              Store data in one place
             </h2>
             <p className={classes["section__content__text"]}>
               AIDE-TOOLS lets you store all information about your models in one
@@ -51,10 +52,19 @@ const Landing = () => {
               choice.
             </p>
             <p className={classes["section__content__text"]}>
-              Protect important data: even if a model is removed from Civitai,
-              important generation settings and trigger words will remain with
-              you, as well as ability to view images generated with that model.
+              Even if the model has been removed from Civitai, you will retain
+              information about the generation settings and trigger words, as
+              well as ability to view images generated with that model. This
+              way, you can continue working with the model if you have
+              downloaded its file.
             </p>
+            <div className={classes["notification"]}>
+              <ExclamationCircleSvg className={classes["notification__svg"]} />
+              <p className={classes["notification__text"]}>
+                The service only stores information about the images and models
+                generation setting, and does not store any files or images.
+              </p>
+            </div>
           </div>
           <div className={classes["section__img-wrap"]}>
             <img
