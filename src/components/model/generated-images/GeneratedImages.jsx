@@ -252,7 +252,10 @@ const GeneratedImages = ({ customData }) => {
         setExamplesIsLoading(false);
       } catch (err) {
         if (err.name !== "AbortError") {
-          setErrorMessage(err.message);
+          // setErrorMessage(err.message);
+          setErrorMessage(
+            "Failed to connect to Civitai. There may be maintenance going on at the moment. Try again later."
+          );
         }
         setExamplesIsLoading(false);
       }
@@ -676,7 +679,7 @@ const GeneratedImages = ({ customData }) => {
       )}
       <div className={classes.images}>{examplesHtml}</div>
       {examplesIsLoading && <Spinner />}
-      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      {errorMessage && isOnline && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {!examplesIsLoading && (
         <div>
           {errorMessage && !!nextCursor && curExampleImgsType === "all" && (

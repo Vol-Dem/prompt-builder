@@ -2505,3 +2505,95 @@ Issues? Report them at https://github.com/firebase/firebase-tools/issues and att
 [info] >      downloadUrl: 'https://civitai.com/api/download/models/430804' {"user":"    downloadUrl: 'https://civitai.com/api/download/models/430804'","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m     downloadUrl: 'https://civitai.com/api/download/models/430804'"}}
 [info] >    } {"user":"  }","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m   }"}}
 [info] >  ] {"user":"]","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-updateModel"},"extension":{},"message":"\u001b[90m> \u001b[39m ]"}}
+[debug] [2024-08-30T13:11:55.705Z] ----------------------------------------------------------------------
+[debug] [2024-08-30T13:11:55.707Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Asus\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start --only functions
+[debug] [2024-08-30T13:11:55.708Z] CLI Version:   13.15.4
+[debug] [2024-08-30T13:11:55.708Z] Platform:      win32
+[debug] [2024-08-30T13:11:55.708Z] Node Version:  v18.14.0
+[debug] [2024-08-30T13:11:55.712Z] Time:          Fri Aug 30 2024 16:11:55 GMT+0300 (Eastern European Summer Time)
+[debug] [2024-08-30T13:11:55.712Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-08-30T13:11:55.799Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-08-30T13:11:55.800Z] > authorizing via signed-in user (volodymyr.demin@gmail.com)
+[info] i  emulators: Starting emulators: functions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions"}}
+[debug] [2024-08-30T13:11:55.814Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-08-30T13:11:55.814Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2024-08-30T13:11:55.818Z] [hub] writing locator at C:\Users\Asus\AppData\Local\Temp\hub-aide-tools.json
+[debug] [2024-08-30T13:11:55.840Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-08-30T13:11:55.841Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-08-30T13:11:55.841Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] !  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: auth, firestore, database, hosting, pubsub, storage, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mauth, firestore, database, hosting, pubsub, storage, dataconnect\u001b[22m"}}
+[debug] [2024-08-30T13:11:55.845Z] defaultcredentials: writing to file C:\Users\Asus\AppData\Roaming\firebase\volodymyr_demin_gmail.com_application_default_credentials.json
+[debug] [2024-08-30T13:11:55.848Z] Setting GAC to C:\Users\Asus\AppData\Roaming\firebase\volodymyr_demin_gmail.com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to C:\\Users\\Asus\\AppData\\Roaming\\firebase\\volodymyr_demin_gmail.com_application_default_credentials.json"}}
+[debug] [2024-08-30T13:11:55.850Z] > refreshing access token with scopes: []
+[debug] [2024-08-30T13:11:55.852Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2024-08-30T13:11:55.853Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-08-30T13:11:56.289Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2024-08-30T13:11:56.289Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-08-30T13:11:56.298Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/aide-tools/adminSdkConfig [none]
+[debug] [2024-08-30T13:11:56.794Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/aide-tools/adminSdkConfig 200
+[debug] [2024-08-30T13:11:56.794Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/aide-tools/adminSdkConfig {"projectId":"aide-tools","storageBucket":"aide-tools.appspot.com"}
+[debug] [2024-08-30T13:11:56.850Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2024-08-30T13:11:56.851Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2024-08-30T13:11:56.851Z] Starting Emulator UI with command {"binary":"node","args":["C:\\Users\\Asus\\.cache\\firebase\\emulators\\ui-v1.13.0\\server\\server.mjs"],"optionalArgs":[],"joinArgs":false,"shell":false} {"metadata":{"emulator":{"name":"ui"},"message":"Starting Emulator UI with command {\"binary\":\"node\",\"args\":[\"C:\\\\Users\\\\Asus\\\\.cache\\\\firebase\\\\emulators\\\\ui-v1.13.0\\\\server\\\\server.mjs\"],\"optionalArgs\":[],\"joinArgs\":false,\"shell\":false}"}}
+[info] i  ui: Emulator UI logging to ui-debug.log {"metadata":{"emulator":{"name":"ui"},"message":"Emulator UI logging to \u001b[1mui-debug.log\u001b[22m"}}
+[debug] [2024-08-30T13:11:57.034Z] Web / API server started at 127.0.0.1:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at 127.0.0.1:4000\n"}}
+[debug] [2024-08-30T13:11:57.035Z] Web / API server started at ::1:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at ::1:4000\n"}}
+[info] i  functions: Watching "C:\Users\Asus\Documents\Edu\react\prompt-generator\functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"C:\\Users\\Asus\\Documents\\Edu\\react\\prompt-generator\\functions\" for Cloud Functions..."}}
+[debug] [2024-08-30T13:11:57.081Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2024-08-30T13:11:58.914Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "lint": "eslint .",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.15.0",
+    "eslint-config-google": "^0.14.0",
+    "firebase-functions-test": "^3.1.0"
+  },
+  "private": true
+}
+[debug] [2024-08-30T13:11:58.914Z] Building nodejs source
+[debug] [2024-08-30T13:11:58.915Z] Failed to find version of module node: reached end of search path C:\Users\Asus\Documents\Edu\react\prompt-generator\functions\node_modules
+[info] +  functions: Using node@18 from host. 
+[debug] [2024-08-30T13:11:58.917Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-08-30T13:11:58.925Z] Found firebase-functions binary at 'C:\Users\Asus\Documents\Edu\react\prompt-generator\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8985
+
+[debug] [2024-08-30T13:11:59.769Z] Got response from /__/functions.yaml {"endpoints":{"uploadModel":{"availableMemoryMb":null,"timeoutSeconds":120,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"uploadModel"},"updateModel":{"availableMemoryMb":null,"timeoutSeconds":120,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"updateModel"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] +  functions: Loaded functions definitions from source: uploadModel, updateModel. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: uploadModel, updateModel."}}
+[info] +  functions[us-central1-uploadModel]: http function initialized (http://127.0.0.1:5001/aide-tools/us-central1/uploadModel). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/aide-tools/us-central1/uploadModel)."}}
+[info] +  functions[us-central1-updateModel]: http function initialized (http://127.0.0.1:5001/aide-tools/us-central1/updateModel). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/aide-tools/us-central1/updateModel)."}}
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌───────────┬────────────────┬─────────────────────────────────┐
+│ Emulator  │ Host:Port      │ View in Emulator UI             │
+├───────────┼────────────────┼─────────────────────────────────┤
+│ Functions │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions │
+└───────────┴────────────────┴─────────────────────────────────┘
+  Emulator Hub running at 127.0.0.1:4400
+  Other reserved ports: 4500
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 

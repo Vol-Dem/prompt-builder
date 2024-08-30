@@ -308,7 +308,9 @@ const ImageCard = ({ activeImgNum }) => {
           if (curImageData?.id === imageData?.id) {
             setImageResources(defResources);
           }
-          setErrorMessage(err);
+          console.log(err);
+          console.log(err.code);
+          // setErrorMessage(err.message);
           setIsLoading(false);
         }
       };
