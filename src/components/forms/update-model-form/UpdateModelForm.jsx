@@ -32,6 +32,8 @@ import {
   SAVED_SUCCESS_MESSAGE,
   TITLE_MAX_LENGTH,
   TRIGER_WORDS_MAX_LENGTH,
+  UPDATE_MODEL_URL,
+  UPLOAD_MODEL_URL,
   modelTypes,
 } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
@@ -435,7 +437,7 @@ const UpdateModelForm = ({ modelData, id }) => {
         if (!modelData) {
           //Upload model to database
           const saveModelRes = await fetch(
-            `http://127.0.0.1:5001/aide-tools/us-central1/updateModel?modelId=${
+            `${UPDATE_MODEL_URL}/updateModel?modelId=${
               modelData?.id || modelId
             }`
           );
@@ -570,9 +572,11 @@ const UpdateModelForm = ({ modelData, id }) => {
 
         const versionIds = modelVersions?.map((version) => version.id) || [];
 
-        const baseModels = new Set(
-          modelVersions?.flatMap((version) => version?.baseModel || [])
-        );
+        const baseModels = [
+          ...new Set(
+            modelVersions?.flatMap((version) => version?.baseModel || [])
+          ),
+        ];
 
         let newCategory = false;
         let newSubcategory = false;
@@ -843,6 +847,28 @@ const UpdateModelForm = ({ modelData, id }) => {
         setModelIsSaving(false);
         setSuccessMessage(SAVED_SUCCESS_MESSAGE);
         setSavedModel(modelId);
+        if (!modelData) {
+          setIdInput({
+            value: "",
+            isValid: false,
+          });
+          setMainInput({
+            value: "",
+            isValid: false,
+          });
+          setSubCatInputs([
+            {
+              type: "text",
+              id: "subcat-def",
+              name: "sub",
+              placeholder: "Subcategory",
+              value: "",
+              isValid: false,
+              errorMessage: "This field is required",
+            },
+          ]);
+          setShowErrorMessage(false);
+        }
       }
     } catch (err) {
       setModelIsSaving(false);

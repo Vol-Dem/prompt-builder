@@ -1,3 +1,5 @@
+export const UPLOAD_MODEL_URL = "https://uploadmodel-o43alvcema-uc.a.run.app";
+export const UPDATE_MODEL_URL = "https://updatemodel-o43alvcema-uc.a.run.app";
 export const TIMEOUT_SEC = 10;
 export const RESULT_NUM = 10;
 export const SPLIT_TAG_REGEX = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;

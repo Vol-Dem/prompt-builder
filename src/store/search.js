@@ -127,6 +127,12 @@ export const liveSearch = (
           ),
           where("nsfw", "in", nsfwFilter)
         ),
+        // caps:
+        and(
+          where("name", ">=", searchString.toUpperCase()),
+          where("name", "<=", searchString.toUpperCase() + "\uf8ff"),
+          where("nsfw", "in", nsfwFilter)
+        ),
         // lowercase:
         and(
           where("name", ">=", searchString.toLowerCase()),

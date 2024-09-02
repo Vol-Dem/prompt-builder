@@ -15,7 +15,7 @@ const Footer = () => {
           <Link className={classes.link} to="/privacy">
             Privacy Policy
           </Link>
-          <LinkA external={true} to="https://civitai.com">
+          <LinkA external={true} href="https://civitai.com">
             Civitai
           </LinkA>
         </div>

@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import UpdateModelForm from "../../forms/update-model-form/UpdateModelForm";
 import VersionForm from "../../forms/version-form/VersionForm";
 import classes from "./ModelSettings.module.scss";
@@ -21,7 +21,12 @@ import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import Spinner from "../../ui/Spinner";
-import { OFFLINE_ERROR_MESSAGE } from "../../../variables/constants";
+import {
+  OFFLINE_ERROR_MESSAGE,
+  UPDATE_MODEL_URL,
+} from "../../../variables/constants";
+import { modelActions } from "../../../store/model";
+import { tabActions } from "../../../store/tabs";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -39,6 +44,7 @@ const ModelSettings = () => {
   const uid = useSelector((state) => state.auth.user.uid);
   const curBaseModels = useSelector((state) => state.tabs.baseModels);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const customData = model.modelVersionsCustomData[curTab];
@@ -71,7 +77,7 @@ const ModelSettings = () => {
       }
 
       const updateModelRes = await fetch(
-        `http://127.0.0.1:5001/aide-tools/us-central1/updateModel?modelId=${model.id}`
+        `${UPDATE_MODEL_URL}/updateModel?modelId=${model.id}`
       );
       const updateModelResData = await updateModelRes.json();
 
@@ -246,6 +252,9 @@ const ModelSettings = () => {
       setIsDeleting(true);
       await deleteModelDoc(uid, model);
       setIsDeleting(false);
+      dispatch(modelActions.resetModelData());
+      dispatch(tabActions.resetModelsData());
+      dispatch(tabActions.resetActiveTabs());
       navigate("/");
     } catch (err) {
       console.error(err.message);
@@ -327,7 +336,7 @@ const ModelSettings = () => {
                 className={classes["btn-update"]}
                 disabled={isLoading}
               >
-                {!isLoading ? "Update" : <Spinner size="small" />}
+                {!isLoading ? "Check for updates" : <Spinner size="small" />}
               </Buttton>
 
               <Buttton

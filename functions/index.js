@@ -6,19 +6,214 @@
  *
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
-
+// import * as functions from "firebase-functions";
 const { onRequest, HttpsError } = require("firebase-functions/v2/https");
-// const logger = require("firebase-functions/logger");
+// const { pubsub } = require("firebase-functions");
+// const { google } = require("googleapis");
+// const { GoogleAuth } = require("google-auth-library");
+const logger = require("firebase-functions/logger");
 
 // The Firebase Admin SDK to access Firestore.
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
+const { getDatabase } = require("firebase-admin/database");
 const { Timestamp } = require("firebase-admin/firestore");
+const { onMessagePublished } = require("firebase-functions/v2/pubsub");
+// const { request } = require("http");
+const { CloudBillingClient } = require("@google-cloud/billing");
+// const { sendDiscordBillingMessage } = require("./discord");
 
 initializeApp();
 
+// const billing = google.cloudbilling("v1").projects;
+const billing = new CloudBillingClient();
+const PROJECT_ID = process.env.GCLOUD_PROJECT;
+// const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT;
+const PROJECT_NAME = `projects/${PROJECT_ID}`;
+const MIN_COST_DIF_FOR_ALERT = 1;
+
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
+
+const sendDiscordMessage = async (webhookUrl, data) => {
+  logger.debug("sendDIscordMessage");
+  await fetch(webhookUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+};
+
+const sendDiscordBillingMessage = async (message) => {
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+  await sendDiscordMessage(webhookUrl, {
+    username: "Firebase Billing",
+    content: message,
+    avatar_url:
+      "https://firebase.google.com/static/images/brand-guidelines/logo-logomark.png",
+  });
+};
+
+const _isBillingEnabled = async () => {
+  try {
+    const [res] = await billing.getProjectBillingInfo({
+      name: PROJECT_NAME,
+    });
+    logger.debug(`Billing INfo: ${res}`);
+    logger.debug(`Billing INfo string: ${JSON.stringify(res)}`);
+    return res.billingEnabled;
+  } catch (err) {
+    logger.error(
+      `Unable to determine if billing is enabled on specified project, assuming billing is enabled ${err}`
+    );
+    return false;
+  }
+};
+
+// const _disableBilling = async () => {
+//   try {
+//     const billingEnabled = await _isBillingEnabled();
+//     if (!billingEnabled) return;
+//     const [res] = await billing.updateProjectBillingInfo({
+//       name: PROJECT_NAME,
+//       projectBillingInfo: { billingAccountName: "" }, // Disable billing
+//       // requestBody: { billingAccountName: "" }, // Disable billing
+//     });
+//     // return `Billing disabled: ${JSON.stringify(res)}`;
+//     logger.debug(`Billing successfully disabled ${JSON.stringify(res)}`);
+//   } catch (err) {
+//     logger.error(`Something went wrong while disabling billing: ${err}`);
+//   }
+// };
+
+exports.handelBillingAlert = onMessagePublished(
+  "projects/aide-tools/topics/billing",
+  async (event) => {
+    logger.debug("BilllingA Allert");
+    const eventData = event.data.message.json;
+    logger.debug(`eventData: ${JSON.stringify(eventData)}`);
+    const billingRef = getDatabase().ref("billing");
+    const billingData = (await billingRef.once("value")).val();
+    logger.debug(`Billing data: ${JSON.stringify(billingData)}`);
+    let { lastReportedCost, lastReportedIntervalStart } = billingData;
+    const budgetExceeded = eventData.costAmount >= eventData.budgetAmount;
+    const isNewBillingCycle =
+      eventData.costIntervalStart !== lastReportedIntervalStart;
+    logger.debug(`isNewBillingCycle: ${isNewBillingCycle}`);
+    if (isNewBillingCycle) lastReportedCost = 0;
+
+    if (
+      !budgetExceeded &&
+      eventData.costAmount - lastReportedCost < MIN_COST_DIF_FOR_ALERT
+    )
+      return;
+
+    const promises = [];
+
+    if (budgetExceeded) {
+      // _disableBilling()
+      const billingEnabled = await _isBillingEnabled();
+      logger.debug(`Billing is enabled: ${billingEnabled}`);
+      promises.push(
+        sendDiscordBillingMessage(
+          `**ALERT**: 100% of your budget used. Current bill: $${eventData.costAmount} ${eventData.currencyCode}`
+        )
+      );
+    } else {
+      const percentageUsed = Math.floor(
+        (eventData.costAmount / eventData.budgetAmount) * 100
+      );
+      promises.push(
+        sendDiscordBillingMessage(
+          `Current bill $${eventData.costAmount} ${eventData.currencyCode}. \n${percentageUsed}% of your budget`
+        )
+      );
+    }
+
+    promises.push(
+      billingRef.update({
+        lastReportedCost: eventData.costAmount,
+        lastReportedIntervalStart: eventData.costIntervalStart,
+      })
+    );
+
+    await Promise.all(promises);
+  }
+);
+
+// exports.getBillingInfo = onRequest(async (request, response) => {
+//   try {
+//     setCredentialsForBilling();
+//     const billingInfo = await billing.getBillingInfo({ name: PROJECT_NAME });
+//     console.log("Billin info");
+//     console.log(billingInfo);
+//     response.send("DONE!!!!");
+//   } catch (err) {
+//     console.error(err.message);
+//   }
+// });
+
+// const setCredentialsForBilling = () => {
+//   const client = new GoogleAuth({
+//     scopes: [
+//       "https://googleapis.com/auth/cloud-billing",
+//       "https://googleapis.com/auth/cloud-platform",
+//     ],
+//   });
+
+//   // Set credential globally for all requests
+//   google.options({
+//     auth: client,
+//   });
+// };
+
+// const disableBilling = async () => {
+//   try {
+//     setCredentialsForBilling();
+//     if (PROJECT_NAME) {
+//       const billingInfo = await billing.getBillingInfo({ name: PROJECT_NAME });
+//       if (billingInfo.data.billingEnabled) {
+//         const result = billing.updateBillingInfo({
+//           name: PROJECT_NAME,
+//           requestBody: { billingAccountName: "" },
+//         });
+//         console.log(JSON.stringify(result));
+//       }
+//     }
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };
+
+// const getBillingData = async () => {
+//   try {
+//     setCredentialsForBilling();
+//     const billingInfo = await billing.getBillingInfo({ name: PROJECT_NAME });
+//     console.log("Billin info");
+//     console.log(billingInfo);
+//   } catch (err) {
+//     console.error(err.message);
+//   }
+// };
+
+// exports.reciveBillingNotice = pubsub.topic("billing").onPublish((message) => {
+//   try {
+//     const data = message.json;
+//     handelPubSub(data);
+//   } catch (err) {
+//     console.error(err.message);
+//   }
+
+//   return null;
+// });
+
+// const handelPubSub = async (data) => {
+//   console.log("Recieved notif");
+//   console.log(data);
+//   await getBillingData();
+// };
 
 const clearObjectKeys = (obj) => {
   const convertedMetaArr = Object.entries(obj).map((entry, i) => {
@@ -145,7 +340,7 @@ const transformImageData = (imageData) => {
 };
 
 const saveVersionImages = async (modelId, username, versionsData) => {
-  console.log(versionsData);
+  // console.log(versionsData);
   const updatedModelversions = await Promise.all(
     versionsData?.map(async (version) => {
       const versionImagesRequest = await fetch(
@@ -215,58 +410,78 @@ const saveVersionImages = async (modelId, username, versionsData) => {
   return updatedModelversions;
 };
 
-exports.uploadModel = onRequest(
-  { timeoutSeconds: 120 },
-  async (request, response) => {
-    //   logger.info("Hello logs!", { structuredData: true });
-    //   response.send("Hello from Firebase!");
-    const modelId = request.query?.modelId || request.params[0];
+// exports.uploadModel = onRequest(
+//   {
+//     timeoutSeconds: 60,
+//     cors: true,
+//     // cors: [
+//     //   "aide-tools.com",
+//     //   "aide-tools.web.app",
+//     //   "https://aide-tools.web.app",
+//     //   "https://aide-tools.com",
+//     //   /aide-tools\.com$/,
+//     // ],
+//   },
+//   async (request, response) => {
+//     //   logger.info("Hello logs!", { structuredData: true });
+//     //   response.send("Hello from Firebase!");
+//     const modelId = request.query?.modelId || request.params[0];
 
-    // Checking attribute.
-    if (!Number.isFinite(+modelId) || modelId.length === 0) {
-      // Throwing an HttpsError so that the client gets the error details.
-      throw new HttpsError("invalid-argument", "Invalid ID");
-    }
-    // Checking that the user is authenticated.
-    //   if (!request.auth) {
-    //     // Throwing an HttpsError so that the client gets the error details.
-    //     throw new HttpsError(
-    //       "failed-precondition",
-    //       "The function must be " + "called while authenticated."
-    //     );
-    //   }
+//     // Checking attribute.
+//     if (!Number.isFinite(+modelId) || modelId.length === 0) {
+//       // Throwing an HttpsError so that the client gets the error details.
+//       throw new HttpsError("invalid-argument", "Invalid ID");
+//     }
+//     // Checking that the user is authenticated.
+//     //   if (!request.auth) {
+//     //     // Throwing an HttpsError so that the client gets the error details.
+//     //     throw new HttpsError(
+//     //       "failed-precondition",
+//     //       "The function must be " + "called while authenticated."
+//     //     );
+//     //   }
 
-    const responseCiv = await fetch(
-      `https://civitai.com/api/v1/models/${modelId}`
-    );
+//     const responseCiv = await fetch(
+//       `https://civitai.com/api/v1/models/${modelId}`
+//     );
 
-    const responseData = await responseCiv.json();
+//     const responseData = await responseCiv.json();
 
-    if (!responseCiv.ok) {
-      throw new HttpsError(`Error status (${responseData})`);
-    }
-    //   response.send(`Model name: ${responseData?.name}`);
-    // Push the new message into Firestore using the Firebase Admin SDK.
-    if (responseData?.id) {
-      await getFirestore()
-        .collection("models")
-        .doc(`${responseData?.id}`)
-        .set({ ...responseData, updatedAt: Timestamp.now().toMillis() });
+//     if (!responseCiv.ok) {
+//       throw new HttpsError(`Error status (${responseData})`);
+//     }
+//     //   response.send(`Model name: ${responseData?.name}`);
+//     // Push the new message into Firestore using the Firebase Admin SDK.
+//     if (responseData?.id) {
+//       await getFirestore()
+//         .collection("models")
+//         .doc(`${responseData?.id}`)
+//         .set({ ...responseData, updatedAt: Timestamp.now().toMillis() });
 
-      response.send({ modelId: responseData?.id, message: "Upload complete" });
-    } else {
-      throw new HttpsError(`Missing ID`);
-    }
+//       response.send({ modelId: responseData?.id, message: "Upload complete" });
+//     } else {
+//       throw new HttpsError(`Missing ID`);
+//     }
 
-    // Send back a message that we've successfully written the message
-    // response.json({ result: `Message with ID: ${writeResult.id} added.` });
+//     // Send back a message that we've successfully written the message
+//     // response.json({ result: `Message with ID: ${writeResult.id} added.` });
 
-    // response.send(`Model ${modelId} updated`);
-  }
-);
+//     // response.send(`Model ${modelId} updated`);
+//   }
+// );
 
 exports.updateModel = onRequest(
-  { timeoutSeconds: 120 },
+  {
+    timeoutSeconds: 60,
+    cors: true,
+    // cors: [
+    //   "aide-tools.com",
+    //   "aide-tools.web.app",
+    //   "https://aide-tools.web.app",
+    //   "https://aide-tools.com",
+    //   /aide-tools\.com$/,
+    // ],
+  },
   async (request, response) => {
     try {
       const modelId = request.query?.modelId || request.params[0];
@@ -393,7 +608,7 @@ exports.updateModel = onRequest(
             updated: true,
             message: "Update complete",
           });
-          console.log("NEW VERSION AMOUNT", newVersions?.length);
+          // console.log("NEW VERSION AMOUNT", newVersions?.length);
           saveVersionImages(
             modelId,
             responseData?.creator?.username,
