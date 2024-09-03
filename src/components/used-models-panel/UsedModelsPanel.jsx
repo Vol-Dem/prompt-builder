@@ -30,13 +30,14 @@ const UsedModelsPanel = () => {
   const formIsOpen = useSelector((state) => state.used.formIsOpen);
   const fullCardView = useSelector((state) => state.used.fullCardView);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
+  const emailVerified = useSelector((state) => state.auth.user.emailVerified);
   const dispatch = useDispatch();
 
   const openPanelHandler = () => {
     dispatch(usedModelsActions.panelState(!panelIsOpen));
   };
   const openFormHandler = () => {
-    if (!isAuth) {
+    if (!isAuth || !emailVerified) {
       dispatch(authActions.openAuthForm(true));
     } else {
       dispatch(usedModelsActions.setFormIsOpen(!formIsOpen));
@@ -192,7 +193,7 @@ const UsedModelsPanel = () => {
             )}
           </Buttton>
           {/* <UpdateDb /> */}
-          {formIsOpen && (
+          {formIsOpen && isAuth && emailVerified && (
             <div className={classes.forms}>
               <UpdateModelForm id="side-form" />
             </div>

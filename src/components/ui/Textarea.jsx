@@ -32,6 +32,9 @@ const Textarea = (props) => {
 
       setInputErrorMessage(errorMessage);
     }
+    if (!validation) {
+      setShowErrorMessage(false);
+    }
   }, [value, validation]);
 
   return (
@@ -54,7 +57,7 @@ const Textarea = (props) => {
           if (onBlur) {
             onBlur(e);
           }
-          if (validation) {
+          if (validation && !validation?.disableErrorOnBlur) {
             setShowErrorMessage(true);
           }
         }}

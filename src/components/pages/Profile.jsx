@@ -21,13 +21,9 @@ import {
   USERNAME_MAX_LENGTH,
 } from "../../variables/constants";
 import SuccessMessage from "../ui/SuccessMessage";
-import firebaseApp from "../../firebase-config";
-import { getAuth, sendEmailVerification } from "firebase/auth";
 import ReAuthForm from "../forms/ReAuth/ReAuthForm";
 import Modal from "../ui/Modal";
-import WarningMessage from "../ui/WarningMessage";
-
-const auth = getAuth(firebaseApp);
+import VerifyEmailMessage from "../notification-messages/VerifyEmailMessage";
 
 const Profile = ({ title }) => {
   const [userName, setUserName] = useState({
@@ -51,7 +47,6 @@ const Profile = ({ title }) => {
   const [changePassIsActive, setChangePassIsActive] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const dispatch = useDispatch();
   const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
   const successMessageAuth = useSelector((state) => state.auth.successMessage);
@@ -322,11 +317,6 @@ const Profile = ({ title }) => {
     </form>
   );
 
-  const resendVerificationEmailHandler = async () => {
-    await sendEmailVerification(auth.currentUser);
-    setSuccessMessage("Check your email");
-  };
-
   const profileHtml = (
     <Card>
       <div className={classes["profile__container"]}>
@@ -351,20 +341,16 @@ const Profile = ({ title }) => {
               </ErrorMessage>
             )}
             {!userData.emailVerified && (
-              <WarningMessage>
-                Email is not verified{" "}
-                <span
-                  className={classes.link}
-                  onClick={resendVerificationEmailHandler}
-                >
-                  resend request
-                </span>{" "}
-              </WarningMessage>
-            )}
-            {successMessage && (
-              <SuccessMessage className={classes["auth__error"]}>
-                {successMessage}
-              </SuccessMessage>
+              <VerifyEmailMessage />
+              // <WarningMessage>
+              //   Email is not verified{" "}
+              //   <span
+              //     className={classes.link}
+              //     onClick={resendVerificationEmailHandler}
+              //   >
+              //     resend request
+              //   </span>{" "}
+              // </WarningMessage>
             )}
             {successMessageAuth && (
               <SuccessMessage className={classes["auth__error"]}>

@@ -271,7 +271,9 @@ const ToS = ({ title }) => {
         reason, with or without notice, and without any liability to you arising
         from such termination. You may terminate your Account and these Terms at
         any time by following the instructions in your Account or contacting us
-        at support@AIDE-TOOLS.com.
+        at <LinkA href="mailto:support@aide-tools.com">
+          support@aide-tools.com
+        </LinkA>.
       </p>
       <p className={classes["tos__text"]}>
         12.3 Effect of Termination. Upon termination of these Terms: (a) your

@@ -21,7 +21,7 @@ import CheckCircleSvg from "../../assets/CheckCircleSvg";
 import ErrorMessage from "../ui/ErrorMessage";
 
 const firestore = getFirestore(firebaseApp);
-
+const civitDefEmb = [250708, 250712, 106916];
 const timeoutDelay = 1000;
 
 const ImageCard = ({ activeImgNum }) => {
@@ -60,7 +60,7 @@ const ImageCard = ({ activeImgNum }) => {
       const loadResoursesInfo = async (curImageData) => {
         try {
           setIsLoading(true);
-
+          console.log(curImageData);
           //MODEL
           let modelHash = "";
           if (curImageData?.meta?.hasOwnProperty("Model hash")) {
@@ -101,7 +101,9 @@ const ImageCard = ({ activeImgNum }) => {
             resourcesInfoCiv = [
               ...resourcesInfoCiv,
               ...imageWithResCiv.meta.civitaiResources,
-            ];
+            ].filter(
+              (resource) => !civitDefEmb.includes(resource.modelVersionId)
+            );
           }
 
           if (!!imageWithResCiv?.meta?.resources?.length) {
@@ -196,7 +198,8 @@ const ImageCard = ({ activeImgNum }) => {
               // doc.data() is never undefined for query doc snapshots
               return doc.data();
             });
-            // console.log(modelsPrewiewByHash);
+            console.log(allModelsPreviews);
+            console.log(modelsPrewiewByHash);
             allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewByHash];
           }
 
@@ -271,24 +274,24 @@ const ImageCard = ({ activeImgNum }) => {
             }
             return resource;
           });
-          // console.log(resources);
+          console.log(resources);
 
           //Remove not uniq items from the end of array//////
           const reversedArr = resources.toReversed();
           const ids = reversedArr
             .map((resource) => resource?.preview?.id)
             .filter(Boolean);
-
+          console.log(ids);
           const filteredNewResult = reversedArr
             .filter((resource, index) => {
               if (!resource?.preview?.id) {
                 return true;
               } else {
-                return !ids.includes(resource?.preview?.id, index + 1);
+                return !ids.includes(resource?.preview?.id, index - 1);
               }
             })
             .toReversed();
-          // console.log(filteredNewResult);
+          console.log(filteredNewResult);
           ////////////////////////////////////////////////////
 
           if (!!modelInfoData?.length) {

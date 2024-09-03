@@ -14,7 +14,7 @@ const LinkA = (props) => {
     <a
       className={`${classes.link} ${props.className || ""}`}
       target={props.external ? "_blank" : ""}
-      rel="noreferrer"
+      rel="noreferrer nofollow"
       href={props.href}
       onClick={(e) => {
         if (props?.onClick) {

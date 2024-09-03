@@ -2,16 +2,12 @@ import { useEffect, useState } from "react";
 import Buttton from "../../ui/Button";
 import Image from "../../ui/image/Image";
 import classes from "./ChooseImageForm.module.scss";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
-import firebaseApp from "../../../firebase-config";
 import { useSelector } from "react-redux";
 import Spinner from "../../ui/Spinner";
 import CheckSvg from "../../../assets/CheckSvg";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { OFFLINE_ERROR_MESSAGE } from "../../../variables/constants";
-
-const firestore = getFirestore(firebaseApp);
 
 const ChooseImageForm = ({
   type,
@@ -93,7 +89,16 @@ const ChooseImageForm = ({
       }
     };
     loadSavedPost();
-  }, [images, activeImageIndex, existedImgsAmount, modelId, type, uid]);
+  }, [
+    images,
+    activeImageIndex,
+    existedImgsAmount,
+    modelId,
+    type,
+    uid,
+    model,
+    versionId,
+  ]);
 
   const imageStatusChangeHandler = (e) => {
     setImagesInputs((prevState) => {

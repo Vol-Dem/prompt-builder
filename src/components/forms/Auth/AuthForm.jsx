@@ -68,11 +68,17 @@ const AuthForm = () => {
       return;
     }
 
-    if (!email.isValid || !password.isValid) {
-      dispatch(authActions.setErrorMessage(DEF_INPUT_ERROR_MESSAGE));
-    } else {
+    if (isLogin || (email.isValid && password.isValid)) {
       dispatch(authRequest(isLogin, email.value, password.value));
+    } else {
+      dispatch(authActions.setErrorMessage(DEF_INPUT_ERROR_MESSAGE));
     }
+
+    // if (!email.isValid || !password.isValid) {
+    //   dispatch(authActions.setErrorMessage(DEF_INPUT_ERROR_MESSAGE));
+    // } else {
+    //   dispatch(authRequest(isLogin, email.value, password.value));
+    // }
   };
 
   const switchSignType = () => {
@@ -173,11 +179,15 @@ const AuthForm = () => {
             onChange={(e, isValid) => {
               setEmail({ value: e.target.value, isValid });
             }}
-            validation={{
-              required: true,
-              email: true,
-              maxLength: EMAIL_MAX_LENGTH,
-            }}
+            validation={
+              !isLogin
+                ? {
+                    required: true,
+                    email: true,
+                    maxLength: EMAIL_MAX_LENGTH,
+                  }
+                : false
+            }
             showError={showErrorMessage}
             value={email.value}
           />
@@ -192,11 +202,15 @@ const AuthForm = () => {
             onChange={(e, isValid) => {
               setPassword({ value: e.target.value, isValid });
             }}
-            validation={{
-              required: true,
-              password: true,
-              maxLength: PASSWORD_MAX_LENGTH,
-            }}
+            validation={
+              !isLogin
+                ? {
+                    required: true,
+                    password: true,
+                    maxLength: PASSWORD_MAX_LENGTH,
+                  }
+                : false
+            }
             showError={showErrorMessage}
             value={password.value}
           />

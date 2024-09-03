@@ -3,26 +3,36 @@ import Card from "./Card";
 import classes from "./Notification.module.scss";
 import { ReactComponent as TriangleIcon } from "./../../assets/triangle.svg";
 import { createPortal } from "react-dom";
-import { useDispatch } from "react-redux";
-import { notificationActions } from "../../store/notification";
+import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 
-const Notification = ({ title, message }) => {
-  const dispatch = useDispatch();
-  const closeNotificationHandler = () => {
-    dispatch(notificationActions.closeNotification());
-  };
+const Notification = (props) => {
+  const { type = "notification", title } = props;
+  // const dispatch = useDispatch();
+  // const closeNotificationHandler = () => {
+  //   if (props?.onClick) {
+  //     props?.onClick();
+  //   }
+  //   dispatch(notificationActions.closeNotification());
+  // };
+
   return (
     <>
       {createPortal(
         <Card className={classes.notification}>
-          <TriangleIcon />
+          <div>
+            {type === "notification" && <ExclamationCircleSvg />}
+            {type === "warning" && <TriangleIcon />}
+          </div>
+
           <div className={classes["notification__message"]}>
-            <h4 className={classes["notification__title"]}>{title}</h4>
-            <p className={classes["notification__text"]}>{message}</p>
+            {title && (
+              <h4 className={classes["notification__title"]}>{title}</h4>
+            )}
+            <p className={classes["notification__text"]}>{props.children}</p>
           </div>
           <Buttton
             className={classes["notification__btn"]}
-            onClick={closeNotificationHandler}
+            onClick={props?.onClick}
           >
             Got it!
           </Buttton>

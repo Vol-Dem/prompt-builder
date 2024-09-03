@@ -34,10 +34,13 @@ const Input = (props) => {
 
       setInputErrorMessage(errorMessage);
     }
+    if (!validation) {
+      setShowErrorMessage(false);
+    }
   }, [value, validation]);
 
   return (
-    <div>
+    <div className={classes.container}>
       {label && (
         <label htmlFor={id} className={classes.label}>
           {label || ""}
@@ -51,7 +54,7 @@ const Input = (props) => {
           if (onBlur) {
             onBlur(e);
           }
-          if (!validation?.disableErrorOnBlur) {
+          if (validation && !validation?.disableErrorOnBlur) {
             setShowErrorMessage(true);
           }
         }}

@@ -248,19 +248,23 @@ const Model = ({ title }) => {
     if (!model?.id) return;
 
     const getDefModelData = async () => {
-      const modelDefDataRef = doc(firestore, "models", `${model.id}`);
+      try {
+        const modelDefDataRef = doc(firestore, "models", `${model.id}`);
 
-      const docSnap = await getDoc(modelDefDataRef);
+        const docSnap = await getDoc(modelDefDataRef);
 
-      if (docSnap.exists()) {
-        const modelDefData = docSnap.data();
-        // console.log(modelDefData);
+        if (docSnap.exists()) {
+          const modelDefData = docSnap.data();
+          // console.log(modelDefData);
 
-        dispatch(
-          modelActions.setModelData({
-            data: modelDefData,
-          })
-        );
+          dispatch(
+            modelActions.setModelData({
+              data: modelDefData,
+            })
+          );
+        }
+      } catch (err) {
+        setErrorMessage(err.message);
       }
     };
 

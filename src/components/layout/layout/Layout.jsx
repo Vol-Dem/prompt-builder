@@ -1,5 +1,11 @@
 import classes from "./Layout.module.scss";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
 import MainNavigation from "../navigation/MainNavigation";
@@ -10,7 +16,7 @@ import UserNavigation from "../navigation/UserNavigation";
 import Buttton from "../../ui/Button";
 import Modal from "../../ui/Modal";
 import AuthForm from "../../forms/Auth/AuthForm";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Spinner from "../../ui/Spinner";
 import Notification from "../../ui/Notification";
 import Prompt from "../../prompt/Prompt";
@@ -21,17 +27,34 @@ import UploadingPanel from "../../uploading-panel/UploadingPanel";
 import ActiveCarousel from "../../active-carousel/ActiveCarousel";
 import SearchSvg from "../../../assets/SearchSvg";
 import { tabActions } from "../../../store/tabs";
+import VerifyEmailMessage from "../../notification-messages/VerifyEmailMessage";
+import {
+  saveToLocalStorage,
+  saveToStorage,
+  uploadLocalStorage,
+  uploadStorage,
+} from "../../../variables/utils";
+import Maintenance from "../maintenance/Maintenance";
 
 const Layout = () => {
+  const [cookificationIsOpen, setCookificationIsOpen] = useState(false);
+  const [activeNotification, setActiveNotification] = useState({});
+  const [allNotification, setAllNotification] = useState([]);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
+  const emailVerified = useSelector((state) => state.auth.user.emailVerified);
   const authIsOpen = useSelector((state) => state.auth.authFormIsOpen);
-  const notificationIsShown = useSelector(
-    (state) => state.notification.isShown
+  // const notificationIsShown = useSelector(
+  //   (state) => state.notification.isShown
+  // );
+  const notifications = useSelector(
+    (state) => state.notification.notifications
   );
-  const notificationTitle = useSelector((state) => state.notification.title);
-  const notificationMessage = useSelector(
-    (state) => state.notification.message
-  );
+  const maintenance = useSelector((state) => state.notification.maintenance);
+  // const notificationType = useSelector((state) => state.notification.type);
+  // const notificationTitle = useSelector((state) => state.notification.title);
+  // const notificationMessage = useSelector(
+  //   (state) => state.notification.message
+  // );
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -52,6 +75,60 @@ const Layout = () => {
 
   const nsfwSwitchHandler = () => {
     dispatch(switchNsfwMode(!isNsfwMode));
+  };
+
+  useEffect(() => {
+    if (!isAuth) {
+      const cookies = uploadStorage(`cookies`);
+      console.log(cookies);
+      if (!cookies?.accepted) {
+        setCookificationIsOpen(true);
+      }
+    }
+  }, [isAuth]);
+
+  useEffect(() => {
+    if (isAuth) {
+      const noticeInfo = uploadLocalStorage(`notifications`);
+      console.log(noticeInfo);
+
+      const updatedNitice = notifications.map((message) => {
+        const notice = noticeInfo?.messages?.find(
+          (userNotice) => userNotice.id === message.id
+        );
+        return {
+          ...message,
+          readed: notice ? notice.readed : message.readed,
+        };
+      });
+      console.log(updatedNitice);
+      setAllNotification(updatedNitice);
+    }
+  }, [notifications, isAuth]);
+
+  useEffect(() => {
+    if (isAuth) {
+      const notification = allNotification.find((message) => !message.readed);
+      setActiveNotification(notification);
+    }
+  }, [notifications, allNotification, isAuth]);
+
+  const closeNotificationHandler = () => {
+    const noticeInfo = allNotification.map((message) => {
+      return {
+        // id: message.id,
+        ...message,
+        readed: activeNotification.id === message.id ? true : message.readed,
+      };
+    });
+    saveToLocalStorage(`notifications`, { messages: noticeInfo });
+    setAllNotification(noticeInfo);
+    setActiveNotification({});
+  };
+
+  const closeCookificationHandler = () => {
+    saveToStorage(`cookies`, { accepted: true });
+    setCookificationIsOpen(false);
   };
 
   return (
@@ -76,8 +153,8 @@ const Layout = () => {
                     />
                   </NavLink>
                 </div>
-                <MainNavigation />
-                {isAuth && (
+                {!maintenance && <MainNavigation />}
+                {isAuth && !maintenance && (
                   <>
                     <Search
                       className={`${
@@ -117,7 +194,7 @@ const Layout = () => {
                   </>
                 )}
 
-                {isAuth && <UserNavigation />}
+                {isAuth && !maintenance && <UserNavigation />}
                 {!isAuth && (
                   <Buttton onClick={openAuth} className={classes["btn-auth"]}>
                     Sign In
@@ -126,34 +203,51 @@ const Layout = () => {
               </div>
             </div>
           </div>
-          <div className={classes.wrap}>
-            <Prompt />
-          </div>
+          {!maintenance && (
+            <div className={classes.wrap}>
+              <Prompt />
+            </div>
+          )}
           <ActiveCarousel />
         </Header>
 
         <main>
           <div className="wrapper">
-            <Suspense fallback={<Spinner />}>
-              <Outlet />
-            </Suspense>
+            {!maintenance && (
+              <Suspense fallback={<Spinner />}>
+                <Outlet />
+              </Suspense>
+            )}
+            {maintenance && <Maintenance />}
           </div>
         </main>
         {authIsOpen && (
           <Modal onClose={closeAuth}>
-            <AuthForm />
+            {!isAuth && <AuthForm />}
+            {isAuth && !emailVerified && <VerifyEmailMessage />}
           </Modal>
         )}
-
-        {notificationIsShown && (
+        {activeNotification?.id && isAuth && (
           <Notification
-            title={notificationTitle}
-            message={notificationMessage}
-          />
+            type={activeNotification.type}
+            title={activeNotification.title}
+            onClick={closeNotificationHandler}
+          >
+            {activeNotification.text}
+          </Notification>
+        )}
+        {cookificationIsOpen && !isAuth && (
+          <Notification type="notification" onClick={closeCookificationHandler}>
+            This website uses cookies to ensure you get the best experience on
+            our website. By using our site you consent cookies.{" "}
+            <Link className={classes.link} to="/privacy">
+              Learn more
+            </Link>
+          </Notification>
         )}
         <Footer />
       </div>
-      <UsedModelsPanel />
+      {!maintenance && <UsedModelsPanel />}
     </div>
   );
 };

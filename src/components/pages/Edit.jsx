@@ -70,25 +70,28 @@ const Edit = ({ title }) => {
 
   useEffect(() => {
     if (!modelId) return;
+    try {
+      const getDefModelData = async () => {
+        const modelDefDataRef = doc(firestore, "models", `${modelId}`);
 
-    const getDefModelData = async () => {
-      const modelDefDataRef = doc(firestore, "models", `${modelId}`);
+        const docSnap = await getDoc(modelDefDataRef);
 
-      const docSnap = await getDoc(modelDefDataRef);
+        if (docSnap.exists()) {
+          const modelDefData = docSnap.data();
+          // console.log(modelDefData);
 
-      if (docSnap.exists()) {
-        const modelDefData = docSnap.data();
-        // console.log(modelDefData);
+          dispatch(
+            modelActions.setModelData({
+              data: modelDefData,
+            })
+          );
+        }
+      };
 
-        dispatch(
-          modelActions.setModelData({
-            data: modelDefData,
-          })
-        );
-      }
-    };
-
-    getDefModelData();
+      getDefModelData();
+    } catch (err) {
+      setErrorMessage(err.message);
+    }
   }, [model?.id, dispatch, modelId]);
 
   return (

@@ -165,7 +165,9 @@ export const authRequest = (isLogin, email, password) => {
           emailVerified: user.emailVerified,
         })
       );
-      dispatch(authActions.closeAuthForm());
+      if (user.emailVerified) {
+        dispatch(authActions.closeAuthForm());
+      }
     } catch (error) {
       if (error.code === "auth/invalid-login-credentials") {
         dispatch(authActions.setErrorMessage("Invalid login credentials"));

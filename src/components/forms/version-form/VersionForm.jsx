@@ -25,6 +25,8 @@ import {
 import InputNumber from "../../ui/InputNumber";
 // import { useOnlineStatus } from "../../../hooks/use-online-status";
 import Spinner from "../../ui/Spinner";
+import ButtonTertiary from "../../ui/ButtonTertiary";
+import CrossSvg from "../../../assets/CrossSvg";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -446,9 +448,27 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
     });
   };
 
-  const tagSetsHtml = tagSetsInputs.map((tagSet) => {
+  const deleteTagsetInputHandler = (index, e) => {
+    setTagSetsInputs((prevState) => {
+      return prevState.toSpliced(index, 1);
+    });
+  };
+
+  const tagSetsHtml = tagSetsInputs.map((tagSet, i) => {
     return (
-      <div key={tagSet[0].id} className={classes["input-group"]}>
+      <div key={tagSet[0].id} className={classes["tagset"]}>
+        <div className={classes["tagset__header"]}>
+          <span className={classes["tagset__title"]}>{`Tagset ${i + 1}`}</span>{" "}
+          {i !== 0 && (
+            <ButtonTertiary
+              type="button"
+              className={classes["input__btn-del"]}
+              onClick={deleteTagsetInputHandler.bind(null, i)}
+            >
+              <CrossSvg />
+            </ButtonTertiary>
+          )}
+        </div>
         <Input
           id={tagSet[0].id}
           name={tagSet[0].name}

@@ -21,6 +21,7 @@ import Edit from "./components/pages/Edit";
 import ErrorPage from "./components/pages/ErrorPage";
 import ToS from "./components/pages/ToS";
 import PrivacyPolicy from "./components/pages/PrivacyPolicy";
+import { getAppInfo } from "./store/notification";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -30,6 +31,7 @@ function App() {
 
   //Authorizes user on application load
   useEffect(() => {
+    dispatch(getAppInfo());
     dispatch(initAuth());
   }, [dispatch]);
 

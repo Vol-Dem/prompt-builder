@@ -85,6 +85,10 @@
   margin-left: auto;
 }
 
+.link {
+  @include var.linkA;
+}
+
 // .active-corousel {
 //   position: sticky;
 //   top: 10rem;

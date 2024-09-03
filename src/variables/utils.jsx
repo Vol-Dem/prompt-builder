@@ -19,3 +19,16 @@ export const uploadStorage = (key) => {
 export const removeFromStorage = (key) => {
   window.sessionStorage.removeItem(key);
 };
+
+export const saveToLocalStorage = (key, data) => {
+  localStorage.setItem(key, JSON.stringify(data));
+};
+
+export const uploadLocalStorage = (key) => {
+  const storageData = localStorage?.getItem(key);
+  return storageData ? JSON.parse(storageData) : null;
+};
+
+export const removeFromLocalStorage = (key) => {
+  localStorage.removeItem(key);
+};

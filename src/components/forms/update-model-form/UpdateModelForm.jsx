@@ -32,16 +32,21 @@ import {
   SAVED_SUCCESS_MESSAGE,
   TITLE_MAX_LENGTH,
   TRIGER_WORDS_MAX_LENGTH,
-  UPDATE_MODEL_URL,
-  UPLOAD_MODEL_URL,
   modelTypes,
 } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import InputNumber from "../../ui/InputNumber";
 import { tabActions } from "../../../store/tabs";
+import ButtonTertiary from "../../ui/ButtonTertiary";
+import CrossSvg from "../../../assets/CrossSvg";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 const firestore = getFirestore(firebaseApp);
+const functions = getFunctions(firebaseApp);
+
+const SUBCATEGORIES_MAX_AMOUNT = 8;
+const TAGSETS_MAX_AMOUNT = 20;
 
 const tagSetsDefData = [
   {
@@ -321,6 +326,8 @@ const UpdateModelForm = ({ modelData, id }) => {
         !stepsInput.isValid;
 
       if (
+        subCatInputs.length > SUBCATEGORIES_MAX_AMOUNT ||
+        tagSetsInputs.length > TAGSETS_MAX_AMOUNT ||
         mainInputsIsNotValid ||
         (!!modelData && baseInputsIsNotValid) ||
         (!!modelData &&
@@ -436,13 +443,26 @@ const UpdateModelForm = ({ modelData, id }) => {
       } else {
         if (!modelData) {
           //Upload model to database
-          const saveModelRes = await fetch(
-            `${UPDATE_MODEL_URL}/updateModel?modelId=${
-              modelData?.id || modelId
-            }`
-          );
+          // const saveModelRes = await fetch(
+          //   `${UPDATE_MODEL_URL}/updateModel?modelId=${
+          //     modelData?.id || modelId
+          //   }`
+          // );
+          const updateModel = httpsCallable(functions, "updateModelCall");
+          const saveModelRes = await updateModel({
+            id: modelData?.id || modelId,
+          });
+          // .then((result) => {
+          //   // Read result of the Cloud Function.
+          //   /** @type {any} */
+          //   const data = result.data;
+          //   const sanitizedMessage = data.text;
+          // });
 
-          const saveModelResData = await saveModelRes.json();
+          // const saveModelResData = await saveModelRes.json();
+          const saveModelResData = saveModelRes.data;
+          console.log(saveModelRes);
+          console.log(saveModelResData);
 
           if (!saveModelResData.modelId) {
             throw new Error("Failed to upload");
@@ -877,6 +897,7 @@ const UpdateModelForm = ({ modelData, id }) => {
   };
 
   const addSubHandler = () => {
+    if (subCatInputs.length >= SUBCATEGORIES_MAX_AMOUNT) return;
     const newFields = [...subCatInputs];
     newFields.push({
       type: "text",
@@ -892,6 +913,7 @@ const UpdateModelForm = ({ modelData, id }) => {
   };
 
   const addtagSetHandler = () => {
+    if (tagSetsInputs.length >= TAGSETS_MAX_AMOUNT) return;
     const newFields = [...tagSetsInputs];
     newFields.push([
       {
@@ -932,24 +954,48 @@ const UpdateModelForm = ({ modelData, id }) => {
     });
   };
 
-  const subCatHtml = subCatInputs.map((sub) => {
+  const deleteSubcategoryInputHandler = (index, e) => {
+    setSubCatInputs((prevState) => {
+      return prevState.toSpliced(index, 1);
+    });
+  };
+
+  const subCatHtml = subCatInputs.map((sub, i) => {
     return (
-      <Input
-        key={sub.id}
-        id={sub.id}
-        name={sub.name}
-        type={sub.type}
-        placeholder={sub.placeholder}
-        onChange={subCatHandler}
-        value={sub.value}
-        validation={{
-          required: true,
-          maxLength: CATEGORY_NAME_MAX_LENGTH,
-        }}
-        showError={showErrorMessage}
-      />
+      <div key={sub.id} className={classes["subcategory"]}>
+        <Input
+          key={sub.id}
+          id={sub.id}
+          name={sub.name}
+          type={sub.type}
+          placeholder={sub.placeholder}
+          onChange={subCatHandler}
+          value={sub.value}
+          className={classes["subcategory__input"]}
+          validation={{
+            required: true,
+            maxLength: CATEGORY_NAME_MAX_LENGTH,
+          }}
+          showError={showErrorMessage}
+        />
+        {i !== 0 && (
+          <ButtonTertiary
+            type="button"
+            className={classes["input__btn-del"]}
+            onClick={deleteSubcategoryInputHandler.bind(null, i)}
+          >
+            <CrossSvg />
+          </ButtonTertiary>
+        )}
+      </div>
     );
   });
+
+  const deleteTagsetInputHandler = (index, e) => {
+    setTagSetsInputs((prevState) => {
+      return prevState.toSpliced(index, 1);
+    });
+  };
 
   const tagSetsHandler = (e, isValid) => {
     setTagSetsInputs((prevState) => {
@@ -974,9 +1020,21 @@ const UpdateModelForm = ({ modelData, id }) => {
     });
   };
 
-  const tagSetsHtml = tagSetsInputs.map((tagSet) => {
+  const tagSetsHtml = tagSetsInputs.map((tagSet, i) => {
     return (
-      <div key={tagSet[0].id} className={classes["input-group"]}>
+      <div key={tagSet[0].id} className={classes["tagset"]}>
+        <div className={classes["tagset__header"]}>
+          <span className={classes["tagset__title"]}>{`Tagset ${i + 1}`}</span>{" "}
+          {i !== 0 && (
+            <ButtonTertiary
+              type="button"
+              className={classes["input__btn-del"]}
+              onClick={deleteTagsetInputHandler.bind(null, i)}
+            >
+              <CrossSvg />
+            </ButtonTertiary>
+          )}
+        </div>
         <Input
           id={tagSet[0].id}
           name={tagSet[0].name}
@@ -1138,14 +1196,16 @@ const UpdateModelForm = ({ modelData, id }) => {
           />
           <Fieldset legend="Subcategories">
             {subCatHtml}
-            <ButttonSecondary
-              type="button"
-              id="sub"
-              onClick={addSubHandler}
-              className={classes["btn-secondary"]}
-            >
-              + add subcategory
-            </ButttonSecondary>
+            {subCatInputs?.length < SUBCATEGORIES_MAX_AMOUNT && (
+              <ButttonSecondary
+                type="button"
+                id="sub"
+                onClick={addSubHandler}
+                className={classes["btn-secondary"]}
+              >
+                + add subcategory
+              </ButttonSecondary>
+            )}
           </Fieldset>
 
           {modelData && (
@@ -1226,14 +1286,16 @@ const UpdateModelForm = ({ modelData, id }) => {
               ></Textarea>
               <Fieldset legend="Tag sets">
                 {tagSetsHtml}
-                <ButttonSecondary
-                  type="button"
-                  onClick={addtagSetHandler}
-                  disabled={modelIsSaving}
-                  className={classes["btn-secondary"]}
-                >
-                  + add new set
-                </ButttonSecondary>
+                {tagSetsInputs?.length < TAGSETS_MAX_AMOUNT && (
+                  <ButttonSecondary
+                    type="button"
+                    onClick={addtagSetHandler}
+                    disabled={modelIsSaving}
+                    className={classes["btn-secondary"]}
+                  >
+                    + add new set
+                  </ButttonSecondary>
+                )}
               </Fieldset>
             </FieldCategory>
             <FieldCategory title="Info">

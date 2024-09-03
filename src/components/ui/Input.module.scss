@@ -1,5 +1,9 @@
 @use "./../../variables/variables.scss" as var;
 
+.container {
+  width: 100%;
+}
+
 .input {
   border-radius: 10px;
   padding: 0.5rem;
@@ -16,6 +20,7 @@
     // border: 1px solid var.$color-text-red;
   }
 }
+
 .label {
   display: inline-block;
   font-size: 1.6rem;

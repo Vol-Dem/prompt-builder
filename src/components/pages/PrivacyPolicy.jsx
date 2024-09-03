@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import classes from "./PrivacyPolicy.module.scss";
 import { useEffect } from "react";
+import LinkA from "../ui/LinkA";
 
 const PrivacyPolicy = ({ title }) => {
   useEffect(() => {
@@ -149,7 +150,11 @@ const PrivacyPolicy = ({ title }) => {
         children under 13 years of age, and no part of our Services is directed
         to children. If you learn that a child has provided us with personal
         information in violation of this Privacy Policy, then you may alert us
-        at support@aide-tools.com.
+        at{" "}
+        <LinkA href="mailto:support@aide-tools.com">
+          support@aide-tools.com
+        </LinkA>
+        .
       </p>
       <h2 className={classes["policy__h2"]}>International Visitors</h2>
       <p className={classes["policy__text"]}>
@@ -173,10 +178,64 @@ const PrivacyPolicy = ({ title }) => {
         previously collected from you through the Services, we will notify you
         through the Services, by email, or other communication.
       </p>
+      <h2 className={classes["policy__h2"]}>Cookie Policy</h2>
+      <p className={classes["policy__text"]}>
+        Please read this cookie policy ("cookie policy", "policy") carefully
+        before using aide-tools.com website ("website", "service").
+      </p>
+      <h3 className={classes["policy__h3"]}>What are cookies?</h3>
+      <p className={classes["policy__text"]}>
+        Cookies are simple text files that are stored on your computer or mobile
+        device by a website&rsquo;s server. Each cookie is unique to your web
+        browser. It will contain some anonymous information such as a unique
+        identifier, website&rsquo;s domain name, and some digits and numbers.
+      </p>
+      <h3 className={classes["policy__h3"]}>
+        What types of cookies do we use?
+      </h3>
+      <h4>Necessary cookies</h4>
+      <p className={classes["policy__text"]}>
+        Necessary cookies allow us to offer you the best possible experience
+        when accessing and navigating through our website and using its
+        features. For example, these cookies let us recognize that you have
+        created an account and have logged into that account.
+      </p>
+      <h4>Functionality cookies</h4>
+      <p className={classes["policy__text"]}>
+        Functionality cookies let us operate the site in accordance with the
+        choices you make. For example, we will recognize your username and
+        remember how you customized the site during future visits.
+      </p>
+      <h4>Analytical cookies</h4>
+      <p className={classes["policy__text"]}>
+        These cookies enable us and third-party services to collect aggregated
+        data for statistical purposes on how our visitors use the website. These
+        cookies do not contain personal information such as names and email
+        addresses and are used to help us improve your user experience of the
+        website.
+      </p>
+      <h3 className={classes["policy__h3"]}>
+        <strong>How to delete cookies?</strong>
+      </h3>
+      <p className={classes["policy__text"]}>
+        If you want to restrict or block the cookies that are set by our
+        website, you can do so through your browser setting. Alternatively, you
+        can visit{" "}
+        <LinkA external={true} href="http://www.internetcookies.com">
+          www.internetcookies.com
+        </LinkA>
+        , which contains comprehensive information on how to do this on a wide
+        variety of browsers and devices. You will find general information about
+        cookies and details on how to delete cookies from your device.
+      </p>
       <h2 className={classes["policy__h2"]}>Contact Information</h2>
       <p className={classes["policy__text"]}>
         If you have any questions, comments, or concerns about our processing
-        activities, please email us at support@aide-tools.com.
+        activities, please email us at{" "}
+        <LinkA href="mailto:support@aide-tools.com">
+          support@aide-tools.com
+        </LinkA>
+        .
       </p>
     </div>
   );

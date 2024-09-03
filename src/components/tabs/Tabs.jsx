@@ -12,6 +12,7 @@ import { useState } from "react";
 const Tabs = () => {
   const [guideIsOpen, setGuideIsOpen] = useState(true);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
+  const authIsOpen = useSelector((state) => state.auth.authFormIsOpen);
   const activeCategory = useSelector((state) => state.tabs.currTab);
   const categories = useSelector((state) => state.tabs.categoriesData);
   const formIsOpen = useSelector((state) => state.used.formIsOpen);
@@ -81,7 +82,7 @@ const Tabs = () => {
                 </LinkA>{" "}
                 , fill in the remaining fields and click "Save".
               </p>
-              {guideIsOpen && sidepanelIsOpen && (
+              {guideIsOpen && sidepanelIsOpen && !authIsOpen && (
                 <Guide
                   className={classes.guide}
                   stage={formIsOpen ? 2 : 1}
