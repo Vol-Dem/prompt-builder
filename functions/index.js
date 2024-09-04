@@ -73,21 +73,21 @@ const _isBillingEnabled = async () => {
   }
 };
 
-// const _disableBilling = async () => {
-//   try {
-//     const billingEnabled = await _isBillingEnabled();
-//     if (!billingEnabled) return;
-//     const [res] = await billing.updateProjectBillingInfo({
-//       name: PROJECT_NAME,
-//       projectBillingInfo: { billingAccountName: "" }, // Disable billing
-//       // requestBody: { billingAccountName: "" }, // Disable billing
-//     });
-//     // return `Billing disabled: ${JSON.stringify(res)}`;
-//     logger.debug(`Billing successfully disabled ${JSON.stringify(res)}`);
-//   } catch (err) {
-//     logger.error(`Something went wrong while disabling billing: ${err}`);
-//   }
-// };
+const _disableBilling = async () => {
+  try {
+    const billingEnabled = await _isBillingEnabled();
+    if (!billingEnabled) return;
+    const [res] = await billing.updateProjectBillingInfo({
+      name: PROJECT_NAME,
+      projectBillingInfo: { billingAccountName: "" }, // Disable billing
+      // requestBody: { billingAccountName: "" }, // Disable billing
+    });
+    // return `Billing disabled: ${JSON.stringify(res)}`;
+    logger.debug(`Billing successfully disabled ${JSON.stringify(res)}`);
+  } catch (err) {
+    logger.error(`Something went wrong while disabling billing: ${err}`);
+  }
+};
 
 exports.handelBillingAlert = onMessagePublished(
   "projects/aide-tools/topics/billing",
@@ -114,7 +114,10 @@ exports.handelBillingAlert = onMessagePublished(
     const promises = [];
 
     if (budgetExceeded) {
-      // _disableBilling()
+      await getFirestore()
+        .collection("application")
+        .doc("info")
+        .set({ maintenance: true }, { merge: true });
       const billingEnabled = await _isBillingEnabled();
       logger.debug(`Billing is enabled: ${billingEnabled}`);
       promises.push(
@@ -122,6 +125,7 @@ exports.handelBillingAlert = onMessagePublished(
           `**ALERT**: 100% of your budget used. Current bill: $${eventData.costAmount} ${eventData.currencyCode}`
         )
       );
+      _disableBilling();
     } else {
       const percentageUsed = Math.floor(
         (eventData.costAmount / eventData.budgetAmount) * 100
