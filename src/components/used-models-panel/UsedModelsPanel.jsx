@@ -37,7 +37,8 @@ const UsedModelsPanel = () => {
     dispatch(usedModelsActions.panelState(!panelIsOpen));
   };
   const openFormHandler = () => {
-    if (!isAuth || !emailVerified) {
+    // if (!isAuth || !emailVerified) {
+    if (!isAuth) {
       dispatch(authActions.openAuthForm(true));
     } else {
       dispatch(usedModelsActions.setFormIsOpen(!formIsOpen));
@@ -132,9 +133,9 @@ const UsedModelsPanel = () => {
     const offcet = Math.round(cursorInitialX) - Math.round(cursorCurX);
     setCursorCurX(null);
     setCursorInitialX(null);
-    console.log(offcet);
-    console.log(cursorInitialX);
-    console.log(cursorCurX);
+    // console.log(offcet);
+    // console.log(cursorInitialX);
+    // console.log(cursorCurX);
     if (!!offcet && offcet > 0 && Math.abs(offcet) > 40) {
       dispatch(usedModelsActions.panelState(true));
     } else if (!!offcet && offcet < 0 && Math.abs(offcet) > 40) {
@@ -193,7 +194,8 @@ const UsedModelsPanel = () => {
             )}
           </Buttton>
           {/* <UpdateDb /> */}
-          {formIsOpen && isAuth && emailVerified && (
+          {/* {formIsOpen && isAuth && emailVerified && ( */}
+          {formIsOpen && isAuth && (
             <div className={classes.forms}>
               <UpdateModelForm id="side-form" />
             </div>

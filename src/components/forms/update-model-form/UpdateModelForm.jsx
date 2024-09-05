@@ -23,6 +23,7 @@ import { Link } from "react-router-dom";
 import Spinner from "../../ui/Spinner";
 import {
   CATEGORY_NAME_MAX_LENGTH,
+  DEF_ERROR_MESSAGE,
   DEF_INPUT_ERROR_MESSAGE,
   DESCRIPTION_MAX_LENGTH,
   EXISTS_ERROR_MESSAGE,
@@ -41,6 +42,7 @@ import { tabActions } from "../../../store/tabs";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
 import { getFunctions, httpsCallable } from "firebase/functions";
+import { modelActions } from "../../../store/model";
 
 const firestore = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp);
@@ -461,8 +463,8 @@ const UpdateModelForm = ({ modelData, id }) => {
 
           // const saveModelResData = await saveModelRes.json();
           const saveModelResData = saveModelRes.data;
-          console.log(saveModelRes);
-          console.log(saveModelResData);
+          // console.log(saveModelRes);
+          // console.log(saveModelResData);
 
           if (!saveModelResData.modelId) {
             throw new Error("Failed to upload");
@@ -891,8 +893,13 @@ const UpdateModelForm = ({ modelData, id }) => {
         }
       }
     } catch (err) {
+      // console.log(err.message);
       setModelIsSaving(false);
-      setErrorMessage(err.message);
+      if (err.message === "This resource already exists") {
+        setErrorMessage(err.message);
+      } else {
+        setErrorMessage(DEF_ERROR_MESSAGE);
+      }
     }
   };
 
@@ -1533,7 +1540,13 @@ const UpdateModelForm = ({ modelData, id }) => {
           {successMessage && !modelData && (
             <>
               {"-"}
-              <Link to={`/model/${savedModel}`} className={classes.link}>
+              <Link
+                to={`/model/${savedModel}`}
+                className={classes.link}
+                onClick={() => {
+                  dispatch(modelActions.resetModelData());
+                }}
+              >
                 Show model
               </Link>
             </>

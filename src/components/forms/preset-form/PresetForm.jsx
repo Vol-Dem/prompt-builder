@@ -9,6 +9,7 @@ import Input from "../../ui/Input";
 import Fieldset from "../../ui/Fieldset";
 import ErrorMessage from "../../ui/ErrorMessage";
 import {
+  DEF_ERROR_MESSAGE,
   DEF_INPUT_ERROR_MESSAGE,
   NAME_MAX_LENGTH,
   OFFLINE_ERROR_MESSAGE,
@@ -109,7 +110,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
       dispatch(updatePresets(promptType, updatedPresets));
       onClose();
     } catch (err) {
-      setErrorMessage(err.message);
+      setErrorMessage(DEF_ERROR_MESSAGE);
     }
   };
 

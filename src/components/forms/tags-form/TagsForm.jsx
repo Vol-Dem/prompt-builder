@@ -12,6 +12,7 @@ import FieldCategory from "../../ui/FieldCategory";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
 import {
+  DEF_ERROR_MESSAGE,
   DEF_INPUT_ERROR_MESSAGE,
   NAME_MAX_LENGTH,
   OFFLINE_ERROR_MESSAGE,
@@ -221,7 +222,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
       setIsSaving(false);
     } catch (err) {
       // console.log(err.message);
-      setErrorMessage(err.message);
+      setErrorMessage(DEF_ERROR_MESSAGE);
       setIsSaving(false);
     }
   };

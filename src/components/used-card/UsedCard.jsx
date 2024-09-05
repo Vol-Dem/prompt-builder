@@ -11,6 +11,7 @@ import { promptActions } from "../../store/prompt";
 import ActivationTag from "../activation-tag/ActivationTag";
 import Arrow from "../ui/Arrow";
 import Image from "../ui/image/Image";
+import { modelActions } from "../../store/model";
 
 const UsedCard = ({ previewData, fullView }) => {
   const [tagsIsOpen, setTagsIsOpen] = useState(false);
@@ -50,6 +51,7 @@ const UsedCard = ({ previewData, fullView }) => {
   };
 
   const closePanelHandler = () => {
+    dispatch(modelActions.resetModelData());
     if (document.body.offsetWidth < 1024) {
       dispatch(usedModelsActions.panelState(false));
     }

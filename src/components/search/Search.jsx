@@ -11,7 +11,10 @@ import ButtonAdd from "../ui/ButtonAdd";
 import ErrorMessage from "../ui/ErrorMessage";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import { useOnlineStatus } from "../../hooks/use-online-status";
-import { OFFLINE_ERROR_MESSAGE } from "../../variables/constants";
+import {
+  DEF_ERROR_MESSAGE,
+  OFFLINE_ERROR_MESSAGE,
+} from "../../variables/constants";
 
 const amountPerPage = 10;
 const amountPerPageQuick = 4;
@@ -138,7 +141,7 @@ const Search = ({ className }) => {
             dispatch(liveSearch(searchInput.trim(), nsfwMode, amountPerPage));
           }
         } catch (err) {
-          dispatch(searchActions.setErrorMessage(err.message));
+          dispatch(searchActions.setErrorMessage(DEF_ERROR_MESSAGE));
           dispatch(searchActions.setSearchIsLoading(false));
         }
       };

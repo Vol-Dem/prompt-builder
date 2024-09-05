@@ -80,7 +80,7 @@ const Layout = () => {
   useEffect(() => {
     if (!isAuth) {
       const cookies = uploadStorage(`cookies`);
-      console.log(cookies);
+      // console.log(cookies);
       if (!cookies?.accepted) {
         setCookificationIsOpen(true);
       }
@@ -90,7 +90,7 @@ const Layout = () => {
   useEffect(() => {
     if (isAuth) {
       const noticeInfo = uploadLocalStorage(`notifications`);
-      console.log(noticeInfo);
+      // console.log(noticeInfo);
 
       const updatedNitice = notifications.map((message) => {
         const notice = noticeInfo?.messages?.find(
@@ -101,7 +101,7 @@ const Layout = () => {
           readed: notice ? notice.readed : message.readed,
         };
       });
-      console.log(updatedNitice);
+      // console.log(updatedNitice);
       setAllNotification(updatedNitice);
     }
   }, [notifications, isAuth]);

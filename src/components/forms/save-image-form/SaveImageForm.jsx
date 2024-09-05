@@ -9,6 +9,7 @@ import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
 import Spinner from "../../ui/Spinner";
 import {
+  DEF_ERROR_MESSAGE,
   DEF_INPUT_ERROR_MESSAGE,
   EMPTY_ERROR_MESSAGE,
   ID_MAX_LENGTH,
@@ -66,7 +67,7 @@ const SaveImageForm = ({ modelData, curVersion }) => {
       setImagesListIsOpen(true);
       setIsLoading(false);
     } catch (err) {
-      setErrorMessage(err.message);
+      setErrorMessage(DEF_ERROR_MESSAGE);
       setIsLoading(false);
     }
   };

@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import {
+  DEF_ERROR_MESSAGE,
   OFFLINE_ERROR_MESSAGE,
   SAVED_SUCCESS_MESSAGE,
 } from "../../../variables/constants";
@@ -116,7 +117,7 @@ const VersionStatusForm = ({ modelData }) => {
       seteSuccessMessage(SAVED_SUCCESS_MESSAGE);
       setIsSaving(false);
     } catch (err) {
-      seteErrorMessage(err.message);
+      seteErrorMessage(DEF_ERROR_MESSAGE);
       setIsSaving(false);
     }
   };

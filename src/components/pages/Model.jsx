@@ -24,6 +24,7 @@ import ErrorMessage from "../ui/ErrorMessage";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import {
   AUTH_ERROR_MESSAGE,
+  DEF_ERROR_MESSAGE,
   // LONG_LOADING_WARNING_MESSAGE,
 } from "../../variables/constants";
 import BackSvg from "../../assets/BackSvg";
@@ -264,7 +265,7 @@ const Model = ({ title }) => {
           );
         }
       } catch (err) {
-        setErrorMessage(err.message);
+        setErrorMessage(DEF_ERROR_MESSAGE);
       }
     };
 

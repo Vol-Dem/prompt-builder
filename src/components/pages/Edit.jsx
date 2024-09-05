@@ -7,6 +7,7 @@ import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
 import firebaseApp from "../../firebase-config";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
+import { DEF_ERROR_MESSAGE } from "../../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -54,7 +55,7 @@ const Edit = ({ title }) => {
       );
     } catch (err) {
       setErrorMessage("Failed to load model");
-      dispatch(modelActions.setErrorMessage(err.message));
+      dispatch(modelActions.setErrorMessage(DEF_ERROR_MESSAGE));
       setIsLoading(false);
     }
     return () => {
@@ -90,7 +91,7 @@ const Edit = ({ title }) => {
 
       getDefModelData();
     } catch (err) {
-      setErrorMessage(err.message);
+      setErrorMessage(DEF_ERROR_MESSAGE);
     }
   }, [model?.id, dispatch, modelId]);
 

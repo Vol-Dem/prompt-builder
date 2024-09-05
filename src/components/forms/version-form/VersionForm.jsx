@@ -13,6 +13,7 @@ import { clearFileExtension } from "../../../utils/generalUtils";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
 import {
+  DEF_ERROR_MESSAGE,
   DEF_INPUT_ERROR_MESSAGE,
   DESCRIPTION_MAX_LENGTH,
   NAME_MAX_LENGTH,
@@ -396,7 +397,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
       seteSuccessMessage(SAVED_SUCCESS_MESSAGE);
       setIsSaving(false);
     } catch (err) {
-      setErrorMessage(err.message);
+      setErrorMessage(DEF_ERROR_MESSAGE);
       setIsSaving(false);
     }
   };

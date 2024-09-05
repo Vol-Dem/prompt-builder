@@ -21,7 +21,10 @@ import ErrorMessage from "../../ui/ErrorMessage";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import usePageEnd from "../../../hooks/use-page-end";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
-import { OFFLINE_ERROR_MESSAGE } from "../../../variables/constants";
+import {
+  DEF_ERROR_MESSAGE,
+  OFFLINE_ERROR_MESSAGE,
+} from "../../../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -368,7 +371,7 @@ const GeneratedImages = ({ customData }) => {
       setIsLastPage(isLast);
       setExamplesIsLoading(false);
     } catch (err) {
-      setErrorMessage(err.message);
+      setErrorMessage(DEF_ERROR_MESSAGE);
       setExamplesIsLoading(false);
     }
   }, [

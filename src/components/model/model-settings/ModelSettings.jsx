@@ -22,6 +22,7 @@ import ErrorMessage from "../../ui/ErrorMessage";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import Spinner from "../../ui/Spinner";
 import {
+  DEF_ERROR_MESSAGE,
   OFFLINE_ERROR_MESSAGE,
   UPDATE_MODEL_URL,
 } from "../../../variables/constants";
@@ -37,7 +38,7 @@ const ModelSettings = () => {
   const [mobileMenuIsOpen, setMobileMenuIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [errorMessage, seteErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, seteSuccessMessage] = useState("");
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
   const model = useSelector((state) => state.model.model);
@@ -69,7 +70,7 @@ const ModelSettings = () => {
   const updateModelHandler = async () => {
     try {
       setIsLoading(true);
-      seteErrorMessage("");
+      setErrorMessage("");
       seteSuccessMessage("");
 
       if (!navigator.onLine) {
@@ -234,7 +235,7 @@ const ModelSettings = () => {
       seteSuccessMessage("Updated");
       setIsLoading(false);
     } catch (err) {
-      seteErrorMessage(err.message);
+      setErrorMessage(DEF_ERROR_MESSAGE);
       setIsLoading(false);
     }
   };
@@ -258,6 +259,7 @@ const ModelSettings = () => {
       navigate("/");
     } catch (err) {
       console.error(err.message);
+      setErrorMessage(DEF_ERROR_MESSAGE);
     }
   };
 

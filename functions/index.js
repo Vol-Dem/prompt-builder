@@ -791,3 +791,160 @@ exports.updateModelCall = onCall(
     }
   }
 );
+
+exports.updateModelCallDev = onCall(async (request) => {
+  try {
+    // const modelId = request.query?.modelId || request.params[0];
+    const modelId = request?.data?.id;
+
+    const uid = request?.auth?.uid;
+
+    if (!uid) {
+      return {
+        modelId: modelId,
+        message: "Auth error",
+      };
+    }
+    // const name = request.auth.token.name || null;
+    // const picture = request.auth.token.picture || null;
+    // const email = request.auth.token.email || null;
+
+    // Checking attribute.
+    if (!Number.isFinite(+modelId) || modelId.length === 0) {
+      // Throwing an HttpsError so that the client gets the error details.
+      throw new HttpsError("invalid-argument", "Invalid ID");
+    }
+    // Checking that the user is authenticated.
+    //   if (!request.auth) {
+    //     // Throwing an HttpsError so that the client gets the error details.
+    //     throw new HttpsError(
+    //       "failed-precondition",
+    //       "The function must be " + "called while authenticated."
+    //     );
+    //   }
+
+    const modelDataRef = getFirestore().collection("models").doc(`${modelId}`);
+
+    const modelDataDoc = await modelDataRef.get();
+    const updateDelayMs = 5 * 60 * 1000;
+
+    if (!modelDataDoc.exists) {
+      const responseCiv = await fetch(
+        `https://civitai.com/api/v1/models/${modelId}`
+      );
+
+      const responseData = await responseCiv.json();
+
+      if (!responseCiv.ok) {
+        throw new HttpsError(`Error status (${responseData})`);
+      }
+      //   response.send(`Model name: ${responseData?.name}`);
+      // Push the new message into Firestore using the Firebase Admin SDK.
+      if (responseData?.id) {
+        await getFirestore()
+          .collection("models")
+          .doc(`${responseData?.id}`)
+          .set({ ...responseData, updatedAt: Timestamp.now().toMillis() });
+
+        saveVersionImages(
+          modelId,
+          responseData?.creator?.username,
+          responseData.modelVersions
+        );
+
+        return {
+          modelId: responseData?.id,
+          message: "Upload complete",
+        };
+      } else {
+        throw new HttpsError(`Missing ID`);
+      }
+    } else {
+      const curModelData = modelDataDoc.data();
+      const timeNow = Timestamp.now().toMillis();
+
+      if (timeNow - curModelData.updatedAt < updateDelayMs) {
+        return {
+          modelId: modelId,
+          updated: false,
+          message: "Already up to date",
+        };
+      }
+
+      const responseCiv = await fetch(
+        `https://civitai.com/api/v1/models/${modelId}`
+      );
+
+      const responseData = await responseCiv.json();
+
+      if (!responseCiv.ok) {
+        throw new HttpsError(`Error status (${responseData})`);
+      }
+      //   response.send(`Model name: ${responseData?.name}`);
+      // Push the new message into Firestore using the Firebase Admin SDK.
+      if (responseData?.id) {
+        const newVersions = responseData.modelVersions.filter(
+          (version) =>
+            !curModelData.modelVersions?.some(
+              (oldVersions) => version?.id === oldVersions?.id
+            )
+        );
+
+        if (!newVersions?.length) {
+          await modelDataRef.update({
+            updatedAt: timeNow,
+          });
+
+          return {
+            modelId: responseData?.id,
+            updated: true,
+            message: "No new versions found",
+          };
+        }
+
+        const newVersionsWithIndex = [
+          ...newVersions,
+          ...curModelData.modelVersions,
+        ].map((version) => {
+          const index = responseData?.modelVersions?.find(
+            (newVersion) => newVersion?.id === version?.id
+          )?.index;
+          return {
+            ...version,
+            index,
+          };
+        });
+
+        await modelDataRef.update({
+          modelVersions: newVersionsWithIndex,
+          description: responseData.description,
+          updatedAt: timeNow,
+        });
+
+        saveVersionImages(
+          modelId,
+          responseData?.creator?.username,
+          newVersions
+        );
+
+        return {
+          modelId: responseData?.id,
+          updated: true,
+          message: "Update complete",
+        };
+        // console.log("NEW VERSION AMOUNT", newVersions?.length);
+
+        // return;
+      } else {
+        throw new HttpsError(`Missing ID`);
+      }
+
+      // Send back a message that we've successfully written the message
+      // response.json({ result: `Message with ID: ${writeResult.id} added.`});
+
+      // response.send(`Model ${modelId} updated`);
+    }
+  } catch (err) {
+    throw new HttpsError(err.message);
+  }
+});

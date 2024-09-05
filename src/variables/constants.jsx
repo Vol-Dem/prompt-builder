@@ -26,6 +26,7 @@ export const NUMBER_MAX_LENGTH = 5;
 export const EMAIL_MAX_LENGTH = 50;
 export const PASSWORD_MAX_LENGTH = 100;
 export const DEF_SUCCESS_MESSAGE = "Saved successfully";
+export const DEF_ERROR_MESSAGE = "Oops! Something went wrong. Try refreshing!";
 export const SAVED_SUCCESS_MESSAGE = "Upload complete";
 export const DEF_INPUT_ERROR_MESSAGE = "Invalid input data";
 export const AGREEMENT_MESSAGE =

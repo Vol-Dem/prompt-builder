@@ -10,7 +10,6 @@ const notificationSlice = createSlice({
   initialState: { maintenance: false, notifications: [] },
   reducers: {
     setNotifications(state, actions) {
-      console.log(actions.payload);
       state.notifications = actions.payload.map((message) => {
         return {
           ...message,

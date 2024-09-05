@@ -6,6 +6,7 @@ import { useState } from "react";
 import SuccessMessage from "../ui/SuccessMessage";
 import ErrorMessage from "../ui/ErrorMessage";
 import Spinner from "../ui/Spinner";
+import { DEF_ERROR_MESSAGE } from "../../variables/constants";
 
 const auth = getAuth(firebaseApp);
 
@@ -26,7 +27,7 @@ const VerifyEmailMessage = () => {
       setSuccessMessage("Request sent, check your email");
     } catch (err) {
       setIsLoading(false);
-      setErrorMessage(err.message);
+      setErrorMessage(DEF_ERROR_MESSAGE);
     }
   };
 

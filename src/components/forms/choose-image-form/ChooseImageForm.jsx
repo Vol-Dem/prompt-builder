@@ -7,7 +7,10 @@ import Spinner from "../../ui/Spinner";
 import CheckSvg from "../../../assets/CheckSvg";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import ErrorMessage from "../../ui/ErrorMessage";
-import { OFFLINE_ERROR_MESSAGE } from "../../../variables/constants";
+import {
+  DEF_ERROR_MESSAGE,
+  OFFLINE_ERROR_MESSAGE,
+} from "../../../variables/constants";
 
 const ChooseImageForm = ({
   type,
@@ -85,7 +88,7 @@ const ChooseImageForm = ({
         setImagesInputs(versionStatusInputData || []);
       } catch (err) {
         setIsLoading(false);
-        seteErrorMessage(err.message);
+        seteErrorMessage(DEF_ERROR_MESSAGE);
       }
     };
     loadSavedPost();

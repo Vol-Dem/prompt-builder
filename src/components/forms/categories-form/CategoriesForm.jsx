@@ -7,6 +7,7 @@ import ButtonTertiary from "../../ui/ButtonTertiary";
 import DeleteRequest from "../../ui/DeleteRequest";
 import {
   CATEGORY_NAME_MAX_LENGTH,
+  DEF_ERROR_MESSAGE,
   OFFLINE_ERROR_MESSAGE,
 } from "../../../variables/constants";
 
@@ -143,7 +144,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
 
       dispatch(updateCategories(modelType, categoriesData));
     } catch (err) {
-      setErrorMessage(err.message);
+      setErrorMessage(DEF_ERROR_MESSAGE);
     }
   };
 
