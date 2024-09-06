@@ -1,53 +1,69 @@
 @use "./../../../variables/variables.scss" as var;
 
+.guide-container {
+  position: relative;
+}
+
 .guide {
-  position: fixed;
-  animation: show 0.3s ease;
-
-  &__backdrop-left {
-    top: 0;
-    height: 100vh;
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.3);
-    z-index: 30;
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(4px);
-
-    &--1 {
-      right: 17rem;
-    }
-
-    &--2 {
-      right: 30rem;
-    }
-  }
-
-  &__backdrop-bottom {
-    right: 0;
-    height: 100vh;
-
-    background-color: rgba(0, 0, 0, 0.3);
-    z-index: 30;
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(4px);
-    // transition: all 0.3s ease-in;
-
-    &--1 {
-      top: 6rem;
-      width: 17rem;
-    }
-
-    &--2 {
-      display: none;
-      top: 40rem;
-      width: 30rem;
-    }
-  }
+  position: absolute;
+  animation: show 1.3s ease;
+  z-index: 5;
 
   &__arrow-up {
     position: absolute;
-    top: -2rem;
+    bottom: 2rem;
     right: 2rem;
+  }
+
+  &__arrow-down {
+    position: absolute;
+    bottom: -4.4rem;
+    left: 2.1rem;
+  }
+
+  &__arrow-bg {
+    position: absolute;
+    top: -1rem;
+    left: 2.1rem;
+    transform: rotate(45deg);
+    // border: 1px solid var.$color-text-white;
+    box-shadow: var.$box-shadow;
+    box-shadow: 0rem 0rem 0.5rem rgb(255 255 255 / 30%);
+    width: 2rem;
+    height: 2rem;
+    background-color: #28273a;
+    z-index: -1;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.4rem 0.8rem 0.6rem 0.8rem;
+    font-size: 1.4rem;
+    // box-shadow: inset var.$box-shadow;
+    box-shadow: inset var.$box-shadow;
+    background-color: #28273a;
+    border-radius: 0 0 10px 10px;
+    // box-shadow: var.$box-shadow-inset;
+
+    & svg {
+      width: 1.4rem;
+      height: 1.4rem;
+    }
+  }
+
+  &__controls-steps {
+    display: flex;
+    gap: 0.6rem;
+  }
+
+  &__controls-btn {
+    padding: 0.2rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.6rem;
   }
 
   &__content {
@@ -59,28 +75,35 @@
     max-width: 95vw;
     // min-width: 40rem;
     max-height: 95vh;
+    background-color: #28273a;
+    border-radius: 10px;
+    // padding: 0 0 0.6rem 0;
     // overflow-y: scroll;
     // @include var.custom-scroll;
-    // box-shadow: var.$box-shadow;
+    box-shadow: var.$box-shadow;
+    box-shadow: 0rem 0rem 0.5rem rgb(255 255 255 / 30%);
     transition: all 0.3s ease-in;
 
     &--1 {
-      top: 8rem;
-      right: 8rem;
+      top: -15.8rem;
+      left: 6.2rem;
+      max-width: 25rem;
     }
 
     &--2 {
-      top: 6.8rem;
-      right: 30rem;
+      top: -15.8rem;
+      left: 16.5rem;
+      max-width: 25rem;
     }
 
     &__text {
       //   margin-bottom: 1.6rem;
       font-size: 1.6rem;
-      background-color: var.$color-background-primary;
+      //   background-color: var.$color-background-primary;
+      background-color: #28273a;
       padding: 0.6rem 1.2rem;
-      border-radius: 10px;
-      box-shadow: var.$box-shadow;
+      //   border-radius: 10px;
+      //   box-shadow: var.$box-shadow;
     }
 
     &__comment {
@@ -101,7 +124,7 @@
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      text-align: right;
+      //   text-align: right;
       gap: 1rem;
       font-size: 1.6rem;
 

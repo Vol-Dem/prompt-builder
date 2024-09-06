@@ -5,6 +5,10 @@
   // height: 100%;
 }
 
+.images-container {
+  position: relative;
+}
+
 .images {
   display: flex;
   gap: 2rem;

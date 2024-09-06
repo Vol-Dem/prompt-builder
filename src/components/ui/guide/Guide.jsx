@@ -6,16 +6,16 @@ import ArrowRightSvg from "../../../assets/ArrowRight";
 import ArrowUp from "../../../assets/ArrowUp";
 
 const Guide = (props) => {
-  useEffect(() => {
-    const scrollTop = document.documentElement.scrollTop;
-    const disableScrollHandler = (e) => {
-      window.scrollTo(0, scrollTop);
-    };
-    window.addEventListener("scroll", disableScrollHandler);
-    return () => {
-      window.removeEventListener("scroll", disableScrollHandler);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const scrollTop = document.documentElement.scrollTop;
+  //   const disableScrollHandler = (e) => {
+  //     window.scrollTo(0, scrollTop);
+  //   };
+  //   window.addEventListener("scroll", disableScrollHandler);
+  //   return () => {
+  //     window.removeEventListener("scroll", disableScrollHandler);
+  //   };
+  // }, []);
 
   return (
     <>
@@ -56,10 +56,14 @@ const Guide = (props) => {
                 <li className={classes["guide__content__item"]}>
                   <p className={classes["guide__content__text"]}>
                     Copy the model ID or URL from
-                    <br />
+                    {/* <br /> */}{" "}
                     <LinkA external href="https://civitai.com">
                       Civitai
                     </LinkA>{" "}
+                    <br />
+                    <span className={classes["guide__content__comment"]}>
+                      To test use ID: 00000
+                    </span>
                   </p>
 
                   <ArrowRightSvg />
@@ -67,6 +71,10 @@ const Guide = (props) => {
                 <li className={classes["guide__content__item"]}>
                   <p className={classes["guide__content__text"]}>
                     Enter the category
+                    <br />
+                    <span className={classes["guide__content__comment"]}>
+                      The category will be created automatically
+                    </span>
                   </p>
 
                   <ArrowRightSvg />

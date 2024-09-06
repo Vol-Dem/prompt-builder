@@ -25,6 +25,7 @@ import {
   DEF_ERROR_MESSAGE,
   OFFLINE_ERROR_MESSAGE,
 } from "../../../variables/constants";
+import ImageSidePanelGuide from "../../ui/guide/ImageSidePanelGuide";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -680,7 +681,10 @@ const GeneratedImages = ({ customData }) => {
           {showAllVersions ? "Hide" : "Show All"}
         </ButtonTertiary>
       )}
-      <div className={classes.images}>{examplesHtml}</div>
+      <div className={classes['images-container']}>
+        <ImageSidePanelGuide />
+        <div className={classes.images}>{examplesHtml}</div>
+      </div>
       {examplesIsLoading && <Spinner />}
       {errorMessage && isOnline && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {!examplesIsLoading && (

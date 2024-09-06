@@ -8,6 +8,7 @@ import Presets from "../presets/Presets";
 import ArrowDownSvg from "../../assets/ArrowDownSvg";
 import ArrowUp from "../../assets/ArrowUp";
 import { authActions } from "../../store/auth";
+import TopPanelGuide from "../ui/guide/TopPanelGuide";
 
 const Prompt = () => {
   const [copiedType, setCopiedType] = useState("");
@@ -254,6 +255,7 @@ const Prompt = () => {
           }}
         />
       )}
+      {promptIsOpen && <TopPanelGuide />}
     </div>
   );
 };

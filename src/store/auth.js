@@ -21,7 +21,7 @@ import firebaseApp from "../firebase-config";
 import { uploadPanelStateFromStorage } from "./usedModels";
 import { promptActions, uploadPromptFromStorage } from "./prompt";
 import { tabActions } from "./tabs";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
+import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 import { modelActions } from "./model";
 import { DEF_ERROR_MESSAGE } from "../variables/constants";
 
@@ -40,6 +40,7 @@ const authInitialState = {
   errorMessage: "",
   successMessage: "",
   categories: [],
+  guide: { topPanel: true, image: true },
   user: {
     idToken: "",
     refreshToken: "",
@@ -98,6 +99,9 @@ const authSlice = createSlice({
     },
     setUserDataLoadError(state, actions) {
       state.userDataIsLoading = actions.payload;
+    },
+    setGuide(state, actions) {
+      state.guide = actions.payload;
     },
   },
 });
@@ -467,11 +471,48 @@ export const getUserData = (uid) => {
         dispatch(tabActions.setBaseModels(userData?.baseModels));
         dispatch(promptActions.setPresets(userData.presets));
         dispatch(modelActions.setNsfwMode(userData.nsfwMode));
+        if (userData?.guide) {
+          dispatch(authActions.setGuide(userData.guide));
+        } else {
+          dispatch(authActions.setGuide({ topPanel: false, image: false }));
+        }
       }
       dispatch(authActions.setUserDataIsLoading(false));
     } catch (err) {
       console.error(err.message);
       dispatch(authActions.setUserDataLoadError(DEF_ERROR_MESSAGE));
+    }
+  };
+};
+
+export const setGuideData = (data) => {
+  return async (dispatch, getState) => {
+    try {
+      if (!data) return;
+      const uid = getState().auth.user.uid;
+      const guideData = getState().auth.guide;
+
+      const userRef = doc(firestore, "users", uid);
+
+      let newGuideData;
+
+      if (!Object.keys(guideData)?.length) {
+        newGuideData = data;
+      } else {
+        newGuideData = { ...guideData, ...data };
+      }
+
+      await setDoc(
+        userRef,
+        {
+          guide: newGuideData,
+        },
+        { merge: true }
+      );
+
+      dispatch(authActions.setGuide(newGuideData));
+    } catch (err) {
+      console.error(err.message);
     }
   };
 };
