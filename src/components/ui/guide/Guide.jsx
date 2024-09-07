@@ -62,7 +62,7 @@ const Guide = (props) => {
                     </LinkA>{" "}
                     <br />
                     <span className={classes["guide__content__comment"]}>
-                      To test use ID: 00000
+                      To test use ID: 727427
                     </span>
                   </p>
 

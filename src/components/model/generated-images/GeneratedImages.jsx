@@ -681,7 +681,7 @@ const GeneratedImages = ({ customData }) => {
           {showAllVersions ? "Hide" : "Show All"}
         </ButtonTertiary>
       )}
-      <div className={classes['images-container']}>
+      <div className={classes["images-container"]}>
         <ImageSidePanelGuide />
         <div className={classes.images}>{examplesHtml}</div>
       </div>

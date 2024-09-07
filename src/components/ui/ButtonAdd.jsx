@@ -43,7 +43,7 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
         versionName: curVersionData?.name || previewData?.versionName || "",
         imgUrl: previewData?.customPreviewImgUrl || previewData?.imgUrl,
         nsfwPreviewImgUrl: previewData?.nsfwPreviewImgUrl || null,
-        type: previewData?.modelType,
+        type: previewData?.type || previewData?.modelType,
         baseModel: curVersionData?.baseModel || previewData?.baseModel,
         mainTag:
           curVersionData?.mainTag ||

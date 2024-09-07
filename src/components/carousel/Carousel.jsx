@@ -634,6 +634,7 @@ const Carousel = ({
               isUploading ? classes["btn-save--saving"] : ""
             }`}
             onClick={openSaveImagesListHandler}
+            disabled={!!isUploading}
           >
             {!isUploading ? <FolderSvg /> : <Spinner size="small" />}
           </button>

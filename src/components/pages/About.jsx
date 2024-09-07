@@ -104,6 +104,29 @@ const About = ({ title }) => {
           set preview images for models and tag sets, etc.
         </li>
       </ul>
+      <div className={classes["notification"]}>
+        <ExclamationCircleSvg className={classes["notification__svg"]} />
+
+        <p className={classes["notification__text"]}>
+          This is a non-profit project that exists thanks to your support. If
+          you like AIDE-TOOLS, support the project on{" "}
+          <LinkA
+            external={true}
+            href="https://www.patreon.com/aidetools"
+            smoothScroll
+          >
+            Patreon
+          </LinkA>{" "}
+          or{" "}
+          <LinkA
+            external={true}
+            href="https://ko-fi.com/J3J31052RE"
+            smoothScroll
+          >
+            Ko-Fi
+          </LinkA>
+        </p>
+      </div>
 
       <h2 className={classes["about__h2"]}>Guide</h2>
       <div className={classes["about__content-block"]}>
