@@ -170,6 +170,7 @@ export const authRequest = (isLogin, email, password) => {
           emailVerified: user.emailVerified,
         })
       );
+      dispatch(getUserData(user.uid));
       if (user.emailVerified) {
         dispatch(authActions.closeAuthForm());
       }
@@ -467,10 +468,14 @@ export const getUserData = (uid) => {
       const userDataDoc = await getDoc(userRef);
       if (userDataDoc.exists()) {
         const userData = userDataDoc.data();
-        dispatch(tabActions.setCategories(userData?.categoriesById));
-        dispatch(tabActions.setBaseModels(userData?.baseModels));
-        dispatch(promptActions.setPresets(userData.presets));
-        dispatch(modelActions.setNsfwMode(userData.nsfwMode));
+        if (userData?.categoriesById)
+          dispatch(tabActions.setCategories(userData.categoriesById));
+        if (userData?.baseModels)
+          dispatch(tabActions.setBaseModels(userData.baseModels));
+        if (userData?.presets)
+          dispatch(promptActions.setPresets(userData.presets));
+        if (userData?.nsfwMode)
+          dispatch(modelActions.setNsfwMode(userData.nsfwMode));
         if (userData?.guide) {
           dispatch(authActions.setGuide(userData.guide));
         } else {

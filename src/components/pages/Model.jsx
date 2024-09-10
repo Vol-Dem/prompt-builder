@@ -203,33 +203,51 @@ const Model = ({ title }) => {
 
   useEffect(() => {
     if (!isAuth) return;
-    let unsub;
-    try {
-      setIsLoading(true);
+    // let unsub;
 
-      unsub = onSnapshot(
-        doc(firestore, "users", uid, "models", modelId),
-        (doc) => {
-          setErrorMessage("");
-          const data = doc.data();
+    const getModelData = async () => {
+      try {
+        setIsLoading(true);
 
-          // console.log(data);
-          if (!data) {
-            setErrorMessage("Failed to load model");
-            setIsLoading(false);
-            unsub();
-            return;
-          }
+        const modelRef = doc(firestore, "users", uid, "models", modelId);
+
+        const docSnap = await getDoc(modelRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
           dispatch(modelActions.setModelData(data));
           dispatch(modelActions.setModelPreview({}));
           setIsLoading(false);
+        } else {
+          throw new Error("Failed to load model");
         }
-      );
-    } catch (err) {
-      setErrorMessage("Failed to load model");
-      dispatch(modelActions.setErrorMessage(err.message));
-      setIsLoading(false);
-    }
+
+        // unsub = onSnapshot(
+        //   doc(firestore, "users", uid, "models", modelId),
+        //   (doc) => {
+        //     setErrorMessage("");
+        //     const data = doc.data();
+
+        //     // console.log(data);
+        //     if (!data) {
+        //       setErrorMessage("Failed to load model");
+        //       setIsLoading(false);
+        //       unsub();
+        //       return;
+        //     }
+        //     dispatch(modelActions.setModelData(data));
+        //     dispatch(modelActions.setModelPreview({}));
+        //     setIsLoading(false);
+        //   }
+        // );
+      } catch (err) {
+        setErrorMessage("Failed to load model");
+        dispatch(modelActions.setErrorMessage(err.message));
+        setIsLoading(false);
+      }
+    };
+    getModelData();
+
     const loadingImagesTimeout = loadingImagesTimeoutRef?.current;
     return () => {
       setErrorMessage("");
@@ -239,9 +257,9 @@ const Model = ({ title }) => {
       dispatch(modelActions.setActiveCarouselData({}));
       dispatch(modelActions.resetModelData());
       clearTimeout(loadingImagesTimeout);
-      if (unsub) {
-        unsub();
-      }
+      // if (unsub) {
+      //   unsub();
+      // }
     };
   }, [modelId, isAuth, dispatch, uid]);
 

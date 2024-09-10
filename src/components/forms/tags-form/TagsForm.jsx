@@ -2,7 +2,7 @@ import classes from "./TagsForm.module.scss";
 import { useEffect, useState } from "react";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Textarea from "../../ui/Textarea";
 import Buttton from "../../ui/Button";
 import Input from "../../ui/Input";
@@ -23,6 +23,7 @@ import {
 import Spinner from "../../ui/Spinner";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
+import { modelActions } from "../../../store/model";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -65,6 +66,8 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
   ]);
 
   const uid = useSelector((state) => state.auth.user.uid);
+  const model = useSelector((state) => state.model.model);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (versionData?.mainTag) {
@@ -217,6 +220,17 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
           [versionPath]: updatedVersionData,
         },
         { merge: true }
+      );
+
+      const updatedCustomData = {
+        ...model.modelVersionsCustomData,
+        [versionData.versionId]: updatedVersionData,
+      };
+
+      dispatch(
+        modelActions.setModelData({
+          modelVersionsCustomData: updatedCustomData,
+        })
       );
       setSuccessMessage(SAVED_SUCCESS_MESSAGE);
       setIsSaving(false);

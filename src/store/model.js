@@ -23,6 +23,10 @@ const firestore = getFirestore(firebaseApp);
 
 const initialModelState = {
   model: {},
+  savedImages: {
+    modelId: null,
+    data: {},
+  },
   modelPreview: [],
   isLoading: true,
   errorMessage: "",
@@ -40,6 +44,68 @@ const modelSlice = createSlice({
   reducers: {
     setModelData(state, actions) {
       state.model = { ...state.model, ...actions.payload };
+
+      if (actions?.payload?.savedImages) {
+        state.savedImages = {
+          modelId: actions.payload.id,
+          data: actions?.payload?.savedImages,
+        };
+      } else if (actions?.payload?.id && !actions?.payload?.savedImages) {
+        state.savedImages = { modelId: null, data: {} };
+      }
+    },
+    setSavedImages(state, actions) {
+      state.savedImages = actions.payload;
+    },
+    updateSavedImages(state, actions) {
+      const { versionId, postId, modelId } = actions.payload.postInfo;
+
+      if (state.model.id !== modelId) return;
+
+      if (state.savedImages.data.hasOwnProperty(`${versionId}`)) {
+        const existedPostIndex = state.savedImages.data[versionId].findIndex(
+          (post) => post.postId === postId
+        );
+        if (existedPostIndex !== -1) {
+          const updatedSavedImages = [...state.savedImages.data[versionId]];
+          updatedSavedImages[existedPostIndex] = actions.payload.data;
+
+          state.savedImages.data[versionId] = updatedSavedImages;
+        } else {
+          const updatedSavedImages = [
+            ...state.savedImages.data[versionId],
+            actions.payload.data,
+          ];
+          state.savedImages.data[versionId] = updatedSavedImages;
+        }
+      } else {
+        const updatedSavedImages = [actions.payload.data];
+        state.savedImages = {
+          modelId: modelId,
+          data: {
+            ...state.savedImages.data,
+            [`${versionId}`]: updatedSavedImages,
+          },
+        };
+      }
+    },
+    deleteSavedImages(state, actions) {
+      const { versionId, postId, modelId } = actions.payload.postInfo;
+
+      if (state.model.id !== modelId) return;
+
+      if (state.savedImages.data.hasOwnProperty(`${versionId}`)) {
+        const existedPostIndex = state.savedImages.data[versionId].findIndex(
+          (post) => post.postId === postId
+        );
+        if (existedPostIndex !== -1) {
+          // const updatedSavedImages = [...state.savedImages.data[versionId]];
+          // updatedSavedImages[existedPostIndex] = actions.payload.data;
+
+          // state.savedImages.data[versionId] = updatedSavedImages;
+          state.savedImages.data[versionId].splice(existedPostIndex, 1);
+        }
+      }
     },
     resetModelData(state, actions) {
       state.model = {};
@@ -195,32 +261,37 @@ export const setTagSetPreviewImg = (versionId, tagSetData) => {
   };
 };
 
-export const deleteImgPost = (versionId, postId, postData) => {
+export const deleteImgPost = (postInfo, postData) => {
   return async (dispatch, getState) => {
-    const uid = getState().auth.user.uid;
-    const id = getState().model.model.id;
+    try {
+      const { versionId, postId } = postInfo;
+      const uid = getState().auth.user.uid;
+      const id = getState().model.model.id;
+      const modelRef = doc(firestore, "users", uid, "models", id + "");
 
-    const modelRef = doc(firestore, "users", uid, "models", id + "");
+      const imgPostRef = doc(firestore, "users", uid, "images", postId + "");
 
-    const imgPostRef = doc(firestore, "users", uid, "images", postId + "");
+      const docSnap = await getDoc(imgPostRef);
 
-    const docSnap = await getDoc(imgPostRef);
+      if (docSnap.exists()) {
+        const postVersions = docSnap.data()?.versionsId;
 
-    if (docSnap.exists()) {
-      const postVersions = docSnap.data()?.versionsId;
-
-      if (postVersions?.length === 1) {
-        await deleteDoc(imgPostRef);
-      } else {
-        await updateDoc(imgPostRef, {
-          versionsId: arrayRemove(versionId),
-        });
+        if (postVersions?.length === 1) {
+          await deleteDoc(imgPostRef);
+        } else {
+          await updateDoc(imgPostRef, {
+            versionsId: arrayRemove(versionId),
+          });
+        }
       }
-    }
 
-    await updateDoc(modelRef, {
-      [`savedImages.${versionId}`]: arrayRemove(postData),
-    });
+      await updateDoc(modelRef, {
+        [`savedImages.${versionId}`]: arrayRemove(postData),
+      });
+      dispatch(modelActions.deleteSavedImages({ postInfo, data: postData }));
+    } catch (err) {
+      console.error(err.message);
+    }
   };
 };
 

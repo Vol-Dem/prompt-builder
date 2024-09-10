@@ -57,6 +57,7 @@ const Carousel = ({
   const caruselIsVisible = true;
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const model = useSelector((state) => state.model.model);
+  const savedImages = useSelector((state) => state.model.savedImages);
   const queue = useSelector((state) => state.upload.queue);
   const isUploading = queue.find((item) => item.postId === postId);
   const dispatch = useDispatch();
@@ -454,21 +455,21 @@ const Carousel = ({
 
   const saveExampleHandler = async (e, ids) => {
     const postData =
-      model.hasOwnProperty("savedImages") &&
-      model?.savedImages[versionId]?.find((post) => post.postId === +postId);
-    dispatch(
-      uploadActions.addToQueue({
-        postId,
-        modelId,
-        modelName: model.name,
-        versionId,
-        nsfwMode,
-        postData: postData,
-        imgUrl: images[0].url,
-        ids: ids || [],
-        existedAmount: existedImgsAmount,
-      })
-    );
+      !!Object.keys(savedImages.data)?.length &&
+      savedImages.data[versionId]?.find((post) => post.postId === +postId);
+
+    const postInfo = {
+      postId,
+      modelId,
+      modelName: model.name,
+      versionId,
+      nsfwMode,
+      postData: postData,
+      imgUrl: images[0].url,
+      ids: ids || [],
+      existedAmount: existedImgsAmount,
+    };
+    dispatch(uploadActions.addToQueue(postInfo));
     setImagesListIsOpen(false);
   };
 
@@ -476,32 +477,33 @@ const Carousel = ({
     try {
       const curPostId = images[0].postId;
       const postData =
-        model.hasOwnProperty("savedImages") &&
-        model?.savedImages[versionId]?.find(
-          (post) => post.postId === curPostId
-        );
+        !!Object.keys(savedImages.data)?.length &&
+        savedImages.data[versionId]?.find((post) => post.postId === curPostId);
       setIsDeleting(true);
+
+      const postInfo = {
+        postId: curPostId,
+        modelId,
+        modelName: model.name,
+        versionId,
+        nsfwMode,
+        postData: postData,
+        delete: true,
+        imgUrl: images[0].url,
+        ids: ids || [],
+        existedAmount: existedImgsAmount,
+      };
 
       if (!!ids?.length && ids?.length !== postData?.imagesId?.length) {
         const newImages = images.filter((image) => !ids?.includes(image.id));
-        await updateImagePostData(
-          {
-            postId: curPostId,
-            modelId,
-            modelName: model.name,
-            versionId,
-            nsfwMode,
-            postData: postData,
-            delete: true,
-            imgUrl: images[0].url,
-            ids: ids || [],
-            existedAmount: existedImgsAmount,
-          },
-          newImages
-        );
+        const updatedPostData = await updateImagePostData(postInfo, newImages);
+
         setImages(newImages);
+        dispatch(
+          modelActions.updateSavedImages({ postInfo, data: updatedPostData })
+        );
       } else {
-        dispatch(deleteImgPost(versionId, curPostId, postData));
+        dispatch(deleteImgPost(postInfo, postData));
       }
       setIsDeleting(false);
       setImagesListIsOpen(false);

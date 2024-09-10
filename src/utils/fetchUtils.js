@@ -512,6 +512,7 @@ export const updateImagePostData = async (
 
     // Commit the batch
     await batch.commit();
+    return newImgData;
   } catch (err) {
     console.error(err.message);
     // console.log(err);

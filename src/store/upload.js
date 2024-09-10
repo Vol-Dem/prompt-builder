@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { transformImageData } from "../utils/generalUtils";
 import { updateImagePostData } from "../utils/fetchUtils";
+import { modelActions } from "./model";
 
 const uploadSlice = createSlice({
   name: "upload",
@@ -83,7 +84,12 @@ export const savePost = (postInfo) => {
           return transformImageData(imageData);
         });
 
-      await updateImagePostData(postInfo, examplesDataWithRes);
+      const newPostData = await updateImagePostData(
+        postInfo,
+        examplesDataWithRes
+      );
+
+      dispatch(modelActions.updateSavedImages({ postInfo, data: newPostData }));
 
       dispatch(uploadActions.setCurPostId(null));
       dispatch(uploadActions.removeFromQueue({ postId, versionId }));

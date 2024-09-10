@@ -27,7 +27,8 @@ const ChooseImageForm = ({
   const [savedImagesIds, setSavedImagesIds] = useState([]);
   const [imagesInputs, setImagesInputs] = useState([]);
   const uid = useSelector((state) => state.auth.user.uid);
-  const model = useSelector((state) => state.model.model);
+  // const model = useSelector((state) => state.model.model);
+  const savedImages = useSelector((state) => state.model.savedImages);
   const isOnline = useOnlineStatus();
 
   useEffect(() => {
@@ -58,12 +59,12 @@ const ChooseImageForm = ({
           // setIsLoading(false);
           const curPostId = images[0].postId;
           const postData =
-            model.hasOwnProperty("savedImages") &&
-            model?.savedImages[versionId]?.find(
+            !!Object.keys(savedImages.data)?.length &&
+            savedImages.data[versionId]?.find(
               (post) => post.postId === curPostId
             );
           savedIds = postData.imagesId;
-          console.log(postData.imagesId);
+
           setSavedImagesIds(postData.imagesId);
         }
 
@@ -99,7 +100,7 @@ const ChooseImageForm = ({
     modelId,
     type,
     uid,
-    model,
+    savedImages,
     versionId,
   ]);
 

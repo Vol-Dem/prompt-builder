@@ -51,7 +51,9 @@ const GeneratedImages = ({ customData }) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
   const [isShowAll, setIsShowAll] = useState(false);
+  const [savedImages, setSavedImages] = useState({});
   const model = useSelector((state) => state.model.model);
+  const savedImagesData = useSelector((state) => state.model.savedImages);
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const uid = useSelector((state) => state.auth.user.uid);
@@ -62,6 +64,14 @@ const GeneratedImages = ({ customData }) => {
   const isPageEnd = usePageEnd(600);
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    if (model?.id && model.id === savedImagesData?.modelId) {
+      setSavedImages(savedImagesData.data);
+    } else {
+      setSavedImages({});
+    }
+  }, [model?.id, savedImagesData]);
 
   useEffect(() => {
     // setIsIntersecting(intersecting);
@@ -340,8 +350,8 @@ const GeneratedImages = ({ customData }) => {
           return post.items
             .filter((image) => {
               const saved =
-                model.savedImages.hasOwnProperty(curImagesModelVersionId) &&
-                model?.savedImages[curImagesModelVersionId]
+                savedImages.hasOwnProperty(curImagesModelVersionId) &&
+                savedImages[curImagesModelVersionId]
                   ?.find((postData) => postData.postId === image.postId)
                   ?.imagesId?.includes(image.id);
 
@@ -379,24 +389,24 @@ const GeneratedImages = ({ customData }) => {
     curImagesModelVersionId,
     isLastPage,
     lastVisible,
-    model.savedImages,
+    savedImages,
     nsfwMode,
     uid,
   ]);
 
   useEffect(() => {
     if (curExampleImgsType === "all") return;
-    if (!model?.savedImages || !Object.values(model.savedImages).length) {
+    if (!Object.values(savedImages).length) {
       setCurExampleImgsType("all");
       return;
     }
 
     if (!curImagesModelVersionId) return;
-    if (!model.savedImages.hasOwnProperty(curImagesModelVersionId)) {
+    if (!savedImages.hasOwnProperty(curImagesModelVersionId)) {
       const latesVersionId = Object.values(model.modelVersionsCustomData)
         .sort((a, b) => a?.index - b?.index)
         .find((version) =>
-          model.savedImages.hasOwnProperty(version.versionId)
+          savedImages.hasOwnProperty(version.versionId)
         )?.versionId;
       if (latesVersionId) {
         setCurImagesModelVersionId(latesVersionId);
@@ -413,6 +423,7 @@ const GeneratedImages = ({ customData }) => {
     getImagesFromFirestore,
     examplesIsLoading,
     errorMessage,
+    savedImages,
   ]);
 
   useEffect(() => {
@@ -501,8 +512,8 @@ const GeneratedImages = ({ customData }) => {
       ?.sort((a, b) => a?.index - b?.index)
       .flatMap((version, i) => {
         const isSaved =
-          model?.savedImages &&
-          Object.keys(model.savedImages).includes(`${version.versionId}`);
+          savedImages &&
+          Object.keys(savedImages).includes(`${version.versionId}`);
         const versionIsSaved = version.downloadStatus;
 
         if (curExampleImgsType === "saved" && !isSaved) {
@@ -529,11 +540,11 @@ const GeneratedImages = ({ customData }) => {
 
   useEffect(() => {
     if (
-      !!model?.savedImages &&
+      !!savedImages &&
       curExampleImgsType === "saved" &&
       !!examplesImgData?.length
     ) {
-      const savedPostsIds = model?.savedImages[curImagesModelVersionId]?.map(
+      const savedPostsIds = savedImages[curImagesModelVersionId]?.map(
         (post) => post.postId
       );
 
@@ -545,7 +556,7 @@ const GeneratedImages = ({ customData }) => {
       }
     }
   }, [
-    model.savedImages,
+    savedImages,
     curImagesModelVersionId,
     curExampleImgsType,
     examplesImgData,
@@ -570,8 +581,8 @@ const GeneratedImages = ({ customData }) => {
     } else {
       examples = examplesImgData.map((item, i) => {
         const existedExample =
-          model?.savedImages?.hasOwnProperty(curImagesModelVersionId) &&
-          model?.savedImages[`${curImagesModelVersionId}`]?.find(
+          savedImages?.hasOwnProperty(curImagesModelVersionId) &&
+          savedImages[`${curImagesModelVersionId}`]?.find(
             (img) => img?.postId === +item[0]?.postId
           );
         const postId =
@@ -601,6 +612,7 @@ const GeneratedImages = ({ customData }) => {
     examplesImgData,
     model,
     nsfwMode,
+    savedImages,
   ]);
 
   const addImgByIdHandler = () => {
@@ -616,8 +628,7 @@ const GeneratedImages = ({ customData }) => {
       <div className={classes["controls"]}>
         <div className={classes["mode-switch"]}>
           {(model?.examplesData?.length ||
-            (model?.savedImages &&
-              !!Object.keys(model?.savedImages).length)) && (
+            (savedImages && !!Object.keys(savedImages).length)) && (
             <span
               className={`${classes["btn-mode"]} ${
                 curExampleImgsType === "saved"
