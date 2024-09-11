@@ -8,18 +8,27 @@ import CrossSvg from "../../assets/CrossSvg";
 
 const ActiveCarousel = () => {
   const [activeImageNumber, setActiveImageNumber] = useState(null);
+  const [savedImages, setSavedImages] = useState({});
   const activeCarouselData = useSelector(
     (state) => state.model.activeCarouselData
   );
   const model = useSelector((state) => state.model.model);
+  const savedImagesData = useSelector((state) => state.model.savedImages);
   const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
   const dispatch = useDispatch();
 
-  const isSaved =
-    activeCarouselData?.versionId &&
-    model?.savedImages?.hasOwnProperty(activeCarouselData?.versionId) &&
-    model?.savedImages[activeCarouselData?.versionId]?.find(
-      (post) => post.postId === activeCarouselData.postId
+  useEffect(() => {
+    if (model?.id && model.id === savedImagesData?.modelId) {
+      setSavedImages(savedImagesData.data);
+    } else {
+      setSavedImages({});
+    }
+  }, [model?.id, savedImagesData]);
+
+  const existedExample =
+    savedImages?.hasOwnProperty(activeCarouselData?.versionId) &&
+    savedImages[`${activeCarouselData?.versionId}`]?.find(
+      (img) => img?.postId === +activeCarouselData?.images[0]?.postId
     );
 
   useEffect(() => {
@@ -27,6 +36,7 @@ const ActiveCarousel = () => {
     const disableScrollHandler = (e) => {
       window.scrollTo(0, scrollTop);
     };
+
     if (!!activeCarouselData?.images?.length) {
       setActiveImageNumber(activeCarouselData.currImgNum);
 
@@ -62,8 +72,10 @@ const ActiveCarousel = () => {
             <Carousel
               imagesData={activeCarouselData?.images}
               versionId={activeCarouselData?.versionId}
-              existedImgsAmount={activeCarouselData?.existedImgsAmount || null}
-              postId={!isSaved ? activeCarouselData?.postId : null}
+              existedImgsAmount={existedExample?.imagesId?.length || null}
+              postId={
+                !activeCarouselData?.saved ? activeCarouselData?.postId : null
+              }
               modelId={activeCarouselData?.modelId}
               visibleImgAmount={1}
               imgIsOpen={true}

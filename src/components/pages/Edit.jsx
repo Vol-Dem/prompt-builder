@@ -39,7 +39,7 @@ const Edit = ({ title }) => {
         doc(firestore, "users", uid, "models", modelId),
         (doc) => {
           setErrorMessage("");
-          const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+          // const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
           // console.log(source);
           const data = doc.data();
 

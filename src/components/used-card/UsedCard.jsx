@@ -18,6 +18,7 @@ const UsedCard = ({ previewData, fullView }) => {
   const [tagsHeight, setTagsHeight] = useState(null);
   const [taglistHeight, setTaglistHeight] = useState(null);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
+  const model = useSelector((state) => state.model.model);
   const dispatch = useDispatch();
   const tagsRef = useRef();
   const tagsListRef = useRef();
@@ -51,7 +52,9 @@ const UsedCard = ({ previewData, fullView }) => {
   };
 
   const closePanelHandler = () => {
-    dispatch(modelActions.resetModelData());
+    if (previewData?.id !== model?.id) {
+      dispatch(modelActions.resetModelData());
+    }
     if (document.body.offsetWidth < 1024) {
       dispatch(usedModelsActions.panelState(false));
     }
@@ -61,7 +64,7 @@ const UsedCard = ({ previewData, fullView }) => {
     <li id={previewData.id} className={`${classes.card} card`}>
       <div className={classes.head}>
         <Link
-          to={`/model/${previewData.id}`}
+          to={`/models/${previewData.id}`}
           state={{ versionId: previewData?.activeVersionId || null }}
           className={classes.link}
           onClick={closePanelHandler}
@@ -80,7 +83,7 @@ const UsedCard = ({ previewData, fullView }) => {
         <div className={classes.info}>
           <div className={classes["title-container"]}>
             <Link
-              to={`/model/${previewData.id}`}
+              to={`/models/${previewData.id}`}
               state={{ versionId: previewData?.activeVersionId || null }}
               className={classes.link}
               onClick={closePanelHandler}

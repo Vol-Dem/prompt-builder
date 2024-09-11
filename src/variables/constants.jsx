@@ -15,6 +15,8 @@ export const modelTypes = [
   { name: "Wildcards", value: "wildcards", position: 9 },
   { name: "Other", value: "other", position: 10 },
 ];
+export const MAX_REF_IMAGE_AMOUNT = 6;
+export const IMAGE_REF_ROW_LENGTH = 3;
 export const CATEGORY_NAME_MAX_LENGTH = 70;
 export const USERNAME_MAX_LENGTH = 100;
 export const NAME_MAX_LENGTH = 300;

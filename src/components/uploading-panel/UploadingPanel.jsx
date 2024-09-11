@@ -97,6 +97,7 @@ const UploadingPanel = () => {
           uploadingListIsOpen ? classes["uploading__btn--active"] : ""
         }`}
         onClick={openUploadingLIstHandler}
+        title="Uploading queue"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -36,7 +36,7 @@ const amountPerPage = 100;
 const GeneratedImages = ({ customData }) => {
   const [showAllVersions, setShowAllVersions] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [curExampleImgsType, setCurExampleImgsType] = useState("saved");
+  const [curExampleImgsType, setCurExampleImgsType] = useState("all");
   const [examplesIsLoading, setExamplesIsLoading] = useState(false);
   const [isLastPage, setIsLastPage] = useState(false);
   const [lastVisible, setLastVisible] = useState({});
@@ -396,10 +396,10 @@ const GeneratedImages = ({ customData }) => {
 
   useEffect(() => {
     if (curExampleImgsType === "all") return;
-    if (!Object.values(savedImages).length) {
-      setCurExampleImgsType("all");
-      return;
-    }
+    // if (!Object.values(savedImages).length) {
+    //   setCurExampleImgsType("all");
+    //   return;
+    // }
 
     if (!curImagesModelVersionId) return;
     if (!savedImages.hasOwnProperty(curImagesModelVersionId)) {
@@ -586,7 +586,7 @@ const GeneratedImages = ({ customData }) => {
             (img) => img?.postId === +item[0]?.postId
           );
         const postId =
-          existedExample && existedExample.amount >= item.length
+          existedExample && existedExample?.imagesId?.length >= item.length
             ? ""
             : item[0]?.postId;
 
@@ -627,7 +627,16 @@ const GeneratedImages = ({ customData }) => {
     <>
       <div className={classes["controls"]}>
         <div className={classes["mode-switch"]}>
-          {(model?.examplesData?.length ||
+          <span
+            className={`${classes["btn-mode"]} ${classes["btn-mode--left"]} ${
+              curExampleImgsType === "saved" ? classes["btn-mode--active"] : ""
+            }`}
+            data-example="saved"
+            onClick={switchCurExamples}
+          >
+            Saved
+          </span>
+          {/* {(model?.examplesData?.length ||
             (savedImages && !!Object.keys(savedImages).length)) && (
             <span
               className={`${classes["btn-mode"]} ${
@@ -640,9 +649,9 @@ const GeneratedImages = ({ customData }) => {
             >
               Saved
             </span>
-          )}
+          )} */}
           <span
-            className={`${classes["btn-mode"]} ${
+            className={`${classes["btn-mode"]} ${classes["btn-mode--right"]} ${
               curExampleImgsType === "all" ? classes["btn-mode--active"] : ""
             }`}
             data-example="all"
@@ -693,7 +702,9 @@ const GeneratedImages = ({ customData }) => {
         </ButtonTertiary>
       )}
       <div className={classes["images-container"]}>
-        <ImageSidePanelGuide />
+        {curExampleImgsType === "all" && !!examplesHtml?.length && (
+          <ImageSidePanelGuide />
+        )}
         <div className={classes.images}>{examplesHtml}</div>
       </div>
       {examplesIsLoading && <Spinner />}

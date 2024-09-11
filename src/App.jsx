@@ -63,12 +63,12 @@ function App() {
             element={<Tabs />}
           ></Route>
           <Route
-            path="model/:modelId"
+            path="models/:modelId"
             errorElement={<ErrorPage />}
             element={<Model title="Model" />}
           ></Route>
           <Route
-            path="model/:modelId/edit"
+            path="models/:modelId/edit"
             errorElement={<ErrorPage />}
             element={<Edit title="Edit" />}
           ></Route>

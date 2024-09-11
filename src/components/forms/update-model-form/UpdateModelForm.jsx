@@ -1541,7 +1541,7 @@ const UpdateModelForm = ({ modelData, id }) => {
             <>
               {"-"}
               <Link
-                to={`/model/${savedModel}`}
+                to={`/models/${savedModel}`}
                 className={classes.link}
                 onClick={() => {
                   dispatch(modelActions.resetModelData());

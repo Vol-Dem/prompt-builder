@@ -1,12 +1,13 @@
 import classes from "./ImageSidePanelGuide.module.scss";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ArrowRightSvg from "../../../assets/ArrowRight";
 import ButtonTertiary from "../ButtonTertiary";
 import ArrowLeftSvg from "../../../assets/ArrowLeft";
 import { useDispatch, useSelector } from "react-redux";
-import { authActions, setGuideData } from "../../../store/auth";
+import { setGuideData } from "../../../store/auth";
 import FolderSvg from "../../../assets/FolderSvg";
 import PlusSvg from "../../../assets/PlusSvg";
+import useIntersection from "../../../hooks/use-intersection";
 
 const stepsAmount = 2;
 
@@ -15,6 +16,8 @@ const ImageSidePanelGuide = (props) => {
   const [guideIsOpen, setGuideIsOpen] = useState(true);
   const guideState = useSelector((state) => state.auth.guide);
   const dispatch = useDispatch();
+  const guideRef = useRef(null);
+  const isIntersecting = useIntersection(guideRef, false);
 
   const downloadImage = (
     <FolderSvg className={`${classes["svg"]} ${classes["svg--medium"]}`} />
@@ -31,8 +34,8 @@ const ImageSidePanelGuide = (props) => {
       step: 1,
       text: (
         <>
-          Click {downloadImage} to save image generation data to use it as a
-          reference later
+          Click {downloadImage} to add image generation data to "Saved" tab so
+          you can use it as a reference later
         </>
       ),
     },
@@ -74,8 +77,8 @@ const ImageSidePanelGuide = (props) => {
   };
 
   return (
-    <>
-      {guideIsOpen && (
+    <div ref={guideRef}>
+      {guideIsOpen && isIntersecting && (
         <div
           className={`${classes["guide-container"]} ${
             props?.className ? props?.className : ""
@@ -99,6 +102,7 @@ const ImageSidePanelGuide = (props) => {
                 <ButtonTertiary
                   className={classes["guide__controls-btn"]}
                   onClick={prevStepHandler}
+                  title="Previous tip"
                 >
                   <ArrowLeftSvg />
                 </ButtonTertiary>
@@ -108,6 +112,7 @@ const ImageSidePanelGuide = (props) => {
                 <ButtonTertiary
                   className={classes["guide__controls-btn"]}
                   onClick={nextStepHandler}
+                  title="Next tip"
                 >
                   <ArrowRightSvg />
                 </ButtonTertiary>
@@ -118,7 +123,7 @@ const ImageSidePanelGuide = (props) => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

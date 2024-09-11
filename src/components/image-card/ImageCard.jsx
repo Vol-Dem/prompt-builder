@@ -11,7 +11,7 @@ import {
   where,
 } from "firebase/firestore";
 import firebaseApp from "../../firebase-config";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ButtonAdd from "../ui/ButtonAdd";
 import { Link } from "react-router-dom";
 import LinkA from "../ui/LinkA";
@@ -19,6 +19,9 @@ import { clearFileExtension } from "../../utils/generalUtils";
 import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 import CheckCircleSvg from "../../assets/CheckCircleSvg";
 import ErrorMessage from "../ui/ErrorMessage";
+import { modelActions } from "../../store/model";
+import CopySvg from "../../assets/CopySvg";
+import CopiedSvg from "../../assets/CopiedSvg";
 
 const firestore = getFirestore(firebaseApp);
 const civitDefEmb = [250708, 250712, 106916];
@@ -33,11 +36,21 @@ const ImageCard = ({ activeImgNum }) => {
   const [modelInfoCiv, setModelInfoCiv] = useState({});
   const [modelInfo, setModelInfo] = useState({});
   const uid = useSelector((state) => state.auth.user.uid);
+  const modelId = useSelector((state) => state.model.model.id);
   const timeoutRef = useRef(null);
+  const dispatch = useDispatch();
 
   const activeCarouselData = useSelector(
     (state) => state.model.activeCarouselData
   );
+
+  const resetModelData = (e) => {
+    console.log(modelId);
+    console.log(e.target.dataset.id);
+    if (+e.target.dataset.id !== modelId) {
+      dispatch(modelActions.resetModelData());
+    }
+  };
 
   useEffect(() => {
     if (!!activeCarouselData?.images?.length) {
@@ -277,10 +290,10 @@ const ImageCard = ({ activeImgNum }) => {
           // console.log(resources);
 
           //Remove not uniq items from the end of array//////
-          const reversedArr = resources.toReversed();
-          const ids = reversedArr
-            .map((resource) => resource?.preview?.id)
-            .filter(Boolean);
+          // const reversedArr = resources.toReversed();
+          // const ids = reversedArr
+          // .map((resource) => resource?.preview?.id)
+          // .filter(Boolean);
           // console.log(ids);
 
           const filteredNewResult = resources.filter((obj1, i, arr) => {
@@ -381,9 +394,11 @@ const ImageCard = ({ activeImgNum }) => {
         {resource?.preview && (
           <>
             <Link
-              to={`/model/${resource?.preview?.id}`}
+              to={`/models/${resource?.preview?.id}`}
               state={{ versionId: version }}
               className={`${classes["resource__link"]} ${classes["resource__name"]}`}
+              onClick={resetModelData}
+              data-id={resource?.preview?.id}
             >
               {resource.preview.name}
             </Link>
@@ -526,38 +541,8 @@ const ImageCard = ({ activeImgNum }) => {
                       {imageData?.meta?.seed && (
                         <span className={classes.seed} onClick={copyHandler}>
                           {imageData?.meta?.seed}
-                          {!copied && (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth={1.5}
-                              stroke="currentColor"
-                              className="w-6 h-6"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"
-                              />
-                            </svg>
-                          )}
-                          {copied && (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth={1.5}
-                              stroke="currentColor"
-                              className="w-6 h-6"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 0 1 9 9v.375M10.125 2.25A3.375 3.375 0 0 1 13.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 0 1 3.375 3.375M9 15l2.25 2.25L15 12"
-                              />
-                            </svg>
-                          )}
+                          {!copied && <CopySvg />}
+                          {copied && <CopiedSvg />}
                         </span>
                       )}
                     </div>
@@ -582,8 +567,10 @@ const ImageCard = ({ activeImgNum }) => {
                       {!!modelInfo?.id && (
                         <>
                           <Link
-                            to={`/model/${modelInfo?.id}`}
+                            to={`/models/${modelInfo?.id}`}
                             className={classes["resource__link"]}
+                            onClick={resetModelData}
+                            data-id={modelInfo?.id}
                           >
                             {modelInfo?.name}
                           </Link>

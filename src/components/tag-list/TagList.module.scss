@@ -27,7 +27,7 @@
   white-space: nowrap;
   margin-right: 0.6rem;
   cursor: pointer;
-  transition: all 0.1s;
+  transition: all 0.3s;
 
   &:hover {
     color: #7278f0;
@@ -38,6 +38,16 @@
     color: #49ab6b;
     border-color: #49ab6b;
     transform: translateY(1px);
+  }
+
+  &--copied {
+    color: #49ab6b;
+    border-color: #49ab6b;
+  }
+
+  & svg {
+    width: 1.6rem;
+    height: 1.6rem;
   }
 }
 

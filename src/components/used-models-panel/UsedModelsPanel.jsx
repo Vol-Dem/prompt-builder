@@ -19,6 +19,7 @@ import PlusSvg from "../../assets/PlusSvg";
 import Bars2Svg from "../../assets/Bars2Svg";
 import Bars4Svg from "../../assets/Bars4Svg";
 import { useState } from "react";
+import { IMAGE_REF_ROW_LENGTH } from "../../variables/constants";
 
 const UsedModelsPanel = () => {
   const [cursorInitialX, setCursorInitialX] = useState(null);
@@ -78,41 +79,82 @@ const UsedModelsPanel = () => {
     return <UsedCard key={i} previewData={model} fullView={fullCardView} />;
   });
 
-  const usedImagesHtml = [...Array(3).keys()].map((image, i) => {
-    const nsfw =
-      usedImages[i]?.nsfw === false ||
-      usedImages[i]?.nsfw === "None" ||
-      usedImages[i]?.nsfwLevel === 1
-        ? false
-        : true;
-    if (!!usedImages[i]?.hash) {
-      return (
-        <li
-          key={`i${i}`}
-          className={classes["ref-images__item"]}
-          data-id={usedImages[i]?.hash}
-        >
-          <Image
-            src={usedImages[i].url}
-            alt={`Reference image ${i++}`}
-            onClick={openImageHandler}
-            className={`${
-              !nsfwMode && nsfw ? classes["ref-images__nsfw"] : ""
-            }`}
-          />
-          <span className={classes.close} onClick={closeImageHandler}>
-            <CrossSvg />
-          </span>
-        </li>
-      );
-    } else {
-      return (
-        <li key={`s${i}`} className={classes["ref-images__item--def"]}>
-          <ImageSvg />
-        </li>
-      );
+  const usedImagesHtml = [...Array(IMAGE_REF_ROW_LENGTH).keys()].map(
+    (image, i) => {
+      const nsfw =
+        usedImages[i]?.nsfw === false ||
+        usedImages[i]?.nsfw === "None" ||
+        usedImages[i]?.nsfwLevel === 1
+          ? false
+          : true;
+      if (!!usedImages[i]?.hash) {
+        return (
+          <li
+            key={`i${i}`}
+            className={classes["ref-images__item"]}
+            data-id={usedImages[i]?.hash}
+          >
+            <Image
+              src={usedImages[i].url}
+              alt={`Reference image ${i++}`}
+              onClick={openImageHandler}
+              className={`${
+                !nsfwMode && nsfw ? classes["ref-images__nsfw"] : ""
+              }`}
+            />
+            <span className={classes.close} onClick={closeImageHandler}>
+              <CrossSvg />
+            </span>
+          </li>
+        );
+      } else {
+        return (
+          <li key={`s${i}`} className={classes["ref-images__item--def"]}>
+            <ImageSvg />
+          </li>
+        );
+      }
     }
-  });
+  );
+
+  const usedImagesSecondRowHtml = [...Array(IMAGE_REF_ROW_LENGTH).keys()].map(
+    (image, i) => {
+      const index = i + IMAGE_REF_ROW_LENGTH;
+      const nsfw =
+        usedImages[index]?.nsfw === false ||
+        usedImages[index]?.nsfw === "None" ||
+        usedImages[index]?.nsfwLevel === 1
+          ? false
+          : true;
+      if (!!usedImages[index]?.hash) {
+        return (
+          <li
+            key={`i${i}`}
+            className={classes["ref-images__item"]}
+            data-id={usedImages[index]?.hash}
+          >
+            <Image
+              src={usedImages[index].url}
+              alt={`Reference image ${i++}`}
+              onClick={openImageHandler}
+              className={`${
+                !nsfwMode && nsfw ? classes["ref-images__nsfw"] : ""
+              }`}
+            />
+            <span className={classes.close} onClick={closeImageHandler}>
+              <CrossSvg />
+            </span>
+          </li>
+        );
+      } else {
+        return (
+          <li key={`s${i}`} className={classes["ref-images__item--def"]}>
+            <ImageSvg />
+          </li>
+        );
+      }
+    }
+  );
 
   const clearPanelHandler = () => {
     dispatch(usedModelsActions.clearPanel());
@@ -211,6 +253,7 @@ const UsedModelsPanel = () => {
                   !fullCardView ? classes["controls__btn--active"] : ""
                 }`}
                 onClick={chageCardViewHandler}
+                title="Short view"
               >
                 <Bars2Svg />
               </ButtonTertiary>
@@ -220,6 +263,7 @@ const UsedModelsPanel = () => {
                   fullCardView ? classes["controls__btn--active"] : ""
                 }`}
                 onClick={chageCardViewHandler}
+                title="Expanded view"
               >
                 <Bars4Svg />
               </ButtonTertiary>
@@ -227,11 +271,16 @@ const UsedModelsPanel = () => {
           </div>
         </div>
 
-        <ul className={classes["model-cards"]}>
+        <div className={classes["model-cards"]}>
           {!!usedImages.length && (
-            <li>
+            <div>
               <ul className={classes["ref-images"]}>{usedImagesHtml}</ul>
-            </li>
+              {usedImages.length > IMAGE_REF_ROW_LENGTH && (
+                <ul className={classes["ref-images"]}>
+                  {usedImagesSecondRowHtml}
+                </ul>
+              )}
+            </div>
           )}
           {!!usedModelsHtml.length && usedModelsHtml}
           {!usedModelsHtml.length && (
@@ -243,7 +292,7 @@ const UsedModelsPanel = () => {
               to add model or image to side panel
             </div>
           )}
-        </ul>
+        </div>
         <div className={classes["support"]}>
           Support project:{" "}
           <a

@@ -13,7 +13,7 @@ import { modelActions } from "../../store/model";
 import ModelInfo from "../model/info/ModelInfo";
 import ModelTags from "../model/tags/ModelTags";
 import GeneratedImages from "../model/generated-images/GeneratedImages";
-import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
 import firebaseApp from "../../firebase-config";
 import TagSets from "../model/tag-sets/TagSets";
 import { tabActions } from "../../store/tabs";
@@ -151,8 +151,16 @@ const Model = ({ title }) => {
         }
 
         if (docSnap.exists()) {
-          const curImages = docSnap.data()?.items;
-          // console.log(curImages);
+          const versionImages = docSnap.data()?.items;
+
+          let curImages;
+          if (!versionImages?.length) {
+            curImages = model?.data?.modelVersions.find(
+              (version) => version?.id === curVersion?.id
+            )?.images;
+          } else {
+            curImages = versionImages;
+          }
 
           const modelImages = nsfwMode
             ? curImages
@@ -208,6 +216,7 @@ const Model = ({ title }) => {
     const getModelData = async () => {
       try {
         setIsLoading(true);
+        dispatch(modelActions.resetModelData());
 
         const modelRef = doc(firestore, "users", uid, "models", modelId);
 

@@ -241,9 +241,11 @@ export const setPreviewImg = (url, isNsfw = false) => {
 };
 
 export const setTagSetPreviewImg = (versionId, tagSetData) => {
-  return async (__, getState) => {
+  return async (dispatch, getState) => {
     const uid = getState().auth.user.uid;
     const id = getState().model.model.id;
+    const model = getState().model.model;
+    console.log(model);
 
     const urlField =
       versionId === "tsv-def"
@@ -258,6 +260,31 @@ export const setTagSetPreviewImg = (versionId, tagSetData) => {
       },
       { merge: true }
     );
+
+    if (versionId === "tsv-def") {
+      const updatedDefaultCustomData = {
+        ...model.defaultCustomData,
+        tagSetsData: tagSetData,
+      };
+      dispatch(
+        modelActions.setModelData({
+          defaultCustomData: updatedDefaultCustomData,
+        })
+      );
+    } else {
+      const updatedVersionsCustomData = {
+        ...model.modelVersionsCustomData,
+        [versionId]: {
+          ...model.modelVersionsCustomData[versionId],
+          tagSetsData: tagSetData,
+        },
+      };
+      dispatch(
+        modelActions.setModelData({
+          modelVersionsCustomData: updatedVersionsCustomData,
+        })
+      );
+    }
   };
 };
 

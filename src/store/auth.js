@@ -170,7 +170,7 @@ export const authRequest = (isLogin, email, password) => {
           emailVerified: user.emailVerified,
         })
       );
-      dispatch(getUserData(user.uid));
+      dispatch(authActions.setGuide({ topPanel: false, image: false }));
       if (user.emailVerified) {
         dispatch(authActions.closeAuthForm());
       }

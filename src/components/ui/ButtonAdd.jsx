@@ -6,6 +6,7 @@ import {
   removeImageFromPanel,
   removeModelFromPanel,
 } from "../../store/usedModels";
+import { MAX_REF_IMAGE_AMOUNT } from "../../variables/constants";
 
 const ButtonAdd = ({ previewData, type, className, versionId }) => {
   const modelsInPanel = useSelector((state) => state.used.models);
@@ -18,7 +19,11 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
   const dispatch = useDispatch();
 
   const addToSidePanelHandler = (e) => {
-    if (!isInPanel && type === "image" && imagesInPanel?.length < 3) {
+    if (
+      !isInPanel &&
+      type === "image" &&
+      imagesInPanel?.length < MAX_REF_IMAGE_AMOUNT
+    ) {
       dispatch(addImageToPanel(previewData));
       return;
     } else if (isInPanel && type === "image") {
@@ -68,7 +73,9 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
       className={`${classes["resource__add"]} ${
         isInPanel ? classes["resource__add--active"] : ""
       } ${
-        imagesInPanel?.length >= 3 && !isInPanel && type === "image"
+        imagesInPanel?.length >= MAX_REF_IMAGE_AMOUNT &&
+        !isInPanel &&
+        type === "image"
           ? classes["resource__add--disabled"]
           : ""
       } ${className || ""}`}

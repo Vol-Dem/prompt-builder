@@ -49,7 +49,7 @@ const PreviewCard = ({ previewData, onClick }) => {
       <div className={classes["image-container"]}>
         <ButtonAdd previewData={previewData} className={classes["btn-add"]} />
 
-        <Link to={`/model/${previewData.id}`} onClick={onClick}>
+        <Link to={`/models/${previewData.id}`} onClick={onClick}>
           <Image
             ref={imgRef}
             src={
@@ -66,7 +66,7 @@ const PreviewCard = ({ previewData, onClick }) => {
       <div className={`${classes.content}`}>
         <div className={classes["title-container"]}>
           <Link
-            to={`/model/${previewData.id}`}
+            to={`/models/${previewData.id}`}
             className={classes.link}
             onClick={onClick}
           >

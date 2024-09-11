@@ -1,5 +1,5 @@
 import classes from "./Guide.module.scss";
-import { useEffect } from "react";
+// import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import LinkA from "../LinkA";
 import ArrowRightSvg from "../../../assets/ArrowRight";

@@ -51,9 +51,17 @@ const Prompt = () => {
     dispatch(promptActions.setTextMode(isTextMode));
   };
 
-  const clearPromptHandler = () => {
-    dispatch(promptActions.clearPrompt());
+  const clearPositivePromptHandler = () => {
+    dispatch(promptActions.setCurrentPrompt(""));
   };
+
+  const clearNegativePromptHandler = () => {
+    dispatch(promptActions.setCurrentNegPrompt(""));
+  };
+
+  // const clearPromptHandler = () => {
+  //   dispatch(promptActions.clearPrompt());
+  // };
 
   const openPresetsHandler = () => {
     if (!isAuth) {
@@ -99,13 +107,29 @@ const Prompt = () => {
             <ButtonTertiary type="button" onClick={openPresetsHandler}>
               Presets
             </ButtonTertiary>
-            <ButtonTertiary
+            {/* <ButtonTertiary
               type="button"
               onClick={clearPromptHandler}
               className={classes["btn-clear"]}
             >
               Clear
-            </ButtonTertiary>
+            </ButtonTertiary> */}
+            <div className={classes["btn-container"]}>
+              <ButtonTertiary
+                type="button"
+                onClick={clearPositivePromptHandler}
+                className={classes["btn-clear"]}
+              >
+                Clear positive
+              </ButtonTertiary>
+              <ButtonTertiary
+                type="button"
+                onClick={clearNegativePromptHandler}
+                className={classes["btn-clear"]}
+              >
+                Clear negative
+              </ButtonTertiary>
+            </div>
           </div>
 
           <div className={classes.field}>

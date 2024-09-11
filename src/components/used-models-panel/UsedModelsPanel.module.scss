@@ -201,8 +201,20 @@
   border: none;
   border-radius: 1rem 0 0 1rem;
   background-color: #756b76;
+  // background-color: var.$color-primary;
   color: var.$color-text-white;
   cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: darken(#756b76, 5%);
+    // background-color: darken(var.$color-primary, 5%);
+  }
+
+  &:active {
+    box-shadow: inset 0.2rem 0.3rem 0.5rem rgba(var.$color-black, 0.4);
+  }
+
   & svg {
     width: 1.4rem;
     height: 1.4rem;

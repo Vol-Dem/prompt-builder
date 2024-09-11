@@ -4,7 +4,7 @@ import ArrowRightSvg from "../../../assets/ArrowRight";
 import ButtonTertiary from "../ButtonTertiary";
 import ArrowLeftSvg from "../../../assets/ArrowLeft";
 import { useDispatch, useSelector } from "react-redux";
-import { authActions, setGuideData } from "../../../store/auth";
+import { setGuideData } from "../../../store/auth";
 
 const stepsAmount = 2;
 const guideSteps = [
@@ -79,6 +79,7 @@ const TopPanelGuide = (props) => {
                 <ButtonTertiary
                   className={classes["guide__controls-btn"]}
                   onClick={prevStepHandler}
+                  title="Previous tip"
                 >
                   <ArrowLeftSvg />
                 </ButtonTertiary>
@@ -88,6 +89,7 @@ const TopPanelGuide = (props) => {
                 <ButtonTertiary
                   className={classes["guide__controls-btn"]}
                   onClick={nextStepHandler}
+                  title="Next tip"
                 >
                   <ArrowRightSvg />
                 </ButtonTertiary>

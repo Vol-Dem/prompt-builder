@@ -3,6 +3,7 @@ import { saveToStorage, uploadStorage } from "../variables/utils";
 import { authActions } from "./auth";
 import { getAuth } from "firebase/auth";
 import firebaseApp from "../firebase-config";
+import { MAX_REF_IMAGE_AMOUNT } from "../variables/constants";
 
 const auth = getAuth(firebaseApp);
 
@@ -100,7 +101,7 @@ export const addImageToPanel = (data) => {
       (image) => image.hash === data.hash
     );
 
-    if (!imageIsInPanel && curImages?.length < 3) {
+    if (!imageIsInPanel && curImages?.length < MAX_REF_IMAGE_AMOUNT) {
       const newImages = [...curImages, data];
       dispatch(usedModelsActions.addImagesToPanel(newImages));
     }

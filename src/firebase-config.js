@@ -19,13 +19,13 @@ const firebaseConfig = {
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 
-// initializeAppCheck(firebaseApp, {
-//   provider: new ReCaptchaV3Provider(process.env.REACT_APP_FIREBASE_REC),
+initializeAppCheck(firebaseApp, {
+  provider: new ReCaptchaV3Provider(process.env.REACT_APP_FIREBASE_REC),
 
-//   // Optional argument. If true, the SDK automatically refreshes App Check
-//   // tokens as needed.
-//   isTokenAutoRefreshEnabled: true,
-// });
+  // Optional argument. If true, the SDK automatically refreshes App Check
+  // tokens as needed.
+  isTokenAutoRefreshEnabled: true,
+});
 
 export const dbfr = getFirestore(firebaseApp);
 export const db = getDatabase();

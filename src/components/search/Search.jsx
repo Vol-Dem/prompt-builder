@@ -176,7 +176,7 @@ const Search = ({ className }) => {
     return (
       <li key={i} className={classes["search__item"]}>
         <NavLink
-          to={`model/${modelPreveiw.id}`}
+          to={`models/${modelPreveiw.id}`}
           className={classes["search__link"]}
           onClick={() => {
             dispatch(searchActions.setSearchQuery(""));
