@@ -69,7 +69,7 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
   };
 
   return (
-    <div
+    <button
       className={`${classes["resource__add"]} ${
         isInPanel ? classes["resource__add--active"] : ""
       } ${
@@ -80,6 +80,7 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
           : ""
       } ${className || ""}`}
       onClick={addToSidePanelHandler}
+      title="Add to side panel"
     >
       {!isInPanel && (
         <svg
@@ -113,7 +114,7 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
           />
         </svg>
       )}
-    </div>
+    </button>
   );
 };
 

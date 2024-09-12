@@ -59,9 +59,9 @@ const Prompt = () => {
     dispatch(promptActions.setCurrentNegPrompt(""));
   };
 
-  // const clearPromptHandler = () => {
-  //   dispatch(promptActions.clearPrompt());
-  // };
+  const clearPromptHandler = () => {
+    dispatch(promptActions.clearPrompt());
+  };
 
   const openPresetsHandler = () => {
     if (!isAuth) {
@@ -107,31 +107,36 @@ const Prompt = () => {
             <ButtonTertiary type="button" onClick={openPresetsHandler}>
               Presets
             </ButtonTertiary>
-            {/* <ButtonTertiary
-              type="button"
-              onClick={clearPromptHandler}
-              className={classes["btn-clear"]}
-            >
-              Clear
-            </ButtonTertiary> */}
+
             <div className={classes["btn-container"]}>
               <ButtonTertiary
                 type="button"
-                onClick={clearPositivePromptHandler}
+                onClick={clearPromptHandler}
                 className={classes["btn-clear"]}
               >
-                Clear positive
+                Clear all
               </ButtonTertiary>
-              <ButtonTertiary
-                type="button"
-                onClick={clearNegativePromptHandler}
-                className={classes["btn-clear"]}
+              <div
+                className={`${classes["btn-container"]} ${classes["btn-container--fields"]}`}
               >
-                Clear negative
-              </ButtonTertiary>
+                <ButtonTertiary
+                  type="button"
+                  onClick={clearPositivePromptHandler}
+                  className={classes["btn-clear"]}
+                >
+                  Clear positive
+                </ButtonTertiary>
+                <ButtonTertiary
+                  type="button"
+                  onClick={clearNegativePromptHandler}
+                  className={classes["btn-clear"]}
+                >
+                  Clear negative
+                </ButtonTertiary>
+              </div>
             </div>
           </div>
-
+          {promptIsOpen && <TopPanelGuide />}
           <div className={classes.field}>
             {!promptTextMode && (
               <TagsTextarea
@@ -279,7 +284,6 @@ const Prompt = () => {
           }}
         />
       )}
-      {promptIsOpen && <TopPanelGuide />}
     </div>
   );
 };

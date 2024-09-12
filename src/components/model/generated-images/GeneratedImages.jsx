@@ -45,7 +45,7 @@ const GeneratedImages = ({ customData }) => {
   const [nextCursor, setNextCursor] = useState(null);
   const [examplesImgData, setExamplesImgData] = useState([]);
   const [examplesHtml, setExamplesHtml] = useState([]);
-  const [curImagesModelVersionId, setCurImagesModelVersionId] = useState();
+  const [curImagesModelVersionId, setCurImagesModelVersionId] = useState(null);
   const [imagesSortValue, setImagesSortValue] = useState("Newest");
   // const [amountPerPage, setAmountPerPage] = useState(100);
   const [isIntersecting, setIsIntersecting] = useState(false);
@@ -64,6 +64,33 @@ const GeneratedImages = ({ customData }) => {
   const isPageEnd = usePageEnd(600);
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
+
+  const resetExamples = () => {
+    setCurrCursor(null);
+    setNextCursor(null);
+    setExamplesImages([]);
+    setExamplesImgData([]);
+    setIsLastPage(false);
+    setLastVisible({});
+    // setCurImagesModelVersionId(null);
+  };
+
+  useEffect(() => {
+    resetExamples();
+    return () => {
+      // console.log("RESET");
+      // console.log(model.id);
+      // console.log(curVersion.id);
+      // console.log(curImagesModelVersionId);
+      // console.log("RESET");
+      resetExamples();
+      clearTimeout(timeoutRef.current);
+      setCurImagesModelVersionId(null);
+      if (abortControlerRef.current) {
+        abortControlerRef.current.abort();
+      }
+    };
+  }, [curVersion.id]);
 
   useEffect(() => {
     if (model?.id && model.id === savedImagesData?.modelId) {
@@ -89,27 +116,6 @@ const GeneratedImages = ({ customData }) => {
     versionsListRef?.current?.offsetHeight,
     versionsItemRef?.current?.offsetHeight,
   ]);
-
-  const resetExamples = () => {
-    setCurrCursor(null);
-    setNextCursor(null);
-    setExamplesImages([]);
-    setExamplesImgData([]);
-    setIsLastPage(false);
-    setLastVisible({});
-    // setCurImagesModelVersionId(null);
-  };
-
-  useEffect(() => {
-    return () => {
-      resetExamples();
-      clearTimeout(timeoutRef.current);
-      setCurImagesModelVersionId(null);
-      if (abortControlerRef.current) {
-        abortControlerRef.current.abort();
-      }
-    };
-  }, [model.id]);
 
   useEffect(() => {
     resetExamples();

@@ -201,14 +201,14 @@
   border: none;
   border-radius: 1rem 0 0 1rem;
   background-color: #756b76;
-  // background-color: var.$color-primary;
+  background-color: var.$color-primary;
   color: var.$color-text-white;
   cursor: pointer;
   transition: all 0.3s;
 
   &:hover {
     background-color: darken(#756b76, 5%);
-    // background-color: darken(var.$color-primary, 5%);
+    background-color: darken(var.$color-primary, 5%);
   }
 
   &:active {

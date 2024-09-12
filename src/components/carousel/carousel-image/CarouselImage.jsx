@@ -274,6 +274,7 @@ const CarouselImage = ({
               type="button"
               className={classes["menu-btn"]}
               onClick={openMenuHandler}
+              title="Image settings"
             >
               <DotsSvg />
             </ButttonTertiary>

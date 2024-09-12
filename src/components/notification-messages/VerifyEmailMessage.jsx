@@ -36,7 +36,10 @@ const VerifyEmailMessage = () => {
       <WarningMessage>
         <p className={classes.message}>
           Email is not verified. Please follow the link in the email to start
-          using the service. Didn't receive the email?{" "}
+          using the service.
+        </p>
+        <p className={classes.message}>
+          Didn't receive the email?{" "}
           <span
             className={classes.link}
             onClick={resendVerificationEmailHandler}

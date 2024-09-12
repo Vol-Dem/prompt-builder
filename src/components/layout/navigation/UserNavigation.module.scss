@@ -1,5 +1,12 @@
 @use "./../../../variables/variables.scss" as var;
 
+.nav-profile-container {
+  position: relative;
+  // width: 4.6rem;
+  // height: 4.4rem;
+  // margin-right: 2rem;
+}
+
 .nav-profile {
   position: relative;
   display: flex;
@@ -62,6 +69,7 @@
     font-weight: 500;
     list-style: none;
   }
+
   &__link {
     font-size: 1.6rem;
 
@@ -92,6 +100,9 @@
   &:hover &__user svg {
     color: var.$color-text-primary;
   }
+  &:hover &__name {
+    display: block;
+  }
 
   &:hover {
     background-color: var.$color-background-light;
@@ -104,10 +115,18 @@
 }
 
 @media (max-width: 480px) {
+  .nav-profile-container {
+    width: 4.6rem;
+    height: 4.4rem;
+    margin-right: 1.2rem;
+  }
+
   .nav-profile {
+    position: absolute;
+    right: 0;
     padding: 0.7rem 0.8rem;
     &__name {
-      // width: 4rem;
+      display: none;
       font-size: 1.2rem;
     }
   }

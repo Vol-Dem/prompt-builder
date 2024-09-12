@@ -5,10 +5,11 @@
   align-items: center;
   height: 5rem;
   background-color: var.$color-background-secondary;
+  font-size: 1.4rem;
 
   &__copy {
-    font-size: 1.4rem;
     margin-right: auto;
+    white-space: nowrap;
   }
 
   &__content {
@@ -21,4 +22,15 @@
 
 .link {
   @include var.linkA;
+}
+
+@media (max-width: 430px) {
+  .footer {
+    height: 4rem;
+    font-size: 1.2rem;
+
+    &__content {
+      gap: 1rem;
+    }
+  }
 }

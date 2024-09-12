@@ -7,6 +7,7 @@ import Buttton from "../ui/Button";
 import { authActions } from "../../store/auth";
 import Modal from "../ui/Modal";
 import AuthForm from "../forms/Auth/AuthForm";
+import { DEF_ERROR_MESSAGE } from "../../variables/constants";
 
 const ErrorPage = () => {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
@@ -25,12 +26,16 @@ const ErrorPage = () => {
   return (
     <section className={classes["error-page"]}>
       <Card className={classes["error-card"]}>
-        <h1 className={classes["error-page__title"]}>{error.status}</h1>
+        {error?.status && (
+          <h1 className={classes["error-page__title"]}>{error.status}</h1>
+        )}
         <p className={classes["error-page__subtitle"]}>
           Sorry, an unexpected error has occurred.
         </p>
         <p className={classes["error-page__message"]}>
-          <i>{error.statusText || error.message}</i>
+          {/* <i>{error.statusText || error.message}</i> */}
+          {error.status !== 404 && <i>{DEF_ERROR_MESSAGE}</i>}
+          {error.status === 404 && <i>Page not found</i>}
         </p>
         {!isAuth && error.status === 404 && (
           <Buttton onClick={openAuth} className={classes["btn-auth"]}>

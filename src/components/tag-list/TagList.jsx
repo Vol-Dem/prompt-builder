@@ -40,16 +40,16 @@ const TagList = forwardRef(function TagList(props, ref) {
   return (
     <div className={`${classes["container"]} ${props.className || ""}`}>
       <div className={classes.title}>
-        <h3>
+        <div>
           {props.name}:
           {props?.coment && (
             <span className={classes.coment}>({props.coment})</span>
           )}
-        </h3>
+        </div>
 
         <span>
           <button
-            id="negativePrompt"
+            // id="negativePrompt"
             data-type={props?.promptType}
             onClick={addAllPromptHandler}
             className={classes["btn-copy"]}
@@ -57,7 +57,7 @@ const TagList = forwardRef(function TagList(props, ref) {
             Add all
           </button>
           <button
-            id="prompt"
+            // id="prompt"
             data-type={props?.promptType}
             onClick={removeAllPromptHandler}
             className={classes["btn-copy"]}

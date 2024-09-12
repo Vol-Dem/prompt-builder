@@ -26,7 +26,7 @@ const ModelTags = ({ customData, modelPreview }) => {
               model?.mainTag ||
               customData?.defActTag) && (
               <div className={classes["activation-tag"]}>
-                <h3 className={classes["tags__subtitle"]}>Activation tag:</h3>
+                <div className={classes["tags__subtitle"]}>Activation tag:</div>
                 <div className={classes["activation-tag__container"]}>
                   <ActivationTag
                     tag={

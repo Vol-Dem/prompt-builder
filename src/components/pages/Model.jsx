@@ -69,6 +69,12 @@ const Model = ({ title }) => {
     };
   }, [title, model?.name]);
 
+  // useEffect(() => {
+  //   return () => {
+  //     dispatch(modelActions.resetModelData());
+  //   };
+  // }, [dispatch]);
+
   useEffect(() => {
     if (model?.id) {
       setDescriptionIsOpen(false);

@@ -24,7 +24,7 @@ const UserNavigation = () => {
   };
 
   return (
-    <>
+    <div className={classes["nav-profile-container"]}>
       <div className={classes["nav-profile"]}>
         <div className={classes["nav-profile__user"]}>
           <span className={classes["nav-profile__name"]}>
@@ -49,7 +49,7 @@ const UserNavigation = () => {
           </ButttonSecondary>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

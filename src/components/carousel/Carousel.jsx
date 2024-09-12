@@ -585,7 +585,7 @@ const Carousel = ({
             type="button"
             className={`${classes.btn} ${classes["btn__left"]}`}
             onClick={slidePrevHandler}
-            title="Prev"
+            title="Previous"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -637,6 +637,7 @@ const Carousel = ({
             }`}
             onClick={openSaveImagesListHandler}
             disabled={!!isUploading}
+            title="Save"
           >
             {!isUploading ? <FolderSvg /> : <Spinner size="small" />}
           </button>

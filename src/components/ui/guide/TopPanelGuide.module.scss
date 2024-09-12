@@ -85,13 +85,14 @@
     transition: all 0.3s ease-in;
 
     &--1 {
-      top: -15.8rem;
+      // top: -15.8rem;
+      top: 0.5rem;
       left: 6.2rem;
       max-width: 25rem;
     }
 
     &--2 {
-      top: -15.8rem;
+      top: 0.5rem;
       left: 16.5rem;
       max-width: 25rem;
     }
@@ -200,6 +201,26 @@
 
 @media (max-width: 1160px) {
   .guide__content--2 {
-    top: 7.6rem;
+    // top: 7.6rem;
+  }
+}
+
+@media (max-width: 460px) {
+  .guide__content--1 {
+    left: 1rem;
+  }
+
+  .guide__content--1 .guide__arrow-bg {
+    top: -1rem;
+    left: 6rem;
+  }
+
+  .guide__content--2 {
+    left: 3rem;
+  }
+
+  .guide__content--2 .guide__arrow-bg {
+    top: -1rem;
+    left: 14rem;
   }
 }
