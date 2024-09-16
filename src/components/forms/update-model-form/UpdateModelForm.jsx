@@ -738,6 +738,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           nsfw: nsfwInput || false,
           src: "civitai.com",
           defaultCustomData: {
+            type: data?.type || "",
             description: !!modelData ? description : data?.description,
             ...(tagSetsData?.length && {
               tagSetsData,

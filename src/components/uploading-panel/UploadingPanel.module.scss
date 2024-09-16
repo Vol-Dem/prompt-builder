@@ -7,19 +7,66 @@
   // padding: 0.8rem;
 
   &__btn {
-    padding: 0.5rem;
-    border-radius: 10px;
+    position: relative;
     width: 2.8rem;
+    height: 2.8rem;
     cursor: pointer;
     transition: all 0.3s;
+    color: var.$color-text-white;
+    background-color: transparent;
+    border: none;
+    z-index: 2;
 
-    &:hover {
-      // background-color: rgba(173, 132, 203, 0.3);
-      background-color: rgba(215, 205, 222, 0.3);
+    &-content {
+      position: relative;
+      padding: 0.5rem;
+      overflow: hidden;
+      border-radius: 10px;
+      width: 2.8rem;
+      height: 2.8rem;
+      transition: all 0.3s ease;
+      // background-color: #494953;
+
+      &:hover {
+        background-color: #62626c;
+      }
+
+      &:active {
+        box-shadow: inset var.$box-shadow;
+      }
+
+      &--loading::after {
+        content: "";
+        position: absolute;
+        z-index: -2;
+        left: -50%;
+        top: -50%;
+        width: 200%;
+        height: 0;
+        padding-bottom: 200%;
+        background-repeat: no-repeat;
+        background: conic-gradient(
+          from 45deg,
+          var.$color-primary,
+          transparent,
+          transparent,
+          transparent,
+          transparent,
+          transparent,
+          var.$color-primary,
+          transparent,
+          transparent,
+          transparent,
+          transparent,
+          transparent,
+          var.$color-primary
+        );
+        animation: loading 4s linear infinite;
+      }
     }
 
-    &--active {
-      background-color: rgba(215, 205, 222, 0.3);
+    &--open &-content {
+      background-color: #494953;
     }
   }
 

@@ -27,6 +27,7 @@ const ChooseImageForm = ({
   const [savedImagesIds, setSavedImagesIds] = useState([]);
   const [imagesInputs, setImagesInputs] = useState([]);
   const uid = useSelector((state) => state.auth.user.uid);
+  const selectedAmount = imagesInputs.filter((input) => input?.value)?.length;
   // const model = useSelector((state) => state.model.model);
   const savedImages = useSelector((state) => state.model.savedImages);
   const isOnline = useOnlineStatus();
@@ -190,9 +191,9 @@ const ChooseImageForm = ({
         <Buttton
           className={`${type === "del" ? classes["btn-del"] : ""}`}
           type="submit"
-          disabled={isLoading || !!isDeleting || !isOnline}
+          disabled={isLoading || !!isDeleting || !isOnline || !selectedAmount}
         >
-          {type === "save" ? "Save selected" : ""}
+          {type === "save" ? `Save (${selectedAmount}) selected` : ""}
           {type === "del" && !isLoading && !isDeleting ? "Delete selected" : ""}
           {!!isDeleting && <Spinner size="small" />}
         </Buttton>
