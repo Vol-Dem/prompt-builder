@@ -75,7 +75,7 @@ const Select = ({
         <input
           className={classes["select__radio"]}
           type="radio"
-          id={`select-${item.value}-${id}`}
+          id={`select-${id}-${i}`}
           name="option"
           value={item.value}
           data-name={item.name}
@@ -85,7 +85,7 @@ const Select = ({
         <label
           ref={labeldRef}
           className={classes["select__label"]}
-          htmlFor={`select-${item.value}-${id}`}
+          htmlFor={`select-${id}-${i}`}
         >
           <div className={classes["select__title"]}>
             <span>{item.name}</span>

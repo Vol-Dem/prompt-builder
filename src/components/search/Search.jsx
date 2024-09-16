@@ -271,6 +271,7 @@ const Search = ({ className }) => {
       <form onSubmit={submitSearchHandler} className={classes["search__field"]}>
         <input
           type="search"
+          name="search"
           onChange={searchInputHandler}
           value={searchInput}
           placeholder="Search"

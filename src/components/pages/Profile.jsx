@@ -174,6 +174,7 @@ const Profile = ({ title }) => {
         {changeNameIsActive && (
           <>
             <Input
+              id="name"
               name="name"
               type="text"
               className={`${classes["auth__input"]} ${
@@ -212,6 +213,7 @@ const Profile = ({ title }) => {
         {changeEmailIsActive && (
           <>
             <Input
+              id="email"
               name="email"
               type="email"
               className={`${classes["auth__input"]} ${
@@ -231,6 +233,7 @@ const Profile = ({ title }) => {
             />
             <Input
               label="Password"
+              id="cur-password"
               name="cur-password"
               type="password"
               className={`${classes["auth__input"]} ${
@@ -269,6 +272,7 @@ const Profile = ({ title }) => {
           <>
             <Input
               label="Current password"
+              id="cur-password"
               name="cur-password"
               type="password"
               className={`${classes["auth__input"]} ${
@@ -286,6 +290,7 @@ const Profile = ({ title }) => {
             />
             <Input
               label="New password"
+              id="password"
               name="password"
               type="password"
               className={`${classes["auth__input"]} ${

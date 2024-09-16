@@ -64,6 +64,7 @@ const ReAuthForm = () => {
       <form onSubmit={authHandlerPass} className={classes["auth__form"]}>
         <Input
           label="Password"
+          id="password"
           name="password"
           type="password"
           input={{ disabled: isLoading }}

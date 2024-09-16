@@ -408,13 +408,11 @@ const Model = ({ title }) => {
   };
 
   const modelImagesHtml = (
-    <div id={curVersion?.name}>
-      <Carousel
-        imagesData={curVersionImages?.filteredItems}
-        versionId={curVersion?.id}
-        saved={false}
-      />
-    </div>
+    <Carousel
+      imagesData={curVersionImages?.filteredItems}
+      versionId={curVersion?.id}
+      saved={false}
+    />
   );
 
   const modelVersionsHtml =
@@ -484,14 +482,14 @@ const Model = ({ title }) => {
   };
 
   return (
-    <div className={classes.model}>
+    <div>
       {isLoading && <Spinner />}
       {!isAuth && <ErrorMessage>{AUTH_ERROR_MESSAGE}</ErrorMessage>}
       {!isLoading && errorMessage && (
         <ErrorMessage>{errorMessage}</ErrorMessage>
       )}
       {!isLoading && !errorMessage && model?.id && (
-        <>
+        <div className={classes.model}>
           <div className={classes["panel"]}>
             <Buttton className={classes["btn-back"]} onClick={backHandler}>
               <BackSvg />
@@ -559,10 +557,12 @@ const Model = ({ title }) => {
               {showAllVersions ? "Hide" : "Show All"}
             </ButtonTertiary>
           )}
-          {!!curVersionImages.filteredItems?.length &&
-            !curVersionImagesIsLoading &&
-            modelImagesHtml}
-          {curVersionImagesIsLoading && <Spinner />}
+          <div className={classes["img-container"]}>
+            {!!curVersionImages.filteredItems?.length &&
+              !curVersionImagesIsLoading &&
+              modelImagesHtml}
+            {curVersionImagesIsLoading && <Spinner />}
+          </div>
           <div className={classes["info-container"]}>
             <ModelInfo customData={curCustomVersionData} />
             <ModelTags
@@ -617,7 +617,7 @@ const Model = ({ title }) => {
 
           <h2 className={classes["h2"]}>Generated images:</h2>
           <GeneratedImages customData={curCustomVersionData} />
-        </>
+        </div>
       )}
     </div>
   );

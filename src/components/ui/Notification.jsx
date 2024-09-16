@@ -19,7 +19,7 @@ const Notification = (props) => {
     <>
       {createPortal(
         <Card className={classes.notification}>
-          <div>
+          <div className={classes['notification__icon']}>
             {type === "notification" && <ExclamationCircleSvg />}
             {type === "warning" && <TriangleIcon />}
           </div>

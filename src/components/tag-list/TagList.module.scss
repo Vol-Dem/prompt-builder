@@ -25,7 +25,7 @@
   border: 1px solid rgba(178, 178, 178, 0.8);
   border-radius: 0.5rem;
   white-space: nowrap;
-  margin-right: 0.6rem;
+  margin-right: 0.4rem;
   cursor: pointer;
   transition: all 0.3s;
 
@@ -70,4 +70,10 @@
   font-weight: 400;
   color: var.$color-text-gray-dark;
   margin-left: 0.6rem;
+}
+
+@media (max-width: 375px) {
+  .title__text {
+    width: 100%;
+  }
 }

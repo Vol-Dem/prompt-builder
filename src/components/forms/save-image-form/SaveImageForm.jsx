@@ -133,6 +133,7 @@ const SaveImageForm = ({ modelData, curVersion }) => {
           options={versionSelectOption}
         />
         <Input
+          id="post-id"
           name="post-id"
           type="text"
           label="Post ID"

@@ -40,7 +40,7 @@ const Textarea = (props) => {
   return (
     <div>
       {label && (
-        <label htmlFor={name} className={classes.label}>
+        <label htmlFor={id} className={classes.label}>
           {label || ""}
         </label>
       )}

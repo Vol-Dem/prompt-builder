@@ -40,7 +40,7 @@ const TagList = forwardRef(function TagList(props, ref) {
   return (
     <div className={`${classes["container"]} ${props.className || ""}`}>
       <div className={classes.title}>
-        <div>
+        <div className={classes["title__text"]}>
           {props.name}:
           {props?.coment && (
             <span className={classes.coment}>({props.coment})</span>

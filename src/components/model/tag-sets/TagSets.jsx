@@ -30,9 +30,24 @@ const TagSets = ({ customData, defaultData }) => {
   ]);
 
   useEffect(() => {
-    const tagSetsData = customData?.length ? customData : defaultData;
+    // const tagSetsData = customData?.length ? customData : defaultData;
+    let tagSetsData = [];
 
-    if (!tagSetsData) return;
+    const defaultDataWithDefMark = defaultData?.map((tagSet) => {
+      return {
+        ...tagSet,
+        default: true,
+      };
+    });
+
+    if (customData?.length) {
+      tagSetsData = [...customData];
+    }
+    if (defaultDataWithDefMark?.length) {
+      tagSetsData = [...tagSetsData, ...defaultDataWithDefMark];
+    }
+
+    if (!tagSetsData?.length) return;
     setAllTagSets(tagSetsData);
     setTagSets(tagSetsData);
     const itemHeight = tagSetItemRef?.current?.offsetHeight;
@@ -77,7 +92,8 @@ const TagSets = ({ customData, defaultData }) => {
       {
         <TagList
           name={tagSet.name}
-          coment={!customData?.length && !!defaultData?.length && "Default"}
+          // coment={!customData?.length && !!defaultData?.length && "Default"}
+          coment={tagSet?.default && "Default"}
           tags={splitTags(tagSet.value)}
           promptType="positive"
           className={classes["tag-sets__tags"]}

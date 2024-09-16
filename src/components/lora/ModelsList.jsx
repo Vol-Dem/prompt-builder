@@ -104,6 +104,7 @@ const ModelsList = () => {
       <div className={classes.panel}>
         <span className={classes["panel__title"]}>Sort by:</span>
         <Select
+          id="sort"
           name="sort"
           selected={sortBy}
           onChange={(value) => {
@@ -115,6 +116,7 @@ const ModelsList = () => {
           className={classes.select}
         />
         <Select
+          id="model"
           name="model"
           selected={modelType}
           onChange={(value) => {

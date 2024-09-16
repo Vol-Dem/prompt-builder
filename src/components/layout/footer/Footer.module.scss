@@ -2,8 +2,9 @@
 
 .footer {
   display: flex;
+  padding: 1rem;
   align-items: center;
-  height: 5rem;
+  // height: 5rem;
   background-color: var.$color-background-secondary;
   font-size: 1.4rem;
 
@@ -14,6 +15,7 @@
 
   &__content {
     display: flex;
+    flex-wrap: wrap;
     gap: 2rem;
     align-items: center;
     margin-top: auto;
@@ -26,11 +28,17 @@
 
 @media (max-width: 430px) {
   .footer {
-    height: 4rem;
-    font-size: 1.2rem;
+    flex-direction: column;
 
     &__content {
       gap: 1rem;
+      justify-content: center;
+    }
+
+    &__copy {
+      margin: auto;
+      width: 100%;
+      text-align: center;
     }
   }
 }

@@ -1113,6 +1113,7 @@ const UpdateModelForm = ({ modelData, id }) => {
       {modelData && (
         <FieldCategory>
           <Input
+            id="title"
             name="title"
             type="text"
             label="Name"
@@ -1129,6 +1130,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           />
           <Textarea
             label="Description"
+            id="description"
             name="description"
             rows="5"
             placeholder="Description"
@@ -1160,7 +1162,8 @@ const UpdateModelForm = ({ modelData, id }) => {
           <Select
             label="Type"
             name="type"
-            id={id}
+            id="type"
+            // id={id}
             selected={modelTypeInput}
             onChange={(value) => {
               setModelTypeInput(value);
@@ -1169,6 +1172,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           />
           {true && (
             <Input
+              id="id"
               name="id"
               label="Model ID or URL"
               type="text"
@@ -1187,6 +1191,7 @@ const UpdateModelForm = ({ modelData, id }) => {
             />
           )}
           <Input
+            id="main"
             name="main"
             type="text"
             label="Category"
@@ -1238,6 +1243,7 @@ const UpdateModelForm = ({ modelData, id }) => {
             <FieldCategory title="Trigger words">
               <Input
                 label="Activation tag"
+                id="main-tag"
                 name="main-tag"
                 type="text"
                 placeholder="<lora:activation tag:1>"
@@ -1251,6 +1257,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                 showError={showErrorMessage}
               />
               <Textarea
+                id="triger"
                 name="triger"
                 type="text"
                 placeholder="Trigger word"
@@ -1266,6 +1273,7 @@ const UpdateModelForm = ({ modelData, id }) => {
               />
               <Textarea
                 label="Helper words"
+                id="helper-tags"
                 name="helper-tags"
                 rows="5"
                 placeholder="Helper words"
@@ -1280,6 +1288,7 @@ const UpdateModelForm = ({ modelData, id }) => {
               ></Textarea>
               <Textarea
                 label="Negative words"
+                id="negative-tags"
                 name="negative-tags"
                 rows="5"
                 placeholder="Negative words"
@@ -1308,6 +1317,7 @@ const UpdateModelForm = ({ modelData, id }) => {
             </FieldCategory>
             <FieldCategory title="Info">
               <Input
+                id="src"
                 name="src"
                 type="text"
                 placeholder="src"
@@ -1322,6 +1332,7 @@ const UpdateModelForm = ({ modelData, id }) => {
               />
               <Input
                 label="File"
+                id="file-name"
                 name="file-name"
                 type="text"
                 placeholder="File name"
@@ -1338,6 +1349,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                 <span className={classes["weight__label"]}>Weight</span>
                 <div className={classes.weight}>
                   <InputNumber
+                    id="minWeight"
                     name="minWeight"
                     type="number"
                     step={0.1}
@@ -1353,6 +1365,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                     showError={showErrorMessage}
                   />
                   <InputNumber
+                    id="maxWeight"
                     name="maxWeight"
                     type="number"
                     step={0.1}
@@ -1368,6 +1381,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                     showError={showErrorMessage}
                   />
                   <InputNumber
+                    id="weight"
                     name="weight"
                     type="number"
                     step={0.1}
@@ -1386,6 +1400,7 @@ const UpdateModelForm = ({ modelData, id }) => {
               </div>
               <Input
                 label="Image size"
+                id="size"
                 name="size"
                 type="text"
                 placeholder="Image size"
@@ -1403,6 +1418,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                 <>
                   <Input
                     label="Sampling method"
+                    id="sampler"
                     name="sampler"
                     type="text"
                     placeholder="Sampling method"
@@ -1417,6 +1433,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                   />
                   <Input
                     label="Sampling steps"
+                    id="steps"
                     name="steps"
                     type="text"
                     placeholder="Sampling steps"
@@ -1432,6 +1449,7 @@ const UpdateModelForm = ({ modelData, id }) => {
 
                   <Input
                     label="CFG Scale"
+                    id="cfgScale"
                     name="cfgScale"
                     type="text"
                     placeholder="CFG Scale"
@@ -1446,6 +1464,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                   />
                   <Input
                     label="Upscaler"
+                    id="hiresUpscaler"
                     name="hiresUpscaler"
                     type="text"
                     placeholder="Upscaler"
@@ -1460,6 +1479,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                   />
                   <Input
                     label="Upscale by"
+                    id="hiresUpscaleBy"
                     name="hiresUpscaleBy"
                     type="text"
                     placeholder="Upscale by"
@@ -1474,6 +1494,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                   />
                   <Input
                     label="Hires steps"
+                    id="hiresUpscaleSteps"
                     name="hiresUpscaleSteps"
                     type="text"
                     placeholder="Hires steps"
@@ -1491,6 +1512,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                   />
                   <Input
                     label="Denoising strength"
+                    id="denoisingStrength"
                     name="denoisingStrength"
                     type="text"
                     placeholder="Denoising strength"
@@ -1508,6 +1530,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                   />
                   <Input
                     label="VAE"
+                    id="vae"
                     name="vae"
                     type="text"
                     placeholder="VAE"

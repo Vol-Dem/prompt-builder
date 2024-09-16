@@ -80,9 +80,7 @@ const Prompt = () => {
       <div className={`${classes.content}`}>
         <>
           <div className={classes.settings}>
-            <label htmlFor="prompt" className={classes.label}>
-              View:
-            </label>
+            <div className={classes.label}>View:</div>
             <div className={classes["mode-switch"]}>
               <button
                 data-type="text"

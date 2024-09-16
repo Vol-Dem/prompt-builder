@@ -169,6 +169,7 @@ const AuthForm = () => {
           )}
           <Input
             label="Email"
+            id="email"
             name="email"
             type="email"
             input={{ disabled: isLoading }}
@@ -193,6 +194,7 @@ const AuthForm = () => {
           />
           <Input
             label="Password"
+            id="password"
             name="password"
             type="password"
             input={{ disabled: isLoading }}

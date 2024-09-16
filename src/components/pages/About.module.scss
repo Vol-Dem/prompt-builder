@@ -1,9 +1,11 @@
 @use "../../variables/variables.scss" as var;
+@include var.animation-show;
 
 .about {
   margin: 3rem auto;
   max-width: 93rem;
   font-size: 1.6rem;
+  animation: show 0.6s ease-in forwards;
 
   &__h1 {
     margin-bottom: 2rem;
@@ -73,18 +75,21 @@
   &--col-1 {
     width: 80%;
     margin: 4rem auto;
+    // height: 34rem;
   }
 
   &--col-2 {
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
     width: 100%;
+    // height: 22rem;
   }
 
   &--col-3 {
     grid-template-columns: 1fr 1fr 1fr;
     gap: 2rem;
     width: 100%;
+    // height: 14rem;
   }
 }
 
@@ -96,7 +101,12 @@
   width: 100%;
   box-shadow: var.$box-shadow-dark;
   transition: all 0.2s ease-in;
+  padding-bottom: 49%;
   cursor: pointer;
+
+  // & img {
+  //   position: relative;
+  // }
 
   &:hover {
     transform: scale(1.005);
@@ -147,5 +157,31 @@
     width: 3.6rem;
     height: 3.6rem;
     color: var.$color-text-gray;
+  }
+}
+
+@media (max-width: 768px) {
+  .img-block--col-3 {
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    margin: 4rem auto;
+  }
+}
+
+@media (max-width: 540px) {
+  .img-block--col-1 {
+    width: 100%;
+  }
+
+  .img-block--col-2 {
+    grid-template-columns: 1fr;
+    width: 100%;
+    margin: 4rem auto;
+  }
+
+  .img-block--col-3 {
+    grid-template-columns: 1fr;
+    width: 100%;
+    margin: 4rem auto;
   }
 }

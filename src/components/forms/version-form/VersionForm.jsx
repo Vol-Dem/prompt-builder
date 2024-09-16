@@ -507,6 +507,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
       </div>
       <Input
         label="Version name"
+        id="name"
         name="name"
         type="text"
         placeholder="name"
@@ -522,6 +523,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
       />
       <Textarea
         label="Description"
+        id="description"
         name="description"
         rows="5"
         placeholder="Description"
@@ -538,6 +540,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         <FieldCategory title="Trigger words">
           <Input
             label="Activation tag"
+            id="main-tag"
             name="main-tag"
             type="text"
             placeholder="<lora:activation tag:1>"
@@ -553,6 +556,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
 
           <Textarea
             label="Trigger words"
+            id="triger"
             name="triger"
             type="text"
             placeholder="Trigger words"
@@ -567,8 +571,8 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
           />
           <Textarea
             label="Helper words"
+            id="helper-tags"
             name="helper-tags"
-            id=""
             rows="5"
             placeholder="Helper words"
             value={helperTagsInput.value}
@@ -582,8 +586,8 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
           ></Textarea>
           <Textarea
             label="Negative words"
+            id="negative-tags"
             name="negative-tags"
-            id=""
             rows="5"
             placeholder="Negative words"
             value={negativeTagsInput.value}
@@ -610,6 +614,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         <FieldCategory title="Info">
           <Input
             label="File name"
+            id="file-name"
             name="file-name"
             type="text"
             placeholder="File name"
@@ -626,6 +631,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
             <span className={classes["weight__label"]}>Weight</span>
             <div className={classes.weight}>
               <InputNumber
+                id="minWeight"
                 name="minWeight"
                 type="number"
                 step={0.1}
@@ -641,6 +647,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
                 showError={showErrorMessage}
               />
               <InputNumber
+                id="maxWeight"
                 name="maxWeight"
                 type="number"
                 step={0.1}
@@ -656,6 +663,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
                 showError={showErrorMessage}
               />
               <InputNumber
+                id="weight"
                 name="weight"
                 type="number"
                 step={0.1}
@@ -674,6 +682,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
           </div>
           <Input
             label="Image size"
+            id="size"
             name="size"
             type="text"
             placeholder="Image size"
@@ -690,6 +699,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
             <>
               <Input
                 label="Sampling method"
+                id="sampler"
                 name="sampler"
                 type="text"
                 placeholder="Sampling method"
@@ -704,6 +714,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
               />
               <Input
                 label="Sampling steps"
+                id="steps"
                 name="steps"
                 type="text"
                 placeholder="Sampling steps"
@@ -719,6 +730,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
 
               <Input
                 label="CFG Scale"
+                id="cfgScale"
                 name="cfgScale"
                 type="text"
                 placeholder="CFG Scale"
@@ -733,6 +745,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
               />
               <Input
                 label="Upscaler"
+                id="hiresUpscaler"
                 name="hiresUpscaler"
                 type="text"
                 placeholder="Upscaler"
@@ -747,6 +760,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
               />
               <Input
                 label="Upscale by"
+                id="hiresUpscaleBy"
                 name="hiresUpscaleBy"
                 type="text"
                 placeholder="Upscale by"
@@ -761,6 +775,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
               />
               <Input
                 label="Hires steps"
+                id="hiresUpscaleSteps"
                 name="hiresUpscaleSteps"
                 type="text"
                 placeholder="Hires steps"
@@ -775,6 +790,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
               />
               <Input
                 label="Denoising strength"
+                id="denoisingStrength"
                 name="denoisingStrength"
                 type="text"
                 placeholder="Denoising strength"
@@ -789,6 +805,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
               />
               <Input
                 label="VAE"
+                id="vae"
                 name="vae"
                 type="text"
                 placeholder="VAE"

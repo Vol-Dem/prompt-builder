@@ -347,6 +347,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
           <FieldCategory>
             <Input
               label="Activation tag"
+              id="main-tag"
               name="main-tag"
               type="text"
               placeholder="<lora:activation tag:1>"
@@ -361,6 +362,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
             />
             <Textarea
               label="Trigger words"
+              id="triger"
               name="triger"
               type="text"
               rows="4"
@@ -376,8 +378,8 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
             />
             <Textarea
               label="Helper words"
+              id="helper-tags"
               name="helper-tags"
-              id=""
               rows="4"
               placeholder="Helper words"
               value={helperTagsInput.value}
@@ -391,8 +393,8 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
             ></Textarea>
             <Textarea
               label="Negative words"
+              id="negative-tags"
               name="negative-tags"
-              id=""
               rows="4"
               placeholder="Negative words"
               value={negativeTagsInput.value}

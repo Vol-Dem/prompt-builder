@@ -125,6 +125,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
     <form className={classes["form"]} onSubmit={submitHandler}>
       <Select
         label="Type"
+        id="type"
         name="type"
         selected={promptType}
         onChange={(value) => {
@@ -134,6 +135,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
       />
       <Fieldset legend="Preset">
         <Input
+          id="preset-name"
           placeholder="Name"
           value={presetName.value}
           onChange={(e, isValid) => {
@@ -146,6 +148,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
           showError={showErrorMessage}
         />
         <Textarea
+          id="preset-words"
           placeholder="Trigger words"
           value={presetWords.value}
           onChange={(e, isValid) => {

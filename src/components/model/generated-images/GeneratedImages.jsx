@@ -669,7 +669,8 @@ const GeneratedImages = ({ customData }) => {
         <Buttton className={classes["button-add"]} onClick={addImgByIdHandler}>
           Add Image by ID
         </Buttton>
-        {curExampleImgsType === "all" && (
+        {/* SORT BUG TEMP DISABLED */}
+        {/* {curExampleImgsType === "all" && (
           <div className={classes.sort}>
             <span>Sort: </span>
             <select
@@ -688,7 +689,7 @@ const GeneratedImages = ({ customData }) => {
               <option value="Most Reactions">Most Reactions</option>
             </select>
           </div>
-        )}
+        )} */}
       </div>
       <div
         className={classes["versions"]}

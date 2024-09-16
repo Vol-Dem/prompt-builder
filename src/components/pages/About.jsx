@@ -13,6 +13,7 @@ import CrossSvg from "../../assets/CrossSvg";
 import Bars2Svg from "../../assets/Bars2Svg";
 import Bars4Svg from "../../assets/Bars4Svg";
 import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
+import Image from "../ui/image/Image";
 
 const About = ({ title }) => {
   const [fullViewIsOpen, setFullViewIsOpen] = useState(false);
@@ -45,9 +46,8 @@ const About = ({ title }) => {
         so, you can use the generated prompt in any web interface or for online
         generation on Civitai.
       </p>
-
       <div className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}>
-        <img
+        <Image
           onClick={openFullVeiwHandler}
           className={classes["img"]}
           src={Image1}
@@ -55,7 +55,7 @@ const About = ({ title }) => {
           alt=""
         />
 
-        <img
+        <Image
           onClick={openFullVeiwHandler}
           className={classes["img"]}
           src={Image2}
@@ -275,7 +275,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/3-new-resource.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/3-new-resource.jpg")}
@@ -301,7 +301,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/4-add-model.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/4-add-model.jpg")}
@@ -333,7 +333,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/5-added-models.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/5-added-models.jpg")}
@@ -365,7 +365,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/6-prompt.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/6-prompt.jpg")}
@@ -392,7 +392,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/7-tags.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/7-tags.jpg")}
@@ -429,7 +429,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/8-presets-1.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/8-presets-1.jpg")}
@@ -441,7 +441,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/8-presets-2.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/8-presets-2.jpg")}
@@ -453,7 +453,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/8-presets-3.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/8-presets-3.jpg")}
@@ -481,7 +481,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/9-model-settings.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/9-model-settings.jpg")}
@@ -506,7 +506,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/10-general-settings.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/10-general-settings.jpg")}
@@ -532,7 +532,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/11-versions-settings-1.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/11-versions-settings-1.jpg")}
@@ -544,7 +544,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/11-versions-settings-2.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/11-versions-settings-2.jpg")}
@@ -571,7 +571,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/12-tag-sets-1.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/12-tag-sets-1.jpg")}
@@ -583,7 +583,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/12-tag-sets-2.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/12-tag-sets-2.jpg")}
@@ -604,7 +604,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/12-tag-sets-12.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/12-tag-sets-12.jpg")}
@@ -616,7 +616,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/12-tag-sets-22.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/12-tag-sets-22.jpg")}
@@ -650,7 +650,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/12-tag-sets-3.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/12-tag-sets-3.jpg")}
@@ -662,7 +662,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/12-tag-sets-4.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/12-tag-sets-4.jpg")}
@@ -698,7 +698,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/13-model-page-1.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/13-model-page-1.jpg")}
@@ -719,7 +719,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/13-model-page-2.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/13-model-page-2.jpg")}
@@ -756,7 +756,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/14-img-examples-1.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/14-img-examples-1.jpg")}
@@ -781,7 +781,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/14-img-examples-2.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/14-img-examples-2.jpg")}
@@ -805,7 +805,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/14-img-examples-5.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/14-img-examples-5.jpg")}
@@ -817,7 +817,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/14-img-examples-52.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/14-img-examples-52.jpg")}
@@ -850,7 +850,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/14-img-examples-3.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/14-img-examples-3.jpg")}
@@ -862,7 +862,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/14-img-examples-4.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/14-img-examples-4.jpg")}
@@ -930,7 +930,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/14-img-examples-resources.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/14-img-examples-resources.jpg")}
@@ -963,7 +963,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/15-queue.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/15-queue.jpg")}
@@ -996,7 +996,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/16-nsfw.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/16-nsfw.jpg")}
@@ -1035,7 +1035,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/17-search.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/17-search.jpg")}
@@ -1081,7 +1081,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/18-sidebar-1.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/18-sidebar-1.jpg")}
@@ -1108,7 +1108,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/18-sidebar-2.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/18-sidebar-2.jpg")}
@@ -1155,7 +1155,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/19-category-edit-1.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/19-category-edit-1.jpg")}
@@ -1167,7 +1167,7 @@ const About = ({ title }) => {
               srcSet={require("../../assets/about/19-category-edit-2.webp")}
               type="image/webp"
             />
-            <img
+            <Image
               onClick={openFullVeiwHandler}
               className={classes["img"]}
               src={require("../../assets/about/19-category-edit-2.jpg")}
