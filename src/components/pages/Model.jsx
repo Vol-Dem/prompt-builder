@@ -25,6 +25,7 @@ import ButtonTertiary from "../ui/ButtonTertiary";
 import {
   AUTH_ERROR_MESSAGE,
   DEF_ERROR_MESSAGE,
+  INITIAL_IMG_LOADING_MESSAGE,
   // LONG_LOADING_WARNING_MESSAGE,
 } from "../../variables/constants";
 import BackSvg from "../../assets/BackSvg";
@@ -46,6 +47,7 @@ const Model = ({ title }) => {
   const [curVersionImages, setCurVersionImages] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [imageMessage, setImageMessage] = useState("");
   // const [warningMessage, setWarningMessage] = useState("");
   const { modelId } = useParams();
   const model = useSelector((state) => state.model.model);
@@ -183,6 +185,7 @@ const Model = ({ title }) => {
         } else {
           ///LOAD DEFAULT IMAGES FROM MODEL
           // setDefaultVersionImages();
+          setImageMessage(INITIAL_IMG_LOADING_MESSAGE);
           setCurVersionImagesIsLoading(false);
         }
       } catch (err) {
@@ -562,7 +565,12 @@ const Model = ({ title }) => {
               !curVersionImagesIsLoading &&
               modelImagesHtml}
             {curVersionImagesIsLoading && <Spinner />}
+            {!curVersionImages.filteredItems?.length &&
+              !curVersionImagesIsLoading && (
+                <div className={classes["img-message"]}>{imageMessage}</div>
+              )}
           </div>
+
           <div className={classes["info-container"]}>
             <ModelInfo customData={curCustomVersionData} />
             <ModelTags

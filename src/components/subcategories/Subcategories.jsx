@@ -61,16 +61,18 @@ const Subcategories = () => {
 
   return (
     <div className={classes.category}>
-      <div className={classes["subcategories-container"]}>
-        <ul className={classes["subcategories"]}>{subcategoriesHtml}</ul>
-        <ButtonTertiary
-          className={classes["subcategories__edit"]}
-          type="button"
-          onClick={editCategoriesHandler}
-        >
-          <EditSvg />
-        </ButtonTertiary>
-      </div>
+      {!!subcategoriesData?.length && (
+        <div className={classes["subcategories-container"]}>
+          <ul className={classes["subcategories"]}>{subcategoriesHtml}</ul>
+          <ButtonTertiary
+            className={classes["subcategories__edit"]}
+            type="button"
+            onClick={editCategoriesHandler}
+          >
+            <EditSvg />
+          </ButtonTertiary>
+        </div>
+      )}
 
       {activeSubcategory && <ModelsList />}
       {editIsOpen && (

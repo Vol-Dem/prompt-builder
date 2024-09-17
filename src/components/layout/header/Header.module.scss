@@ -35,11 +35,13 @@
 
 .header--fixed-open ~ main {
   padding-top: 255.2px;
+  padding-top: 278px;
 }
 
 .header--fixed-closed ~ main {
   padding-top: 50px;
   padding-top: 90px;
+  padding-top: 70px;
 }
 // .header--fixed-open[style="transition: all 0.4s ease 0s;"] ~ main {
 //   padding-top: 50px;

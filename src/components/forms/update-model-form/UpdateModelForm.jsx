@@ -43,6 +43,7 @@ import ButtonTertiary from "../../ui/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { modelActions } from "../../../store/model";
+import ExtendedInput from "../../ui/ExtendedInput";
 
 const firestore = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp);
@@ -266,11 +267,13 @@ const UpdateModelForm = ({ modelData, id }) => {
     if (!id) {
       return;
     }
-    let curId = id;
+    let curId = id?.toLowerCase();
     let mainIdExists;
 
     //Check if category id is exists
-    mainIdExists = categoriesData?.find((category) => category.id === curId);
+    mainIdExists = categoriesData?.find(
+      (category) => category.id?.toLowerCase() === curId
+    );
 
     while (mainIdExists) {
       const idArr = curId.split("-");
@@ -629,7 +632,8 @@ const UpdateModelForm = ({ modelData, id }) => {
             let mainId;
             let subIds;
             const mainCategoryData = categories[modelType]?.find(
-              (category) => category.name === main
+              // (category) => category.name === main
+              (category) => category.name?.toLowerCase() === main?.toLowerCase()
             );
 
             if (!mainCategoryData) {
@@ -652,7 +656,9 @@ const UpdateModelForm = ({ modelData, id }) => {
               subIds = [];
               const newSubcategoriesData = sub.flatMap((subcategory) => {
                 const subExists = mainCategoryData.subcategories.find(
-                  (oldSucategories) => oldSucategories.name === subcategory
+                  (oldSucategories) =>
+                    oldSucategories.name?.toLowerCase() ===
+                    subcategory?.toLowerCase()
                 );
 
                 if (!subExists) {

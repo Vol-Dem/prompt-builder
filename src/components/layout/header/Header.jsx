@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import classes from "./Header.module.scss";
 import { useSelector } from "react-redux";
 
+const fixedSwitchHeight = 10;
+
 const Header = (props) => {
   const [isFixed, setIsFixed] = useState(false);
   const sidePanelIsOpen = useSelector((state) => state.used.panelIsOpen);
@@ -12,9 +14,10 @@ const Header = (props) => {
   useEffect(() => {
     const scrollHandler = () => {
       const scrollToTop = document.documentElement.scrollTop;
-      setIsFixed(scrollToTop > 255);
 
-      if (scrollToTop > 255) {
+      setIsFixed(scrollToTop > fixedSwitchHeight);
+
+      if (scrollToTop > fixedSwitchHeight) {
         if (transitionRef?.current) {
           clearTimeout(transitionRef.current);
         }
@@ -32,7 +35,7 @@ const Header = (props) => {
       document.removeEventListener("scroll", scrollHandler);
       clearTimeout(transitionRef?.current);
     };
-  }, [sidePanelIsOpen]);
+  }, [sidePanelIsOpen, promptIsOpen]);
 
   return (
     <header

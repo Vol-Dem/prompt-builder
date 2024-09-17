@@ -42,3 +42,5 @@ export const EMPTY_ERROR_MESSAGE =
   "No matching images found. Try to switch the NSFW filter or the related checkbox.";
 export const OFFLINE_ERROR_MESSAGE =
   "Internet connection lost. Check your connection settings";
+export const INITIAL_IMG_LOADING_MESSAGE =
+  "We are loading images for this model from Civitai so that you can then access images and prompts. This may take some time only the first time. Try refreshing the page in a few moments.";
