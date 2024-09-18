@@ -9,8 +9,6 @@ import FolderSvg from "../../../assets/FolderSvg";
 import PlusSvg from "../../../assets/PlusSvg";
 import useIntersection from "../../../hooks/use-intersection";
 
-const stepsAmount = 2;
-
 const ImageSidePanelGuide = (props) => {
   const [guideStepIndex, setGuideStepIndex] = useState(0);
   const [guideIsOpen, setGuideIsOpen] = useState(true);
@@ -107,7 +105,7 @@ const ImageSidePanelGuide = (props) => {
                   <ArrowLeftSvg />
                 </ButtonTertiary>
                 <span>
-                  {guideSteps[guideStepIndex].step} / {stepsAmount}
+                  {guideSteps[guideStepIndex].step} / {guideSteps.length}
                 </span>
                 <ButtonTertiary
                   className={classes["guide__controls-btn"]}

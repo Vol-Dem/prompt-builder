@@ -7,6 +7,7 @@ import Modal from "../../ui/Modal";
 import TagsForm from "../../forms/tags-form/TagsForm";
 import EditSvg from "../../../assets/EditSvg";
 import Tooltip from "../../ui/Tooltip";
+import EditTWGuide from "../../ui/guide/EditTWGuide";
 
 const ModelTags = ({ customData, modelPreview }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -57,14 +58,17 @@ const ModelTags = ({ customData, modelPreview }) => {
                 </div>
               </div>
             )}
-            <button
-              type="button"
-              className={classes["tags__btn-edit"]}
-              onClick={openEditHandler}
-            >
-              <span className={classes["tags__btn-edit-name"]}>Edit...</span>
-              <EditSvg />
-            </button>
+            <div>
+              <button
+                type="button"
+                className={classes["tags__btn-edit"]}
+                onClick={openEditHandler}
+              >
+                <span className={classes["tags__btn-edit-name"]}>Edit...</span>
+                <EditSvg />
+              </button>
+              <EditTWGuide />
+            </div>
           </div>
           {(!!curVersion?.trainedWords?.length ||
             !!customData?.trainedWords?.length) && (

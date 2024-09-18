@@ -1,30 +1,29 @@
-import classes from "./TopPanelGuide.module.scss";
-import { useEffect, useState } from "react";
+import classes from "./EditTWGuide.module.scss";
+import { useEffect, useRef, useState } from "react";
 import ArrowRightSvg from "../../../assets/ArrowRight";
 import ButtonTertiary from "../ButtonTertiary";
 import ArrowLeftSvg from "../../../assets/ArrowLeft";
 import { useDispatch, useSelector } from "react-redux";
 import { setGuideData } from "../../../store/auth";
+import useIntersection from "../../../hooks/use-intersection";
 
 const guideSteps = [
   {
     step: 1,
-    text: "Click to switch between tag and text mode. The text will be automatically split into tags",
-  },
-  {
-    step: 2,
-    text: "Add commonly used trigger words into presets. Create presets for both positive and negative words",
+    text: "Here you can add tag sets and edit version trigger words",
   },
 ];
 
-const TopPanelGuide = (props) => {
+const EditTWGuide = (props) => {
   const [guideStepIndex, setGuideStepIndex] = useState(0);
   const [guideIsOpen, setGuideIsOpen] = useState(false);
   const guideState = useSelector((state) => state.auth.guide);
   const dispatch = useDispatch();
+  const guideRef = useRef(null);
+  const isIntersecting = useIntersection(guideRef, false);
 
   useEffect(() => {
-    setGuideIsOpen(!guideState?.topPanel);
+    setGuideIsOpen(!guideState?.editTW);
   }, [guideState]);
 
   const nextStepHandler = () => {
@@ -49,12 +48,12 @@ const TopPanelGuide = (props) => {
 
   const closeGuideHandler = () => {
     setGuideIsOpen(false);
-    dispatch(setGuideData({ topPanel: true }));
+    dispatch(setGuideData({ editTW: true }));
   };
 
   return (
-    <>
-      {guideIsOpen && (
+    <div ref={guideRef}>
+      {guideIsOpen && isIntersecting && (
         <div
           className={`${classes["guide-container"]} ${
             props?.className ? props?.className : ""
@@ -69,29 +68,30 @@ const TopPanelGuide = (props) => {
               <p className={classes["guide__content__text"]}>
                 {guideSteps[guideStepIndex].text}
               </p>
-              {/* <ArrowUp className={classes["guide__arrow-up"]} />
-               */}
-              {/* <ArrowDownSvg className={classes["guide__arrow-down"]} /> */}
             </div>
             <div className={classes["guide__controls"]}>
               <div className={classes["guide__controls-steps"]}>
-                <ButtonTertiary
-                  className={classes["guide__controls-btn"]}
-                  onClick={prevStepHandler}
-                  title="Previous tip"
-                >
-                  <ArrowLeftSvg />
-                </ButtonTertiary>
-                <span>
-                  {guideSteps[guideStepIndex].step} / {guideSteps.length}
-                </span>
-                <ButtonTertiary
-                  className={classes["guide__controls-btn"]}
-                  onClick={nextStepHandler}
-                  title="Next tip"
-                >
-                  <ArrowRightSvg />
-                </ButtonTertiary>
+                {guideSteps.length > 1 && (
+                  <>
+                    <ButtonTertiary
+                      className={classes["guide__controls-btn"]}
+                      onClick={prevStepHandler}
+                      title="Previous tip"
+                    >
+                      <ArrowLeftSvg />
+                    </ButtonTertiary>
+                    <span>
+                      {guideSteps[guideStepIndex].step} / {guideSteps.length}
+                    </span>
+                    <ButtonTertiary
+                      className={classes["guide__controls-btn"]}
+                      onClick={nextStepHandler}
+                      title="Next tip"
+                    >
+                      <ArrowRightSvg />
+                    </ButtonTertiary>
+                  </>
+                )}
               </div>
               <ButtonTertiary onClick={closeGuideHandler}>close</ButtonTertiary>
             </div>
@@ -99,8 +99,8 @@ const TopPanelGuide = (props) => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
-export default TopPanelGuide;
+export default EditTWGuide;
