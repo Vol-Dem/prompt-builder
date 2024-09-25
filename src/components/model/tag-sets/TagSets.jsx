@@ -1,9 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import classes from "./TagSets.module.scss";
 import TagList from "../../tag-list/TagList";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Image from "../../ui/image/Image";
 import Buttton from "../../ui/Button";
+import TagSetGuide from "../../ui/guide/model/TagSetGuide";
+import { GUIDE_STEP_MODEL_TAGSET } from "../../../variables/constants";
+import { guideActions } from "../../../store/guide";
 
 const defVisibleTags = 2;
 
@@ -15,8 +18,24 @@ const TagSets = ({ customData, defaultData }) => {
   const [tagsetListHeight, setTagsetListHeight] = useState(500);
   const model = useSelector((state) => state.model.model);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
+  const guideActive = useSelector((state) => state.guide.model.active);
+  const guideStep = useSelector((state) => state.guide.model.step);
   const tagSetItemRef = useRef();
   const tagSetListRef = useRef();
+  const dispatch = useDispatch();
+  const guideTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    if (guideActive && guideStep === GUIDE_STEP_MODEL_TAGSET) {
+      if (guideTimeoutRef.current) {
+        clearTimeout(guideTimeoutRef.current);
+      }
+      guideTimeoutRef.current = setTimeout(() => {
+        if (!tagSets?.length)
+          dispatch(guideActions.guideNextStep({ type: "model" }));
+      }, 1000);
+    }
+  }, [guideStep, dispatch, guideActive, tagSets]);
 
   useEffect(() => {
     const itemHeight = tagSetItemRef?.current?.offsetHeight;
@@ -107,7 +126,7 @@ const TagSets = ({ customData, defaultData }) => {
   };
 
   return (
-    <div>
+    <div className={classes["tag-sets__wrap"]}>
       {!!tagSets?.length && <div className={classes.title}>Tag sets:</div>}
       {!!tagSets?.length && (
         <div
@@ -143,6 +162,7 @@ const TagSets = ({ customData, defaultData }) => {
           {!tagSetsIsOpen ? "Show All" : "Hide"}
         </Buttton>
       )}
+      {!!tagSets?.length && <TagSetGuide />}
     </div>
   );
 };

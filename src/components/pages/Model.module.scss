@@ -65,17 +65,23 @@
 }
 
 .title-container {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .img-container {
+  position: relative;
   display: flex;
   align-items: center;
   // justify-content: center;
   height: 40rem;
   width: 100%;
+
+  &--guide {
+    @include var.pulse;
+  }
 }
 
 .title {

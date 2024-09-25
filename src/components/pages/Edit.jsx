@@ -7,7 +7,14 @@ import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
 import firebaseApp from "../../firebase-config";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
-import { DEF_ERROR_MESSAGE } from "../../variables/constants";
+import {
+  DEF_ERROR_MESSAGE,
+  GUIDE_STEP_MODEL_EDIT,
+} from "../../variables/constants";
+import { guideActions } from "../../store/guide";
+import Modal from "../ui/Modal";
+import OutroGuide from "../ui/guide/OutroGuide";
+import classes from "./Edit.module.scss";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -18,9 +25,21 @@ const Edit = ({ title }) => {
   const model = useSelector((state) => state.model.model);
   const isAuth = useSelector((state) => state.auth.user.uid);
   const uid = useSelector((state) => state.auth.user.uid);
+  const modelGuideState = useSelector((state) => state.guide.model);
+  const guideOutroIsActive = useSelector((state) => state.guide.outroIsActive);
   const dispatch = useDispatch();
 
   const { modelId } = useParams();
+
+  useEffect(() => {
+    if (
+      modelGuideState?.active &&
+      modelGuideState?.step === GUIDE_STEP_MODEL_EDIT
+    ) {
+      dispatch(guideActions.setGuideActive({ type: "model", value: false }));
+      dispatch(guideActions.setGuideActive({ type: "edit", value: true }));
+    }
+  }, [modelGuideState, dispatch]);
 
   useEffect(() => {
     document.title = `Edit - ${model?.name}` || title;
@@ -104,6 +123,16 @@ const Edit = ({ title }) => {
         <ErrorMessage>{errorMessage}</ErrorMessage>
       )}
       {isLoading && <Spinner />}
+      {guideOutroIsActive && (
+        <Modal
+          onClose={() => {
+            dispatch(guideActions.setOutroIsActive(false));
+          }}
+          disableClass={classes["guide-outro"]}
+        >
+          <OutroGuide />
+        </Modal>
+      )}
     </div>
   );
 };

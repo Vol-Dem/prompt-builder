@@ -1,0 +1,56 @@
+@use "./../../../../variables/variables.scss" as var;
+@include var.animation-show;
+
+.guide {
+  &__content {
+    &--0 {
+      top: -7.5rem;
+      left: 10.2rem;
+    }
+
+    &--1 {
+      top: -7.5rem;
+      left: 2rem;
+    }
+
+    &--2 {
+      top: -11rem;
+      right: 0rem;
+    }
+  }
+
+  &__comment {
+    font-size: 1.4rem;
+    color: var.$color-text-gray;
+  }
+}
+
+.btn-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 1px solid rgba(228, 201, 0, 0.7);
+  border-radius: 6px;
+  //   color: var.$color-text-white;
+  color: #e4c800;
+  transform: translateY(1px);
+
+  & svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+.svg {
+  margin-bottom: -0.3rem;
+  width: 2rem;
+  height: 2rem;
+}
+
+@media (max-width: 1000px) {
+  .guide__content--2 {
+    top: -14rem;
+  }
+}

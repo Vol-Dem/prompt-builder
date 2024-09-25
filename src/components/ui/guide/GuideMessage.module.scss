@@ -2,13 +2,34 @@
 @include var.animation-show;
 
 .guide-container {
-  position: relative;
+  position: absolute;
+  transition: all 0.3s;
 }
 
 .guide {
-  position: absolute;
+  position: relative;
   animation: show 1.3s ease;
   z-index: 5;
+  width: 100%;
+
+  &__close {
+    background: none;
+    border: none;
+    position: absolute;
+    cursor: pointer;
+    top: 0.2rem;
+    right: 0.6rem;
+    color: var.$color-text-gray;
+    transition: all 0.3s;
+
+    & svg {
+      width: 2.4rem;
+    }
+
+    &:hover {
+      color: lighten(var.$color-text-gray, 20%);
+    }
+  }
 
   &__arrow-up {
     position: absolute;
@@ -38,16 +59,62 @@
 
   &__arrow-bg {
     position: absolute;
-    top: -1rem;
-    left: 2.1rem;
     transform: rotate(45deg);
     // border: 1px solid var.$color-text-white;
     box-shadow: var.$box-shadow;
     box-shadow: 0rem 0rem 0.5rem rgb(255 255 255 / 30%);
+    box-shadow: 0 0 10px #dfaf07;
+    border: 1px solid rgba(223, 176, 7, 0.8);
     width: 2rem;
     height: 2rem;
     background-color: #28273a;
     z-index: -1;
+
+    &--0 {
+      display: none;
+    }
+
+    &--1 {
+      top: -1rem;
+      left: 2.1rem;
+    }
+
+    &--2 {
+      top: -1rem;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    &--3 {
+      top: -1rem;
+      right: 2.1rem;
+    }
+
+    &--4 {
+      top: 1.4rem;
+      right: -1rem;
+    }
+
+    &--5 {
+      bottom: -1rem;
+      right: 2.1rem;
+    }
+
+    &--6 {
+      bottom: -1rem;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    &--7 {
+      bottom: -1rem;
+      left: 2.1rem;
+    }
+
+    &--8 {
+      top: 1.4rem;
+      left: -1rem;
+    }
   }
 
   &__controls {
@@ -74,10 +141,56 @@
   }
 
   &__controls-btn {
-    padding: 0.2rem;
-    width: 2rem;
+    position: relative;
+    padding: 0.1rem 0.4rem 0.1rem 0.8rem;
+    // box-shadow: 0 0 2px #dfaf07;
+    // width: 5rem;
     height: 2rem;
     border-radius: 0.6rem;
+
+    &:disabled {
+      background: transparent;
+      color: #58555e;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    &:disabled:hover {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    &--next {
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        border-radius: 6px;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 6px #dfaf07;
+        box-sizing: initial;
+        //   z-index: -1;
+      }
+      &::before {
+        // border: 5px solid #dfaf07;
+        box-shadow: 0 0 6px #dfaf07;
+        animation: pulse2 2s ease-in-out infinite;
+      }
+      &::after {
+        border: 1px solid #dfaf07;
+        transform: translate(-50%, -50%);
+        opacity: 0.8;
+        // animation: pulse2 3s 1s ease-in-out infinite;
+      }
+    }
+  }
+
+  &__controls-btn-close {
+    color: var.$color-text-gray;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    // background-color: #dfaf07;
   }
 
   &__content {
@@ -85,39 +198,46 @@
     height: auto;
     // transform: translate(-50%, -50%);
     z-index: 40;
-    // width: 28rem;
-    max-width: 95vw;
+    width: 24rem;
+    width: 25.7rem;
+    max-width: 26rem;
     // min-width: 40rem;
-    max-height: 95vh;
+    // max-height: 95vh;
     background-color: #28273a;
     border-radius: 10px;
     // padding: 0 0 0.6rem 0;
     // overflow-y: scroll;
     // @include var.custom-scroll;
     // box-shadow: var.$box-shadow;
-    box-shadow: 0rem 0rem 0.5rem rgb(255 255 255 / 30%);
+    box-shadow: 0rem 0rem 0.8rem rgb(255 255 255 / 90%);
+    box-shadow: 0 0 10px #dfaf07;
+    border: 1px solid rgba(223, 176, 7, 0.8);
     transition: all 0.3s ease-in;
 
-    &--1 {
-      // top: -10.2rem;
-      top: 5.8rem;
-      left: 0;
-      max-width: 25rem;
-    }
+    // &--1 {
+    //   // top: -10.2rem;
+    //   top: 5.8rem;
+    //   left: 0;
+    //   max-width: 25rem;
+    // }
 
-    &--2 {
-      top: 8.6rem;
-      left: 20rem;
-      max-width: 25rem;
-    }
+    // &--2 {
+    //   top: 8.6rem;
+    //   left: 20rem;
+    //   max-width: 25rem;
+    // }
 
     &__text {
       //   margin-bottom: 1.6rem;
       font-size: 1.6rem;
+      color: var.$color-text-white;
       //   background-color: var.$color-background-primary;
       background-color: #28273a;
       border-radius: 10px 10px 0 0;
-      padding: 0.6rem 1.2rem;
+      //   padding: 0.6rem 1.2rem;
+      padding: 0.6rem 2.9rem 0.6rem 1.2rem;
+      width: 100%;
+      //   color: var.$color-text-gray;
       //   border-radius: 10px;
       //   box-shadow: var.$box-shadow;
     }
@@ -148,30 +268,30 @@
 
       & svg {
         flex-shrink: 0;
-        width: 1.8rem;
-        height: 1.8rem;
+        // width: 1.8rem;
+        // height: 1.8rem;
       }
     }
   }
 
-  &__close {
-    position: fixed;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    top: 0.6rem;
-    right: 32rem;
-    color: #a8a8a8;
-    transition: all 0.3s;
+  //   &__close {
+  //     position: fixed;
+  //     cursor: pointer;
+  //     display: flex;
+  //     align-items: center;
+  //     top: 0.6rem;
+  //     right: 32rem;
+  //     color: #a8a8a8;
+  //     transition: all 0.3s;
 
-    & svg {
-      width: 2.4rem;
-    }
+  //     & svg {
+  //       width: 2.4rem;
+  //     }
 
-    &:hover {
-      color: lighten(#a8a8a8, 20%);
-    }
-  }
+  //     &:hover {
+  //       color: lighten(#a8a8a8, 20%);
+  //     }
+  //   }
 
   &__cross {
     display: inline-block;
@@ -246,15 +366,6 @@
 }
 
 @media (max-width: 600px) {
-  // .guide__content--1 {
-  //   left: 1rem;
-  // }
-
-  // .guide__content--1 .guide__arrow-bg {
-  //   top: -1rem;
-  //   left: 6rem;
-  // }
-
   .guide__content--2 {
     left: 3rem;
   }
@@ -262,5 +373,11 @@
   .guide__content--2 .guide__arrow-bg {
     top: -1rem;
     left: 19.1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .guide-container {
+    display: none;
   }
 }

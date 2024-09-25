@@ -1,0 +1,40 @@
+@use "./../../../variables/variables.scss" as var;
+
+.container {
+  max-width: 50rem;
+}
+
+.btns {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.btn {
+  width: 14rem;
+
+  &--close {
+    background-color: var.$color-background-red;
+
+    &:hover {
+      background-color: darken(var.$color-background-red, 10%);
+    }
+  }
+}
+
+.title {
+  font-size: 2.4rem;
+  margin-bottom: 1.8rem;
+  padding-left: 1rem;
+  border-left: 5px solid var.$color-primary;
+}
+
+.text {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+}
+
+.link {
+  @include var.linkA;
+}

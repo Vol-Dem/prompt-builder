@@ -4,8 +4,14 @@ import { createPortal } from "react-dom";
 import LinkA from "../LinkA";
 import ArrowRightSvg from "../../../assets/ArrowRight";
 import ArrowUp from "../../../assets/ArrowUp";
+import ButtonTertiary from "../ButtonTertiary";
+import CopiedSvg from "../../../assets/CopiedSvg";
+import CopySvg from "../../../assets/CopySvg";
+import { useState } from "react";
 
 const Guide = (props) => {
+  const [copied, setCopied] = useState(false);
+
   // useEffect(() => {
   //   const scrollTop = document.documentElement.scrollTop;
   //   const disableScrollHandler = (e) => {
@@ -16,6 +22,14 @@ const Guide = (props) => {
   //     window.removeEventListener("scroll", disableScrollHandler);
   //   };
   // }, []);
+
+  const copyHandler = (e) => {
+    navigator.clipboard.writeText("727427");
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 1000);
+  };
 
   return (
     <>
@@ -62,7 +76,17 @@ const Guide = (props) => {
                     </LinkA>{" "}
                     <br />
                     <span className={classes["guide__content__comment"]}>
-                      To test use ID: 727427
+                      To test use ID:{" "}
+                      <ButtonTertiary
+                        className={`${classes["btn-copy"]} ${
+                          copied ? classes["btn-copy--copied"] : ""
+                        }`}
+                        onClick={copyHandler}
+                        title="Copy"
+                      >
+                        727427 {!copied && <CopySvg />}
+                        {copied && <CopiedSvg />}
+                      </ButtonTertiary>
                     </span>
                   </p>
 
@@ -82,6 +106,11 @@ const Guide = (props) => {
                 <li className={classes["guide__content__item"]}>
                   <p className={classes["guide__content__text"]}>
                     Enter the subcategories
+                    <br />
+                    <span className={classes["guide__content__comment"]}>
+                      You can add multiple subcategories <br /> by clicking
+                      "+add subcategory"
+                    </span>
                   </p>
 
                   <ArrowRightSvg />
@@ -90,7 +119,7 @@ const Guide = (props) => {
             )}
             {true && (
               <div className={classes["guide__close"]} onClick={props.onClose}>
-                <span>Close guide</span>
+                <span>Close</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"

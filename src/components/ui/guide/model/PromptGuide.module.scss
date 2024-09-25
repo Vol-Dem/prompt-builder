@@ -1,0 +1,63 @@
+@use "./../../../../variables/variables.scss" as var;
+@include var.animation-show;
+
+.guide__content {
+  &--default {
+    top: 3.5rem;
+    right: 1rem;
+  }
+
+  &--0 {
+    top: -0.1rem;
+    left: 18rem;
+  }
+
+  &--1 {
+    top: -0.1rem;
+    left: 25rem;
+  }
+
+  &--2 {
+    top: 6.4rem;
+    left: calc(100% - 30rem);
+  }
+}
+
+.svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  transform: translateY(2px);
+}
+
+@media (max-width: 1025px) {
+  .guide__content {
+    &--default {
+      top: 3.5rem;
+      right: 50%;
+      transform: translateX(50%);
+      z-index: 20;
+    }
+  }
+}
+
+@media (max-width: 540px) {
+  .guide__content {
+    &--1 {
+      left: 22rem;
+    }
+  }
+}
+
+@media (max-width: 460px) {
+  .guide__content {
+    &--0 {
+      left: 14rem;
+    }
+    &--1 {
+      left: 21rem;
+    }
+    &--2 {
+      top: 10rem;
+    }
+  }
+}

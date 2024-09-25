@@ -14,10 +14,15 @@
   list-style: none;
   //   max-height: 32rem;
   transition: all 0.4s;
+  // @include var.pulse;
 
   //   &--open {
   //     max-height: 200rem;
   //   }
+}
+
+.tag-sets__wrap {
+  position: relative;
 }
 
 .tag-sets__container {

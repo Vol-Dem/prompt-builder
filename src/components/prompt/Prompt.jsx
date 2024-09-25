@@ -8,7 +8,7 @@ import Presets from "../presets/Presets";
 import ArrowDownSvg from "../../assets/ArrowDownSvg";
 import ArrowUp from "../../assets/ArrowUp";
 import { authActions } from "../../store/auth";
-import TopPanelGuide from "../ui/guide/TopPanelGuide";
+import PromptGuide from "../ui/guide/model/PromptGuide";
 
 const Prompt = () => {
   const [copiedType, setCopiedType] = useState("");
@@ -134,7 +134,7 @@ const Prompt = () => {
               </div>
             </div>
           </div>
-          {promptIsOpen && <TopPanelGuide />}
+          <PromptGuide />
           <div className={classes.field}>
             {!promptTextMode && (
               <TagsTextarea

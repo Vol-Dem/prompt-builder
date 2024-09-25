@@ -25,8 +25,8 @@ const ExtendedInput = (props) => {
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [searchInput, setSearchInput] = useState("");
-  const [searchResultIsOpen, setSearchResultIsOpen] = useState(false);
-  const [searchResult, setSearchResult] = useState({});
+  // const [searchResultIsOpen, setSearchResultIsOpen] = useState(false);
+  // const [searchResult, setSearchResult] = useState({});
   const [categoriesSearchData, setCategoriesSearchData] = useState([]);
   const [subcategoriesSearchResult, setSubcategoriesSearchResult] = useState(
     []
@@ -72,9 +72,9 @@ const ExtendedInput = (props) => {
   }, [categories]);
 
   useEffect(() => {
-    const subcats = subcategoriesSearch(searchInput);
-    console.log(subcategoriesSearchResult);
-  }, [searchInput]);
+    subcategoriesSearch(searchInput);
+    // console.log(subcategoriesSearchResult);
+  }, [searchInput, subcategoriesSearch]);
 
   useEffect(() => {
     setShowErrorMessage(showError);

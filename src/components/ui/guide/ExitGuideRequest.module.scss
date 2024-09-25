@@ -1,0 +1,36 @@
+@use "./../../../variables/variables.scss" as var;
+
+.btn-exit {
+  background-color: var.$color-background-red;
+
+  &:hover {
+    background-color: darken(var.$color-background-red, 10%);
+  }
+}
+
+.modal {
+  padding: 2.4rem 3rem;
+}
+
+.exit-request {
+  width: 36rem;
+
+  &__message {
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  &__btn-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+}
+
+.spinner-container {
+  position: relative;
+  height: 3rem;
+}

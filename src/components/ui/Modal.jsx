@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import Card from "./Card";
 import classes from "./Modal.module.scss";
 import { createPortal } from "react-dom";
+import CrossSvg from "../../assets/CrossSvg";
 
 const Modal = (props) => {
   useEffect(() => {
@@ -22,7 +23,7 @@ const Modal = (props) => {
   return (
     <>
       {createPortal(
-        <div className={classes.test}>
+        <div className={`${props?.disableClass || ""}`}>
           <div
             className={`${classes.modal} ${classes["modal--backdrop"]}`}
             onClick={props.onClose}
@@ -35,20 +36,7 @@ const Modal = (props) => {
             {props.title && <h2 className={classes.title}>{props.title}</h2>}
             {props.children}
             <button className={classes["modal__close"]} onClick={props.onClose}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18 18 6M6 6l12 12"
-                />
-              </svg>
+              <CrossSvg />
             </button>
           </Card>
         </div>,

@@ -23,11 +23,13 @@ import ButtonTertiary from "../../ui/ButtonTertiary";
 import Spinner from "../../ui/Spinner";
 import {
   DEF_ERROR_MESSAGE,
+  GUIDE_STEP_EDIT_UPD_DEL,
   OFFLINE_ERROR_MESSAGE,
   UPDATE_MODEL_URL,
 } from "../../../variables/constants";
 import { modelActions } from "../../../store/model";
 import { tabActions } from "../../../store/tabs";
+import EditPageGuide from "../../ui/guide/edit/EditPageGuide";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -44,6 +46,8 @@ const ModelSettings = () => {
   const model = useSelector((state) => state.model.model);
   const uid = useSelector((state) => state.auth.user.uid);
   const curBaseModels = useSelector((state) => state.tabs.baseModels);
+  const guideHomeState = useSelector((state) => state.guide.edit);
+  const guideIsActive = useSelector((state) => state.guide.active);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -331,7 +335,15 @@ const ModelSettings = () => {
       <div className={classes.content}>
         {curTab === "general" && (
           <div>
-            <div className={classes["update"]}>
+            <div
+              className={`${classes["update"]} ${
+                guideIsActive &&
+                guideHomeState?.active &&
+                guideHomeState?.step === GUIDE_STEP_EDIT_UPD_DEL
+                  ? classes["update--guide"]
+                  : ""
+              }`}
+            >
               <Buttton
                 type="button"
                 onClick={updateModelHandler}
@@ -355,6 +367,7 @@ const ModelSettings = () => {
             )}
             {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
             <UpdateModelForm modelData={model} />
+            {guideIsActive && guideHomeState?.active && <EditPageGuide />}
           </div>
         )}
         {curTab === "versions" && (

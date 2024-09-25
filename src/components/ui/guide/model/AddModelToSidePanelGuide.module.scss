@@ -1,0 +1,62 @@
+@use "./../../../../variables/variables.scss" as var;
+@include var.animation-show;
+
+.guide__content {
+  &--0 {
+    top: 100%;
+    right: 6rem;
+    transform: translateY(-50%);
+  }
+
+  &--1 {
+    top: -0.1rem;
+    left: 18rem;
+  }
+
+  &--2 {
+    top: 3.4rem;
+    width: 24rem;
+  }
+}
+
+.btn-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 1px solid rgba(228, 201, 0, 0.7);
+  border-radius: 6px;
+  color: #e4c800;
+  transform: translateY(1px);
+
+  & svg {
+    width: 1.5rem;
+  }
+}
+
+@media (max-width: 1160px) {
+  .guide__content--2 {
+    // top: 7.6rem;
+  }
+}
+
+@media (max-width: 600px) {
+  // .guide__content--1 {
+  //   left: 1rem;
+  // }
+
+  // .guide__content--1 .guide__arrow-bg {
+  //   top: -1rem;
+  //   left: 6rem;
+  // }
+
+  .guide__content--2 {
+    left: 3rem;
+  }
+
+  .guide__content--2 .guide__arrow-bg {
+    top: -1rem;
+    left: 19.1rem;
+  }
+}

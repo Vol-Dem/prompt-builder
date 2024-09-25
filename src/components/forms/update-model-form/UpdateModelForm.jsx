@@ -5,8 +5,7 @@ import {
   doc,
   getDoc,
   getFirestore,
-  runTransaction,
-  setDoc,
+  writeBatch,
 } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,6 +26,7 @@ import {
   DEF_INPUT_ERROR_MESSAGE,
   DESCRIPTION_MAX_LENGTH,
   EXISTS_ERROR_MESSAGE,
+  GUIDE_STEP_EDIT_DEFAULT,
   NAME_MAX_LENGTH,
   NUMBER_MAX_LENGTH,
   OFFLINE_ERROR_MESSAGE,
@@ -43,7 +43,8 @@ import ButtonTertiary from "../../ui/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { modelActions } from "../../../store/model";
-import ExtendedInput from "../../ui/ExtendedInput";
+// import ExtendedInput from "../../ui/ExtendedInput";
+import EditDefaultGuide from "../../ui/guide/edit/EditDefaultGuide";
 
 const firestore = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp);
@@ -82,7 +83,6 @@ const subCatsDefData = {
 };
 
 const UpdateModelForm = ({ modelData, id }) => {
-  const [advancedSettings, setAdvancedSettings] = useState(false);
   const [modelIsSaving, setModelIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -190,6 +190,8 @@ const UpdateModelForm = ({ modelData, id }) => {
   const uid = useSelector((state) => state.auth.user.uid);
   const categories = useSelector((state) => state.tabs.categoriesData);
   const curBaseModels = useSelector((state) => state.tabs.baseModels);
+  const guideStep = useSelector((state) => state.guide.edit.step);
+  const guideIsActive = useSelector((state) => state.guide.active);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -439,48 +441,43 @@ const UpdateModelForm = ({ modelData, id }) => {
         modelId + ""
       );
 
-      const modelSnap = await getDoc(modelsRef);
+      // const modelSnap = await getDoc(modelsRef);
       const modelsPrevRefSnap = await getDoc(modelsPrevRef);
 
       // Throw error if user try to add existing model using new model form
-      if (modelSnap.exists() && modelsPrevRefSnap.exists() && !modelData) {
+      // if (modelSnap.exists() && modelsPrevRefSnap.exists() && !modelData) {
+      if (modelsPrevRefSnap.exists() && !modelData) {
         throw new Error(EXISTS_ERROR_MESSAGE);
       } else {
         if (!modelData) {
           //Upload model to database
-          // const saveModelRes = await fetch(
-          //   `${UPDATE_MODEL_URL}/updateModel?modelId=${
-          //     modelData?.id || modelId
-          //   }`
-          // );
           const updateModel = httpsCallable(functions, "updateModelCall");
-          const saveModelRes = await updateModel({
-            id: modelData?.id || modelId,
-          });
-          // .then((result) => {
-          //   // Read result of the Cloud Function.
-          //   /** @type {any} */
-          //   const data = result.data;
-          //   const sanitizedMessage = data.text;
+
+          updateModel({ id: modelData?.id || modelId });
+          // const saveModelRes = await updateModel({
+          //   id: modelData?.id || modelId,
           // });
+          // const saveModelResData = saveModelRes.data;
 
-          // const saveModelResData = await saveModelRes.json();
-          const saveModelResData = saveModelRes.data;
-          // console.log(saveModelRes);
-          // console.log(saveModelResData);
+          // if (!saveModelResData.modelId) {
+          //   throw new Error("Failed to upload");
+          // }
 
-          if (!saveModelResData.modelId) {
-            throw new Error("Failed to upload");
-          }
+          // const modelDefDataRef = doc(firestore, "models", `${modelId}`);
 
-          const modelDefDataRef = doc(firestore, "models", `${modelId}`);
+          // const docSnap = await getDoc(modelDefDataRef);
 
-          const docSnap = await getDoc(modelDefDataRef);
+          // if (docSnap.exists()) {
+          //   data = docSnap.data();
+          //   modelVersions = data?.modelVersions;
+          // }
 
-          if (docSnap.exists()) {
-            data = docSnap.data();
-            modelVersions = data?.modelVersions;
-          }
+          const responseCiv = await fetch(
+            `https://civitai.com/api/v1/models/${modelId}`
+          );
+
+          data = await responseCiv.json();
+          modelVersions = data?.modelVersions;
         } else {
           data = modelData.data;
           modelVersions = data?.modelVersions.filter((version) =>
@@ -603,126 +600,130 @@ const UpdateModelForm = ({ modelData, id }) => {
           ),
         ];
 
+        // Get a new write batch
+        const batch = writeBatch(firestore);
+
         let newCategory = false;
         let newSubcategory = false;
         let newBaseModel = false;
 
-        const { mainId, subIds } = await runTransaction(
-          firestore,
-          async (transaction) => {
-            const sfDoc = await transaction.get(userRef);
+        // const { mainId, subIds } = await runTransaction(
+        //   firestore,
+        //   async (transaction) => {
+        // const sfDoc = await transaction.get(userRef);
 
-            const categories = sfDoc?.data()?.categoriesById || {};
-            const curUserBaseModels = sfDoc?.data()?.baseModels || [];
+        // const categories = sfDoc?.data()?.categoriesById || {};
+        const curUserBaseModels = curBaseModels;
 
-            if (!curUserBaseModels?.length) {
+        if (!curUserBaseModels?.length) {
+          newBaseModel = true;
+        } else {
+          baseModels.forEach((baseModel) => {
+            const exists = curUserBaseModels.some(
+              (curBaseModel) => curBaseModel === baseModel
+            );
+            if (!exists) {
               newBaseModel = true;
-            } else {
-              baseModels.forEach((baseModel) => {
-                const exists = curUserBaseModels.some(
-                  (curBaseModel) => curBaseModel === baseModel
-                );
-                if (!exists) {
-                  newBaseModel = true;
-                }
-              });
             }
+          });
+        }
 
-            let updatedCategories;
-            let mainId;
-            let subIds;
-            const mainCategoryData = categories[modelType]?.find(
-              // (category) => category.name === main
-              (category) => category.name?.toLowerCase() === main?.toLowerCase()
+        let updatedCategories;
+        let mainId;
+        let subIds;
+        const mainCategoryData = categories[modelType]?.find(
+          // (category) => category.name === main
+          (category) => category.name?.toLowerCase() === main?.toLowerCase()
+        );
+
+        if (!mainCategoryData) {
+          newCategory = true;
+          const currCategories = categories[modelType] || [];
+          mainId = createCategoryId(main, categories[modelType]);
+          subIds = sub;
+          updatedCategories = [
+            ...currCategories,
+            {
+              id: mainId,
+              name: main,
+              subcategories: sub.map((subcategory) => {
+                return { id: subcategory, name: subcategory };
+              }),
+            },
+          ];
+        } else {
+          mainId = mainCategoryData.id;
+          subIds = [];
+          const newSubcategoriesData = sub.flatMap((subcategory) => {
+            const subExists = mainCategoryData.subcategories.find(
+              (oldSucategories) =>
+                oldSucategories.name?.toLowerCase() ===
+                subcategory?.toLowerCase()
             );
 
-            if (!mainCategoryData) {
-              newCategory = true;
-              const currCategories = categories[modelType] || [];
-              mainId = createCategoryId(main, categories[modelType]);
-              subIds = sub;
-              updatedCategories = [
-                ...currCategories,
-                {
-                  id: mainId,
-                  name: main,
-                  subcategories: sub.map((subcategory) => {
-                    return { id: subcategory, name: subcategory };
-                  }),
-                },
-              ];
-            } else {
-              mainId = mainCategoryData.id;
-              subIds = [];
-              const newSubcategoriesData = sub.flatMap((subcategory) => {
-                const subExists = mainCategoryData.subcategories.find(
-                  (oldSucategories) =>
-                    oldSucategories.name?.toLowerCase() ===
-                    subcategory?.toLowerCase()
-                );
-
-                if (!subExists) {
-                  newSubcategory = true;
-                  const categoryId = createCategoryId(
-                    subcategory,
-                    mainCategoryData.subcategories
-                  );
-
-                  subIds = [...subIds, categoryId];
-                  return {
-                    id: categoryId,
-                    name: subcategory,
-                  };
-                } else {
-                  subIds = [...subIds, subExists.id];
-                  return [];
-                }
-              });
-              const mainCategoryIndex = categories[modelType].findIndex(
-                (category) => category.name === main
+            if (!subExists) {
+              newSubcategory = true;
+              const categoryId = createCategoryId(
+                subcategory,
+                mainCategoryData.subcategories
               );
 
-              const curUpdatedCategory = {
-                id: mainId,
-                name: mainCategoryData.name,
-                subcategories: [
-                  ...mainCategoryData.subcategories,
-                  ...newSubcategoriesData,
-                ],
+              subIds = [...subIds, categoryId];
+              return {
+                id: categoryId,
+                name: subcategory,
               };
-              updatedCategories = [
-                ...categories[modelType].slice(0, mainCategoryIndex),
-                curUpdatedCategory,
-                ...categories[modelType].slice(mainCategoryIndex + 1),
-              ];
+            } else {
+              subIds = [...subIds, subExists.id];
+              return [];
             }
+          });
+          const mainCategoryIndex = categories[modelType].findIndex(
+            (category) => category.name === main
+          );
 
-            const categoryField = `categoriesById.${modelType}`;
+          const curUpdatedCategory = {
+            id: mainId,
+            name: mainCategoryData.name,
+            subcategories: [
+              ...mainCategoryData.subcategories,
+              ...newSubcategoriesData,
+            ],
+          };
+          updatedCategories = [
+            ...categories[modelType].slice(0, mainCategoryIndex),
+            curUpdatedCategory,
+            ...categories[modelType].slice(mainCategoryIndex + 1),
+          ];
+        }
 
-            if (newBaseModel || newCategory || newSubcategory) {
-              if (!sfDoc.exists()) {
-                transaction.set(
-                  userRef,
-                  {
-                    categoriesById: { [modelType]: updatedCategories },
-                    baseModels: baseModels,
-                  },
-                  { merge: true }
-                );
-              } else {
-                transaction.update(
-                  userRef,
-                  {
-                    [categoryField]: updatedCategories,
-                    baseModels: arrayUnion(...baseModels),
-                  },
-                  { merge: true }
-                );
-              }
-            }
-            return { mainId, subIds };
+        const categoryField = `categoriesById.${modelType}`;
+
+        if (newBaseModel || newCategory || newSubcategory) {
+          // if (false) {
+          if (!categories) {
+            batch.set(
+              userRef,
+              {
+                categoriesById: { [modelType]: updatedCategories },
+                baseModels: baseModels,
+              },
+              { merge: true }
+            );
+          } else {
+            batch.update(
+              userRef,
+              {
+                [categoryField]: updatedCategories,
+                baseModels: arrayUnion(...baseModels),
+              },
+              { merge: true }
+            );
           }
-        );
+        }
+        //     return { mainId, subIds };
+        //   }
+        // );
 
         let createdAt;
         if (modelData?.createdAt) {
@@ -860,11 +861,20 @@ const UpdateModelForm = ({ modelData, id }) => {
           createdAt,
         };
 
-        await setDoc(modelsRef, modelInfo);
-
         const curPrevData = modelsPrevRefSnap.data() || {};
 
-        await setDoc(modelsPrevRef, { ...curPrevData, ...loraPrevData });
+        batch.set(modelsRef, modelInfo);
+
+        batch.set(modelsPrevRef, { ...curPrevData, ...loraPrevData });
+
+        // Commit the batch
+        await batch.commit();
+
+        // await setDoc(modelsRef, modelInfo);
+
+        // const curPrevData = modelsPrevRefSnap.data() || {};
+
+        // await setDoc(modelsPrevRef, { ...curPrevData, ...loraPrevData });
 
         if (newBaseModel) {
           const updatedBaseModels = [
@@ -900,7 +910,7 @@ const UpdateModelForm = ({ modelData, id }) => {
         }
       }
     } catch (err) {
-      // console.log(err.message);
+      // console.log(err);
       setModelIsSaving(false);
       if (err.message === "This resource already exists") {
         setErrorMessage(err.message);
@@ -1158,12 +1168,24 @@ const UpdateModelForm = ({ modelData, id }) => {
               setNsfwInput(e.target.checked);
             }}
           />
+          {modelData && (
+            <Fieldset legend="Model versions" className={classes.versions}>
+              {versionStatusHtml}
+            </Fieldset>
+          )}
         </FieldCategory>
       )}
       {modelData && (
         <h3 className={classes.subtitle}>Default data for all versions</h3>
       )}
-      <div className={classes.fields}>
+      <div
+        className={`${classes.fields} ${
+          modelData && guideIsActive && guideStep === GUIDE_STEP_EDIT_DEFAULT
+            ? classes["fields--guide"]
+            : ""
+        }`}
+      >
+        {modelData && <EditDefaultGuide />}
         <FieldCategory title={modelData ? "Categories" : ""}>
           <Select
             label="Type"
@@ -1226,25 +1248,8 @@ const UpdateModelForm = ({ modelData, id }) => {
               </ButttonSecondary>
             )}
           </Fieldset>
-
-          {modelData && (
-            <Fieldset legend="Model versions" className={classes.versions}>
-              {versionStatusHtml}
-            </Fieldset>
-          )}
-          {false && (
-            <Checkbox
-              id="advanced"
-              value={advancedSettings}
-              name="advanced"
-              label="advanced settings"
-              onChange={(e) => {
-                setAdvancedSettings(e.target.checked);
-              }}
-            />
-          )}
         </FieldCategory>
-        {(modelData || advancedSettings) && (
+        {modelData && (
           <>
             <FieldCategory title="Trigger words">
               <Input

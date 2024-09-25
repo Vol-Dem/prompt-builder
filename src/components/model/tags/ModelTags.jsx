@@ -1,27 +1,51 @@
 import React, { useState } from "react";
 import classes from "./ModelTags.module.scss";
 import TagList from "../../tag-list/TagList";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ActivationTag from "../../activation-tag/ActivationTag";
 import Modal from "../../ui/Modal";
 import TagsForm from "../../forms/tags-form/TagsForm";
 import EditSvg from "../../../assets/EditSvg";
 import Tooltip from "../../ui/Tooltip";
-import EditTWGuide from "../../ui/guide/EditTWGuide";
+import ModelTagsGuide from "../../ui/guide/model/ModelTagsGuide";
+import {
+  GUIDE_STEP_MODEL_TAGS_CLOSE,
+  GUIDE_STEP_MODEL_TAGS_EDIT_FROM,
+  GUIDE_STEP_MODEL_TAGSET,
+} from "../../../variables/constants";
+import { guideActions } from "../../../store/guide";
 
 const ModelTags = ({ customData, modelPreview }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
+  const guideStep = useSelector((state) => state.guide.model.step);
+  const dispatch = useDispatch();
 
   const openEditHandler = () => {
     setModalIsOpen(true);
+  };
+
+  const closeTagsFormHabdler = () => {
+    setModalIsOpen(false);
+    if (
+      guideStep >= GUIDE_STEP_MODEL_TAGS_EDIT_FROM &&
+      guideStep <= GUIDE_STEP_MODEL_TAGS_CLOSE
+    ) {
+      dispatch(
+        guideActions.setGuideStep({
+          type: "model",
+          value: GUIDE_STEP_MODEL_TAGSET,
+        })
+      );
+    }
   };
 
   return (
     <>
       <div className={classes["tags"]}>
         <div className={classes["tags__container"]}>
+          <ModelTagsGuide />
           <div className={classes["tags__param"]}>
             {(customData?.mainTag ||
               model?.mainTag ||
@@ -67,7 +91,6 @@ const ModelTags = ({ customData, modelPreview }) => {
                 <span className={classes["tags__btn-edit-name"]}>Edit...</span>
                 <EditSvg />
               </button>
-              <EditTWGuide />
             </div>
           </div>
           {(!!curVersion?.trainedWords?.length ||
@@ -127,16 +150,12 @@ const ModelTags = ({ customData, modelPreview }) => {
           )}
         </div>
         {modalIsOpen && (
-          <Modal
-            title="Trigger words"
-            onClose={() => {
-              setModalIsOpen(false);
-            }}
-          >
+          <Modal title="Trigger words" onClose={closeTagsFormHabdler}>
             <TagsForm
               versionData={customData}
               defaultData={model.defaultCustomData}
               modelId={model.id}
+              onClose={closeTagsFormHabdler}
             />
           </Modal>
         )}

@@ -7,6 +7,7 @@ import authSlice from "./auth";
 import notificationSlice from "./notification";
 import searchSlice from "./search";
 import uploadSlice from "./upload";
+import guideSlice from "./guide";
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
     search: searchSlice.reducer,
     notification: notificationSlice.reducer,
     upload: uploadSlice.reducer,
+    guide: guideSlice.reducer,
   },
 });
 

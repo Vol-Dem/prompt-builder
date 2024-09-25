@@ -5,6 +5,16 @@ import Carousel from "../carousel/Carousel";
 import ImageCard from "../image-card/ImageCard";
 import { modelActions } from "../../store/model";
 import CrossSvg from "../../assets/CrossSvg";
+import ImageCardCarouselGuide from "../ui/guide/model/ImageCardCarouselGuide";
+import CloseImageGuide from "../ui/guide/model/CloseImageGuide";
+import { guideActions } from "../../store/guide";
+import {
+  GUIDE_STEP_CLOSE_IMAGE,
+  GUIDE_STEP_MODEL_TAGS_EDIT,
+  GUIDE_STEP_OPEN_IMAGE,
+  GUIDE_STEP_PROMPT_COPY,
+  GUIDE_STEP_PROMPT_VIEW,
+} from "../../variables/constants";
 
 const ActiveCarousel = () => {
   const [activeImageNumber, setActiveImageNumber] = useState(null);
@@ -15,6 +25,8 @@ const ActiveCarousel = () => {
   const model = useSelector((state) => state.model.model);
   const savedImagesData = useSelector((state) => state.model.savedImages);
   const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
+  const guideStep = useSelector((state) => state.guide.model.step);
+  const guideIsActive = useSelector((state) => state.guide.active);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -49,6 +61,41 @@ const ActiveCarousel = () => {
     };
   }, [activeCarouselData]);
 
+  const closeActiveCarouselHandler = () => {
+    dispatch(modelActions.setActiveCarouselData({}));
+
+    if (!guideIsActive) return;
+
+    if (guideStep === GUIDE_STEP_CLOSE_IMAGE) {
+      dispatch(guideActions.guideNextStep({ type: "model" }));
+    } else if (
+      guideStep > GUIDE_STEP_OPEN_IMAGE &&
+      guideStep < GUIDE_STEP_PROMPT_VIEW
+    ) {
+      dispatch(
+        guideActions.setGuideStep({
+          type: "model",
+          value: GUIDE_STEP_PROMPT_VIEW,
+        })
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (
+      guideIsActive &&
+      guideStep === GUIDE_STEP_PROMPT_COPY + 1 &&
+      !activeCarouselData?.images?.length
+    ) {
+      dispatch(
+        guideActions.setGuideStep({
+          type: "model",
+          value: GUIDE_STEP_MODEL_TAGS_EDIT,
+        })
+      );
+    }
+  }, [guideStep, activeCarouselData?.images, dispatch, guideIsActive]);
+
   return (
     <>
       <div
@@ -68,34 +115,42 @@ const ActiveCarousel = () => {
               : {}
           }
         >
-          {!!activeCarouselData?.images?.length && (
-            <Carousel
-              imagesData={activeCarouselData?.images}
-              versionId={activeCarouselData?.versionId}
-              existedImgsAmount={existedExample?.imagesId?.length || null}
-              postId={
-                !activeCarouselData?.saved ? activeCarouselData?.postId : null
-              }
-              modelId={activeCarouselData?.modelId}
-              visibleImgAmount={1}
-              imgIsOpen={true}
-              activeImgNum={activeCarouselData?.currImgNum || 0}
-              active={true}
-              saved={activeCarouselData?.saved}
-              onActiveNumChange={setActiveImageNumber}
-              side={activeCarouselData?.side}
-            />
-          )}
+          <div className={classes["carousel"]}>
+            {!!activeCarouselData?.images?.length && (
+              <>
+                <Carousel
+                  imagesData={activeCarouselData?.images}
+                  versionId={activeCarouselData?.versionId}
+                  existedImgsAmount={existedExample?.imagesId?.length || null}
+                  postId={
+                    !activeCarouselData?.saved
+                      ? activeCarouselData?.postId
+                      : null
+                  }
+                  modelId={activeCarouselData?.modelId}
+                  visibleImgAmount={1}
+                  imgIsOpen={true}
+                  activeImgNum={activeCarouselData?.currImgNum || 0}
+                  active={true}
+                  saved={activeCarouselData?.saved}
+                  onActiveNumChange={setActiveImageNumber}
+                  side={activeCarouselData?.side}
+                />
+                <ImageCardCarouselGuide />
+              </>
+            )}
+          </div>
           <ImageCard activeImgNum={activeImageNumber} />
           <div
             className={classes["btn__close"]}
-            onClick={() => {
-              dispatch(modelActions.setActiveCarouselData({}));
-            }}
+            onClick={closeActiveCarouselHandler}
           >
             {!!activeCarouselData?.images?.length && <CrossSvg />}
           </div>
         </div>
+        {!!activeCarouselData?.images?.length && guideIsActive && (
+          <CloseImageGuide />
+        )}
       </div>
     </>
   );

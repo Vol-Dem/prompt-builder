@@ -14,7 +14,7 @@ const usedModelsSlice = createSlice({
     images: [],
     panelIsOpen: false,
     formIsOpen: false,
-    fullCardView: true,
+    fullCardView: false,
   },
   reducers: {
     addModelsToPanel(state, actions) {

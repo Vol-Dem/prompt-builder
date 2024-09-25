@@ -8,7 +8,12 @@ import Select from "../ui/Select";
 import usePageEnd from "../../hooks/use-page-end";
 import { useOnlineStatus } from "../../hooks/use-online-status";
 import ErrorMessage from "../ui/ErrorMessage";
-import { OFFLINE_ERROR_MESSAGE } from "../../variables/constants";
+import {
+  GUIDE_STEP_OPEN_MODEL,
+  OFFLINE_ERROR_MESSAGE,
+} from "../../variables/constants";
+import OpenModelGuide from "../ui/guide/home/OpenModelGuide";
+import { guideActions } from "../../store/guide";
 
 const sortTypes = [
   { name: "Newest", value: "createdAt" },
@@ -28,6 +33,7 @@ const ModelsList = () => {
   const errorMessage = useSelector((state) => state.tabs.errorMessage);
   const baseModels = useSelector((state) => state.tabs.baseModels);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const guideState = useSelector((state) => state.guide.home);
   const endPage = useRef(null);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const isPageEnd = usePageEnd(100);
@@ -47,6 +53,17 @@ const ModelsList = () => {
   useEffect(() => {
     setIsIntersecting(isPageEnd);
   }, [isPageEnd]);
+
+  useEffect(() => {
+    if (guideState?.step < GUIDE_STEP_OPEN_MODEL) {
+      dispatch(
+        guideActions.setGuideStep({
+          type: "home",
+          value: GUIDE_STEP_OPEN_MODEL,
+        })
+      );
+    }
+  }, [guideState, dispatch]);
 
   useEffect(() => {
     if (
@@ -130,7 +147,7 @@ const ModelsList = () => {
       </div>
 
       <div className={classes["category"]}>{loraHtml}</div>
-
+      {guideState?.active && !isLoading && <OpenModelGuide />}
       {!loraHtml?.length && !errorMessage && !isLoading && isOnline && (
         <div className={classes.empty}>This category is empty</div>
       )}

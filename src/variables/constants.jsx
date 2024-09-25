@@ -44,3 +44,42 @@ export const OFFLINE_ERROR_MESSAGE =
   "Internet connection lost. Check your connection settings";
 export const INITIAL_IMG_LOADING_MESSAGE =
   "We are loading images for this model from Civitai so that you can then access images and prompts. This may take some time only the first time. Try refreshing the page in a few moments.";
+export const USER_DATA_LOAD_ERROR_MESSAGE =
+  "Oops! Something went wrong. Try refreshing!";
+
+export const GUIDE_STEP_ADD_MODEL_TO_SIDEPANEL = 1;
+export const GUIDE_STEP_ADD_IMAGE_TO_SIDEPANEL = 2;
+export const GUIDE_STEP_SIDEPANEL = 3;
+export const GUIDE_STEP_SIDEPANEL_VIEW_SWITCH = 4;
+export const GUIDE_STEP_OPEN_IMAGE = 5;
+export const GUIDE_STEP_ADD_TO_PROMPT = 6;
+export const GUIDE_STEP_ADD_ALL_TO_PROMPT = 7;
+export const GUIDE_STEP_SWITCH_IMAGE = 8;
+export const GUIDE_STEP_HIGHLIGHTING_WORDS = 9;
+export const GUIDE_STEP_PROMPT_VIEW = 10;
+export const GUIDE_STEP_PROMPT_PRESETS = 11;
+export const GUIDE_STEP_PROMPT_COPY = 12;
+export const GUIDE_STEP_IMAGE_RESOURCES = 13;
+export const GUIDE_STEP_CLOSE_IMAGE = 14;
+export const GUIDE_STEP_MODEL_TAGS_EDIT = 15;
+export const GUIDE_STEP_MODEL_TAGS_EDIT_FROM = 16;
+export const GUIDE_STEP_MODEL_TAGS_ADD_TAGSET = 17;
+export const GUIDE_STEP_MODEL_TAGS_CLOSE = 18;
+export const GUIDE_STEP_MODEL_TAGSET = 19;
+export const GUIDE_STEP_GENERATED_IMAGES = 20;
+export const GUIDE_STEP_IMAGE_MENU = 21;
+export const GUIDE_STEP_SAVE_IMAGE = 22;
+export const GUIDE_STEP_SAVED_TAB = 23;
+export const GUIDE_STEP_MODEL_EDIT = 24;
+
+// export const GUIDE_STEP_EDIT_PAGE = 1;
+export const GUIDE_STEP_EDIT_UPD_DEL = 1;
+export const GUIDE_STEP_EDIT_VERSIONS_SWITCH = 2;
+export const GUIDE_STEP_EDIT_DEFAULT = 3;
+export const GUIDE_STEP_EDIT_MENU = 4;
+
+export const GUIDE_STEP_OPEN_CATEGORY = 1;
+export const GUIDE_STEP_OPEN_MODEL = 2;
+
+export const GUIDE_LAST_STEP_TYPE = "edit";
+export const GUIDE_LAST_STEP = GUIDE_STEP_EDIT_MENU;

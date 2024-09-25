@@ -9,9 +9,22 @@
 }
 
 .fields {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
+
+  &--guide {
+    @include var.pulse;
+
+    &::before {
+      transform: translate(-50%, -50%) scale(1.02);
+    }
+
+    &::after {
+      transform: translate(-50%, -50%) scale(1.02);
+    }
+  }
 }
 
 .filter {
@@ -60,6 +73,10 @@
 }
 
 .versions {
+  flex-direction: row;
+  gap: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 20rem);
   // height: 100%;
 }
 

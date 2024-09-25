@@ -1,8 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   collection,
-  doc,
-  getDoc,
   getDocs,
   getFirestore,
   limit,
@@ -124,21 +122,21 @@ const tabsSlice = createSlice({
   },
 });
 
-export const getUserCategories = (uid) => {
-  return async (dispatch, getState) => {
-    try {
-      const userRef = doc(firestore, "users", uid);
+// export const getUserCategories = (uid) => {
+//   return async (dispatch, getState) => {
+//     try {
+//       const userRef = doc(firestore, "users", uid);
 
-      const categoriesDoc = await getDoc(userRef);
-      if (categoriesDoc.exists()) {
-        const categoriesData = categoriesDoc.data();
-        dispatch(tabActions.setCategories(categoriesData.categoriesById));
-      }
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-};
+//       const categoriesDoc = await getDoc(userRef);
+//       if (categoriesDoc.exists()) {
+//         const categoriesData = categoriesDoc.data();
+//         dispatch(tabActions.setCategories(categoriesData.categoriesById));
+//       }
+//     } catch (err) {
+//       console.error(err.message);
+//     }
+//   };
+// };
 
 export const getModelsPreview = (loadMore = false, nsfwMode) => {
   return async (dispatch, getState) => {

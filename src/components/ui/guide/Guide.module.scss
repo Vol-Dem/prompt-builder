@@ -156,6 +156,44 @@
   }
 }
 
+.btn-copy {
+  display: inline-flex;
+  color: #b2b2b2;
+  padding: 0.2rem 0.5rem;
+  background: none;
+  border: 1px solid rgba(178, 178, 178, 0.8);
+  border-radius: 0.5rem;
+  white-space: nowrap;
+  margin-right: 0.4rem;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    color: #7278f0;
+    border-color: #7278f0;
+  }
+
+  &:active {
+    color: #49ab6b;
+    border-color: #49ab6b;
+    transform: translateY(1px);
+  }
+
+  &--copied {
+    color: #49ab6b;
+    border-color: #49ab6b;
+    &:hover {
+      color: #49ab6b;
+      border-color: #49ab6b;
+    }
+  }
+
+  & svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+}
+
 .test {
   position: relative;
   // z-index: 20;

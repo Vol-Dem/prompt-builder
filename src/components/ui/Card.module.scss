@@ -16,6 +16,12 @@
   height: 100%;
 }
 
+@media (max-width: 700px) {
+  .card {
+    padding: 3.6rem 3.2rem 2.6rem 3.2rem;
+  }
+}
+
 @media (max-width: 480px) {
   .card {
     padding: 2.8rem 1.6rem 1.6rem 1.6rem;

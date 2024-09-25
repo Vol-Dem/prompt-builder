@@ -7,6 +7,7 @@ import { useState } from "react";
 import Modal from "../ui/Modal";
 import CategoriesForm from "../forms/categories-form/CategoriesForm";
 import EditSvg from "../../assets/EditSvg";
+import OpenCategoryGuide from "../ui/guide/home/OpenCategoryGuide";
 
 const Subcategories = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
@@ -14,6 +15,7 @@ const Subcategories = () => {
   const activeCategory = useSelector((state) => state.tabs.currCategory);
   const activeTab = useSelector((state) => state.tabs.currTab);
   const categories = useSelector((state) => state.tabs.categoriesData);
+  const guideHomeState = useSelector((state) => state.guide.home);
 
   const dispatch = useDispatch();
 
@@ -51,6 +53,7 @@ const Subcategories = () => {
           }`}
         >
           {subcategory.name}
+          {guideHomeState?.active && i === 0 && <OpenCategoryGuide />}
         </li>
       );
     });

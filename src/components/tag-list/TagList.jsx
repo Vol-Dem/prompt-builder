@@ -30,6 +30,7 @@ const TagList = forwardRef(function TagList(props, ref) {
   };
 
   const copyHandler = (e) => {
+    if (!props?.tags?.length) return;
     navigator.clipboard.writeText(props.tags.join(", "));
     setCopied(true);
     setTimeout(() => {

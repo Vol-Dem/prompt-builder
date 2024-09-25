@@ -43,6 +43,10 @@
   &--copied {
     color: #49ab6b;
     border-color: #49ab6b;
+    &:hover {
+      color: #49ab6b;
+      border-color: #49ab6b;
+    }
   }
 
   & svg {

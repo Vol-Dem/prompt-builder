@@ -1,0 +1,6 @@
+@use "./../../../variables/variables.scss" as var;
+
+.message {
+  font-size: 1.6rem;
+  color: var.$color-text-yellow;
+}

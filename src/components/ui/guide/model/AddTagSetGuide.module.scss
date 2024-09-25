@@ -1,0 +1,55 @@
+@use "./../../../../variables/variables.scss" as var;
+@include var.animation-show;
+
+.guide__content {
+  &--default {
+    top: 3.5rem;
+    left: calc(100% - 19rem);
+  }
+
+  &--0 {
+    top: -17.4rem;
+    left: 8rem;
+  }
+
+  &--1 {
+    top: -0.1rem;
+    left: 25rem;
+  }
+
+  &--2 {
+    top: 5.4rem;
+    left: calc(100% - 30rem);
+  }
+
+  &__comment {
+    font-size: 1.4rem;
+    color: var.$color-text-gray;
+  }
+}
+
+@media (max-width: 1160px) {
+  .guide__content--2 {
+    // top: 7.6rem;
+  }
+}
+
+@media (max-width: 600px) {
+  // .guide__content--1 {
+  //   left: 1rem;
+  // }
+
+  // .guide__content--1 .guide__arrow-bg {
+  //   top: -1rem;
+  //   left: 6rem;
+  // }
+
+  .guide__content--2 {
+    left: 3rem;
+  }
+
+  .guide__content--2 .guide__arrow-bg {
+    top: -1rem;
+    left: 19.1rem;
+  }
+}

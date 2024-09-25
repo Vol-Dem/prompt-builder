@@ -23,9 +23,10 @@ import usePageEnd from "../../../hooks/use-page-end";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import {
   DEF_ERROR_MESSAGE,
+  GUIDE_STEP_GENERATED_IMAGES,
   OFFLINE_ERROR_MESSAGE,
 } from "../../../variables/constants";
-import ImageSidePanelGuide from "../../ui/guide/ImageSidePanelGuide";
+import GeneratedImagesGuide from "../../ui/guide/model/GeneratedImagesGuide";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -57,6 +58,8 @@ const GeneratedImages = ({ customData }) => {
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const uid = useSelector((state) => state.auth.user.uid);
+  const guideIsActive = useSelector((state) => state.guide.active);
+  const guideStep = useSelector((state) => state.guide.model.step);
   const endPageRef = useRef(null);
   const versionsListRef = useRef(null);
   const versionsItemRef = useRef(null);
@@ -708,10 +711,16 @@ const GeneratedImages = ({ customData }) => {
           {showAllVersions ? "Hide" : "Show All"}
         </ButtonTertiary>
       )}
-      <div className={classes["images-container"]}>
-        {curExampleImgsType === "all" && !!examplesHtml?.length && (
-          <ImageSidePanelGuide />
-        )}
+      <div
+        className={`${classes["images-container"]} ${
+          guideIsActive &&
+          examplesHtml?.length &&
+          guideStep === GUIDE_STEP_GENERATED_IMAGES
+            ? classes["images-container--guide"]
+            : ""
+        }`}
+      >
+        {!!examplesHtml?.length && <GeneratedImagesGuide />}
         <div className={classes.images}>{examplesHtml}</div>
       </div>
       {examplesIsLoading && <Spinner />}

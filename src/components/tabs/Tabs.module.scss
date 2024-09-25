@@ -32,6 +32,7 @@
 }
 
 .tag-menu {
+  position: relative;
   width: 100%;
   // padding-right: 2rem;
   font-size: 1.8rem;
@@ -48,6 +49,7 @@
 }
 
 .category__link {
+  position: relative;
   transition: all 0.3s;
   cursor: pointer;
 }
@@ -147,8 +149,18 @@
   }
 }
 
+.guide-intro {
+  display: block;
+}
+
 @media (max-width: 600px) {
   .guide {
+    display: none;
+  }
+}
+
+@media (max-width: 500px) {
+  .guide-intro {
     display: none;
   }
 }

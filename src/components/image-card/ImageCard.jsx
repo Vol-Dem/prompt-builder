@@ -22,6 +22,13 @@ import ErrorMessage from "../ui/ErrorMessage";
 import { modelActions } from "../../store/model";
 import CopySvg from "../../assets/CopySvg";
 import CopiedSvg from "../../assets/CopiedSvg";
+import ImageCardGuide from "../ui/guide/model/ImageCardGuide";
+import {
+  GUIDE_STEP_ADD_TO_PROMPT,
+  GUIDE_STEP_IMAGE_RESOURCES,
+} from "../../variables/constants";
+import { guideActions } from "../../store/guide";
+import ImageCardResourcesGuide from "../ui/guide/model/ImageCardResourcesGuide";
 
 const firestore = getFirestore(firebaseApp);
 const civitDefEmb = [250708, 250712, 106916];
@@ -37,16 +44,48 @@ const ImageCard = ({ activeImgNum }) => {
   const [modelInfo, setModelInfo] = useState({});
   const uid = useSelector((state) => state.auth.user.uid);
   const modelId = useSelector((state) => state.model.model.id);
+  const guideModelActive = useSelector((state) => state.guide.model.active);
+  const guideIsActive = useSelector((state) => state.guide.active);
+  const guideStep = useSelector((state) => state.guide.model.step);
   const timeoutRef = useRef(null);
   const dispatch = useDispatch();
+  const resorcesRef = useRef(null);
+
+  useEffect(() => {
+    if (
+      imageData?.url &&
+      guideIsActive &&
+      guideStep &&
+      guideStep < GUIDE_STEP_ADD_TO_PROMPT
+    ) {
+      dispatch(
+        guideActions.setGuideStep({
+          type: "model",
+          value: GUIDE_STEP_ADD_TO_PROMPT,
+        })
+      );
+    }
+
+    // if (
+    //   imageData?.url &&
+    //   guideStep &&
+    //   resorcesRef?.current &&
+    //   guideStep === GUIDE_STEP_IMAGE_RESOURCES
+    // ) {
+    //   resorcesRef.current.scrollIntoView({
+    //     behavior: "smooth",
+    //     block: "nearest",
+    //   });
+    // }
+  }, [guideStep, imageData?.url, dispatch, guideIsActive]);
 
   const activeCarouselData = useSelector(
     (state) => state.model.activeCarouselData
   );
 
   const resetModelData = (e) => {
-    console.log(modelId);
-    console.log(e.target.dataset.id);
+    // console.log(modelId);
+    // console.log(e.target.dataset.id);
     if (+e.target.dataset.id !== modelId) {
       dispatch(modelActions.resetModelData());
     }
@@ -266,6 +305,12 @@ const ImageCard = ({ activeImgNum }) => {
             }
           }
 
+          // console.log(modelsIds);
+          // console.log(modelsVersionIds);
+          // console.log(modelsHashes);
+          // console.log(modelsNames);
+          // console.log(allModelsPreviews);
+
           // console.log("All", allModelsPreviews);
           const resources = resourcesInfoCiv?.map((resource) => {
             const versionId = resource?.modelVersionId || resource?.versionId;
@@ -296,17 +341,30 @@ const ImageCard = ({ activeImgNum }) => {
           // .filter(Boolean);
           // console.log(ids);
 
-          const filteredNewResult = resources.filter((obj1, i, arr) => {
-            if (!obj1?.preview?.id) {
-              return true;
-            } else {
-              return (
-                arr.findIndex(
-                  (obj2) => obj2?.preview?.id === obj1?.preview?.id
-                ) === i
-              );
-            }
-          });
+          const filteredNewResult = resources
+            .filter((obj1, i, arr) => {
+              if (!!obj1?.preview?.id) {
+                return (
+                  arr.findIndex(
+                    (obj2) => obj2?.preview?.id === obj1?.preview?.id
+                  ) === i
+                );
+              } else if (!!obj1?.modelId) {
+                return (
+                  arr.findIndex((obj2) => obj2?.modelId === obj1?.modelId) === i
+                );
+              } else {
+                return true;
+              }
+            })
+            ?.filter((resourse) => {
+              if (resourse?.name && resourse.name?.includes("urn:air:")) {
+                return false;
+              } else {
+                return true;
+              }
+            });
+          // console.log(filteredNewResult);
           ////////////////////////////////////////////////////
 
           if (!!modelInfoData?.length) {
@@ -423,7 +481,12 @@ const ImageCard = ({ activeImgNum }) => {
               resource?.hash}
           </div>
         )}
-        <div className={classes["resource__version"]}>
+        <div
+          className={classes["resource__version"]}
+          title={`${
+            versionIsSaved ? "Version downloaded" : "Version not downloaded"
+          }`}
+        >
           {!versionIsSaved && !!resource?.preview && (
             <ExclamationCircleSvg
               className={classes["resource__version-svg"]}
@@ -477,7 +540,16 @@ const ImageCard = ({ activeImgNum }) => {
         <div className={classes.example}>
           <div className={classes["example__info"]}>
             <>
-              <div className={classes["example__prompt"]}>
+              <div
+                className={`${classes["example__prompt"]} ${
+                  guideModelActive &&
+                  guideIsActive &&
+                  guideStep === GUIDE_STEP_ADD_TO_PROMPT
+                    ? classes["example__prompt--guide"]
+                    : ""
+                }`}
+              >
+                <ImageCardGuide />
                 <TagList
                   name="Positive prompt"
                   tags={positiveWordsArr}
@@ -539,7 +611,12 @@ const ImageCard = ({ activeImgNum }) => {
                         Seed:
                       </span>
                       {imageData?.meta?.seed && (
-                        <span className={classes.seed} onClick={copyHandler}>
+                        <span
+                          className={`${classes.seed} ${
+                            copied ? classes["seed--copied"] : ""
+                          }`}
+                          onClick={copyHandler}
+                        >
                           {imageData?.meta?.seed}
                           {!copied && <CopySvg />}
                           {copied && <CopiedSvg />}
@@ -634,10 +711,18 @@ const ImageCard = ({ activeImgNum }) => {
                   </div>
                 )}
                 {!isLoading && !!resourcesHtml?.length && (
-                  <div>
+                  <div ref={resorcesRef}>
                     Resources:
-                    <ul className={classes["example__resourses"]}>
+                    <ul
+                      className={`${classes["example__resourses"]} ${
+                        guideIsActive &&
+                        guideStep === GUIDE_STEP_IMAGE_RESOURCES
+                          ? classes["example__resourses--guide"]
+                          : ""
+                      }`}
+                    >
                       {resourcesHtml}
+                      <ImageCardResourcesGuide />
                     </ul>
                   </div>
                 )}

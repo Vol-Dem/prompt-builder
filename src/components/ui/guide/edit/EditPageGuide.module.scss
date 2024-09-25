@@ -1,0 +1,58 @@
+@use "./../../../../variables/variables.scss" as var;
+@include var.animation-show;
+
+.guide__content {
+  &--0 {
+    top: 6rem;
+    left: 8rem;
+  }
+
+  &--1 {
+    top: 16rem;
+    left: 11rem;
+  }
+
+  &--2 {
+    top: 8rem;
+    left: 0rem;
+  }
+}
+
+.btn-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+
+  & svg {
+    width: 1.5rem;
+  }
+}
+
+.svg {
+  width: 1.5rem;
+  height: 1.5rem;
+
+  &--medium {
+    display: inline-block;
+    margin-bottom: -0.3rem;
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+@media (max-width: 620px) {
+  .guide__content--1 {
+    left: 4rem;
+  }
+}
+
+@media (max-width: 580px) {
+  .guide__content--2 {
+    top: -4rem;
+    left: 5rem;
+  }
+}

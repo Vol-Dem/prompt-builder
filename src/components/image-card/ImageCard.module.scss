@@ -50,11 +50,19 @@
   }
 
   &__prompt {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 1rem;
     width: 100%;
     min-width: 45rem;
+
+    margin: 0.5rem;
+    padding: 0.5rem;
+
+    &--guide {
+      @include var.pulse;
+    }
   }
 
   &__config {
@@ -80,7 +88,12 @@
   }
 
   &__resourses {
+    position: relative;
     list-style: none;
+
+    &--guide {
+      @include var.pulse;
+    }
   }
 }
 
@@ -101,6 +114,15 @@
   background-color: #323148;
   margin-left: 0.8rem;
   transition: all 0.3s;
+
+  &--copied {
+    color: #49ab6b;
+    border-color: #49ab6b;
+    &:hover {
+      color: #49ab6b;
+      border-color: #49ab6b;
+    }
+  }
 
   &__copied {
     position: absolute;

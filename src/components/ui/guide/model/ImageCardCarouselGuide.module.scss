@@ -1,0 +1,22 @@
+@use "./../../../../variables/variables.scss" as var;
+@include var.animation-show;
+
+.guide__content {
+  &--0 {
+    top: 17.2rem;
+    left: calc(100% + 1rem);
+  }
+}
+
+.svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  transform: translateY(2px);
+}
+
+@media (max-width: 740px) {
+  //   .guide__content--0 {
+  //     // top: 17.2rem;
+  //     left: 5rem;
+  //   }
+}

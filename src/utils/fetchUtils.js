@@ -519,3 +519,42 @@ export const updateImagePostData = async (
     // throw new Error(err);
   }
 };
+
+export const getVersionImagesFromCiv = async (modelId, username, version) => {
+  const versionImagesRequest = await fetch(
+    `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${username}&nsfw=X`
+  );
+  const versionImages = await versionImagesRequest.json();
+  // console.log(versionImages);
+  const updatedImages = version?.images?.flatMap((image) => {
+    const fullImgData = versionImages?.items?.find(
+      (verImg) => verImg.hash === image.hash
+    );
+
+    if (!fullImgData) return [];
+
+    const transformedImgData = transformImageData(fullImgData || image);
+
+    return { ...image, ...transformedImgData };
+  });
+
+  return updatedImages.filter(Boolean);
+};
+
+export const saveGuideData = async (guideData, uid) => {
+  try {
+    if (!guideData || !uid) return;
+
+    const userRef = doc(firestore, "users", uid);
+
+    await setDoc(
+      userRef,
+      {
+        guide: guideData,
+      },
+      { merge: true }
+    );
+  } catch (err) {
+    console.error(err.message);
+  }
+};

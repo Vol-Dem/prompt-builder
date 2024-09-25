@@ -20,7 +20,7 @@
   //   border-left: 1px solid #fff;
   width: 0px;
   padding: 0rem;
-  overflow: hidden;
+  // overflow: hidden;
   flex-shrink: 0;
   transition: all 0.4s;
 
@@ -152,6 +152,7 @@
 }
 
 .options {
+  position: relative;
   width: 28rem;
 }
 
@@ -241,6 +242,14 @@
   & svg {
     width: 2rem;
     height: 2rem;
+  }
+
+  &--close {
+    background-color: var.$color-background-red;
+
+    &:hover {
+      background-color: darken(var.$color-red, 15%);
+    }
   }
 }
 

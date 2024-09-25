@@ -1,0 +1,9 @@
+.guide-outro {
+  display: block;
+}
+
+@media (max-width: 500px) {
+  .guide-outro {
+    display: none;
+  }
+}

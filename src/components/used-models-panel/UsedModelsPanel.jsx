@@ -18,8 +18,12 @@ import ArrowRightSvg from "../../assets/ArrowRight";
 import PlusSvg from "../../assets/PlusSvg";
 import Bars2Svg from "../../assets/Bars2Svg";
 import Bars4Svg from "../../assets/Bars4Svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IMAGE_REF_ROW_LENGTH } from "../../variables/constants";
+import ErrorMessage from "../ui/ErrorMessage";
+import SidePanelGuide from "../ui/guide/model/SidePanelGuide";
+import OpenSidePanelGuide from "../ui/guide/model/OpenSidePanelGuide";
+import { useLocation } from "react-router-dom";
 
 const UsedModelsPanel = () => {
   const [cursorInitialX, setCursorInitialX] = useState(null);
@@ -31,8 +35,21 @@ const UsedModelsPanel = () => {
   const formIsOpen = useSelector((state) => state.used.formIsOpen);
   const fullCardView = useSelector((state) => state.used.fullCardView);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
-  const emailVerified = useSelector((state) => state.auth.user.emailVerified);
+  const location = useLocation();
+  const userDataIsLoading = useSelector(
+    (state) => state.auth.userDataIsLoading
+  );
+  const userDataLoadError = useSelector(
+    (state) => state.auth.userDataLoadError
+  );
+  // const emailVerified = useSelector((state) => state.auth.user.emailVerified);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (location?.pathname) {
+      dispatch(usedModelsActions.setFormIsOpen(false));
+    }
+  }, [location?.pathname, dispatch]);
 
   const openPanelHandler = () => {
     dispatch(usedModelsActions.panelState(!panelIsOpen));
@@ -185,6 +202,14 @@ const UsedModelsPanel = () => {
     }
   };
 
+  // const nextStepHandler = () => {
+  //   dispatch(guideActions.guideNextStep({ type: "model" }));
+  // };
+
+  // const prevStepHandler = () => {
+  //   dispatch(guideActions.guidePrevStep({ type: "model" }));
+  // };
+
   return (
     <aside
       className={`${classes.container} ${
@@ -203,13 +228,20 @@ const UsedModelsPanel = () => {
         {!panelIsOpen && <ArrowLeftSvg />}
         {panelIsOpen && <ArrowRightSvg />}
       </button>
+      <OpenSidePanelGuide />
       <div
         className={`${classes.panel} ${
           panelIsOpen ? classes["panel--open"] : ""
         }`}
       >
         <div className={classes["options"]}>
-          <Buttton className={classes["btn-forms"]} onClick={openFormHandler}>
+          <Buttton
+            className={`${classes["btn-forms"]} ${
+              formIsOpen ? classes["btn-forms--close"] : ""
+            }`}
+            onClick={openFormHandler}
+            disabled={!!userDataLoadError || userDataIsLoading}
+          >
             {!formIsOpen ? (
               <>
                 <svg
@@ -235,6 +267,14 @@ const UsedModelsPanel = () => {
               </>
             )}
           </Buttton>
+          {/* <div>
+            <button onClick={prevStepHandler}>prev</button>
+            <span>{modelStep}</span>
+            <button onClick={nextStepHandler}>next</button>
+          </div> */}
+          {userDataLoadError && (
+            <ErrorMessage>{userDataLoadError}</ErrorMessage>
+          )}
           {/* <UpdateDb /> */}
           {/* {formIsOpen && isAuth && emailVerified && ( */}
           {formIsOpen && isAuth && (
@@ -269,6 +309,7 @@ const UsedModelsPanel = () => {
               </ButtonTertiary>
             </div>
           </div>
+          <SidePanelGuide />
         </div>
 
         <div className={classes["model-cards"]}>

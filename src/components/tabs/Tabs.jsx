@@ -8,6 +8,10 @@ import ErrorMessage from "../ui/ErrorMessage";
 import LinkA from "../ui/LinkA";
 import Guide from "../ui/guide/Guide";
 import { useState } from "react";
+import OpenCategoryGuide from "../ui/guide/home/OpenCategoryGuide";
+import Modal from "../ui/Modal";
+import IntroGuide from "../ui/guide/IntroGuide";
+import { guideActions } from "../../store/guide";
 
 const Tabs = () => {
   const [guideIsOpen, setGuideIsOpen] = useState(true);
@@ -17,6 +21,11 @@ const Tabs = () => {
   const categories = useSelector((state) => state.tabs.categoriesData);
   const formIsOpen = useSelector((state) => state.used.formIsOpen);
   const sidepanelIsOpen = useSelector((state) => state.used.panelIsOpen);
+  const guideHomeState = useSelector((state) => state.guide.home);
+  const guideIsActive = useSelector((state) => state.guide.active);
+  const guideIntroIsDisabled = useSelector(
+    (state) => state.guide.introDisabled
+  );
   const userDataIsLoading = useSelector(
     (state) => state.auth.userDataIsLoading
   );
@@ -53,6 +62,9 @@ const Tabs = () => {
           }`}
         >
           {category.name}
+          {guideHomeState?.active && i === 0 && !activeCategory && (
+            <OpenCategoryGuide />
+          )}
         </li>
       );
     });
@@ -82,15 +94,19 @@ const Tabs = () => {
                 </LinkA>{" "}
                 , fill in the remaining fields and click "Save".
               </p>
-              {guideIsOpen && sidepanelIsOpen && !authIsOpen && (
-                <Guide
-                  className={classes.guide}
-                  stage={formIsOpen ? 2 : 1}
-                  onClose={() => {
-                    setGuideIsOpen(false);
-                  }}
-                ></Guide>
-              )}
+              {guideIsOpen &&
+                sidepanelIsOpen &&
+                !authIsOpen &&
+                !userDataIsLoading &&
+                !userDataLoadError && (
+                  <Guide
+                    className={classes.guide}
+                    stage={formIsOpen ? 2 : 1}
+                    onClose={() => {
+                      setGuideIsOpen(false);
+                    }}
+                  ></Guide>
+                )}
             </div>
           )}
         {userDataIsLoading && (
@@ -98,8 +114,24 @@ const Tabs = () => {
             <Spinner size="medium" />
           </div>
         )}
+        <div className={classes["guide-intro"]}>
+          {userDataLoadError && (
+            <ErrorMessage>{userDataLoadError}</ErrorMessage>
+          )}
 
-        {userDataLoadError && <ErrorMessage>{userDataLoadError}</ErrorMessage>}
+          {!guideIntroIsDisabled &&
+            !guideIsActive &&
+            !!modelTypesHtml?.length && (
+              <Modal
+                onClose={() => {
+                  dispatch(guideActions.setIntroDisabled(true));
+                }}
+                disableClass={classes["guide-intro"]}
+              >
+                <IntroGuide />
+              </Modal>
+            )}
+        </div>
       </div>
     </>
   );

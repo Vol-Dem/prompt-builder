@@ -7,12 +7,14 @@ import { useState } from "react";
 import Modal from "../ui/Modal";
 import CategoriesForm from "../forms/categories-form/CategoriesForm";
 import EditSvg from "../../assets/EditSvg";
+import OpenCategoryGuide from "../ui/guide/home/OpenCategoryGuide";
 
 const Categories = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
   const activeCategory = useSelector((state) => state.tabs.currCategory);
   const activeTab = useSelector((state) => state.tabs.currTab);
   const categories = useSelector((state) => state.tabs.categoriesData);
+  const guideHomeState = useSelector((state) => state.guide.home);
   const userDataIsLoading = useSelector(
     (state) => state.auth.userDataIsLoading
   );
@@ -48,6 +50,9 @@ const Categories = () => {
               }`}
             >
               {category.name}
+              {guideHomeState?.active && !activeCategory && i === 0 && (
+                <OpenCategoryGuide />
+              )}
             </li>
           );
         })
@@ -61,7 +66,7 @@ const Categories = () => {
     <div className={classes["container"]}>
       <div className={classes["category"]}>
         <ul className={classes["category__list"]}>{catHtml}</ul>
-        {categories && (
+        {!!catHtml?.length && (
           <ButtonTertiary
             type="button"
             className={classes["category__edit"]}
@@ -72,6 +77,7 @@ const Categories = () => {
           </ButtonTertiary>
         )}
       </div>
+      {!catHtml?.length && <div>No categories found</div>}
       {activeCategory && activeTab && categories && (
         <Subcategories
           subcategories={categories[activeTab][activeCategory]}

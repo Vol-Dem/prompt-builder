@@ -14,6 +14,8 @@ import SuccessMessage from "../../ui/SuccessMessage";
 import {
   DEF_ERROR_MESSAGE,
   DEF_INPUT_ERROR_MESSAGE,
+  GUIDE_STEP_MODEL_TAGS_EDIT,
+  GUIDE_STEP_MODEL_TAGS_EDIT_FROM,
   NAME_MAX_LENGTH,
   OFFLINE_ERROR_MESSAGE,
   SAVED_SUCCESS_MESSAGE,
@@ -24,10 +26,13 @@ import Spinner from "../../ui/Spinner";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
 import { modelActions } from "../../../store/model";
+import ModelTagsFormGuide from "../../ui/guide/model/ModelTagsEditGuide";
+import AddTagSetGuide from "../../ui/guide/model/AddTagSetGuide";
+import { guideActions } from "../../../store/guide";
 
 const firestore = getFirestore(firebaseApp);
 
-const TagsForm = ({ versionData, defaultData, modelId }) => {
+const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -67,7 +72,20 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
 
   const uid = useSelector((state) => state.auth.user.uid);
   const model = useSelector((state) => state.model.model);
+  const guideActive = useSelector((state) => state.guide.model.active);
+  const guideStep = useSelector((state) => state.guide.model.step);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (guideActive && guideStep === GUIDE_STEP_MODEL_TAGS_EDIT) {
+      dispatch(
+        guideActions.setGuideStep({
+          type: "model",
+          value: GUIDE_STEP_MODEL_TAGS_EDIT_FROM,
+        })
+      );
+    }
+  }, [guideActive, guideStep, dispatch]);
 
   useEffect(() => {
     if (versionData?.mainTag) {
@@ -103,7 +121,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
           type: "text",
           id: "set-name" + i,
           name: "set-name",
-          placeholder: "set name",
+          placeholder: "Set name",
           value: tagSet.name,
           isValid: true,
           errorMessage: "",
@@ -111,7 +129,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
         {
           id: "set-value" + i,
           name: "set-value",
-          placeholder: "set value",
+          placeholder: "Triger words",
           value: tagSet.value,
           isValid: true,
           errorMessage: "",
@@ -234,6 +252,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
       );
       setSuccessMessage(SAVED_SUCCESS_MESSAGE);
       setIsSaving(false);
+      onClose();
     } catch (err) {
       // console.log(err.message);
       setErrorMessage(DEF_ERROR_MESSAGE);
@@ -248,7 +267,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
         type: "text",
         id: `set-name-${Date.now()}`,
         name: "set-name",
-        placeholder: "set name",
+        placeholder: "Set name",
         value: "",
         isValid: true,
         errorMessage: "",
@@ -257,7 +276,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
         type: "text",
         id: `set-value-${Date.now()}`,
         name: "set-value",
-        placeholder: "set value",
+        placeholder: "Triger words",
         value: "",
         isValid: true,
         errorMessage: "",
@@ -406,7 +425,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
               }}
               showError={showErrorMessage}
             ></Textarea>
-            <Fieldset legend="Tag sets">
+            <Fieldset legend="Tag sets" className={classes.fieldset}>
               {tagSetsHtml}
               <ButttonSecondary
                 type="button"
@@ -416,6 +435,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
               >
                 + add new set
               </ButttonSecondary>
+              <AddTagSetGuide />
             </Fieldset>
           </FieldCategory>
         </div>
@@ -425,6 +445,7 @@ const TagsForm = ({ versionData, defaultData, modelId }) => {
       </Buttton>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
+      <ModelTagsFormGuide />
     </form>
   );
 };

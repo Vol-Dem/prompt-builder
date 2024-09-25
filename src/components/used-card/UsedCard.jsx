@@ -19,13 +19,14 @@ const UsedCard = ({ previewData, fullView }) => {
   const [taglistHeight, setTaglistHeight] = useState(null);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const model = useSelector((state) => state.model.model);
+  const fullCardView = useSelector((state) => state.used.fullCardView);
   const dispatch = useDispatch();
   const tagsRef = useRef();
   const tagsListRef = useRef();
   const taglistItemHeight = 68;
 
   useEffect(() => {
-    if (tagsRef?.current?.clientHeight)
+    if (tagsRef?.current?.clientHeight && fullCardView)
       setTaglistHeight(tagsRef?.current?.clientHeight);
     if (taglistHeight === taglistItemHeight) setTagsHeight(taglistItemHeight);
   }, [
@@ -33,6 +34,7 @@ const UsedCard = ({ previewData, fullView }) => {
     taglistHeight,
     taglistItemHeight,
     tagsRef?.current?.clientHeight,
+    fullCardView,
   ]);
 
   const openTagsHandler = () => {
@@ -180,6 +182,7 @@ const UsedCard = ({ previewData, fullView }) => {
                       />
                     </div>
                   </div>
+                  {/* {taglistHeight > taglistItemHeight && ( */}
                   {taglistHeight > taglistItemHeight && (
                     <button
                       className={`${classes["tags__btn"]} ${
