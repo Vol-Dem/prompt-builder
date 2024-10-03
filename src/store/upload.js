@@ -87,14 +87,20 @@ export const savePost = (postInfo) => {
 
       const data = await imgExampleResponse.json();
       console.log(data);
+      // throw new Error("test");
       if (!data?.items?.length) {
         throw new Error("0 items");
       }
 
       const examplesDataWithRes = data.items
-        .filter((image) =>
-          !!postInfo?.ids?.length ? postInfo.ids.includes(image?.id) : true
-        )
+        .filter((image) => {
+          // !!postInfo?.ids?.length ? postInfo.ids.includes(image?.id) : true
+          if (!!postInfo?.ids?.length) {
+            return postInfo.ids.includes(image?.id);
+          } else {
+            return image.postId === postId;
+          }
+        })
         .sort((a, b) => {
           return b.createdAt - a.createdAt;
         })
@@ -102,7 +108,15 @@ export const savePost = (postInfo) => {
           return transformImageData(imageData);
         });
 
-      await updateImagePostData(postInfo, examplesDataWithRes);
+      const images = examplesDataWithRes?.length
+        ? examplesDataWithRes
+        : postInfo?.images;
+
+      if (!images?.length) {
+        throw new Error("0 items");
+      }
+
+      await updateImagePostData(postInfo, images);
       // const uid = getState().auth.user.uid;
       // const imgExampleResponse = await fetch(
       //   `https://civitai.com/api/v1/images?postId=${postId}&modelId=${modelId}&modelVersionId=${versionId}${
