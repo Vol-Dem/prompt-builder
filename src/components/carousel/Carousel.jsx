@@ -588,9 +588,11 @@ const Carousel = ({
     const postData =
       model.hasOwnProperty("savedImages") &&
       model?.savedImages[versionId]?.find((post) => post.postId === +postId);
-    const images = ids?.length
+
+    const imagesToSave = ids?.length
       ? imagesData.filter((image) => ids.includes(image?.id))
-      : [];
+      : imagesData;
+
     console.log(queue);
     dispatch(
       uploadActions.addToQueue({
@@ -603,7 +605,7 @@ const Carousel = ({
         imgUrl: images[0].url,
         ids: ids || [],
         existedAmount: existedImgsAmount,
-        images,
+        images: imagesToSave,
       })
     );
     setImagesListIsOpen(false);
