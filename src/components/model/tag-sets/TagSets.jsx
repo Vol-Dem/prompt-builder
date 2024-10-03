@@ -38,6 +38,7 @@ const TagSets = ({ customData, defaultData }) => {
   }, [guideStep, dispatch, guideActive, tagSets]);
 
   useEffect(() => {
+    if (!tagSets?.length) return;
     const itemHeight = tagSetItemRef?.current?.offsetHeight;
     const listHeight = tagSetListRef?.current?.offsetHeight;
     setTagsetItemHeight(itemHeight);
@@ -46,6 +47,7 @@ const TagSets = ({ customData, defaultData }) => {
     tagSetItemRef?.current?.offsetHeight,
     tagSetListRef?.current?.offsetHeight,
     customData,
+    tagSets,
   ]);
 
   useEffect(() => {

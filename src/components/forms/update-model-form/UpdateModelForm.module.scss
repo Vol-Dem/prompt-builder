@@ -82,7 +82,8 @@
 
 .submit {
   display: flex;
-  position: relative;
+  position: sticky;
+  bottom: 0;
   // height: 3.2rem;
   justify-content: center;
   align-items: center;
