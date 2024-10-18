@@ -264,8 +264,17 @@ const GeneratedImages = ({ customData }) => {
           setIsLastPage(true);
         }
 
+        // Remove dublicate images (fix for civitai bug)
+        const dataUniq = data?.items?.filter((obj1, i, arr) => {
+          if (!!obj1?.id) {
+            return arr.findIndex((obj2) => obj2?.id === obj1?.id) === i;
+          } else {
+            return true;
+          }
+        });
+
         setExamplesImages((prevState) => {
-          const newExampleImages = [...data?.items, ...prevState];
+          const newExampleImages = [...dataUniq, ...prevState];
           if (versionId === curImagesModelVersionId) {
             sortExampleImages(newExampleImages, versionId);
           }
