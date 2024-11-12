@@ -520,8 +520,8 @@ const UpdateModelForm = ({ modelData, id }) => {
         let fileName;
         if (version.hasOwnProperty("files") && version?.files) {
           fileName = clearFileExtension(
-            version.files.find((file) => file?.primary).name
-          ).toLowerCase();
+            version.files.find((file) => file?.primary)?.name
+          )?.toLowerCase();
         }
 
         modelVersionsCustomData = {

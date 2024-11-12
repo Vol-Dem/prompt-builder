@@ -18,6 +18,7 @@ import ImageSvg from "../../assets/ImageSvg";
 import { authActions } from "../../store/auth";
 import ArrowLeftSvg from "../../assets/ArrowLeft";
 import ArrowRightSvg from "../../assets/ArrowRight";
+import ArchiveForm from "../forms/archive-form/ArchiveForm";
 
 const UsedModelsPanel = () => {
   // const [panelIsOpen, setPanelIsOpen] = useState(true);
@@ -152,13 +153,8 @@ const UsedModelsPanel = () => {
         className={classes["btn__open"]}
       >
         {/* <Arrow direction={panelIsOpen ? "right" : "left"} /> */}
-        {!panelIsOpen && (
-          <ArrowLeftSvg/>
-        )}
-        {panelIsOpen && (
-          
-          <ArrowRightSvg/>
-        )}
+        {!panelIsOpen && <ArrowLeftSvg />}
+        {panelIsOpen && <ArrowRightSvg />}
       </button>
       <div
         className={`${classes.panel} ${
@@ -209,6 +205,7 @@ const UsedModelsPanel = () => {
           {/* <UpdateDb /> */}
           {formIsOpen && (
             <div className={classes.forms}>
+              <ArchiveForm />
               <UpdateModelForm id="side-form" />
             </div>
           )}
