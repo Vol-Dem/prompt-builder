@@ -24,12 +24,12 @@ import ErrorMessage from "../ui/ErrorMessage";
 import SidePanelGuide from "../ui/guide/model/SidePanelGuide";
 import OpenSidePanelGuide from "../ui/guide/model/OpenSidePanelGuide";
 import { useLocation } from "react-router-dom";
+import ReferenceImageList from "./reference-image-list/ReferenceImageList";
 
 const UsedModelsPanel = () => {
   const [cursorInitialX, setCursorInitialX] = useState(null);
   const [cursorCurX, setCursorCurX] = useState(null);
   const usedModels = useSelector((state) => state.used.models);
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const usedImages = useSelector((state) => state.used.images);
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
   const formIsOpen = useSelector((state) => state.used.formIsOpen);
@@ -67,111 +67,11 @@ const UsedModelsPanel = () => {
     dispatch(usedModelsActions.cardViewState());
   };
 
-  const openImageHandler = (e) => {
-    const hash = e.target.closest(`.${classes["ref-images__item"]}`).dataset.id;
-    const image = usedImages.find((image) => image.hash === hash);
-
-    if (hash) {
-      dispatch(
-        modelActions.setActiveCarouselData({
-          images: [image],
-          side: true,
-        })
-      );
-      if (document.body.offsetWidth < 1024) {
-        dispatch(usedModelsActions.panelState(false));
-      }
-    }
-  };
-
-  const closeImageHandler = (e) => {
-    const hash = e.target.closest(`.${classes["ref-images__item"]}`).dataset.id;
-
-    if (hash) {
-      dispatch(removeImageFromPanel(hash));
-    }
-  };
-
   const usedModelsHtml = usedModels.map((model, i) => {
     return <UsedCard key={i} previewData={model} fullView={fullCardView} />;
   });
 
-  const usedImagesHtml = [...Array(IMAGE_REF_ROW_LENGTH).keys()].map(
-    (image, i) => {
-      const nsfw =
-        usedImages[i]?.nsfw === false ||
-        usedImages[i]?.nsfw === "None" ||
-        usedImages[i]?.nsfwLevel === 1
-          ? false
-          : true;
-      if (!!usedImages[i]?.hash) {
-        return (
-          <li
-            key={`i${i}`}
-            className={classes["ref-images__item"]}
-            data-id={usedImages[i]?.hash}
-          >
-            <Image
-              src={usedImages[i].url}
-              alt={`Reference image ${i++}`}
-              onClick={openImageHandler}
-              className={`${
-                !nsfwMode && nsfw ? classes["ref-images__nsfw"] : ""
-              }`}
-            />
-            <span className={classes.close} onClick={closeImageHandler}>
-              <CrossSvg />
-            </span>
-          </li>
-        );
-      } else {
-        return (
-          <li key={`s${i}`} className={classes["ref-images__item--def"]}>
-            <ImageSvg />
-          </li>
-        );
-      }
-    }
-  );
-
-  const usedImagesSecondRowHtml = [...Array(IMAGE_REF_ROW_LENGTH).keys()].map(
-    (image, i) => {
-      const index = i + IMAGE_REF_ROW_LENGTH;
-      const nsfw =
-        usedImages[index]?.nsfw === false ||
-        usedImages[index]?.nsfw === "None" ||
-        usedImages[index]?.nsfwLevel === 1
-          ? false
-          : true;
-      if (!!usedImages[index]?.hash) {
-        return (
-          <li
-            key={`i${i}`}
-            className={classes["ref-images__item"]}
-            data-id={usedImages[index]?.hash}
-          >
-            <Image
-              src={usedImages[index].url}
-              alt={`Reference image ${i++}`}
-              onClick={openImageHandler}
-              className={`${
-                !nsfwMode && nsfw ? classes["ref-images__nsfw"] : ""
-              }`}
-            />
-            <span className={classes.close} onClick={closeImageHandler}>
-              <CrossSvg />
-            </span>
-          </li>
-        );
-      } else {
-        return (
-          <li key={`s${i}`} className={classes["ref-images__item--def"]}>
-            <ImageSvg />
-          </li>
-        );
-      }
-    }
-  );
+  const usedImagesHtml = <ReferenceImageList usedImages={usedImages} />;
 
   const clearPanelHandler = () => {
     dispatch(usedModelsActions.clearPanel());
@@ -313,16 +213,7 @@ const UsedModelsPanel = () => {
         </div>
 
         <div className={classes["model-cards"]}>
-          {!!usedImages.length && (
-            <div>
-              <ul className={classes["ref-images"]}>{usedImagesHtml}</ul>
-              {usedImages.length > IMAGE_REF_ROW_LENGTH && (
-                <ul className={classes["ref-images"]}>
-                  {usedImagesSecondRowHtml}
-                </ul>
-              )}
-            </div>
-          )}
+          {!!usedImages.length && usedImagesHtml}
           {!!usedModelsHtml.length && usedModelsHtml}
           {!usedModelsHtml.length && (
             <div className={classes["model-cards__tip"]}>
