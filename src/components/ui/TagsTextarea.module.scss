@@ -21,11 +21,14 @@
 
 .tag {
   display: inline-block;
-  margin: 0 1rem 1rem 0;
+  // margin: 0 1rem 1rem 0;
   font-size: 1.4rem;
   padding: 0.4rem 0.6rem;
   background-color: #323148;
   border-radius: 1rem;
+  transition: all 0.3s;
+  cursor: grab;
+
   &__content {
     display: flex;
     align-items: center;
@@ -35,7 +38,7 @@
   &__text {
     margin-right: 0.6rem;
     word-break: break-word;
-    cursor: default;
+    // cursor: default;
   }
   &__cross {
     display: inline-block;
@@ -100,6 +103,26 @@
     max-width: 40rem;
     text-align: center;
   }
+}
+
+.tag-container {
+  display: inline-block;
+  margin: 0 1rem 1rem 0;
+  transition: all 0.3s;
+  // background-color: blueviolet;
+}
+
+.drop-left {
+  // background-color: aqua;
+  padding-left: 8rem;
+  // border-left: 1px solid #fff;
+  // margin-left: 3rem;
+}
+.drop-right {
+  // background-color: blueviolet;
+  padding-right: 8rem;
+  // border-right: 1px solid #fff;
+  // margin-right: 3rem;
 }
 
 @media (max-width: 480px) {

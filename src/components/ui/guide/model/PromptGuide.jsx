@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import GuideMessage from "../GuideMessage";
 import {
   GUIDE_STEP_PROMPT_COPY,
+  GUIDE_STEP_PROMPT_DRAG_AND_DROP,
   GUIDE_STEP_PROMPT_PRESETS,
   GUIDE_STEP_PROMPT_VIEW,
 } from "../../../../variables/constants";
@@ -39,6 +40,12 @@ const PromptGuide = (props) => {
             both positive and negative words
           </>
         ),
+      },
+      {
+        step: GUIDE_STEP_PROMPT_DRAG_AND_DROP,
+        arrowPosition: 7,
+        next: true,
+        text: <>You can Drag & Drop tags to change the order</>,
       },
       {
         step: GUIDE_STEP_PROMPT_COPY,
