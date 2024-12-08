@@ -948,3 +948,37 @@ exports.updateModelCallDev = onCall(async (request) => {
     throw new HttpsError(err.message);
   }
 });
+
+exports.getGeonamesCountries = onRequest(
+  {
+    timeoutSeconds: 20,
+    cors: true,
+  },
+  async (request, response) => {
+    const responseGeo = await fetch(
+      `http://api.geonames.org/countryInfoJSON?username=unstogeo`
+    );
+
+    const responseData = await responseGeo.json();
+
+    response.send(responseData);
+  }
+);
+exports.getGeonamesCities = onRequest(
+  {
+    timeoutSeconds: 20,
+    cors: true,
+  },
+  async (request, response) => {
+    const countryCode = request.query?.country || request.params[0];
+    const maxRows = request.query?.maxRows || request.params[1];
+
+    const responseGeo = await fetch(
+      `http://api.geonames.org/searchJSON?country=${countryCode}&featureClass=P&maxRows=${maxRows}&username=unstogeo`
+    );
+
+    const responseData = await responseGeo.json();
+
+    response.send(responseData);
+  }
+);

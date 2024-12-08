@@ -1,3 +1,5 @@
+import { SPLIT_TAG_REGEX } from "../variables/constants";
+
 export const clearObjectKeys = (obj) => {
   const convertedMetaArr = Object.entries(obj).map((entry, i) => {
     let newKey;
@@ -269,4 +271,8 @@ export const transformImageData = (imageData) => {
 
 export const disableScrollHandler = (scrollTop, e) => {
   window.scrollTo(0, scrollTop);
+};
+
+export const convertPromptToArr = (prompt) => {
+  return prompt?.split(SPLIT_TAG_REGEX)?.flatMap((tag) => tag.trim() || []);
 };

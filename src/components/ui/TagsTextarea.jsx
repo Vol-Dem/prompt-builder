@@ -1,10 +1,10 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import classes from "./TagsTextarea.module.scss";
 import { promptActions } from "../../store/prompt";
 import CrossSvg from "../../assets/CrossSvg";
 import { useEffect, useState } from "react";
-
-const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
+import { AnimatePresence, motion } from "framer-motion";
+import { SPLIT_TAG_REGEX } from "../../variables/constants";
 
 const TagsTextarea = ({
   data,
@@ -15,16 +15,27 @@ const TagsTextarea = ({
 }) => {
   const [curPrompt, setCurrentPrompt] = useState([]);
   const dispatch = useDispatch();
+  const curPromptArr = useSelector((state) => state.prompt.curPromptArr);
+  const curNegPromptArr = useSelector((state) => state.prompt.curNegPromptArr);
 
   useEffect(() => {
+    // const promptArr =
+    //   promptType === "positive" ? curPromptArr : curNegPromptArr;
+    // const tagsData = promptArr.map((item, i) => {
+    //   return {
+    //     ...item,
+    //     dropLeft: null,
+    //   };
+    // });
+    // console.log(tagsData);
     const tagsData = data
       .trim()
-      .split(splitRegEx)
+      .split(SPLIT_TAG_REGEX)
       .flatMap((item, i) => {
         if (!item) return [];
         return {
           id: i,
-          tag: item,
+          tag: item.trim(),
           dropLeft: null,
         };
       });
@@ -43,7 +54,12 @@ const TagsTextarea = ({
 
   const dragStartHandler = (e) => {
     const targetTagContainer = e.target.closest(`.${classes["tag-container"]}`);
-    e.dataTransfer.setData("text/plain", targetTagContainer.dataset.id);
+    const id = targetTagContainer.dataset.id;
+    const tag = targetTagContainer.dataset.tag;
+    const type = targetTagContainer.dataset.type;
+    const tagData = { id, tag, type };
+
+    e.dataTransfer.setData("text/plain", JSON.stringify(tagData));
     e.dataTransfer.effectAllowed = "move";
   };
 
@@ -112,46 +128,126 @@ const TagsTextarea = ({
   };
 
   const dropHandler = (e) => {
-    const id = +e.dataTransfer.getData("text/plain");
+    const { id, tag, type } = JSON.parse(e.dataTransfer.getData("text/plain"));
     const targetTagContainer = e.target.closest(`.${classes["tag-container"]}`);
-    const containerId = +targetTagContainer.dataset.id;
-    if (id === containerId) return;
+    const dropTargetId = +targetTagContainer?.dataset?.id;
+    const dropTargetType = targetTagContainer?.dataset?.type;
+    console.log(dropTargetType);
+    console.log(dropTargetId);
+    if (Number.isFinite(dropTargetId) && dropTargetType) {
+      if (id === dropTargetId && dropTargetType === type) return;
 
-    const containerData = curPrompt.find(
-      (tagItem) => +tagItem.id === containerId
-    );
-    if (containerData.dropLeft === null) return;
+      const containerData = curPrompt.find(
+        (tagItem) => +tagItem.id === dropTargetId
+      );
+      if (containerData.dropLeft === null) return;
 
-    let newPosition;
+      let newPosition;
 
-    if (
-      (containerData.dropLeft && id > containerId) ||
-      (!containerData.dropLeft && id < containerId)
-    ) {
-      newPosition = containerData.id;
-    } else if (containerData.dropLeft && id < containerId) {
-      newPosition = containerData.id - 1;
-    } else if (!containerData.dropLeft && id > containerId) {
-      newPosition = containerData.id + 1;
+      if (
+        (containerData.dropLeft && id > dropTargetId) ||
+        (!containerData.dropLeft && id < dropTargetId)
+        // || (containerData.dropLeft && id <= dropTargetId && containerData.id === 0)
+      ) {
+        newPosition = containerData.id;
+      } else if (
+        containerData.dropLeft &&
+        id <= dropTargetId &&
+        containerData.id > 0
+      ) {
+        newPosition = containerData.id - 1;
+      } else if (!containerData.dropLeft && id >= dropTargetId) {
+        newPosition = containerData.id + 1;
+      }
+      console.log(containerData);
+      console.log("new", newPosition);
+
+      dispatch(
+        promptActions.removeTag({
+          type: type,
+          value: tag,
+        })
+      );
+      dispatch(
+        promptActions.addTagToPosition({
+          position: newPosition,
+          tag,
+          type: dropTargetType,
+        })
+      );
+
+      // const movedItem = { id, tag, dropLeft: null };
+
+      // let newPrompt;
+
+      // if (dropTargetType === type) {
+      //   dispatch(
+      //     promptActions.removeTag({
+      //       type: type,
+      //       value: tag,
+      //     })
+      //   );
+      //   dispatch(
+      //     promptActions.addTagToPosition({
+      //       position: newPosition,
+      //       tag,
+      //       type: dropTargetType,
+      //     })
+      //   );
+      //   // newPrompt = curPrompt
+      //   //   .toSpliced(id, 1)
+      //   //   .toSpliced(newPosition, 0, movedItem);
+      // } else {
+      //   dispatch(
+      //     promptActions.removeTag({
+      //       type: type,
+      //       value: tag,
+      //     })
+      //   );
+      //   dispatch(
+      //     promptActions.addTagToPosition({
+      //       position: newPosition,
+      //       tag,
+      //       type: dropTargetType,
+      //     })
+      //   );
+      //   // newPrompt = curPrompt.toSpliced(newPosition, 0, movedItem);
+      // }
+
+      // if (dropTargetType === "positive") {
+      //   dispatch(
+      //     promptActions.setCurrentPrompt(
+      //       newPrompt.map((tagItem) => tagItem.tag.trim()).join(", ")
+      //     )
+      //   );
+      // }
+      // if (dropTargetType === "negative") {
+      //   dispatch(
+      //     promptActions.setCurrentNegPrompt(
+      //       newPrompt.map((tagItem) => tagItem.tag.trim()).join(", ")
+      //     )
+      //   );
+      // }
     }
-
-    const movedItem = curPrompt[id];
-
-    const newPrompt = curPrompt
-      .toSpliced(id, 1)
-      .toSpliced(newPosition, 0, movedItem);
-
-    dispatch(
-      promptActions.setCurrentPrompt(
-        newPrompt.map((tagItem) => tagItem.tag).join(", ")
-      )
-    );
   };
 
   const tagItemsHtml = curPrompt.map((item, i) => {
     return (
-      <li
-        key={i}
+      <motion.li
+        key={item.tag}
+        layout
+        initial={{ opacity: 0, scale: 0.8 }}
+        variants={{
+          hidden: { opacity: 0, scale: 0.5 },
+          visible: {
+            opacity: 1,
+            scale: 1,
+            transition: { type: "spring" },
+          },
+        }}
+        animate="visible"
+        exit={{ y: -30, x: 30, opacity: 0, scale: 0.5 }}
+        // className={`${classes["tag-container"]}`}
         className={`${classes["tag-container"]} ${
           item.dropLeft !== null && item.dropLeft ? classes["drop-left"] : ""
         } ${
@@ -161,6 +257,8 @@ const TagsTextarea = ({
         onDragLeave={dragLeaveHandler}
         onDrop={dropHandler}
         data-id={item.id}
+        data-tag={item.tag}
+        data-type={promptType}
       >
         <div
           className={classes.tag}
@@ -168,6 +266,8 @@ const TagsTextarea = ({
           onDragStart={dragStartHandler}
           onDragEnd={dragEndHandler}
           data-id={item.id}
+          data-tag={item.tag}
+          data-type={promptType}
         >
           <div className={classes["tag__content"]}>
             <span className={classes["tag__text"]}>{item.tag.trim()}</span>
@@ -185,12 +285,18 @@ const TagsTextarea = ({
             </button>
           </div>
         </div>
-      </li>
+      </motion.li>
     );
   });
 
   return (
-    <ul className={`${classes.field} ${className || ""}`}>
+    <ul
+      // onDragOver={dragOverHandler}
+      // onDragLeave={dragLeaveHandler}
+      // onDrop={dropHandler}
+      // data-type={promptType}
+      className={`${classes.field} ${className || ""}`}
+    >
       {!tagItemsHtml.length && (
         <li className={classes.placeholder}>{placeholder}</li>
       )}
@@ -201,7 +307,7 @@ const TagsTextarea = ({
           {aditionalPlacegholder}
         </li>
       )}
-      {tagItemsHtml}
+      <AnimatePresence>{tagItemsHtml}</AnimatePresence>
     </ul>
   );
 };

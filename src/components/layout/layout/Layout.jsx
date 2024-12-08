@@ -35,6 +35,7 @@ import {
   uploadStorage,
 } from "../../../variables/utils";
 import Maintenance from "../maintenance/Maintenance";
+import { AnimatePresence } from "framer-motion";
 
 const Layout = () => {
   const [cookificationIsOpen, setCookificationIsOpen] = useState(false);
@@ -221,30 +222,35 @@ const Layout = () => {
             {maintenance && <Maintenance />}
           </div>
         </main>
-        {authIsOpen && (
-          <Modal onClose={closeAuth}>
-            {!isAuth && <AuthForm />}
-            {isAuth && !emailVerified && <VerifyEmailMessage />}
-          </Modal>
-        )}
-        {activeNotification?.id && isAuth && (
-          <Notification
-            type={activeNotification.type}
-            title={activeNotification.title}
-            onClick={closeNotificationHandler}
-          >
-            {activeNotification.text}
-          </Notification>
-        )}
-        {cookificationIsOpen && !isAuth && (
-          <Notification type="notification" onClick={closeCookificationHandler}>
-            This website uses cookies to ensure you get the best experience on
-            our website. By using our site you consent cookies.{" "}
-            <Link className={classes.link} to="/privacy">
-              Learn more
-            </Link>
-          </Notification>
-        )}
+        <AnimatePresence>
+          {authIsOpen && (
+            <Modal onClose={closeAuth}>
+              {!isAuth && <AuthForm />}
+              {isAuth && !emailVerified && <VerifyEmailMessage />}
+            </Modal>
+          )}
+          {activeNotification?.id && isAuth && (
+            <Notification
+              type={activeNotification.type}
+              title={activeNotification.title}
+              onClick={closeNotificationHandler}
+            >
+              {activeNotification.text}
+            </Notification>
+          )}
+          {cookificationIsOpen && !isAuth && (
+            <Notification
+              type="notification"
+              onClick={closeCookificationHandler}
+            >
+              This website uses cookies to ensure you get the best experience on
+              our website. By using our site you consent cookies.{" "}
+              <Link className={classes.link} to="/privacy">
+                Learn more
+              </Link>
+            </Notification>
+          )}
+        </AnimatePresence>
         <Footer />
       </div>
       {!maintenance && <UsedModelsPanel />}

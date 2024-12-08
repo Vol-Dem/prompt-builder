@@ -4,17 +4,18 @@ import { getAuth } from "firebase/auth";
 import firebaseApp from "../firebase-config";
 import { saveToStorage, uploadStorage } from "../variables/utils";
 import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
+import { convertPromptToArr } from "../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
-
-const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
 
 const promptSlice = createSlice({
   name: "prompt",
   initialState: {
     curPrompt: "",
+    curPromptArr: [],
     curNegPrompt: "",
+    curNegPromptArr: [],
     presets: { positive: [], negative: [] },
     promptIsOpen: false,
     isTextMode: false,
@@ -22,9 +23,11 @@ const promptSlice = createSlice({
   reducers: {
     setCurrentPrompt(state, actions) {
       state.curPrompt = actions.payload;
+      // state.curPromptArr = convertPromptToArr(actions.payload);
     },
     setCurrentNegPrompt(state, actions) {
       state.curNegPrompt = actions.payload;
+      // state.curNegPromptArr = convertPromptToArr(actions.payload);
     },
     clearPrompt(state, actions) {
       state.curPrompt = "";
@@ -39,11 +42,77 @@ const promptSlice = createSlice({
     setTextMode(state, actions) {
       state.isTextMode = actions.payload;
     },
+    addTagToPosition(state, actions) {
+      const { tag, position, type } = actions.payload;
+      if ((!tag, !Number.isFinite(position), !type)) return;
+      if (type === "positive") {
+        state.curPrompt = convertPromptToArr(state.curPrompt)
+          .toSpliced(position, 0, tag)
+          .join(", ");
+      }
+      if (type === "negative") {
+        state.curNegPrompt = convertPromptToArr(state.curNegPrompt)
+          .toSpliced(position, 0, tag)
+          .join(", ");
+      }
+    },
     addTagToPrompt(state, actions) {
+      const promptPos = state.curPrompt.trim();
+      const promptNeg = state.curNegPrompt.trim();
+      const allIds = [
+        ...state.curPromptArr.map((tag) => tag.id),
+        ...state.curNegPromptArr.map((tag) => tag.id),
+      ].sort();
+      const promptPosPositions = state.curPromptArr
+        .map((tag) => tag.position)
+        .sort();
+      const promptPNegPositions = state.curNegPromptArr
+        .map((tag) => tag.position)
+        .sort();
+
+      console.log("ids", allIds);
+      console.log("pos", promptPosPositions);
+      console.log("posNeg", promptPNegPositions);
+
       const isPositive = actions.payload.type === "positive";
-      const prompt = isPositive
-        ? state.curPrompt.trim()
-        : state.curNegPrompt.trim();
+      const prompt = isPositive ? promptPos : promptNeg;
+
+      //ARR
+
+      if (isPositive && !state.curPromptArr.length) {
+        state.curPromptArr = [
+          { id: 0, position: 0, tag: actions.payload.value },
+        ];
+      } else if (isPositive && !!state.curPromptArr.length) {
+        console.log(allIds[allIds.length] + 1);
+        state.curPromptArr = [
+          ...state.curPromptArr,
+          {
+            id: allIds[allIds.length - 1] + 1,
+            tag: actions.payload.value,
+            position: promptPosPositions[promptPosPositions.length - 1] + 1,
+          },
+        ];
+        // console.log(id)
+      }
+
+      if (!isPositive && !state.curNegPromptArr.length) {
+        state.curNegPromptArr = [
+          { id: 0, position: 0, tag: actions.payload.value },
+        ];
+      } else if (!isPositive && !!state.curNegPromptArr.length) {
+        state.curNegPromptArr = [
+          ...state.curNegPromptArr,
+          {
+            id: allIds[allIds.length - 1] + 1,
+            tag: actions.payload.value,
+            position: promptPNegPositions[promptPNegPositions.length - 1] + 1,
+          },
+        ];
+        // console.log(id)
+      }
+
+      //STRING
 
       const lastSimbol = prompt.slice(-1);
 
@@ -65,9 +134,7 @@ const promptSlice = createSlice({
           ? state.curPrompt
           : state.curNegPrompt;
 
-      const promptArr = curPrompt
-        ?.split(splitRegEx)
-        ?.flatMap((tag) => tag.trim() || []);
+      const promptArr = convertPromptToArr(curPrompt);
 
       let newPromt = promptArr.flatMap((word) => {
         if (word === actions.payload.value) return [];
@@ -87,9 +154,7 @@ const promptSlice = createSlice({
 
       const lastSimbol = prompt.slice(-1);
 
-      const promptArr = prompt
-        ?.split(splitRegEx)
-        ?.flatMap((tag) => tag.trim() || []);
+      const promptArr = convertPromptToArr(prompt);
 
       const newWords = actions.payload?.value?.filter((newWord) => {
         const isInPrompt = promptArr.find(
@@ -116,9 +181,7 @@ const promptSlice = createSlice({
           ? state.curPrompt
           : state.curNegPrompt;
 
-      const promptArr = curPrompt
-        ?.split(splitRegEx)
-        ?.flatMap((tag) => tag.trim() || []);
+      const promptArr = convertPromptToArr(curPrompt);
 
       let newPromt = promptArr.flatMap((word) => {
         const isInPrompt = actions.payload.value.find(
@@ -134,9 +197,7 @@ const promptSlice = createSlice({
       }
     },
     changeActivationTag(state, actions) {
-      const promptArr = state.curPrompt
-        ?.split(splitRegEx)
-        ?.flatMap((tag) => tag.trim() || []);
+      const promptArr = convertPromptToArr(state.curPrompt);
 
       const activationTagIndex = promptArr.findIndex((word) =>
         word.trim().includes(actions.payload.prevTag)
