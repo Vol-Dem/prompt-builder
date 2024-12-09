@@ -283,27 +283,31 @@ export const addElementToIndex = ({
   dropTargetType,
   prevPosition,
   curPromptArr,
-  newId,
 }) => {
-  const curPromptArrUpdatedPosition = curPromptArr.map((tag) => {
+  const curPromptArrUpdatedPosition = curPromptArr.toSpliced(
+    item.position,
+    0,
+    item
+  );
+  return curPromptArrUpdatedPosition.map((tag) => {
     if (dropTargetType === type && Number.isFinite(prevPosition)) {
       if (
         item.position < prevPosition &&
         tag.position >= item.position &&
-        tag.position < prevPosition
+        tag.id !== item.id
       ) {
         return { ...tag, position: tag.position + 1 };
       }
       if (
         item.position > prevPosition &&
-        tag.position <= item.position &&
-        tag.position > prevPosition
+        tag.position >= item.position &&
+        tag.id !== item.id
       ) {
-        return { ...tag, position: tag.position - 1 };
+        return { ...tag, position: tag.position + 1 };
       }
     }
     if (dropTargetType !== type) {
-      if (tag.position >= item.position) {
+      if (tag.position >= item.position && tag.id !== item.id) {
         return {
           ...tag,
           position: tag.position + 1,
@@ -312,6 +316,4 @@ export const addElementToIndex = ({
     }
     return tag;
   });
-
-  return curPromptArrUpdatedPosition.toSpliced(item.position, 0, item);
 };

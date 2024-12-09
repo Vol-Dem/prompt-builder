@@ -296,9 +296,28 @@ const Model = ({ title }) => {
     };
   }, [modelId, isAuth, dispatch, uid]);
 
+  const getDefModelDataFromFirestore = useCallback(async () => {
+    try {
+      const modelDefDataRef = doc(firestore, "models", `${model.id}`);
+      const docSnap = await getDoc(modelDefDataRef);
+
+      if (docSnap.exists()) {
+        const modelDefData = docSnap.data();
+
+        dispatch(
+          modelActions.setModelData({
+            data: modelDefData,
+          })
+        );
+      }
+    } catch (err) {
+      console.log(err.message);
+      setErrorMessage(DEF_ERROR_MESSAGE);
+    }
+  }, [dispatch, model.id]);
+
   useEffect(() => {
     if (!model?.id) return;
-    if (!!model?.data?.id) return;
 
     const getDefModelData = async () => {
       try {
@@ -309,31 +328,34 @@ const Model = ({ title }) => {
         const responseData = await responseCiv.json();
         // console.log(responseData);
 
-        let modelDefData;
-
-        if (responseData?.id) {
-          modelDefData = responseData;
-        } else {
-          const modelDefDataRef = doc(firestore, "models", `${model.id}`);
-          const docSnap = await getDoc(modelDefDataRef);
-
-          if (docSnap.exists()) {
-            modelDefData = docSnap.data();
-          }
+        if (!responseData?.id) {
+          throw new Error("Civitai faild");
         }
+        const modelDefDataRef = doc(firestore, "models", `${model.id}`);
+        const docSnap = await getDoc(modelDefDataRef);
 
-        dispatch(
-          modelActions.setModelData({
-            data: modelDefData,
-          })
-        );
+        if (docSnap.exists()) {
+          const modelDefData = docSnap.data();
+
+          dispatch(
+            modelActions.setModelData({
+              data: modelDefData,
+            })
+          );
+        }
       } catch (err) {
-        setErrorMessage(DEF_ERROR_MESSAGE);
+        getDefModelDataFromFirestore();
       }
     };
 
     getDefModelData();
-  }, [model?.id, dispatch, model?.data?.id, modelId]);
+  }, [
+    model?.id,
+    dispatch,
+    model?.data?.id,
+    modelId,
+    getDefModelDataFromFirestore,
+  ]);
 
   useEffect(() => {
     if (

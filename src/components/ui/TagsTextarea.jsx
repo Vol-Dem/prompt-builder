@@ -46,8 +46,8 @@ const TagsTextarea = ({
     const value = e.target.closest(`.${classes.btn}`).dataset.value;
     dispatch(
       promptActions.removeTag({
+        ...JSON.parse(value),
         type: promptType,
-        value: value,
       })
     );
   };
@@ -146,7 +146,9 @@ const TagsTextarea = ({
       dispatch(
         promptActions.removeTag({ id, type, dropTargetType: fieldType })
       );
-      dispatch(promptActions.addTagToPrompt({ value: tag, type: fieldType }));
+      dispatch(
+        promptActions.addTagToPrompt({ id: id, value: tag, type: fieldType })
+      );
       return;
     }
 
@@ -193,7 +195,7 @@ const TagsTextarea = ({
         newPosition = containerData.position + 1;
       }
       // console.log(containerData);
-      // console.log("new", newPosition);
+      console.log("new", newPosition);
 
       // dispatch(
       //   promptActions.removeTag({
@@ -271,7 +273,7 @@ const TagsTextarea = ({
               type="button"
               className={classes.btn}
               onClick={removeTagHandler}
-              data-value={item.tag.trim()}
+              data-value={JSON.stringify(item)}
               data-type=""
             >
               <span className={classes["tag__cross"]}>

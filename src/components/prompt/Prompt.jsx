@@ -53,10 +53,12 @@ const Prompt = () => {
 
   const clearPositivePromptHandler = () => {
     dispatch(promptActions.setCurrentPrompt(""));
+    dispatch(promptActions.setCurPromptArr([]));
   };
 
   const clearNegativePromptHandler = () => {
     dispatch(promptActions.setCurrentNegPrompt(""));
+    dispatch(promptActions.setCurNegPromptArr([]));
   };
 
   const clearPromptHandler = () => {
