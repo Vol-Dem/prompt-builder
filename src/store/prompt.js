@@ -4,7 +4,7 @@ import { getAuth } from "firebase/auth";
 import firebaseApp from "../firebase-config";
 import { saveToStorage, uploadStorage } from "../variables/utils";
 import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
-import { convertPromptToArr } from "../utils/generalUtils";
+import { addElementToIndex, convertPromptToArr } from "../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
@@ -23,15 +23,15 @@ const promptSlice = createSlice({
   reducers: {
     setCurrentPrompt(state, actions) {
       state.curPrompt = actions.payload;
-      // state.curPromptArr = convertPromptToArr(actions.payload);
     },
     setCurrentNegPrompt(state, actions) {
       state.curNegPrompt = actions.payload;
-      // state.curNegPromptArr = convertPromptToArr(actions.payload);
     },
     clearPrompt(state, actions) {
       state.curPrompt = "";
       state.curNegPrompt = "";
+      state.curPromptArr = [];
+      state.curNegPromptArr = [];
     },
     setPresets(state, actions) {
       if (actions?.payload) state.presets = actions.payload;
@@ -43,108 +43,161 @@ const promptSlice = createSlice({
       state.isTextMode = actions.payload;
     },
     addTagToPosition(state, actions) {
-      const { tag, position, type } = actions.payload;
-      if ((!tag, !Number.isFinite(position), !type)) return;
-      if (type === "positive") {
-        state.curPrompt = convertPromptToArr(state.curPrompt)
-          .toSpliced(position, 0, tag)
-          .join(", ");
-      }
-      if (type === "negative") {
-        state.curNegPrompt = convertPromptToArr(state.curNegPrompt)
-          .toSpliced(position, 0, tag)
-          .join(", ");
-      }
-    },
-    addTagToPrompt(state, actions) {
-      const promptPos = state.curPrompt.trim();
-      const promptNeg = state.curNegPrompt.trim();
+      const { dropTargetType } = actions.payload;
       const allIds = [
         ...state.curPromptArr.map((tag) => tag.id),
         ...state.curNegPromptArr.map((tag) => tag.id),
-      ].sort();
+      ].sort((a, b) => a - b);
+      const newId = allIds[allIds.length - 1] + 1;
+
+      if (dropTargetType === "positive") {
+        state.curPromptArr = addElementToIndex({
+          ...actions.payload,
+          curPromptArr: state.curPromptArr,
+          newId,
+        });
+      }
+      if (dropTargetType === "negative") {
+        state.curNegPromptArr = addElementToIndex({
+          ...actions.payload,
+          curPromptArr: state.curNegPromptArr,
+          newId,
+        });
+      }
+
+      ////STRING///////////////////////////////////////////////////////////////////////////////
+      // const { tag, position, type } = actions.payload;
+      // if ((!tag, !Number.isFinite(position), !type)) return;
+      // if (type === "positive") {
+      //   state.curPrompt = convertPromptToArr(state.curPrompt)
+      //     .toSpliced(position, 0, tag)
+      //     .join(", ");
+      // }
+      // if (type === "negative") {
+      //   state.curNegPrompt = convertPromptToArr(state.curNegPrompt)
+      //     .toSpliced(position, 0, tag)
+      //     .join(", ");
+      // }
+    },
+    addTagToPrompt(state, actions) {
+      const allIds = [
+        ...state.curPromptArr.map((tag) => tag.id),
+        ...state.curNegPromptArr.map((tag) => tag.id),
+      ].sort((a, b) => a - b);
       const promptPosPositions = state.curPromptArr
         .map((tag) => tag.position)
-        .sort();
+        .sort((a, b) => a - b);
       const promptPNegPositions = state.curNegPromptArr
         .map((tag) => tag.position)
-        .sort();
-
-      console.log("ids", allIds);
-      console.log("pos", promptPosPositions);
-      console.log("posNeg", promptPNegPositions);
+        .sort((a, b) => a - b);
 
       const isPositive = actions.payload.type === "positive";
-      const prompt = isPositive ? promptPos : promptNeg;
+
+      const curPrompt = isPositive ? state.curPromptArr : state.curNegPromptArr;
+      const curPromptPositions = isPositive
+        ? promptPosPositions
+        : promptPNegPositions;
 
       //ARR
 
-      if (isPositive && !state.curPromptArr.length) {
-        state.curPromptArr = [
-          { id: 0, position: 0, tag: actions.payload.value },
-        ];
-      } else if (isPositive && !!state.curPromptArr.length) {
-        console.log(allIds[allIds.length] + 1);
-        state.curPromptArr = [
-          ...state.curPromptArr,
-          {
-            id: allIds[allIds.length - 1] + 1,
-            tag: actions.payload.value,
-            position: promptPosPositions[promptPosPositions.length - 1] + 1,
-          },
-        ];
-        // console.log(id)
-      }
+      const newPromptArr = [
+        ...curPrompt,
+        {
+          id: !allIds.length ? 0 : allIds[allIds.length - 1] + 1,
+          tag: actions.payload.value,
+          position: !curPromptPositions.length
+            ? 0
+            : curPromptPositions[curPromptPositions.length - 1] + 1,
+        },
+      ];
 
-      if (!isPositive && !state.curNegPromptArr.length) {
-        state.curNegPromptArr = [
-          { id: 0, position: 0, tag: actions.payload.value },
-        ];
-      } else if (!isPositive && !!state.curNegPromptArr.length) {
-        state.curNegPromptArr = [
-          ...state.curNegPromptArr,
-          {
-            id: allIds[allIds.length - 1] + 1,
-            tag: actions.payload.value,
-            position: promptPNegPositions[promptPNegPositions.length - 1] + 1,
-          },
-        ];
-        // console.log(id)
+      const newPrompt = newPromptArr.map((tag) => tag.tag).join(", ");
+
+      if (isPositive) {
+        state.curPromptArr = newPromptArr;
+        state.curPrompt = newPrompt;
+      } else {
+        state.curNegPromptArr = newPromptArr;
+        state.curNegPrompt = newPrompt;
       }
 
       //STRING
+      // const promptPos = state.curPrompt.trim();
+      // const promptNeg = state.curNegPrompt.trim();
+      // const lastSimbol = prompt.slice(-1);
 
-      const lastSimbol = prompt.slice(-1);
-
-      if (isPositive) {
-        state.curPrompt =
-          lastSimbol === "," || !prompt.length
-            ? `${prompt} ${actions.payload.value},`
-            : `${prompt}, ${actions.payload.value},`;
-      } else {
-        state.curNegPrompt =
-          lastSimbol === "," || !prompt.length
-            ? `${prompt} ${actions.payload.value},`
-            : `${prompt}, ${actions.payload.value},`;
-      }
+      // if (isPositive) {
+      //   state.curPrompt =
+      //     lastSimbol === "," || !prompt.length
+      //       ? `${prompt} ${actions.payload.value},`
+      //       : `${prompt}, ${actions.payload.value},`;
+      // } else {
+      //   state.curNegPrompt =
+      //     lastSimbol === "," || !prompt.length
+      //       ? `${prompt} ${actions.payload.value},`
+      //       : `${prompt}, ${actions.payload.value},`;
+      // }
     },
     removeTag(state, actions) {
-      const curPrompt =
-        actions.payload.type === "positive"
-          ? state.curPrompt
-          : state.curNegPrompt;
+      const { id, type, dropTargetType, value } = actions.payload;
+      // console.log("DEL", id, type);
+      const promptArr =
+        type === "positive" ? state.curPromptArr : state.curNegPromptArr;
 
-      const promptArr = convertPromptToArr(curPrompt);
+      let newPromptArr;
 
-      let newPromt = promptArr.flatMap((word) => {
-        if (word === actions.payload.value) return [];
-        return word;
-      });
-      if (actions.payload.type === "positive") {
-        state.curPrompt = newPromt.join(", ");
-      } else {
-        state.curNegPrompt = newPromt.join(", ");
+      if (!dropTargetType && value) {
+        const delIndex = promptArr.findIndex((tag) => tag.tag === value);
+        if (delIndex < 0) return;
+        newPromptArr = promptArr.toSpliced(delIndex, 1);
       }
+
+      const delIndex = promptArr.findIndex((tag) => tag.id === id);
+      if (dropTargetType === type) {
+        if (delIndex < 0) return;
+        newPromptArr = promptArr.toSpliced(delIndex, 1);
+      } else if (dropTargetType !== type) {
+        newPromptArr = promptArr.flatMap((tag) => {
+          if (tag.position === delIndex) {
+            return [];
+          }
+          if (tag.position > delIndex) {
+            return {
+              ...tag,
+              position: tag.position - 1,
+            };
+          }
+          return tag;
+        });
+      }
+
+      const newPrompt = newPromptArr.map((tag) => tag.tag).join(", ");
+
+      if (type === "positive") {
+        state.curPromptArr = newPromptArr;
+        state.curPrompt = newPrompt;
+      } else {
+        state.curNegPromptArr = newPromptArr;
+        state.curNegPrompt = newPrompt;
+      }
+
+      // //STRING
+      // const curPrompt =
+      //   actions.payload.type === "positive"
+      //     ? state.curPrompt
+      //     : state.curNegPrompt;
+
+      // const promptArr = convertPromptToArr(curPrompt);
+
+      // let newPromt = promptArr.flatMap((word) => {
+      //   if (word === actions.payload.value) return [];
+      //   return word;
+      // });
+      // if (actions.payload.type === "positive") {
+      //   state.curPrompt = newPromt.join(", ");
+      // } else {
+      //   state.curNegPrompt = newPromt.join(", ");
+      // }
     },
     addAllTagsToPrompt(state, actions) {
       const isPositive = actions.payload.type === "positive";
@@ -220,6 +273,88 @@ const promptSlice = createSlice({
         state.promptIsOpen = true;
         state.isTextMode = false;
       })
+      .addMatcher(
+        (action) => action.type.startsWith("prompt/removeTag"),
+        (state, actions) => {
+          console.log("RUNNNN");
+          const { type, dropTargetType } = actions.payload;
+          if (type === "positive" || dropTargetType === "positive") {
+            state.curPrompt = state.curPromptArr
+              .map((tag) => tag.tag)
+              .join(", ");
+          }
+          if (type === "negative" || dropTargetType === "negative") {
+            state.curNegPrompt = state.curNegPromptArr
+              .map((tag) => tag.tag)
+              .join(", ");
+          }
+        }
+      )
+      .addMatcher(
+        (action) => action.type.startsWith("prompt/setTextMode"),
+        (state, actions) => {
+          if (state.curPrompt && state.curNegPrompt) return;
+          const promptArr = convertPromptToArr(state.curPrompt).map(
+            (tag, i) => {
+              return {
+                tag,
+                position: i,
+              };
+            }
+          );
+          const newTags = promptArr.filter(
+            (tag) =>
+              !state.curPromptArr.find((curTag) => curTag.tag === tag.tag)
+          );
+
+          const promptArrNeg = convertPromptToArr(state.curNegPrompt).map(
+            (tag, i) => {
+              return {
+                tag,
+                position: i,
+              };
+            }
+          );
+          const newNegTags = promptArrNeg.filter(
+            (tag) =>
+              !state.curNegPromptArr.find((curTag) => curTag.tag === tag.tag)
+          );
+
+          console.log(promptArr);
+          console.log(newTags);
+
+          const allIds = [
+            ...state.curPromptArr.map((tag) => tag.id),
+            ...state.curNegPromptArr.map((tag) => tag.id),
+          ].sort((a, b) => a - b);
+
+          if (newTags.length) {
+            let newPromptArr = [...state.curPromptArr];
+
+            newTags.forEach((newTag) => {
+              const newId = allIds[allIds.length - 1] + 1;
+              allIds.push(newId);
+              newPromptArr = addElementToIndex({
+                item: { ...newTag, id: newId },
+                type: "positive",
+                curPromptArr: newPromptArr,
+                newId,
+              });
+            });
+            state.curPromptArr = newPromptArr;
+          }
+          if (newNegTags.length) {
+            let newNegPromptArr;
+
+            newNegTags.forEach((newNegTag) => {
+              const newId = allIds[allIds.length - 1] + 1;
+              allIds.push(newId);
+              newNegPromptArr = addElementToIndex(newNegTag);
+            });
+            state.curNegPromptArr = newNegPromptArr;
+          }
+        }
+      )
       .addMatcher(
         (action) => action.type.startsWith("prompt/"),
         (state, action) => {

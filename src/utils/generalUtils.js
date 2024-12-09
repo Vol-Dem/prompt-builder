@@ -276,3 +276,42 @@ export const disableScrollHandler = (scrollTop, e) => {
 export const convertPromptToArr = (prompt) => {
   return prompt?.split(SPLIT_TAG_REGEX)?.flatMap((tag) => tag.trim() || []);
 };
+
+export const addElementToIndex = ({
+  item,
+  type,
+  dropTargetType,
+  prevPosition,
+  curPromptArr,
+  newId,
+}) => {
+  const curPromptArrUpdatedPosition = curPromptArr.map((tag) => {
+    if (dropTargetType === type && Number.isFinite(prevPosition)) {
+      if (
+        item.position < prevPosition &&
+        tag.position >= item.position &&
+        tag.position < prevPosition
+      ) {
+        return { ...tag, position: tag.position + 1 };
+      }
+      if (
+        item.position > prevPosition &&
+        tag.position <= item.position &&
+        tag.position > prevPosition
+      ) {
+        return { ...tag, position: tag.position - 1 };
+      }
+    }
+    if (dropTargetType !== type) {
+      if (tag.position >= item.position) {
+        return {
+          ...tag,
+          position: tag.position + 1,
+        };
+      }
+    }
+    return tag;
+  });
+
+  return curPromptArrUpdatedPosition.toSpliced(item.position, 0, item);
+};
