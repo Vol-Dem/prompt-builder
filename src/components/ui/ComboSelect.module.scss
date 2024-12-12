@@ -1,0 +1,104 @@
+@use "../../variables/variables.scss" as var;
+
+.container {
+  width: 100%;
+}
+
+.select {
+  border-radius: 10px;
+  padding: 0.5rem;
+  width: 100%;
+  padding-left: 1rem;
+  background-color: var.$color-input-bg;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var.$box-shadow-inset;
+  color: var.$color-text-white;
+  color: var.$color-text-gray;
+
+  &--error {
+    border: 1px solid rgba(var.$color-red, 0.6);
+    // border: 1px solid var.$color-text-red;
+  }
+
+  &--select {
+    cursor: pointer;
+  }
+  &:focus {
+    outline: 1px solid blueviolet;
+  }
+  &-img {
+    position: absolute;
+    top: 50%;
+    left: 0.5rem;
+    transform: translateY(-50%);
+    width: 2.5rem;
+    stroke: blueviolet;
+    &--box {
+      fill: rgba(137, 43, 226, 0.5);
+      stroke-width: 0.1px;
+    }
+  }
+}
+.relative {
+  position: relative;
+}
+
+.button {
+  position: absolute;
+  right: 0.2rem;
+  top: 0.3rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.arrow {
+  color: var.$color-text-gray;
+  width: 2rem;
+  height: 2rem;
+}
+
+.check {
+  width: 2rem;
+  height: 2rem;
+}
+
+.options {
+  width: var(--input-width);
+  background-color: var.$color-input-bg;
+  border-radius: 10px;
+  margin-top: 0.4rem;
+  z-index: 30;
+}
+
+.option {
+  display: flex;
+  gap: 1rem;
+  padding: 0.4rem 0.8rem;
+  margin: 0.2rem 1rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var.$color-primary;
+  }
+
+  &:focus {
+    background-color: var.$color-primary;
+  }
+
+  &[data-focus] {
+    background-color: var.$color-primary;
+  }
+}
+
+.selected {
+  background-color: rgb(var.$color-primary, 0.4);
+}
+
+.error {
+  font-size: 1.4rem;
+  color: var.$color-text-red;
+  margin: 0.2rem 1.8rem 0rem;
+}

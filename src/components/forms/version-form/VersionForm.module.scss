@@ -68,11 +68,26 @@
   // height: 100%;
 }
 
-.submit {
+.submit-container {
   position: sticky;
-  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  bottom: 0.4rem;
+}
+
+.submit {
+  display: flex;
+  // position: sticky;
+
+  // height: 3.2rem;
+  justify-content: center;
+  align-items: center;
   font-size: 1.6rem;
   min-height: 3.4rem;
+  width: 100%;
+  // width: 12rem;
+  // align-self: flex-end;
 }
 
 .weight {

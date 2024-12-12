@@ -257,6 +257,10 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  overflow-y: scroll;
+  max-height: 60vh;
+
+  @include var.custom-scroll;
 }
 
 .controls__btn {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import classes from "./UpdateModelForm.module.scss";
 import {
   arrayUnion,
@@ -20,6 +20,7 @@ import FieldCategory from "../../ui/FieldCategory";
 import { clearFileExtension, splitTags } from "../../../utils/generalUtils";
 import { Link } from "react-router-dom";
 import Spinner from "../../ui/Spinner";
+import ComboSelect from "../../ui/ComboSelect";
 import {
   CATEGORY_NAME_MAX_LENGTH,
   DEF_ERROR_MESSAGE,
@@ -78,6 +79,8 @@ const subCatsDefData = {
   name: "sub",
   placeholder: "Subcategory",
   value: "",
+  query: "",
+  selected: { id: null, name: "" },
   isValid: false,
   errorMessage: "This field is required",
 };
@@ -186,6 +189,14 @@ const UpdateModelForm = ({ modelData, id }) => {
   const [subCatInputs, setSubCatInputs] = useState([subCatsDefData]);
   const [tagSetsInputs, setTagSetsInputs] = useState([tagSetsDefData]);
   const [savedModel, setSavedModel] = useState(null);
+  const [mainCategoryQuery, setMainCategoryQuery] = useState("");
+  const [mainCategorySelected, setMainCategorySelected] = useState({
+    name: modelData?.main || "",
+    id: modelData?.main || "",
+    isValid: !!modelData?.main,
+  });
+  const [subCategoryQuery, setSubCategoryQuery] = useState("");
+  const [subCategorySelected, setSubCategorySelected] = useState({});
 
   const uid = useSelector((state) => state.auth.user.uid);
   const categories = useSelector((state) => state.tabs.categoriesData);
@@ -193,6 +204,34 @@ const UpdateModelForm = ({ modelData, id }) => {
   const guideStep = useSelector((state) => state.guide.edit.step);
   const guideIsActive = useSelector((state) => state.guide.active);
   const dispatch = useDispatch();
+
+  // console.log(categories);
+  // console.log(mainCategorySelected);
+  // const mainCategoryOptions = categories[modelTypeInput]?.filter((category) =>
+  //   category.name.toLowerCase().includes(mainCategoryQuery.toLowerCase())
+  // );
+
+  const mainCategoryOptions = useMemo(() => {
+    return !modelTypeInput
+      ? []
+      : categories[modelTypeInput]?.filter((category) =>
+          category.name.toLowerCase().includes(mainCategoryQuery.toLowerCase())
+        );
+  }, [categories, modelTypeInput, mainCategoryQuery]);
+
+  const subCategoryOptions =
+    categories[modelTypeInput]
+      .find((category) => category.name === mainCategorySelected.name)
+      ?.subcategories?.filter((subcategory) =>
+        subcategory.name.toLowerCase().includes(subCategoryQuery.toLowerCase())
+      ) || [];
+
+  useEffect(() => {}, []);
+
+  const selectMainCategoryHandler = (value, isValid, errorMessage) => {
+    setMainCategorySelected({ ...value, isValid, errorMessage });
+    setSubCategorySelected({});
+  };
 
   useEffect(() => {
     if (!modelData) return;
@@ -222,6 +261,8 @@ const UpdateModelForm = ({ modelData, id }) => {
         name: subCatsDefData.name,
         placeholder: subCatsDefData.placeholder,
         value: subData?.name || subId || "",
+        query: subData?.name || subId || "",
+        selected: { id: subData.id, name: subData.name },
         isValid: true,
         errorMessage: "",
       };
@@ -297,15 +338,21 @@ const UpdateModelForm = ({ modelData, id }) => {
       setErrorMessage("");
       setSuccessMessage("");
       setShowErrorMessage(true);
+      console.log(mainCategorySelected);
+      console.log(subCatInputs);
       const tagsetsIsNotValid = !!tagSetsInputs.find(
         (input) => input[0].isValid === false || input[1].isValid === false
       );
       const subcatsIsValid = !!subCatInputs.find(
         (input) => input.isValid === true
       );
+      // const subcatsIsValid = !!subCatInputs.find(
+      //   (input) => input.isValid === true
+      // );
 
       const mainInputsIsNotValid =
-        !idInput.isValid || !mainInput.isValid || !subcatsIsValid;
+        !idInput.isValid || !mainCategorySelected.isValid || !subcatsIsValid;
+      // !idInput.isValid || !mainInput.isValid || !subcatsIsValid;
 
       const baseInputsIsNotValid =
         !srcInput.isValid ||
@@ -369,9 +416,13 @@ const UpdateModelForm = ({ modelData, id }) => {
 
       const modelName = titleInput.value.trim();
       const description = descriptionInput.value.trim();
-      const main = formdata.get("main")?.trim().toLowerCase();
-      const subData = formdata.getAll("sub").filter(Boolean);
-      const sub = subData.map((el) => el?.trim());
+      // const main = formdata.get("main")?.trim().toLowerCase();
+      const main = mainCategorySelected.name;
+
+      // const subData = formdata.getAll("sub").filter(Boolean);
+      // const sub = subData.map((el) => el?.trim());
+      // console.log(subCatInputs);
+      const sub = subCatInputs.map((el) => el?.selected?.name?.trim());
       const mainTag = formdata.get("main-tag")?.trim() || "";
       const weight = parseFloat(formdata.get("weight")?.trim()) || null;
       const minWeight = parseFloat(minWeightInput.value) || null;
@@ -902,6 +953,8 @@ const UpdateModelForm = ({ modelData, id }) => {
               name: "sub",
               placeholder: "Subcategory",
               value: "",
+              query: "",
+              selected: { id: null, name: "" },
               isValid: false,
               errorMessage: "This field is required",
             },
@@ -910,9 +963,13 @@ const UpdateModelForm = ({ modelData, id }) => {
         }
       }
     } catch (err) {
-      // console.log(err);
+      console.log(err);
       setModelIsSaving(false);
-      if (err.message === "This resource already exists") {
+      if (
+        err.message === EXISTS_ERROR_MESSAGE ||
+        err.message === DEF_INPUT_ERROR_MESSAGE ||
+        err.message === OFFLINE_ERROR_MESSAGE
+      ) {
         setErrorMessage(err.message);
       } else {
         setErrorMessage(DEF_ERROR_MESSAGE);
@@ -929,6 +986,8 @@ const UpdateModelForm = ({ modelData, id }) => {
       name: "sub",
       placeholder: "Subcategory",
       value: "",
+      query: "",
+      selected: { id: null, name: "" },
       isValid: false,
       errorMessage: "",
     });
@@ -963,17 +1022,58 @@ const UpdateModelForm = ({ modelData, id }) => {
     setTagSetsInputs(newFields);
   };
 
-  const subCatHandler = (e, isValid) => {
+  // const subCatHandler = (e, isValid) => {
+  //   setSubCatInputs((prevState) => {
+  //     const newState = [...prevState];
+
+  //     const curIndex = newState.findIndex((imageId) => {
+  //       return imageId.id + "" === e.target.id;
+  //     });
+  // if(curIndex < 0) return
+
+  //     newState[curIndex].value = e.target.value;
+  //     newState[curIndex].isValid = isValid;
+
+  //     return newState;
+  //   });
+  // };
+  // const subCatQueryHandler = (value, isValid, errorMessage, id) => {
+  //   if (!id) return;
+  //   setSubCatInputs((prevState) => {
+  //     const newState = [...prevState];
+
+  //     const curIndex = newState.findIndex((imageId) => {
+  //       return imageId.id + "" === id;
+  //     });
+  //     console.log(newState);
+  //     console.log(curIndex);
+  //     console.log(id);
+  //     if (curIndex < 0) return prevState;
+
+  //     newState[curIndex].query = value;
+  //     newState[curIndex].isValid = isValid;
+  //     newState[curIndex].errorMessage = errorMessage;
+  //     console.log(newState);
+  //     return newState;
+  //   });
+  // };
+
+  const subCatSelectHandler = (value, isValid, errorMessage, id) => {
     setSubCatInputs((prevState) => {
       const newState = [...prevState];
 
       const curIndex = newState.findIndex((imageId) => {
-        return imageId.id + "" === e.target.id;
+        return imageId.id + "" === id + "";
       });
+      // console.log(newState);
+      // console.log(curIndex);
+      // console.log(id);
+      if (curIndex < 0) return prevState;
 
-      newState[curIndex].value = e.target.value;
+      newState[curIndex].selected = value;
       newState[curIndex].isValid = isValid;
-
+      newState[curIndex].errorMessage = errorMessage;
+      // console.log(newState);
       return newState;
     });
   };
@@ -987,15 +1087,14 @@ const UpdateModelForm = ({ modelData, id }) => {
   const subCatHtml = subCatInputs.map((sub, i) => {
     return (
       <div key={sub.id} className={classes["subcategory"]}>
-        <Input
-          key={sub.id}
+        <ComboSelect
           id={sub.id}
-          name={sub.name}
-          type={sub.type}
-          placeholder={sub.placeholder}
-          onChange={subCatHandler}
-          value={sub.value}
-          className={classes["subcategory__input"]}
+          optionsData={subCategoryOptions}
+          query={subCategoryQuery}
+          setQuery={setSubCategoryQuery}
+          setSelected={subCatSelectHandler}
+          selected={sub.selected}
+          placeholder="Subcategory"
           validation={{
             required: true,
             maxLength: CATEGORY_NAME_MAX_LENGTH,
@@ -1014,6 +1113,36 @@ const UpdateModelForm = ({ modelData, id }) => {
       </div>
     );
   });
+  // const subCatHtml = subCatInputs.map((sub, i) => {
+  //   return (
+  //     <div key={sub.id} className={classes["subcategory"]}>
+  //       <Input
+  //         key={sub.id}
+  //         id={sub.id}
+  //         name={sub.name}
+  //         type={sub.type}
+  //         placeholder={sub.placeholder}
+  //         onChange={subCatHandler}
+  //         value={sub.value}
+  //         className={classes["subcategory__input"]}
+  //         validation={{
+  //           required: true,
+  //           maxLength: CATEGORY_NAME_MAX_LENGTH,
+  //         }}
+  //         showError={showErrorMessage}
+  //       />
+  //       {i !== 0 && (
+  //         <ButtonTertiary
+  //           type="button"
+  //           className={classes["input__btn-del"]}
+  //           onClick={deleteSubcategoryInputHandler.bind(null, i)}
+  //         >
+  //           <CrossSvg />
+  //         </ButtonTertiary>
+  //       )}
+  //     </div>
+  //   );
+  // });
 
   const deleteTagsetInputHandler = (index, e) => {
     setTagSetsInputs((prevState) => {
@@ -1218,17 +1347,31 @@ const UpdateModelForm = ({ modelData, id }) => {
               showError={showErrorMessage}
             />
           )}
-          <Input
+          {/* <Input
             id="main"
             name="main"
             type="text"
             label="Category"
             placeholder="Main category"
             value={mainInput.value}
-            onChange={(e, isValid) => {
-              setMainInput({ value: e.target.value, isValid });
+            onChange={(e, isValid, errorMessage) => {
+              setMainInput({ value: e.target.value, isValid, errorMessage });
             }}
             readOnly={!!modelData}
+            validation={{
+              required: true,
+              maxLength: CATEGORY_NAME_MAX_LENGTH,
+            }}
+            showError={showErrorMessage}
+            errorMessage={mainInput.errorMessage}
+          /> */}
+          <ComboSelect
+            optionsData={mainCategoryOptions}
+            query={mainCategoryQuery}
+            setQuery={setMainCategoryQuery}
+            setSelected={selectMainCategoryHandler}
+            selected={mainCategorySelected}
+            placeholder="Main category"
             validation={{
               required: true,
               maxLength: CATEGORY_NAME_MAX_LENGTH,
@@ -1248,6 +1391,19 @@ const UpdateModelForm = ({ modelData, id }) => {
               </ButttonSecondary>
             )}
           </Fieldset>
+          {/* <ComboSelect
+            optionsData={subCategoryOptions}
+            query={subCategoryQuery}
+            setQuery={setSubCategoryQuery}
+            setSelected={setSubCategorySelected}
+            selected={subCategorySelected}
+            placeholder="Subcategory"
+            validation={{
+              required: true,
+              maxLength: CATEGORY_NAME_MAX_LENGTH,
+            }}
+            showError={showErrorMessage}
+          /> */}
         </FieldCategory>
         {modelData && (
           <>
@@ -1560,41 +1716,43 @@ const UpdateModelForm = ({ modelData, id }) => {
           </>
         )}
       </div>
-      {(errorMessage || successMessage) && (
-        <div className={classes.status}>
-          {errorMessage && (
-            <ErrorMessage className={classes["status__message"]}>
-              {errorMessage}
-            </ErrorMessage>
-          )}
-          {successMessage && (
-            <SuccessMessage className={classes["status__message"]}>
-              {successMessage}
-            </SuccessMessage>
-          )}
-          {successMessage && !modelData && (
-            <>
-              {"-"}
-              <Link
-                to={`/models/${savedModel}`}
-                className={classes.link}
-                onClick={() => {
-                  dispatch(modelActions.resetModelData());
-                }}
-              >
-                Show model
-              </Link>
-            </>
-          )}
-        </div>
-      )}
-      <Buttton
-        type="submit"
-        disabled={modelIsSaving}
-        className={classes.submit}
-      >
-        {!modelIsSaving ? "Save" : <Spinner size="small" />}
-      </Buttton>
+      <div className={classes["submit-container"]}>
+        {(errorMessage || successMessage) && (
+          <div className={classes.status}>
+            {errorMessage && (
+              <ErrorMessage className={classes["status__message"]}>
+                {errorMessage}
+              </ErrorMessage>
+            )}
+            {successMessage && (
+              <SuccessMessage className={classes["status__message"]}>
+                {successMessage}
+              </SuccessMessage>
+            )}
+            {successMessage && !modelData && (
+              <>
+                {"-"}
+                <Link
+                  to={`/models/${savedModel}`}
+                  className={classes.link}
+                  onClick={() => {
+                    dispatch(modelActions.resetModelData());
+                  }}
+                >
+                  Show model
+                </Link>
+              </>
+            )}
+          </div>
+        )}
+        <Buttton
+          type="submit"
+          disabled={modelIsSaving}
+          className={classes.submit}
+        >
+          {!modelIsSaving ? "Save" : <Spinner size="small" />}
+        </Buttton>
+      </div>
     </form>
   );
 };

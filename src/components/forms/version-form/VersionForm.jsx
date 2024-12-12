@@ -822,11 +822,13 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
           )}
         </FieldCategory>
       </div>
-      <Buttton type="submit" disabled={isSaving} className={classes.submit}>
-        {!isSaving ? "Save" : <Spinner size="small" />}
-      </Buttton>
-      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-      {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
+      <div className={classes["submit-container"]}>
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+        {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
+        <Buttton type="submit" disabled={isSaving} className={classes.submit}>
+          {!isSaving ? "Save" : <Spinner size="small" />}
+        </Buttton>
+      </div>
     </form>
   );
 };

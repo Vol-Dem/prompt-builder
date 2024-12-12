@@ -34,9 +34,9 @@ const Input = (props) => {
 
       setInputErrorMessage(errorMessage);
     }
-    if (!validation) {
-      setShowErrorMessage(false);
-    }
+    // if (!validation) {
+    //   setShowErrorMessage(false);
+    // }
   }, [value, validation]);
 
   return (
