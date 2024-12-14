@@ -14,6 +14,7 @@ import {
   GUIDE_STEP_MODEL_TAGSET,
 } from "../../../variables/constants";
 import { guideActions } from "../../../store/guide";
+import { AnimatePresence } from "framer-motion";
 
 const ModelTags = ({ customData, modelPreview }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -149,16 +150,18 @@ const ModelTags = ({ customData, modelPreview }) => {
             </>
           )}
         </div>
-        {modalIsOpen && (
-          <Modal title="Trigger words" onClose={closeTagsFormHabdler}>
-            <TagsForm
-              versionData={customData}
-              defaultData={model.defaultCustomData}
-              modelId={model.id}
-              onClose={closeTagsFormHabdler}
-            />
-          </Modal>
-        )}
+        <AnimatePresence>
+          {modalIsOpen && (
+            <Modal title="Trigger words" onClose={closeTagsFormHabdler}>
+              <TagsForm
+                versionData={customData}
+                defaultData={model.defaultCustomData}
+                modelId={model.id}
+                onClose={closeTagsFormHabdler}
+              />
+            </Modal>
+          )}
+        </AnimatePresence>
       </div>
     </>
   );

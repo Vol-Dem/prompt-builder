@@ -24,7 +24,7 @@
     cursor: pointer;
   }
   &:focus {
-    outline: 1px solid blueviolet;
+    outline: 1px solid var.$color-primary;
   }
   &-img {
     position: absolute;
@@ -69,6 +69,9 @@
   border-radius: 10px;
   margin-top: 0.4rem;
   z-index: 30;
+  box-shadow: var.$box-shadow;
+  border: 1px solid rgba(var.$color-gray, 0.3);
+  @include var.custom-scroll;
 }
 
 .option {

@@ -8,6 +8,7 @@ import { splitTags } from "../../utils/generalUtils";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import PresetForm from "../forms/preset-form/PresetForm";
 import DeleteRequest from "../ui/DeleteRequest";
+import { AnimatePresence } from "framer-motion";
 
 const Presets = ({ onClose }) => {
   const [formIsOpen, setFormIsOpen] = useState(false);
@@ -148,33 +149,35 @@ const Presets = ({ onClose }) => {
           </div>
         </>
       )}
-      {formIsOpen && (
-        <Modal
-          onClose={() => {
-            setFormIsOpen(false);
-            setPresetData({});
-          }}
-        >
-          <PresetForm
-            type={presetData?.type}
-            id={presetData?.id}
-            name={presetData?.name}
-            words={presetData?.words}
+      <AnimatePresence>
+        {formIsOpen && (
+          <Modal
             onClose={() => {
               setFormIsOpen(false);
               setPresetData({});
             }}
-          />
-        </Modal>
-      )}
-      {deleteRequestIsOpen && (
-        <DeleteRequest
-          message={`Are you sure you want to delete "${presetToDel.name}" preset? This action can't
+          >
+            <PresetForm
+              type={presetData?.type}
+              id={presetData?.id}
+              name={presetData?.name}
+              words={presetData?.words}
+              onClose={() => {
+                setFormIsOpen(false);
+                setPresetData({});
+              }}
+            />
+          </Modal>
+        )}
+        {deleteRequestIsOpen && (
+          <DeleteRequest
+            message={`Are you sure you want to delete "${presetToDel.name}" preset? This action can't
         be undone`}
-          onSubmit={deleteHandler}
-          onClose={closeDeleteReqeustHandler}
-        />
-      )}
+            onSubmit={deleteHandler}
+            onClose={closeDeleteReqeustHandler}
+          />
+        )}
+      </AnimatePresence>
     </Modal>
   );
 };

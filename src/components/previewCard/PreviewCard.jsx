@@ -5,6 +5,11 @@ import { useSelector } from "react-redux";
 import Image from "../ui/image/Image";
 import ActivationTag from "../activation-tag/ActivationTag";
 import ButtonAdd from "../ui/ButtonAdd";
+import { motion } from "framer-motion";
+import {
+  FM_ANIMTION_SLIDEIN,
+  FM_ANIMTION_SLIDEIN_INITIAL,
+} from "../../variables/constants";
 
 const PreviewCard = ({ previewData, onClick }) => {
   const [currVersion, setCurrVersion] = useState({});
@@ -45,7 +50,12 @@ const PreviewCard = ({ previewData, onClick }) => {
   }, [previewData, isNsfwMode]);
 
   return (
-    <div id={previewData.id} className={`${classes.card} card`}>
+    <motion.div
+      initial={FM_ANIMTION_SLIDEIN_INITIAL}
+      animate={FM_ANIMTION_SLIDEIN}
+      id={previewData.id}
+      className={`${classes.card} card`}
+    >
       <div className={classes["image-container"]}>
         <ButtonAdd previewData={previewData} className={classes["btn-add"]} />
 
@@ -131,7 +141,7 @@ const PreviewCard = ({ previewData, onClick }) => {
           </ul>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

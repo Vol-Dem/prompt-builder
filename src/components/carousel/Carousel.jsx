@@ -12,6 +12,7 @@ import Modal from "../ui/Modal";
 import ChooseImageForm from "../forms/choose-image-form/ChooseImageForm";
 import ImageFullView from "../ui/ImageFullView";
 import FolderSvg from "../../assets/FolderSvg";
+import { AnimatePresence } from "framer-motion";
 
 // const maxCarouselHeight = 390;
 const carouselHeight = 390;
@@ -670,32 +671,34 @@ const Carousel = ({
           controls={images?.length > 1}
         ></ImageFullView>
       )}
-      {imagesListIsOpen && (
-        <Modal
-          onClose={() => {
-            setImagesListIsOpen(false);
-          }}
-        >
-          <ChooseImageForm
-            type={imageFormType}
-            modelId={modelId}
-            versionId={versionId}
-            images={images}
-            activeImageIndex={currImgNum}
-            existedImgsAmount={existedImgsAmount}
-            onSave={
-              imageFormType === "save"
-                ? saveExampleHandler
-                : deleteExampleHandler
-            }
-            isDeleting={isDeleting}
+      <AnimatePresence>
+        {imagesListIsOpen && (
+          <Modal
             onClose={() => {
-              setImageFormType("");
               setImagesListIsOpen(false);
             }}
-          />
-        </Modal>
-      )}
+          >
+            <ChooseImageForm
+              type={imageFormType}
+              modelId={modelId}
+              versionId={versionId}
+              images={images}
+              activeImageIndex={currImgNum}
+              existedImgsAmount={existedImgsAmount}
+              onSave={
+                imageFormType === "save"
+                  ? saveExampleHandler
+                  : deleteExampleHandler
+              }
+              isDeleting={isDeleting}
+              onClose={() => {
+                setImageFormType("");
+                setImagesListIsOpen(false);
+              }}
+            />
+          </Modal>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

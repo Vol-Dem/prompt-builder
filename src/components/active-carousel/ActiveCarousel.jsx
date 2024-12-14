@@ -15,6 +15,7 @@ import {
   GUIDE_STEP_PROMPT_COPY,
   GUIDE_STEP_PROMPT_VIEW,
 } from "../../variables/constants";
+import { AnimatePresence, motion } from "framer-motion";
 
 const ActiveCarousel = () => {
   const [activeImageNumber, setActiveImageNumber] = useState(null);
@@ -97,62 +98,76 @@ const ActiveCarousel = () => {
   }, [guideStep, activeCarouselData?.images, dispatch, guideIsActive]);
 
   return (
-    <>
-      <div
-        className={`${classes.container} ${
-          !!activeCarouselData?.images?.length ? classes["container--open"] : ""
-        }`}
-      >
-        <div
-          className={`${classes.wrap}`}
-          style={
+    <AnimatePresence>
+      {!!activeCarouselData?.images?.length && (
+        <motion.div
+          variants={{
+            hidden: { opacity: 0, y: 30 },
+            visible: { opacity: 1, y: 0 },
+            exit: { opacity: 0, y: 30 },
+          }}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          className={`${classes.container} ${
             !!activeCarouselData?.images?.length
-              ? {
-                  height: `${
-                    promptIsOpen ? "calc(100vh - 315px)" : "calc(100vh - 110px)"
-                  }`,
-                }
-              : {}
-          }
+              ? classes["container--open"]
+              : ""
+          }`}
         >
-          <div className={classes["carousel"]}>
-            {!!activeCarouselData?.images?.length && (
-              <>
-                <Carousel
-                  imagesData={activeCarouselData?.images}
-                  versionId={activeCarouselData?.versionId}
-                  existedImgsAmount={existedExample?.imagesId?.length || null}
-                  postId={
-                    !activeCarouselData?.saved
-                      ? activeCarouselData?.postId
-                      : null
-                  }
-                  modelId={activeCarouselData?.modelId}
-                  visibleImgAmount={1}
-                  imgIsOpen={true}
-                  activeImgNum={activeCarouselData?.currImgNum || 0}
-                  active={true}
-                  saved={activeCarouselData?.saved}
-                  onActiveNumChange={setActiveImageNumber}
-                  side={activeCarouselData?.side}
-                />
-                <ImageCardCarouselGuide />
-              </>
-            )}
-          </div>
-          <ImageCard activeImgNum={activeImageNumber} />
           <div
-            className={classes["btn__close"]}
-            onClick={closeActiveCarouselHandler}
+            className={`${classes.wrap}`}
+            style={
+              !!activeCarouselData?.images?.length
+                ? {
+                    height: `${
+                      promptIsOpen
+                        ? "calc(100vh - 315px)"
+                        : "calc(100vh - 110px)"
+                    }`,
+                  }
+                : {}
+            }
           >
-            {!!activeCarouselData?.images?.length && <CrossSvg />}
+            <div className={classes["carousel"]}>
+              {!!activeCarouselData?.images?.length && (
+                <>
+                  <Carousel
+                    imagesData={activeCarouselData?.images}
+                    versionId={activeCarouselData?.versionId}
+                    existedImgsAmount={existedExample?.imagesId?.length || null}
+                    postId={
+                      !activeCarouselData?.saved
+                        ? activeCarouselData?.postId
+                        : null
+                    }
+                    modelId={activeCarouselData?.modelId}
+                    visibleImgAmount={1}
+                    imgIsOpen={true}
+                    activeImgNum={activeCarouselData?.currImgNum || 0}
+                    active={true}
+                    saved={activeCarouselData?.saved}
+                    onActiveNumChange={setActiveImageNumber}
+                    side={activeCarouselData?.side}
+                  />
+                  <ImageCardCarouselGuide />
+                </>
+              )}
+            </div>
+            <ImageCard activeImgNum={activeImageNumber} />
+            <div
+              className={classes["btn__close"]}
+              onClick={closeActiveCarouselHandler}
+            >
+              {!!activeCarouselData?.images?.length && <CrossSvg />}
+            </div>
           </div>
-        </div>
-        {!!activeCarouselData?.images?.length && guideIsActive && (
-          <CloseImageGuide />
-        )}
-      </div>
-    </>
+          {!!activeCarouselData?.images?.length && guideIsActive && (
+            <CloseImageGuide />
+          )}
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

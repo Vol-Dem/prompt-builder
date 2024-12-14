@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import classes from "./Input.module.scss";
 import { validateInput } from "../../utils/generalUtils";
 
@@ -14,19 +14,28 @@ const Input = (props) => {
     onChange,
     onClick,
     onFocus,
+    autoComplete,
     error,
     autoFocus,
     value,
     placeholder,
     validation,
     showError,
+    fitContent,
   } = props;
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     setShowErrorMessage(showError);
   }, [showError]);
+
+  // useEffect(() => {
+  //   if (fitContent && inputRef.current) {
+  //     inputRef.current.style.width = `${inputRef.current.scrollWidth + 5}px`;
+  //   }
+  // }, [fitContent, inputRef.current]);
 
   useEffect(() => {
     if (!!validation) {
@@ -47,9 +56,11 @@ const Input = (props) => {
         </label>
       )}
       <input
+        ref={inputRef}
         id={id}
         type={type}
         name={name}
+        // style={{ width: 0 }}
         onBlur={(e) => {
           if (onBlur) {
             onBlur(e);
@@ -59,7 +70,13 @@ const Input = (props) => {
           }
         }}
         onChange={(e) => {
-          // onChange(e, inputIsValid);
+          if (!onChange) return;
+          if (fitContent) {
+            inputRef.current.style.width = "0";
+            inputRef.current.style.width = `${
+              inputRef.current.scrollWidth + 5
+            }px`;
+          }
           if (validation) {
             const { isValid, errorMessage } = validateInput(
               validation,
@@ -81,6 +98,7 @@ const Input = (props) => {
           inputErrorMessage && showErrorMessage ? classes["input--error"] : ""
         }`}
         autoFocus={autoFocus}
+        autoComplete={autoComplete}
         value={value}
       />
       {showErrorMessage && error && (

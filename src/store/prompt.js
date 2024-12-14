@@ -7,6 +7,8 @@ import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
 import {
   addElementToIndex,
   convertPromptToArr,
+  getTagWeight,
+  markDuplicateTags,
   splitTags,
 } from "../utils/generalUtils";
 
@@ -32,10 +34,10 @@ const promptSlice = createSlice({
       state.curNegPrompt = actions.payload;
     },
     setCurPromptArr(state, actions) {
-      state.curPromptArr = actions.payload;
+      state.curPromptArr = markDuplicateTags(actions.payload);
     },
     setCurNegPromptArr(state, actions) {
-      state.curNegPromptArr = actions.payload;
+      state.curNegPromptArr = markDuplicateTags(actions.payload);
     },
     clearPrompt(state, actions) {
       state.curPrompt = "";
@@ -65,10 +67,12 @@ const promptSlice = createSlice({
         curPromptArr,
       });
 
+      const newPromptArrDuplicates = markDuplicateTags(newPromptArr);
+
       if (dropTargetType === "positive") {
-        state.curPromptArr = newPromptArr;
+        state.curPromptArr = newPromptArrDuplicates;
       } else {
-        state.curNegPromptArr = newPromptArr;
+        state.curNegPromptArr = newPromptArrDuplicates;
       }
     },
     addTagToPrompt(state, actions) {
@@ -92,21 +96,28 @@ const promptSlice = createSlice({
 
       const newId = !allIds.length ? 0 : allIds[allIds.length - 1] + 1;
 
+      const tagweight = getTagWeight(actions.payload.value);
+
+      console.log(tagweight);
+
       const newPromptArr = [
         ...curPrompt,
         {
           id: actions.payload?.id ?? newId,
           tag: actions.payload.value,
+          weight: tagweight,
           position: !curPromptPositions.length
             ? 0
             : curPromptPositions[curPromptPositions.length - 1] + 1,
         },
       ];
 
+      const newPromptArrDuplicates = markDuplicateTags(newPromptArr);
+
       if (isPositive) {
-        state.curPromptArr = newPromptArr;
+        state.curPromptArr = newPromptArrDuplicates;
       } else {
-        state.curNegPromptArr = newPromptArr;
+        state.curNegPromptArr = newPromptArrDuplicates;
       }
     },
     removeTag(state, actions) {
@@ -140,10 +151,12 @@ const promptSlice = createSlice({
         return tag;
       });
 
+      const newPromptArrDuplicates = markDuplicateTags(newPromptArr);
+
       if (type === "positive") {
-        state.curPromptArr = newPromptArr;
+        state.curPromptArr = newPromptArrDuplicates;
       } else {
-        state.curNegPromptArr = newPromptArr;
+        state.curNegPromptArr = newPromptArrDuplicates;
       }
     },
     addAllTagsToPrompt(state, actions) {
@@ -189,17 +202,26 @@ const promptSlice = createSlice({
             curPromptPositions[curPromptPositions.length - 1] + 1 || 0;
           allIds.push(newId);
           curPromptPositions.push(newPosition);
+          const tagweight = getTagWeight(newTag);
+
           newPromptArr = addElementToIndex({
-            item: { id: newId, tag: newTag, position: newPosition },
+            item: {
+              id: newId,
+              tag: newTag,
+              weight: tagweight,
+              position: newPosition,
+            },
             type: actions.payload.type,
             curPromptArr: newPromptArr,
           });
         });
 
+        const newPromptArrDuplicates = markDuplicateTags(newPromptArr);
+
         if (isPositive) {
-          state.curPromptArr = newPromptArr;
+          state.curPromptArr = newPromptArrDuplicates;
         } else {
-          state.curNegPromptArr = newPromptArr;
+          state.curNegPromptArr = newPromptArrDuplicates;
         }
       }
     },
@@ -213,10 +235,12 @@ const promptSlice = createSlice({
         return !actions.payload.value.includes(tag.tag);
       });
 
+      const newPromptArrDuplicates = markDuplicateTags(newPromptArr);
+
       if (actions.payload.type === "positive") {
-        state.curPromptArr = newPromptArr;
+        state.curPromptArr = newPromptArrDuplicates;
       } else {
-        state.curNegPromptArr = newPromptArr;
+        state.curNegPromptArr = newPromptArrDuplicates;
       }
     },
     changeActivationTag(state, actions) {
@@ -244,18 +268,7 @@ const promptSlice = createSlice({
         state.promptIsOpen = true;
         state.isTextMode = false;
       })
-      .addMatcher(
-        (action) => action.type.startsWith("prompt/"),
-        (state, actions) => {
-          const newPrompt = state.curPromptArr.map((tag) => tag.tag).join(", ");
-          const newNegPrompt = state.curNegPromptArr
-            .map((tag) => tag.tag)
-            .join(", ");
 
-          state.curPrompt = newPrompt;
-          state.curNegPrompt = newNegPrompt;
-        }
-      )
       .addMatcher(
         (action) => action.type.startsWith("prompt/removeTag"),
         (state, actions) => {
@@ -336,6 +349,20 @@ const promptSlice = createSlice({
             });
             state.curNegPromptArr = newNegPromptArr;
           }
+        }
+      )
+      .addMatcher(
+        (action) =>
+          action.type.startsWith("prompt/") &&
+          !action.type.startsWith("prompt/setCurrentPrompt"),
+        (state, actions) => {
+          const newPrompt = state.curPromptArr.map((tag) => tag.tag).join(", ");
+          const newNegPrompt = state.curNegPromptArr
+            .map((tag) => tag.tag)
+            .join(", ");
+
+          state.curPrompt = newPrompt;
+          state.curNegPrompt = newNegPrompt;
         }
       )
       .addMatcher(

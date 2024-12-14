@@ -9,6 +9,7 @@ import ArrowDownSvg from "../../assets/ArrowDownSvg";
 import ArrowUp from "../../assets/ArrowUp";
 import { authActions } from "../../store/auth";
 import PromptGuide from "../ui/guide/model/PromptGuide";
+import { AnimatePresence } from "framer-motion";
 
 const Prompt = () => {
   const [copiedType, setCopiedType] = useState("");
@@ -277,13 +278,15 @@ const Prompt = () => {
           </>
         )}
       </button>
-      {presetsIsOpen && (
-        <Presets
-          onClose={() => {
-            setPresetsIsOpen(false);
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {presetsIsOpen && (
+          <Presets
+            onClose={() => {
+              setPresetsIsOpen(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

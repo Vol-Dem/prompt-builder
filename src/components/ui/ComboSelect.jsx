@@ -117,6 +117,8 @@ const ComboSelect = ({
                   className={classes.options}
                   onAnimationComplete={() => setQuery("")}
                   data-id={id}
+                  modal={false}
+                  // portal={false}
                 >
                   {query.length > 0 && !nameExists && (
                     <ComboboxOption

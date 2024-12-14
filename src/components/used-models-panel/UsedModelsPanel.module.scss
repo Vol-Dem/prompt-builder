@@ -87,6 +87,7 @@
 }
 
 .model-cards {
+  position: relative;
   display: flex;
   flex-direction: column;
   background-color: lighten(var.$color-background-secondary, 3%);
@@ -101,13 +102,17 @@
   width: 28rem;
 
   &__tip {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     font-size: 1.6rem;
     color: var.$color-text-gray-dark;
     margin: auto;
     // margin-top: 70%;
     width: 15rem;
     text-align: center;
-    margin-left: 6.4rem;
+    margin-left: 1.5rem;
   }
 
   &:hover {
@@ -258,6 +263,7 @@
   flex-direction: column;
   gap: 2rem;
   overflow-y: scroll;
+  overflow-x: hidden;
   max-height: 60vh;
 
   @include var.custom-scroll;

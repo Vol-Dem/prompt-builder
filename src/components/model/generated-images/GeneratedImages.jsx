@@ -27,6 +27,7 @@ import {
   OFFLINE_ERROR_MESSAGE,
 } from "../../../variables/constants";
 import GeneratedImagesGuide from "../../ui/guide/model/GeneratedImagesGuide";
+import { AnimatePresence } from "framer-motion";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -93,7 +94,7 @@ const GeneratedImages = ({ customData }) => {
         abortControlerRef.current.abort();
       }
     };
-  }, [curVersion.id]);
+  }, [curVersion?.id]);
 
   useEffect(() => {
     if (model?.id && model.id === savedImagesData?.modelId) {
@@ -746,19 +747,21 @@ const GeneratedImages = ({ customData }) => {
       )}
       {!isOnline && <ErrorMessage>{OFFLINE_ERROR_MESSAGE}</ErrorMessage>}
       <div ref={endPageRef}></div>
-      {addImgModalIsOpen && (
-        <Modal
-          title="Add images by ID"
-          onClose={() => {
-            setAddImgModalIsOpen(false);
-          }}
-        >
-          <SaveImageForm
-            modelData={model}
-            curVersion={curImagesModelVersionId}
-          />
-        </Modal>
-      )}
+      <AnimatePresence>
+        {addImgModalIsOpen && (
+          <Modal
+            title="Add images by ID"
+            onClose={() => {
+              setAddImgModalIsOpen(false);
+            }}
+          >
+            <SaveImageForm
+              modelData={model}
+              curVersion={curImagesModelVersionId}
+            />
+          </Modal>
+        )}
+      </AnimatePresence>
     </>
   );
 };

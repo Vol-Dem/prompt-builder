@@ -13,6 +13,11 @@ import DeleteRequest from "../../ui/DeleteRequest";
 import ButtonAdd from "../../ui/ButtonAdd";
 import ImageSvg from "../../../assets/ImageSvg";
 import DotsSvg from "../../../assets/DotsSvg";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  FM_ANIMTION_SLIDEIN,
+  FM_ANIMTION_SLIDEIN_INITIAL,
+} from "../../../variables/constants";
 
 const CarouselImage = ({
   id,
@@ -139,7 +144,13 @@ const CarouselImage = ({
   const defTagSetsHtml = model?.defaultCustomData?.tagSetsData?.map(
     (tagSet, i) => {
       return (
-        <li key={i} data-id={i} className={classes["tag-sets__item"]}>
+        <motion.li
+          key={i}
+          initial={FM_ANIMTION_SLIDEIN_INITIAL}
+          animate={FM_ANIMTION_SLIDEIN}
+          data-id={i}
+          className={classes["tag-sets__item"]}
+        >
           <div className={classes["tag-sets__img"]}>
             <Image src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl} />
           </div>
@@ -164,7 +175,7 @@ const CarouselImage = ({
               )}
             </div>
           </div>
-        </li>
+        </motion.li>
       );
     }
   );
@@ -174,7 +185,13 @@ const CarouselImage = ({
     model?.modelVersionsCustomData[curTagSetVersionId]?.tagSetsData.map(
       (tagSet, i) => {
         return (
-          <li key={i} data-id={i} className={classes["tag-sets__item"]}>
+          <motion.li
+            key={i}
+            initial={FM_ANIMTION_SLIDEIN_INITIAL}
+            animate={FM_ANIMTION_SLIDEIN}
+            data-id={i}
+            className={classes["tag-sets__item"]}
+          >
             <div className={classes["tag-sets__img"]}>
               <Image
                 src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl}
@@ -201,7 +218,7 @@ const CarouselImage = ({
                 )}
               </div>
             </div>
-          </li>
+          </motion.li>
         );
       }
     );
@@ -356,68 +373,70 @@ const CarouselImage = ({
           />
         </>
       )}
-      {tagSetMenuIsOpen && (
-        <Modal
-          className={classes["tag-sets__modal"]}
-          onClose={closeTagSetMenuHandler}
-        >
-          <div className={classes["tag-sets-head"]}>
-            <div className={classes["tag-sets-title"]}>Tag sets</div>
-            {nsfwMode && (
-              <div className={classes["mode-switch"]}>
-                <button
-                  type="button"
-                  onClick={nsfwSwitchHandler}
-                  className={`${classes["btn-mode"]} ${
-                    !showNsfwPreview ? classes["btn-mode--active"] : ""
+      <AnimatePresence>
+        {tagSetMenuIsOpen && (
+          <Modal
+            className={classes["tag-sets__modal"]}
+            onClose={closeTagSetMenuHandler}
+          >
+            <div className={classes["tag-sets-head"]}>
+              <div className={classes["tag-sets-title"]}>Tag sets</div>
+              {nsfwMode && (
+                <div className={classes["mode-switch"]}>
+                  <button
+                    type="button"
+                    onClick={nsfwSwitchHandler}
+                    className={`${classes["btn-mode"]} ${
+                      !showNsfwPreview ? classes["btn-mode--active"] : ""
+                    }`}
+                  >
+                    SFW
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nsfwSwitchHandler}
+                    className={`${classes["btn-mode"]} ${
+                      showNsfwPreview ? classes["btn-mode--active"] : ""
+                    }`}
+                  >
+                    NSFW
+                  </button>
+                </div>
+              )}
+            </div>
+            <ul className={classes["tag-sets-versions"]}>
+              {!!model.defaultCustomData?.tagSetsData?.length && (
+                <li
+                  id={`tsv-def`}
+                  className={`${classes["tag-sets-versions__item"]} ${
+                    curTagSetVersionId === "tsv-def"
+                      ? classes["tag-sets-versions__item--active"]
+                      : ""
                   }`}
+                  onClick={openTagSetVersionHandler}
                 >
-                  SFW
-                </button>
-                <button
-                  type="button"
-                  onClick={nsfwSwitchHandler}
-                  className={`${classes["btn-mode"]} ${
-                    showNsfwPreview ? classes["btn-mode--active"] : ""
-                  }`}
-                >
-                  NSFW
-                </button>
-              </div>
+                  Default
+                </li>
+              )}
+              {tagSetVersionsHtml}
+            </ul>
+            {curTagSetVersionId === "tsv-def" && (
+              <ul className={classes["tag-sets"]}>{defTagSetsHtml}</ul>
             )}
-          </div>
-          <ul className={classes["tag-sets-versions"]}>
-            {!!model.defaultCustomData?.tagSetsData?.length && (
-              <li
-                id={`tsv-def`}
-                className={`${classes["tag-sets-versions__item"]} ${
-                  curTagSetVersionId === "tsv-def"
-                    ? classes["tag-sets-versions__item--active"]
-                    : ""
-                }`}
-                onClick={openTagSetVersionHandler}
-              >
-                Default
-              </li>
+            {curTagSetVersionId !== "tsv-def" && (
+              <ul className={classes["tag-sets"]}>{versionTagsetsHtml}</ul>
             )}
-            {tagSetVersionsHtml}
-          </ul>
-          {curTagSetVersionId === "tsv-def" && (
-            <ul className={classes["tag-sets"]}>{defTagSetsHtml}</ul>
-          )}
-          {curTagSetVersionId !== "tsv-def" && (
-            <ul className={classes["tag-sets"]}>{versionTagsetsHtml}</ul>
-          )}
-        </Modal>
-      )}
-      {deleteRequestIsOpen && (
-        <DeleteRequest
-          message={`Are you sure that you want to delete this post? This action can't
+          </Modal>
+        )}
+        {deleteRequestIsOpen && (
+          <DeleteRequest
+            message={`Are you sure that you want to delete this post? This action can't
           be reverted`}
-          onSubmit={deleteImgPostHandler}
-          onClose={closeDeleteReqeustHandler}
-        />
-      )}
+            onSubmit={deleteImgPostHandler}
+            onClose={closeDeleteReqeustHandler}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

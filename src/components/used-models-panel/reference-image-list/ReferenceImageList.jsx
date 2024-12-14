@@ -1,5 +1,9 @@
 import classes from "./ReferenceImageList.module.scss";
-import { IMAGE_REF_ROW_LENGTH } from "../../../variables/constants";
+import {
+  FM_ANIMTION_SLIDEIN,
+  FM_ANIMTION_SLIDEIN_INITIAL,
+  IMAGE_REF_ROW_LENGTH,
+} from "../../../variables/constants";
 import Image from "../../ui/image/Image";
 import CrossSvg from "../../../assets/CrossSvg";
 import ImageSvg from "../../../assets/ImageSvg";
@@ -9,6 +13,7 @@ import {
   removeImageFromPanel,
   usedModelsActions,
 } from "../../../store/usedModels";
+import { motion } from "framer-motion";
 
 const ReferenceImageList = ({ usedImages }) => {
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
@@ -44,7 +49,13 @@ const ReferenceImageList = ({ usedImages }) => {
   const imageList = numberOfRows
     ? [...Array(numberOfRows).keys()].map((row, indexRow) => {
         return (
-          <ul key={indexRow} className={classes["ref-images"]}>
+          <motion.ul
+            initial={FM_ANIMTION_SLIDEIN_INITIAL}
+            animate={FM_ANIMTION_SLIDEIN}
+            exit={FM_ANIMTION_SLIDEIN_INITIAL}
+            key={indexRow}
+            className={classes["ref-images"]}
+          >
             {[...Array(IMAGE_REF_ROW_LENGTH).keys()].map((image, index) => {
               const i = indexRow * IMAGE_REF_ROW_LENGTH + index;
               const nsfw =
@@ -84,12 +95,20 @@ const ReferenceImageList = ({ usedImages }) => {
                 );
               }
             })}
-          </ul>
+          </motion.ul>
         );
       })
     : [];
 
-  return <div>{imageList}</div>;
+  return (
+    <motion.div
+      initial={FM_ANIMTION_SLIDEIN_INITIAL}
+      animate={FM_ANIMTION_SLIDEIN}
+      exit={FM_ANIMTION_SLIDEIN_INITIAL}
+    >
+      {imageList}
+    </motion.div>
+  );
 };
 
 export default ReferenceImageList;

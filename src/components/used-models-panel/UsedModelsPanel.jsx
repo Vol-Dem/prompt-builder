@@ -25,6 +25,7 @@ import SidePanelGuide from "../ui/guide/model/SidePanelGuide";
 import OpenSidePanelGuide from "../ui/guide/model/OpenSidePanelGuide";
 import { useLocation } from "react-router-dom";
 import ReferenceImageList from "./reference-image-list/ReferenceImageList";
+import { AnimatePresence, motion } from "framer-motion";
 
 const UsedModelsPanel = () => {
   const [cursorInitialX, setCursorInitialX] = useState(null);
@@ -213,8 +214,10 @@ const UsedModelsPanel = () => {
         </div>
 
         <div className={classes["model-cards"]}>
-          {!!usedImages.length && usedImagesHtml}
-          {!!usedModelsHtml.length && usedModelsHtml}
+          <AnimatePresence>
+            {!!usedImages.length && usedImagesHtml}
+            {!!usedModelsHtml.length && usedModelsHtml}
+          </AnimatePresence>
           {!usedModelsHtml.length && (
             <div className={classes["model-cards__tip"]}>
               Press{" "}

@@ -8,12 +8,12 @@
   border-radius: 1rem;
   min-height: 24rem;
   overflow: hidden;
-  transition: all 0.3s;
+  // transition: all 0.3s;
   box-shadow: var.$box-shadow-dark;
   box-shadow: var.$box-shadow;
   background-color: var.$color-background-tertiary;
   word-break: break-word;
-  animation: show 0.3s ease-in forwards;
+  // animation: show 0.3s ease-in forwards;
 }
 
 .btn-add {

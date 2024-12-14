@@ -33,6 +33,7 @@ import CarouselGuide from "../ui/guide/model/CarouselGuide";
 import AddModelToSidePanelGuide from "../ui/guide/model/AddModelToSidePanelGuide";
 import { guideActions } from "../../store/guide";
 import SettingsSvg from "../../assets/SettingsSvg";
+import { AnimatePresence } from "framer-motion";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -50,6 +51,7 @@ const Model = ({ title }) => {
     useState(false);
   const [curVersionImages, setCurVersionImages] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [defDataIsLoading, setDefDataIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   // const [warningMessage, setWarningMessage] = useState("");
   const { modelId } = useParams();
@@ -310,9 +312,11 @@ const Model = ({ title }) => {
           })
         );
       }
+      setDefDataIsLoading(false);
     } catch (err) {
       console.log(err.message);
       setErrorMessage(DEF_ERROR_MESSAGE);
+      setDefDataIsLoading(false);
     }
   }, [dispatch, model.id]);
 
@@ -321,29 +325,26 @@ const Model = ({ title }) => {
 
     const getDefModelData = async () => {
       try {
+        setDefDataIsLoading(true);
         const responseCiv = await fetch(
           `https://civitai.com/api/v1/models/${modelId}`
         );
 
         const responseData = await responseCiv.json();
-        // console.log(responseData);
+        console.log(responseData);
 
         if (!responseData?.id) {
-          throw new Error("Civitai faild");
+          throw new Error("Civitai failed");
         }
-        const modelDefDataRef = doc(firestore, "models", `${model.id}`);
-        const docSnap = await getDoc(modelDefDataRef);
 
-        if (docSnap.exists()) {
-          const modelDefData = docSnap.data();
-
-          dispatch(
-            modelActions.setModelData({
-              data: modelDefData,
-            })
-          );
-        }
+        dispatch(
+          modelActions.setModelData({
+            data: responseData,
+          })
+        );
+        setDefDataIsLoading(false);
       } catch (err) {
+        console.log(err.message);
         getDefModelDataFromFirestore();
       }
     };
@@ -535,12 +536,12 @@ const Model = ({ title }) => {
 
   return (
     <div>
-      {isLoading && <Spinner />}
+      {(isLoading || defDataIsLoading) && <Spinner />}
       {!isAuth && <ErrorMessage>{AUTH_ERROR_MESSAGE}</ErrorMessage>}
       {!isLoading && errorMessage && (
         <ErrorMessage>{errorMessage}</ErrorMessage>
       )}
-      {!isLoading && !errorMessage && model?.id && (
+      {!isLoading && !defDataIsLoading && !errorMessage && model?.id && (
         <div className={classes.model}>
           <div className={classes["panel"]}>
             <Buttton className={classes["btn-back"]} onClick={backHandler}>
@@ -601,9 +602,11 @@ const Model = ({ title }) => {
                 : ""
             }`}
           >
-            {!!curVersionImages.filteredItems?.length &&
-              !curVersionImagesIsLoading &&
-              modelImagesHtml}
+            <AnimatePresence>
+              {!!curVersionImages.filteredItems?.length &&
+                !curVersionImagesIsLoading &&
+                modelImagesHtml}
+            </AnimatePresence>
             {curVersionImagesIsLoading && <Spinner />}
             {guideIsActive && <CarouselGuide />}
           </div>

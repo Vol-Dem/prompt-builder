@@ -1,7 +1,7 @@
 @use "./../../variables/variables.scss" as var;
 
 .container {
-  width: 100%;
+  width: auto;
 }
 
 .input {
@@ -14,6 +14,11 @@
   box-shadow: var.$box-shadow-inset;
   color: var.$color-text-white;
   color: var.$color-text-gray;
+
+  &:focus-visible {
+    border: 1px solid var.$color-primary;
+    outline: 1px solid var.$color-primary;
+  }
 
   &--error {
     border: 1px solid rgba(var.$color-red, 0.6);

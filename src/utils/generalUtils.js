@@ -317,3 +317,49 @@ export const addElementToIndex = ({
     return tag;
   });
 };
+
+export const markDuplicateTags = (tagsArr) => {
+  const duplicates = [];
+  let duplicatesAmount = 0;
+  return tagsArr.map((tag, i, tags) => {
+    const duplicateIndex = duplicates.findIndex(
+      (duplicate) => duplicate.tag === tag.tag
+    );
+
+    if (duplicateIndex < 0) {
+      const duplicate = tags
+        .slice(i + 1)
+        .find((nextTag) => nextTag.tag === tag.tag);
+      if (duplicate) {
+        duplicates.push(tag);
+        return { ...tag, duplicateId: duplicates.length };
+      } else {
+        return { ...tag, duplicateId: null };
+      }
+    } else {
+      return { ...tag, duplicateId: duplicateIndex + 1 };
+    }
+  });
+};
+
+export const getTagWeight = (tag) => {
+  let regex = /\([^)]*\)/i;
+  const hasWeight = regex.test(tag);
+  console.log(hasWeight);
+  let tagweight = 1;
+
+  if (hasWeight) {
+    const tagArr = tag.split(":");
+    const curWeight = parseFloat(tagArr[tagArr.length - 1]);
+    if (curWeight) {
+      tagweight = curWeight;
+    } else {
+      const allParentheses = tag
+        .split("")
+        .filter((char) => char === "(" || char === ")");
+      console.log(allParentheses.length);
+      tagweight = tagweight + Math.floor(allParentheses.length / 2) / 10;
+    }
+  }
+  return tagweight;
+};

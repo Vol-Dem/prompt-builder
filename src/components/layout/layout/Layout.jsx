@@ -209,7 +209,9 @@ const Layout = () => {
               <Prompt />
             </div>
           )}
-          <ActiveCarousel />
+          <AnimatePresence>
+            <ActiveCarousel />
+          </AnimatePresence>
         </Header>
 
         <main>

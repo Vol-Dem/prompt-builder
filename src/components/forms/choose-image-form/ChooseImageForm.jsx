@@ -11,6 +11,7 @@ import {
   DEF_ERROR_MESSAGE,
   OFFLINE_ERROR_MESSAGE,
 } from "../../../variables/constants";
+import { motion } from "framer-motion";
 
 const ChooseImageForm = ({
   type,
@@ -151,7 +152,15 @@ const ChooseImageForm = ({
   });
 
   return (
-    <form
+    <motion.form
+      variants={{
+        hidden: { opacity: 0, y: 30 },
+        visible: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: 30 },
+      }}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
       onSubmit={(e) => {
         e.preventDefault();
         const imagesId = imagesInputs
@@ -198,7 +207,7 @@ const ChooseImageForm = ({
           {!!isDeleting && <Spinner size="small" />}
         </Buttton>
       </div>
-    </form>
+    </motion.form>
   );
 };
 

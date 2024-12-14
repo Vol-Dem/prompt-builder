@@ -84,3 +84,8 @@ export const GUIDE_STEP_OPEN_MODEL = 2;
 
 export const GUIDE_LAST_STEP_TYPE = "edit";
 export const GUIDE_LAST_STEP = GUIDE_STEP_EDIT_MENU;
+
+//FM ANIMATIONS
+
+export const FM_ANIMTION_SLIDEIN_INITIAL = { opacity: 0, y: 30 };
+export const FM_ANIMTION_SLIDEIN = { opacity: 1, y: 0 };

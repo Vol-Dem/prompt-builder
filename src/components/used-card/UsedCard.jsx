@@ -12,6 +12,11 @@ import ActivationTag from "../activation-tag/ActivationTag";
 import Arrow from "../ui/Arrow";
 import Image from "../ui/image/Image";
 import { modelActions } from "../../store/model";
+import { motion } from "framer-motion";
+import {
+  FM_ANIMTION_SLIDEIN,
+  FM_ANIMTION_SLIDEIN_INITIAL,
+} from "../../variables/constants";
 
 const UsedCard = ({ previewData, fullView }) => {
   const [tagsIsOpen, setTagsIsOpen] = useState(false);
@@ -63,7 +68,13 @@ const UsedCard = ({ previewData, fullView }) => {
   };
 
   return (
-    <li id={previewData.id} className={`${classes.card} card`}>
+    <motion.li
+      initial={FM_ANIMTION_SLIDEIN_INITIAL}
+      animate={FM_ANIMTION_SLIDEIN}
+      exit={FM_ANIMTION_SLIDEIN_INITIAL}
+      id={previewData.id}
+      className={`${classes.card} card`}
+    >
       <div className={classes.head}>
         <Link
           to={`/models/${previewData.id}`}
@@ -198,7 +209,7 @@ const UsedCard = ({ previewData, fullView }) => {
             </div>
           </div>
         )}
-    </li>
+    </motion.li>
   );
 };
 
