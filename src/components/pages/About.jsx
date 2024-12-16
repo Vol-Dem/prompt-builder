@@ -14,6 +14,7 @@ import Bars2Svg from "../../assets/Bars2Svg";
 import Bars4Svg from "../../assets/Bars4Svg";
 import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 import Image from "../ui/image/Image";
+import { AnimatePresence, motion } from "framer-motion";
 
 const About = ({ title }) => {
   const [fullViewIsOpen, setFullViewIsOpen] = useState(false);
@@ -1182,14 +1183,16 @@ const About = ({ title }) => {
           before.
         </p>
       </div>
-      {fullViewIsOpen && (
-        <ImageFullView
-          src={currImageUrl}
-          onClose={() => {
-            setFullViewIsOpen(false);
-          }}
-        ></ImageFullView>
-      )}
+      <AnimatePresence>
+        {fullViewIsOpen && (
+          <ImageFullView
+            src={currImageUrl}
+            onClose={() => {
+              setFullViewIsOpen(false);
+            }}
+          ></ImageFullView>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

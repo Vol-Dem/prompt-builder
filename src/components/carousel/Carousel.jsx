@@ -659,19 +659,19 @@ const Carousel = ({
           UP
         </span>
       )}
-      {fullViewIsOpen && (
-        <ImageFullView
-          src={images[currImgNum]?.url}
-          onClose={() => {
-            setFullViewIsOpen(false);
-            onActiveNumChange(currImgNum);
-          }}
-          nextSlide={slideNextHandler}
-          prevSlide={slidePrevHandler}
-          controls={images?.length > 1}
-        ></ImageFullView>
-      )}
       <AnimatePresence>
+        {fullViewIsOpen && (
+          <ImageFullView
+            src={images[currImgNum]?.url}
+            onClose={() => {
+              setFullViewIsOpen(false);
+              onActiveNumChange(currImgNum);
+            }}
+            nextSlide={slideNextHandler}
+            prevSlide={slidePrevHandler}
+            controls={images?.length > 1}
+          ></ImageFullView>
+        )}
         {imagesListIsOpen && (
           <Modal
             onClose={() => {

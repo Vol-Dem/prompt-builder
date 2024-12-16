@@ -331,7 +331,7 @@ const Model = ({ title }) => {
         );
 
         const responseData = await responseCiv.json();
-        console.log(responseData);
+        // console.log(responseData);
 
         if (!responseData?.id) {
           throw new Error("Civitai failed");

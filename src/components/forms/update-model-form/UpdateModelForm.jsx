@@ -46,6 +46,7 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { modelActions } from "../../../store/model";
 // import ExtendedInput from "../../ui/ExtendedInput";
 import EditDefaultGuide from "../../ui/guide/edit/EditDefaultGuide";
+import { motion } from "framer-motion";
 
 const firestore = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp);

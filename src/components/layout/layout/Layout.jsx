@@ -21,7 +21,7 @@ import Spinner from "../../ui/Spinner";
 import Notification from "../../ui/Notification";
 import Prompt from "../../prompt/Prompt";
 import UsedModelsPanel from "../../used-models-panel/UsedModelsPanel";
-import { switchNsfwMode } from "../../../store/model";
+import { modelActions, switchNsfwMode } from "../../../store/model";
 import Search from "../../search/Search";
 import UploadingPanel from "../../uploading-panel/UploadingPanel";
 import ActiveCarousel from "../../active-carousel/ActiveCarousel";
@@ -36,6 +36,7 @@ import {
 } from "../../../variables/utils";
 import Maintenance from "../maintenance/Maintenance";
 import { AnimatePresence } from "framer-motion";
+import { usedModelsActions } from "../../../store/usedModels";
 
 const Layout = () => {
   const [cookificationIsOpen, setCookificationIsOpen] = useState(false);
@@ -60,6 +61,13 @@ const Layout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    if (location?.pathname) {
+      dispatch(usedModelsActions.setFormIsOpen(false));
+      dispatch(modelActions.resetModelData());
+    }
+  }, [location?.pathname, dispatch]);
 
   const openAuth = () => {
     dispatch(authActions.openAuthForm());

@@ -34,6 +34,7 @@ const ModelsList = () => {
   const baseModels = useSelector((state) => state.tabs.baseModels);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const guideState = useSelector((state) => state.guide.home);
+  const usedModels = useSelector((state) => state.used.models);
   const endPage = useRef(null);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const isPageEnd = usePageEnd(100);
@@ -106,7 +107,19 @@ const ModelsList = () => {
   }, [isIntersecting, dispatch, isLastPage, modelsData, nsfwMode, isOnline]);
 
   const loraHtml = modelsData?.previews?.map((item, i) => {
-    return <PreviewCard previewData={item} key={i} />;
+    const isInSidePanel = usedModels.find((model) => model.id === item.id);
+    return (
+      <div key={i} style={{ position: "relative" }}>
+        <PreviewCard layout={false} previewData={item} />
+
+        <PreviewCard layout={true} previewData={item} />
+
+        {/* {isInSidePanel && <PreviewCard previewData={item} key={i} />}
+        {!isInSidePanel && (
+          <PreviewCard layout={true} previewData={item} key={i} />
+        )} */}
+      </div>
+    );
   });
 
   let sortSelectOption = sortTypes.map((version) => {

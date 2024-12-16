@@ -345,7 +345,7 @@ export const markDuplicateTags = (tagsArr) => {
 export const getTagWeight = (tag) => {
   let regex = /\([^)]*\)/i;
   const hasWeight = regex.test(tag);
-  console.log(hasWeight);
+
   let tagweight = 1;
 
   if (hasWeight) {

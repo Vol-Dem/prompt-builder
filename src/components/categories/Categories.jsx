@@ -8,6 +8,7 @@ import Modal from "../ui/Modal";
 import CategoriesForm from "../forms/categories-form/CategoriesForm";
 import EditSvg from "../../assets/EditSvg";
 import OpenCategoryGuide from "../ui/guide/home/OpenCategoryGuide";
+import { AnimatePresence } from "framer-motion";
 
 const Categories = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
@@ -85,19 +86,21 @@ const Categories = () => {
         />
       )}
       {!categories && !userDataIsLoading && <div>Nothing is here...</div>}
-      {editIsOpen && (
-        <Modal
-          title="Categories"
-          onClose={() => {
-            setEditIsOpen(false);
-          }}
-        >
-          <CategoriesForm
-            modelType={activeTab}
-            categories={categories[activeTab]}
-          />
-        </Modal>
-      )}
+      <AnimatePresence>
+        {editIsOpen && (
+          <Modal
+            title="Categories"
+            onClose={() => {
+              setEditIsOpen(false);
+            }}
+          >
+            <CategoriesForm
+              modelType={activeTab}
+              categories={categories[activeTab]}
+            />
+          </Modal>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

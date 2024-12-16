@@ -18,6 +18,7 @@ import {
   FM_ANIMTION_SLIDEIN,
   FM_ANIMTION_SLIDEIN_INITIAL,
 } from "../../../variables/constants";
+import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
 
 const CarouselImage = ({
   id,
@@ -49,7 +50,7 @@ const CarouselImage = ({
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
-
+  // console.log(id);
   useEffect(() => {
     if (src && !imgIsLoaded && !imgError) {
       setImgSrc(src);
@@ -268,7 +269,8 @@ const CarouselImage = ({
   }, [menuIsOpen, closeMenuHandler]);
 
   return (
-    <div
+    <motion.div
+      // layoutId={id}
       className={`${classes.container} ${
         active && !imgIsLoading && !imgError && imgSrc !== "#"
           ? classes["container--shadow"]
@@ -355,7 +357,8 @@ const CarouselImage = ({
       )}
       {!imgError && imgSrc !== "#" && (
         <>
-          <img
+          <motion.img
+            // layoutId={active ? src : null}
             className={`${classes.image} ${
               imageData?.width - imageData?.height < 0
                 ? classes["image--portrait"]
@@ -420,6 +423,17 @@ const CarouselImage = ({
               )}
               {tagSetVersionsHtml}
             </ul>
+            {true && (
+              <div className={classes["notification"]}>
+                <ExclamationCircleSvg
+                  className={classes["notification__svg"]}
+                />
+                <p className={classes["notification__text"]}>
+                  You don't have any tag sets. <br /> Press "Add tag set" to add
+                  new tag set!
+                </p>
+              </div>
+            )}
             {curTagSetVersionId === "tsv-def" && (
               <ul className={classes["tag-sets"]}>{defTagSetsHtml}</ul>
             )}
@@ -437,7 +451,7 @@ const CarouselImage = ({
           />
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 };
 

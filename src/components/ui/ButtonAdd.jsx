@@ -8,7 +8,7 @@ import {
 } from "../../store/usedModels";
 import { MAX_REF_IMAGE_AMOUNT } from "../../variables/constants";
 
-const ButtonAdd = ({ previewData, type, className, versionId }) => {
+const ButtonAdd = ({ previewData, type, className, versionId, onClick }) => {
   const modelsInPanel = useSelector((state) => state.used.models);
   const imagesInPanel = useSelector((state) => state.used.images);
   const isInPanel =
@@ -19,6 +19,7 @@ const ButtonAdd = ({ previewData, type, className, versionId }) => {
   const dispatch = useDispatch();
 
   const addToSidePanelHandler = (e) => {
+    if (onClick) onClick("vaanvknac");
     if (
       !isInPanel &&
       type === "image" &&

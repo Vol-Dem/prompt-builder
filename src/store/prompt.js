@@ -98,8 +98,6 @@ const promptSlice = createSlice({
 
       const tagweight = getTagWeight(actions.payload.value);
 
-      console.log(tagweight);
-
       const newPromptArr = [
         ...curPrompt,
         {

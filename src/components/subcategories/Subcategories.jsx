@@ -8,6 +8,7 @@ import Modal from "../ui/Modal";
 import CategoriesForm from "../forms/categories-form/CategoriesForm";
 import EditSvg from "../../assets/EditSvg";
 import OpenCategoryGuide from "../ui/guide/home/OpenCategoryGuide";
+import { AnimatePresence } from "framer-motion";
 
 const Subcategories = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
@@ -78,20 +79,22 @@ const Subcategories = () => {
       )}
 
       {activeSubcategory && <ModelsList />}
-      {editIsOpen && (
-        <Modal
-          title="Subcategories"
-          onClose={() => {
-            setEditIsOpen(false);
-          }}
-        >
-          <CategoriesForm
-            modelType={activeTab}
-            activeCategory={activeCategory}
-            categories={categories[activeTab]}
-          />
-        </Modal>
-      )}
+      <AnimatePresence>
+        {editIsOpen && (
+          <Modal
+            title="Subcategories"
+            onClose={() => {
+              setEditIsOpen(false);
+            }}
+          >
+            <CategoriesForm
+              modelType={activeTab}
+              activeCategory={activeCategory}
+              categories={categories[activeTab]}
+            />
+          </Modal>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

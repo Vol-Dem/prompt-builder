@@ -13,7 +13,16 @@
   box-shadow: var.$box-shadow;
   background-color: var.$color-background-tertiary;
   word-break: break-word;
+  height: 100%;
   // animation: show 0.3s ease-in forwards;
+
+  &--motion {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+  }
 }
 
 .btn-add {

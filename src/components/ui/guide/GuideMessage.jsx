@@ -10,6 +10,7 @@ import {
   GUIDE_LAST_STEP_TYPE,
 } from "../../../variables/constants";
 import CrossSvg from "../../../assets/CrossSvg";
+import { motion } from "framer-motion";
 
 const GuideMessage = (props) => {
   const {
@@ -61,7 +62,9 @@ const GuideMessage = (props) => {
   return (
     <>
       {guideState?.active && curGuideIsActive && (
-        <div
+        <motion.div
+          style={{ zIndex: 9999 }}
+          layoutId="guide-message"
           ref={guideMessageRef}
           className={`${classes["guide-container"]} ${
             className ? className : ""
@@ -129,7 +132,7 @@ const GuideMessage = (props) => {
               Are you sure you want to exit tutorial?
             </ExitGuideRequest>
           )}
-        </div>
+        </motion.div>
       )}
     </>
   );

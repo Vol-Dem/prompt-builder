@@ -15,7 +15,8 @@
   // border-radius: 10px;
 
   overflow-y: scroll;
-  max-height: 40vh;
+  // max-height: 40vh;
+  max-height: 34vh;
   @include var.custom-scroll;
 
   &__name {
@@ -28,6 +29,8 @@
     padding: 0.2rem;
     border-radius: 10px;
     margin-top: 1rem;
+    // min-height: 27rem;
+    width: 100%;
     overflow: hidden;
   }
 }
@@ -35,7 +38,7 @@
 .preset {
   display: flex;
   gap: 1rem;
-  width: 30rem;
+  min-width: 25rem;
   justify-content: space-between;
   align-items: center;
 
@@ -155,6 +158,48 @@
 
 .title {
   margin-bottom: 1rem;
+}
+
+.btn-back {
+  position: absolute;
+  top: 0.6rem;
+  left: 1.4rem;
+  // background-color: transparent;
+  background: none;
+  border: none;
+  color: var.$color-text-gray;
+  transition: all 0.3s;
+  cursor: pointer;
+
+  &:hover {
+    color: lighten(var.$color-text-gray, 20%);
+  }
+
+  & svg {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+.notification {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  // margin-bottom: 3rem;
+  background-color: var.$color-background-tertiary;
+  border-radius: 10px;
+  padding: 1rem 0.9rem;
+
+  &__text {
+    color: var.$color-text-gray;
+  }
+
+  &__svg {
+    flex-shrink: 0;
+    width: 3rem;
+    height: 3rem;
+    color: var.$color-text-gray;
+  }
 }
 
 @keyframes show {

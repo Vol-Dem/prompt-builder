@@ -5,6 +5,7 @@ import ArrowLeftSvg from "../../assets/ArrowLeft";
 import ArrowRightSvg from "../../assets/ArrowRight";
 import CrossSvg from "../../assets/CrossSvg";
 import Spinner from "./Spinner";
+import { motion } from "framer-motion";
 
 const ImageFullView = (props) => {
   const [imgIsLoading, setImgIsLoading] = useState(true);
@@ -21,10 +22,18 @@ const ImageFullView = (props) => {
     <>
       {createPortal(
         <div>
-          <div
+          <motion.div
+            variants={{
+              hidden: { opacity: 0 },
+              visible: { opacity: 1 },
+              exit: { opacity: 0 },
+            }}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             className={`${classes.modal} ${classes["modal--backdrop"]}`}
             onClick={props.onClose}
-          ></div>
+          ></motion.div>
           <div className={`${classes.modal} ${classes["modal--content"]}`}>
             {props.title && <h2 className={classes.title}>{props.title}</h2>}
             {imgIsLoading && (
@@ -32,9 +41,19 @@ const ImageFullView = (props) => {
                 <Spinner size="medium" />
               </div>
             )}
-            <img
+            <motion.img
+              layout
+              layoutId={props?.src}
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                visible: { opacity: 1, y: 0 },
+                exit: { opacity: 0, y: 30 },
+              }}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
               src={props?.src}
-              alt=""
+              alt={props?.alt || "image-full"}
               className={`${classes.img} ${
                 imgIsLoading ? classes["img--hidden"] : ""
               }`}

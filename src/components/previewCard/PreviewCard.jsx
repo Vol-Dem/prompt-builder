@@ -11,9 +11,10 @@ import {
   FM_ANIMTION_SLIDEIN_INITIAL,
 } from "../../variables/constants";
 
-const PreviewCard = ({ previewData, onClick }) => {
+const PreviewCard = ({ previewData, onClick, layout }) => {
   const [currVersion, setCurrVersion] = useState({});
   const [currSidePanelData, setCurrSidePanelData] = useState({});
+  const [cardLayoutId, setCardLayoutId] = useState(previewData.id);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const imgRef = useRef();
 
@@ -51,13 +52,24 @@ const PreviewCard = ({ previewData, onClick }) => {
 
   return (
     <motion.div
+      layoutId={layout ? previewData.id : Math.random()}
+      transition={{
+        layout: { duration: 0 },
+      }}
+      style={{ zIndex: 999 }}
       initial={FM_ANIMTION_SLIDEIN_INITIAL}
       animate={FM_ANIMTION_SLIDEIN}
       id={previewData.id}
-      className={`${classes.card} card`}
+      className={`${classes.card} card ${
+        layout ? classes["card--motion"] : ""
+      }`}
     >
       <div className={classes["image-container"]}>
-        <ButtonAdd previewData={previewData} className={classes["btn-add"]} />
+        <ButtonAdd
+          previewData={previewData}
+          className={classes["btn-add"]}
+          onClick={setCardLayoutId}
+        />
 
         <Link to={`/models/${previewData.id}`} onClick={onClick}>
           <Image

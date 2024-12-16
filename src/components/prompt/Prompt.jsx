@@ -3,15 +3,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { promptActions } from "../../store/prompt";
 import TagsTextarea from "../ui/TagsTextarea";
 import ButtonTertiary from "../ui/ButtonTertiary";
-import { useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import Presets from "../presets/Presets";
 import ArrowDownSvg from "../../assets/ArrowDownSvg";
 import ArrowUp from "../../assets/ArrowUp";
 import { authActions } from "../../store/auth";
 import PromptGuide from "../ui/guide/model/PromptGuide";
 import { AnimatePresence } from "framer-motion";
+import Modal from "../ui/Modal";
 
-const Prompt = () => {
+const Prompt = memo(() => {
   const [copiedType, setCopiedType] = useState("");
   const [presetsIsOpen, setPresetsIsOpen] = useState(false);
   const curPrompt = useSelector((state) => state.prompt.curPrompt);
@@ -280,15 +281,22 @@ const Prompt = () => {
       </button>
       <AnimatePresence>
         {presetsIsOpen && (
-          <Presets
+          <Modal
+            title="Presets"
             onClose={() => {
               setPresetsIsOpen(false);
             }}
-          />
+          >
+            <Presets
+              onClose={() => {
+                setPresetsIsOpen(false);
+              }}
+            />
+          </Modal>
         )}
       </AnimatePresence>
     </div>
   );
-};
+});
 
 export default Prompt;

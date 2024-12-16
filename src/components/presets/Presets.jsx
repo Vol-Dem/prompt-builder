@@ -9,6 +9,8 @@ import ButtonTertiary from "../ui/ButtonTertiary";
 import PresetForm from "../forms/preset-form/PresetForm";
 import DeleteRequest from "../ui/DeleteRequest";
 import { AnimatePresence } from "framer-motion";
+import BackSvg from "../../assets/BackSvg";
+import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 
 const Presets = ({ onClose }) => {
   const [formIsOpen, setFormIsOpen] = useState(false);
@@ -116,7 +118,17 @@ const Presets = ({ onClose }) => {
   });
 
   return (
-    <Modal title="Presets" onClose={onClose}>
+    <>
+      {formIsOpen && (
+        <button
+          className={classes["btn-back"]}
+          onClick={() => {
+            setFormIsOpen(false);
+          }}
+        >
+          <BackSvg />
+        </button>
+      )}
       {!formIsOpen && (
         <>
           <Buttton
@@ -130,6 +142,19 @@ const Presets = ({ onClose }) => {
           </Buttton>
 
           <div className={classes["presets-container"]}>
+            {!presets?.positive?.length && !presets?.negative?.length && (
+              <div className={classes[`presets__bg`]}>
+                <div className={classes["notification"]}>
+                  <ExclamationCircleSvg
+                    className={classes["notification__svg"]}
+                  />
+                  <p className={classes["notification__text"]}>
+                    You don't have any presets. <br /> Press "Add preset" to add
+                    new preset!
+                  </p>
+                </div>
+              </div>
+            )}
             {!!presets?.positive?.length && (
               <div>
                 <div className={classes[`presets__name`]}>Positive:</div>
@@ -149,26 +174,19 @@ const Presets = ({ onClose }) => {
           </div>
         </>
       )}
+      {formIsOpen && (
+        <PresetForm
+          type={presetData?.type}
+          id={presetData?.id}
+          name={presetData?.name}
+          words={presetData?.words}
+          onClose={() => {
+            setFormIsOpen(false);
+            setPresetData({});
+          }}
+        />
+      )}
       <AnimatePresence>
-        {formIsOpen && (
-          <Modal
-            onClose={() => {
-              setFormIsOpen(false);
-              setPresetData({});
-            }}
-          >
-            <PresetForm
-              type={presetData?.type}
-              id={presetData?.id}
-              name={presetData?.name}
-              words={presetData?.words}
-              onClose={() => {
-                setFormIsOpen(false);
-                setPresetData({});
-              }}
-            />
-          </Modal>
-        )}
         {deleteRequestIsOpen && (
           <DeleteRequest
             message={`Are you sure you want to delete "${presetToDel.name}" preset? This action can't
@@ -178,7 +196,7 @@ const Presets = ({ onClose }) => {
           />
         )}
       </AnimatePresence>
-    </Modal>
+    </>
   );
 };
 

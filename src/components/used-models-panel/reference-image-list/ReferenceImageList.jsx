@@ -50,6 +50,7 @@ const ReferenceImageList = ({ usedImages }) => {
     ? [...Array(numberOfRows).keys()].map((row, indexRow) => {
         return (
           <motion.ul
+            layout
             initial={FM_ANIMTION_SLIDEIN_INITIAL}
             animate={FM_ANIMTION_SLIDEIN}
             exit={FM_ANIMTION_SLIDEIN_INITIAL}
@@ -66,8 +67,12 @@ const ReferenceImageList = ({ usedImages }) => {
                   : true;
               if (!!usedImages[i]?.hash) {
                 return (
-                  <li
-                    key={`i${i}`}
+                  <motion.li
+                    key={usedImages[i]?.hash}
+                    layoutId={`ref-${usedImages[i]?.hash}`}
+                    initial={FM_ANIMTION_SLIDEIN_INITIAL}
+                    animate={FM_ANIMTION_SLIDEIN}
+                    exit={FM_ANIMTION_SLIDEIN_INITIAL}
                     className={classes["ref-images__item"]}
                     data-id={usedImages[i]?.hash}
                   >
@@ -82,7 +87,7 @@ const ReferenceImageList = ({ usedImages }) => {
                     <span className={classes.close} onClick={closeImageHandler}>
                       <CrossSvg />
                     </span>
-                  </li>
+                  </motion.li>
                 );
               } else {
                 return (

@@ -34,7 +34,7 @@ const TagsTextarea = ({
         dropLeft: null,
       };
     });
-    console.log(tagsData);
+    // console.log(tagsData);
     // const tagsData = data
     //   .trim()
     //   .split(SPLIT_TAG_REGEX)
@@ -144,10 +144,10 @@ const TagsTextarea = ({
     // const dropTargetType = targetTagContainer?.dataset?.type;
     // if (targetTagContainer && fieldType && fieldId) return;
     // console.log(targetTagContainer, fieldType, fieldId);
-    console.log(e.target);
-    console.log(targetTagContainer);
-    console.log(fieldType);
-    console.log(fieldId);
+    // console.log(e.target);
+    // console.log(targetTagContainer);
+    // console.log(fieldType);
+    // console.log(fieldId);
     if (!targetTagContainer && fieldType === type) return;
     if (!targetTagContainer) {
       dispatch(
@@ -165,9 +165,9 @@ const TagsTextarea = ({
       position: dropTargetPosition,
       type: dropTargetType,
     } = JSON.parse(targetTagContainer.dataset.item);
-    console.log(targetTagContainer.dataset.item);
-    console.log(dropTargetType);
-    console.log(dropTargetId);
+    // console.log(targetTagContainer.dataset.item);
+    // console.log(dropTargetType);
+    // console.log(dropTargetId);
 
     if (Number.isFinite(dropTargetId) && dropTargetType) {
       if (id === dropTargetId && dropTargetType === type) return;
@@ -202,7 +202,7 @@ const TagsTextarea = ({
         newPosition = containerData.position + 1;
       }
       // console.log(containerData);
-      console.log("new", newPosition);
+      // console.log("new", newPosition);
 
       // dispatch(
       //   promptActions.removeTag({
@@ -235,11 +235,11 @@ const TagsTextarea = ({
   };
 
   const openEditHandler = (e) => {
-    console.log("START");
+    // console.log("START");
     const id = +e.target.closest(`.${classes["tag-container"]}`).dataset.id;
     const fieldWidth = e.target.offsetWidth;
     setInputWidth(fieldWidth);
-    console.log(fieldWidth);
+    // console.log(fieldWidth);
     setCurrentPrompt((prevState) => {
       return prevState.map((item) => {
         if (item.id === id) {
@@ -266,11 +266,11 @@ const TagsTextarea = ({
   const submitEditHandler = (e) => {
     e.preventDefault();
     const id = +e.target.closest(`.${classes["tag-container"]}`).dataset.id;
-    console.log(id);
-    const formData = new FormData(e.target);
-    const tagName = formData.get("tag").trim();
-    console.log(tagName);
-    console.log(editTagInput.value);
+    // console.log(id);
+    // const formData = new FormData(e.target);
+    // const tagName = formData.get("tag").trim();
+    // console.log(tagName);
+    // console.log(editTagInput.value);
     // setCurrentPrompt((prevState) => {
     //   const newPrompt = prevState.map((item) => {
     //     if (item.id === id) {
@@ -291,9 +291,9 @@ const TagsTextarea = ({
               .slice(0, -1);
             tag = `(${tagName}:${editWeightInput.value})`;
           } else {
-            console.log(editTagInput.value);
+            // console.log(editTagInput.value);
             const tagName = editTagInput.value.replace(/^\(+|\)+$/g, "");
-            console.log(tagName);
+            // console.log(tagName);
             tag = `(${tagName}:${editWeightInput.value})`;
           }
         }
@@ -319,6 +319,7 @@ const TagsTextarea = ({
       <motion.li
         key={item.id}
         layout
+        layoutId={item.id}
         initial={{ opacity: 0, scale: 0.8 }}
         variants={{
           hidden: { opacity: 0, scale: 0.5 },

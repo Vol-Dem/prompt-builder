@@ -11,11 +11,14 @@ import ErrorMessage from "../../ui/ErrorMessage";
 import {
   DEF_ERROR_MESSAGE,
   DEF_INPUT_ERROR_MESSAGE,
+  FM_ANIMTION_SLIDEIN,
+  FM_ANIMTION_SLIDEIN_INITIAL,
   NAME_MAX_LENGTH,
   OFFLINE_ERROR_MESSAGE,
   TRIGER_WORDS_MAX_LENGTH,
   UNIQUE_ERROR_MESSAGE,
 } from "../../../variables/constants";
+import { motion } from "framer-motion";
 // import { useOnlineStatus } from "../../../hooks/use-online-status";
 
 const promptTypes = [
@@ -122,8 +125,13 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
   });
 
   return (
-    <form className={classes["form"]} onSubmit={submitHandler}>
-      <Select
+    <motion.form
+      initial={FM_ANIMTION_SLIDEIN_INITIAL}
+      animate={FM_ANIMTION_SLIDEIN}
+      className={classes["form"]}
+      onSubmit={submitHandler}
+    >
+      {/* <Select
         label="Type"
         id="type"
         name="type"
@@ -132,7 +140,46 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
           setPromptType(value);
         }}
         options={typeSelectOption}
-      />
+      /> */}
+      <fieldset
+        className={classes["types"]}
+        // onChange={(e) => {
+        //   console.log(e.target.value);
+        //   setPromptType(e.target.value);
+        // }}
+      >
+        <div className={classes["type"]}>
+          <input
+            type="radio"
+            id="positive"
+            name="type"
+            value="positive"
+            checked={promptType === "positive" ? true : false}
+            onChange={(e) => {
+              setPromptType(e.target.value);
+            }}
+          />
+          <label htmlFor="positive" className={classes["type-label"]}>
+            Positive
+          </label>
+        </div>
+
+        <div className={classes["type"]}>
+          <input
+            type="radio"
+            id="negative"
+            name="type"
+            value="negative"
+            checked={promptType === "negative" ? true : false}
+            onChange={(e) => {
+              setPromptType(e.target.value);
+            }}
+          />
+          <label htmlFor="negative" className={classes["type-label"]}>
+            Negative
+          </label>
+        </div>
+      </fieldset>
       <Fieldset legend="Preset">
         <Input
           id="preset-name"
@@ -165,7 +212,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
         Save
       </Buttton>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-    </form>
+    </motion.form>
   );
 };
 

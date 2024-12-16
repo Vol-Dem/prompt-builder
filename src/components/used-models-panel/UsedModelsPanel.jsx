@@ -18,7 +18,7 @@ import ArrowRightSvg from "../../assets/ArrowRight";
 import PlusSvg from "../../assets/PlusSvg";
 import Bars2Svg from "../../assets/Bars2Svg";
 import Bars4Svg from "../../assets/Bars4Svg";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { IMAGE_REF_ROW_LENGTH } from "../../variables/constants";
 import ErrorMessage from "../ui/ErrorMessage";
 import SidePanelGuide from "../ui/guide/model/SidePanelGuide";
@@ -26,8 +26,9 @@ import OpenSidePanelGuide from "../ui/guide/model/OpenSidePanelGuide";
 import { useLocation } from "react-router-dom";
 import ReferenceImageList from "./reference-image-list/ReferenceImageList";
 import { AnimatePresence, motion } from "framer-motion";
+import { guideActions } from "../../store/guide";
 
-const UsedModelsPanel = () => {
+const UsedModelsPanel = memo(() => {
   const [cursorInitialX, setCursorInitialX] = useState(null);
   const [cursorCurX, setCursorCurX] = useState(null);
   const usedModels = useSelector((state) => state.used.models);
@@ -36,7 +37,8 @@ const UsedModelsPanel = () => {
   const formIsOpen = useSelector((state) => state.used.formIsOpen);
   const fullCardView = useSelector((state) => state.used.fullCardView);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
-  const location = useLocation();
+  // const location = useLocation();
+  // const location = false;
   const userDataIsLoading = useSelector(
     (state) => state.auth.userDataIsLoading
   );
@@ -46,11 +48,11 @@ const UsedModelsPanel = () => {
   // const emailVerified = useSelector((state) => state.auth.user.emailVerified);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (location?.pathname) {
-      dispatch(usedModelsActions.setFormIsOpen(false));
-    }
-  }, [location?.pathname, dispatch]);
+  // useEffect(() => {
+  //   if (location?.pathname) {
+  //     dispatch(usedModelsActions.setFormIsOpen(false));
+  //   }
+  // }, [location?.pathname, dispatch]);
 
   const openPanelHandler = () => {
     dispatch(usedModelsActions.panelState(!panelIsOpen));
@@ -68,9 +70,20 @@ const UsedModelsPanel = () => {
     dispatch(usedModelsActions.cardViewState());
   };
 
-  const usedModelsHtml = usedModels.map((model, i) => {
-    return <UsedCard key={i} previewData={model} fullView={fullCardView} />;
-  });
+  const usedModelsHtml = useMemo(() => {
+    return usedModels.map((model, i) => {
+      return (
+        <div key={`side-card-${model.id}`} style={{ position: "relative" }}>
+          <UsedCard
+            layoutId={model.id}
+            previewData={model}
+            fullView={fullCardView}
+          />
+          <UsedCard previewData={model} fullView={fullCardView} />
+        </div>
+      );
+    });
+  }, [usedModels, fullCardView]);
 
   const usedImagesHtml = <ReferenceImageList usedImages={usedImages} />;
 
@@ -103,16 +116,17 @@ const UsedModelsPanel = () => {
     }
   };
 
-  // const nextStepHandler = () => {
-  //   dispatch(guideActions.guideNextStep({ type: "model" }));
-  // };
+  const nextStepHandler = () => {
+    dispatch(guideActions.guideNextStep({ type: "model" }));
+  };
 
-  // const prevStepHandler = () => {
-  //   dispatch(guideActions.guidePrevStep({ type: "model" }));
-  // };
+  const prevStepHandler = () => {
+    dispatch(guideActions.guidePrevStep({ type: "model" }));
+  };
 
   return (
-    <aside
+    <motion.aside
+      layout
       className={`${classes.container} ${
         panelIsOpen ? classes["container--open"] : ""
       }`}
@@ -130,7 +144,8 @@ const UsedModelsPanel = () => {
         {panelIsOpen && <ArrowRightSvg />}
       </button>
       <OpenSidePanelGuide />
-      <div
+      <motion.div
+        layout
         className={`${classes.panel} ${
           panelIsOpen ? classes["panel--open"] : ""
         }`}
@@ -178,11 +193,13 @@ const UsedModelsPanel = () => {
           )}
           {/* <UpdateDb /> */}
           {/* {formIsOpen && isAuth && emailVerified && ( */}
-          {formIsOpen && isAuth && (
-            <div className={classes.forms}>
-              <UpdateModelForm id="side-form" />
-            </div>
-          )}
+          <AnimatePresence>
+            {formIsOpen && isAuth && (
+              <div className={classes.forms}>
+                <UpdateModelForm id="side-form" />
+              </div>
+            )}
+          </AnimatePresence>
           <div className={classes["controls"]}>
             <ButtonTertiary type="button" onClick={clearPanelHandler}>
               Clear
@@ -218,7 +235,7 @@ const UsedModelsPanel = () => {
             {!!usedImages.length && usedImagesHtml}
             {!!usedModelsHtml.length && usedModelsHtml}
           </AnimatePresence>
-          {!usedModelsHtml.length && (
+          {!usedModelsHtml.length && !usedImages.length && (
             <div className={classes["model-cards__tip"]}>
               Press{" "}
               <span className={classes.plus}>
@@ -255,9 +272,9 @@ const UsedModelsPanel = () => {
             />
           </a>
         </div>
-      </div>
-    </aside>
+      </motion.div>
+    </motion.aside>
   );
-};
+});
 
 export default UsedModelsPanel;

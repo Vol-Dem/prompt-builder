@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import classes from "./UsedCard.module.scss";
 import { Link } from "react-router-dom";
 import TagList from "../tag-list/TagList";
@@ -17,18 +17,27 @@ import {
   FM_ANIMTION_SLIDEIN,
   FM_ANIMTION_SLIDEIN_INITIAL,
 } from "../../variables/constants";
+const taglistItemHeight = 68;
 
-const UsedCard = ({ previewData, fullView }) => {
+const UsedCard = memo(({ previewData, fullView, layoutId }) => {
   const [tagsIsOpen, setTagsIsOpen] = useState(false);
   const [tagsHeight, setTagsHeight] = useState(null);
   const [taglistHeight, setTaglistHeight] = useState(null);
+  const [cardLayuotId, setcardLayuotId] = useState(previewData.id);
+  const [cardIsHidden, setCardIsHidden] = useState(false);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
-  const model = useSelector((state) => state.model.model);
+  // const model = useSelector((state) => state.model.model);
   const fullCardView = useSelector((state) => state.used.fullCardView);
   const dispatch = useDispatch();
   const tagsRef = useRef();
   const tagsListRef = useRef();
-  const taglistItemHeight = 68;
+
+  useEffect(() => {
+    setTimeout(() => {
+      setCardIsHidden(true);
+    }, 1000);
+    // setcardLayuotId(Math.random());
+  }, []);
 
   useEffect(() => {
     if (tagsRef?.current?.clientHeight && fullCardView)
@@ -37,7 +46,7 @@ const UsedCard = ({ previewData, fullView }) => {
   }, [
     previewData,
     taglistHeight,
-    taglistItemHeight,
+    // taglistItemHeight,
     tagsRef?.current?.clientHeight,
     fullCardView,
   ]);
@@ -59,21 +68,32 @@ const UsedCard = ({ previewData, fullView }) => {
   };
 
   const closePanelHandler = () => {
-    if (previewData?.id !== model?.id) {
-      dispatch(modelActions.resetModelData());
-    }
+    // if (previewData?.id !== model?.id) {
+    //   dispatch(modelActions.resetModelData());
+    // }
     if (document.body.offsetWidth < 1024) {
       dispatch(usedModelsActions.panelState(false));
     }
   };
 
   return (
-    <motion.li
-      initial={FM_ANIMTION_SLIDEIN_INITIAL}
-      animate={FM_ANIMTION_SLIDEIN}
-      exit={FM_ANIMTION_SLIDEIN_INITIAL}
+    <motion.div
+      layout
+      layoutId={layoutId || null}
+      // initial={FM_ANIMTION_SLIDEIN_INITIAL}
+      initial={{ opacity: 0, y: 30 }}
+      // animate={FM_ANIMTION_SLIDEIN}
+      animate={
+        !layoutId ? { opacity: [0, 0, 0, 1], y: 0 } : { opacity: 1, y: 0 }
+      }
+      // animate={!layoutId ? { opacity: [0, 0, 1], y: 0 } : FM_ANIMTION_SLIDEIN}
+      exit={{ opacity: 0, y: 30 }}
+      // layoutRoot
+      // exit={FM_ANIMTION_SLIDEIN_INITIAL}
       id={previewData.id}
-      className={`${classes.card} card`}
+      className={`${classes.card} card ${
+        layoutId ? classes["card--motion"] : ""
+      } ${cardIsHidden ? classes["card--hidden"] : ""}`}
     >
       <div className={classes.head}>
         <Link
@@ -209,8 +229,8 @@ const UsedCard = ({ previewData, fullView }) => {
             </div>
           </div>
         )}
-    </motion.li>
+    </motion.div>
   );
-};
+});
 
 export default UsedCard;
