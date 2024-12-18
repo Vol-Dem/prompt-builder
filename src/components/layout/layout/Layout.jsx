@@ -239,28 +239,26 @@ const Layout = () => {
               {isAuth && !emailVerified && <VerifyEmailMessage />}
             </Modal>
           )}
-          {activeNotification?.id && isAuth && (
-            <Notification
-              type={activeNotification.type}
-              title={activeNotification.title}
-              onClick={closeNotificationHandler}
-            >
-              {activeNotification.text}
-            </Notification>
-          )}
-          {cookificationIsOpen && !isAuth && (
-            <Notification
-              type="notification"
-              onClick={closeCookificationHandler}
-            >
-              This website uses cookies to ensure you get the best experience on
-              our website. By using our site you consent cookies.{" "}
-              <Link className={classes.link} to="/privacy">
-                Learn more
-              </Link>
-            </Notification>
-          )}
         </AnimatePresence>
+        {activeNotification?.id && isAuth && (
+          <Notification
+            type={activeNotification.type}
+            title={activeNotification.title}
+            onClick={closeNotificationHandler}
+          >
+            {activeNotification.text}
+          </Notification>
+        )}
+        {cookificationIsOpen && !isAuth && (
+          <Notification type="notification" onClick={closeCookificationHandler}>
+            This website uses cookies to ensure you get the best experience on
+            our website. By using our site you consent cookies.{" "}
+            <Link className={classes.link} to="/privacy">
+              Learn more
+            </Link>
+          </Notification>
+        )}
+
         <Footer />
       </div>
       {!maintenance && <UsedModelsPanel />}

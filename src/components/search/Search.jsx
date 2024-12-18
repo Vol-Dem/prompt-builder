@@ -12,9 +12,14 @@ import ErrorMessage from "../ui/ErrorMessage";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import { useOnlineStatus } from "../../hooks/use-online-status";
 import {
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+  ANIMATIONS_FM_ZOOM_IN,
+  ANIMATIONS_FM_ZOOM_IN_INITIAL,
   ERROR_MESSAGE_DEFAULT,
   ERROR_MESSAGE_OFFLINE,
 } from "../../variables/constants";
+import { AnimatePresence, motion } from "framer-motion";
 
 const amountPerPage = 10;
 const amountPerPageQuick = 4;
@@ -56,6 +61,7 @@ const Search = ({ className }) => {
   const searchInputHandler = (e) => {
     const searchInputValue = e.target.value;
     setSearchResultIsOpen(true);
+    setShowMore(false);
     dispatch(searchActions.setSearchQuery(searchInputValue));
   };
 
@@ -174,7 +180,13 @@ const Search = ({ className }) => {
 
   const searchResultHtml = searchResult?.result?.map((modelPreveiw, i) => {
     return (
-      <li key={i} className={classes["search__item"]}>
+      <motion.li
+        key={modelPreveiw.id}
+        initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+        animate={ANIMATIONS_FM_SLIDEIN}
+        exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
+        className={classes["search__item"]}
+      >
         <NavLink
           to={`models/${modelPreveiw.id}`}
           className={classes["search__link"]}
@@ -212,14 +224,20 @@ const Search = ({ className }) => {
           previewData={modelPreveiw}
           className={classes["search__add"]}
         />
-      </li>
+      </motion.li>
     );
   });
 
   const categoriesSearchResultHtml = subcategoriesSearchResult.map(
     (result, i) => {
       return (
-        <li key={i} className={classes["search__categories-item"]}>
+        <motion.li
+          key={result.id}
+          initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+          animate={ANIMATIONS_FM_SLIDEIN}
+          exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
+          className={classes["search__categories-item"]}
+        >
           <span className={classes["search__type"]}>{result.type}</span>{" "}
           <Link
             to="/"
@@ -247,7 +265,7 @@ const Search = ({ className }) => {
           >
             {result.subName}
           </Link>
-        </li>
+        </motion.li>
       );
     }
   );
@@ -289,63 +307,70 @@ const Search = ({ className }) => {
           <SearchIcon />
         </button>
       </form>
-      {searchInput.length >= 3 &&
-        searchResultIsOpen &&
-        location.pathname !== "/search" && (
-          <div className={classes["search__dropdown"]}>
-            <div className={classes["search__settings"]}>
-              <button
-                className={classes["search__btn-close"]}
-                onClick={() => {
-                  setSearchResult({});
-                  dispatch(searchActions.setSearchQuery(""));
-                  setSearchResultIsOpen(false);
-                }}
-              >
-                <span className={classes["search__cross"]}></span>
-              </button>
-            </div>
-            <div className={classes["search__result"]}>
-              {!!subcategoriesSearchResult.length && (
-                <ul className={classes["search__categories"]}>
-                  {categoriesSearchResultHtml}
-                </ul>
-              )}
-              {searchIsLoading && (
-                <div className={classes["spiner-container"]}>
-                  <Spinner size="small" />
-                </div>
-              )}
-              {!searchIsLoading && errorMessage && (
-                <ErrorMessage>{errorMessage}</ErrorMessage>
-              )}
-              {!searchIsLoading &&
-                !errorMessage &&
-                !searchResult?.result?.length &&
-                !!searchResult?.query &&
-                isOnline && (
-                  <div className={classes.error}>No resources found</div>
-                )}
-              {!isOnline && (
-                <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>
-              )}
-              {!searchIsLoading && !!searchResult?.result?.length && (
-                <ul className={classes["search__models"]}>
-                  {searchResultHtml}
-                </ul>
-              )}
-              {showMore && (
-                <ButtonTertiary
-                  type="button"
-                  className={classes["btn-more"]}
-                  onClick={submitSearchHandler}
+      <AnimatePresence>
+        {searchInput.length >= 3 &&
+          searchResultIsOpen &&
+          location.pathname !== "/search" && (
+            <motion.div
+              initial={ANIMATIONS_FM_ZOOM_IN_INITIAL}
+              animate={ANIMATIONS_FM_ZOOM_IN}
+              exit={ANIMATIONS_FM_ZOOM_IN_INITIAL}
+              className={classes["search__dropdown"]}
+            >
+              <div className={classes["search__settings"]}>
+                <button
+                  className={classes["search__btn-close"]}
+                  onClick={() => {
+                    setSearchResult({});
+                    dispatch(searchActions.setSearchQuery(""));
+                    setSearchResultIsOpen(false);
+                  }}
                 >
-                  Show more
-                </ButtonTertiary>
-              )}
-            </div>
-          </div>
-        )}
+                  <span className={classes["search__cross"]}></span>
+                </button>
+              </div>
+              <div className={classes["search__result"]}>
+                {!!subcategoriesSearchResult.length && (
+                  <ul className={classes["search__categories"]}>
+                    {categoriesSearchResultHtml}
+                  </ul>
+                )}
+                {searchIsLoading && (
+                  <div className={classes["spiner-container"]}>
+                    <Spinner size="small" />
+                  </div>
+                )}
+                {!searchIsLoading && errorMessage && (
+                  <ErrorMessage>{errorMessage}</ErrorMessage>
+                )}
+                {!searchIsLoading &&
+                  !errorMessage &&
+                  !searchResult?.result?.length &&
+                  !!searchResult?.query &&
+                  isOnline && (
+                    <div className={classes.error}>No resources found</div>
+                  )}
+                {!isOnline && (
+                  <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>
+                )}
+                {!searchIsLoading && !!searchResult?.result?.length && (
+                  <ul className={classes["search__models"]}>
+                    {searchResultHtml}
+                  </ul>
+                )}
+                {showMore && (
+                  <ButtonTertiary
+                    type="button"
+                    className={classes["btn-more"]}
+                    onClick={submitSearchHandler}
+                  >
+                    Show more
+                  </ButtonTertiary>
+                )}
+              </div>
+            </motion.div>
+          )}
+      </AnimatePresence>
     </div>
   );
 };

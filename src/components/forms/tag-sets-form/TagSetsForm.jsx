@@ -243,6 +243,7 @@ const TagSetsForm = ({ modelId, onClose }) => {
           {i !== 0 && (
             <ButtonTertiary
               type="button"
+              title="Delete tag set"
               className={classes["input__btn-del"]}
               onClick={deleteTagsetInputHandler.bind(null, i)}
             >

@@ -17,6 +17,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
+  ANIMATIONS_FM_ZOOM_IN,
+  ANIMATIONS_FM_ZOOM_IN_INITIAL,
 } from "../../../variables/constants";
 import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
 import TagSetsForm from "../../forms/tag-sets-form/TagSetsForm";
@@ -309,38 +311,45 @@ const CarouselImage = ({
             >
               <DotsSvg />
             </ButttonTertiary>
-            {menuIsOpen && (
-              <menu className={classes["menu__list"]}>
-                <li
-                  className={classes["menu__item"]}
-                  onClick={setPreviwImgHandler}
+            <AnimatePresence>
+              {menuIsOpen && (
+                <motion.menu
+                  initial={ANIMATIONS_FM_ZOOM_IN_INITIAL}
+                  animate={ANIMATIONS_FM_ZOOM_IN}
+                  exit={ANIMATIONS_FM_ZOOM_IN_INITIAL}
+                  className={classes["menu__list"]}
                 >
-                  Set as preview
-                </li>
-                <li
-                  className={classes["menu__item"]}
-                  onClick={openTagSetMenuHandler}
-                >
-                  Set as tag set preview
-                </li>
-                {nsfwMode && (
                   <li
                     className={classes["menu__item"]}
-                    onClick={setNsfwPreviwImgHandler}
+                    onClick={setPreviwImgHandler}
                   >
-                    Set as NSFW preview
+                    Set as preview
                   </li>
-                )}
-                {imgIsSaved && (
                   <li
-                    className={`${classes["menu__item"]} ${classes["menu__item--del"]}`}
-                    onClick={showDeleteReqeustHandler}
+                    className={classes["menu__item"]}
+                    onClick={openTagSetMenuHandler}
                   >
-                    Delete
+                    Set as tag set preview
                   </li>
-                )}
-              </menu>
-            )}
+                  {nsfwMode && (
+                    <li
+                      className={classes["menu__item"]}
+                      onClick={setNsfwPreviwImgHandler}
+                    >
+                      Set as NSFW preview
+                    </li>
+                  )}
+                  {imgIsSaved && (
+                    <li
+                      className={`${classes["menu__item"]} ${classes["menu__item--del"]}`}
+                      onClick={showDeleteReqeustHandler}
+                    >
+                      Delete
+                    </li>
+                  )}
+                </motion.menu>
+              )}
+            </AnimatePresence>
           </div>
           <ButtonAdd
             className={classes["btn-add"]}

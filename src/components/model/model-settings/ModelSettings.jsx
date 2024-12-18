@@ -26,10 +26,13 @@ import {
   GUIDE_STEP_EDIT_UPD_DEL,
   ERROR_MESSAGE_OFFLINE,
   URL_CF_UPDATE_MODEL,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+  ANIMATIONS_FM_SLIDEIN,
 } from "../../../variables/constants";
 import { modelActions } from "../../../store/model";
 import { tabActions } from "../../../store/tabs";
 import EditPageGuide from "../../ui/guide/edit/EditPageGuide";
+import { AnimatePresence, motion } from "framer-motion";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -334,7 +337,10 @@ const ModelSettings = () => {
       )}
       <div className={classes.content}>
         {curTab === "general" && (
-          <div>
+          <motion.div
+            initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            animate={ANIMATIONS_FM_SLIDEIN}
+          >
             <div
               className={`${classes["update"]} ${
                 guideIsActive &&
@@ -368,33 +374,41 @@ const ModelSettings = () => {
             {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
             <UpdateModelForm modelData={model} />
             {guideIsActive && guideHomeState?.active && <EditPageGuide />}
-          </div>
+          </motion.div>
         )}
         {curTab === "versions" && (
-          <div>
+          <motion.div
+            initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            animate={ANIMATIONS_FM_SLIDEIN}
+          >
             <VersionStatusForm modelData={model} />
-          </div>
+          </motion.div>
         )}
         {curVersionData && (
-          <div>
+          <motion.div
+            initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            animate={ANIMATIONS_FM_SLIDEIN}
+          >
             <VersionForm
               versionData={curVersionData}
               defaultData={curVersionDefData}
               modelId={model.id}
               modelType={model.modelType}
             />
-          </div>
+          </motion.div>
         )}
       </div>
-      {deleteRequestIsOpen && (
-        <DeleteRequest
-          message="Are you sure you want to delete this resource? This action
+      <AnimatePresence>
+        {deleteRequestIsOpen && (
+          <DeleteRequest
+            message="Are you sure you want to delete this resource? This action
         can't be undone"
-          onSubmit={deleteModelHandler}
-          onClose={closeDeleteReqeustHandler}
-          isDeleting={isDeleting}
-        />
-      )}
+            onSubmit={deleteModelHandler}
+            onClose={closeDeleteReqeustHandler}
+            isDeleting={isDeleting}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

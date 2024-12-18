@@ -10,6 +10,10 @@ import classes from "./ComboSelect.module.scss";
 import { motion, AnimatePresence } from "framer-motion";
 import { validateInput } from "../../utils/generalUtils";
 import { useEffect, useState } from "react";
+import {
+  ANIMATIONS_FM_SLIDEOUT,
+  ANIMATIONS_FM_SLIDEOUT_INITIAL,
+} from "../../variables/constants";
 
 const ComboSelect = ({
   id,
@@ -35,7 +39,7 @@ const ComboSelect = ({
   }, [showError]);
 
   const nameExists = optionsData?.find((option) => option.name === query);
-  console.log(optionsData);
+  // console.log(optionsData);
   useEffect(() => {
     if (!!validation) {
       // console.log(selected);
@@ -161,10 +165,22 @@ const ComboSelect = ({
         )}
       </Combobox>
       {showErrorMessage && error && (
-        <div className={classes.error}>{error}</div>
+        <motion.div
+          initial={ANIMATIONS_FM_SLIDEOUT_INITIAL}
+          animate={ANIMATIONS_FM_SLIDEOUT}
+          className={classes.error}
+        >
+          {error}
+        </motion.div>
       )}
       {showErrorMessage && inputErrorMessage && (
-        <div className={classes.error}>{inputErrorMessage}</div>
+        <motion.div
+          initial={ANIMATIONS_FM_SLIDEOUT_INITIAL}
+          animate={ANIMATIONS_FM_SLIDEOUT}
+          className={classes.error}
+        >
+          {inputErrorMessage}
+        </motion.div>
       )}
     </div>
   );

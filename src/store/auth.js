@@ -179,19 +179,29 @@ export const authRequest = (isLogin, email, password) => {
         dispatch(authActions.closeAuthForm());
       }
     } catch (error) {
-      if (error.code === "auth/invalid-login-credentials") {
-        dispatch(authActions.setErrorMessage("Invalid login credentials"));
-      } else if (error.code === "auth/too-many-requests") {
-        dispatch(
-          authActions.setErrorMessage(
-            "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later"
-          )
-        );
-      } else {
-        dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
+      let errMessage;
+      switch (error.code) {
+        case "auth/invalid-login-credentials":
+          errMessage = "Invalid login credentials";
+          break;
+        case "auth/invalid-email":
+          errMessage = "Invalid email";
+          break;
+        case "auth/missing-password":
+          errMessage = "Missing password";
+          break;
+        case "auth/too-many-requests":
+          errMessage =
+            "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later";
+          break;
+        default:
+          errMessage = error.message;
       }
+
+      dispatch(authActions.setErrorMessage(errMessage));
+    } finally {
+      dispatch(authActions.setIsLoading(false));
     }
-    dispatch(authActions.setIsLoading(false));
   };
 };
 

@@ -14,7 +14,6 @@ import {
 const PreviewCard = ({ previewData, onClick, layout }) => {
   const [currVersion, setCurrVersion] = useState({});
   const [currSidePanelData, setCurrSidePanelData] = useState({});
-  const [cardLayoutId, setCardLayoutId] = useState(previewData.id);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const imgRef = useRef();
 
@@ -56,21 +55,12 @@ const PreviewCard = ({ previewData, onClick, layout }) => {
       transition={{
         layout: { duration: 0 },
         type: "spring",
-        // duration: 0.2,
       }}
-      // style={{ zIndex: 999 }}
-      initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-      animate={ANIMATIONS_FM_SLIDEIN}
       id={previewData.id}
       className={`${classes.card} ${layout ? classes["card--motion"] : ""}`}
     >
       <div className={classes["image-container"]}>
-        <ButtonAdd
-          previewData={previewData}
-          className={classes["btn-add"]}
-          onClick={setCardLayoutId}
-        />
-
+        <ButtonAdd previewData={previewData} className={classes["btn-add"]} />
         <Link to={`/models/${previewData.id}`} onClick={onClick}>
           <Image
             ref={imgRef}

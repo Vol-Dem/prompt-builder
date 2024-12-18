@@ -26,6 +26,7 @@ import {
   ERROR_MESSAGE_AUTH,
   ERROR_MESSAGE_DEFAULT,
   GUIDE_STEP_OPEN_IMAGE,
+  URL_CIV_MODELS,
 } from "../../variables/constants";
 import BackSvg from "../../assets/BackSvg";
 import { getVersionImagesFromCiv } from "../../utils/fetchUtils";
@@ -71,6 +72,20 @@ const Model = ({ title }) => {
   const dispatch = useDispatch();
   const descriptionRef = useRef();
   const loadingImagesTimeoutRef = useRef();
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const responseCiv = await fetch(`${URL_CIV_MODELS}512412`);
+
+  //       const data = await responseCiv.json();
+  //       console.log(data);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
   useEffect(() => {
     if (guideIsActive && guideHomeActive) {

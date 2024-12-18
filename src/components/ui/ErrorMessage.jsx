@@ -1,8 +1,15 @@
+import {
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+} from "../../variables/constants";
 import classes from "./ErrorMessage.module.scss";
+import { motion } from "framer-motion";
 
 const ErrorMessage = (props) => {
   return (
-    <div
+    <motion.div
+      initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+      animate={ANIMATIONS_FM_SLIDEIN}
       data-testid="error-message"
       className={`${classes.error} ${props.className || ""}`}
     >
@@ -21,7 +28,7 @@ const ErrorMessage = (props) => {
         />
       </svg>
       {props.children}
-    </div>
+    </motion.div>
   );
 };
 

@@ -1,8 +1,17 @@
+import {
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+} from "../../variables/constants";
 import classes from "./WarningMessage.module.scss";
+import { motion } from "framer-motion";
 
 const WarningMessage = (props) => {
   return (
-    <div className={`${classes.warning} ${props.className || ""}`}>
+    <motion.div
+      initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+      animate={ANIMATIONS_FM_SLIDEIN}
+      className={`${classes.warning} ${props.className || ""}`}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -18,7 +27,7 @@ const WarningMessage = (props) => {
         />
       </svg>
       <div>{props.children}</div>
-    </div>
+    </motion.div>
   );
 };
 

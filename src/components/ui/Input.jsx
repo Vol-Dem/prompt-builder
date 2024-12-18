@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import classes from "./Input.module.scss";
 import { validateInput } from "../../utils/generalUtils";
+import { motion } from "framer-motion";
+import {
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+  ANIMATIONS_FM_SLIDEOUT,
+  ANIMATIONS_FM_SLIDEOUT_INITIAL,
+} from "../../variables/constants";
 
 const Input = (props) => {
   const {
@@ -102,10 +109,22 @@ const Input = (props) => {
         value={value}
       />
       {showErrorMessage && error && (
-        <div className={classes.error}>{error}</div>
+        <motion.div
+          initial={ANIMATIONS_FM_SLIDEOUT_INITIAL}
+          animate={ANIMATIONS_FM_SLIDEOUT}
+          className={classes.error}
+        >
+          {error}
+        </motion.div>
       )}
       {showErrorMessage && inputErrorMessage && (
-        <div className={classes.error}>{inputErrorMessage}</div>
+        <motion.div
+          initial={ANIMATIONS_FM_SLIDEOUT_INITIAL}
+          animate={ANIMATIONS_FM_SLIDEOUT}
+          className={classes.error}
+        >
+          {inputErrorMessage}
+        </motion.div>
       )}
     </div>
   );

@@ -30,7 +30,8 @@ body {
   margin: 0;
   font-size: 1.4rem;
   color: var.$color-text-white;
-  overflow-x: hidden;
+  // overflow-x: hidden;
+  overflow: hidden scroll;
   background-color: var.$color-background-primary;
   // font-family: var.$font-family-primary;
   font-family: "Nunito", sans-serif;

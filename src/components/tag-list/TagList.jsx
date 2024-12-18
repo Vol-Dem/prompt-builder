@@ -6,6 +6,11 @@ import { promptActions } from "../../store/prompt";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import CopiedSvg from "../../assets/CopiedSvg";
 import CopySvg from "../../assets/CopySvg";
+import { motion } from "framer-motion";
+import {
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+} from "../../variables/constants";
 
 const TagList = forwardRef(function TagList(props, ref) {
   const [copied, setCopied] = useState(false);
@@ -77,16 +82,21 @@ const TagList = forwardRef(function TagList(props, ref) {
           {copied && <CopiedSvg />}
         </ButtonTertiary>
       </div>
-      <ul className={classes.tags}>
+      <motion.ul
+        // key={Date.now()}
+        // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+        // animate={ANIMATIONS_FM_SLIDEIN}
+        className={classes.tags}
+      >
         {!!props?.tags?.length &&
           props?.tags?.map((tag, i) => {
             return (
-              <li key={i}>
+              <li key={`${tag}-${i}`}>
                 <Tag ref={ref} tag={tag} promptType={props?.promptType} />
               </li>
             );
           })}
-      </ul>
+      </motion.ul>
     </div>
   );
 });

@@ -72,7 +72,7 @@
   &__dropdown {
     position: absolute;
     top: 100%;
-    left: 50%;
+    left: 0.4rem;
     // min-height: 2rem;
     // max-height: 40rem;
     width: 97%;
@@ -80,7 +80,7 @@
     border-radius: 0 0 1rem 1rem;
     background-color: var.$color-background-primary;
     box-shadow: var.$box-shadow;
-    transform: translateX(-50%);
+    // transform: translateX(-50%);
     z-index: 60;
   }
 
@@ -162,7 +162,7 @@
     // overflow: hidden;
     margin-bottom: 0.6rem;
     margin-right: 1rem;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease;
 
     &:hover {
       background-color: lighten(var.$color-background-tertiary, 5%);

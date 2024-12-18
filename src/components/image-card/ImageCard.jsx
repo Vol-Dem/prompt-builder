@@ -29,6 +29,7 @@ import {
 } from "../../variables/constants";
 import { guideActions } from "../../store/guide";
 import ImageCardResourcesGuide from "../ui/guide/model/ImageCardResourcesGuide";
+import { motion } from "framer-motion";
 
 const firestore = getFirestore(firebaseApp);
 const civitDefEmb = [250708, 250712, 106916];
@@ -448,7 +449,14 @@ const ImageCard = ({ activeImgNum }) => {
     const version = versiondId || versionIdByName;
 
     return (
-      <li key={i} className={classes["resource"]}>
+      <motion.li
+        variants={{
+          hidden: { opacity: 0, y: 30 },
+          visible: { opacity: 1, y: 0 },
+        }}
+        key={i}
+        className={classes["resource"]}
+      >
         {resource?.preview && (
           <>
             <Link
@@ -522,7 +530,7 @@ const ImageCard = ({ activeImgNum }) => {
           </div>
           {resource?.weight && <div>weight: {resource?.weight || ""}</div>}
         </div>
-      </li>
+      </motion.li>
     );
   });
 
@@ -713,7 +721,10 @@ const ImageCard = ({ activeImgNum }) => {
                 {!isLoading && !!resourcesHtml?.length && (
                   <div ref={resorcesRef}>
                     Resources:
-                    <ul
+                    <motion.ul
+                      variants={{
+                        visible: { transition: { staggerChildren: 0.05 } },
+                      }}
                       className={`${classes["example__resourses"]} ${
                         guideIsActive &&
                         guideStep === GUIDE_STEP_IMAGE_RESOURCES
@@ -723,7 +734,7 @@ const ImageCard = ({ activeImgNum }) => {
                     >
                       {resourcesHtml}
                       <ImageCardResourcesGuide />
-                    </ul>
+                    </motion.ul>
                   </div>
                 )}
                 {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}

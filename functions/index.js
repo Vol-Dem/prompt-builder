@@ -33,6 +33,11 @@ const PROJECT_ID = process.env.GCLOUD_PROJECT;
 const PROJECT_NAME = `projects/${PROJECT_ID}`;
 const MIN_COST_DIF_FOR_ALERT = 1;
 
+// ERROR_MESSAGES
+const ERROR_MESSAGE_AUTH = "You must be authorized to perform this action";
+const ERROR_MESSAGE_INVALID_ID = "Invalid ID";
+const ERROR_MESSAGE_INVALID_DATA = "Invalid data";
+
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
 
@@ -623,7 +628,10 @@ exports.updateModel = onRequest(
         // response.send(`Model ${modelId} updated`);
       }
     } catch (err) {
-      throw new HttpsError(err.message);
+      // throw new HttpsError(err);
+      return {
+        error: err.message,
+      };
     }
   }
 );
@@ -640,10 +648,7 @@ exports.updateModelCall = onCall(
       const uid = request?.auth?.uid;
 
       if (!uid) {
-        return {
-          modelId: modelId,
-          message: "Auth error",
-        };
+        throw new HttpsError("unauthenticated", ERROR_MESSAGE_AUTH);
       }
       // const name = request.auth.token.name || null;
       // const picture = request.auth.token.picture || null;
@@ -652,7 +657,7 @@ exports.updateModelCall = onCall(
       // Checking attribute.
       if (!Number.isFinite(+modelId) || modelId.length === 0) {
         // Throwing an HttpsError so that the client gets the error details.
-        throw new HttpsError("invalid-argument", "Invalid ID");
+        throw new HttpsError("invalid-argument", ERROR_MESSAGE_INVALID_ID);
       }
       // Checking that the user is authenticated.
       //   if (!request.auth) {
@@ -677,9 +682,12 @@ exports.updateModelCall = onCall(
 
         const responseData = await responseCiv.json();
 
-        if (!responseCiv.ok) {
-          throw new HttpsError(`Error status (${responseData})`);
+        if (responseData.error) {
+          throw new HttpsError("internal", responseData.error);
         }
+        // if (!responseCiv.ok) {
+        //   throw new HttpsError(`Error status (${responseData})`);
+        // }
         //   response.send(`Model name: ${responseData?.name}`);
         // Push the new message into Firestore using the Firebase Admin SDK.
         if (responseData?.id) {
@@ -699,7 +707,7 @@ exports.updateModelCall = onCall(
             message: "Upload complete",
           };
         } else {
-          throw new HttpsError(`Missing ID`);
+          throw new HttpsError("unavailable", ERROR_MESSAGE_INVALID_DATA);
         }
       } else {
         const curModelData = modelDataDoc.data();
@@ -719,9 +727,12 @@ exports.updateModelCall = onCall(
 
         const responseData = await responseCiv.json();
 
-        if (!responseCiv.ok) {
-          throw new HttpsError(`Error status (${responseData})`);
+        if (responseData.error) {
+          throw new HttpsError("internal", responseData.error);
         }
+        // if (!responseCiv.ok) {
+        //   throw new HttpsError(`Error status (${responseData})`);
+        // }
         //   response.send(`Model name: ${responseData?.name}`);
         // Push the new message into Firestore using the Firebase Admin SDK.
         if (responseData?.id) {
@@ -778,7 +789,7 @@ exports.updateModelCall = onCall(
 
           // return;
         } else {
-          throw new HttpsError(`Missing ID`);
+          throw new HttpsError("unavailable", ERROR_MESSAGE_INVALID_DATA);
         }
 
         // Send back a message that we've successfully written the message
@@ -787,7 +798,10 @@ exports.updateModelCall = onCall(
         // response.send(`Model ${modelId} updated`);
       }
     } catch (err) {
-      throw new HttpsError(err.message);
+      // throw new HttpsError(err.message);
+      return {
+        error: err.message,
+      };
     }
   }
 );
@@ -945,7 +959,10 @@ exports.updateModelCallDev = onCall(async (request) => {
       // response.send(`Model ${modelId} updated`);
     }
   } catch (err) {
-    throw new HttpsError(err.message);
+    // throw new HttpsError(err.message);
+    return {
+      error: err.message,
+    };
   }
 });
 
@@ -955,13 +972,19 @@ exports.getGeonamesCountries = onRequest(
     cors: true,
   },
   async (request, response) => {
-    const responseGeo = await fetch(
-      `http://api.geonames.org/countryInfoJSON?username=unstogeo`
-    );
+    try {
+      const responseGeo = await fetch(
+        `http://api.geonames.org/countryInfoJSON?username=unstogeo`
+      );
 
-    const responseData = await responseGeo.json();
+      const responseData = await responseGeo.json();
 
-    response.send(responseData);
+      response.send(responseData);
+    } catch (err) {
+      return {
+        error: err.message,
+      };
+    }
   }
 );
 exports.getGeonamesCities = onRequest(
@@ -970,15 +993,21 @@ exports.getGeonamesCities = onRequest(
     cors: true,
   },
   async (request, response) => {
-    const countryCode = request.query?.country || request.params[0];
-    const maxRows = request.query?.maxRows || request.params[1];
+    try {
+      const countryCode = request.query?.country || request.params[0];
+      const maxRows = request.query?.maxRows || request.params[1];
 
-    const responseGeo = await fetch(
-      `http://api.geonames.org/searchJSON?country=${countryCode}&featureClass=P&maxRows=${maxRows}&username=unstogeo`
-    );
+      const responseGeo = await fetch(
+        `http://api.geonames.org/searchJSON?country=${countryCode}&featureClass=P&maxRows=${maxRows}&username=unstogeo`
+      );
 
-    const responseData = await responseGeo.json();
+      const responseData = await responseGeo.json();
 
-    response.send(responseData);
+      response.send(responseData);
+    } catch (err) {
+      return {
+        error: err.message,
+      };
+    }
   }
 );

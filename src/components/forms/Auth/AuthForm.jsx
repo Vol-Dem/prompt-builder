@@ -19,11 +19,14 @@ import {
   VALIDATION_EMAIL_MAX_LENGTH,
   ERROR_MESSAGE_OFFLINE,
   VALIDATION_PASSWORD_MAX_LENGTH,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+  ANIMATIONS_FM_SLIDEIN,
 } from "../../../variables/constants";
 import Checkbox from "../../ui/Checkbox";
 import LinkA from "../../ui/LinkA";
 import SuccessMessage from "../../ui/SuccessMessage";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -68,7 +71,7 @@ const AuthForm = () => {
       return;
     }
 
-    if (isLogin || (email.isValid && password.isValid)) {
+    if (email.isValid && password.isValid) {
       dispatch(authRequest(isLogin, email.value, password.value));
     } else {
       dispatch(authActions.setErrorMessage(ERROR_MESSAGE_INPUT_DEF));
@@ -143,7 +146,13 @@ const AuthForm = () => {
   );
 
   return (
-    <section className={classes.auth}>
+    <motion.div
+      key={isLogin}
+      initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+      animate={ANIMATIONS_FM_SLIDEIN}
+      exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
+      className={classes.auth}
+    >
       {!showResetPassword && (
         <h3 className={classes["auth__title"]}>
           {isLogin ? "Log in" : "Sign Up"}
@@ -180,15 +189,21 @@ const AuthForm = () => {
             onChange={(e, isValid) => {
               setEmail({ value: e.target.value, isValid });
             }}
-            validation={
-              !isLogin
-                ? {
-                    required: true,
-                    email: true,
-                    maxLength: VALIDATION_EMAIL_MAX_LENGTH,
-                  }
-                : false
-            }
+            validation={{
+              required: true,
+              email: true,
+              maxLength: VALIDATION_EMAIL_MAX_LENGTH,
+              disableErrorOnBlur: !isLogin ? false : true,
+            }}
+            // validation={
+            //   !isLogin
+            //     ? {
+            //         required: true,
+            //         email: true,
+            //         maxLength: VALIDATION_EMAIL_MAX_LENGTH,
+            //       }
+            //     : false
+            // }
             showError={showErrorMessage}
             value={email.value}
           />
@@ -204,15 +219,21 @@ const AuthForm = () => {
             onChange={(e, isValid) => {
               setPassword({ value: e.target.value, isValid });
             }}
-            validation={
-              !isLogin
-                ? {
-                    required: true,
-                    password: true,
-                    maxLength: VALIDATION_PASSWORD_MAX_LENGTH,
-                  }
-                : false
-            }
+            validation={{
+              required: true,
+              password: true,
+              maxLength: VALIDATION_PASSWORD_MAX_LENGTH,
+              disableErrorOnBlur: !isLogin ? false : true,
+            }}
+            // validation={
+            //   !isLogin
+            //     ? {
+            //         required: true,
+            //         password: true,
+            //         maxLength: VALIDATION_PASSWORD_MAX_LENGTH,
+            //       }
+            //     : false
+            // }
             showError={showErrorMessage}
             value={password.value}
           />
@@ -286,7 +307,7 @@ const AuthForm = () => {
           </Link>
         </div>
       )}
-    </section>
+    </motion.div>
   );
 };
 

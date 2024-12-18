@@ -1,8 +1,17 @@
+import {
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+} from "../../variables/constants";
 import classes from "./SuccessMessage.module.scss";
+import { motion } from "framer-motion";
 
 const SuccessMessage = (props) => {
   return (
-    <div className={`${classes["success"]} ${props?.className || ""}`}>
+    <motion.div
+      initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+      animate={ANIMATIONS_FM_SLIDEIN}
+      className={`${classes["success"]} ${props?.className || ""}`}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -18,7 +27,7 @@ const SuccessMessage = (props) => {
         />
       </svg>
       <span>{props.children}</span>
-    </div>
+    </motion.div>
   );
 };
 

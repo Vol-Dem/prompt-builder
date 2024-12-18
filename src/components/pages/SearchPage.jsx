@@ -8,6 +8,7 @@ import ErrorMessage from "../ui/ErrorMessage";
 import usePageEnd from "../../hooks/use-page-end";
 import { ERROR_MESSAGE_OFFLINE } from "../../variables/constants";
 import { useOnlineStatus } from "../../hooks/use-online-status";
+import AddToPanelAnimContainer from "../ui/AddToPanelAnimContainer";
 
 const amountPerPage = 10;
 
@@ -20,6 +21,7 @@ const SearchPage = ({ title }) => {
   const isLastPage = useSelector((state) => state.search.isLastPage);
   const isLastSubPage = useSelector((state) => state.search.isLastSubPage);
   const errorMessage = useSelector((state) => state.search.errorMessage);
+  const usedModels = useSelector((state) => state.used.models);
   const dispatch = useDispatch();
   const endPage = useRef(null);
   const isPageEnd = usePageEnd(600);
@@ -32,13 +34,22 @@ const SearchPage = ({ title }) => {
 
   const searchResultHtml = searchResult.result?.map((item, i) => {
     return (
-      <PreviewCard
-        key={item.id}
-        previewData={item}
-        onClick={() => {
-          dispatch(searchActions.setSearchQuery(""));
-        }}
-      />
+      <AddToPanelAnimContainer key={item.id} usedModels={usedModels}>
+        <PreviewCard
+          layout={true}
+          previewData={item}
+          onClick={() => {
+            dispatch(searchActions.setSearchQuery(""));
+          }}
+        />
+        <PreviewCard
+          layout={false}
+          previewData={item}
+          onClick={() => {
+            dispatch(searchActions.setSearchQuery(""));
+          }}
+        />
+      </AddToPanelAnimContainer>
     );
   });
 

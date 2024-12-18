@@ -41,6 +41,11 @@ import {
   VALIDATION_TRIGER_WORDS_MAX_LENGTH,
   MODEL_TYPES,
   URL_CIV_MODELS,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEOUT_INITIAL,
+  ANIMATIONS_FM_SLIDEOUT,
+  ANIMATIONS_FM_FADEOUT_EXIT,
 } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
@@ -52,7 +57,7 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { modelActions } from "../../../store/model";
 // import ExtendedInput from "../../ui/ExtendedInput";
 import EditDefaultGuide from "../../ui/guide/edit/EditDefaultGuide";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 const firestore = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp);
@@ -287,6 +292,11 @@ const UpdateModelForm = ({ modelData, id }) => {
       value: mainCategoryName || modelData?.main,
       isValid: true,
     });
+    setMainCategorySelected({
+      name: mainCategoryName || modelData?.main,
+      id: modelData?.main,
+      isValid: true,
+    });
 
     if (!!modelData?.defaultCustomData?.tagSetsData?.length) {
       const tagSets = modelData.defaultCustomData.tagSetsData.map(
@@ -514,7 +524,12 @@ const UpdateModelForm = ({ modelData, id }) => {
           //Upload model to database
           const updateModel = httpsCallable(functions, "updateModelCall");
 
+          // const updateModelResp = await updateModel({ id: modelData?.id || modelId });
+          // if(updateModelResp.data.error) {
+          //   throwCustomError(resp.data.error)
+          // }
           updateModel({ id: modelData?.id || modelId });
+
           // const saveModelRes = await updateModel({
           //   id: modelData?.id || modelId,
           // });
@@ -546,7 +561,9 @@ const UpdateModelForm = ({ modelData, id }) => {
           );
         }
 
-        // console.log(data);
+        if (data.error) {
+          throwCustomError(data.error);
+        }
 
         if (!data.id) return;
 
@@ -954,23 +971,12 @@ const UpdateModelForm = ({ modelData, id }) => {
             value: "",
             isValid: false,
           });
-          setSubCatInputs([
-            {
-              type: "text",
-              id: "subcat-def",
-              name: "sub",
-              placeholder: "Subcategory",
-              value: "",
-              query: "",
-              selected: { id: null, name: "" },
-              isValid: false,
-              errorMessage: "This field is required",
-            },
-          ]);
+          setSubCatInputs([subCatsDefData]);
           setShowErrorMessage(false);
         }
       }
     } catch (err) {
+      console.log(err);
       setErrorMessage(handleErrors(err));
       setModelIsSaving(false);
     }
@@ -1085,7 +1091,14 @@ const UpdateModelForm = ({ modelData, id }) => {
 
   const subCatHtml = subCatInputs.map((sub, i) => {
     return (
-      <div key={sub.id} className={classes["subcategory"]}>
+      <motion.div
+        layout
+        key={sub.id}
+        initial={ANIMATIONS_FM_SLIDEOUT_INITIAL}
+        animate={ANIMATIONS_FM_SLIDEOUT}
+        exit={ANIMATIONS_FM_FADEOUT_EXIT}
+        className={classes["subcategory"]}
+      >
         <ComboSelect
           id={sub.id}
           optionsData={subCategoryOptions || []}
@@ -1109,7 +1122,7 @@ const UpdateModelForm = ({ modelData, id }) => {
             <CrossSvg />
           </ButtonTertiary>
         )}
-      </div>
+      </motion.div>
     );
   });
   // const subCatHtml = subCatInputs.map((sub, i) => {
@@ -1245,7 +1258,7 @@ const UpdateModelForm = ({ modelData, id }) => {
     );
   });
 
-  let typeSelectOption = MODEL_TYPES.map((version) => {
+  let typeSelectOption = MODEL_TYPES?.map((version) => {
     return {
       name: version.name,
       value: version.value,
@@ -1379,7 +1392,7 @@ const UpdateModelForm = ({ modelData, id }) => {
             showError={showErrorMessage}
           />
           <Fieldset legend="Subcategories">
-            {subCatHtml}
+            <AnimatePresence>{subCatHtml}</AnimatePresence>
             {subCatInputs?.length < SUBCATEGORIES_MAX_AMOUNT && (
               <ButttonSecondary
                 type="button"
@@ -1468,7 +1481,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                 }}
                 showError={showErrorMessage}
               ></Textarea>
-              <Fieldset legend="Tag sets">
+              <Fieldset legend="Tag sets (default)">
                 {tagSetsHtml}
                 {tagSetsInputs?.length < TAGSETS_MAX_AMOUNT && (
                   <ButttonSecondary

@@ -3,7 +3,11 @@ import classes from "./Select.module.scss";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Input from "./Input";
 import ArrowDownSvg from "../../assets/ArrowDownSvg";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ANIMATIONS_FM_ZOOM_IN,
+  ANIMATIONS_FM_ZOOM_IN_INITIAL,
+} from "../../variables/constants";
 
 const Select = ({
   id = "select",
@@ -51,15 +55,18 @@ const Select = ({
         ? options.length * selectHeight
         : visibleOptionsAmount * selectHeight;
     setOptionsFieldHeight(fieldHeight);
+  }, [visibleOptionsAmount, selectIsOpen, options, selected]);
 
+  useEffect(() => {
     if (selected) {
       const selectedData = options.find(
         (option) => option.value + "" === selected + ""
       );
+
       setSelectedFieldName(selectedData.name);
       setSelectedFieldValue(selectedData.value);
     }
-  }, [visibleOptionsAmount, options.length, selectIsOpen, options, selected]);
+  }, [options, selected]);
 
   const onSelectValueChange = (e) => {
     setSelectedFieldName(e.target.dataset.name);
@@ -124,33 +131,34 @@ const Select = ({
               value={selectedFieldName}
             />
           </div>
-
-          {!!selectIsOpen && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              // style={
-              //   optionsFieldHeight && selectIsOpen
-              //     ? { height: `${optionsFieldHeight}px` }
-              //     : {}
-              // }
-              className={`${classes["select__field"]} ${
-                !selectIsOpen ? classes["select__field--hide"] : ""
-              }`}
-            >
-              <div
-                className={classes["select__field-container"]}
+          <AnimatePresence>
+            {!!selectIsOpen && (
+              <motion.div
+                initial={ANIMATIONS_FM_ZOOM_IN_INITIAL}
+                animate={ANIMATIONS_FM_ZOOM_IN}
+                exit={ANIMATIONS_FM_ZOOM_IN_INITIAL}
                 style={
-                  options.length <= visibleOptionsAmount
-                    ? { overflowY: `unset` }
+                  optionsFieldHeight && selectIsOpen
+                    ? { height: `${optionsFieldHeight}px` }
                     : {}
                 }
+                className={`${classes["select__field"]} ${
+                  !selectIsOpen ? classes["select__field--hide"] : ""
+                }`}
               >
-                {selectOptions}
-              </div>
-            </motion.div>
-          )}
+                <div
+                  className={classes["select__field-container"]}
+                  style={
+                    options.length <= visibleOptionsAmount
+                      ? { overflowY: `unset` }
+                      : {}
+                  }
+                >
+                  {selectOptions}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>

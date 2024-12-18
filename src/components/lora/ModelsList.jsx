@@ -11,9 +11,13 @@ import ErrorMessage from "../ui/ErrorMessage";
 import {
   GUIDE_STEP_OPEN_MODEL,
   ERROR_MESSAGE_OFFLINE,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+  ANIMATIONS_FM_SLIDEIN,
 } from "../../variables/constants";
 import OpenModelGuide from "../ui/guide/home/OpenModelGuide";
 import { guideActions } from "../../store/guide";
+import { motion } from "framer-motion";
+import AddToPanelAnimContainer from "../ui/AddToPanelAnimContainer";
 
 const sortTypes = [
   { name: "Newest", value: "createdAt" },
@@ -107,18 +111,11 @@ const ModelsList = () => {
   }, [isIntersecting, dispatch, isLastPage, modelsData, nsfwMode, isOnline]);
 
   const loraHtml = modelsData?.previews?.map((item, i) => {
-    // const isInSidePanel = usedModels.find((model) => model.id === item.id);
     return (
-      <div key={i} style={{ position: "relative" }}>
+      <AddToPanelAnimContainer key={i} usedModels={usedModels}>
         <PreviewCard layout={false} previewData={item} />
-
         <PreviewCard layout={true} previewData={item} />
-
-        {/* {isInSidePanel && <PreviewCard previewData={item} key={i} />}
-        {!isInSidePanel && (
-          <PreviewCard layout={true} previewData={item} key={i} />
-        )} */}
-      </div>
+      </AddToPanelAnimContainer>
     );
   });
 
