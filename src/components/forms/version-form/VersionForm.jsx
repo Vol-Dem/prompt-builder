@@ -9,19 +9,22 @@ import Input from "../../ui/Input";
 import ButttonSecondary from "../../ui/ButtonSecondary";
 import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
-import { clearFileExtension } from "../../../utils/generalUtils";
+import {
+  clearFileExtension,
+  handleErrors,
+  throwCustomError,
+} from "../../../utils/generalUtils";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
 import {
-  DEF_ERROR_MESSAGE,
-  DEF_INPUT_ERROR_MESSAGE,
-  DESCRIPTION_MAX_LENGTH,
-  NAME_MAX_LENGTH,
-  NUMBER_MAX_LENGTH,
-  OFFLINE_ERROR_MESSAGE,
-  SAVED_SUCCESS_MESSAGE,
-  TITLE_MAX_LENGTH,
-  TRIGER_WORDS_MAX_LENGTH,
+  ERROR_MESSAGE_INPUT_DEF,
+  VALIDATION_DESCRIPTION_MAX_LENGTH,
+  VALIDATION_NAME_MAX_LENGTH,
+  VALIDATION_NUMBER_MAX_LENGTH,
+  ERROR_MESSAGE_OFFLINE,
+  SUCCESS_MESSAGE_UPLOADED,
+  VALIDATION_TITLE_MAX_LENGTH,
+  VALIDATION_TRIGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
 import InputNumber from "../../ui/InputNumber";
 // import { useOnlineStatus } from "../../../hooks/use-online-status";
@@ -252,10 +255,10 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         baseInputsIsNotValid ||
         (modelType === "checkpoint" && aditionalInputsIsNotValid)
       ) {
-        throw new Error(DEF_INPUT_ERROR_MESSAGE);
+        throwCustomError(ERROR_MESSAGE_INPUT_DEF);
       }
       if (!navigator?.onLine) {
-        throw new Error(OFFLINE_ERROR_MESSAGE);
+        throwCustomError(ERROR_MESSAGE_OFFLINE);
       }
 
       setIsSaving(true);
@@ -394,10 +397,10 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         },
         { merge: true }
       );
-      seteSuccessMessage(SAVED_SUCCESS_MESSAGE);
+      seteSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
       setIsSaving(false);
     } catch (err) {
-      setErrorMessage(DEF_ERROR_MESSAGE);
+      setErrorMessage(handleErrors(err));
       setIsSaving(false);
     }
   };
@@ -480,7 +483,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
           isValid={tagSet[0].isValid}
           showError={showErrorMessage}
           validation={{
-            maxLength: NAME_MAX_LENGTH,
+            maxLength: VALIDATION_NAME_MAX_LENGTH,
           }}
         />
         <Textarea
@@ -493,7 +496,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
           isValid={tagSet[1].isValid}
           showError={showErrorMessage}
           validation={{
-            maxLength: TRIGER_WORDS_MAX_LENGTH,
+            maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
           }}
         ></Textarea>
       </div>
@@ -517,7 +520,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         }}
         validation={{
           required: true,
-          maxLength: NAME_MAX_LENGTH,
+          maxLength: VALIDATION_NAME_MAX_LENGTH,
         }}
         showError={showErrorMessage}
       />
@@ -532,7 +535,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
           setDescriptionInput({ value: e.target.value, isValid });
         }}
         validation={{
-          maxLength: DESCRIPTION_MAX_LENGTH,
+          maxLength: VALIDATION_DESCRIPTION_MAX_LENGTH,
         }}
         showError={showErrorMessage}
       ></Textarea>
@@ -549,7 +552,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
               setMainTagInput({ value: e.target.value, isValid });
             }}
             validation={{
-              maxLength: TRIGER_WORDS_MAX_LENGTH,
+              maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
             }}
             showError={showErrorMessage}
           />
@@ -565,7 +568,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
               setTrigerInput({ value: e.target.value, isValid });
             }}
             validation={{
-              maxLength: TRIGER_WORDS_MAX_LENGTH,
+              maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
             }}
             showError={showErrorMessage}
           />
@@ -580,7 +583,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
               setHelperTagsInput({ value: e.target.value, isValid });
             }}
             validation={{
-              maxLength: TRIGER_WORDS_MAX_LENGTH,
+              maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
             }}
             showError={showErrorMessage}
           ></Textarea>
@@ -595,7 +598,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
               setNegativeTagsInput({ value: e.target.value, isValid });
             }}
             validation={{
-              maxLength: TRIGER_WORDS_MAX_LENGTH,
+              maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
             }}
             showError={showErrorMessage}
           ></Textarea>
@@ -623,7 +626,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
               setFileNameInput({ value: e.target.value, isValid });
             }}
             validation={{
-              maxLength: NAME_MAX_LENGTH,
+              maxLength: VALIDATION_NAME_MAX_LENGTH,
             }}
             showError={showErrorMessage}
           />
@@ -642,7 +645,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
                 }}
                 validation={{
                   number: true,
-                  maxLength: NUMBER_MAX_LENGTH,
+                  maxLength: VALIDATION_NUMBER_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />
@@ -658,7 +661,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
                 }}
                 validation={{
                   number: true,
-                  maxLength: NUMBER_MAX_LENGTH,
+                  maxLength: VALIDATION_NUMBER_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />
@@ -674,7 +677,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
                 }}
                 validation={{
                   number: true,
-                  maxLength: NUMBER_MAX_LENGTH,
+                  maxLength: VALIDATION_NUMBER_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />
@@ -691,7 +694,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
               setSizeInput({ value: e.target.value, isValid });
             }}
             validation={{
-              maxLength: TITLE_MAX_LENGTH,
+              maxLength: VALIDATION_TITLE_MAX_LENGTH,
             }}
             showError={showErrorMessage}
           />
@@ -708,7 +711,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
                   setSamplerInput({ value: e.target.value, isValid });
                 }}
                 validation={{
-                  maxLength: NAME_MAX_LENGTH,
+                  maxLength: VALIDATION_NAME_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />
@@ -723,7 +726,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
                   setStepsInput({ value: e.target.value, isValid });
                 }}
                 validation={{
-                  maxLength: NAME_MAX_LENGTH,
+                  maxLength: VALIDATION_NAME_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />
@@ -739,7 +742,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
                   setCfgScaleInput({ value: e.target.value, isValid });
                 }}
                 validation={{
-                  maxLength: NAME_MAX_LENGTH,
+                  maxLength: VALIDATION_NAME_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />
@@ -754,7 +757,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
                   setHiresUpscalerInput({ value: e.target.value, isValid });
                 }}
                 validation={{
-                  maxLength: NAME_MAX_LENGTH,
+                  maxLength: VALIDATION_NAME_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />
@@ -769,7 +772,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
                   setHiresUpscaleInput({ value: e.target.value, isValid });
                 }}
                 validation={{
-                  maxLength: NAME_MAX_LENGTH,
+                  maxLength: VALIDATION_NAME_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />
@@ -784,7 +787,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
                   setHiresUpscaleStepsInput({ value: e.target.value, isValid });
                 }}
                 validation={{
-                  maxLength: NAME_MAX_LENGTH,
+                  maxLength: VALIDATION_NAME_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />
@@ -799,7 +802,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
                   setDenoisingStrengthInput({ value: e.target.value, isValid });
                 }}
                 validation={{
-                  maxLength: NAME_MAX_LENGTH,
+                  maxLength: VALIDATION_NAME_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />
@@ -814,7 +817,7 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
                   setVaeInput({ value: e.target.value, isValid });
                 }}
                 validation={{
-                  maxLength: NAME_MAX_LENGTH,
+                  maxLength: VALIDATION_NAME_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />

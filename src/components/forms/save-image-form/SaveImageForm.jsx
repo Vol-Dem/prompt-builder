@@ -10,14 +10,15 @@ import SuccessMessage from "../../ui/SuccessMessage";
 import Spinner from "../../ui/Spinner";
 import {
   DEF_ERROR_MESSAGE,
-  DEF_INPUT_ERROR_MESSAGE,
-  EMPTY_ERROR_MESSAGE,
-  ID_MAX_LENGTH,
-  OFFLINE_ERROR_MESSAGE,
+  ERROR_MESSAGE_INPUT_DEF,
+  ERROR_MESSAGE_EMPTY,
+  VALIDATION_ID_MAX_LENGTH,
+  ERROR_MESSAGE_OFFLINE,
 } from "../../../variables/constants";
 import ChooseImageForm from "../choose-image-form/ChooseImageForm";
 import { uploadActions } from "../../../store/upload";
 import BackSvg from "../../../assets/BackSvg";
+import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 
 const SaveImageForm = ({ modelData, curVersion }) => {
   const [filterDisabledInput, setFilterDisabledInput] = useState(true);
@@ -41,10 +42,10 @@ const SaveImageForm = ({ modelData, curVersion }) => {
       setShowErrorMessage(true);
 
       if (!postIdInput.isValid) {
-        throw new Error(DEF_INPUT_ERROR_MESSAGE);
+        throwCustomError(ERROR_MESSAGE_INPUT_DEF);
       }
       if (!navigator?.onLine) {
-        throw new Error(OFFLINE_ERROR_MESSAGE);
+        throwCustomError(ERROR_MESSAGE_OFFLINE);
       }
 
       if (!postIdInput?.value) return;
@@ -61,14 +62,13 @@ const SaveImageForm = ({ modelData, curVersion }) => {
       setImages(data.items);
 
       if (!data.items.length) {
-        throw new Error(EMPTY_ERROR_MESSAGE);
+        throwCustomError(ERROR_MESSAGE_EMPTY);
       }
 
       setImagesListIsOpen(true);
       setIsLoading(false);
     } catch (err) {
-      setErrorMessage(DEF_ERROR_MESSAGE);
-      setIsLoading(false);
+      setErrorMessage(handleErrors(err));
     }
   };
 
@@ -148,7 +148,7 @@ const SaveImageForm = ({ modelData, curVersion }) => {
           }`}
           validation={{
             required: true,
-            maxLength: ID_MAX_LENGTH,
+            maxLength: VALIDATION_ID_MAX_LENGTH,
             number: true,
           }}
           showError={showErrorMessage}

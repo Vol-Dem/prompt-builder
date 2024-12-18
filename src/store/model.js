@@ -245,7 +245,7 @@ export const setTagSetPreviewImg = (versionId, tagSetData) => {
     const uid = getState().auth.user.uid;
     const id = getState().model.model.id;
     const model = getState().model.model;
-    console.log(model);
+    // console.log(model);
 
     const urlField =
       versionId === "tsv-def"

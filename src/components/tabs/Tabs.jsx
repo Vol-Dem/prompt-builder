@@ -2,7 +2,7 @@ import classes from "./Tabs.module.scss";
 import Categories from "../categories/Categories";
 import { useDispatch, useSelector } from "react-redux";
 import { tabActions } from "../../store/tabs";
-import { modelTypes } from "../../variables/constants";
+import { MODEL_TYPES } from "../../variables/constants";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import LinkA from "../ui/LinkA";
@@ -40,7 +40,7 @@ const Tabs = () => {
 
   const modelTypesHtml = Object.keys(categories)
     .map((categoryId) => {
-      const modelTypeInfo = modelTypes.find(
+      const modelTypeInfo = MODEL_TYPES.find(
         (modelType) => modelType.value === categoryId
       );
 
@@ -126,7 +126,7 @@ const Tabs = () => {
                 onClose={() => {
                   dispatch(guideActions.setIntroDisabled(true));
                 }}
-                disableClass={classes["guide-intro"]}
+                // disableClass={classes["guide-intro"]}
               >
                 <IntroGuide />
               </Modal>

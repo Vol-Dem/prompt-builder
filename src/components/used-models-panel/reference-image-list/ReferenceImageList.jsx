@@ -1,8 +1,8 @@
 import classes from "./ReferenceImageList.module.scss";
 import {
-  FM_ANIMTION_SLIDEIN,
-  FM_ANIMTION_SLIDEIN_INITIAL,
-  IMAGE_REF_ROW_LENGTH,
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+  SETTINGS_REF_IMAGE_ROW_LENGTH,
 } from "../../../variables/constants";
 import Image from "../../ui/image/Image";
 import CrossSvg from "../../../assets/CrossSvg";
@@ -44,62 +44,69 @@ const ReferenceImageList = ({ usedImages }) => {
     }
   };
 
-  const numberOfRows = Math.ceil(usedImages?.length / IMAGE_REF_ROW_LENGTH);
+  const numberOfRows = Math.ceil(
+    usedImages?.length / SETTINGS_REF_IMAGE_ROW_LENGTH
+  );
 
   const imageList = numberOfRows
     ? [...Array(numberOfRows).keys()].map((row, indexRow) => {
         return (
           <motion.ul
             layout
-            initial={FM_ANIMTION_SLIDEIN_INITIAL}
-            animate={FM_ANIMTION_SLIDEIN}
-            exit={FM_ANIMTION_SLIDEIN_INITIAL}
+            initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            animate={ANIMATIONS_FM_SLIDEIN}
+            exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
             key={indexRow}
             className={classes["ref-images"]}
           >
-            {[...Array(IMAGE_REF_ROW_LENGTH).keys()].map((image, index) => {
-              const i = indexRow * IMAGE_REF_ROW_LENGTH + index;
-              const nsfw =
-                usedImages[i]?.nsfw === false ||
-                usedImages[i]?.nsfw === "None" ||
-                usedImages[i]?.nsfwLevel === 1
-                  ? false
-                  : true;
-              if (!!usedImages[i]?.hash) {
-                return (
-                  <motion.li
-                    key={usedImages[i]?.hash}
-                    layoutId={`ref-${usedImages[i]?.hash}`}
-                    initial={FM_ANIMTION_SLIDEIN_INITIAL}
-                    animate={FM_ANIMTION_SLIDEIN}
-                    exit={FM_ANIMTION_SLIDEIN_INITIAL}
-                    className={classes["ref-images__item"]}
-                    data-id={usedImages[i]?.hash}
-                  >
-                    <Image
-                      src={usedImages[i].url}
-                      alt={`Reference image ${i}`}
-                      onClick={openImageHandler}
-                      className={`${
-                        !nsfwMode && nsfw ? classes["ref-images__nsfw"] : ""
-                      }`}
-                    />
-                    <span className={classes.close} onClick={closeImageHandler}>
-                      <CrossSvg />
-                    </span>
-                  </motion.li>
-                );
-              } else {
-                return (
-                  <li
-                    key={`s${i}`}
-                    className={classes["ref-images__item--def"]}
-                  >
-                    <ImageSvg />
-                  </li>
-                );
+            {[...Array(SETTINGS_REF_IMAGE_ROW_LENGTH).keys()].map(
+              (image, index) => {
+                const i = indexRow * SETTINGS_REF_IMAGE_ROW_LENGTH + index;
+                const nsfw =
+                  usedImages[i]?.nsfw === false ||
+                  usedImages[i]?.nsfw === "None" ||
+                  usedImages[i]?.nsfwLevel === 1
+                    ? false
+                    : true;
+                if (!!usedImages[i]?.hash) {
+                  return (
+                    <motion.li
+                      key={usedImages[i]?.hash}
+                      layoutId={`ref-${usedImages[i]?.hash}`}
+                      initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+                      animate={ANIMATIONS_FM_SLIDEIN}
+                      exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
+                      className={classes["ref-images__item"]}
+                      data-id={usedImages[i]?.hash}
+                    >
+                      <Image
+                        src={usedImages[i].url}
+                        alt={`Reference image ${i}`}
+                        onClick={openImageHandler}
+                        className={`${
+                          !nsfwMode && nsfw ? classes["ref-images__nsfw"] : ""
+                        }`}
+                      />
+                      <span
+                        className={classes.close}
+                        onClick={closeImageHandler}
+                      >
+                        <CrossSvg />
+                      </span>
+                    </motion.li>
+                  );
+                } else {
+                  return (
+                    <li
+                      key={`s${i}`}
+                      className={classes["ref-images__item--def"]}
+                    >
+                      <ImageSvg />
+                    </li>
+                  );
+                }
               }
-            })}
+            )}
           </motion.ul>
         );
       })
@@ -107,9 +114,9 @@ const ReferenceImageList = ({ usedImages }) => {
 
   return (
     <motion.div
-      initial={FM_ANIMTION_SLIDEIN_INITIAL}
-      animate={FM_ANIMTION_SLIDEIN}
-      exit={FM_ANIMTION_SLIDEIN_INITIAL}
+      initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+      animate={ANIMATIONS_FM_SLIDEIN}
+      exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
     >
       {imageList}
     </motion.div>

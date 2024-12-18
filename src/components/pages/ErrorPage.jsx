@@ -7,7 +7,7 @@ import Buttton from "../ui/Button";
 import { authActions } from "../../store/auth";
 import Modal from "../ui/Modal";
 import AuthForm from "../forms/Auth/AuthForm";
-import { DEF_ERROR_MESSAGE } from "../../variables/constants";
+import { ERROR_MESSAGE_DEFAULT } from "../../variables/constants";
 
 const ErrorPage = () => {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
@@ -34,7 +34,7 @@ const ErrorPage = () => {
         </p>
         <p className={classes["error-page__message"]}>
           {/* <i>{error.statusText || error.message}</i> */}
-          {error.status !== 404 && <i>{DEF_ERROR_MESSAGE}</i>}
+          {error.status !== 404 && <i>{ERROR_MESSAGE_DEFAULT}</i>}
           {error.status === 404 && <i>Page not found</i>}
         </p>
         {!isAuth && error.status === 404 && (

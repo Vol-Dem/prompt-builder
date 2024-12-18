@@ -11,7 +11,7 @@ import {
 } from "firebase/firestore";
 import firebaseApp from "../firebase-config";
 import { authActions } from "./auth";
-import { DEF_ERROR_MESSAGE } from "../variables/constants";
+import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -216,7 +216,7 @@ export const getModelsPreview = (loadMore = false, nsfwMode) => {
       dispatch(tabActions.setIsLoading(false));
     } catch (err) {
       dispatch(tabActions.setIsLoading(false));
-      dispatch(tabActions.setErrorMessage(DEF_ERROR_MESSAGE));
+      dispatch(tabActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
     }
   };
 };

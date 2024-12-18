@@ -8,7 +8,11 @@ import Modal from "../ui/Modal";
 import CategoriesForm from "../forms/categories-form/CategoriesForm";
 import EditSvg from "../../assets/EditSvg";
 import OpenCategoryGuide from "../ui/guide/home/OpenCategoryGuide";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+} from "../../variables/constants";
 
 const Subcategories = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
@@ -45,17 +49,23 @@ const Subcategories = () => {
     })
     ?.map((subcategory, i) => {
       return (
-        <li
+        <motion.li
+          key={`${activeCategory}-${subcategory.id}`}
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+          // animate={ANIMATIONS_FM_SLIDEIN}
+          // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
           id={subcategory.id}
           onClick={categorySwitchHandler}
-          key={i}
           className={`${classes[`subcategory__link`]} ${
             activeSubcategory === subcategory.id ? classes.active : ""
           }`}
         >
           {subcategory.name}
           {guideHomeState?.active && i === 0 && <OpenCategoryGuide />}
-        </li>
+        </motion.li>
       );
     });
 
@@ -67,7 +77,16 @@ const Subcategories = () => {
     <div className={classes.category}>
       {!!subcategoriesData?.length && (
         <div className={classes["subcategories-container"]}>
-          <ul className={classes["subcategories"]}>{subcategoriesHtml}</ul>
+          <motion.ul
+            variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
+            // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            animate="visible"
+            // animate={ANIMATIONS_FM_SLIDEIN}
+            exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            className={classes["subcategories"]}
+          >
+            {subcategoriesHtml}
+          </motion.ul>
           <ButtonTertiary
             className={classes["subcategories__edit"]}
             type="button"

@@ -8,7 +8,11 @@ import Modal from "../ui/Modal";
 import CategoriesForm from "../forms/categories-form/CategoriesForm";
 import EditSvg from "../../assets/EditSvg";
 import OpenCategoryGuide from "../ui/guide/home/OpenCategoryGuide";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+} from "../../variables/constants";
 
 const Categories = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
@@ -42,10 +46,16 @@ const Categories = () => {
         })
         .map((category, i) => {
           return (
-            <li
+            <motion.li
+              key={`${activeTab}-${category.id}`}
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+              // animate={ANIMATIONS_FM_SLIDEIN}
+              // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
               id={category.id}
               onClick={categorySwitchHandler}
-              key={i}
               className={`${classes[`category__link`]} ${
                 activeCategory === category.id ? classes.active : ""
               }`}
@@ -54,7 +64,7 @@ const Categories = () => {
               {guideHomeState?.active && !activeCategory && i === 0 && (
                 <OpenCategoryGuide />
               )}
-            </li>
+            </motion.li>
           );
         })
     : [];
@@ -66,7 +76,14 @@ const Categories = () => {
   return (
     <div className={classes["container"]}>
       <div className={classes["category"]}>
-        <ul className={classes["category__list"]}>{catHtml}</ul>
+        <motion.ul
+          // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+          // animate={ANIMATIONS_FM_SLIDEIN}
+          // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
+          className={classes["category__list"]}
+        >
+          {catHtml}
+        </motion.ul>
         {!!catHtml?.length && (
           <ButtonTertiary
             type="button"

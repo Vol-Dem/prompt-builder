@@ -17,24 +17,30 @@ import Checkbox from "../../ui/Checkbox";
 import Select from "../../ui/Select";
 import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
-import { clearFileExtension, splitTags } from "../../../utils/generalUtils";
+import {
+  clearFileExtension,
+  handleErrors,
+  splitTags,
+  throwCustomError,
+} from "../../../utils/generalUtils";
 import { Link } from "react-router-dom";
 import Spinner from "../../ui/Spinner";
 import ComboSelect from "../../ui/ComboSelect";
 import {
-  CATEGORY_NAME_MAX_LENGTH,
+  VALIDATION_CATEGORY_NAME_MAX_LENGTH,
   DEF_ERROR_MESSAGE,
-  DEF_INPUT_ERROR_MESSAGE,
-  DESCRIPTION_MAX_LENGTH,
-  EXISTS_ERROR_MESSAGE,
+  ERROR_MESSAGE_INPUT_DEF,
+  VALIDATION_DESCRIPTION_MAX_LENGTH,
+  ERROR_MESSAGE_EXISTS,
   GUIDE_STEP_EDIT_DEFAULT,
-  NAME_MAX_LENGTH,
-  NUMBER_MAX_LENGTH,
-  OFFLINE_ERROR_MESSAGE,
-  SAVED_SUCCESS_MESSAGE,
-  TITLE_MAX_LENGTH,
-  TRIGER_WORDS_MAX_LENGTH,
-  modelTypes,
+  VALIDATION_NAME_MAX_LENGTH,
+  VALIDATION_NUMBER_MAX_LENGTH,
+  ERROR_MESSAGE_OFFLINE,
+  SUCCESS_MESSAGE_UPLOADED,
+  VALIDATION_TITLE_MAX_LENGTH,
+  VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+  MODEL_TYPES,
+  URL_CIV_MODELS,
 } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
@@ -213,19 +219,22 @@ const UpdateModelForm = ({ modelData, id }) => {
   // );
 
   const mainCategoryOptions = useMemo(() => {
-    return !modelTypeInput
-      ? []
-      : categories[modelTypeInput]?.filter((category) =>
+    return !!modelTypeInput && categories?.hasOwnProperty(modelTypeInput)
+      ? categories[modelTypeInput]?.filter((category) =>
           category.name.toLowerCase().includes(mainCategoryQuery.toLowerCase())
-        );
+        )
+      : [];
   }, [categories, modelTypeInput, mainCategoryQuery]);
 
-  const subCategoryOptions =
-    categories[modelTypeInput]
-      .find((category) => category.name === mainCategorySelected.name)
-      ?.subcategories?.filter((subcategory) =>
-        subcategory.name.toLowerCase().includes(subCategoryQuery.toLowerCase())
-      ) || [];
+  const subCategoryOptions = categories?.hasOwnProperty(modelTypeInput)
+    ? categories[modelTypeInput]
+        .find((category) => category.name === mainCategorySelected.name)
+        ?.subcategories?.filter((subcategory) =>
+          subcategory.name
+            .toLowerCase()
+            .includes(subCategoryQuery.toLowerCase())
+        )
+    : [];
 
   useEffect(() => {}, []);
 
@@ -339,8 +348,8 @@ const UpdateModelForm = ({ modelData, id }) => {
       setErrorMessage("");
       setSuccessMessage("");
       setShowErrorMessage(true);
-      console.log(mainCategorySelected);
-      console.log(subCatInputs);
+      // console.log(mainCategorySelected);
+      // console.log(subCatInputs);
       const tagsetsIsNotValid = !!tagSetsInputs.find(
         (input) => input[0].isValid === false || input[1].isValid === false
       );
@@ -389,10 +398,10 @@ const UpdateModelForm = ({ modelData, id }) => {
           modelTypeInput === "checkpoint" &&
           aditionalInputsIsNotValid)
       ) {
-        throw new Error(DEF_INPUT_ERROR_MESSAGE);
+        throwCustomError(ERROR_MESSAGE_INPUT_DEF);
       }
       if (!navigator?.onLine) {
-        throw new Error(OFFLINE_ERROR_MESSAGE);
+        throwCustomError(ERROR_MESSAGE_OFFLINE);
       }
 
       setModelIsSaving(true);
@@ -411,7 +420,7 @@ const UpdateModelForm = ({ modelData, id }) => {
         if (modelIdIndex) {
           modelId = parseInt(urlArr[modelIdIndex]);
         } else {
-          throw new Error("Invalid URL");
+          throwCustomError("Invalid URL");
         }
       }
 
@@ -499,7 +508,7 @@ const UpdateModelForm = ({ modelData, id }) => {
       // Throw error if user try to add existing model using new model form
       // if (modelSnap.exists() && modelsPrevRefSnap.exists() && !modelData) {
       if (modelsPrevRefSnap.exists() && !modelData) {
-        throw new Error(EXISTS_ERROR_MESSAGE);
+        throwCustomError(ERROR_MESSAGE_EXISTS);
       } else {
         if (!modelData) {
           //Upload model to database
@@ -524,9 +533,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           //   modelVersions = data?.modelVersions;
           // }
 
-          const responseCiv = await fetch(
-            `https://civitai.com/api/v1/models/${modelId}`
-          );
+          const responseCiv = await fetch(`${URL_CIV_MODELS}${modelId}`);
 
           data = await responseCiv.json();
           modelVersions = data?.modelVersions;
@@ -936,7 +943,7 @@ const UpdateModelForm = ({ modelData, id }) => {
         }
 
         setModelIsSaving(false);
-        setSuccessMessage(SAVED_SUCCESS_MESSAGE);
+        setSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
         setSavedModel(modelId);
         if (!modelData) {
           setIdInput({
@@ -964,17 +971,8 @@ const UpdateModelForm = ({ modelData, id }) => {
         }
       }
     } catch (err) {
-      console.log(err);
+      setErrorMessage(handleErrors(err));
       setModelIsSaving(false);
-      if (
-        err.message === EXISTS_ERROR_MESSAGE ||
-        err.message === DEF_INPUT_ERROR_MESSAGE ||
-        err.message === OFFLINE_ERROR_MESSAGE
-      ) {
-        setErrorMessage(err.message);
-      } else {
-        setErrorMessage(DEF_ERROR_MESSAGE);
-      }
     }
   };
 
@@ -1090,7 +1088,7 @@ const UpdateModelForm = ({ modelData, id }) => {
       <div key={sub.id} className={classes["subcategory"]}>
         <ComboSelect
           id={sub.id}
-          optionsData={subCategoryOptions}
+          optionsData={subCategoryOptions || []}
           query={subCategoryQuery}
           setQuery={setSubCategoryQuery}
           setSelected={subCatSelectHandler}
@@ -1098,7 +1096,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           placeholder="Subcategory"
           validation={{
             required: true,
-            maxLength: CATEGORY_NAME_MAX_LENGTH,
+            maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
           }}
           showError={showErrorMessage}
         />
@@ -1128,7 +1126,7 @@ const UpdateModelForm = ({ modelData, id }) => {
   //         className={classes["subcategory__input"]}
   //         validation={{
   //           required: true,
-  //           maxLength: CATEGORY_NAME_MAX_LENGTH,
+  //           maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
   //         }}
   //         showError={showErrorMessage}
   //       />
@@ -1199,7 +1197,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           isValid={tagSet[0].isValid}
           showError={showErrorMessage}
           validation={{
-            maxLength: NAME_MAX_LENGTH,
+            maxLength: VALIDATION_NAME_MAX_LENGTH,
           }}
         />
         <Textarea
@@ -1213,7 +1211,7 @@ const UpdateModelForm = ({ modelData, id }) => {
           error={tagSet[1].errorMessage}
           showError={showErrorMessage}
           validation={{
-            maxLength: TRIGER_WORDS_MAX_LENGTH,
+            maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
           }}
         ></Textarea>
       </div>
@@ -1247,7 +1245,7 @@ const UpdateModelForm = ({ modelData, id }) => {
     );
   });
 
-  let typeSelectOption = modelTypes.map((version) => {
+  let typeSelectOption = MODEL_TYPES.map((version) => {
     return {
       name: version.name,
       value: version.value,
@@ -1270,7 +1268,7 @@ const UpdateModelForm = ({ modelData, id }) => {
             }}
             validation={{
               required: true,
-              maxLength: TITLE_MAX_LENGTH,
+              maxLength: VALIDATION_TITLE_MAX_LENGTH,
             }}
             showError={showErrorMessage}
           />
@@ -1285,7 +1283,7 @@ const UpdateModelForm = ({ modelData, id }) => {
               setDescriptionInput({ value: e.target.value, isValid });
             }}
             validation={{
-              maxLength: DESCRIPTION_MAX_LENGTH,
+              maxLength: VALIDATION_DESCRIPTION_MAX_LENGTH,
             }}
             showError={showErrorMessage}
           ></Textarea>
@@ -1343,7 +1341,7 @@ const UpdateModelForm = ({ modelData, id }) => {
               readOnly={!!modelData}
               validation={{
                 required: true,
-                maxLength: TITLE_MAX_LENGTH,
+                maxLength: VALIDATION_TITLE_MAX_LENGTH,
               }}
               showError={showErrorMessage}
             />
@@ -1361,12 +1359,13 @@ const UpdateModelForm = ({ modelData, id }) => {
             readOnly={!!modelData}
             validation={{
               required: true,
-              maxLength: CATEGORY_NAME_MAX_LENGTH,
+              maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
             }}
             showError={showErrorMessage}
             errorMessage={mainInput.errorMessage}
           /> */}
           <ComboSelect
+            label="Category"
             optionsData={mainCategoryOptions}
             query={mainCategoryQuery}
             setQuery={setMainCategoryQuery}
@@ -1375,7 +1374,7 @@ const UpdateModelForm = ({ modelData, id }) => {
             placeholder="Main category"
             validation={{
               required: true,
-              maxLength: CATEGORY_NAME_MAX_LENGTH,
+              maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
             }}
             showError={showErrorMessage}
           />
@@ -1401,7 +1400,7 @@ const UpdateModelForm = ({ modelData, id }) => {
             placeholder="Subcategory"
             validation={{
               required: true,
-              maxLength: CATEGORY_NAME_MAX_LENGTH,
+              maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
             }}
             showError={showErrorMessage}
           /> */}
@@ -1420,7 +1419,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                   setMainTagInput({ value: e.target.value, isValid });
                 }}
                 validation={{
-                  maxLength: NAME_MAX_LENGTH,
+                  maxLength: VALIDATION_NAME_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />
@@ -1435,7 +1434,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                   setTrigerInput({ value: e.target.value, isValid });
                 }}
                 validation={{
-                  maxLength: TRIGER_WORDS_MAX_LENGTH,
+                  maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />
@@ -1450,7 +1449,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                   setHelperTagsInput({ value: e.target.value, isValid });
                 }}
                 validation={{
-                  maxLength: TRIGER_WORDS_MAX_LENGTH,
+                  maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               ></Textarea>
@@ -1465,7 +1464,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                   setNegativeTagsInput({ value: e.target.value, isValid });
                 }}
                 validation={{
-                  maxLength: TRIGER_WORDS_MAX_LENGTH,
+                  maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               ></Textarea>
@@ -1495,7 +1494,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                   setSrcInput({ value: e.target.value, isValid });
                 }}
                 validation={{
-                  maxLength: NAME_MAX_LENGTH,
+                  maxLength: VALIDATION_NAME_MAX_LENGTH,
                 }}
               />
               <Input
@@ -1509,7 +1508,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                   setFileNameInput({ value: e.target.value, isValid });
                 }}
                 validation={{
-                  maxLength: NAME_MAX_LENGTH,
+                  maxLength: VALIDATION_NAME_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />
@@ -1528,7 +1527,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                     }}
                     validation={{
                       number: true,
-                      maxLength: NUMBER_MAX_LENGTH,
+                      maxLength: VALIDATION_NUMBER_MAX_LENGTH,
                     }}
                     showError={showErrorMessage}
                   />
@@ -1544,7 +1543,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                     }}
                     validation={{
                       number: true,
-                      maxLength: NUMBER_MAX_LENGTH,
+                      maxLength: VALIDATION_NUMBER_MAX_LENGTH,
                     }}
                     showError={showErrorMessage}
                   />
@@ -1560,7 +1559,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                     }}
                     validation={{
                       number: true,
-                      maxLength: NUMBER_MAX_LENGTH,
+                      maxLength: VALIDATION_NUMBER_MAX_LENGTH,
                     }}
                     showError={showErrorMessage}
                   />
@@ -1577,7 +1576,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                   setSizeInput({ value: e.target.value, isValid });
                 }}
                 validation={{
-                  maxLength: TITLE_MAX_LENGTH,
+                  maxLength: VALIDATION_TITLE_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />
@@ -1595,7 +1594,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                       setSamplerInput({ value: e.target.value, isValid });
                     }}
                     validation={{
-                      maxLength: NAME_MAX_LENGTH,
+                      maxLength: VALIDATION_NAME_MAX_LENGTH,
                     }}
                     showError={showErrorMessage}
                   />
@@ -1610,7 +1609,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                       setStepsInput({ value: e.target.value, isValid });
                     }}
                     validation={{
-                      maxLength: NUMBER_MAX_LENGTH,
+                      maxLength: VALIDATION_NUMBER_MAX_LENGTH,
                     }}
                     showError={showErrorMessage}
                   />
@@ -1626,7 +1625,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                       setCfgScaleInput({ value: e.target.value, isValid });
                     }}
                     validation={{
-                      maxLength: NUMBER_MAX_LENGTH,
+                      maxLength: VALIDATION_NUMBER_MAX_LENGTH,
                     }}
                     showError={showErrorMessage}
                   />
@@ -1641,7 +1640,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                       setHiresUpscalerInput({ value: e.target.value, isValid });
                     }}
                     validation={{
-                      maxLength: NAME_MAX_LENGTH,
+                      maxLength: VALIDATION_NAME_MAX_LENGTH,
                     }}
                     showError={showErrorMessage}
                   />
@@ -1656,7 +1655,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                       setHiresUpscaleInput({ value: e.target.value, isValid });
                     }}
                     validation={{
-                      maxLength: NAME_MAX_LENGTH,
+                      maxLength: VALIDATION_NAME_MAX_LENGTH,
                     }}
                     showError={showErrorMessage}
                   />
@@ -1674,7 +1673,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                       });
                     }}
                     validation={{
-                      maxLength: NAME_MAX_LENGTH,
+                      maxLength: VALIDATION_NAME_MAX_LENGTH,
                     }}
                     showError={showErrorMessage}
                   />
@@ -1692,7 +1691,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                       });
                     }}
                     validation={{
-                      maxLength: NAME_MAX_LENGTH,
+                      maxLength: VALIDATION_NAME_MAX_LENGTH,
                     }}
                     showError={showErrorMessage}
                   />
@@ -1707,7 +1706,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                       setVaeInput({ value: e.target.value, isValid });
                     }}
                     validation={{
-                      maxLength: NAME_MAX_LENGTH,
+                      maxLength: VALIDATION_NAME_MAX_LENGTH,
                     }}
                     showError={showErrorMessage}
                   />

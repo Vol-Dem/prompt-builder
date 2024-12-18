@@ -10,7 +10,7 @@ import { useOnlineStatus } from "../../hooks/use-online-status";
 import ErrorMessage from "../ui/ErrorMessage";
 import {
   GUIDE_STEP_OPEN_MODEL,
-  OFFLINE_ERROR_MESSAGE,
+  ERROR_MESSAGE_OFFLINE,
 } from "../../variables/constants";
 import OpenModelGuide from "../ui/guide/home/OpenModelGuide";
 import { guideActions } from "../../store/guide";
@@ -107,7 +107,7 @@ const ModelsList = () => {
   }, [isIntersecting, dispatch, isLastPage, modelsData, nsfwMode, isOnline]);
 
   const loraHtml = modelsData?.previews?.map((item, i) => {
-    const isInSidePanel = usedModels.find((model) => model.id === item.id);
+    // const isInSidePanel = usedModels.find((model) => model.id === item.id);
     return (
       <div key={i} style={{ position: "relative" }}>
         <PreviewCard layout={false} previewData={item} />
@@ -165,7 +165,7 @@ const ModelsList = () => {
         <div className={classes.empty}>This category is empty</div>
       )}
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-      {!isOnline && <ErrorMessage>{OFFLINE_ERROR_MESSAGE}</ErrorMessage>}
+      {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
       <div ref={endPage}></div>
       {isLoading && (
         <div className={classes["spiner-container"]}>

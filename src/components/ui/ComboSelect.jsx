@@ -25,6 +25,7 @@ const ComboSelect = ({
   error,
   showError,
   onBlur,
+  label,
 }) => {
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -33,8 +34,8 @@ const ComboSelect = ({
     setShowErrorMessage(showError);
   }, [showError]);
 
-  const nameExists = optionsData.find((option) => option.name === query);
-
+  const nameExists = optionsData?.find((option) => option.name === query);
+  console.log(optionsData);
   useEffect(() => {
     if (!!validation) {
       // console.log(selected);
@@ -49,6 +50,11 @@ const ComboSelect = ({
 
   return (
     <div className={classes["container"]}>
+      {label && (
+        <label htmlFor={id} className={classes.label}>
+          {label || ""}
+        </label>
+      )}
       <Combobox
         immediate
         value={selected}
@@ -114,7 +120,9 @@ const ComboSelect = ({
                   exit={{ opacity: 0, scale: 0.95 }}
                   anchor="bottom"
                   transition
-                  className={classes.options}
+                  className={`${classes.options} ${
+                    !!optionsData?.length ? classes["options__border"] : ""
+                  }`}
                   onAnimationComplete={() => setQuery("")}
                   data-id={id}
                   modal={false}

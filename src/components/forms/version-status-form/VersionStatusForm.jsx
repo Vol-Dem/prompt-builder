@@ -10,9 +10,9 @@ import { useSelector } from "react-redux";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import {
-  DEF_ERROR_MESSAGE,
-  OFFLINE_ERROR_MESSAGE,
-  SAVED_SUCCESS_MESSAGE,
+  ERROR_MESSAGE_DEFAULT,
+  ERROR_MESSAGE_OFFLINE,
+  SUCCESS_MESSAGE_UPLOADED,
 } from "../../../variables/constants";
 // import { useOnlineStatus } from "../../../hooks/use-online-status";
 import Spinner from "../../ui/Spinner";
@@ -54,7 +54,7 @@ const VersionStatusForm = ({ modelData }) => {
       seteSuccessMessage("");
 
       if (!navigator?.onLine) {
-        throw new Error(OFFLINE_ERROR_MESSAGE);
+        throw new Error(ERROR_MESSAGE_OFFLINE);
       }
 
       const updatedVersionData = { ...modelData.modelVersionsCustomData };
@@ -114,10 +114,10 @@ const VersionStatusForm = ({ modelData }) => {
         },
         { merge: true }
       );
-      seteSuccessMessage(SAVED_SUCCESS_MESSAGE);
+      seteSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
       setIsSaving(false);
     } catch (err) {
-      seteErrorMessage(DEF_ERROR_MESSAGE);
+      seteErrorMessage(ERROR_MESSAGE_DEFAULT);
       setIsSaving(false);
     }
   };

@@ -7,6 +7,11 @@
     right: 1rem;
   }
 
+  &--mode {
+    top: -0.1rem;
+    left: 18rem;
+  }
+
   &--0 {
     top: -0.1rem;
     left: 18rem;
@@ -18,11 +23,15 @@
   }
 
   &--2 {
-    top: -1.4rem;
+    top: -4rem;
     left: 29rem;
   }
 
   &--3 {
+    top: -3.8rem;
+    left: 32rem;
+  }
+  &--4 {
     top: 6.4rem;
     left: calc(100% - 30rem);
   }

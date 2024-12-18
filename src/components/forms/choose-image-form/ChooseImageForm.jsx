@@ -8,8 +8,8 @@ import CheckSvg from "../../../assets/CheckSvg";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import ErrorMessage from "../../ui/ErrorMessage";
 import {
-  DEF_ERROR_MESSAGE,
-  OFFLINE_ERROR_MESSAGE,
+  ERROR_MESSAGE_DEFAULT,
+  ERROR_MESSAGE_OFFLINE,
 } from "../../../variables/constants";
 import { motion } from "framer-motion";
 
@@ -91,7 +91,7 @@ const ChooseImageForm = ({
         setImagesInputs(versionStatusInputData || []);
       } catch (err) {
         setIsLoading(false);
-        seteErrorMessage(DEF_ERROR_MESSAGE);
+        seteErrorMessage(ERROR_MESSAGE_DEFAULT);
       }
     };
     loadSavedPost();
@@ -185,7 +185,7 @@ const ChooseImageForm = ({
       {!!errorMessage && isOnline && (
         <ErrorMessage>{errorMessage}</ErrorMessage>
       )}
-      {!isOnline && <ErrorMessage>{OFFLINE_ERROR_MESSAGE}</ErrorMessage>}
+      {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
       <div className={classes["btns"]}>
         <Buttton
           className={`${type === "del" ? classes["btn-del"] : ""}`}

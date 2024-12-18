@@ -2,7 +2,6 @@
 
 .title {
   font-size: 2rem;
-  margin-bottom: 1rem;
 }
 
 .tag-sets__list {
@@ -23,6 +22,14 @@
 
 .tag-sets__wrap {
   position: relative;
+}
+
+.tag-sets__header {
+  display: flex;
+  align-items: center;
+  // justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .tag-sets__container {
@@ -66,6 +73,27 @@
 
   &__btn--hidden {
     display: none;
+  }
+}
+
+.notification {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  // margin-bottom: 3rem;
+  background-color: var.$color-background-tertiary;
+  border-radius: 10px;
+  padding: 1rem 1.4rem;
+
+  &__text {
+    color: var.$color-text-gray;
+  }
+
+  &__svg {
+    flex-shrink: 0;
+    width: 3rem;
+    height: 3rem;
+    color: var.$color-text-gray;
   }
 }
 

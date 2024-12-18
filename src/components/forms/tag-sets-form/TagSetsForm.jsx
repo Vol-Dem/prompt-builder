@@ -1,4 +1,5 @@
-import classes from "./TagsForm.module.scss";
+import React from "react";
+import classes from "./TagSetsForm.module.scss";
 import { useEffect, useState } from "react";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
@@ -21,7 +22,6 @@ import {
   SUCCESS_MESSAGE_UPLOADED,
   VALIDATION_TRIGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
-// import { useOnlineStatus } from "../../../hooks/use-online-status";
 import Spinner from "../../ui/Spinner";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
@@ -33,24 +33,11 @@ import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 
-const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
+const TagSetsForm = ({ modelId, onClose }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  const [mainTagInput, setMainTagInput] = useState({
-    value: "",
-    isValid: true,
-  });
-  const [trigerInput, setTrigerInput] = useState({ value: "", isValid: true });
-  const [helperTagsInput, setHelperTagsInput] = useState({
-    value: "",
-    isValid: true,
-  });
-  const [negativeTagsInput, setNegativeTagsInput] = useState({
-    value: "",
-    isValid: true,
-  });
   const [tagSetsInputs, setTagSetsInputs] = useState([
     [
       {
@@ -73,6 +60,8 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
 
   const uid = useSelector((state) => state.auth.user.uid);
   const model = useSelector((state) => state.model.model);
+  const curVersion = useSelector((state) => state.model.curVersion);
+  const versionData = model.modelVersionsCustomData[curVersion.id];
   const guideActive = useSelector((state) => state.guide.model.active);
   const guideStep = useSelector((state) => state.guide.model.step);
   const dispatch = useDispatch();
@@ -87,31 +76,6 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
       );
     }
   }, [guideActive, guideStep, dispatch]);
-
-  useEffect(() => {
-    if (versionData?.mainTag) {
-      setMainTagInput({ value: versionData?.mainTag || "", isValid: true });
-    }
-
-    if (
-      !!versionData?.trainedWords?.length ||
-      !!defaultData?.trainedWords?.length
-    ) {
-      setTrigerInput(
-        versionData?.trainedWords
-          ? { value: versionData?.trainedWords?.join(", "), isValid: true }
-          : { value: defaultData.trainedWords?.join(", "), isValid: true }
-      );
-    }
-
-    if (versionData?.helperTags) {
-      setHelperTagsInput({ value: versionData?.helperTags, isValid: true });
-    }
-
-    if (versionData?.negativeTags) {
-      setNegativeTagsInput({ value: versionData?.negativeTags, isValid: true });
-    }
-  }, [versionData, defaultData]);
 
   useEffect(() => {
     if (!versionData) return;
@@ -150,13 +114,7 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
         (input) => input[0].isValid === false || input[1].isValid === false
       );
 
-      if (
-        !mainTagInput.isValid ||
-        !trigerInput.isValid ||
-        !helperTagsInput.isValid ||
-        !negativeTagsInput.isValid ||
-        tagsetsIsNotValid
-      ) {
+      if (tagsetsIsNotValid) {
         throwCustomError(ERROR_MESSAGE_INPUT_DEF);
       }
       if (!navigator?.onLine) {
@@ -165,34 +123,13 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
 
       setIsSaving(true);
 
-      const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
-
       const formdata = new FormData(e.target);
-      const mainTag = formdata.get("main-tag").trim();
       const tagSetsValues = formdata.getAll("set-value");
-      const trainedWords = formdata
-        .get("triger")
-        .trim()
-        .split(splitRegEx)
-        .filter(Boolean)
-        .map((tag) => tag.trim());
       const tagSetNames = formdata.getAll("set-name");
       const tagSetsInputData = tagSetNames.flatMap((setName, i) => {
         if (!setName && !tagSetsValues[i]) return [];
         return [{ name: setName, value: tagSetsValues[i] }];
       });
-      const helperTags = formdata
-        .get("helper-tags")
-        .trim()
-        .split(splitRegEx)
-        .filter(Boolean)
-        .map((tag) => tag.trim());
-      const negativeTags = formdata
-        .get("negative-tags")
-        .trim()
-        .split(splitRegEx)
-        .filter(Boolean)
-        .map((tag) => tag.trim());
 
       let tagSetsData;
       if (!versionData?.tagSetsData?.length) {
@@ -208,33 +145,15 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
 
       const updatedVersionData = {
         ...versionData,
-        mainTag,
-        helperTags,
-        negativeTags,
-        trainedWords,
         tagSetsData,
       };
 
       const modelsRef = doc(firestore, "users", uid, "models", modelId + "");
-      const modelsPrevRef = doc(
-        firestore,
-        "users",
-        uid,
-        "preview",
-        modelId + ""
-      );
 
       const versionPath = `modelVersionsCustomData.${versionData.versionId}`;
 
       await updateDoc(
         modelsRef,
-        {
-          [versionPath]: updatedVersionData,
-        },
-        { merge: true }
-      );
-      await updateDoc(
-        modelsPrevRef,
         {
           [versionPath]: updatedVersionData,
         },
@@ -364,67 +283,6 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
       <div className={classes.inputs}>
         <div className={classes.fields}>
           <FieldCategory>
-            <Input
-              label="Activation tag"
-              id="main-tag"
-              name="main-tag"
-              type="text"
-              placeholder="<lora:activation tag:1>"
-              value={mainTagInput.value}
-              onChange={(e, isValid) => {
-                setMainTagInput({ value: e.target.value, isValid });
-              }}
-              validation={{
-                maxLength: VALIDATION_NAME_MAX_LENGTH,
-              }}
-              showError={showErrorMessage}
-            />
-            <Textarea
-              label="Trigger words"
-              id="triger"
-              name="triger"
-              type="text"
-              rows="4"
-              placeholder="Triger word"
-              value={trigerInput.value}
-              onChange={(e, isValid) => {
-                setTrigerInput({ value: e.target.value, isValid });
-              }}
-              validation={{
-                maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
-              }}
-              showError={showErrorMessage}
-            />
-            <Textarea
-              label="Helper words"
-              id="helper-tags"
-              name="helper-tags"
-              rows="4"
-              placeholder="Helper words"
-              value={helperTagsInput.value}
-              onChange={(e, isValid) => {
-                setHelperTagsInput({ value: e.target.value, isValid });
-              }}
-              validation={{
-                maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
-              }}
-              showError={showErrorMessage}
-            ></Textarea>
-            <Textarea
-              label="Negative words"
-              id="negative-tags"
-              name="negative-tags"
-              rows="4"
-              placeholder="Negative words"
-              value={negativeTagsInput.value}
-              onChange={(e, isValid) => {
-                setNegativeTagsInput({ value: e.target.value, isValid });
-              }}
-              validation={{
-                maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
-              }}
-              showError={showErrorMessage}
-            ></Textarea>
             <Fieldset legend="Tag sets" className={classes.fieldset}>
               {tagSetsHtml}
               <ButttonSecondary
@@ -450,4 +308,4 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
   );
 };
 
-export default TagsForm;
+export default TagSetsForm;

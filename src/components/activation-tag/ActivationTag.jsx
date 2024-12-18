@@ -40,6 +40,7 @@ const ActivationTag = ({ tag, modelData, strength }) => {
         promptActions.changeActivationTag({
           prevTag: curTagName,
           newTag: `${curTagName}:${strenghth.toFixed(1)}>`,
+          weight: +strenghth.toFixed(1),
         })
       );
       return +strenghth.toFixed(1);

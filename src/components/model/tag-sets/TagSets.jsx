@@ -5,18 +5,28 @@ import { useDispatch, useSelector } from "react-redux";
 import Image from "../../ui/image/Image";
 import Buttton from "../../ui/Button";
 import TagSetGuide from "../../ui/guide/model/TagSetGuide";
-import { GUIDE_STEP_MODEL_TAGSET } from "../../../variables/constants";
+import {
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+  GUIDE_STEP_MODEL_TAGSET,
+} from "../../../variables/constants";
 import { guideActions } from "../../../store/guide";
+import Modal from "../../ui/Modal";
+import TagSetsForm from "../../forms/tag-sets-form/TagSetsForm";
+import { AnimatePresence, motion } from "framer-motion";
+import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
 
 const defVisibleTags = 2;
 
 const TagSets = ({ customData, defaultData }) => {
   const [tagSetsIsOpen, setTagSetsIsOpen] = useState(false);
+  const [tagSetsFormIsOpen, setTagSetsFormIsOpen] = useState(false);
   const [tagSets, setTagSets] = useState([]);
   const [allTagSets, setAllTagSets] = useState([]);
   const [tagsetItemHeight, setTagsetItemHeight] = useState(500);
   const [tagsetListHeight, setTagsetListHeight] = useState(500);
   const model = useSelector((state) => state.model.model);
+  // const curVersion = useSelector((state) => state.model.curVersion);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const guideActive = useSelector((state) => state.guide.model.active);
   const guideStep = useSelector((state) => state.guide.model.step);
@@ -97,8 +107,12 @@ const TagSets = ({ customData, defaultData }) => {
   };
 
   const tagSetsHtml = tagSets?.map((tagSet, i) => (
-    <li
+    <motion.li
       key={i}
+      initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+      animate={ANIMATIONS_FM_SLIDEIN}
+      // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
+      exit={{ opacity: 0, y: 30, transition: { delay: 1 } }}
       ref={i === 0 ? tagSetItemRef : null}
       className={classes["tag-sets"]}
     >
@@ -120,37 +134,57 @@ const TagSets = ({ customData, defaultData }) => {
           className={classes["tag-sets__tags"]}
         />
       }
-    </li>
+    </motion.li>
   ));
 
   const showAllTagSetsHandler = () => {
     setTagSetsIsOpen((prevState) => !prevState);
   };
 
+  const openTagSetsForm = () => {
+    setTagSetsFormIsOpen(true);
+  };
+
+  const closeTagSetsForm = () => {
+    setTagSetsFormIsOpen(false);
+  };
+
   return (
     <div className={classes["tag-sets__wrap"]}>
-      {!!tagSets?.length && <div className={classes.title}>Tag sets:</div>}
-      {!!tagSets?.length && (
-        <div
-          className={classes["tag-sets__container"]}
-          style={{
-            maxHeight: `${
-              !tagSetsIsOpen ? tagsetItemHeight : tagsetListHeight
-            }px`,
-            overflow: "hidden",
-          }}
-        >
-          <ul
-            className={`${classes["tag-sets__list"]} ${
-              tagSetsIsOpen ? classes["tag-sets__list--open"] : ""
-            }`}
-            ref={tagSetListRef}
-          >
-            {tagSetsHtml}
-          </ul>
+      <div className={classes["tag-sets__header"]}>
+        <div className={classes.title}>Tag sets:</div>
+        <Buttton onClick={openTagSetsForm}>Add tag set</Buttton>
+      </div>
+      {!tagSets?.length && (
+        <div className={classes["notification"]}>
+          {/* <ExclamationCircleSvg className={classes["notification__svg"]} /> */}
+          <p className={classes["notification__text"]}>
+            You don't have any tag sets. Press "Add tag set" to add new tag set.
+          </p>
         </div>
       )}
-
+      <AnimatePresence>
+        {!!tagSets?.length && (
+          <div
+            className={classes["tag-sets__container"]}
+            style={{
+              maxHeight: `${
+                !tagSetsIsOpen ? tagsetItemHeight : tagsetListHeight
+              }px`,
+              overflow: "hidden",
+            }}
+          >
+            <ul
+              className={`${classes["tag-sets__list"]} ${
+                tagSetsIsOpen ? classes["tag-sets__list--open"] : ""
+              }`}
+              ref={tagSetListRef}
+            >
+              {tagSetsHtml}
+            </ul>
+          </div>
+        )}
+      </AnimatePresence>
       {allTagSets?.length > 1 && (
         <Buttton
           type="button"
@@ -165,6 +199,13 @@ const TagSets = ({ customData, defaultData }) => {
         </Buttton>
       )}
       {!!tagSets?.length && <TagSetGuide />}
+      <AnimatePresence>
+        {tagSetsFormIsOpen && (
+          <Modal onClose={closeTagSetsForm}>
+            <TagSetsForm modelId={model.id} onClose={closeTagSetsForm} />
+          </Modal>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

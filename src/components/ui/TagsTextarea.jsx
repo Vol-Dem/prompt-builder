@@ -282,14 +282,25 @@ const TagsTextarea = ({
     // });
     const newPrompt = curPrompt.map((item) => {
       if (item.id === id) {
+        let regex = /\<[^>]*\>/i;
+        const isActivationTag = regex.test(editTagInput.value);
+
         let tag = editTagInput.value;
+
         if (+editWeightInput.value !== item.weight) {
           if (editTagInput.value.includes(":")) {
             const tagName = editTagInput.value
-              .replace(/^\(+|\)+$/g, "")
+              .replace(/^\(+|\<+|\)+|\>$/g, "")
               .split(":")
-              .slice(0, -1);
-            tag = `(${tagName}:${editWeightInput.value})`;
+              .slice(0, -1)
+              .join(":");
+            if (isActivationTag) {
+              tag = `<${tagName}:${editWeightInput.value}>`;
+            } else if (!isActivationTag && editWeightInput.value === 1) {
+              tag = tagName;
+            } else {
+              tag = `(${tagName}:${editWeightInput.value})`;
+            }
           } else {
             // console.log(editTagInput.value);
             const tagName = editTagInput.value.replace(/^\(+|\)+$/g, "");

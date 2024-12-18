@@ -6,7 +6,7 @@ import { liveSearch, searchActions } from "../../store/search";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import usePageEnd from "../../hooks/use-page-end";
-import { OFFLINE_ERROR_MESSAGE } from "../../variables/constants";
+import { ERROR_MESSAGE_OFFLINE } from "../../variables/constants";
 import { useOnlineStatus } from "../../hooks/use-online-status";
 
 const amountPerPage = 10;
@@ -99,7 +99,7 @@ const SearchPage = ({ title }) => {
         <ul className={classes["result-list"]}>{searchResultHtml}</ul>
       )}
       {searchIsLoading && <Spinner />}
-      {!isOnline && <ErrorMessage>{OFFLINE_ERROR_MESSAGE}</ErrorMessage>}
+      {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
       <div ref={endPage}></div>
     </div>
   );

@@ -8,9 +8,9 @@ import { authActions, reAuthUser } from "../../../store/auth";
 import Buttton from "../../ui/Button";
 import { useEffect } from "react";
 import {
-  DEF_INPUT_ERROR_MESSAGE,
-  OFFLINE_ERROR_MESSAGE,
-  PASSWORD_MAX_LENGTH,
+  ERROR_MESSAGE_INPUT_DEF,
+  ERROR_MESSAGE_OFFLINE,
+  VALIDATION_PASSWORD_MAX_LENGTH,
 } from "../../../variables/constants";
 
 const ReAuthForm = () => {
@@ -36,12 +36,12 @@ const ReAuthForm = () => {
     dispatch(authActions.setErrorMessage(""));
     setShowErrorMessage(true);
     if (!navigator?.onLine) {
-      dispatch(authActions.setErrorMessage(OFFLINE_ERROR_MESSAGE));
+      dispatch(authActions.setErrorMessage(ERROR_MESSAGE_OFFLINE));
       return;
     }
 
     if (!password.isValid) {
-      dispatch(authActions.setErrorMessage(DEF_INPUT_ERROR_MESSAGE));
+      dispatch(authActions.setErrorMessage(ERROR_MESSAGE_INPUT_DEF));
     } else {
       dispatch(reAuthUser("pass", password.value));
     }
@@ -52,7 +52,7 @@ const ReAuthForm = () => {
     dispatch(authActions.setErrorMessage(""));
     setShowErrorMessage(true);
     if (!navigator?.onLine) {
-      dispatch(authActions.setErrorMessage(OFFLINE_ERROR_MESSAGE));
+      dispatch(authActions.setErrorMessage(ERROR_MESSAGE_OFFLINE));
       return;
     }
 
@@ -77,7 +77,7 @@ const ReAuthForm = () => {
           validation={{
             required: true,
             password: true,
-            maxLength: PASSWORD_MAX_LENGTH,
+            maxLength: VALIDATION_PASSWORD_MAX_LENGTH,
           }}
           showError={showErrorMessage}
           value={password.value}

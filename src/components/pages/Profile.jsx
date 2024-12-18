@@ -13,12 +13,12 @@ import { useEffect, useState } from "react";
 import { ReactComponent as UserIcon } from "./../../assets/user.svg";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import {
-  AUTH_ERROR_MESSAGE,
-  DEF_INPUT_ERROR_MESSAGE,
-  EMAIL_MAX_LENGTH,
-  OFFLINE_ERROR_MESSAGE,
-  PASSWORD_MAX_LENGTH,
-  USERNAME_MAX_LENGTH,
+  ERROR_MESSAGE_AUTH,
+  ERROR_MESSAGE_INPUT_DEF,
+  VALIDATION_EMAIL_MAX_LENGTH,
+  ERROR_MESSAGE_OFFLINE,
+  VALIDATION_PASSWORD_MAX_LENGTH,
+  VALIDATION_USERNAME_MAX_LENGTH,
 } from "../../variables/constants";
 import SuccessMessage from "../ui/SuccessMessage";
 import ReAuthForm from "../forms/ReAuth/ReAuthForm";
@@ -96,13 +96,13 @@ const Profile = ({ title }) => {
     dispatch(authActions.setErrorMessage(""));
     dispatch(authActions.setSuccessMessage(""));
     if (!email.isValid) {
-      setErrorMessage(DEF_INPUT_ERROR_MESSAGE);
+      setErrorMessage(ERROR_MESSAGE_INPUT_DEF);
       setShowErrorMessage(true);
       return;
     }
 
     if (!navigator?.onLine) {
-      setErrorMessage(OFFLINE_ERROR_MESSAGE);
+      setErrorMessage(ERROR_MESSAGE_OFFLINE);
       setShowErrorMessage(true);
       return;
     }
@@ -118,13 +118,13 @@ const Profile = ({ title }) => {
     dispatch(authActions.setErrorMessage(""));
     dispatch(authActions.setSuccessMessage(""));
     if (!password.isValid) {
-      setErrorMessage(DEF_INPUT_ERROR_MESSAGE);
+      setErrorMessage(ERROR_MESSAGE_INPUT_DEF);
       setShowErrorMessage(true);
       return;
     }
 
     if (!navigator?.onLine) {
-      setErrorMessage(OFFLINE_ERROR_MESSAGE);
+      setErrorMessage(ERROR_MESSAGE_OFFLINE);
       setShowErrorMessage(true);
       return;
     }
@@ -147,13 +147,13 @@ const Profile = ({ title }) => {
     dispatch(authActions.setErrorMessage(""));
     dispatch(authActions.setSuccessMessage(""));
     if (!userName.isValid) {
-      setErrorMessage(DEF_INPUT_ERROR_MESSAGE);
+      setErrorMessage(ERROR_MESSAGE_INPUT_DEF);
       setShowErrorMessage(true);
       return;
     }
 
     if (!navigator?.onLine) {
-      setErrorMessage(OFFLINE_ERROR_MESSAGE);
+      setErrorMessage(ERROR_MESSAGE_OFFLINE);
       setShowErrorMessage(true);
       return;
     }
@@ -186,7 +186,7 @@ const Profile = ({ title }) => {
               validation={{
                 disableErrorOnBlur: true,
                 required: true,
-                maxLength: USERNAME_MAX_LENGTH,
+                maxLength: VALIDATION_USERNAME_MAX_LENGTH,
               }}
               showError={showErrorMessage}
               value={userName.value}
@@ -225,7 +225,7 @@ const Profile = ({ title }) => {
               validation={{
                 required: true,
                 email: true,
-                maxLength: EMAIL_MAX_LENGTH,
+                maxLength: VALIDATION_EMAIL_MAX_LENGTH,
               }}
               showError={showErrorMessage}
               value={email.value}
@@ -302,7 +302,7 @@ const Profile = ({ title }) => {
               validation={{
                 required: true,
                 password: true,
-                maxLength: PASSWORD_MAX_LENGTH,
+                maxLength: VALIDATION_PASSWORD_MAX_LENGTH,
                 disableErrorOnBlur: true,
               }}
               showError={showErrorMessage}
@@ -377,7 +377,7 @@ const Profile = ({ title }) => {
     <section className={classes.profile}>
       {isAuth && profileHtml}
 
-      {!isAuth && <ErrorMessage>{AUTH_ERROR_MESSAGE}</ErrorMessage>}
+      {!isAuth && <ErrorMessage>{ERROR_MESSAGE_AUTH}</ErrorMessage>}
     </section>
   );
 };

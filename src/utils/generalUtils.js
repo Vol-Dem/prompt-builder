@@ -1,4 +1,7 @@
-import { SPLIT_TAG_REGEX } from "../variables/constants";
+import {
+  ERROR_MESSAGE_DEFAULT,
+  REGEX_SPLIT_TAGS,
+} from "../variables/constants";
 
 export const clearObjectKeys = (obj) => {
   const convertedMetaArr = Object.entries(obj).map((entry, i) => {
@@ -274,7 +277,7 @@ export const disableScrollHandler = (scrollTop, e) => {
 };
 
 export const convertPromptToArr = (prompt) => {
-  return prompt?.split(SPLIT_TAG_REGEX)?.flatMap((tag) => tag.trim() || []);
+  return prompt?.split(REGEX_SPLIT_TAGS)?.flatMap((tag) => tag.trim() || []);
 };
 
 export const addElementToIndex = ({
@@ -343,7 +346,7 @@ export const markDuplicateTags = (tagsArr) => {
 };
 
 export const getTagWeight = (tag) => {
-  let regex = /\([^)]*\)/i;
+  let regex = /\(|<[^)|>]*\)|>/i;
   const hasWeight = regex.test(tag);
 
   let tagweight = 1;
@@ -357,9 +360,36 @@ export const getTagWeight = (tag) => {
       const allParentheses = tag
         .split("")
         .filter((char) => char === "(" || char === ")");
-      console.log(allParentheses.length);
       tagweight = tagweight + Math.floor(allParentheses.length / 2) / 10;
     }
   }
   return tagweight;
+};
+
+export const createPromptItem = (tag, id, index) => {
+  return {
+    id,
+    tag,
+    position: index,
+    weight: getTagWeight(tag),
+  };
+};
+
+export const throwCustomError = (message) => {
+  const error = new Error(message);
+  error.isCustom = true; // Add a custom flag
+  throw error;
+};
+
+export const handleErrors = (err) => {
+  // const isStandardError = ERROR_MESSAGES.includes(err.message);
+  let errorMessage = ERROR_MESSAGE_DEFAULT;
+
+  if (err.isCustom) {
+    errorMessage = err.message;
+  } else {
+    console.error(err);
+  }
+
+  return errorMessage;
 };

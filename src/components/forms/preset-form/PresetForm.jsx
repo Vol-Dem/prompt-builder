@@ -10,15 +10,17 @@ import Fieldset from "../../ui/Fieldset";
 import ErrorMessage from "../../ui/ErrorMessage";
 import {
   DEF_ERROR_MESSAGE,
-  DEF_INPUT_ERROR_MESSAGE,
-  FM_ANIMTION_SLIDEIN,
-  FM_ANIMTION_SLIDEIN_INITIAL,
-  NAME_MAX_LENGTH,
-  OFFLINE_ERROR_MESSAGE,
-  TRIGER_WORDS_MAX_LENGTH,
-  UNIQUE_ERROR_MESSAGE,
+  ERROR_MESSAGE_INPUT_DEF,
+  ERROR_MESSAGES,
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+  VALIDATION_NAME_MAX_LENGTH,
+  ERROR_MESSAGE_OFFLINE,
+  VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+  ERROR_MESSAGE_UNIQUE,
 } from "../../../variables/constants";
 import { motion } from "framer-motion";
+import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 // import { useOnlineStatus } from "../../../hooks/use-online-status";
 
 const promptTypes = [
@@ -77,15 +79,15 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
       );
 
       if (nameExists && presetName.value !== name) {
-        throw new Error(UNIQUE_ERROR_MESSAGE);
+        throwCustomError(`The "${presetName.value}" preset already exists`);
       }
 
       if (!presetName.isValid || !presetWords.isValid) {
-        throw new Error(DEF_INPUT_ERROR_MESSAGE);
+        throwCustomError(ERROR_MESSAGE_INPUT_DEF);
       }
 
       if (!navigator?.onLine) {
-        throw new Error(OFFLINE_ERROR_MESSAGE);
+        throwCustomError(ERROR_MESSAGE_OFFLINE);
       }
 
       if (!id) {
@@ -113,7 +115,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
       dispatch(updatePresets(promptType, updatedPresets));
       onClose();
     } catch (err) {
-      setErrorMessage(DEF_ERROR_MESSAGE);
+      setErrorMessage(handleErrors(err));
     }
   };
 
@@ -126,8 +128,8 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
 
   return (
     <motion.form
-      initial={FM_ANIMTION_SLIDEIN_INITIAL}
-      animate={FM_ANIMTION_SLIDEIN}
+      initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+      animate={ANIMATIONS_FM_SLIDEIN}
       className={classes["form"]}
       onSubmit={submitHandler}
     >
@@ -190,7 +192,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
           }}
           validation={{
             required: true,
-            maxLength: NAME_MAX_LENGTH,
+            maxLength: VALIDATION_NAME_MAX_LENGTH,
           }}
           showError={showErrorMessage}
         />
@@ -203,7 +205,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
           }}
           validation={{
             required: true,
-            maxLength: TRIGER_WORDS_MAX_LENGTH,
+            maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
           }}
           showError={showErrorMessage}
         />

@@ -22,9 +22,9 @@ import ButtonTertiary from "../../ui/ButtonTertiary";
 import usePageEnd from "../../../hooks/use-page-end";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import {
-  DEF_ERROR_MESSAGE,
+  ERROR_MESSAGE_DEFAULT,
   GUIDE_STEP_GENERATED_IMAGES,
-  OFFLINE_ERROR_MESSAGE,
+  ERROR_MESSAGE_OFFLINE,
 } from "../../../variables/constants";
 import GeneratedImagesGuide from "../../ui/guide/model/GeneratedImagesGuide";
 import { AnimatePresence } from "framer-motion";
@@ -401,7 +401,7 @@ const GeneratedImages = ({ customData }) => {
       setIsLastPage(isLast);
       setExamplesIsLoading(false);
     } catch (err) {
-      setErrorMessage(DEF_ERROR_MESSAGE);
+      setErrorMessage(ERROR_MESSAGE_DEFAULT);
       setExamplesIsLoading(false);
     }
   }, [
@@ -745,7 +745,7 @@ const GeneratedImages = ({ customData }) => {
       {!examplesIsLoading && !examplesHtml.length && !errorMessage && (
         <div>No images found</div>
       )}
-      {!isOnline && <ErrorMessage>{OFFLINE_ERROR_MESSAGE}</ErrorMessage>}
+      {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
       <div ref={endPageRef}></div>
       <AnimatePresence>
         {addImgModalIsOpen && (

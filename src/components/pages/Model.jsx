@@ -23,8 +23,8 @@ import Buttton from "../ui/Button";
 import ErrorMessage from "../ui/ErrorMessage";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import {
-  AUTH_ERROR_MESSAGE,
-  DEF_ERROR_MESSAGE,
+  ERROR_MESSAGE_AUTH,
+  ERROR_MESSAGE_DEFAULT,
   GUIDE_STEP_OPEN_IMAGE,
 } from "../../variables/constants";
 import BackSvg from "../../assets/BackSvg";
@@ -315,7 +315,7 @@ const Model = ({ title }) => {
       setDefDataIsLoading(false);
     } catch (err) {
       console.log(err.message);
-      setErrorMessage(DEF_ERROR_MESSAGE);
+      setErrorMessage(ERROR_MESSAGE_DEFAULT);
       setDefDataIsLoading(false);
     }
   }, [dispatch, model.id]);
@@ -537,7 +537,7 @@ const Model = ({ title }) => {
   return (
     <div>
       {(isLoading || defDataIsLoading) && <Spinner />}
-      {!isAuth && <ErrorMessage>{AUTH_ERROR_MESSAGE}</ErrorMessage>}
+      {!isAuth && <ErrorMessage>{ERROR_MESSAGE_AUTH}</ErrorMessage>}
       {!isLoading && errorMessage && (
         <ErrorMessage>{errorMessage}</ErrorMessage>
       )}
@@ -619,6 +619,7 @@ const Model = ({ title }) => {
             />
           </div>
           <TagSets
+            customVersionData={curCustomVersionData}
             customData={curCustomVersionData?.tagSetsData}
             defaultData={model?.defaultCustomData?.tagSetsData}
           />

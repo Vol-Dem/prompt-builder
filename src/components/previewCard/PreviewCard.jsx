@@ -7,8 +7,8 @@ import ActivationTag from "../activation-tag/ActivationTag";
 import ButtonAdd from "../ui/ButtonAdd";
 import { motion } from "framer-motion";
 import {
-  FM_ANIMTION_SLIDEIN,
-  FM_ANIMTION_SLIDEIN_INITIAL,
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../variables/constants";
 
 const PreviewCard = ({ previewData, onClick, layout }) => {
@@ -55,14 +55,14 @@ const PreviewCard = ({ previewData, onClick, layout }) => {
       layoutId={layout ? previewData.id : Math.random()}
       transition={{
         layout: { duration: 0 },
+        type: "spring",
+        // duration: 0.2,
       }}
-      style={{ zIndex: 999 }}
-      initial={FM_ANIMTION_SLIDEIN_INITIAL}
-      animate={FM_ANIMTION_SLIDEIN}
+      // style={{ zIndex: 999 }}
+      initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+      animate={ANIMATIONS_FM_SLIDEIN}
       id={previewData.id}
-      className={`${classes.card} card ${
-        layout ? classes["card--motion"] : ""
-      }`}
+      className={`${classes.card} ${layout ? classes["card--motion"] : ""}`}
     >
       <div className={classes["image-container"]}>
         <ButtonAdd

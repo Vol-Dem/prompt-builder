@@ -15,10 +15,13 @@ import ImageSvg from "../../../assets/ImageSvg";
 import DotsSvg from "../../../assets/DotsSvg";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  FM_ANIMTION_SLIDEIN,
-  FM_ANIMTION_SLIDEIN_INITIAL,
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../../variables/constants";
 import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
+import TagSetsForm from "../../forms/tag-sets-form/TagSetsForm";
+import Buttton from "../../ui/Button";
+import SetTagSetPreview from "../set-tagset-preview/SetTagSetPreview";
 
 const CarouselImage = ({
   id,
@@ -40,6 +43,7 @@ const CarouselImage = ({
   const [imgIsLoaded, setImgIsLoaded] = useState(false);
   const [imgIsSaved, setImgIsSaved] = useState(!!saved);
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
+  const [tagSetsFormIsOpen, setTagSetsFormIsOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState("#");
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -118,6 +122,7 @@ const CarouselImage = ({
 
   const closeTagSetMenuHandler = () => {
     settagSetMenuIsOpen(false);
+    setTagSetsFormIsOpen(false);
   };
 
   const tagSetVersionsHtml =
@@ -147,8 +152,8 @@ const CarouselImage = ({
       return (
         <motion.li
           key={i}
-          initial={FM_ANIMTION_SLIDEIN_INITIAL}
-          animate={FM_ANIMTION_SLIDEIN}
+          initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+          animate={ANIMATIONS_FM_SLIDEIN}
           data-id={i}
           className={classes["tag-sets__item"]}
         >
@@ -188,8 +193,8 @@ const CarouselImage = ({
         return (
           <motion.li
             key={i}
-            initial={FM_ANIMTION_SLIDEIN_INITIAL}
-            animate={FM_ANIMTION_SLIDEIN}
+            initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            animate={ANIMATIONS_FM_SLIDEIN}
             data-id={i}
             className={classes["tag-sets__item"]}
           >
@@ -267,6 +272,13 @@ const CarouselImage = ({
       document.removeEventListener("click", closeMenuHandler);
     };
   }, [menuIsOpen, closeMenuHandler]);
+
+  const openTagSetsForm = () => {
+    setTagSetsFormIsOpen(true);
+  };
+  const closeTagSetsForm = () => {
+    setTagSetsFormIsOpen(false);
+  };
 
   return (
     <motion.div
@@ -382,64 +394,79 @@ const CarouselImage = ({
             className={classes["tag-sets__modal"]}
             onClose={closeTagSetMenuHandler}
           >
-            <div className={classes["tag-sets-head"]}>
-              <div className={classes["tag-sets-title"]}>Tag sets</div>
-              {nsfwMode && (
-                <div className={classes["mode-switch"]}>
-                  <button
-                    type="button"
-                    onClick={nsfwSwitchHandler}
-                    className={`${classes["btn-mode"]} ${
-                      !showNsfwPreview ? classes["btn-mode--active"] : ""
-                    }`}
-                  >
-                    SFW
-                  </button>
-                  <button
-                    type="button"
-                    onClick={nsfwSwitchHandler}
-                    className={`${classes["btn-mode"]} ${
-                      showNsfwPreview ? classes["btn-mode--active"] : ""
-                    }`}
-                  >
-                    NSFW
-                  </button>
-                </div>
-              )}
-            </div>
-            <ul className={classes["tag-sets-versions"]}>
-              {!!model.defaultCustomData?.tagSetsData?.length && (
-                <li
-                  id={`tsv-def`}
-                  className={`${classes["tag-sets-versions__item"]} ${
-                    curTagSetVersionId === "tsv-def"
-                      ? classes["tag-sets-versions__item--active"]
-                      : ""
-                  }`}
-                  onClick={openTagSetVersionHandler}
-                >
-                  Default
-                </li>
-              )}
-              {tagSetVersionsHtml}
-            </ul>
-            {true && (
-              <div className={classes["notification"]}>
-                <ExclamationCircleSvg
-                  className={classes["notification__svg"]}
-                />
-                <p className={classes["notification__text"]}>
-                  You don't have any tag sets. <br /> Press "Add tag set" to add
-                  new tag set!
-                </p>
+            <SetTagSetPreview src={src} />
+            {/* <>
+              <div className={classes["tag-sets-head"]}>
+                <div className={classes["tag-sets-title"]}>Tag sets</div>
+
+                {!tagSetsFormIsOpen && (
+                  <Buttton onClick={openTagSetsForm}>Add tag set</Buttton>
+                )}
+                {nsfwMode && (
+                  <div className={classes["mode-switch"]}>
+                    <button
+                      type="button"
+                      onClick={nsfwSwitchHandler}
+                      className={`${classes["btn-mode"]} ${
+                        !showNsfwPreview ? classes["btn-mode--active"] : ""
+                      }`}
+                    >
+                      SFW
+                    </button>
+                    <button
+                      type="button"
+                      onClick={nsfwSwitchHandler}
+                      className={`${classes["btn-mode"]} ${
+                        showNsfwPreview ? classes["btn-mode--active"] : ""
+                      }`}
+                    >
+                      NSFW
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
-            {curTagSetVersionId === "tsv-def" && (
-              <ul className={classes["tag-sets"]}>{defTagSetsHtml}</ul>
-            )}
-            {curTagSetVersionId !== "tsv-def" && (
-              <ul className={classes["tag-sets"]}>{versionTagsetsHtml}</ul>
-            )}
+              <ul className={classes["tag-sets-versions"]}>
+                {!!model.defaultCustomData?.tagSetsData?.length && (
+                  <li
+                    id={`tsv-def`}
+                    className={`${classes["tag-sets-versions__item"]} ${
+                      curTagSetVersionId === "tsv-def"
+                        ? classes["tag-sets-versions__item--active"]
+                        : ""
+                    }`}
+                    onClick={openTagSetVersionHandler}
+                  >
+                    Default
+                  </li>
+                )}
+                {tagSetVersionsHtml}
+                {tagSetsFormIsOpen && (
+                  <TagSetsForm
+                    modelId={model.id}
+                    // versionData={customVersionData}
+                    onClose={closeTagSetsForm}
+                  />
+                )}
+              </ul>
+              {!model.defaultCustomData?.tagSetsData?.length &&
+                !tagSetVersionsHtml?.length && (
+                  <div className={classes["notification"]}>
+                    <ExclamationCircleSvg
+                      className={classes["notification__svg"]}
+                    />
+                    <p className={classes["notification__text"]}>
+                      You don't have any tag sets. <br /> Press "Add tag set" to
+                      add new tag set!
+                    </p>
+                  </div>
+                )}
+              {curTagSetVersionId === "tsv-def" && (
+                <ul className={classes["tag-sets"]}>{defTagSetsHtml}</ul>
+              )}
+              {curTagSetVersionId !== "tsv-def" && (
+                <ul className={classes["tag-sets"]}>{versionTagsetsHtml}</ul>
+              )}
+            </> */}
           </Modal>
         )}
         {deleteRequestIsOpen && (

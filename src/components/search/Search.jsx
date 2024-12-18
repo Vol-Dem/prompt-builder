@@ -12,8 +12,8 @@ import ErrorMessage from "../ui/ErrorMessage";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import { useOnlineStatus } from "../../hooks/use-online-status";
 import {
-  DEF_ERROR_MESSAGE,
-  OFFLINE_ERROR_MESSAGE,
+  ERROR_MESSAGE_DEFAULT,
+  ERROR_MESSAGE_OFFLINE,
 } from "../../variables/constants";
 
 const amountPerPage = 10;
@@ -141,7 +141,7 @@ const Search = ({ className }) => {
             dispatch(liveSearch(searchInput.trim(), nsfwMode, amountPerPage));
           }
         } catch (err) {
-          dispatch(searchActions.setErrorMessage(DEF_ERROR_MESSAGE));
+          dispatch(searchActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
           dispatch(searchActions.setSearchIsLoading(false));
         }
       };
@@ -327,7 +327,7 @@ const Search = ({ className }) => {
                   <div className={classes.error}>No resources found</div>
                 )}
               {!isOnline && (
-                <ErrorMessage>{OFFLINE_ERROR_MESSAGE}</ErrorMessage>
+                <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>
               )}
               {!searchIsLoading && !!searchResult?.result?.length && (
                 <ul className={classes["search__models"]}>

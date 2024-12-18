@@ -3,6 +3,7 @@ import classes from "./Select.module.scss";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Input from "./Input";
 import ArrowDownSvg from "../../assets/ArrowDownSvg";
+import { motion } from "framer-motion";
 
 const Select = ({
   id = "select",
@@ -39,6 +40,7 @@ const Select = ({
   }, [selectIsOpen, closeSelectHandler]);
 
   useEffect(() => {
+    if (!labeldRef?.current) return;
     const labelStyle = window.getComputedStyle(labeldRef.current);
     const merginTop = parseFloat(labelStyle.marginTop);
     const merginBottom = parseFloat(labelStyle.marginBottom);
@@ -122,27 +124,33 @@ const Select = ({
               value={selectedFieldName}
             />
           </div>
-          <fieldset
-            style={
-              optionsFieldHeight && selectIsOpen
-                ? { height: `${optionsFieldHeight}px` }
-                : {}
-            }
-            className={`${classes["select__field"]} ${
-              !selectIsOpen ? classes["select__field--hide"] : ""
-            }`}
-          >
-            <div
-              className={classes["select__field-container"]}
-              style={
-                options.length <= visibleOptionsAmount
-                  ? { overflowY: `unset` }
-                  : {}
-              }
+
+          {!!selectIsOpen && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              // style={
+              //   optionsFieldHeight && selectIsOpen
+              //     ? { height: `${optionsFieldHeight}px` }
+              //     : {}
+              // }
+              className={`${classes["select__field"]} ${
+                !selectIsOpen ? classes["select__field--hide"] : ""
+              }`}
             >
-              {selectOptions}
-            </div>
-          </fieldset>
+              <div
+                className={classes["select__field-container"]}
+                style={
+                  options.length <= visibleOptionsAmount
+                    ? { overflowY: `unset` }
+                    : {}
+                }
+              >
+                {selectOptions}
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
     </div>

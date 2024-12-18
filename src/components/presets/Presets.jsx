@@ -11,6 +11,12 @@ import DeleteRequest from "../ui/DeleteRequest";
 import { AnimatePresence } from "framer-motion";
 import BackSvg from "../../assets/BackSvg";
 import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
+import { motion } from "framer-motion";
+import {
+  ANIMATIONS_FM_FADEOUT_EXIT,
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+} from "../../variables/constants";
 
 const Presets = ({ onClose }) => {
   const [formIsOpen, setFormIsOpen] = useState(false);
@@ -71,8 +77,12 @@ const Presets = ({ onClose }) => {
 
   const positivePresetsHtml = presets?.positive?.map((preset, i) => {
     return (
-      <li
-        key={i}
+      <motion.li
+        key={preset.id}
+        layout
+        initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+        animate={ANIMATIONS_FM_SLIDEIN}
+        exit={ANIMATIONS_FM_FADEOUT_EXIT}
         className={classes.preset}
         data-id={preset.id}
         data-type="positive"
@@ -89,14 +99,18 @@ const Presets = ({ onClose }) => {
             Delete
           </ButtonTertiary>
         </div>
-      </li>
+      </motion.li>
     );
   });
 
   const negativePresetsHtml = presets?.negative?.map((preset, i) => {
     return (
-      <li
-        key={i}
+      <motion.li
+        key={preset.id}
+        layout
+        initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+        animate={ANIMATIONS_FM_SLIDEIN}
+        exit={ANIMATIONS_FM_FADEOUT_EXIT}
         className={classes.preset}
         data-id={preset.id}
         data-type="negative"
@@ -113,7 +127,7 @@ const Presets = ({ onClose }) => {
             Delete
           </ButtonTertiary>
         </div>
-      </li>
+      </motion.li>
     );
   });
 
@@ -159,7 +173,15 @@ const Presets = ({ onClose }) => {
               <div>
                 <div className={classes[`presets__name`]}>Positive:</div>
                 <div className={classes[`presets__bg`]}>
-                  <ul className={classes.presets}>{positivePresetsHtml}</ul>
+                  <motion.ul
+                    // layout
+                    initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+                    animate={ANIMATIONS_FM_SLIDEIN}
+                    exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
+                    className={classes.presets}
+                  >
+                    <AnimatePresence>{positivePresetsHtml}</AnimatePresence>
+                  </motion.ul>
                 </div>
               </div>
             )}
@@ -167,7 +189,15 @@ const Presets = ({ onClose }) => {
               <div>
                 <div className={classes[`presets__name`]}>Negative:</div>
                 <div className={classes[`presets__bg`]}>
-                  <ul className={classes.presets}>{negativePresetsHtml}</ul>
+                  <motion.ul
+                    // layout
+                    initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+                    animate={ANIMATIONS_FM_SLIDEIN}
+                    exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
+                    className={classes.presets}
+                  >
+                    <AnimatePresence>{negativePresetsHtml}</AnimatePresence>
+                  </motion.ul>
                 </div>
               </div>
             )}

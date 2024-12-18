@@ -21,7 +21,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 999;
+    z-index: 2;
   }
 }
 
@@ -60,7 +60,7 @@
     min-height: 100%;
     max-width: 100%;
     object-fit: cover;
-    transition: all 0.3s;
+    // transition: all 0.3s;
   }
 
   &--hidden {
@@ -159,7 +159,7 @@
   align-items: flex-start;
   gap: 1rem;
   padding: 1rem 1.8rem;
-  transition: all 0.3s;
+  // transition: all 0.3s;
 
   // &--open {
   //   grid-template-rows: auto auto auto auto 1fr 1fr;
@@ -191,7 +191,7 @@
   height: 6.6rem;
   // height: 30%;
   overflow: hidden;
-  transition: all 0.3s;
+  // transition: all 0.3s;
 
   &-container {
     display: flex;
@@ -259,7 +259,7 @@
 .helper-tags {
   height: 0px;
   overflow: hidden;
-  transition: all 0.8s;
+  // transition: all 0.8s;
   &--open {
     // height: 100%;
   }

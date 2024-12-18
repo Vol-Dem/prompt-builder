@@ -24,7 +24,7 @@ const Modal = (props) => {
   return (
     <>
       {createPortal(
-        <div className={`${props?.disableClass || ""}`}>
+        <div className={`${classes["modal"]} ${props?.disableClass || ""}`}>
           <motion.div
             variants={{
               hidden: { opacity: 0 },
@@ -34,20 +34,23 @@ const Modal = (props) => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className={`${classes.modal} ${classes["modal--backdrop"]}`}
+            className={`${classes["modal__backdrop"]}`}
             onClick={props.onClose}
           ></motion.div>
           <motion.div
             layout
             variants={{
-              hidden: { opacity: 0, y: "-30%", x: "-50%" },
-              visible: { opacity: 1, y: "-50%", x: "-50%" },
-              exit: { opacity: 0, y: "-30%", x: "-50%" },
+              hidden: { opacity: 0, y: 30 },
+              visible: { opacity: 1, y: 0 },
+              exit: { opacity: 0, y: 30 },
+              // hidden: { opacity: 0, y: "-30%", x: "-50%" },
+              // visible: { opacity: 1, y: "-50%", x: "-50%" },
+              // exit: { opacity: 0, y: "-30%", x: "-50%" },
             }}
             initial="hidden"
             animate="visible"
             exit="exit"
-            className={`${classes.modal} ${classes["modal--content"]} ${
+            className={`${classes["modal__content"]} ${
               props?.className ? props.className : ""
             }`}
           >

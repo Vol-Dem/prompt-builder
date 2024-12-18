@@ -7,6 +7,7 @@ import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
 import {
   addElementToIndex,
   convertPromptToArr,
+  createPromptItem,
   getTagWeight,
   markDuplicateTags,
   splitTags,
@@ -52,7 +53,25 @@ const promptSlice = createSlice({
       state.promptIsOpen = actions.payload;
     },
     setTextMode(state, actions) {
+      const allIds = [];
+
+      const promptArr = convertPromptToArr(state.curPrompt).map((tag, i) => {
+        const newId = allIds[allIds.length - 1] + 1 || 0;
+        allIds.push(newId);
+        return createPromptItem(tag, newId, i);
+      });
+
+      const promptArrNeg = convertPromptToArr(state.curNegPrompt).map(
+        (tag, i) => {
+          const newId = allIds[allIds.length - 1] + 1 || 0;
+          allIds.push(newId);
+          return createPromptItem(tag, newId, i);
+        }
+      );
+
       state.isTextMode = actions.payload;
+      state.curPromptArr = promptArr;
+      state.curNegPromptArr = promptArrNeg;
     },
     addTagToPosition(state, actions) {
       const { dropTargetType } = actions.payload;
@@ -170,9 +189,6 @@ const promptSlice = createSlice({
         .sort((a, b) => a - b);
 
       const isPositive = actions.payload.type === "positive";
-      const prompt = isPositive
-        ? state.curPrompt.trim()
-        : state.curNegPrompt.trim();
 
       const curPromptArr = isPositive
         ? state.curPromptArr
@@ -182,11 +198,9 @@ const promptSlice = createSlice({
         ? promptPosPositions
         : promptPNegPositions;
 
-      const promptArr = convertPromptToArr(prompt);
-
       const newTags = actions.payload?.value?.filter((newWord) => {
-        const isInPrompt = promptArr.find(
-          (promptWord) => promptWord === newWord
+        const isInPrompt = curPromptArr.find(
+          (promptWord) => promptWord.tag === newWord
         );
         return !isInPrompt;
       });
@@ -253,6 +267,7 @@ const promptSlice = createSlice({
       const updatedPromptArr = promptArr.toSpliced(activationTagIndex, 1, {
         ...promptArr[activationTagIndex],
         tag: actions.payload.newTag,
+        weight: actions.payload.weight,
       });
 
       state.curPromptArr = updatedPromptArr;
@@ -266,93 +281,12 @@ const promptSlice = createSlice({
         state.promptIsOpen = true;
         state.isTextMode = false;
       })
-
-      .addMatcher(
-        (action) => action.type.startsWith("prompt/removeTag"),
-        (state, actions) => {
-          const { type, dropTargetType } = actions.payload;
-          if (type === "positive" || dropTargetType === "positive") {
-            state.curPrompt = state.curPromptArr
-              .map((tag) => tag.tag)
-              .join(", ");
-          }
-          if (type === "negative" || dropTargetType === "negative") {
-            state.curNegPrompt = state.curNegPromptArr
-              .map((tag) => tag.tag)
-              .join(", ");
-          }
-        }
-      )
-      .addMatcher(
-        (action) => action.type.startsWith("prompt/setTextMode"),
-        (state, actions) => {
-          const promptArr = convertPromptToArr(state.curPrompt).map(
-            (tag, i) => {
-              return {
-                tag,
-                position: i,
-              };
-            }
-          );
-          const newTags = promptArr.filter(
-            (tag) =>
-              !state.curPromptArr.find((curTag) => curTag.tag === tag.tag)
-          );
-
-          const promptArrNeg = convertPromptToArr(state.curNegPrompt).map(
-            (tag, i) => {
-              return {
-                tag,
-                position: i,
-              };
-            }
-          );
-          const newNegTags = promptArrNeg.filter(
-            (tag) =>
-              !state.curNegPromptArr.find((curTag) => curTag.tag === tag.tag)
-          );
-
-          const allIds = [
-            ...state.curPromptArr.map((tag) => tag.id),
-            ...state.curNegPromptArr.map((tag) => tag.id),
-          ].sort((a, b) => a - b);
-
-          if (newTags.length) {
-            let newPromptArr = [...state.curPromptArr];
-
-            newTags.forEach((newTag) => {
-              const newId = allIds[allIds.length - 1] + 1;
-              allIds.push(newId);
-              newPromptArr = addElementToIndex({
-                newId,
-                item: { id: newId || 0, ...newTag },
-                type: "positive",
-                curPromptArr: newPromptArr,
-              });
-            });
-            state.curPromptArr = newPromptArr;
-          }
-          if (newNegTags.length) {
-            let newNegPromptArr = [...state.curNegPromptArr];
-
-            newNegTags.forEach((newTag) => {
-              const newId = allIds[allIds.length - 1] + 1;
-              allIds.push(newId);
-              newNegPromptArr = addElementToIndex({
-                newId,
-                item: { id: newId || 0, ...newTag },
-                type: "negative",
-                curPromptArr: newNegPromptArr,
-              });
-            });
-            state.curNegPromptArr = newNegPromptArr;
-          }
-        }
-      )
       .addMatcher(
         (action) =>
           action.type.startsWith("prompt/") &&
-          !action.type.startsWith("prompt/setCurrentPrompt"),
+          !action.type.startsWith("prompt/setCurrentPrompt") &&
+          !action.type.startsWith("prompt/setCurrentNegPrompt") &&
+          !action.type.startsWith("prompt/setTextMode"),
         (state, actions) => {
           const newPrompt = state.curPromptArr.map((tag) => tag.tag).join(", ");
           const newNegPrompt = state.curNegPromptArr

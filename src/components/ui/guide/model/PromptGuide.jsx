@@ -5,6 +5,7 @@ import GuideMessage from "../GuideMessage";
 import {
   GUIDE_STEP_PROMPT_COPY,
   GUIDE_STEP_PROMPT_DRAG_AND_DROP,
+  GUIDE_STEP_PROMPT_EDIT_TAG,
   GUIDE_STEP_PROMPT_PRESETS,
   GUIDE_STEP_PROMPT_VIEW,
 } from "../../../../variables/constants";
@@ -16,6 +17,7 @@ const guideType = "model";
 
 const PromptGuide = (props) => {
   const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
+  const isTextMode = useSelector((state) => state.prompt.isTextMode);
 
   const guideSteps = useMemo(() => {
     return [
@@ -25,7 +27,7 @@ const PromptGuide = (props) => {
         next: true,
         text: (
           <>
-            You can switch between tag and text mod to add or change the prompt
+            You can switch between tag and text mode to add or change the prompt
             manually
           </>
         ),
@@ -36,8 +38,8 @@ const PromptGuide = (props) => {
         next: true,
         text: (
           <>
-            Add commonly used trigger words into presets. Create presets for
-            both positive and negative words
+            You can add commonly used trigger words into presets. Create presets
+            for both positive and negative words
           </>
         ),
       },
@@ -45,7 +47,18 @@ const PromptGuide = (props) => {
         step: GUIDE_STEP_PROMPT_DRAG_AND_DROP,
         arrowPosition: 7,
         next: true,
-        text: <>You can Drag & Drop tags to change the order</>,
+        text: <>You can drag-n-drop tags to change the order</>,
+      },
+      {
+        step: GUIDE_STEP_PROMPT_EDIT_TAG,
+        arrowPosition: 7,
+        next: true,
+        text: (
+          <>
+            You can click a tag to enter edit mode to change its content and
+            weight
+          </>
+        ),
       },
       {
         step: GUIDE_STEP_PROMPT_COPY,
@@ -71,11 +84,22 @@ const PromptGuide = (props) => {
     ),
   };
 
+  const changePromptMode = {
+    step: "mode",
+    arrowPosition: 8,
+    text: (
+      <>
+        <GuideActionMessage>Change to "Tags" mode</GuideActionMessage> to
+        continue
+      </>
+    ),
+  };
+
   const guideStepIndex = useGuideIndex(guideType, guideSteps);
 
   return (
     <>
-      {promptIsOpen && guideStepIndex !== null && (
+      {promptIsOpen && !isTextMode && guideStepIndex !== null && (
         <GuideMessage
           type={guideType}
           className={`${classes[`guide__content--${guideStepIndex}`]}`}
@@ -95,6 +119,17 @@ const PromptGuide = (props) => {
           next={openPanelData?.next}
         >
           {openPanelData?.text}
+        </GuideMessage>
+      )}
+      {promptIsOpen && isTextMode && guideStepIndex !== null && (
+        <GuideMessage
+          type={guideType}
+          className={`${classes[`guide__content--${changePromptMode.step}`]}`}
+          step={changePromptMode?.step}
+          arrowPosition={changePromptMode?.arrowPosition}
+          next={changePromptMode?.next}
+        >
+          {changePromptMode?.text}
         </GuideMessage>
       )}
     </>

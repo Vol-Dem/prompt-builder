@@ -19,7 +19,7 @@ import PlusSvg from "../../assets/PlusSvg";
 import Bars2Svg from "../../assets/Bars2Svg";
 import Bars4Svg from "../../assets/Bars4Svg";
 import { memo, useEffect, useMemo, useState } from "react";
-import { IMAGE_REF_ROW_LENGTH } from "../../variables/constants";
+import { SETTINGS_REF_IMAGE_ROW_LENGTH } from "../../variables/constants";
 import ErrorMessage from "../ui/ErrorMessage";
 import SidePanelGuide from "../ui/guide/model/SidePanelGuide";
 import OpenSidePanelGuide from "../ui/guide/model/OpenSidePanelGuide";
@@ -185,7 +185,6 @@ const UsedModelsPanel = memo(() => {
           </Buttton>
           {/* <div>
             <button onClick={prevStepHandler}>prev</button>
-            <span>{modelStep}</span>
             <button onClick={nextStepHandler}>next</button>
           </div> */}
           {userDataLoadError && (

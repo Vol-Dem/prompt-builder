@@ -6,10 +6,13 @@ import { updateCategories } from "../../../store/model";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import DeleteRequest from "../../ui/DeleteRequest";
 import {
-  CATEGORY_NAME_MAX_LENGTH,
+  VALIDATION_CATEGORY_NAME_MAX_LENGTH,
   DEF_ERROR_MESSAGE,
-  OFFLINE_ERROR_MESSAGE,
+  ERROR_MESSAGES,
+  ERROR_MESSAGE_OFFLINE,
 } from "../../../variables/constants";
+import { AnimatePresence } from "framer-motion";
+import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 
 const CategoriesForm = ({ modelType, activeCategory, categories }) => {
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
@@ -114,10 +117,10 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
       }
 
       if (existedName) {
-        throw new Error(`The "${categoryName}" category already exists`);
+        throwCustomError(`The "${categoryName}" category already exists`);
       }
       if (!navigator?.onLine) {
-        throw new Error(OFFLINE_ERROR_MESSAGE);
+        throwCustomError(ERROR_MESSAGE_OFFLINE);
       }
 
       const updatedCategories = categoriesToUpdate.map((category) => {
@@ -144,7 +147,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
 
       dispatch(updateCategories(modelType, categoriesData));
     } catch (err) {
-      setErrorMessage(DEF_ERROR_MESSAGE);
+      setErrorMessage(handleErrors(err));
     }
   };
 
@@ -211,7 +214,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
                 value={category.value}
                 validation={{
                   required: true,
-                  maxLength: CATEGORY_NAME_MAX_LENGTH,
+                  maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
               />
@@ -255,14 +258,16 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
           </div>
         </div>
       </div>
-      {deleteRequestIsOpen && (
-        <DeleteRequest
-          message={`Are you sure you want to delete "${deleteCategoryData.name}" category? This action can't
+      <AnimatePresence>
+        {deleteRequestIsOpen && (
+          <DeleteRequest
+            message={`Are you sure you want to delete "${deleteCategoryData.name}" category? This action can't
         be undone`}
-          onSubmit={deleteCategoryHandler}
-          onClose={closeDeleteReqeustHandler}
-        />
-      )}
+            onSubmit={deleteCategoryHandler}
+            onClose={closeDeleteReqeustHandler}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 };

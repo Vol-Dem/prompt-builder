@@ -94,11 +94,12 @@ const Guide = (props) => {
                 </li>
                 <li className={classes["guide__content__item"]}>
                   <p className={classes["guide__content__text"]}>
-                    Enter the category
+                    Enter the category name <br /> and click "Create" in the
+                    dropdown
                     <br />
-                    <span className={classes["guide__content__comment"]}>
+                    {/* <span className={classes["guide__content__comment"]}>
                       The category will be created automatically
-                    </span>
+                    </span> */}
                   </p>
 
                   <ArrowRightSvg />

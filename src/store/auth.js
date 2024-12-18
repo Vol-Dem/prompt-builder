@@ -24,8 +24,8 @@ import { tabActions } from "./tabs";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { modelActions } from "./model";
 import {
-  DEF_ERROR_MESSAGE,
-  USER_DATA_LOAD_ERROR_MESSAGE,
+  ERROR_MESSAGE_DEFAULT,
+  ERROR_MESSAGE_USER_DATA_LOAD,
 } from "../variables/constants";
 import { guideActions } from "./guide";
 
@@ -188,7 +188,7 @@ export const authRequest = (isLogin, email, password) => {
           )
         );
       } else {
-        dispatch(authActions.setErrorMessage(DEF_ERROR_MESSAGE));
+        dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
       }
     }
     dispatch(authActions.setIsLoading(false));
@@ -228,7 +228,7 @@ export const authWithGoogle = () => {
         // The AuthCredential type that was used.
         // const credential = GoogleAuthProvider.credentialFromError(error);
         // ...
-        dispatch(authActions.setErrorMessage(DEF_ERROR_MESSAGE));
+        dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
       });
   };
 };
@@ -307,7 +307,7 @@ export const changeUserEmail = (email) => {
           )
         );
       } else {
-        dispatch(authActions.setErrorMessage(DEF_ERROR_MESSAGE));
+        dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
       }
     }
   };
@@ -406,7 +406,7 @@ export const changeUserPassword = (password, oldPassword) => {
       // } else {
       //   dispatch(authActions.setErrorMessage(error.message));
       // }
-      dispatch(authActions.setErrorMessage(DEF_ERROR_MESSAGE));
+      dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
     }
   };
 };
@@ -422,7 +422,7 @@ export const resetUserPassword = (email) => {
         if (error.code === "auth/invalid-email") {
           dispatch(authActions.setErrorMessage("Invalid email"));
         } else {
-          dispatch(authActions.setErrorMessage(DEF_ERROR_MESSAGE));
+          dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
         }
         // ..
       });
@@ -457,7 +457,7 @@ export const changeUserName = (name) => {
       );
       dispatch(authActions.setSuccessMessage("Name changed successfully"));
     } catch (error) {
-      dispatch(authActions.setErrorMessage(DEF_ERROR_MESSAGE));
+      dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
     }
   };
 };
@@ -491,7 +491,7 @@ export const getUserData = (uid) => {
       dispatch(authActions.setUserDataIsLoading(false));
     } catch (err) {
       console.error(err.message);
-      dispatch(authActions.setUserDataLoadError(USER_DATA_LOAD_ERROR_MESSAGE));
+      dispatch(authActions.setUserDataLoadError(ERROR_MESSAGE_USER_DATA_LOAD));
       dispatch(authActions.setUserDataIsLoading(false));
     }
   };

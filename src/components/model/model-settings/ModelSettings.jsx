@@ -22,10 +22,10 @@ import ErrorMessage from "../../ui/ErrorMessage";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import Spinner from "../../ui/Spinner";
 import {
-  DEF_ERROR_MESSAGE,
+  ERROR_MESSAGE_DEFAULT,
   GUIDE_STEP_EDIT_UPD_DEL,
-  OFFLINE_ERROR_MESSAGE,
-  UPDATE_MODEL_URL,
+  ERROR_MESSAGE_OFFLINE,
+  URL_CF_UPDATE_MODEL,
 } from "../../../variables/constants";
 import { modelActions } from "../../../store/model";
 import { tabActions } from "../../../store/tabs";
@@ -78,11 +78,11 @@ const ModelSettings = () => {
       seteSuccessMessage("");
 
       if (!navigator.onLine) {
-        throw new Error(OFFLINE_ERROR_MESSAGE);
+        throw new Error(ERROR_MESSAGE_OFFLINE);
       }
 
       const updateModelRes = await fetch(
-        `${UPDATE_MODEL_URL}/updateModel?modelId=${model.id}`
+        `${URL_CF_UPDATE_MODEL}/updateModel?modelId=${model.id}`
       );
       const updateModelResData = await updateModelRes.json();
 
@@ -239,7 +239,7 @@ const ModelSettings = () => {
       seteSuccessMessage("Updated");
       setIsLoading(false);
     } catch (err) {
-      setErrorMessage(DEF_ERROR_MESSAGE);
+      setErrorMessage(ERROR_MESSAGE_DEFAULT);
       setIsLoading(false);
     }
   };
@@ -263,7 +263,7 @@ const ModelSettings = () => {
       navigate("/");
     } catch (err) {
       console.error(err.message);
-      setErrorMessage(DEF_ERROR_MESSAGE);
+      setErrorMessage(ERROR_MESSAGE_DEFAULT);
     }
   };
 

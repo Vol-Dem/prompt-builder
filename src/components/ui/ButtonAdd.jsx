@@ -6,7 +6,7 @@ import {
   removeImageFromPanel,
   removeModelFromPanel,
 } from "../../store/usedModels";
-import { MAX_REF_IMAGE_AMOUNT } from "../../variables/constants";
+import { SETTINGS_REF_IMAGE_AMOUNT } from "../../variables/constants";
 
 const ButtonAdd = ({ previewData, type, className, versionId, onClick }) => {
   const modelsInPanel = useSelector((state) => state.used.models);
@@ -23,7 +23,7 @@ const ButtonAdd = ({ previewData, type, className, versionId, onClick }) => {
     if (
       !isInPanel &&
       type === "image" &&
-      imagesInPanel?.length < MAX_REF_IMAGE_AMOUNT
+      imagesInPanel?.length < SETTINGS_REF_IMAGE_AMOUNT
     ) {
       dispatch(addImageToPanel(previewData));
       return;
@@ -74,7 +74,7 @@ const ButtonAdd = ({ previewData, type, className, versionId, onClick }) => {
       className={`${classes["resource__add"]} ${
         isInPanel ? classes["resource__add--active"] : ""
       } ${
-        imagesInPanel?.length >= MAX_REF_IMAGE_AMOUNT &&
+        imagesInPanel?.length >= SETTINGS_REF_IMAGE_AMOUNT &&
         !isInPanel &&
         type === "image"
           ? classes["resource__add--disabled"]

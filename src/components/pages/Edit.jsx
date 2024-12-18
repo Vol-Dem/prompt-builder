@@ -8,13 +8,14 @@ import firebaseApp from "../../firebase-config";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import {
-  DEF_ERROR_MESSAGE,
+  ERROR_MESSAGE_DEFAULT,
   GUIDE_STEP_MODEL_EDIT,
 } from "../../variables/constants";
 import { guideActions } from "../../store/guide";
 import Modal from "../ui/Modal";
 import OutroGuide from "../ui/guide/OutroGuide";
 import classes from "./Edit.module.scss";
+import { AnimatePresence } from "framer-motion";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -76,7 +77,7 @@ const Edit = ({ title }) => {
       );
     } catch (err) {
       setErrorMessage("Failed to load model");
-      dispatch(modelActions.setErrorMessage(DEF_ERROR_MESSAGE));
+      dispatch(modelActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
       setIsLoading(false);
     }
     return () => {
@@ -112,7 +113,7 @@ const Edit = ({ title }) => {
 
       getDefModelData();
     } catch (err) {
-      setErrorMessage(DEF_ERROR_MESSAGE);
+      setErrorMessage(ERROR_MESSAGE_DEFAULT);
     }
   }, [model?.id, dispatch, modelId]);
 
@@ -123,16 +124,18 @@ const Edit = ({ title }) => {
         <ErrorMessage>{errorMessage}</ErrorMessage>
       )}
       {isLoading && <Spinner />}
-      {guideOutroIsActive && (
-        <Modal
-          onClose={() => {
-            dispatch(guideActions.setOutroIsActive(false));
-          }}
-          disableClass={classes["guide-outro"]}
-        >
-          <OutroGuide />
-        </Modal>
-      )}
+      <AnimatePresence>
+        {guideOutroIsActive && (
+          <Modal
+            onClose={() => {
+              dispatch(guideActions.setOutroIsActive(false));
+            }}
+            // disableClass={classes["guide-outro"]}
+          >
+            <OutroGuide />
+          </Modal>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
