@@ -60,6 +60,9 @@ const ComboSelect = ({
         </label>
       )}
       <Combobox
+        as={motion.div}
+        initial={ANIMATIONS_FM_SLIDEOUT_INITIAL}
+        animate={ANIMATIONS_FM_SLIDEOUT}
         immediate
         value={selected}
         onChange={(value) => {

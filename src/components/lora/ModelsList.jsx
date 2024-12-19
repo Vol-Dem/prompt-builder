@@ -45,6 +45,12 @@ const ModelsList = () => {
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
   const dispatch = useDispatch();
+  const getAllModels =
+    activeTab === "all" ||
+    activeCategory === "all" ||
+    activeSubcategory === "all";
+
+  const getSubcategoryModels = activeTab && activeCategory && activeSubcategory;
 
   const baseModelsData = !baseModels?.length
     ? baseModelsDef
@@ -58,6 +64,22 @@ const ModelsList = () => {
   useEffect(() => {
     setIsIntersecting(isPageEnd);
   }, [isPageEnd]);
+
+  useEffect(() => {
+    dispatch(tabActions.resetModelsData());
+    dispatch(tabActions.setIsLastPage(false));
+    // if (
+    //   activeTab === "all" ||
+    //   activeCategory === "all" ||
+    //   activeSubcategory === "all"
+    // ) {
+    //   dispatch(tabActions.resetModelsData());
+    //   dispatch(tabActions.setIsLastPage(false));
+    // } else {
+    //   // dispatch(tabActions.setIsLastPage(false));
+    //   dispatch(tabActions.resetModelsData());
+    // }
+  }, [activeTab, activeCategory, activeSubcategory, dispatch]);
 
   useEffect(() => {
     if (guideState?.step < GUIDE_STEP_OPEN_MODEL) {
@@ -87,13 +109,37 @@ const ModelsList = () => {
     activeCategory,
     activeSubcategory,
     activeTab,
+    getAllModels,
+    getSubcategoryModels,
   ]);
 
   useEffect(() => {
-    if (!modelsData?.previews?.length && !isLastPage && isOnline) {
-      dispatch(getModelsPreview(false, nsfwMode));
+    if (
+      !modelsData?.previews?.length &&
+      !isLastPage &&
+      isOnline &&
+      (getSubcategoryModels || getAllModels)
+    ) {
+      dispatch(
+        getModelsPreview(
+          activeTab,
+          activeCategory,
+          activeSubcategory,
+          false,
+          nsfwMode
+        )
+      );
     }
-  }, [dispatch, modelsData, nsfwMode, isLastPage, isOnline]);
+  }, [
+    dispatch,
+    modelsData,
+    nsfwMode,
+    isLastPage,
+    isOnline,
+    activeTab,
+    activeCategory,
+    activeSubcategory,
+  ]);
 
   useEffect(() => {
     if (
@@ -105,10 +151,28 @@ const ModelsList = () => {
       clearTimeout(timeoutRef.current);
       setIsIntersecting(false);
       timeoutRef.current = setTimeout(() => {
-        dispatch(getModelsPreview(true, nsfwMode));
+        dispatch(
+          getModelsPreview(
+            activeTab,
+            activeCategory,
+            activeSubcategory,
+            true,
+            nsfwMode
+          )
+        );
       }, 1000);
     }
-  }, [isIntersecting, dispatch, isLastPage, modelsData, nsfwMode, isOnline]);
+  }, [
+    isIntersecting,
+    dispatch,
+    isLastPage,
+    modelsData,
+    nsfwMode,
+    isOnline,
+    activeTab,
+    activeCategory,
+    activeSubcategory,
+  ]);
 
   const loraHtml = modelsData?.previews?.map((item, i) => {
     return (
@@ -137,7 +201,15 @@ const ModelsList = () => {
           onChange={(value) => {
             dispatch(tabActions.setSortBy(value));
             dispatch(tabActions.setModelsData([]));
-            dispatch(getModelsPreview(false, nsfwMode));
+            dispatch(
+              getModelsPreview(
+                activeTab,
+                activeCategory,
+                activeSubcategory,
+                false,
+                nsfwMode
+              )
+            );
           }}
           options={sortSelectOption}
           className={classes.select}
@@ -149,7 +221,15 @@ const ModelsList = () => {
           onChange={(value) => {
             dispatch(tabActions.setModelType(value));
             dispatch(tabActions.setModelsData([]));
-            dispatch(getModelsPreview(false, nsfwMode));
+            dispatch(
+              getModelsPreview(
+                activeTab,
+                activeCategory,
+                activeSubcategory,
+                false,
+                nsfwMode
+              )
+            );
           }}
           options={baseModelsData}
           className={classes.select}
@@ -158,9 +238,13 @@ const ModelsList = () => {
 
       <div className={classes["category"]}>{loraHtml}</div>
       {guideState?.active && !isLoading && <OpenModelGuide />}
-      {!loraHtml?.length && !errorMessage && !isLoading && isOnline && (
-        <div className={classes.empty}>This category is empty</div>
-      )}
+      {!loraHtml?.length &&
+        !errorMessage &&
+        !isLoading &&
+        isOnline &&
+        (getAllModels || getSubcategoryModels) && (
+          <div className={classes.empty}>This category is empty</div>
+        )}
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
       <div ref={endPage}></div>

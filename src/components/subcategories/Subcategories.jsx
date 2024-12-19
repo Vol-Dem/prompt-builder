@@ -25,7 +25,7 @@ const Subcategories = () => {
   const dispatch = useDispatch();
 
   const categorySwitchHandler = (e) => {
-    dispatch(tabActions.setCurrentSubcategory(e.target.id));
+    dispatch(tabActions.setCurrentSubcategory(e.target.dataset.value));
     dispatch(tabActions.resetModelsData());
   };
 
@@ -57,7 +57,7 @@ const Subcategories = () => {
           // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
           // animate={ANIMATIONS_FM_SLIDEIN}
           // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
-          id={subcategory.id}
+          data-value={subcategory.id}
           onClick={categorySwitchHandler}
           className={`${classes[`subcategory__link`]} ${
             activeSubcategory === subcategory.id ? classes.active : ""
@@ -78,13 +78,24 @@ const Subcategories = () => {
       {!!subcategoriesData?.length && (
         <div className={classes["subcategories-container"]}>
           <motion.ul
-            variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
-            // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-            animate="visible"
-            // animate={ANIMATIONS_FM_SLIDEIN}
-            exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
             className={classes["subcategories"]}
           >
+            <motion.li
+              key={activeSubcategory}
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              data-value="all"
+              onClick={categorySwitchHandler}
+              className={`${classes[`subcategory__link`]} ${
+                activeSubcategory === "all" ? classes.active : ""
+              }`}
+            >
+              All
+            </motion.li>
             {subcategoriesHtml}
           </motion.ul>
           <ButtonTertiary
@@ -97,7 +108,7 @@ const Subcategories = () => {
         </div>
       )}
 
-      {activeSubcategory && <ModelsList />}
+      {/* {activeSubcategory && <ModelsList />} */}
       <AnimatePresence>
         {editIsOpen && (
           <Modal

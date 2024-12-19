@@ -12,6 +12,7 @@ import {
 import firebaseApp from "../firebase-config";
 import { authActions } from "./auth";
 import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
+import { handleErrors } from "../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -138,9 +139,16 @@ const tabsSlice = createSlice({
 //   };
 // };
 
-export const getModelsPreview = (loadMore = false, nsfwMode) => {
+export const getModelsPreview = (
+  activeTab,
+  activeCategory,
+  activeSubcategory,
+  loadMore = false,
+  nsfwMode
+) => {
   return async (dispatch, getState) => {
     try {
+      dispatch(tabActions.setErrorMessage(""));
       if (!loadMore) {
         lastVisible = "";
         dispatch(tabActions.setIsLastPage(false));
@@ -159,34 +167,33 @@ export const getModelsPreview = (loadMore = false, nsfwMode) => {
       dispatch(tabActions.setIsLoading(true));
       const direction = sortBy === "name" ? "asc" : "desc";
       const order = orderBy(sortBy, direction);
-      let q;
+      // let q;
 
       const nsfwFilter = !nsfwMode ? [false] : [true, false];
 
-      if (baseModel && baseModel !== "-") {
-        q = query(
-          collection(firestore, "users", uid, `preview`),
-          where("modelType", "==", activeTab),
-          where("main", "==", activeCategory),
-          where("baseModel", "==", baseModel),
-          where("nsfw", "in", nsfwFilter),
-          where("sub", "array-contains", activeSubcategory),
-          order,
-          startAfter(lastVisible),
-          limit(amountPerPage)
-        );
-      } else {
-        q = query(
-          collection(firestore, "users", uid, `preview`),
-          where("modelType", "==", activeTab),
-          where("main", "==", activeCategory),
-          where("nsfw", "in", nsfwFilter),
-          where("sub", "array-contains", activeSubcategory),
-          order,
-          startAfter(lastVisible),
-          limit(amountPerPage)
-        );
+      const optionalWhere = [];
+
+      if (activeTab && activeTab !== "all") {
+        optionalWhere.push(where("modelType", "==", activeTab));
       }
+      if (activeCategory && activeCategory !== "all") {
+        optionalWhere.push(where("main", "==", activeCategory));
+      }
+      if (activeSubcategory && activeSubcategory !== "all") {
+        optionalWhere.push(where("sub", "array-contains", activeSubcategory));
+      }
+      if (baseModel && baseModel !== "-") {
+        optionalWhere.push(where("baseModel", "==", baseModel));
+      }
+
+      const q = query(
+        collection(firestore, "users", uid, `preview`),
+        ...optionalWhere,
+        where("nsfw", "in", nsfwFilter),
+        order,
+        startAfter(lastVisible),
+        limit(amountPerPage)
+      );
 
       const querySnapshot = await getDocs(q);
 
@@ -212,11 +219,12 @@ export const getModelsPreview = (loadMore = false, nsfwMode) => {
             previews: loadMore ? [...curModelsData, ...modelsData] : modelsData,
           })
         );
+
       dispatch(tabActions.setIsLastPage(isLast));
       dispatch(tabActions.setIsLoading(false));
     } catch (err) {
       dispatch(tabActions.setIsLoading(false));
-      dispatch(tabActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
+      dispatch(tabActions.setErrorMessage(handleErrors(err)));
     }
   };
 };

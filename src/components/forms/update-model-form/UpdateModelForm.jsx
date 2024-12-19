@@ -19,6 +19,7 @@ import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
 import {
   clearFileExtension,
+  createTagSetsInputData,
   handleErrors,
   splitTags,
   throwCustomError,
@@ -46,6 +47,7 @@ import {
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
   ANIMATIONS_FM_SLIDEOUT,
   ANIMATIONS_FM_FADEOUT_EXIT,
+  DEFAULT_DATA_TAGSETS_INPUT,
 } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
@@ -58,6 +60,7 @@ import { modelActions } from "../../../store/model";
 // import ExtendedInput from "../../ui/ExtendedInput";
 import EditDefaultGuide from "../../ui/guide/edit/EditDefaultGuide";
 import { AnimatePresence, motion } from "framer-motion";
+import TagSetsInputFieldset from "../../ui/TagSetsInputFieldset";
 
 const firestore = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp);
@@ -65,25 +68,25 @@ const functions = getFunctions(firebaseApp);
 const SUBCATEGORIES_MAX_AMOUNT = 8;
 const TAGSETS_MAX_AMOUNT = 20;
 
-const tagSetsDefData = [
-  {
-    type: "text",
-    id: "set-name-def",
-    name: "set-name",
-    placeholder: "Set name",
-    value: "",
-    isValid: true,
-    errorMessage: "",
-  },
-  {
-    id: "set-value-def",
-    name: "set-value",
-    placeholder: "Trigger words",
-    value: "",
-    isValid: true,
-    errorMessage: "",
-  },
-];
+// const tagSetsDefData = [
+//   {
+//     type: "text",
+//     id: "set-name-def",
+//     name: "set-name",
+//     placeholder: "Set name",
+//     value: "",
+//     isValid: true,
+//     errorMessage: "",
+//   },
+//   {
+//     id: "set-value-def",
+//     name: "set-value",
+//     placeholder: "Trigger words",
+//     value: "",
+//     isValid: true,
+//     errorMessage: "",
+//   },
+// ];
 
 const subCatsDefData = {
   type: "text",
@@ -199,7 +202,7 @@ const UpdateModelForm = ({ modelData, id }) => {
     isValid: true,
   });
   const [subCatInputs, setSubCatInputs] = useState([subCatsDefData]);
-  const [tagSetsInputs, setTagSetsInputs] = useState([tagSetsDefData]);
+  const [tagSetsInputs, setTagSetsInputs] = useState([]);
   const [savedModel, setSavedModel] = useState(null);
   const [mainCategoryQuery, setMainCategoryQuery] = useState("");
   const [mainCategorySelected, setMainCategorySelected] = useState({
@@ -215,6 +218,7 @@ const UpdateModelForm = ({ modelData, id }) => {
   const curBaseModels = useSelector((state) => state.tabs.baseModels);
   const guideStep = useSelector((state) => state.guide.edit.step);
   const guideIsActive = useSelector((state) => state.guide.active);
+  const curModel = useSelector((state) => state.model.model);
   const dispatch = useDispatch();
 
   // console.log(categories);
@@ -298,32 +302,39 @@ const UpdateModelForm = ({ modelData, id }) => {
       isValid: true,
     });
 
-    if (!!modelData?.defaultCustomData?.tagSetsData?.length) {
-      const tagSets = modelData.defaultCustomData.tagSetsData.map(
-        (tagSet, i) => {
-          return [
-            {
-              type: "text",
-              id: "set-name-" + i,
-              name: tagSetsDefData[0].name,
-              placeholder: tagSetsDefData[0].placeholder,
-              value: tagSet.name,
-              isValid: true,
-              errorMessage: "",
-            },
-            {
-              id: "set-value-" + i,
-              name: tagSetsDefData[1].name,
-              placeholder: tagSetsDefData[1].placeholder,
-              value: tagSet.value,
-              isValid: true,
-              errorMessage: "",
-            },
-          ];
-        }
-      );
-      setTagSetsInputs(tagSets);
-    }
+    setTagSetsInputs(
+      createTagSetsInputData(
+        modelData?.defaultCustomData?.tagSetsData,
+        DEFAULT_DATA_TAGSETS_INPUT
+      )
+    );
+
+    // if (!!modelData?.defaultCustomData?.tagSetsData?.length) {
+    //   const tagSets = modelData.defaultCustomData.tagSetsData.map(
+    //     (tagSet, i) => {
+    //       return [
+    //         {
+    //           type: "text",
+    //           id: "set-name-" + i,
+    //           name: tagSetsDefData[0].name,
+    //           placeholder: tagSetsDefData[0].placeholder,
+    //           value: tagSet.name,
+    //           isValid: true,
+    //           errorMessage: "",
+    //         },
+    //         {
+    //           id: "set-value-" + i,
+    //           name: tagSetsDefData[1].name,
+    //           placeholder: tagSetsDefData[1].placeholder,
+    //           value: tagSet.value,
+    //           isValid: true,
+    //           errorMessage: "",
+    //         },
+    //       ];
+    //     }
+    //   );
+    //   setTagSetsInputs(tagSets);
+    // }
   }, [modelData, categories]);
 
   const createCategoryId = (id, categoriesData) => {
@@ -353,6 +364,7 @@ const UpdateModelForm = ({ modelData, id }) => {
   };
 
   const saveModelHandler = async (e, update) => {
+    let modelId;
     try {
       e.preventDefault();
       setErrorMessage("");
@@ -419,7 +431,7 @@ const UpdateModelForm = ({ modelData, id }) => {
       const formdata = new FormData(e.target);
 
       const modelType = modelTypeInput;
-      let modelId;
+
       if (Number.isFinite(+idInput.value)) {
         modelId = +idInput.value;
       } else {
@@ -973,10 +985,14 @@ const UpdateModelForm = ({ modelData, id }) => {
           });
           setSubCatInputs([subCatsDefData]);
           setShowErrorMessage(false);
+          setMainCategorySelected({});
         }
       }
     } catch (err) {
       console.log(err);
+      if (err.message === ERROR_MESSAGE_EXISTS) {
+        setSavedModel(modelId);
+      }
       setErrorMessage(handleErrors(err));
       setModelIsSaving(false);
     }
@@ -1156,80 +1172,80 @@ const UpdateModelForm = ({ modelData, id }) => {
   //   );
   // });
 
-  const deleteTagsetInputHandler = (index, e) => {
-    setTagSetsInputs((prevState) => {
-      return prevState.toSpliced(index, 1);
-    });
-  };
+  // const deleteTagsetInputHandler = (index, e) => {
+  //   setTagSetsInputs((prevState) => {
+  //     return prevState.toSpliced(index, 1);
+  //   });
+  // };
 
-  const tagSetsHandler = (e, isValid) => {
-    setTagSetsInputs((prevState) => {
-      const newState = [...prevState];
-      const curSetNameIndex = newState.findIndex((imageId) => {
-        return imageId[0].id + "" === e.target.id;
-      });
-      const curSetTagsIndex = newState.findIndex((imageId) => {
-        return imageId[1].id + "" === e.target.id;
-      });
+  // const tagSetsHandler = (e, isValid) => {
+  //   setTagSetsInputs((prevState) => {
+  //     const newState = [...prevState];
+  //     const curSetNameIndex = newState.findIndex((imageId) => {
+  //       return imageId[0].id + "" === e.target.id;
+  //     });
+  //     const curSetTagsIndex = newState.findIndex((imageId) => {
+  //       return imageId[1].id + "" === e.target.id;
+  //     });
 
-      if (curSetNameIndex !== -1) {
-        newState[curSetNameIndex][0].value = e.target.value;
-        newState[curSetNameIndex][0].isValid = isValid;
-      }
-      if (curSetTagsIndex !== -1) {
-        newState[curSetTagsIndex][1].value = e.target.value;
-        newState[curSetTagsIndex][1].isValid = isValid;
-      }
+  //     if (curSetNameIndex !== -1) {
+  //       newState[curSetNameIndex][0].value = e.target.value;
+  //       newState[curSetNameIndex][0].isValid = isValid;
+  //     }
+  //     if (curSetTagsIndex !== -1) {
+  //       newState[curSetTagsIndex][1].value = e.target.value;
+  //       newState[curSetTagsIndex][1].isValid = isValid;
+  //     }
 
-      return newState;
-    });
-  };
+  //     return newState;
+  //   });
+  // };
 
-  const tagSetsHtml = tagSetsInputs.map((tagSet, i) => {
-    return (
-      <div key={tagSet[0].id} className={classes["tagset"]}>
-        <div className={classes["tagset__header"]}>
-          <span className={classes["tagset__title"]}>{`Tagset ${i + 1}`}</span>{" "}
-          {i !== 0 && (
-            <ButtonTertiary
-              type="button"
-              className={classes["input__btn-del"]}
-              onClick={deleteTagsetInputHandler.bind(null, i)}
-            >
-              <CrossSvg />
-            </ButtonTertiary>
-          )}
-        </div>
-        <Input
-          id={tagSet[0].id}
-          name={tagSet[0].name}
-          type={tagSet[0].type}
-          placeholder={tagSet[0].placeholder}
-          onChange={tagSetsHandler}
-          value={tagSet[0].value}
-          isValid={tagSet[0].isValid}
-          showError={showErrorMessage}
-          validation={{
-            maxLength: VALIDATION_NAME_MAX_LENGTH,
-          }}
-        />
-        <Textarea
-          id={tagSet[1].id}
-          name={tagSet[1].name}
-          rows="5"
-          placeholder={tagSet[1].placeholder}
-          onChange={tagSetsHandler}
-          value={tagSet[1].value}
-          isValid={tagSet[1].isValid}
-          error={tagSet[1].errorMessage}
-          showError={showErrorMessage}
-          validation={{
-            maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
-          }}
-        ></Textarea>
-      </div>
-    );
-  });
+  // const tagSetsHtml = tagSetsInputs.map((tagSet, i) => {
+  //   return (
+  //     <div key={tagSet[0].id} className={classes["tagset"]}>
+  //       <div className={classes["tagset__header"]}>
+  //         <span className={classes["tagset__title"]}>{`Tagset ${i + 1}`}</span>{" "}
+  //         {i !== 0 && (
+  //           <ButtonTertiary
+  //             type="button"
+  //             className={classes["input__btn-del"]}
+  //             onClick={deleteTagsetInputHandler.bind(null, i)}
+  //           >
+  //             <CrossSvg />
+  //           </ButtonTertiary>
+  //         )}
+  //       </div>
+  //       <Input
+  //         id={tagSet[0].id}
+  //         name={tagSet[0].name}
+  //         type={tagSet[0].type}
+  //         placeholder={tagSet[0].placeholder}
+  //         onChange={tagSetsHandler}
+  //         value={tagSet[0].value}
+  //         isValid={tagSet[0].isValid}
+  //         showError={showErrorMessage}
+  //         validation={{
+  //           maxLength: VALIDATION_NAME_MAX_LENGTH,
+  //         }}
+  //       />
+  //       <Textarea
+  //         id={tagSet[1].id}
+  //         name={tagSet[1].name}
+  //         rows="5"
+  //         placeholder={tagSet[1].placeholder}
+  //         onChange={tagSetsHandler}
+  //         value={tagSet[1].value}
+  //         isValid={tagSet[1].isValid}
+  //         error={tagSet[1].errorMessage}
+  //         showError={showErrorMessage}
+  //         validation={{
+  //           maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+  //         }}
+  //       ></Textarea>
+  //     </div>
+  //   );
+  // });
 
   const versionStatusChangeHandler = (e) => {
     setVersionsDownloadStatus((prevState) => {
@@ -1481,7 +1497,13 @@ const UpdateModelForm = ({ modelData, id }) => {
                 }}
                 showError={showErrorMessage}
               ></Textarea>
-              <Fieldset legend="Tag sets (default)">
+              <TagSetsInputFieldset
+                tagSetsInputs={tagSetsInputs}
+                setTagSetsInputs={setTagSetsInputs}
+                showErrorMessage={showErrorMessage}
+                // isSaving={isSaving}
+              />
+              {/* <Fieldset legend="Tag sets (default)">
                 {tagSetsHtml}
                 {tagSetsInputs?.length < TAGSETS_MAX_AMOUNT && (
                   <ButttonSecondary
@@ -1493,7 +1515,7 @@ const UpdateModelForm = ({ modelData, id }) => {
                     + add new set
                   </ButttonSecondary>
                 )}
-              </Fieldset>
+              </Fieldset> */}
             </FieldCategory>
             <FieldCategory title="Info">
               <Input
@@ -1742,14 +1764,16 @@ const UpdateModelForm = ({ modelData, id }) => {
                 {successMessage}
               </SuccessMessage>
             )}
-            {successMessage && !modelData && (
+            {savedModel && !modelData && (
               <>
                 {"-"}
                 <Link
                   to={`/models/${savedModel}`}
                   className={classes.link}
                   onClick={() => {
-                    dispatch(modelActions.resetModelData());
+                    if (savedModel !== curModel.id) {
+                      dispatch(modelActions.resetModelData());
+                    }
                   }}
                 >
                   Show model

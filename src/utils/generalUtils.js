@@ -393,3 +393,34 @@ export const handleErrors = (err) => {
 
   return errorMessage;
 };
+
+export const createTagSetsInputData = (tagSetsData, defTagSetData) => {
+  let tagSets;
+
+  if (!tagSetsData?.length) {
+    tagSets = defTagSetData;
+  } else {
+    tagSets = tagSetsData.map((tagSet, i) => {
+      return [
+        {
+          type: "text",
+          id: "set-name" + i,
+          name: "set-name",
+          placeholder: "Set name",
+          value: tagSet.name,
+          isValid: true,
+          errorMessage: "",
+        },
+        {
+          id: "set-value" + i,
+          name: "set-value",
+          placeholder: "Triger words",
+          value: tagSet.value,
+          isValid: true,
+          errorMessage: "",
+        },
+      ];
+    });
+  }
+  return tagSets;
+};

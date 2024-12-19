@@ -26,7 +26,7 @@ const Categories = () => {
   const dispatch = useDispatch();
 
   const categorySwitchHandler = (e) => {
-    dispatch(tabActions.setCurrentCategory(e.target.id));
+    dispatch(tabActions.setCurrentCategory(e.target.dataset.value));
   };
 
   const catHtml = categories?.hasOwnProperty(activeTab)
@@ -54,7 +54,7 @@ const Categories = () => {
               // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
               // animate={ANIMATIONS_FM_SLIDEIN}
               // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
-              id={category.id}
+              data-value={category.id}
               onClick={categorySwitchHandler}
               className={`${classes[`category__link`]} ${
                 activeCategory === category.id ? classes.active : ""
@@ -82,6 +82,18 @@ const Categories = () => {
           // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
           className={classes["category__list"]}
         >
+          <motion.li
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            data-value="all"
+            onClick={categorySwitchHandler}
+            className={`${classes[`category__link`]} ${
+              activeCategory === "all" ? classes.active : ""
+            }`}
+          >
+            All
+          </motion.li>
           {catHtml}
         </motion.ul>
         {!!catHtml?.length && (

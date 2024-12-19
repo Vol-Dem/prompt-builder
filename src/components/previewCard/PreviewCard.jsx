@@ -54,7 +54,7 @@ const PreviewCard = ({ previewData, onClick, layout }) => {
       layoutId={layout ? previewData.id : Math.random()}
       transition={{
         layout: { duration: 0 },
-        type: "spring",
+        // type: "spring",
       }}
       id={previewData.id}
       className={`${classes.card} ${layout ? classes["card--motion"] : ""}`}

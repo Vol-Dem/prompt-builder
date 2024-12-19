@@ -115,3 +115,23 @@ export const ANIMATIONS_FM_SLIDEOUT = { opacity: 1, y: 0 };
 export const ANIMATIONS_FM_FADEOUT_EXIT = { opacity: 0, scale: 0.8 };
 export const ANIMATIONS_FM_ZOOM_IN_INITIAL = { opacity: 0, scale: 0.95 };
 export const ANIMATIONS_FM_ZOOM_IN = { opacity: 1, scale: 1 };
+
+export const DEFAULT_DATA_TAGSETS_INPUT = [
+  [
+    {
+      type: "text",
+      id: "set-name-def",
+      name: "set-name",
+      placeholder: "Set name",
+      value: "",
+      isValid: true,
+    },
+    {
+      id: "set-value-def",
+      name: "set-value",
+      placeholder: "Triger words",
+      value: "",
+      isValid: true,
+    },
+  ],
+];

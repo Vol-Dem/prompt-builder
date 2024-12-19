@@ -50,7 +50,7 @@ const Tag = forwardRef((props, ref) => {
   };
 
   return (
-    <motion.div
+    <div
       // initial={{ opacity: 0, scale: 0.9 }}
       // variants={{
       //   hidden: { opacity: 0.4, scale: 0.5 },
@@ -68,7 +68,7 @@ const Tag = forwardRef((props, ref) => {
       style={props.style}
     >
       {props.tag}
-    </motion.div>
+    </div>
   );
 });
 

@@ -28,6 +28,7 @@ import {
   URL_CF_UPDATE_MODEL,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_ZOOM_IN_INITIAL,
 } from "../../../variables/constants";
 import { modelActions } from "../../../store/model";
 import { tabActions } from "../../../store/tabs";
@@ -277,8 +278,11 @@ const ModelSettings = () => {
         return [];
       }
       return (
-        <li
+        <motion.li
           key={i}
+          initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+          animate={ANIMATIONS_FM_SLIDEIN}
+          exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
           id={version.versionId}
           data-version={i}
           onClick={switchTabHandler}
@@ -289,7 +293,7 @@ const ModelSettings = () => {
           }`}
         >
           {version.name}
-        </li>
+        </motion.li>
       );
     });
 
@@ -307,7 +311,9 @@ const ModelSettings = () => {
           !mobileMenuIsOpen ? classes["menu--hidden"] : ""
         }`}
       >
-        <li
+        <motion.li
+          initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+          animate={ANIMATIONS_FM_SLIDEIN}
           className={`${classes["menu-item"]} ${
             curTab === "general" ? classes["menu-item--active"] : ""
           }`}
@@ -315,8 +321,10 @@ const ModelSettings = () => {
           onClick={switchTabHandler}
         >
           General settings
-        </li>
-        <li
+        </motion.li>
+        <motion.li
+          initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+          animate={ANIMATIONS_FM_SLIDEIN}
           className={`${classes["menu-item"]} ${
             curTab === "versions" ? classes["menu-item--active"] : ""
           }`}
@@ -324,9 +332,11 @@ const ModelSettings = () => {
           onClick={switchTabHandler}
         >
           Version settings
-        </li>
+        </motion.li>
         <li>
-          <ul className={classes.versions}>{modelVersionsHtml}</ul>
+          <AnimatePresence>
+            <ul className={classes.versions}>{modelVersionsHtml}</ul>
+          </AnimatePresence>
         </li>
       </ul>
       {mobileMenuIsOpen && (

@@ -111,6 +111,8 @@ export const liveSearch = (
           where("name", "<=", searchString + "\uf8ff"),
           where("nsfw", "in", nsfwFilter)
         ),
+        //by id
+        and(where("id", "==", +searchString)),
         // capitalize first letter:
         and(
           where(

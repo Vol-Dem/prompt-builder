@@ -2,7 +2,11 @@ import classes from "./Tabs.module.scss";
 import Categories from "../categories/Categories";
 import { useDispatch, useSelector } from "react-redux";
 import { tabActions } from "../../store/tabs";
-import { MODEL_TYPES } from "../../variables/constants";
+import {
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+  MODEL_TYPES,
+} from "../../variables/constants";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import LinkA from "../ui/LinkA";
@@ -12,12 +16,14 @@ import OpenCategoryGuide from "../ui/guide/home/OpenCategoryGuide";
 import Modal from "../ui/Modal";
 import IntroGuide from "../ui/guide/IntroGuide";
 import { guideActions } from "../../store/guide";
+import { motion } from "framer-motion";
+import ModelsList from "../lora/ModelsList";
 
 const Tabs = () => {
   const [guideIsOpen, setGuideIsOpen] = useState(true);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const authIsOpen = useSelector((state) => state.auth.authFormIsOpen);
-  const activeCategory = useSelector((state) => state.tabs.currTab);
+  const activeTab = useSelector((state) => state.tabs.currTab);
   const categories = useSelector((state) => state.tabs.categoriesData);
   const formIsOpen = useSelector((state) => state.used.formIsOpen);
   const sidepanelIsOpen = useSelector((state) => state.used.panelIsOpen);
@@ -35,7 +41,7 @@ const Tabs = () => {
   const dispatch = useDispatch();
 
   const categorySwitchHandler = (e) => {
-    dispatch(tabActions.setCurrentTab(e.target.id));
+    dispatch(tabActions.setCurrentTab(e.target.dataset.value));
   };
 
   const modelTypesHtml = Object.keys(categories)
@@ -53,19 +59,19 @@ const Tabs = () => {
     .sort((a, b) => a.position - b.position)
     .map((category, i) => {
       return (
-        <li
-          key={i}
-          id={category.id}
+        <motion.li
+          key={category.id}
+          data-value={category.id}
           onClick={categorySwitchHandler}
           className={`${classes[`category__link`]} ${
-            activeCategory === category.id ? classes.active : ""
+            activeTab === category.id ? classes.active : ""
           }`}
         >
           {category.name}
-          {guideHomeState?.active && i === 0 && !activeCategory && (
+          {guideHomeState?.active && i === 0 && !activeTab && (
             <OpenCategoryGuide />
           )}
-        </li>
+        </motion.li>
       );
     });
 
@@ -73,11 +79,26 @@ const Tabs = () => {
     <>
       <div className={classes["tag-menu"]}>
         {!!modelTypesHtml?.length && (
-          <ul className={classes["tag-menu__labels"]}>{modelTypesHtml}</ul>
+          <motion.ul
+            initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            animate={ANIMATIONS_FM_SLIDEIN}
+            className={classes["tag-menu__labels"]}
+          >
+            <li
+              data-value="all"
+              onClick={categorySwitchHandler}
+              className={`${classes[`category__link`]} ${
+                activeTab === "all" ? classes.active : ""
+              }`}
+            >
+              All
+            </li>
+            {modelTypesHtml}
+          </motion.ul>
         )}
-        {activeCategory && (
+        {activeTab && activeTab !== "all" && (
           <div>
-            <Categories category={activeCategory} />
+            <Categories category={activeTab} />
           </div>
         )}
         {!userDataIsLoading &&
@@ -132,6 +153,7 @@ const Tabs = () => {
               </Modal>
             )}
         </div>
+        {activeTab && <ModelsList />}
       </div>
     </>
   );
