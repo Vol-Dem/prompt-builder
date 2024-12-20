@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import classes from "./ModelsList.module.scss";
 import PreviewCard from "../previewCard/PreviewCard";
 import { useDispatch, useSelector } from "react-redux";
@@ -45,12 +45,18 @@ const ModelsList = () => {
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
   const dispatch = useDispatch();
-  const getAllModels =
-    activeTab === "all" ||
-    activeCategory === "all" ||
-    activeSubcategory === "all";
+  const getAllModels = useMemo(
+    () =>
+      activeTab === "all" ||
+      activeCategory === "all" ||
+      activeSubcategory === "all",
+    [activeTab, activeCategory, activeSubcategory]
+  );
 
-  const getSubcategoryModels = activeTab && activeCategory && activeSubcategory;
+  const getSubcategoryModels = useMemo(
+    () => activeTab && activeCategory && activeSubcategory,
+    [activeTab, activeCategory, activeSubcategory]
+  );
 
   const baseModelsData = !baseModels?.length
     ? baseModelsDef
@@ -139,6 +145,8 @@ const ModelsList = () => {
     activeTab,
     activeCategory,
     activeSubcategory,
+    getAllModels,
+    getSubcategoryModels,
   ]);
 
   useEffect(() => {

@@ -26,6 +26,9 @@ const promptSlice = createSlice({
     presets: { positive: [], negative: [] },
     promptIsOpen: false,
     isTextMode: false,
+    headerHeight: null,
+    positivePromptHeight: null,
+    negativePromptHeight: null,
   },
   reducers: {
     setCurrentPrompt(state, actions) {
@@ -272,6 +275,18 @@ const promptSlice = createSlice({
 
       state.curPromptArr = updatedPromptArr;
     },
+    setHeaderHeight(state, actions) {
+      state.headerHeight = actions.payload;
+    },
+    setPromptHeight(state, actions) {
+      if (actions.payload.type === "positive") {
+        state.positivePromptHeight = actions.payload.value;
+      }
+      if (actions.payload.type === "negative") {
+        state.negativePromptHeight = actions.payload.value;
+      }
+    },
+    setNegativePromptHeight(state, actions) {},
   },
   extraReducers: (builder) => {
     builder

@@ -12,9 +12,16 @@ import PromptGuide from "../ui/guide/model/PromptGuide";
 import { AnimatePresence } from "framer-motion";
 import Modal from "../ui/Modal";
 
+const positiveMinHeight = 100;
+const negativeMinHeight = 60;
+
 const Prompt = memo(() => {
   const [copiedType, setCopiedType] = useState("");
   const [presetsIsOpen, setPresetsIsOpen] = useState(false);
+  const [positivePromptHeight, setPositivePromptHeight] =
+    useState(positiveMinHeight);
+  const [negativePromptHeight, setNegativePromptHeight] =
+    useState(negativeMinHeight);
   const curPrompt = useSelector((state) => state.prompt.curPrompt);
   const curNegPrompt = useSelector((state) => state.prompt.curNegPrompt);
   const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
@@ -73,6 +80,40 @@ const Prompt = memo(() => {
     } else {
       setPresetsIsOpen(true);
     }
+  };
+
+  const onMouseDown = (e) => {
+    const promptType = e.target.dataset.type;
+    const startHeight =
+      promptType === "positive" ? positivePromptHeight : negativePromptHeight;
+    const minHeight =
+      promptType === "positive" ? positiveMinHeight : negativeMinHeight;
+    const startY = e.clientY;
+
+    const onMouseMove = (moveEvent) => {
+      const newHeight = startHeight + (moveEvent.clientY - startY);
+      // setWidth(Math.max(50, newWidth)); // Min size
+      if (promptType === "positive") {
+        setPositivePromptHeight(Math.max(minHeight, newHeight));
+        dispatch(
+          promptActions.setPromptHeight({ type: "positive", value: newHeight })
+        );
+      }
+      if (promptType === "negative") {
+        setNegativePromptHeight(Math.max(minHeight, newHeight));
+        dispatch(
+          promptActions.setPromptHeight({ type: "negative", value: newHeight })
+        );
+      }
+    };
+
+    const onMouseUp = () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
   };
 
   return (
@@ -140,25 +181,37 @@ const Prompt = memo(() => {
           </div>
           <PromptGuide />
           <div className={classes.field}>
-            {!promptTextMode && (
-              <TagsTextarea
-                data={curPrompt}
-                promptType="positive"
-                aditionalPlacegholder="Add tags from the model or image tag list, or switch view to text mode to enter manually"
-                placeholder="Prompt (tags mode)"
-                className={classes["tagarea"]}
-              />
-            )}
-            {promptTextMode && (
-              <textarea
-                id="prompt"
-                name="prompt"
-                placeholder="Prompt (text mode)"
-                onChange={promptHandler}
-                value={curPrompt}
-                className={classes.prompt}
-              ></textarea>
-            )}
+            <div
+              className={classes["prompt"]}
+              style={{
+                height: `${positivePromptHeight}px`,
+              }}
+            >
+              {!promptTextMode && (
+                <TagsTextarea
+                  data={curPrompt}
+                  promptType="positive"
+                  aditionalPlacegholder="Add tags from the model or image tag list, or switch view to text mode to enter manually"
+                  placeholder="Prompt (tags mode)"
+                  className={classes["tagarea"]}
+                />
+              )}
+              {promptTextMode && (
+                <textarea
+                  id="prompt"
+                  name="prompt"
+                  placeholder="Prompt (text mode)"
+                  onChange={promptHandler}
+                  value={curPrompt}
+                  className={classes["prompt__textarea"]}
+                ></textarea>
+              )}
+              <div
+                onMouseDown={onMouseDown}
+                className={classes["prompt__resize-box"]}
+                data-type="positive"
+              ></div>
+            </div>
             <button
               type="button"
               data-type="positive"
@@ -201,24 +254,36 @@ const Prompt = memo(() => {
             </button>
           </div>
           <div className={`${classes.field} ${classes["field--neg"]}`}>
-            {!promptTextMode && (
-              <TagsTextarea
-                data={curNegPrompt}
-                promptType="negative"
-                placeholder="Negative prompt (tags mode)"
-                className={`${classes["tagarea"]} ${classes["tagarea--neg"]}`}
-              />
-            )}
-            {promptTextMode && (
-              <textarea
-                id="neg-prompt"
-                name="neg-prompt"
-                placeholder="Negative prompt (text mode)"
-                onChange={negPromptHandler}
-                value={curNegPrompt}
-                className={`${classes.prompt} ${classes["prompt--neg"]}`}
-              ></textarea>
-            )}
+            <div
+              className={`${classes.prompt} ${classes["prompt--neg"]}`}
+              style={{
+                height: `${negativePromptHeight}px`,
+              }}
+            >
+              {!promptTextMode && (
+                <TagsTextarea
+                  data={curNegPrompt}
+                  promptType="negative"
+                  placeholder="Negative prompt (tags mode)"
+                  className={`${classes["tagarea"]} ${classes["tagarea--neg"]}`}
+                />
+              )}
+              {promptTextMode && (
+                <textarea
+                  id="neg-prompt"
+                  name="neg-prompt"
+                  placeholder="Negative prompt (text mode)"
+                  onChange={negPromptHandler}
+                  value={curNegPrompt}
+                  className={`${classes["prompt__textarea"]}`}
+                ></textarea>
+              )}
+              <div
+                onMouseDown={onMouseDown}
+                className={classes["prompt__resize-box"]}
+                data-type="negative"
+              ></div>
+            </div>
             <button
               type="button"
               data-type="negative"

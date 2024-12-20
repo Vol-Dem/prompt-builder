@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import classes from "./TagsTextarea.module.scss";
 import { promptActions } from "../../store/prompt";
 import CrossSvg from "../../assets/CrossSvg";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { SPLIT_TAG_REGEX } from "../../variables/constants";
 import { CheckIcon } from "@heroicons/react/20/solid";
@@ -24,6 +24,7 @@ const TagsTextarea = ({
   const dispatch = useDispatch();
   const curPromptArr = useSelector((state) => state.prompt.curPromptArr);
   const curNegPromptArr = useSelector((state) => state.prompt.curNegPromptArr);
+  const fieldRef = useRef(null);
 
   useEffect(() => {
     const promptArr =
@@ -60,6 +61,7 @@ const TagsTextarea = ({
   };
 
   const dragStartHandler = (e) => {
+    console.log(e.target);
     const targetTagContainer = e.target.closest(`.${classes["tag-container"]}`);
     const tagData = targetTagContainer.dataset.item;
     // console.log(tagData);
@@ -133,13 +135,13 @@ const TagsTextarea = ({
   };
 
   const dropHandler = (e) => {
-    const { id, tag, position, type } = JSON.parse(
-      e.dataTransfer.getData("text/plain")
-    );
-    // console.log(id, tag, position, type);
+    const tagData = e.dataTransfer.getData("text/plain");
+    if (!tagData.trim()) return;
+
+    const { id, tag, position, type } = JSON.parse(tagData);
     const targetTagContainer = e.target.closest(`.${classes["tag-container"]}`);
     const fieldType = e.target?.dataset?.type;
-    const fieldId = e.target?.dataset?.id;
+    // const fieldId = e.target?.dataset?.id;
     // const dropTargetId = +targetTagContainer?.dataset?.id;
     // const dropTargetType = targetTagContainer?.dataset?.type;
     // if (targetTagContainer && fieldType && fieldId) return;
@@ -471,16 +473,36 @@ const TagsTextarea = ({
     );
   });
 
+  const promptResizeHandler = () => {
+    console.log(fieldRef.current.offsetHeight);
+    dispatch(
+      promptActions.setPromptHeight({
+        type: promptType,
+        value: fieldRef.current.offsetHeight,
+      })
+    );
+  };
+
   return (
     <ul
+      ref={fieldRef}
       onDragOver={dragOverHandler}
       onDragLeave={dragLeaveHandler}
       onDrop={dropHandler}
+      onResize={promptResizeHandler}
       data-type={promptType}
-      className={`${classes.field} ${className || ""}`}
+      className={`${classes.field} ${
+        promptType === "positive"
+          ? classes["field--positive"]
+          : classes["field--negative"]
+      } ${className || ""}`}
     >
       {!tagItemsHtml.length && (
-        <li data-type={promptType} className={classes.placeholder}>
+        <li
+          draggable={false}
+          data-type={promptType}
+          className={classes.placeholder}
+        >
           {placeholder}
         </li>
       )}

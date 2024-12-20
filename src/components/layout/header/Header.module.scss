@@ -7,7 +7,9 @@
   width: 100%;
   position: sticky;
   top: 0;
+  padding-bottom: 2.2rem;
   z-index: 20;
+
   // transition: all 0.4s;
   // transition: all 0s;
   // transition: padding-right 0.4s;
@@ -18,6 +20,11 @@
   //   // width: calc(100% - 32rem);
   //   // transition: padding-right 0.4s;
   // }
+
+  &--active {
+    height: 100vh;
+    padding-bottom: 0.4rem;
+  }
 
   &--fixed {
     position: fixed;
@@ -33,16 +40,16 @@
   }
 }
 
-.header--fixed-open ~ main {
-  padding-top: 255.2px;
-  padding-top: 278px;
-}
+// .header--fixed-open ~ main {
+//   padding-top: 255.2px;
+//   padding-top: 278px;
+// }
 
-.header--fixed-closed ~ main {
-  padding-top: 50px;
-  padding-top: 90px;
-  padding-top: 70px;
-}
+// .header--fixed-closed ~ main {
+//   padding-top: 50px;
+//   padding-top: 90px;
+//   padding-top: 70px;
+// }
 // .header--fixed-open[style="transition: all 0.4s ease 0s;"] ~ main {
 //   padding-top: 50px;
 // }

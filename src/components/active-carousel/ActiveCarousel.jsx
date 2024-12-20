@@ -17,6 +17,9 @@ import {
 } from "../../variables/constants";
 import { AnimatePresence, motion } from "framer-motion";
 
+// const defHeight = 315;
+// const defHeightS = 110;
+
 const ActiveCarousel = () => {
   const [activeImageNumber, setActiveImageNumber] = useState(null);
   const [savedImages, setSavedImages] = useState({});
@@ -28,6 +31,7 @@ const ActiveCarousel = () => {
   const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
   const guideStep = useSelector((state) => state.guide.model.step);
   const guideIsActive = useSelector((state) => state.guide.active);
+  const headerHeight = useSelector((state) => state.prompt.headerHeight);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -117,17 +121,18 @@ const ActiveCarousel = () => {
         >
           <div
             className={`${classes.wrap}`}
-            style={
-              !!activeCarouselData?.images?.length
-                ? {
-                    height: `${
-                      promptIsOpen
-                        ? "calc(100vh - 315px)"
-                        : "calc(100vh - 110px)"
-                    }`,
-                  }
-                : {}
-            }
+            // style={
+            //   !!activeCarouselData?.images?.length && headerHeight
+            //     ? {
+            //         // height: `${`calc(100vh - ${headerHeight + 40}px)`}`,
+            //         // height: `${
+            //         //   promptIsOpen
+            //         //     ? `calc(100vh - ${headerHeight || defHeight}px)`
+            //         //     : `calc(100vh - ${headerHeight || defHeightS}px)`
+            //         // }`,
+            //       }
+            //     : {}
+            // }
           >
             <div className={classes["carousel"]}>
               {!!activeCarouselData?.images?.length && (

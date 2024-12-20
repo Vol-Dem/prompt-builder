@@ -16,7 +16,14 @@ import UserNavigation from "../navigation/UserNavigation";
 import Buttton from "../../ui/Button";
 import Modal from "../../ui/Modal";
 import AuthForm from "../../forms/Auth/AuthForm";
-import { Suspense, useEffect, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import Spinner from "../../ui/Spinner";
 import Notification from "../../ui/Notification";
 import Prompt from "../../prompt/Prompt";
@@ -42,9 +49,13 @@ const Layout = () => {
   const [cookificationIsOpen, setCookificationIsOpen] = useState(false);
   const [activeNotification, setActiveNotification] = useState({});
   const [allNotification, setAllNotification] = useState([]);
+  const [headerIsFixed, setHeaderIsFixed] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(null);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
+  const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
   const emailVerified = useSelector((state) => state.auth.user.emailVerified);
   const authIsOpen = useSelector((state) => state.auth.authFormIsOpen);
+  const mainRef = useRef(null);
   // const notificationIsShown = useSelector(
   //   (state) => state.notification.isShown
   // );
@@ -140,10 +151,28 @@ const Layout = () => {
     setCookificationIsOpen(false);
   };
 
+  useEffect(() => {
+    if (headerIsFixed && headerHeight) {
+      mainRef.current.style.paddingTop = `${headerHeight}px`;
+    } else {
+      mainRef.current.style.paddingTop = null;
+    }
+  }, [headerIsFixed, headerHeight, promptIsOpen]);
+
+  const setHeaderIsFixedHandler = useCallback((value) => {
+    setHeaderIsFixed(value);
+  }, []);
+  const setHeaderHeightHandler = useCallback((value) => {
+    setHeaderHeight(value);
+  }, []);
+
   return (
     <div className={classes.wrapper}>
       <div className={classes.content}>
-        <Header>
+        <Header
+          onFixed={setHeaderIsFixedHandler}
+          onHeightChange={setHeaderHeightHandler}
+        >
           <div className={classes["menu-container"]}>
             <div className="wrapper">
               <div className={classes.menu}>
@@ -222,7 +251,7 @@ const Layout = () => {
           </AnimatePresence>
         </Header>
 
-        <main>
+        <main ref={mainRef}>
           <div className="wrapper">
             {!maintenance && (
               <Suspense fallback={<Spinner />}>
