@@ -27,6 +27,8 @@ const promptSlice = createSlice({
     promptIsOpen: false,
     isTextMode: false,
     headerHeight: null,
+    promptBtnHeight: null,
+    promptHeight: null,
     positivePromptHeight: null,
     negativePromptHeight: null,
   },
@@ -278,13 +280,17 @@ const promptSlice = createSlice({
     setHeaderHeight(state, actions) {
       state.headerHeight = actions.payload;
     },
+    setPromptBtnHeight(state, actions) {
+      state.promptBtnHeight = actions.payload;
+    },
     setPromptHeight(state, actions) {
-      if (actions.payload.type === "positive") {
-        state.positivePromptHeight = actions.payload.value;
-      }
-      if (actions.payload.type === "negative") {
-        state.negativePromptHeight = actions.payload.value;
-      }
+      state.promptHeight = actions.payload;
+      // if (actions.payload.type === "positive") {
+      //   state.positivePromptHeight = actions.payload.value;
+      // }
+      // if (actions.payload.type === "negative") {
+      //   state.negativePromptHeight = actions.payload.value;
+      // }
     },
     setNegativePromptHeight(state, actions) {},
   },

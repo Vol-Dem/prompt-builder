@@ -65,16 +65,16 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
   const guideStep = useSelector((state) => state.guide.model.step);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (guideActive && guideStep === GUIDE_STEP_MODEL_TAGS_EDIT) {
-      dispatch(
-        guideActions.setGuideStep({
-          type: "model",
-          value: GUIDE_STEP_MODEL_TAGS_EDIT_FROM,
-        })
-      );
-    }
-  }, [guideActive, guideStep, dispatch]);
+  // useEffect(() => {
+  //   if (guideActive && guideStep === GUIDE_STEP_MODEL_TAGS_EDIT) {
+  //     dispatch(
+  //       guideActions.setGuideStep({
+  //         type: "model",
+  //         value: GUIDE_STEP_MODEL_TAGS_EDIT_FROM,
+  //       })
+  //     );
+  //   }
+  // }, [guideActive, guideStep, dispatch]);
 
   useEffect(() => {
     if (versionData?.mainTag) {
@@ -446,7 +446,7 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
       </Buttton>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
-      <ModelTagsFormGuide />
+      {/* <ModelTagsFormGuide /> */}
     </form>
   );
 };

@@ -88,8 +88,8 @@ const Tabs = () => {
               data-value="all"
               onClick={categorySwitchHandler}
               className={`${classes[`category__link`]} ${
-                activeTab === "all" ? classes.active : ""
-              }`}
+                classes[`category__link--all`]
+              } ${activeTab === "all" ? classes.active : ""}`}
             >
               All
             </li>

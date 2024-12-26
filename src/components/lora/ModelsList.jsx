@@ -88,7 +88,10 @@ const ModelsList = () => {
   }, [activeTab, activeCategory, activeSubcategory, dispatch]);
 
   useEffect(() => {
-    if (guideState?.step < GUIDE_STEP_OPEN_MODEL) {
+    if (
+      guideState?.step < GUIDE_STEP_OPEN_MODEL &&
+      modelsData?.previews?.length
+    ) {
       dispatch(
         guideActions.setGuideStep({
           type: "home",
@@ -96,7 +99,7 @@ const ModelsList = () => {
         })
       );
     }
-  }, [guideState, dispatch]);
+  }, [guideState, modelsData?.previews, dispatch]);
 
   useEffect(() => {
     if (
@@ -243,7 +246,6 @@ const ModelsList = () => {
           className={classes.select}
         />
       </div>
-
       <div className={classes["category"]}>{loraHtml}</div>
       {guideState?.active && !isLoading && <OpenModelGuide />}
       {!loraHtml?.length &&

@@ -8,9 +8,11 @@ import notificationSlice from "./notification";
 import searchSlice from "./search";
 import uploadSlice from "./upload";
 import guideSlice from "./guide";
+import generalSlice from "./general";
 
 const store = configureStore({
   reducer: {
+    general: generalSlice.reducer,
     prompt: promptSlice.reducer,
     tabs: tabsSlice.reducer,
     used: usedModelsSlice.reducer,

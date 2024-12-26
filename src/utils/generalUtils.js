@@ -1,3 +1,4 @@
+import { MotionGlobalConfig } from "framer-motion";
 import {
   ERROR_MESSAGE_DEFAULT,
   REGEX_SPLIT_TAGS,
@@ -423,4 +424,15 @@ export const createTagSetsInputData = (tagSetsData, defTagSetData) => {
     });
   }
   return tagSets;
+};
+
+export const checkIsMobile = () => {
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+};
+
+export const disableAnimationsOnMobile = () => {
+  const isMobile = checkIsMobile();
+  if (isMobile) {
+    MotionGlobalConfig.skipAnimations = true;
+  }
 };

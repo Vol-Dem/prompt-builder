@@ -35,6 +35,7 @@ import AddModelToSidePanelGuide from "../ui/guide/model/AddModelToSidePanelGuide
 import { guideActions } from "../../store/guide";
 import SettingsSvg from "../../assets/SettingsSvg";
 import { AnimatePresence } from "framer-motion";
+import ImageSvg from "../../assets/ImageSvg";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -621,6 +622,13 @@ const Model = ({ title }) => {
               {!!curVersionImages.filteredItems?.length &&
                 !curVersionImagesIsLoading &&
                 modelImagesHtml}
+              {!curVersionImages?.filteredItems?.length &&
+                !curVersionImagesIsLoading && (
+                  <div className={classes["img-container__placeholder"]}>
+                    <ImageSvg className={classes["img-container__svg"]} />
+                     <span>Images not found</span>
+                  </div>
+                )}
             </AnimatePresence>
             {curVersionImagesIsLoading && <Spinner />}
             {guideIsActive && <CarouselGuide />}

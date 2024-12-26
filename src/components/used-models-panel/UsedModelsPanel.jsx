@@ -18,7 +18,7 @@ import ArrowRightSvg from "../../assets/ArrowRight";
 import PlusSvg from "../../assets/PlusSvg";
 import Bars2Svg from "../../assets/Bars2Svg";
 import Bars4Svg from "../../assets/Bars4Svg";
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { SETTINGS_REF_IMAGE_ROW_LENGTH } from "../../variables/constants";
 import ErrorMessage from "../ui/ErrorMessage";
 import SidePanelGuide from "../ui/guide/model/SidePanelGuide";
@@ -37,6 +37,8 @@ const UsedModelsPanel = memo(() => {
   const formIsOpen = useSelector((state) => state.used.formIsOpen);
   const fullCardView = useSelector((state) => state.used.fullCardView);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
+  const sidePanelRef = useRef({ offsetWidth: 0 });
+  const openPanelBtnRef = useRef({ offsetWidth: 20 });
   // const location = useLocation();
   // const location = false;
   const userDataIsLoading = useSelector(
@@ -53,6 +55,21 @@ const UsedModelsPanel = memo(() => {
   //     dispatch(usedModelsActions.setFormIsOpen(false));
   //   }
   // }, [location?.pathname, dispatch]);
+
+  useEffect(() => {
+    // console.log(
+    //   "SIDE",
+    //   sidePanelRef.current.offsetWidth,
+    //   openPanelBtnRef.current.offsetWidth
+    // );
+    if (sidePanelRef?.current && openPanelBtnRef?.current) {
+      dispatch(
+        usedModelsActions.setSidePanelWidth(
+          sidePanelRef.current.offsetWidth + openPanelBtnRef.current.offsetWidth
+        )
+      );
+    }
+  }, [panelIsOpen, dispatch]);
 
   const openPanelHandler = () => {
     dispatch(usedModelsActions.panelState(!panelIsOpen));
@@ -126,152 +143,171 @@ const UsedModelsPanel = memo(() => {
 
   return (
     <motion.aside
-      layout
+      // layout
       className={`${classes.container} ${
         panelIsOpen ? classes["container--open"] : ""
       }`}
       onTouchEnd={mouseUp}
       onTouchStart={mouseDownHandler}
       onTouchMove={moveElement}
+      animate={{
+        // transform: `translateX(${
+        //   !panelIsOpen ? sidePanelRef?.current?.offsetWidth : 0
+        // }px)`,
+        width: panelIsOpen
+          ? sidePanelRef?.current?.offsetWidth +
+            openPanelBtnRef?.current?.offsetWidth
+          : openPanelBtnRef?.current?.offsetWidth,
+      }}
+      // style={{
+      //   transform: `translateX(${sidePanelRef?.current?.offsetWidth || 0}px)`,
+      //   // transform: `translateX(100% - ${
+      //   //   openPanelBtnRef?.current?.offsetWidth || 0
+      //   // }px)`,
+      // }}
     >
-      <button
-        type="button"
-        title={panelIsOpen ? "Close side panel" : "Open side panel"}
-        onClick={openPanelHandler}
-        className={classes["btn__open"]}
-      >
-        {!panelIsOpen && <ArrowLeftSvg />}
-        {panelIsOpen && <ArrowRightSvg />}
-      </button>
-      <OpenSidePanelGuide />
-      <motion.div
-        layout
-        className={`${classes.panel} ${
-          panelIsOpen ? classes["panel--open"] : ""
-        }`}
-      >
-        <div className={classes["options"]}>
-          <Buttton
-            className={`${classes["btn-forms"]} ${
-              formIsOpen ? classes["btn-forms--close"] : ""
-            }`}
-            onClick={openFormHandler}
-            disabled={!!userDataLoadError || userDataIsLoading}
-          >
-            {!formIsOpen ? (
-              <>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
-                  />
-                </svg>
-                New resource
-              </>
-            ) : (
-              <>
-                <CrossSvg />
-                Hide form
-              </>
-            )}
-          </Buttton>
-          {/* <div>
+      <>
+        <button
+          ref={openPanelBtnRef}
+          type="button"
+          title={panelIsOpen ? "Close side panel" : "Open side panel"}
+          onClick={openPanelHandler}
+          className={classes["btn__open"]}
+        >
+          {!panelIsOpen && <ArrowLeftSvg />}
+          {panelIsOpen && <ArrowRightSvg />}
+        </button>
+        <OpenSidePanelGuide />
+        <motion.div
+          ref={sidePanelRef}
+          layout
+          className={`${classes.panel} ${
+            panelIsOpen ? classes["panel--open"] : ""
+          }`}
+        >
+          <div className={classes["options"]}>
+            <Buttton
+              className={`${classes["btn-forms"]} ${
+                formIsOpen ? classes["btn-forms--close"] : ""
+              }`}
+              onClick={openFormHandler}
+              disabled={!!userDataLoadError || userDataIsLoading}
+            >
+              {!formIsOpen ? (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+                    />
+                  </svg>
+                  New resource
+                </>
+              ) : (
+                <>
+                  <CrossSvg />
+                  Hide form
+                </>
+              )}
+            </Buttton>
+            {/* <div>
             <button onClick={prevStepHandler}>prev</button>
             <button onClick={nextStepHandler}>next</button>
           </div> */}
-          {userDataLoadError && (
-            <ErrorMessage>{userDataLoadError}</ErrorMessage>
-          )}
-          {/* <UpdateDb /> */}
-          {/* {formIsOpen && isAuth && emailVerified && ( */}
-          <AnimatePresence>
-            {formIsOpen && isAuth && (
-              <div className={classes.forms}>
-                <UpdateModelForm id="side-form" />
+            {userDataLoadError && (
+              <ErrorMessage>{userDataLoadError}</ErrorMessage>
+            )}
+            {/* <UpdateDb /> */}
+            {/* {formIsOpen && isAuth && emailVerified && ( */}
+            <AnimatePresence>
+              {formIsOpen && isAuth && (
+                <div className={classes.forms}>
+                  <UpdateModelForm id="side-form" />
+                </div>
+              )}
+            </AnimatePresence>
+            <div className={classes["controls"]}>
+              <ButtonTertiary type="button" onClick={clearPanelHandler}>
+                Clear
+              </ButtonTertiary>
+              <div>
+                <ButtonTertiary
+                  type="button"
+                  className={`${classes["controls__btn"]} ${
+                    !fullCardView ? classes["controls__btn--active"] : ""
+                  }`}
+                  onClick={chageCardViewHandler}
+                  title="Short view"
+                >
+                  <Bars2Svg />
+                </ButtonTertiary>
+                <ButtonTertiary
+                  type="button"
+                  className={`${classes["controls__btn"]} ${
+                    fullCardView ? classes["controls__btn--active"] : ""
+                  }`}
+                  onClick={chageCardViewHandler}
+                  title="Expanded view"
+                >
+                  <Bars4Svg />
+                </ButtonTertiary>
+              </div>
+            </div>
+            <SidePanelGuide />
+          </div>
+
+          <div className={classes["model-cards"]}>
+            <AnimatePresence>
+              {!!usedImages.length && usedImagesHtml}
+              {!!usedModelsHtml.length && usedModelsHtml}
+            </AnimatePresence>
+            {!usedModelsHtml.length && !usedImages.length && (
+              <div className={classes["model-cards__tip"]}>
+                Press{" "}
+                <span className={classes.plus}>
+                  <PlusSvg />
+                </span>{" "}
+                to add model or image to side panel
               </div>
             )}
-          </AnimatePresence>
-          <div className={classes["controls"]}>
-            <ButtonTertiary type="button" onClick={clearPanelHandler}>
-              Clear
-            </ButtonTertiary>
-            <div>
-              <ButtonTertiary
-                type="button"
-                className={`${classes["controls__btn"]} ${
-                  !fullCardView ? classes["controls__btn--active"] : ""
-                }`}
-                onClick={chageCardViewHandler}
-                title="Short view"
-              >
-                <Bars2Svg />
-              </ButtonTertiary>
-              <ButtonTertiary
-                type="button"
-                className={`${classes["controls__btn"]} ${
-                  fullCardView ? classes["controls__btn--active"] : ""
-                }`}
-                onClick={chageCardViewHandler}
-                title="Expanded view"
-              >
-                <Bars4Svg />
-              </ButtonTertiary>
-            </div>
           </div>
-          <SidePanelGuide />
-        </div>
-
-        <div className={classes["model-cards"]}>
-          <AnimatePresence>
-            {!!usedImages.length && usedImagesHtml}
-            {!!usedModelsHtml.length && usedModelsHtml}
-          </AnimatePresence>
-          {!usedModelsHtml.length && !usedImages.length && (
-            <div className={classes["model-cards__tip"]}>
-              Press{" "}
-              <span className={classes.plus}>
-                <PlusSvg />
-              </span>{" "}
-              to add model or image to side panel
-            </div>
-          )}
-        </div>
-        <div className={classes["support"]}>
-          Support project:{" "}
-          <a
-            href="https://www.patreon.com/aidetools"
-            target="_blank"
-            rel="noreferrer nofollow"
-          >
-            <img
-              height="16"
-              src={require("../../assets/patreon-w.png")}
-              border="0"
-              alt="patreon"
-            />
-          </a>
-          <a
-            href="https://ko-fi.com/J3J31052RE"
-            target="_blank"
-            rel="noreferrer nofollow"
-          >
-            <img
-              height="28"
-              src="https://storage.ko-fi.com/cdn/brandasset/kofi_bg_tag_dark.png"
-              border="0"
-              alt="ko-fi"
-            />
-          </a>
-        </div>
-      </motion.div>
+          <div className={classes["support"]}>
+            Support project:{" "}
+            <a
+              href="https://www.patreon.com/aidetools"
+              target="_blank"
+              rel="noreferrer nofollow"
+            >
+              <img
+                height="16"
+                src={require("../../assets/patreon-w.png")}
+                border="0"
+                alt="patreon"
+              />
+            </a>
+            <a
+              href="https://ko-fi.com/J3J31052RE"
+              target="_blank"
+              rel="noreferrer nofollow"
+            >
+              <img
+                height="28"
+                src="https://storage.ko-fi.com/cdn/brandasset/kofi_bg_tag_dark.png"
+                border="0"
+                alt="ko-fi"
+              />
+            </a>
+          </div>
+        </motion.div>
+      </>
     </motion.aside>
   );
 });

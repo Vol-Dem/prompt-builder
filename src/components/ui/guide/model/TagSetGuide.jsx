@@ -2,17 +2,32 @@ import classes from "./TagSetGuide.module.scss";
 import { useMemo } from "react";
 import GuideMessage from "../GuideMessage";
 import {
+  GUIDE_STEP_MODEL_ADD_TAGSET,
   GUIDE_STEP_MODEL_TAGSET,
 } from "../../../../variables/constants";
 import useGuideIndex from "../../../../hooks/use-guide-index";
 import DotsSvg from "../../../../assets/DotsSvg";
+import GuideActionMessage from "../GuideActionMessage";
 
 const guideType = "model";
 
 const TagSetGuide = () => {
-
   const guideSteps = useMemo(() => {
     return [
+      {
+        step: GUIDE_STEP_MODEL_ADD_TAGSET,
+        arrowPosition: 7,
+        next: true,
+        text: (
+          <>
+            {" "}
+            <GuideActionMessage>
+              Click "Add tag set" button
+            </GuideActionMessage>{" "}
+            to create new set
+          </>
+        ),
+      },
       {
         step: GUIDE_STEP_MODEL_TAGSET,
         arrowPosition: 7,
@@ -31,7 +46,7 @@ const TagSetGuide = () => {
 
   return (
     <>
-      {guideStepIndex !== null &&  (
+      {guideStepIndex !== null && (
         <GuideMessage
           type={guideType}
           className={`${classes[`guide__content--${guideStepIndex}`]}`}

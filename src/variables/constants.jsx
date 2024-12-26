@@ -12,6 +12,7 @@ export const MODEL_TYPES = [
 ];
 
 //SETTINGS
+export const SETTINGS_STICKY_SWITCH_HEIGHT = 20;
 export const SETTINGS_TIMEOUT_SEC = 10;
 export const SETTINGS_RESULT_NUM = 10;
 export const SETTINGS_REF_IMAGE_AMOUNT = 12;
@@ -83,19 +84,21 @@ export const GUIDE_STEP_PROMPT_VIEW = 10;
 export const GUIDE_STEP_PROMPT_PRESETS = 11;
 export const GUIDE_STEP_PROMPT_DRAG_AND_DROP = 12;
 export const GUIDE_STEP_PROMPT_EDIT_TAG = 13;
-export const GUIDE_STEP_PROMPT_COPY = 14;
-export const GUIDE_STEP_IMAGE_RESOURCES = 15;
-export const GUIDE_STEP_CLOSE_IMAGE = 16;
-export const GUIDE_STEP_MODEL_TAGS_EDIT = 17;
-export const GUIDE_STEP_MODEL_TAGS_EDIT_FROM = 18;
-export const GUIDE_STEP_MODEL_TAGS_ADD_TAGSET = 19;
-export const GUIDE_STEP_MODEL_TAGS_CLOSE = 20;
-export const GUIDE_STEP_MODEL_TAGSET = 21;
-export const GUIDE_STEP_GENERATED_IMAGES = 22;
-export const GUIDE_STEP_IMAGE_MENU = 23;
-export const GUIDE_STEP_SAVE_IMAGE = 24;
-export const GUIDE_STEP_SAVED_TAB = 25;
-export const GUIDE_STEP_MODEL_EDIT = 26;
+export const GUIDE_STEP_PROMPT_RESIZE = 14;
+export const GUIDE_STEP_PROMPT_COPY = 15;
+export const GUIDE_STEP_IMAGE_RESOURCES = 16;
+export const GUIDE_STEP_CLOSE_IMAGE = 17;
+export const GUIDE_STEP_MODEL_TAGS_EDIT = 18;
+export const GUIDE_STEP_MODEL_TAGS_EDIT_FROM = null;
+export const GUIDE_STEP_MODEL_TAGS_ADD_TAGSET = null;
+export const GUIDE_STEP_MODEL_TAGS_CLOSE = null;
+export const GUIDE_STEP_MODEL_ADD_TAGSET = 19;
+export const GUIDE_STEP_MODEL_TAGSET = 20;
+export const GUIDE_STEP_GENERATED_IMAGES = 21;
+export const GUIDE_STEP_IMAGE_MENU = 22;
+export const GUIDE_STEP_SAVE_IMAGE = 23;
+export const GUIDE_STEP_SAVED_TAB = 24;
+export const GUIDE_STEP_MODEL_EDIT = 25;
 
 //GUIDE STEPS EDIT PAGE
 export const GUIDE_STEP_EDIT_UPD_DEL = 1;

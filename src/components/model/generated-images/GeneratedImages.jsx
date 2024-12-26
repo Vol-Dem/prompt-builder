@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import classes from "./GeneratedImages.module.scss";
 import { useSelector } from "react-redux";
 import Carousel from "../../carousel/Carousel";
@@ -25,9 +32,14 @@ import {
   ERROR_MESSAGE_DEFAULT,
   GUIDE_STEP_GENERATED_IMAGES,
   ERROR_MESSAGE_OFFLINE,
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../../variables/constants";
 import GeneratedImagesGuide from "../../ui/guide/model/GeneratedImagesGuide";
 import { AnimatePresence } from "framer-motion";
+import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
+import FolderSvg from "../../../assets/FolderSvg";
+import { motion } from "framer-motion";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -35,7 +47,7 @@ const postsPerPage = 16;
 
 const amountPerPage = 100;
 
-const GeneratedImages = ({ customData }) => {
+const GeneratedImages = memo(({ customData }) => {
   const [showAllVersions, setShowAllVersions] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [curExampleImgsType, setCurExampleImgsType] = useState("all");
@@ -643,7 +655,7 @@ const GeneratedImages = ({ customData }) => {
   };
 
   return (
-    <>
+    <div className={classes.container}>
       <div className={classes["controls"]}>
         <div className={classes["mode-switch"]}>
           <span
@@ -730,7 +742,7 @@ const GeneratedImages = ({ customData }) => {
             : ""
         }`}
       >
-        {!!examplesHtml?.length && <GeneratedImagesGuide />}
+        <GeneratedImagesGuide />
         <div className={classes.images}>{examplesHtml}</div>
       </div>
       {examplesIsLoading && <Spinner />}
@@ -743,7 +755,23 @@ const GeneratedImages = ({ customData }) => {
         </div>
       )}
       {!examplesIsLoading && !examplesHtml.length && !errorMessage && (
-        <div>No images found</div>
+        <motion.div
+          initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+          animate={ANIMATIONS_FM_SLIDEIN}
+          className={classes["notification"]}
+        >
+          <ExclamationCircleSvg className={classes["notification__svg"]} />
+          <span>No images found.</span>
+          {curExampleImgsType === "saved" && (
+            <span>
+              Click{" "}
+              <FolderSvg
+                className={`${classes["svg"]} ${classes["svg--medium"]}`}
+              />{" "}
+              at the top left corner of the image to add it to your collection.
+            </span>
+          )}
+        </motion.div>
       )}
       {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
       <div ref={endPageRef}></div>
@@ -762,8 +790,8 @@ const GeneratedImages = ({ customData }) => {
           </Modal>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
-};
+});
 
 export default GeneratedImages;

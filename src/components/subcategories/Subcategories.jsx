@@ -84,15 +84,14 @@ const Subcategories = () => {
             className={classes["subcategories"]}
           >
             <motion.li
-              key={activeSubcategory}
               initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
               data-value="all"
               onClick={categorySwitchHandler}
               className={`${classes[`subcategory__link`]} ${
-                activeSubcategory === "all" ? classes.active : ""
-              }`}
+                classes[`subcategory__link--all`]
+              } ${activeSubcategory === "all" ? classes.active : ""}`}
             >
               All
             </motion.li>

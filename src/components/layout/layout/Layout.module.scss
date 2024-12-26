@@ -6,17 +6,17 @@
   // overflow: hidden;
 }
 
-.wrap {
-  @include var.wrapper;
-  background-color: rgb(var.$color-background-primary, 0.9);
-}
+// .wrap {
+//   @include var.wrapper;
+//   background-color: rgb(var.$color-background-primary, 0.9);
+// }
 
 .menu-container {
   position: relative;
   background-color: var.$color-background-secondary;
   box-shadow: var.$box-shadow;
   width: 100%;
-  // z-index: 20;
+  z-index: 20;
 }
 
 .menu {
@@ -97,6 +97,12 @@
 //   // left: 50%;
 //   // transform: translateX(50%);
 // }
+
+@media (max-width: 968px) {
+  .menu {
+    padding-left: 5rem;
+  }
+}
 
 @media (max-width: 680px) {
   .wrap {

@@ -187,8 +187,14 @@ export const authRequest = (isLogin, email, password) => {
         case "auth/invalid-email":
           errMessage = "Invalid email";
           break;
+        case "auth/wrong-password":
+          errMessage = "Wrong password";
+          break;
         case "auth/missing-password":
           errMessage = "Missing password";
+          break;
+        case "auth/user-not-found":
+          errMessage = "User not found";
           break;
         case "auth/too-many-requests":
           errMessage =
@@ -238,7 +244,7 @@ export const authWithGoogle = () => {
         // The AuthCredential type that was used.
         // const credential = GoogleAuthProvider.credentialFromError(error);
         // ...
-        dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
+        dispatch(authActions.setErrorMessage(error.message));
       });
   };
 };

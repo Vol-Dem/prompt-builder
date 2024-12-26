@@ -387,6 +387,7 @@ const CarouselImage = ({
             } ${imgIsLoading && !imgIsLoaded ? classes["image--hidden"] : ""} ${
               !nsfwMode && nsfw ? classes["image--nsfw"] : ""
             }`}
+            draggable={false}
             onClick={onClick}
             onLoad={imgLoadHandler}
             onError={imgErrorHandler}

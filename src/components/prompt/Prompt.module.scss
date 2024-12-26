@@ -1,17 +1,36 @@
 @use "./../../variables/variables.scss" as var;
 
+.wrap {
+  @include var.wrapper;
+  flex-shrink: 0;
+  padding: 0;
+  transition: none;
+  // background-color: rgb(var.$color-background-primary, 0.9);
+}
+
+.prompt__content-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  user-select: none;
+}
+
 .container {
-  position: relative;
-  // overflow: hidden;
   display: grid;
+  position: relative;
+  bottom: 0;
+  // overflow: hidden;
+  // display: grid;
   grid-template-rows: 0fr auto;
   transition: all 0.3s;
   color: #fff;
   width: 100%;
-  will-change: grid-template-rows;
+  // will-change: grid-template-rows;
   // padding: 0 2rem;
+  // z-index: 10;
 
   &--open {
+    // transform: translateY(-100%);
     grid-template-rows: 1fr auto;
   }
 }
@@ -27,6 +46,8 @@
   width: 100%;
   // padding: 1rem;
   overflow: hidden;
+  padding: 0 2rem;
+  background-color: rgb(var.$color-background-primary, 0.9);
   transition: all 0.3s;
 }
 
@@ -284,6 +305,16 @@
 }
 
 @media (max-width: 480px) {
+  .prompt {
+    position: relative;
+    max-height: calc(100vh - 300px);
+    height: 10rem;
+    min-height: 17rem;
+
+    &--neg {
+      min-height: 9rem;
+    }
+  }
   .field {
     height: 17rem;
     &--neg {

@@ -37,13 +37,15 @@ const TagSets = ({ customData, defaultData }) => {
 
   useEffect(() => {
     if (guideActive && guideStep === GUIDE_STEP_MODEL_TAGSET) {
-      if (guideTimeoutRef.current) {
-        clearTimeout(guideTimeoutRef.current);
-      }
-      guideTimeoutRef.current = setTimeout(() => {
-        if (!tagSets?.length)
-          dispatch(guideActions.guideNextStep({ type: "model" }));
-      }, 1000);
+      if (!tagSets?.length)
+        dispatch(guideActions.guideNextStep({ type: "model" }));
+      // if (guideTimeoutRef.current) {
+      //   clearTimeout(guideTimeoutRef.current);
+      // }
+      // guideTimeoutRef.current = setTimeout(() => {
+      //   if (!tagSets?.length)
+      //     dispatch(guideActions.guideNextStep({ type: "model" }));
+      // }, 1000);
     }
   }, [guideStep, dispatch, guideActive, tagSets]);
 
@@ -198,7 +200,7 @@ const TagSets = ({ customData, defaultData }) => {
           {!tagSetsIsOpen ? "Show All" : "Hide"}
         </Buttton>
       )}
-      {!!tagSets?.length && <TagSetGuide />}
+      <TagSetGuide />
       <AnimatePresence>
         {tagSetsFormIsOpen && (
           <Modal onClose={closeTagSetsForm}>

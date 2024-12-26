@@ -14,12 +14,12 @@ const ModelTagsGuide = () => {
       {
         step: GUIDE_STEP_MODEL_TAGS_EDIT,
         arrowPosition: 3,
+        next: true,
         text: (
           <>
             {" "}
-            <GuideActionMessage>Click </GuideActionMessage>{" "}
-            <EditSvg className={classes.svg} /> to open the version trigger word
-            settings
+            You can click <EditSvg className={classes.svg} /> to edit the
+            version trigger words and activation tag
           </>
         ),
       },

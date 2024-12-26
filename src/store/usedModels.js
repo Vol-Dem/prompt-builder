@@ -4,6 +4,7 @@ import { authActions } from "./auth";
 import { getAuth } from "firebase/auth";
 import firebaseApp from "../firebase-config";
 import { SETTINGS_REF_IMAGE_AMOUNT } from "../variables/constants";
+import { checkIsMobile } from "../utils/generalUtils";
 
 const auth = getAuth(firebaseApp);
 
@@ -15,6 +16,7 @@ const usedModelsSlice = createSlice({
     panelIsOpen: false,
     formIsOpen: false,
     fullCardView: false,
+    sidePanelWidth: null,
   },
   reducers: {
     addModelsToPanel(state, actions) {
@@ -39,6 +41,9 @@ const usedModelsSlice = createSlice({
     clearPanel(state, actions) {
       state.models = [];
       state.images = [];
+    },
+    setSidePanelWidth(state, actions) {
+      state.sidePanelWidth = actions.payload;
     },
   },
   extraReducers: (builder) => {
@@ -130,7 +135,7 @@ export const uploadPanelStateFromStorage = () => {
       dispatch(usedModelsActions.addImagesToPanel(storageImgData));
     if (storagePanelState?.hasOwnProperty("panelIsOpen")) {
       dispatch(usedModelsActions.panelState(storagePanelState?.panelIsOpen));
-    } else if (document.body.offsetWidth > 600) {
+    } else if (!checkIsMobile()) {
       dispatch(usedModelsActions.panelState({ panelIsOpen: true }));
     }
     if (storageViewState)

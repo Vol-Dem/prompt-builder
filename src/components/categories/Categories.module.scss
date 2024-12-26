@@ -1,3 +1,5 @@
+@use "../../variables/variables.scss" as var;
+
 .category {
   display: flex;
   gap: 1.6rem;
@@ -17,6 +19,7 @@
 
 .category__list {
   display: flex;
+  align-items: center;
   list-style: none;
   gap: 1rem;
   flex-wrap: wrap;
@@ -33,6 +36,20 @@
   position: relative;
   // margin-bottom: 1rem;
   cursor: pointer;
+
+  &--all {
+    // padding-right: 1rem;
+    // border-right: 1px solid var.$color-text-gray-dark;
+    // border: 1px solid var.$color-text-gray-dark;
+    border: 1px solid var.$color-violet-grey;
+    border-radius: 10px;
+    padding: 0.2rem 1.3rem;
+    font-size: 1.6rem;
+
+    &.active {
+      border-color: aquamarine;
+    }
+  }
 }
 
 .active {

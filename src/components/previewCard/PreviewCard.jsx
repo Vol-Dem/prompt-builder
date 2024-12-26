@@ -15,6 +15,7 @@ const PreviewCard = ({ previewData, onClick, layout }) => {
   const [currVersion, setCurrVersion] = useState({});
   const [currSidePanelData, setCurrSidePanelData] = useState({});
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
+  const isMobile = useSelector((state) => state.general.isMobile);
   const imgRef = useRef();
 
   useEffect(() => {
@@ -51,7 +52,7 @@ const PreviewCard = ({ previewData, onClick, layout }) => {
 
   return (
     <motion.div
-      layoutId={layout ? previewData.id : Math.random()}
+      layoutId={layout && !isMobile ? previewData.id : Math.random()}
       transition={{
         layout: { duration: 0 },
         // type: "spring",

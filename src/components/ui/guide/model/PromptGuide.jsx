@@ -7,6 +7,7 @@ import {
   GUIDE_STEP_PROMPT_DRAG_AND_DROP,
   GUIDE_STEP_PROMPT_EDIT_TAG,
   GUIDE_STEP_PROMPT_PRESETS,
+  GUIDE_STEP_PROMPT_RESIZE,
   GUIDE_STEP_PROMPT_VIEW,
 } from "../../../../variables/constants";
 import useGuideIndex from "../../../../hooks/use-guide-index";
@@ -59,6 +60,12 @@ const PromptGuide = (props) => {
             weight
           </>
         ),
+      },
+      {
+        step: GUIDE_STEP_PROMPT_RESIZE,
+        arrowPosition: 5,
+        next: true,
+        text: <>You can resize prompt field</>,
       },
       {
         step: GUIDE_STEP_PROMPT_COPY,

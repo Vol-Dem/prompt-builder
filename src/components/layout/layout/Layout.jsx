@@ -44,18 +44,24 @@ import {
 import Maintenance from "../maintenance/Maintenance";
 import { AnimatePresence } from "framer-motion";
 import { usedModelsActions } from "../../../store/usedModels";
+import { useMemo } from "react";
 
 const Layout = () => {
   const [cookificationIsOpen, setCookificationIsOpen] = useState(false);
   const [activeNotification, setActiveNotification] = useState({});
   const [allNotification, setAllNotification] = useState([]);
-  const [headerIsFixed, setHeaderIsFixed] = useState(false);
-  const [headerHeight, setHeaderHeight] = useState(null);
+  // const [headerIsFixed, setHeaderIsFixed] = useState(false);
+  // const [headerHeight, setHeaderHeight] = useState(null);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
+  // const headerHeight = useSelector((state) => state.prompt.headerHeight);
+  const promptBtnHeight = useSelector((state) => state.prompt.promptBtnHeight);
+  const promptHeight = useSelector((state) => state.prompt.promptHeight);
   const emailVerified = useSelector((state) => state.auth.user.emailVerified);
   const authIsOpen = useSelector((state) => state.auth.authFormIsOpen);
+  const headerIsFixed = useSelector((state) => state.general.headerIsFixed);
   const mainRef = useRef(null);
+  const headerRef = useRef(null);
   // const notificationIsShown = useSelector(
   //   (state) => state.notification.isShown
   // );
@@ -151,29 +157,76 @@ const Layout = () => {
     setCookificationIsOpen(false);
   };
 
-  useEffect(() => {
-    if (headerIsFixed && headerHeight) {
-      mainRef.current.style.paddingTop = `${headerHeight}px`;
+  const paddingMain = useMemo(() => {
+    if (
+      headerIsFixed &&
+      headerRef?.current?.offsetHeight &&
+      promptHeight &&
+      promptIsOpen
+    ) {
+      return headerRef.current.offsetHeight + promptHeight + promptBtnHeight;
+    } else if (
+      headerIsFixed &&
+      headerRef?.current?.offsetHeight &&
+      promptHeight &&
+      !promptIsOpen
+    ) {
+      return headerRef.current.offsetHeight + promptBtnHeight;
     } else {
-      mainRef.current.style.paddingTop = null;
+      return null;
     }
-  }, [headerIsFixed, headerHeight, promptIsOpen]);
+  }, [
+    headerIsFixed,
+    headerRef.current?.offsetHeight,
+    promptHeight,
+    promptIsOpen,
+    promptBtnHeight,
+  ]);
+  // useLayoutEffect(() => {
+  //   if (
+  //     headerIsFixed &&
+  //     headerRef?.current?.offsetHeight &&
+  //     promptHeight &&
+  //     promptIsOpen
+  //   ) {
+  //     mainRef.current.style.paddingTop = `${
+  //       headerRef.current.offsetHeight + promptHeight + promptBtnHeight
+  //     }px`;
+  //   } else if (
+  //     headerIsFixed &&
+  //     headerRef?.current?.offsetHeight &&
+  //     promptHeight &&
+  //     !promptIsOpen
+  //   ) {
+  //     mainRef.current.style.paddingTop = `${
+  //       headerRef.current.offsetHeight + promptBtnHeight
+  //     }px`;
+  //   } else {
+  //     mainRef.current.style.paddingTop = null;
+  //   }
+  // }, [
+  //   headerIsFixed,
+  //   headerRef.current?.offsetHeight,
+  //   promptHeight,
+  //   promptIsOpen,
+  //   promptBtnHeight,
+  // ]);
 
-  const setHeaderIsFixedHandler = useCallback((value) => {
-    setHeaderIsFixed(value);
-  }, []);
-  const setHeaderHeightHandler = useCallback((value) => {
-    setHeaderHeight(value);
-  }, []);
+  // const setHeaderIsFixedHandler = useCallback((value) => {
+  //   setHeaderIsFixed(value);
+  // }, []);
+  // const setHeaderHeightHandler = useCallback((value) => {
+  //   // setHeaderHeight(value);
+  // }, []);
 
   return (
     <div className={classes.wrapper}>
       <div className={classes.content}>
         <Header
-          onFixed={setHeaderIsFixedHandler}
-          onHeightChange={setHeaderHeightHandler}
+        // onFixed={setHeaderIsFixedHandler}
+        // onHeightChange={setHeaderHeightHandler}
         >
-          <div className={classes["menu-container"]}>
+          <div ref={headerRef} className={classes["menu-container"]}>
             <div className="wrapper">
               <div className={classes.menu}>
                 <MobileNavigation />
@@ -242,16 +295,16 @@ const Layout = () => {
             </div>
           </div>
           {!maintenance && (
-            <div className={classes.wrap}>
-              <Prompt />
-            </div>
+            // <div className={classes.wrap}>
+            <Prompt />
+            // </div>
           )}
           <AnimatePresence>
             <ActiveCarousel />
           </AnimatePresence>
         </Header>
 
-        <main ref={mainRef}>
+        <main ref={mainRef} style={{ paddingTop: paddingMain }}>
           <div className="wrapper">
             {!maintenance && (
               <Suspense fallback={<Spinner />}>

@@ -2,13 +2,15 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import classes from "./Header.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { promptActions } from "../../../store/prompt";
+import { SETTINGS_STICKY_SWITCH_HEIGHT } from "../../../variables/constants";
+import { generalActions } from "../../../store/general";
 
-const fixedSwitchHeight = 10;
-
-const Header = ({ onFixed, onHeightChange, children }) => {
-  const [isFixed, setIsFixed] = useState(false);
+const Header = ({ children }) => {
+  // const [isFixed, setIsFixed] = useState(false);
   const sidePanelIsOpen = useSelector((state) => state.used.panelIsOpen);
   const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
+  const sidePanelWidth = useSelector((state) => state.used.sidePanelWidth);
+  const isFixed = useSelector((state) => state.general.headerIsFixed);
   const positivePromptHeight = useSelector(
     (state) => state.prompt.positivePromptHeight
   );
@@ -22,22 +24,29 @@ const Header = ({ onFixed, onHeightChange, children }) => {
   const transitionRef = useRef(null);
   const dispatch = useDispatch();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const scrollHandler = () => {
       const scrollToTop = document.documentElement.scrollTop;
 
-      setIsFixed(scrollToTop > fixedSwitchHeight);
+      // setIsFixed(scrollToTop > SETTINGS_STICKY_SWITCH_HEIGHT);
+      // onFixed(scrollToTop > SETTINGS_STICKY_SWITCH_HEIGHT);
+      dispatch(
+        generalActions.setHeaderIsFixed(
+          scrollToTop >= SETTINGS_STICKY_SWITCH_HEIGHT
+        )
+      );
 
-      if (scrollToTop > fixedSwitchHeight) {
+      if (scrollToTop >= SETTINGS_STICKY_SWITCH_HEIGHT) {
         if (transitionRef?.current) {
           clearTimeout(transitionRef.current);
         }
 
         transitionRef.current = setTimeout(() => {
-          headerRef.current.style.transition = "all 0.4s";
-        }, 100);
+          // headerRef.current.style.transition = "all 0.3s";
+          headerRef.current.style.transitionDuration = "0.3s";
+        }, 500);
       } else {
-        headerRef.current.style.transition = "all 0s";
+        headerRef.current.style.transitionDuration = "0s";
       }
     };
     document.addEventListener("scroll", scrollHandler);
@@ -51,29 +60,31 @@ const Header = ({ onFixed, onHeightChange, children }) => {
     promptIsOpen,
     headerRef.current?.offsetHeight,
     dispatch,
-    onFixed,
-    onHeightChange,
   ]);
 
-  useEffect(() => {
-    // const mainEl = document.querySelector("main");
-    // if (isFixed && headerRef?.current) {
-    //   mainEl.style.paddingTop = `${headerRef.current.offsetHeight}px`;
-    // } else {
-    //   mainEl.style.paddingTop = null;
-    // }
-    onFixed(isFixed);
-    console.log("HEADER", headerRef.current?.offsetHeight);
-    onHeightChange(headerRef.current?.offsetHeight);
-    // dispatch(promptActions.setHeaderHeight(headerRef.current?.offsetHeight));
-  }, [
-    isFixed,
-    promptIsOpen,
-    positivePromptHeight,
-    negativePromptHeight,
-    onFixed,
-    onHeightChange,
-  ]);
+  // useLayoutEffect(() => {
+  //   // dispatch(promptActions.setHeaderHeight(headerRef.current?.offsetHeight));
+  //   // onFixed(isFixed);
+  //   // const mainEl = document.querySelector("main");
+  //   // if (isFixed && headerRef?.current) {
+  //   //   mainEl.style.paddingTop = `${headerRef.current.offsetHeight}px`;
+  //   // } else {
+  //   //   mainEl.style.paddingTop = null;
+  //   // }
+  //   // console.log("HEADER", headerRef.current?.offsetHeight);
+  //   // onHeightChange(headerRef.current?.offsetHeight);
+  //   // dispatch(promptActions.setHeaderHeight(headerRef.current?.offsetHeight));
+  // }, [
+  //   isFixed,
+  //   onFixed,
+  //   dispatch,
+  //   headerRef?.current?.offsetHeight,
+  //   // promptIsOpen,
+  //   // positivePromptHeight,
+  //   // negativePromptHeight,
+  //   // onFixed,
+  //   // onHeightChange,
+  // ]);
 
   return (
     <header
@@ -81,14 +92,11 @@ const Header = ({ onFixed, onHeightChange, children }) => {
       id="header"
       className={`${classes.header}
        ${isFixed ? classes["header--fixed"] : ""} ${
-        activeCarouselData?.modelId ? classes["header--active"] : ""
+        activeCarouselData?.versionId ? classes["header--active"] : ""
       }
-      ${sidePanelIsOpen && isFixed ? classes["header--open"] : ""}`}
-      onResize={() => {
-        console.log(headerRef.current?.offsetHeight);
-        dispatch(
-          promptActions.setHeaderHeight(headerRef.current?.offsetHeight)
-        );
+      ${sidePanelIsOpen && isFixed ? classes["header--aside-open"] : ""}`}
+      style={{
+        "--padding-right": `${sidePanelWidth}px`,
       }}
     >
       {children}

@@ -1,8 +1,11 @@
 @use "./../../../variables/variables.scss" as var;
 
 .mobile-nav {
+  position: fixed;
   display: none;
-  position: relative;
+  top: 9px;
+  left: 2rem;
+  z-index: 9999;
 
   &__icon {
     position: absolute;
@@ -140,6 +143,12 @@
 @media (max-width: 968px) {
   .mobile-nav {
     display: block;
+  }
+}
+
+@media (max-width: 560px) {
+  .mobile-nav {
+    left: 1rem;
   }
 }
 

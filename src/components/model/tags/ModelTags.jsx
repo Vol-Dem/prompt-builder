@@ -29,17 +29,17 @@ const ModelTags = ({ customData, modelPreview }) => {
 
   const closeTagsFormHabdler = () => {
     setModalIsOpen(false);
-    if (
-      guideStep >= GUIDE_STEP_MODEL_TAGS_EDIT_FROM &&
-      guideStep <= GUIDE_STEP_MODEL_TAGS_CLOSE
-    ) {
-      dispatch(
-        guideActions.setGuideStep({
-          type: "model",
-          value: GUIDE_STEP_MODEL_TAGSET,
-        })
-      );
-    }
+    // if (
+    //   guideStep >= GUIDE_STEP_MODEL_TAGS_EDIT_FROM &&
+    //   guideStep <= GUIDE_STEP_MODEL_TAGS_CLOSE
+    // ) {
+    //   dispatch(
+    //     guideActions.setGuideStep({
+    //       type: "model",
+    //       value: GUIDE_STEP_MODEL_TAGSET,
+    //     })
+    //   );
+    // }
   };
 
   return (
@@ -83,16 +83,14 @@ const ModelTags = ({ customData, modelPreview }) => {
                 </div>
               </div>
             )}
-            <div>
-              <button
-                type="button"
-                className={classes["tags__btn-edit"]}
-                onClick={openEditHandler}
-              >
-                <span className={classes["tags__btn-edit-name"]}>Edit...</span>
-                <EditSvg />
-              </button>
-            </div>
+            <button
+              type="button"
+              className={classes["tags__btn-edit"]}
+              onClick={openEditHandler}
+            >
+              <span className={classes["tags__btn-edit-name"]}>Edit...</span>
+              <EditSvg />
+            </button>
           </div>
           {(!!curVersion?.trainedWords?.length ||
             !!customData?.trainedWords?.length) && (

@@ -89,8 +89,8 @@ const Categories = () => {
             data-value="all"
             onClick={categorySwitchHandler}
             className={`${classes[`category__link`]} ${
-              activeCategory === "all" ? classes.active : ""
-            }`}
+              classes["category__link--all"]
+            } ${activeCategory === "all" ? classes.active : ""}`}
           >
             All
           </motion.li>
