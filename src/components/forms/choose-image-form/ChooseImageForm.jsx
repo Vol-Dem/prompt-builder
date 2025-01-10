@@ -10,6 +10,8 @@ import ErrorMessage from "../../ui/ErrorMessage";
 import {
   ERROR_MESSAGE_DEFAULT,
   ERROR_MESSAGE_OFFLINE,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
 } from "../../../variables/constants";
 import { motion } from "framer-motion";
 
@@ -136,6 +138,7 @@ const ChooseImageForm = ({
             }`}
             src={image.label}
             alt={`Image-${i}`}
+            imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM}
           />
         </label>
         <input

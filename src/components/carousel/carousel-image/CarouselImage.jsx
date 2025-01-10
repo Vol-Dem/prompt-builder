@@ -10,7 +10,7 @@ import ButttonTertiary from "../../ui/ButtonTertiary";
 import Modal from "../../ui/Modal";
 import Image from "../../ui/image/Image";
 import DeleteRequest from "../../ui/DeleteRequest";
-import ButtonAdd from "../../ui/ButtonAdd";
+import ButtonAdd from "../../ui/ButtonSquareAdd";
 import ImageSvg from "../../../assets/ImageSvg";
 import DotsSvg from "../../../assets/DotsSvg";
 import { AnimatePresence, motion } from "framer-motion";
@@ -19,11 +19,14 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   ANIMATIONS_FM_ZOOM_IN,
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
 } from "../../../variables/constants";
 import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
 import TagSetsForm from "../../forms/tag-sets-form/TagSetsForm";
 import Buttton from "../../ui/Button";
 import SetTagSetPreview from "../set-tagset-preview/SetTagSetPreview";
+import { transformSrcPreview } from "../../../utils/generalUtils";
 
 const CarouselImage = ({
   id,
@@ -59,7 +62,11 @@ const CarouselImage = ({
   // console.log(id);
   useEffect(() => {
     if (src && !imgIsLoaded && !imgError) {
-      setImgSrc(src);
+      const previewSrc = transformSrcPreview(
+        src,
+        SETTINGS_IMAGE_PREVIEW_WIDTH_BIG
+      );
+      setImgSrc(previewSrc);
       setImgIsLoading(true);
     }
   }, [src, imgIsLoaded, imgError]);
@@ -160,7 +167,10 @@ const CarouselImage = ({
           className={classes["tag-sets__item"]}
         >
           <div className={classes["tag-sets__img"]}>
-            <Image src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl} />
+            <Image
+              src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl}
+              imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM}
+            />
           </div>
           <div className={classes["tag-sets__info"]}>
             <h3 className={classes["tag-sets__name"]}>{tagSet.name}</h3>
@@ -203,6 +213,7 @@ const CarouselImage = ({
             <div className={classes["tag-sets__img"]}>
               <Image
                 src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl}
+                imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM}
               />
             </div>
             <div className={classes["tag-sets__info"]}>

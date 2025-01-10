@@ -4,11 +4,13 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Image from "../ui/image/Image";
 import ActivationTag from "../activation-tag/ActivationTag";
-import ButtonAdd from "../ui/ButtonAdd";
+import ButtonSquareAdd from "../ui/ButtonSquareAdd";
 import { motion } from "framer-motion";
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_CARD,
 } from "../../variables/constants";
 
 const PreviewCard = ({ previewData, onClick, layout }) => {
@@ -61,7 +63,10 @@ const PreviewCard = ({ previewData, onClick, layout }) => {
       className={`${classes.card} ${layout ? classes["card--motion"] : ""}`}
     >
       <div className={classes["image-container"]}>
-        <ButtonAdd previewData={previewData} className={classes["btn-add"]} />
+        <ButtonSquareAdd
+          previewData={previewData}
+          className={classes["btn-add"]}
+        />
         <Link to={`/models/${previewData.id}`} onClick={onClick}>
           <Image
             ref={imgRef}
@@ -73,6 +78,7 @@ const PreviewCard = ({ previewData, onClick, layout }) => {
                 : previewData.customPreviewImgUrl || previewData.imgUrl
             }
             alt="Preview"
+            imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_BIG}
           />
         </Link>
       </div>

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import classes from "./ButtonAdd.module.scss";
+import classes from "./ButtonSquareAdd.module.scss";
 import {
   addImageToPanel,
   addModelToPanel,
@@ -7,8 +7,17 @@ import {
   removeModelFromPanel,
 } from "../../store/usedModels";
 import { SETTINGS_REF_IMAGE_AMOUNT } from "../../variables/constants";
+import { CheckIcon, PlusIcon } from "@heroicons/react/24/outline";
+import ButtonSquare from "./ButtonSquare";
 
-const ButtonAdd = ({ previewData, type, className, versionId, onClick }) => {
+const ButtonAdd = ({
+  previewData,
+  type,
+  className,
+  modelId,
+  versionId,
+  onClick,
+}) => {
   const modelsInPanel = useSelector((state) => state.used.models);
   const imagesInPanel = useSelector((state) => state.used.images);
   const isInPanel =
@@ -19,7 +28,7 @@ const ButtonAdd = ({ previewData, type, className, versionId, onClick }) => {
   const dispatch = useDispatch();
 
   const addToSidePanelHandler = (e) => {
-    if (onClick) onClick("vaanvknac");
+    if (onClick) onClick(modelId);
     if (
       !isInPanel &&
       type === "image" &&
@@ -32,7 +41,7 @@ const ButtonAdd = ({ previewData, type, className, versionId, onClick }) => {
       return;
     }
 
-    if (!isInPanel && type !== "image") {
+    if (!isInPanel && type !== "image" && previewData) {
       let curVersionData =
         previewData?.modelVersionsCustomData &&
         Object.values(previewData.modelVersionsCustomData)
@@ -70,52 +79,22 @@ const ButtonAdd = ({ previewData, type, className, versionId, onClick }) => {
   };
 
   return (
-    <button
+    <ButtonSquare
       className={`${classes["resource__add"]} ${
         isInPanel ? classes["resource__add--active"] : ""
-      } ${
+      }
+        ${className || ""}`}
+      disabled={
         imagesInPanel?.length >= SETTINGS_REF_IMAGE_AMOUNT &&
         !isInPanel &&
         type === "image"
-          ? classes["resource__add--disabled"]
-          : ""
-      } ${className || ""}`}
+      }
       onClick={addToSidePanelHandler}
       title="Add to side panel"
     >
-      {!isInPanel && (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
-          />
-        </svg>
-      )}
-      {isInPanel && (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="m4.5 12.75 6 6 9-13.5"
-          />
-        </svg>
-      )}
-    </button>
+      {!isInPanel && previewData && <PlusIcon className={classes.icon} />}
+      {isInPanel && <CheckIcon className={classes.icon} />}
+    </ButtonSquare>
   );
 };
 

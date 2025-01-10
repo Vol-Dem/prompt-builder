@@ -1,0 +1,34 @@
+@use "./../../variables/variables.scss" as var;
+
+.icon {
+  width: 2.4rem;
+}
+
+.resource__add {
+  flex-shrink: 0;
+
+  &.resource__add--active {
+    // background-color: rgba(38, 160, 43, 0.6);
+    background-color: rgba(#49ab6b, 0.6);
+    // cursor: default;
+
+    &:hover {
+      background-color: rgba(var.$color-red, 0.45);
+
+      & .icon {
+        display: none;
+      }
+
+      &::before {
+        content: "";
+        width: 1.8rem;
+        height: 1.2rem;
+        background-color: rgb(222, 222, 222);
+        clip-path: polygon(10% 40%, 90% 40%, 90% 60%, 10% 60%);
+      }
+    }
+    &:hover .plus--active {
+      clip-path: polygon(10% 40%, 90% 40%, 90% 60%, 10% 60%);
+    }
+  }
+}

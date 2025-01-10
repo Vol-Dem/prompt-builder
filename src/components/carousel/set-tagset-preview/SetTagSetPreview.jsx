@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
 } from "../../../variables/constants";
 import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
 import TagSetsForm from "../../forms/tag-sets-form/TagSetsForm";
@@ -100,7 +101,10 @@ const SetTagSetPreview = ({ src }) => {
           className={classes["tag-sets__item"]}
         >
           <div className={classes["tag-sets__img"]}>
-            <Image src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl} />
+            <Image
+              src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl}
+              imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL}
+            />
           </div>
           <div className={classes["tag-sets__info"]}>
             <h3 className={classes["tag-sets__name"]}>{tagSet.name}</h3>
@@ -143,6 +147,7 @@ const SetTagSetPreview = ({ src }) => {
             <div className={classes["tag-sets__img"]}>
               <Image
                 src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl}
+                imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL}
               />
             </div>
             <div className={classes["tag-sets__info"]}>

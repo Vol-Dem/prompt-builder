@@ -13,10 +13,7 @@ import Arrow from "../ui/Arrow";
 import Image from "../ui/image/Image";
 import { modelActions } from "../../store/model";
 import { motion } from "framer-motion";
-import {
-  FM_ANIMTION_SLIDEIN,
-  FM_ANIMTION_SLIDEIN_INITIAL,
-} from "../../variables/constants";
+import { SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM } from "../../variables/constants";
 const taglistItemHeight = 68;
 
 const UsedCard = memo(({ previewData, fullView, layoutId }) => {
@@ -111,6 +108,7 @@ const UsedCard = memo(({ previewData, fullView, layoutId }) => {
                 : previewData.customPreviewImgUrl || previewData.imgUrl
             }
             alt="Preview"
+            imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM}
           />
         </Link>
         <div className={classes.info}>

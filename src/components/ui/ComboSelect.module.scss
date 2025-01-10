@@ -75,7 +75,7 @@
   background-color: var.$color-input-bg;
   border-radius: 10px;
   margin-top: 0.4rem;
-  z-index: 30;
+  z-index: 999;
   box-shadow: var.$box-shadow;
 
   @include var.custom-scroll;

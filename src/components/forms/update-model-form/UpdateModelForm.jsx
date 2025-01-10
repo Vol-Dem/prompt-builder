@@ -29,7 +29,6 @@ import Spinner from "../../ui/Spinner";
 import ComboSelect from "../../ui/ComboSelect";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-  DEF_ERROR_MESSAGE,
   ERROR_MESSAGE_INPUT_DEF,
   VALIDATION_DESCRIPTION_MAX_LENGTH,
   ERROR_MESSAGE_EXISTS,
@@ -42,12 +41,11 @@ import {
   VALIDATION_TRIGER_WORDS_MAX_LENGTH,
   MODEL_TYPES,
   URL_CIV_MODELS,
-  ANIMATIONS_FM_SLIDEIN_INITIAL,
-  ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
   ANIMATIONS_FM_SLIDEOUT,
   ANIMATIONS_FM_FADEOUT_EXIT,
   DEFAULT_DATA_TAGSETS_INPUT,
+  ERROR_MESSAGE_INVALID_DATA,
 } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
@@ -57,7 +55,6 @@ import ButtonTertiary from "../../ui/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { modelActions } from "../../../store/model";
-// import ExtendedInput from "../../ui/ExtendedInput";
 import EditDefaultGuide from "../../ui/guide/edit/EditDefaultGuide";
 import { AnimatePresence, motion } from "framer-motion";
 import TagSetsInputFieldset from "../../ui/TagSetsInputFieldset";
@@ -68,39 +65,19 @@ const functions = getFunctions(firebaseApp);
 const SUBCATEGORIES_MAX_AMOUNT = 8;
 const TAGSETS_MAX_AMOUNT = 20;
 
-// const tagSetsDefData = [
-//   {
-//     type: "text",
-//     id: "set-name-def",
-//     name: "set-name",
-//     placeholder: "Set name",
-//     value: "",
-//     isValid: true,
-//     errorMessage: "",
-//   },
-//   {
-//     id: "set-value-def",
-//     name: "set-value",
-//     placeholder: "Trigger words",
-//     value: "",
-//     isValid: true,
-//     errorMessage: "",
-//   },
-// ];
+const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
+  const subCatsDefData = {
+    type: "text",
+    id: "subcat-def",
+    name: "sub",
+    placeholder: "Subcategory",
+    value: "",
+    query: "",
+    selected: { id: null, name: "" },
+    isValid: false,
+    errorMessage: "This field is required",
+  };
 
-const subCatsDefData = {
-  type: "text",
-  id: "subcat-def",
-  name: "sub",
-  placeholder: "Subcategory",
-  value: "",
-  query: "",
-  selected: { id: null, name: "" },
-  isValid: false,
-  errorMessage: "This field is required",
-};
-
-const UpdateModelForm = ({ modelData, id }) => {
   const [modelIsSaving, setModelIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -122,8 +99,8 @@ const UpdateModelForm = ({ modelData, id }) => {
     isValid: true,
   });
   const [idInput, setIdInput] = useState({
-    value: modelData?.id || "",
-    isValid: !modelData?.id ? false : true,
+    value: modelData?.id || newModelId || "",
+    isValid: modelData?.id || newModelId ? true : false,
   });
   const [trigerInput, setTrigerInput] = useState({
     value:
@@ -211,8 +188,6 @@ const UpdateModelForm = ({ modelData, id }) => {
     isValid: !!modelData?.main,
   });
   const [subCategoryQuery, setSubCategoryQuery] = useState("");
-  const [subCategorySelected, setSubCategorySelected] = useState({});
-
   const uid = useSelector((state) => state.auth.user.uid);
   const categories = useSelector((state) => state.tabs.categoriesData);
   const curBaseModels = useSelector((state) => state.tabs.baseModels);
@@ -220,12 +195,6 @@ const UpdateModelForm = ({ modelData, id }) => {
   const guideIsActive = useSelector((state) => state.guide.active);
   const curModel = useSelector((state) => state.model.model);
   const dispatch = useDispatch();
-
-  // console.log(categories);
-  // console.log(mainCategorySelected);
-  // const mainCategoryOptions = categories[modelTypeInput]?.filter((category) =>
-  //   category.name.toLowerCase().includes(mainCategoryQuery.toLowerCase())
-  // );
 
   const mainCategoryOptions = useMemo(() => {
     return !!modelTypeInput && categories?.hasOwnProperty(modelTypeInput)
@@ -249,7 +218,7 @@ const UpdateModelForm = ({ modelData, id }) => {
 
   const selectMainCategoryHandler = (value, isValid, errorMessage) => {
     setMainCategorySelected({ ...value, isValid, errorMessage });
-    setSubCategorySelected({});
+    setSubCatInputs([subCatsDefData]);
   };
 
   useEffect(() => {
@@ -286,6 +255,7 @@ const UpdateModelForm = ({ modelData, id }) => {
         errorMessage: "",
       };
     });
+    console.log(subCats);
     setSubCatInputs(subCats);
 
     const mainCategoryName = categories[modelData?.modelType]?.find(
@@ -308,33 +278,6 @@ const UpdateModelForm = ({ modelData, id }) => {
         DEFAULT_DATA_TAGSETS_INPUT
       )
     );
-
-    // if (!!modelData?.defaultCustomData?.tagSetsData?.length) {
-    //   const tagSets = modelData.defaultCustomData.tagSetsData.map(
-    //     (tagSet, i) => {
-    //       return [
-    //         {
-    //           type: "text",
-    //           id: "set-name-" + i,
-    //           name: tagSetsDefData[0].name,
-    //           placeholder: tagSetsDefData[0].placeholder,
-    //           value: tagSet.name,
-    //           isValid: true,
-    //           errorMessage: "",
-    //         },
-    //         {
-    //           id: "set-value-" + i,
-    //           name: tagSetsDefData[1].name,
-    //           placeholder: tagSetsDefData[1].placeholder,
-    //           value: tagSet.value,
-    //           isValid: true,
-    //           errorMessage: "",
-    //         },
-    //       ];
-    //     }
-    //   );
-    //   setTagSetsInputs(tagSets);
-    // }
   }, [modelData, categories]);
 
   const createCategoryId = (id, categoriesData) => {
@@ -365,26 +308,22 @@ const UpdateModelForm = ({ modelData, id }) => {
 
   const saveModelHandler = async (e, update) => {
     let modelId;
+    let modelVersionId;
     try {
       e.preventDefault();
       setErrorMessage("");
       setSuccessMessage("");
       setShowErrorMessage(true);
-      // console.log(mainCategorySelected);
-      // console.log(subCatInputs);
+
       const tagsetsIsNotValid = !!tagSetsInputs.find(
         (input) => input[0].isValid === false || input[1].isValid === false
       );
       const subcatsIsValid = !!subCatInputs.find(
         (input) => input.isValid === true
       );
-      // const subcatsIsValid = !!subCatInputs.find(
-      //   (input) => input.isValid === true
-      // );
 
       const mainInputsIsNotValid =
         !idInput.isValid || !mainCategorySelected.isValid || !subcatsIsValid;
-      // !idInput.isValid || !mainInput.isValid || !subcatsIsValid;
 
       const baseInputsIsNotValid =
         !srcInput.isValid ||
@@ -438,11 +377,20 @@ const UpdateModelForm = ({ modelData, id }) => {
         const urlArr = idInput.value.split("/");
         const modelIdIndex =
           urlArr.findIndex((urlPart) => urlPart === "models") + 1;
+        const modelVersionIdUrlArr = urlArr
+          .find((urlPart) => urlPart.includes("modelVersionId"))
+          ?.split("=");
 
-        if (modelIdIndex) {
-          modelId = parseInt(urlArr[modelIdIndex]);
-        } else {
+        if (modelVersionIdUrlArr?.length) {
+          modelVersionId =
+            parseInt(modelVersionIdUrlArr[modelVersionIdUrlArr.length - 1]) ||
+            null;
+        }
+
+        if (modelIdIndex < 0) {
           throwCustomError("Invalid URL");
+        } else {
+          modelId = parseInt(urlArr[modelIdIndex]);
         }
       }
 
@@ -524,7 +472,6 @@ const UpdateModelForm = ({ modelData, id }) => {
         modelId + ""
       );
 
-      // const modelSnap = await getDoc(modelsRef);
       const modelsPrevRefSnap = await getDoc(modelsPrevRef);
 
       // Throw error if user try to add existing model using new model form
@@ -535,30 +482,7 @@ const UpdateModelForm = ({ modelData, id }) => {
         if (!modelData) {
           //Upload model to database
           const updateModel = httpsCallable(functions, "updateModelCall");
-
-          // const updateModelResp = await updateModel({ id: modelData?.id || modelId });
-          // if(updateModelResp.data.error) {
-          //   throwCustomError(resp.data.error)
-          // }
           updateModel({ id: modelData?.id || modelId });
-
-          // const saveModelRes = await updateModel({
-          //   id: modelData?.id || modelId,
-          // });
-          // const saveModelResData = saveModelRes.data;
-
-          // if (!saveModelResData.modelId) {
-          //   throw new Error("Failed to upload");
-          // }
-
-          // const modelDefDataRef = doc(firestore, "models", `${modelId}`);
-
-          // const docSnap = await getDoc(modelDefDataRef);
-
-          // if (docSnap.exists()) {
-          //   data = docSnap.data();
-          //   modelVersions = data?.modelVersions;
-          // }
 
           const responseCiv = await fetch(`${URL_CIV_MODELS}${modelId}`);
 
@@ -573,23 +497,33 @@ const UpdateModelForm = ({ modelData, id }) => {
           );
         }
 
-        if (data.error) {
+        if (data?.error) {
           throwCustomError(data.error);
         }
 
-        if (!data.id) return;
+        if (!data?.id) {
+          throwCustomError(ERROR_MESSAGE_INVALID_DATA);
+        }
 
         let modelVersionsCustomData = modelData?.modelVersionsCustomData || {};
 
         modelVersions.forEach((version, i) => {
           // const isSingle = modelVersions.length === 1;
-          const isSingle = !Object.keys(modelVersionsCustomData).length;
-          const curVersionDlStatus = versionsDownloadStatus.find(
-            (dlData) => Number.parseInt(dlData.id) === version.id
-          )?.value;
-          const dlStatus = versionsDownloadStatus.length
-            ? !!curVersionDlStatus
-            : false;
+          const isSingle =
+            !modelVersionId && !Object.keys(modelVersionsCustomData).length;
+          let curVersionDlStatus;
+          if (modelVersionId && modelVersionId === version.id) {
+            curVersionDlStatus = true;
+          } else {
+            curVersionDlStatus = versionsDownloadStatus.find(
+              (dlData) => Number.parseInt(dlData.id) === version.id
+            )?.value;
+          }
+
+          const dlStatus =
+            versionsDownloadStatus.length || modelVersionId === version.id
+              ? !!curVersionDlStatus
+              : false;
           const currVersionData = modelVersionsCustomData.hasOwnProperty(
             version.id
           )
@@ -695,12 +629,6 @@ const UpdateModelForm = ({ modelData, id }) => {
         let newSubcategory = false;
         let newBaseModel = false;
 
-        // const { mainId, subIds } = await runTransaction(
-        //   firestore,
-        //   async (transaction) => {
-        // const sfDoc = await transaction.get(userRef);
-
-        // const categories = sfDoc?.data()?.categoriesById || {};
         const curUserBaseModels = curBaseModels;
 
         if (!curUserBaseModels?.length) {
@@ -974,9 +902,10 @@ const UpdateModelForm = ({ modelData, id }) => {
         setModelIsSaving(false);
         setSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
         setSavedModel(modelId);
+        if (onSave) onSave(loraPrevData);
         if (!modelData) {
           setIdInput({
-            value: "",
+            value: newModelId || "",
             isValid: false,
           });
           setMainInput({
@@ -989,7 +918,6 @@ const UpdateModelForm = ({ modelData, id }) => {
         }
       }
     } catch (err) {
-      console.log(err);
       if (err.message === ERROR_MESSAGE_EXISTS) {
         setSavedModel(modelId);
       }
@@ -1043,42 +971,6 @@ const UpdateModelForm = ({ modelData, id }) => {
     setTagSetsInputs(newFields);
   };
 
-  // const subCatHandler = (e, isValid) => {
-  //   setSubCatInputs((prevState) => {
-  //     const newState = [...prevState];
-
-  //     const curIndex = newState.findIndex((imageId) => {
-  //       return imageId.id + "" === e.target.id;
-  //     });
-  // if(curIndex < 0) return
-
-  //     newState[curIndex].value = e.target.value;
-  //     newState[curIndex].isValid = isValid;
-
-  //     return newState;
-  //   });
-  // };
-  // const subCatQueryHandler = (value, isValid, errorMessage, id) => {
-  //   if (!id) return;
-  //   setSubCatInputs((prevState) => {
-  //     const newState = [...prevState];
-
-  //     const curIndex = newState.findIndex((imageId) => {
-  //       return imageId.id + "" === id;
-  //     });
-  //     console.log(newState);
-  //     console.log(curIndex);
-  //     console.log(id);
-  //     if (curIndex < 0) return prevState;
-
-  //     newState[curIndex].query = value;
-  //     newState[curIndex].isValid = isValid;
-  //     newState[curIndex].errorMessage = errorMessage;
-  //     console.log(newState);
-  //     return newState;
-  //   });
-  // };
-
   const subCatSelectHandler = (value, isValid, errorMessage, id) => {
     setSubCatInputs((prevState) => {
       const newState = [...prevState];
@@ -1086,15 +978,13 @@ const UpdateModelForm = ({ modelData, id }) => {
       const curIndex = newState.findIndex((imageId) => {
         return imageId.id + "" === id + "";
       });
-      // console.log(newState);
-      // console.log(curIndex);
-      // console.log(id);
+
       if (curIndex < 0) return prevState;
 
       newState[curIndex].selected = value;
       newState[curIndex].isValid = isValid;
       newState[curIndex].errorMessage = errorMessage;
-      // console.log(newState);
+
       return newState;
     });
   };
@@ -1141,111 +1031,6 @@ const UpdateModelForm = ({ modelData, id }) => {
       </motion.div>
     );
   });
-  // const subCatHtml = subCatInputs.map((sub, i) => {
-  //   return (
-  //     <div key={sub.id} className={classes["subcategory"]}>
-  //       <Input
-  //         key={sub.id}
-  //         id={sub.id}
-  //         name={sub.name}
-  //         type={sub.type}
-  //         placeholder={sub.placeholder}
-  //         onChange={subCatHandler}
-  //         value={sub.value}
-  //         className={classes["subcategory__input"]}
-  //         validation={{
-  //           required: true,
-  //           maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-  //         }}
-  //         showError={showErrorMessage}
-  //       />
-  //       {i !== 0 && (
-  //         <ButtonTertiary
-  //           type="button"
-  //           className={classes["input__btn-del"]}
-  //           onClick={deleteSubcategoryInputHandler.bind(null, i)}
-  //         >
-  //           <CrossSvg />
-  //         </ButtonTertiary>
-  //       )}
-  //     </div>
-  //   );
-  // });
-
-  // const deleteTagsetInputHandler = (index, e) => {
-  //   setTagSetsInputs((prevState) => {
-  //     return prevState.toSpliced(index, 1);
-  //   });
-  // };
-
-  // const tagSetsHandler = (e, isValid) => {
-  //   setTagSetsInputs((prevState) => {
-  //     const newState = [...prevState];
-  //     const curSetNameIndex = newState.findIndex((imageId) => {
-  //       return imageId[0].id + "" === e.target.id;
-  //     });
-  //     const curSetTagsIndex = newState.findIndex((imageId) => {
-  //       return imageId[1].id + "" === e.target.id;
-  //     });
-
-  //     if (curSetNameIndex !== -1) {
-  //       newState[curSetNameIndex][0].value = e.target.value;
-  //       newState[curSetNameIndex][0].isValid = isValid;
-  //     }
-  //     if (curSetTagsIndex !== -1) {
-  //       newState[curSetTagsIndex][1].value = e.target.value;
-  //       newState[curSetTagsIndex][1].isValid = isValid;
-  //     }
-
-  //     return newState;
-  //   });
-  // };
-
-  // const tagSetsHtml = tagSetsInputs.map((tagSet, i) => {
-  //   return (
-  //     <div key={tagSet[0].id} className={classes["tagset"]}>
-  //       <div className={classes["tagset__header"]}>
-  //         <span className={classes["tagset__title"]}>{`Tagset ${i + 1}`}</span>{" "}
-  //         {i !== 0 && (
-  //           <ButtonTertiary
-  //             type="button"
-  //             className={classes["input__btn-del"]}
-  //             onClick={deleteTagsetInputHandler.bind(null, i)}
-  //           >
-  //             <CrossSvg />
-  //           </ButtonTertiary>
-  //         )}
-  //       </div>
-  //       <Input
-  //         id={tagSet[0].id}
-  //         name={tagSet[0].name}
-  //         type={tagSet[0].type}
-  //         placeholder={tagSet[0].placeholder}
-  //         onChange={tagSetsHandler}
-  //         value={tagSet[0].value}
-  //         isValid={tagSet[0].isValid}
-  //         showError={showErrorMessage}
-  //         validation={{
-  //           maxLength: VALIDATION_NAME_MAX_LENGTH,
-  //         }}
-  //       />
-  //       <Textarea
-  //         id={tagSet[1].id}
-  //         name={tagSet[1].name}
-  //         rows="5"
-  //         placeholder={tagSet[1].placeholder}
-  //         onChange={tagSetsHandler}
-  //         value={tagSet[1].value}
-  //         isValid={tagSet[1].isValid}
-  //         error={tagSet[1].errorMessage}
-  //         showError={showErrorMessage}
-  //         validation={{
-  //           maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
-  //         }}
-  //       ></Textarea>
-  //     </div>
-  //   );
-  // });
 
   const versionStatusChangeHandler = (e) => {
     setVersionsDownloadStatus((prevState) => {
@@ -1352,6 +1137,9 @@ const UpdateModelForm = ({ modelData, id }) => {
             selected={modelTypeInput}
             onChange={(value) => {
               setModelTypeInput(value);
+              setMainCategoryQuery("");
+              setMainCategorySelected({});
+              setSubCatInputs([subCatsDefData]);
             }}
             options={typeSelectOption}
           />
@@ -1367,7 +1155,7 @@ const UpdateModelForm = ({ modelData, id }) => {
               onChange={(e, isValid) => {
                 setIdInput({ value: e.target.value, isValid });
               }}
-              readOnly={!!modelData}
+              readOnly={!!modelData || newModelId}
               validation={{
                 required: true,
                 maxLength: VALIDATION_TITLE_MAX_LENGTH,

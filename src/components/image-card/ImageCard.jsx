@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import firebaseApp from "../../firebase-config";
 import { useDispatch, useSelector } from "react-redux";
-import ButtonAdd from "../ui/ButtonAdd";
+import ButtonAdd from "../ui/ButtonSquareAdd";
 import { Link } from "react-router-dom";
 import LinkA from "../ui/LinkA";
 import { clearFileExtension } from "../../utils/generalUtils";
@@ -29,13 +29,22 @@ import {
 } from "../../variables/constants";
 import { guideActions } from "../../store/guide";
 import ImageCardResourcesGuide from "../ui/guide/model/ImageCardResourcesGuide";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import ButtonSquareSave from "../ui/ButtonSquareSave";
+import Modal from "../ui/Modal";
+import UpdateModelForm from "../forms/update-model-form/UpdateModelForm";
 
 const firestore = getFirestore(firebaseApp);
 const civitDefEmb = [250708, 250712, 106916];
 const timeoutDelay = 1000;
+const modelToSaveDefState = {
+  modelId: null,
+  modelVersionId: null,
+};
 
 const ImageCard = ({ activeImgNum }) => {
+  const [fromIsOpen, setFormIsOpen] = useState(false);
+  const [modelToSave, setModelToSave] = useState(modelToSaveDefState);
   const [imageData, setImageData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -51,6 +60,34 @@ const ImageCard = ({ activeImgNum }) => {
   const timeoutRef = useRef(null);
   const dispatch = useDispatch();
   const resorcesRef = useRef(null);
+
+  const openFormHandler = (newModelId, newModelVersionId) => {
+    setModelToSave({
+      modelId: newModelId,
+      modelVersionId: newModelVersionId,
+    });
+    setFormIsOpen(true);
+  };
+
+  const closeFormHandler = () => {
+    setModelToSave(modelToSaveDefState);
+    setFormIsOpen(false);
+  };
+
+  const updateImageResources = (previewData) => {
+    setImageResources((prevState) => {
+      const updatedResourceIndex = prevState.findIndex(
+        (resource) => resource.modelId === previewData.id
+      );
+
+      if (updatedResourceIndex < 0) return prevState;
+
+      const updatedResource = [...prevState];
+      prevState[updatedResourceIndex].preview = previewData;
+
+      return updatedResource;
+    });
+  };
 
   useEffect(() => {
     if (
@@ -373,6 +410,7 @@ const ImageCard = ({ activeImgNum }) => {
           }
           // setImageResources(resources || []);
           if (curImageData?.id === imageData?.id) {
+            // console.log(filteredNewResult);
             setImageResources(filteredNewResult || []);
           }
           // setImageResources(filteredNewResult || []);
@@ -487,6 +525,19 @@ const ImageCard = ({ activeImgNum }) => {
               resource?.modelVersionName ||
               resource?.modelVersionId ||
               resource?.hash}
+            {resource?.modelId &&
+              (resource?.modelVersionId || resource?.versionId) && (
+                <ButtonSquareSave
+                  // modelId={resource?.modelId}
+                  // versionId={resource?.modelVersionId}
+                  className={classes["resource__add"]}
+                  onClick={openFormHandler.bind(
+                    null,
+                    resource?.modelId,
+                    resource?.modelVersionId || resource?.versionId
+                  )}
+                />
+              )}
           </div>
         )}
         <div
@@ -743,6 +794,18 @@ const ImageCard = ({ activeImgNum }) => {
           </div>
         </div>
       )}
+      <AnimatePresence>
+        {fromIsOpen && (
+          <Modal title="Add new resource" onClose={closeFormHandler}>
+            <UpdateModelForm
+              id="resources-form"
+              newModelId={modelToSave?.modelId}
+              newModelVersionId={modelToSave?.modelVersionId}
+              onSave={updateImageResources}
+            />
+          </Modal>
+        )}
+      </AnimatePresence>
     </>
   );
 };

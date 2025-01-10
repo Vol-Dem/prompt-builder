@@ -2,6 +2,7 @@ import classes from "./ReferenceImageList.module.scss";
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
   SETTINGS_REF_IMAGE_ROW_LENGTH,
 } from "../../../variables/constants";
 import Image from "../../ui/image/Image";
@@ -86,6 +87,7 @@ const ReferenceImageList = ({ usedImages }) => {
                         className={`${
                           !nsfwMode && nsfw ? classes["ref-images__nsfw"] : ""
                         }`}
+                        imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL}
                       />
                       <span
                         className={classes.close}

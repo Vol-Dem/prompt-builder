@@ -1,9 +1,13 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
 import classes from "./Image.module.scss";
 import ImageSvg from "../../../assets/ImageSvg";
+import { transformSrcPreview } from "../../../utils/generalUtils";
 
 const Image = forwardRef(
-  ({ id, src, type, alt, onClick, className, preloader = true }, ref) => {
+  (
+    { id, src, type, alt, onClick, className, preloader = true, imageWidth },
+    ref
+  ) => {
     const [imgIsLoading, setImgIsLoading] = useState(true);
     const [imgError, setImgError] = useState(false);
     // const [imgIsLoaded, setiImgIsLoaded] = useState(false);
@@ -14,9 +18,12 @@ const Image = forwardRef(
     useEffect(() => {
       // if (!imgIsLoaded) setImgIsLoading(true);
       if (imageIsVisible) {
+        const previewSrc = imageWidth
+          ? transformSrcPreview(src, imageWidth)
+          : src;
         setImgError(false);
         setImgIsLoading(true);
-        setImgSrc(src);
+        setImgSrc(previewSrc);
       }
     }, [src, imageIsVisible]);
 

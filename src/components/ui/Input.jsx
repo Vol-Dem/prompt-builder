@@ -29,6 +29,7 @@ const Input = (props) => {
     validation,
     showError,
     fitContent,
+    readOnly,
   } = props;
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -103,9 +104,10 @@ const Input = (props) => {
         onFocus={onFocus}
         placeholder={placeholder}
         {...input}
-        className={`${classes.input} ${className || ""} ${
+        readOnly={readOnly}
+        className={`${classes.input} ${
           inputErrorMessage && showErrorMessage ? classes["input--error"] : ""
-        }`}
+        } ${readOnly ? classes["input--read-only"] : ""} ${className || ""} `}
         autoFocus={autoFocus}
         autoComplete={autoComplete}
         value={value}

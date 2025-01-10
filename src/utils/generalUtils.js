@@ -2,6 +2,7 @@ import { MotionGlobalConfig } from "framer-motion";
 import {
   ERROR_MESSAGE_DEFAULT,
   REGEX_SPLIT_TAGS,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_DEF,
 } from "../variables/constants";
 
 export const clearObjectKeys = (obj) => {
@@ -435,4 +436,24 @@ export const disableAnimationsOnMobile = () => {
   if (isMobile) {
     MotionGlobalConfig.skipAnimations = true;
   }
+};
+
+export const transformSrcPreview = (
+  src,
+  width = SETTINGS_IMAGE_PREVIEW_WIDTH_DEF
+) => {
+  if (!src) return;
+
+  let previewSrc;
+  let srcArr = src.split("/");
+  const widthIndex = srcArr.findIndex((srcSlice) => srcSlice.includes("width"));
+
+  if (widthIndex < 0) {
+    previewSrc = src;
+  } else {
+    srcArr[widthIndex] = `width=${width}`;
+    previewSrc = srcArr.join("/");
+  }
+
+  return previewSrc;
 };

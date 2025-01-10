@@ -18,7 +18,7 @@ import firebaseApp from "../../firebase-config";
 import TagSets from "../model/tag-sets/TagSets";
 import { tabActions } from "../../store/tabs";
 import Spinner from "../ui/Spinner";
-import ButtonAdd from "../ui/ButtonAdd";
+import ButtonSquareAdd from "../ui/ButtonSquareAdd";
 import Buttton from "../ui/Button";
 import ErrorMessage from "../ui/ErrorMessage";
 import ButtonTertiary from "../ui/ButtonTertiary";
@@ -587,7 +587,7 @@ const Model = ({ title }) => {
             <h1 className={classes.title}>
               {model?.name || model?.data?.name}
             </h1>
-            <ButtonAdd previewData={modelPreview} />
+            <ButtonSquareAdd previewData={modelPreview} />
             {guideIsActive && <AddModelToSidePanelGuide />}
           </div>
           <div
@@ -626,7 +626,7 @@ const Model = ({ title }) => {
                 !curVersionImagesIsLoading && (
                   <div className={classes["img-container__placeholder"]}>
                     <ImageSvg className={classes["img-container__svg"]} />
-                     <span>Images not found</span>
+                    <span>Images not found</span>
                   </div>
                 )}
             </AnimatePresence>

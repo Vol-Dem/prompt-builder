@@ -7,7 +7,7 @@ import { tabActions } from "../../store/tabs";
 import { ReactComponent as SearchIcon } from "./../../assets/search.svg";
 import { liveSearch, searchActions } from "../../store/search";
 import Spinner from "../ui/Spinner";
-import ButtonAdd from "../ui/ButtonAdd";
+import ButtonSquareAdd from "../ui/ButtonSquareAdd";
 import ErrorMessage from "../ui/ErrorMessage";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import { useOnlineStatus } from "../../hooks/use-online-status";
@@ -18,6 +18,9 @@ import {
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
   ERROR_MESSAGE_DEFAULT,
   ERROR_MESSAGE_OFFLINE,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_QSEARCH,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
 } from "../../variables/constants";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -205,6 +208,7 @@ const Search = ({ className }) => {
                     modelPreveiw.imgUrl
                   : modelPreveiw.customPreviewImgUrl || modelPreveiw.imgUrl
               }
+              imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL}
             />
           </>
           <div className={classes["card__content"]}>
@@ -220,7 +224,7 @@ const Search = ({ className }) => {
             <div className={classes["search__name"]}>{modelPreveiw.name}</div>
           </div>
         </NavLink>
-        <ButtonAdd
+        <ButtonSquareAdd
           previewData={modelPreveiw}
           className={classes["search__add"]}
         />

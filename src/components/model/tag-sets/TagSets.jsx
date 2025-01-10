@@ -9,6 +9,7 @@ import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   GUIDE_STEP_MODEL_TAGSET,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
 } from "../../../variables/constants";
 import { guideActions } from "../../../store/guide";
 import Modal from "../../ui/Modal";
@@ -124,6 +125,7 @@ const TagSets = ({ customData, defaultData }) => {
             isNsfwMode ? tagSet?.nsfwImgUrl || tagSet?.imgUrl : tagSet?.imgUrl
           }
           alt="Set prewiew image"
+          imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_BIG}
         />
       </div>
       {

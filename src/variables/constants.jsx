@@ -17,6 +17,10 @@ export const SETTINGS_TIMEOUT_SEC = 10;
 export const SETTINGS_RESULT_NUM = 10;
 export const SETTINGS_REF_IMAGE_AMOUNT = 12;
 export const SETTINGS_REF_IMAGE_ROW_LENGTH = 3;
+export const SETTINGS_IMAGE_PREVIEW_WIDTH_DEF = 450;
+export const SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL = 250;
+export const SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM = 350;
+export const SETTINGS_IMAGE_PREVIEW_WIDTH_BIG = 450;
 
 //URLS
 export const URL_CIV_MODELS = "https://civitai.com/api/v1/models/";
@@ -65,6 +69,7 @@ export const ERROR_MESSAGE_OFFLINE =
   "Internet connection lost. Check your connection settings";
 export const ERROR_MESSAGE_USER_DATA_LOAD =
   "Oops! Something went wrong. Try refreshing!";
+export const ERROR_MESSAGE_INVALID_DATA = "Invalid data";
 
 //GUIDE STEPS HOME PAGE
 export const GUIDE_STEP_OPEN_CATEGORY = 1;

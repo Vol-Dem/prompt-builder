@@ -92,7 +92,7 @@ const Header = ({ children }) => {
       id="header"
       className={`${classes.header}
        ${isFixed ? classes["header--fixed"] : ""} ${
-        activeCarouselData?.versionId ? classes["header--active"] : ""
+        activeCarouselData?.images?.length ? classes["header--active"] : ""
       }
       ${sidePanelIsOpen && isFixed ? classes["header--aside-open"] : ""}`}
       style={{
