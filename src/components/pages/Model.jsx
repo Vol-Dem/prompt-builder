@@ -249,7 +249,7 @@ const Model = ({ title }) => {
     if (!descHeight && descriptionRef?.current?.offsetHeight !== descHeight) {
       setDescHeight(descriptionRef?.current?.offsetHeight);
     }
-  }, [descHeight]);
+  }, [descHeight, descriptionRef?.current?.offsetHeight]);
 
   useEffect(() => {
     if (!isAuth) return;

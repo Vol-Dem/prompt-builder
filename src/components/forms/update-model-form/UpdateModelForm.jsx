@@ -1000,7 +1000,7 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
       <motion.div
         layout
         key={sub.id}
-        initial={ANIMATIONS_FM_SLIDEOUT_INITIAL}
+        initial={i ? ANIMATIONS_FM_SLIDEOUT_INITIAL : null}
         animate={ANIMATIONS_FM_SLIDEOUT}
         exit={ANIMATIONS_FM_FADEOUT_EXIT}
         className={classes["subcategory"]}

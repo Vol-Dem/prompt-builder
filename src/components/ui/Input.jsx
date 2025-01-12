@@ -64,7 +64,7 @@ const Input = (props) => {
         </label>
       )}
       <motion.input
-        initial={ANIMATIONS_FM_SLIDEOUT_INITIAL}
+        // initial={ANIMATIONS_FM_SLIDEOUT_INITIAL}
         animate={ANIMATIONS_FM_SLIDEOUT}
         ref={inputRef}
         id={id}

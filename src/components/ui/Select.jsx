@@ -129,6 +129,7 @@ const Select = ({
               placeholder="-"
               input={{ readOnly: true }}
               value={selectedFieldName}
+              readOnly
             />
           </div>
           <AnimatePresence>
