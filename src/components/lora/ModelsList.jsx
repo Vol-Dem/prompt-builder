@@ -2,7 +2,11 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import classes from "./ModelsList.module.scss";
 import PreviewCard from "../previewCard/PreviewCard";
 import { useDispatch, useSelector } from "react-redux";
-import { getModelsPreview, tabActions } from "../../store/tabs";
+import {
+  getModelsPreview,
+  switchPreviewFullView,
+  tabActions,
+} from "../../store/tabs";
 import Spinner from "../ui/Spinner";
 import Select from "../ui/Select";
 import usePageEnd from "../../hooks/use-page-end";
@@ -18,6 +22,8 @@ import OpenModelGuide from "../ui/guide/home/OpenModelGuide";
 import { guideActions } from "../../store/guide";
 import { motion } from "framer-motion";
 import AddToPanelAnimContainer from "../ui/AddToPanelAnimContainer";
+import ButtonTertiary from "../ui/ButtonTertiary";
+import { Bars2Icon, Bars4Icon } from "@heroicons/react/24/outline";
 
 const sortTypes = [
   { name: "Newest", value: "createdAt" },
@@ -36,6 +42,7 @@ const ModelsList = () => {
   const activeSubcategory = useSelector((state) => state.tabs.currSubcategory);
   const errorMessage = useSelector((state) => state.tabs.errorMessage);
   const baseModels = useSelector((state) => state.tabs.baseModels);
+  const previewFullView = useSelector((state) => state.tabs.previewFullView);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const guideState = useSelector((state) => state.guide.home);
   const usedModels = useSelector((state) => state.used.models);
@@ -201,6 +208,10 @@ const ModelsList = () => {
     };
   });
 
+  const changeViewHandler = (e) => {
+    dispatch(tabActions.setPreviewFullView(true));
+  };
+
   return (
     <div className={classes["container"]}>
       <div className={classes.panel}>
@@ -245,8 +256,40 @@ const ModelsList = () => {
           options={baseModelsData}
           className={classes.select}
         />
+        <div className={classes["panel__view"]}>
+          <ButtonTertiary
+            type="button"
+            className={`${classes["panel__btn"]} ${
+              !previewFullView ? classes["panel__btn--active"] : ""
+            }`}
+            onClick={() => {
+              dispatch(switchPreviewFullView(false));
+            }}
+            title="Short view"
+          >
+            <Bars2Icon className={classes["panel__btn-icon"]} />
+          </ButtonTertiary>
+          <ButtonTertiary
+            type="button"
+            className={`${classes["panel__btn"]} ${
+              previewFullView ? classes["panel__btn--active"] : ""
+            }`}
+            onClick={() => {
+              dispatch(switchPreviewFullView(true));
+            }}
+            title="Expanded view"
+          >
+            <Bars4Icon className={classes["panel__btn-icon"]} />
+          </ButtonTertiary>
+        </div>
       </div>
-      <div className={classes["category"]}>{loraHtml}</div>
+      <div
+        className={`${classes["category"]} ${
+          previewFullView ? classes["category__full"] : ""
+        }`}
+      >
+        {loraHtml}
+      </div>
       {guideState?.active && !isLoading && <OpenModelGuide />}
       {!loraHtml?.length &&
         !errorMessage &&

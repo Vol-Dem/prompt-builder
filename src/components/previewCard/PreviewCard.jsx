@@ -18,6 +18,7 @@ const PreviewCard = ({ previewData, onClick, layout }) => {
   const [currSidePanelData, setCurrSidePanelData] = useState({});
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const isMobile = useSelector((state) => state.general.isMobile);
+  const fullView = useSelector((state) => state.tabs.previewFullView);
   const imgRef = useRef();
 
   useEffect(() => {
@@ -60,7 +61,9 @@ const PreviewCard = ({ previewData, onClick, layout }) => {
         // type: "spring",
       }}
       id={previewData.id}
-      className={`${classes.card} ${layout ? classes["card--motion"] : ""}`}
+      className={`${classes.card} ${fullView ? classes["card__full"] : ""} ${
+        layout ? classes["card--motion"] : ""
+      }`}
     >
       <div className={classes["image-container"]}>
         <ButtonSquareAdd
@@ -80,76 +83,102 @@ const PreviewCard = ({ previewData, onClick, layout }) => {
             alt="Preview"
             imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_BIG}
           />
+          {!fullView && (
+            <div className={classes["card__content"]}>
+              {/* <div className={classes["models__item"]}>
+                {previewData?.baseModels[0] ||
+                  currVersion?.baseModel ||
+                  previewData?.baseModel}
+              </div> */}
+              <ul className={classes["models"]}>
+                {previewData?.baseModels?.map((model, i) => (
+                  <li key={i} className={classes["models__item"]}>
+                    {model}
+                  </li>
+                )) ||
+                  currVersion?.baseModel ||
+                  previewData?.baseModel}
+              </ul>
+              <h4
+                className={classes.title}
+                title={previewData.name || previewData.title}
+              >
+                {previewData.name || previewData.title}
+              </h4>
+            </div>
+          )}
         </Link>
       </div>
-      <div className={`${classes.content}`}>
-        <div className={classes["title-container"]}>
-          <Link
-            to={`/models/${previewData.id}`}
-            className={classes.link}
-            onClick={onClick}
-          >
-            <h4
-              className={classes.title}
-              title={previewData.name || previewData.title}
+      {fullView && (
+        <div className={`${classes.content}`}>
+          <div className={classes["title-container"]}>
+            <Link
+              to={`/models/${previewData.id}`}
+              className={classes.link}
+              onClick={onClick}
             >
-              {previewData.name || previewData.title}
-            </h4>
-          </Link>
-        </div>
-        <span className={classes.type}>
-          {previewData.type === "TextualInversion"
-            ? "Embedding"
-            : previewData.type}
-        </span>
-        <div className={classes.info}>
-          Model:{" "}
-          <ul className={classes["models"]}>
-            {previewData?.baseModels?.map((model, i) => (
-              <li key={i} className={classes["models__item"]}>
-                {model}
-              </li>
-            )) ||
-              currVersion?.baseModel ||
-              previewData?.baseModel}
-          </ul>
-        </div>
-        {currVersion?.versionName && (
-          <div className={classes["text"]}>
-            Version:{" "}
-            <span className={classes["text-secondary"]}>
-              {currVersion.name}
-            </span>
+              <h4
+                className={classes.title}
+                title={previewData.name || previewData.title}
+              >
+                {previewData.name || previewData.title}
+              </h4>
+            </Link>
           </div>
-        )}
-        {(currVersion?.fileName ||
-          previewData?.fileName ||
-          currVersion?.defFileName) && (
-          <div className={classes["text"]}>
-            File name:{" "}
-            <span className={classes["text-secondary"]}>
-              {currVersion?.fileName ||
-                previewData?.fileName ||
-                currVersion?.defFileName}
-            </span>
+          <span className={classes.type}>
+            {previewData.type === "TextualInversion"
+              ? "Embedding"
+              : previewData.type}
+          </span>
+          <div className={classes.info}>
+            Model:{" "}
+            <ul className={classes["models"]}>
+              {previewData?.baseModels?.map((model, i) => (
+                <li key={i} className={classes["models__item"]}>
+                  {model}
+                </li>
+              )) ||
+                currVersion?.baseModel ||
+                previewData?.baseModel}
+            </ul>
           </div>
-        )}
-        {(currVersion?.mainTag ||
-          previewData?.mainTag ||
-          currVersion?.defActTag) && (
-          <ul className={classes["main-tag"]}>
-            <ActivationTag
-              tag={
-                currVersion?.mainTag ||
-                previewData?.mainTag ||
-                currVersion?.defActTag
-              }
-              modelData={currSidePanelData}
-              strength={currVersion?.weight || previewData?.weight}
-            />
-          </ul>
-        )}
-      </div>
+          {currVersion?.versionName && (
+            <div className={classes["text"]}>
+              Version:{" "}
+              <span className={classes["text-secondary"]}>
+                {currVersion.name}
+              </span>
+            </div>
+          )}
+          {(currVersion?.fileName ||
+            previewData?.fileName ||
+            currVersion?.defFileName) && (
+            <div className={classes["text"]}>
+              File name:{" "}
+              <span className={classes["text-secondary"]}>
+                {currVersion?.fileName ||
+                  previewData?.fileName ||
+                  currVersion?.defFileName}
+              </span>
+            </div>
+          )}
+          {(currVersion?.mainTag ||
+            previewData?.mainTag ||
+            currVersion?.defActTag) && (
+            <ul className={classes["main-tag"]}>
+              <ActivationTag
+                tag={
+                  currVersion?.mainTag ||
+                  previewData?.mainTag ||
+                  currVersion?.defActTag
+                }
+                modelData={currSidePanelData}
+                strength={currVersion?.weight || previewData?.weight}
+              />
+            </ul>
+          )}
+        </div>
+      )}
     </motion.div>
   );
 };

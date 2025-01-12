@@ -18,7 +18,7 @@ import {
   EmailAuthProvider,
 } from "firebase/auth";
 import firebaseApp from "../firebase-config";
-import { uploadPanelStateFromStorage } from "./usedModels";
+import { uploadPanelStateFromStorage, usedModelsActions } from "./usedModels";
 import { promptActions, uploadPromptFromStorage } from "./prompt";
 import { tabActions } from "./tabs";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
@@ -28,6 +28,7 @@ import {
   ERROR_MESSAGE_USER_DATA_LOAD,
 } from "../variables/constants";
 import { guideActions } from "./guide";
+import { checkIsMobile } from "../utils/generalUtils";
 
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
@@ -44,7 +45,6 @@ const authInitialState = {
   errorMessage: "",
   successMessage: "",
   categories: [],
-  // guide: { topPanel: true, image: true },
   user: {
     idToken: "",
     refreshToken: "",
@@ -497,6 +497,16 @@ export const getUserData = (uid) => {
           dispatch(promptActions.setPresets(userData.presets));
         if (userData?.nsfwMode)
           dispatch(modelActions.setNsfwMode(userData.nsfwMode));
+        if (userData?.uiState) {
+          dispatch(
+            tabActions.setPreviewFullView(userData.uiState?.previewFullView)
+          );
+          dispatch(
+            usedModelsActions.cardViewState(
+              userData.uiState?.sidePanelCardfullView
+            )
+          );
+        }
         if (userData?.guide && userData?.guide?.newGuide) {
           // console.log(userData.guide);
           dispatch(guideActions.setGuideInitialState(userData.guide));

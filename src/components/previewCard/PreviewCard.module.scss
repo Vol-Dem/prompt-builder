@@ -3,10 +3,10 @@
 .card {
   display: grid;
   position: relative;
-  grid-template-columns: 2fr 3fr;
+
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 1rem;
-  min-height: 24rem;
+  min-height: 38rem;
   overflow: hidden;
   // transition: all 0.3s;
   box-shadow: var.$box-shadow-dark;
@@ -22,6 +22,22 @@
     left: 0;
     width: 100%;
     z-index: 2;
+  }
+
+  &__full {
+    min-height: 24rem;
+    grid-template-columns: 2fr 3fr;
+  }
+
+  &__content {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-decoration: none;
+    color: var.$color-text-white;
+    padding: 1rem 1rem;
+    font-size: 1.4rem;
+    background: linear-gradient(transparent, #000);
   }
 }
 
@@ -141,6 +157,7 @@
   // border-radius: 10px;
 
   &__item {
+    display: inline-flex;
     color: var.$color-text-gray;
     background-color: #323148;
     padding: 0.2rem 0.8rem;

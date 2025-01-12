@@ -1,12 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   collection,
+  doc,
   getDocs,
   getFirestore,
   limit,
   orderBy,
   query,
   startAfter,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import firebaseApp from "../firebase-config";
@@ -36,6 +38,7 @@ const tabsSlice = createSlice({
       nsfw: false,
       previews: [],
     },
+    previewFullView: true,
     subcategories: [],
     baseModels: [],
     sortBy: "createdAt",
@@ -111,6 +114,9 @@ const tabsSlice = createSlice({
       state.currTab = "";
       state.currCategory = "";
       state.currSubcategory = "";
+    },
+    setPreviewFullView(state, action) {
+      state.previewFullView = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -226,6 +232,23 @@ export const getModelsPreview = (
       dispatch(tabActions.setIsLoading(false));
       dispatch(tabActions.setErrorMessage(handleErrors(err)));
     }
+  };
+};
+
+export const switchPreviewFullView = (isFullView) => {
+  return async (dispatch, getState) => {
+    dispatch(tabActions.setPreviewFullView(isFullView));
+    const uid = getState().auth.user.uid;
+    const userRef = doc(firestore, "users", uid);
+    await updateDoc(
+      userRef,
+      {
+        "uiState.previewFullView": isFullView,
+      },
+      {
+        merge: true,
+      }
+    );
   };
 };
 

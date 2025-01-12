@@ -5,6 +5,9 @@ import { getAuth } from "firebase/auth";
 import firebaseApp from "../firebase-config";
 import { SETTINGS_REF_IMAGE_AMOUNT } from "../variables/constants";
 import { checkIsMobile } from "../utils/generalUtils";
+import { doc, getFirestore, updateDoc } from "firebase/firestore";
+
+const firestore = getFirestore(firebaseApp);
 
 const auth = getAuth(firebaseApp);
 
@@ -32,11 +35,12 @@ const usedModelsSlice = createSlice({
       state.panelIsOpen = actions.payload;
     },
     cardViewState(state, actions) {
-      if (actions.payload) {
-        state.fullCardView = actions.payload.fullCardView;
-      } else {
-        state.fullCardView = !state.fullCardView;
-      }
+      state.fullCardView = actions.payload;
+      // if (actions.payload) {
+      //   state.fullCardView = actions.payload.fullCardView;
+      // } else {
+      //   state.fullCardView = !state.fullCardView;
+      // }
     },
     clearPanel(state, actions) {
       state.models = [];
@@ -134,12 +138,34 @@ export const uploadPanelStateFromStorage = () => {
     if (storageImgData)
       dispatch(usedModelsActions.addImagesToPanel(storageImgData));
     if (storagePanelState?.hasOwnProperty("panelIsOpen")) {
-      dispatch(usedModelsActions.panelState(storagePanelState?.panelIsOpen));
+      dispatch(
+        usedModelsActions.panelState(
+          !checkIsMobile() ? storagePanelState?.panelIsOpen : false
+        )
+      );
     } else if (!checkIsMobile()) {
       dispatch(usedModelsActions.panelState({ panelIsOpen: true }));
     }
-    if (storageViewState)
-      dispatch(usedModelsActions.cardViewState(storageViewState));
+
+    // if (storageViewState)
+    //   dispatch(usedModelsActions.cardViewState(storageViewState));
+  };
+};
+
+export const switchSidePanelfullView = (isFullView) => {
+  return async (dispatch, getState) => {
+    dispatch(usedModelsActions.cardViewState(isFullView));
+    const uid = getState().auth.user.uid;
+    const userRef = doc(firestore, "users", uid);
+    await updateDoc(
+      userRef,
+      {
+        "uiState.sidePanelCardfullView": isFullView,
+      },
+      {
+        merge: true,
+      }
+    );
   };
 };
 

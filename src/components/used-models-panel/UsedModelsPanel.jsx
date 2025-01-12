@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import UsedCard from "../used-card/UsedCard";
 import {
   removeImageFromPanel,
+  switchSidePanelfullView,
   usedModelsActions,
 } from "../../store/usedModels";
 import UpdateModelForm from "../forms/update-model-form/UpdateModelForm";
@@ -27,6 +28,7 @@ import { useLocation } from "react-router-dom";
 import ReferenceImageList from "./reference-image-list/ReferenceImageList";
 import { AnimatePresence, motion } from "framer-motion";
 import { guideActions } from "../../store/guide";
+import { Bars2Icon, Bars4Icon } from "@heroicons/react/24/outline";
 
 const UsedModelsPanel = memo(() => {
   const [cursorInitialX, setCursorInitialX] = useState(null);
@@ -83,9 +85,9 @@ const UsedModelsPanel = memo(() => {
     }
   };
 
-  const chageCardViewHandler = () => {
-    dispatch(usedModelsActions.cardViewState());
-  };
+  // const chageCardViewHandler = () => {
+  //   dispatch(usedModelsActions.cardViewState());
+  // };
 
   const usedModelsHtml = useMemo(() => {
     return usedModels.map((model, i) => {
@@ -244,20 +246,24 @@ const UsedModelsPanel = memo(() => {
                   className={`${classes["controls__btn"]} ${
                     !fullCardView ? classes["controls__btn--active"] : ""
                   }`}
-                  onClick={chageCardViewHandler}
+                  onClick={() => {
+                    dispatch(switchSidePanelfullView(false));
+                  }}
                   title="Short view"
                 >
-                  <Bars2Svg />
+                  <Bars2Icon />
                 </ButtonTertiary>
                 <ButtonTertiary
                   type="button"
                   className={`${classes["controls__btn"]} ${
                     fullCardView ? classes["controls__btn--active"] : ""
                   }`}
-                  onClick={chageCardViewHandler}
+                  onClick={() => {
+                    dispatch(switchSidePanelfullView(true));
+                  }}
                   title="Expanded view"
                 >
-                  <Bars4Svg />
+                  <Bars4Icon />
                 </ButtonTertiary>
               </div>
             </div>

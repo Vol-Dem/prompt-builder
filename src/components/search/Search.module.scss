@@ -210,6 +210,8 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     margin-top: 0.6rem;
+    word-break: break-all;
+    @include var.ellipsis;
   }
 }
 
