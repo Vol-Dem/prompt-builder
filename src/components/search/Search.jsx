@@ -18,14 +18,12 @@ import {
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
   ERROR_MESSAGE_DEFAULT,
   ERROR_MESSAGE_OFFLINE,
-  SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
-  SETTINGS_IMAGE_PREVIEW_WIDTH_QSEARCH,
   SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
+  SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE,
+  SETTINGS_SEARCH_RESULT_PER_PAGE,
 } from "../../variables/constants";
 import { AnimatePresence, motion } from "framer-motion";
 
-const amountPerPage = 10;
-const amountPerPageQuick = 4;
 const searchTimeoutMs = 1000;
 
 const Search = ({ className }) => {
@@ -82,7 +80,9 @@ const Search = ({ className }) => {
   }, [categories]);
 
   useEffect(() => {
-    if (quickSerchResult.result.length > amountPerPageQuick) {
+    if (
+      quickSerchResult.result.length > SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE
+    ) {
       const newResult = quickSerchResult.result.toSpliced(-1);
       setSearchResult({ ...quickSerchResult, result: newResult });
       setShowMore(true);
@@ -139,7 +139,7 @@ const Search = ({ className }) => {
               liveSearch(
                 searchInput.trim(),
                 nsfwMode,
-                amountPerPageQuick + 1,
+                SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE + 1,
                 false,
                 true
               )
@@ -147,7 +147,13 @@ const Search = ({ className }) => {
           } else {
             dispatch(searchActions.setIsLastPage(false));
             dispatch(searchActions.setIsLastSubPage(false));
-            dispatch(liveSearch(searchInput.trim(), nsfwMode, amountPerPage));
+            dispatch(
+              liveSearch(
+                searchInput.trim(),
+                nsfwMode,
+                SETTINGS_SEARCH_RESULT_PER_PAGE
+              )
+            );
           }
         } catch (err) {
           dispatch(searchActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
@@ -284,7 +290,13 @@ const Search = ({ className }) => {
 
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(async () => {
-      dispatch(liveSearch(searchInput.trim(), nsfwMode, amountPerPage));
+      dispatch(
+        liveSearch(
+          searchInput.trim(),
+          nsfwMode,
+          SETTINGS_SEARCH_RESULT_PER_PAGE
+        )
+      );
     }, searchTimeoutMs);
   };
 

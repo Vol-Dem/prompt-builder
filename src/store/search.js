@@ -78,7 +78,8 @@ export const liveSearch = (
   nsfw,
   limitAmount = 5,
   loadMore = false,
-  quickSerch = false
+  quickSerch = false,
+  hashtag = false
 ) => {
   return async (dispatch, getState) => {
     try {
@@ -157,34 +158,43 @@ export const liveSearch = (
         limit(limitAmount)
       );
 
-      const queryRuleSub = or(
-        and(
-          where("fileNames", "array-contains-any", [
-            clearFileExtension(searchString).toLowerCase(),
-          ]),
-          where("nsfw", "in", nsfwFilter)
-        ),
-        and(
-          where("customFileNames", "array-contains-any", [
-            clearFileExtension(searchString).toLowerCase(),
-          ]),
-          where("nsfw", "in", nsfwFilter)
-        ),
-        and(
-          where("mainTags", "array-contains-any", [
-            clearFileExtension(searchString).toLowerCase(),
-          ]),
-          where("nsfw", "in", nsfwFilter)
-        ),
-        and(
-          where("versionIds", "array-contains-any", [+searchString]),
-          where("nsfw", "in", nsfwFilter)
-        ),
-        and(
+      let queryRuleSub;
+
+      if (hashtag) {
+        queryRuleSub = and(
           where("authorTags", "array-contains-any", [searchString]),
           where("nsfw", "in", nsfwFilter)
-        )
-      );
+        );
+      } else {
+        queryRuleSub = or(
+          and(
+            where("fileNames", "array-contains-any", [
+              clearFileExtension(searchString).toLowerCase(),
+            ]),
+            where("nsfw", "in", nsfwFilter)
+          ),
+          and(
+            where("customFileNames", "array-contains-any", [
+              clearFileExtension(searchString).toLowerCase(),
+            ]),
+            where("nsfw", "in", nsfwFilter)
+          ),
+          and(
+            where("mainTags", "array-contains-any", [
+              clearFileExtension(searchString).toLowerCase(),
+            ]),
+            where("nsfw", "in", nsfwFilter)
+          ),
+          and(
+            where("versionIds", "array-contains-any", [+searchString]),
+            where("nsfw", "in", nsfwFilter)
+          ),
+          and(
+            where("authorTags", "array-contains-any", [searchString]),
+            where("nsfw", "in", nsfwFilter)
+          )
+        );
+      }
 
       const querySub = query(
         collectionRef,
@@ -197,7 +207,7 @@ export const liveSearch = (
       let modelsDataName = [];
       let querySnapshot = {};
 
-      if (!isLastPage) {
+      if (!isLastPage && !hashtag) {
         querySnapshot = await getDocs(queryByName);
         modelsDataName = querySnapshot.docs.map((doc) => {
           // doc.data() is never undefined for query doc snapshots
@@ -208,10 +218,10 @@ export const liveSearch = (
       let modelsDataSub = [];
       let querySnapshotSub = {};
 
-      if (
-        (isLastPage || querySnapshot.docs.length < limitAmount) &&
-        !isLastSubPage
-      ) {
+      const isLast =
+        !querySnapshot?.docs?.length || querySnapshot.docs.length < limitAmount;
+
+      if ((isLast || hashtag) && !isLastSubPage) {
         querySnapshotSub = await getDocs(querySub);
         modelsDataSub = querySnapshotSub.docs.map((doc) => {
           // doc.data() is never undefined for query doc snapshots
@@ -219,8 +229,6 @@ export const liveSearch = (
         });
       }
 
-      const isLast =
-        !querySnapshot?.docs?.length || querySnapshot.docs.length < limitAmount;
       const isLastSub =
         isLast &&
         (!querySnapshotSub?.docs?.length ||
@@ -265,14 +273,16 @@ export const liveSearch = (
             query: searchString,
             nsfw,
             result: finalResult,
+            hashtag,
           })
         );
         dispatch(searchActions.setIsLastPage(isLast));
         dispatch(searchActions.setIsLastSubPage(isLastSub));
       }
-      dispatch(searchActions.setSearchIsLoading(false));
     } catch (err) {
       console.error(err.message);
+    } finally {
+      dispatch(searchActions.setSearchIsLoading(false));
     }
   };
 };

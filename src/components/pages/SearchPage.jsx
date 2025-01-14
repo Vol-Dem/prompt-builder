@@ -6,11 +6,12 @@ import { liveSearch, searchActions } from "../../store/search";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import usePageEnd from "../../hooks/use-page-end";
-import { ERROR_MESSAGE_OFFLINE } from "../../variables/constants";
+import {
+  ERROR_MESSAGE_OFFLINE,
+  SETTINGS_SEARCH_RESULT_PER_PAGE,
+} from "../../variables/constants";
 import { useOnlineStatus } from "../../hooks/use-online-status";
 import AddToPanelAnimContainer from "../ui/AddToPanelAnimContainer";
-
-const amountPerPage = 10;
 
 const SearchPage = ({ title }) => {
   const [initial, setInitial] = useState(true);
@@ -27,6 +28,7 @@ const SearchPage = ({ title }) => {
   const isPageEnd = usePageEnd(600);
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
+  console.log(searchIsLoading);
 
   useEffect(() => {
     setIsIntersecting(isPageEnd);
@@ -66,9 +68,17 @@ const SearchPage = ({ title }) => {
     ) {
       setIsIntersecting(false);
       clearTimeout(timeoutRef.current);
+      dispatch(searchActions.setSearchIsLoading(true));
       timeoutRef.current = setTimeout(() => {
         dispatch(
-          liveSearch(searchResult.query, searchResult.nsfw, amountPerPage, true)
+          liveSearch(
+            searchResult.query,
+            searchResult.nsfw,
+            SETTINGS_SEARCH_RESULT_PER_PAGE,
+            true,
+            false,
+            !!searchResult?.hashtag
+          )
         );
       }, 1000);
     }
@@ -97,7 +107,7 @@ const SearchPage = ({ title }) => {
       {!searchIsLoading && errorMessage && (
         <ErrorMessage>{errorMessage}</ErrorMessage>
       )}
-      {!searchIsLoading && !!searchResultHtml?.length && (
+      {!!searchResult?.result?.length && (
         <div className={classes["title"]}>
           Search result for "{searchResult.query}"
         </div>

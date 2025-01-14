@@ -26,6 +26,7 @@ import {
   ERROR_MESSAGE_AUTH,
   ERROR_MESSAGE_DEFAULT,
   GUIDE_STEP_OPEN_IMAGE,
+  SETTINGS_SEARCH_RESULT_PER_PAGE,
   URL_CIV_MODELS,
 } from "../../variables/constants";
 import BackSvg from "../../assets/BackSvg";
@@ -36,6 +37,7 @@ import { guideActions } from "../../store/guide";
 import SettingsSvg from "../../assets/SettingsSvg";
 import { AnimatePresence } from "framer-motion";
 import ImageSvg from "../../assets/ImageSvg";
+import { liveSearch, searchActions } from "../../store/search";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -476,14 +478,6 @@ const Model = ({ title }) => {
     dispatch(modelActions.setCurVersion(curVer));
   };
 
-  const modelImagesHtml = (
-    <Carousel
-      imagesData={curVersionImages?.filteredItems}
-      versionId={curVersion?.id}
-      saved={false}
-    />
-  );
-
   const modelVersionsHtml =
     model?.modelVersionsCustomData &&
     Object.values(model?.modelVersionsCustomData)
@@ -549,6 +543,36 @@ const Model = ({ title }) => {
   const showAllVersionsHandler = () => {
     setSHowAllVersions((prevState) => !prevState);
   };
+
+  const submitSearchHandler = (e) => {
+    e.preventDefault();
+    dispatch(searchActions.resetSearchData());
+
+    navigate("/search");
+    dispatch(
+      liveSearch(
+        e.target.dataset.value,
+        nsfwMode,
+        SETTINGS_SEARCH_RESULT_PER_PAGE,
+        false,
+        false,
+        true
+      )
+    );
+  };
+
+  const modelTagsHtml = model?.data?.tags.map((tag, i) => {
+    return (
+      <li
+        key={i}
+        className={classes["hashtags__tag"]}
+        onClick={submitSearchHandler}
+        data-value={tag}
+      >
+        #{tag}
+      </li>
+    );
+  });
 
   return (
     <div>
@@ -620,8 +644,13 @@ const Model = ({ title }) => {
           >
             <AnimatePresence>
               {!!curVersionImages.filteredItems?.length &&
-                !curVersionImagesIsLoading &&
-                modelImagesHtml}
+                !curVersionImagesIsLoading && (
+                  <Carousel
+                    imagesData={curVersionImages?.filteredItems}
+                    versionId={curVersion?.id}
+                    saved={false}
+                  />
+                )}
               {!curVersionImages?.filteredItems?.length &&
                 !curVersionImagesIsLoading && (
                   <div className={classes["img-container__placeholder"]}>
@@ -633,7 +662,7 @@ const Model = ({ title }) => {
             {curVersionImagesIsLoading && <Spinner />}
             {guideIsActive && <CarouselGuide />}
           </div>
-
+          <ul className={classes["hashtags"]}>{modelTagsHtml}</ul>
           <div className={classes["info-container"]}>
             <ModelInfo customData={curCustomVersionData} />
             <ModelTags

@@ -11,8 +11,21 @@
 .result-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   margin-top: 1.8rem;
+}
+
+@media (max-width: 1040px) {
+  .result-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .result-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 680px) {
@@ -25,7 +38,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .result-list {
     grid-template-columns: 1fr;
   }
