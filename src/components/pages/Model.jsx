@@ -26,6 +26,7 @@ import {
   ERROR_MESSAGE_AUTH,
   ERROR_MESSAGE_DEFAULT,
   GUIDE_STEP_OPEN_IMAGE,
+  SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT,
   SETTINGS_SEARCH_RESULT_PER_PAGE,
   URL_CIV_MODELS,
 } from "../../variables/constants";
@@ -38,11 +39,16 @@ import SettingsSvg from "../../assets/SettingsSvg";
 import { AnimatePresence } from "framer-motion";
 import ImageSvg from "../../assets/ImageSvg";
 import { liveSearch, searchActions } from "../../store/search";
+import ButttonSecondary from "../ui/ButtonSecondary";
+import {
+  ArrowRightIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/24/outline";
 
 const firestore = getFirestore(firebaseApp);
 
 const minDescriptionHeight = 300;
-// const defImagesTimeotSec = 10;
 
 const Model = ({ title }) => {
   const [modelPreview, setModelPreview] = useState({});
@@ -57,7 +63,8 @@ const Model = ({ title }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [defDataIsLoading, setDefDataIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  // const [warningMessage, setWarningMessage] = useState("");
+  const [showAllHashtags, setShowAllHashtags] = useState(false);
+  const [hashtags, setHashtags] = useState([]);
   const { modelId } = useParams();
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
@@ -75,6 +82,7 @@ const Model = ({ title }) => {
   const dispatch = useDispatch();
   const descriptionRef = useRef();
   const loadingImagesTimeoutRef = useRef();
+  const allHashtags = model?.hashtags || model?.data?.tags;
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -561,7 +569,16 @@ const Model = ({ title }) => {
     );
   };
 
-  const modelTagsHtml = model?.data?.tags.map((tag, i) => {
+  useEffect(() => {
+    if (!allHashtags) return;
+
+    const visibleHashtags = showAllHashtags
+      ? allHashtags
+      : allHashtags.slice(0, SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT);
+    setHashtags(visibleHashtags);
+  }, [model, showAllHashtags]);
+
+  const modelHashtagsHtml = hashtags?.map((tag, i) => {
     return (
       <li
         key={i}
@@ -573,6 +590,10 @@ const Model = ({ title }) => {
       </li>
     );
   });
+
+  const showAllHashtagsHandler = () => {
+    setShowAllHashtags((prevState) => !prevState);
+  };
 
   return (
     <div>
@@ -662,7 +683,42 @@ const Model = ({ title }) => {
             {curVersionImagesIsLoading && <Spinner />}
             {guideIsActive && <CarouselGuide />}
           </div>
-          <ul className={classes["hashtags"]}>{modelTagsHtml}</ul>
+          {!!allHashtags?.length && (
+            <ul className={classes["hashtags"]}>
+              {modelHashtagsHtml}{" "}
+              {allHashtags.length > SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT && (
+                <li>
+                  <button
+                    onClick={showAllHashtagsHandler}
+                    className={`${classes["hashtags__btn"]} ${
+                      classes[
+                        !showAllHashtags
+                          ? "hashtags__btn--show"
+                          : "hashtags__btn--hide"
+                      ]
+                    }`}
+                  >
+                    {showAllHashtags ? (
+                      <>
+                        <ChevronLeftIcon
+                          className={classes["hashtags__btn-icon"]}
+                        />
+                        <span>Hide</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Show All</span>
+                        <ChevronRightIcon
+                          className={classes["hashtags__btn-icon"]}
+                        />
+                      </>
+                    )}
+                  </button>
+                </li>
+              )}
+            </ul>
+          )}
+
           <div className={classes["info-container"]}>
             <ModelInfo customData={curCustomVersionData} />
             <ModelTags

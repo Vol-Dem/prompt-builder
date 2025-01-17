@@ -457,3 +457,37 @@ export const transformSrcPreview = (
 
   return previewSrc;
 };
+
+export const parseIdsFromInput = (value) => {
+  if (value.includes("urn:air")) {
+    const airArr = value.split(":");
+    const ids = airArr[airArr.length - 1]
+      .split("@")
+      .map((id) => parseFloat(id));
+
+    return ids;
+  } else {
+    //urn:air:sdxl:checkpoint:civitai:827184@1283437
+    const urlArr = value.split("/");
+    const modelIdIndex =
+      urlArr.findIndex((urlPart) => urlPart === "models") + 1;
+    const modelVersionIdUrlArr = urlArr
+      .find((urlPart) => urlPart.includes("modelVersionId"))
+      ?.split("=");
+
+    if (modelIdIndex < 0) {
+      throwCustomError("Invalid ID");
+    } else {
+      const modelId = parseInt(urlArr[modelIdIndex]);
+      let modelVersionId = null;
+
+      if (modelVersionIdUrlArr?.length) {
+        modelVersionId =
+          parseInt(modelVersionIdUrlArr[modelVersionIdUrlArr.length - 1]) ||
+          null;
+      }
+
+      return [+modelId, +modelVersionId];
+    }
+  }
+};

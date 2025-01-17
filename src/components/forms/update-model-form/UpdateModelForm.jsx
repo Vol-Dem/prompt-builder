@@ -21,6 +21,8 @@ import {
   clearFileExtension,
   createTagSetsInputData,
   handleErrors,
+  parseIdFromInput,
+  parseIdsFromInput,
   splitTags,
   throwCustomError,
 } from "../../../utils/generalUtils";
@@ -170,6 +172,12 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
     value: modelData?.defaultCustomData?.steps || "",
     isValid: true,
   });
+  const [hashtagsInput, setHashtagsInput] = useState({
+    value: modelData?.hashtags?.filter(Boolean)?.length
+      ? modelData?.hashtags.join(", ")
+      : modelData?.data?.tags.join(", ") || "",
+    isValid: true,
+  });
   const [helperTagsInput, setHelperTagsInput] = useState({
     value: modelData?.defaultCustomData?.helperTags || [],
     isValid: true,
@@ -255,7 +263,7 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
         errorMessage: "",
       };
     });
-    console.log(subCats);
+
     setSubCatInputs(subCats);
 
     const mainCategoryName = categories[modelData?.modelType]?.find(
@@ -338,6 +346,7 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
         !weightInput.isValid ||
         !minWeightInput.isValid ||
         !maxWeightInput.isValid ||
+        !hashtagsInput.isValid ||
         !sizetInput.isValid;
 
       const aditionalInputsIsNotValid =
@@ -374,31 +383,17 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
       if (Number.isFinite(+idInput.value)) {
         modelId = +idInput.value;
       } else {
-        const urlArr = idInput.value.split("/");
-        const modelIdIndex =
-          urlArr.findIndex((urlPart) => urlPart === "models") + 1;
-        const modelVersionIdUrlArr = urlArr
-          .find((urlPart) => urlPart.includes("modelVersionId"))
-          ?.split("=");
-
-        if (modelVersionIdUrlArr?.length) {
-          modelVersionId =
-            parseInt(modelVersionIdUrlArr[modelVersionIdUrlArr.length - 1]) ||
-            null;
-        }
-
-        if (modelIdIndex < 0) {
-          throwCustomError("Invalid URL");
-        } else {
-          modelId = parseInt(urlArr[modelIdIndex]);
-        }
+        [modelId, modelVersionId] = parseIdsFromInput(idInput.value);
       }
 
       const modelName = titleInput.value.trim();
       const description = descriptionInput.value.trim();
       // const main = formdata.get("main")?.trim().toLowerCase();
       const main = mainCategorySelected.name;
-
+      const hashtags = hashtagsInput.value
+        .split(",")
+        .map((hashtag) => hashtag.trim())
+        .filter(Boolean);
       // const subData = formdata.getAll("sub").filter(Boolean);
       // const sub = subData.map((el) => el?.trim());
       // console.log(subCatInputs);
@@ -757,6 +752,7 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
           main: mainId,
           sub: subIds,
           name: modelName || data.name,
+          hashtags,
           mainTag,
           nsfw: nsfwInput || false,
           src: "civitai.com",
@@ -871,7 +867,7 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
           minWeight,
           maxWeight,
           size,
-          authorTags: data.tags || [],
+          authorTags: hashtags || data.tags || [],
           modelVersionsCustomData: previewModelVersionsCustomData,
           updatedAt: new Date().toISOString(),
           createdAt,
@@ -1255,6 +1251,7 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
                 }}
                 showError={showErrorMessage}
               />
+
               <Textarea
                 label="Helper words"
                 id="helper-tags"
@@ -1403,7 +1400,21 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
                 }}
                 showError={showErrorMessage}
               />
-
+              <Textarea
+                label="Hashtags"
+                id="hashtags"
+                name="hashtags"
+                rows="5"
+                placeholder="Hashtags"
+                value={hashtagsInput.value}
+                onChange={(e, isValid) => {
+                  setHashtagsInput({ value: e.target.value, isValid });
+                }}
+                validation={{
+                  maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+                }}
+                showError={showErrorMessage}
+              />
               {modelTypeInput === "checkpointssss" && (
                 <>
                   <Input

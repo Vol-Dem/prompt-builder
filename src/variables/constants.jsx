@@ -23,6 +23,7 @@ export const SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM = 350;
 export const SETTINGS_IMAGE_PREVIEW_WIDTH_BIG = 450;
 export const SETTINGS_SEARCH_RESULT_PER_PAGE = 10;
 export const SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE = 4;
+export const SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT = 5;
 
 //URLS
 export const URL_CIV_MODELS = "https://civitai.com/api/v1/models/";
