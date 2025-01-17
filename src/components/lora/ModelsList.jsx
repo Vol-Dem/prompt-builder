@@ -195,8 +195,16 @@ const ModelsList = () => {
   const loraHtml = modelsData?.previews?.map((item, i) => {
     return (
       <AddToPanelAnimContainer key={i} usedModels={usedModels}>
-        <PreviewCard layout={false} previewData={item} />
-        <PreviewCard layout={true} previewData={item} />
+        <PreviewCard
+          layout={false}
+          previewData={item}
+          fullView={previewFullView}
+        />
+        <PreviewCard
+          layout={true}
+          previewData={item}
+          fullView={previewFullView}
+        />
       </AddToPanelAnimContainer>
     );
   });

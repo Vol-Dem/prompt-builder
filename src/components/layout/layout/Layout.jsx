@@ -177,7 +177,7 @@ const Layout = () => {
     }
   }, [
     headerIsFixed,
-    headerRef.current?.offsetHeight,
+    headerRef?.current?.offsetHeight,
     promptHeight,
     promptIsOpen,
     promptBtnHeight,

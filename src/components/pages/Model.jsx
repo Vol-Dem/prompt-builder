@@ -82,7 +82,9 @@ const Model = ({ title }) => {
   const dispatch = useDispatch();
   const descriptionRef = useRef();
   const loadingImagesTimeoutRef = useRef();
-  const allHashtags = model?.hashtags || model?.data?.tags;
+  const allHashtags = useMemo(() => {
+    return model?.hashtags || model?.data?.tags;
+  }, [model]);
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -511,12 +513,15 @@ const Model = ({ title }) => {
       });
 
   const subCatsHtml = useMemo(() => {
-    return model?.sub?.map((sub, i) => {
-      const subcategoryName =
-        categories[model?.modelType]
-          ?.find((category) => category.id === model?.main)
-          ?.subcategories.find((subcategory) => subcategory.id === sub)?.name ||
-        sub;
+    return model?.sub?.flatMap((sub, i) => {
+      const subcategoryName = categories[model?.modelType]
+        ?.find((category) => category.id === model?.main)
+        ?.subcategories.find((subcategory) => subcategory.id === sub)?.name;
+
+      if (!subcategoryName) {
+        return [];
+      }
+
       return (
         <li key={i}>
           <Link
@@ -528,7 +533,7 @@ const Model = ({ title }) => {
               dispatch(tabActions.setCurrentSubcategory(sub));
             }}
           >
-            {subcategoryName || sub}
+            {subcategoryName}
           </Link>
         </li>
       );
@@ -576,7 +581,7 @@ const Model = ({ title }) => {
       ? allHashtags
       : allHashtags.slice(0, SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT);
     setHashtags(visibleHashtags);
-  }, [model, showAllHashtags]);
+  }, [model, showAllHashtags, allHashtags]);
 
   const modelHashtagsHtml = hashtags?.map((tag, i) => {
     return (
@@ -640,7 +645,7 @@ const Model = ({ title }) => {
             style={{
               maxHeight: showAllVersions
                 ? `${versionsListRef?.current?.offsetHeight}px`
-                : `${versionsItemRef?.current?.offsetHeight + 1}px`,
+                : `${versionsItemRef?.current?.offsetHeight}px`,
             }}
           >
             <ul ref={versionsListRef} className={classes["versions__list"]}>
@@ -649,7 +654,7 @@ const Model = ({ title }) => {
           </div>
 
           {versionsListRef?.current?.offsetHeight >
-            versionsItemRef?.current?.offsetHeight + 1 && (
+            versionsItemRef?.current?.offsetHeight && (
             <ButtonTertiary onClick={showAllVersionsHandler}>
               {showAllVersions ? "Hide" : "Show All"}
             </ButtonTertiary>

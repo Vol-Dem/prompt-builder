@@ -66,20 +66,19 @@ const functions = getFunctions(firebaseApp);
 
 const SUBCATEGORIES_MAX_AMOUNT = 8;
 const TAGSETS_MAX_AMOUNT = 20;
+const subCatsDefData = {
+  type: "text",
+  id: "subcat-def",
+  name: "sub",
+  placeholder: "Subcategory",
+  value: "",
+  query: "",
+  selected: { id: null, name: "" },
+  isValid: false,
+  errorMessage: "This field is required",
+};
 
 const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
-  const subCatsDefData = {
-    type: "text",
-    id: "subcat-def",
-    name: "sub",
-    placeholder: "Subcategory",
-    value: "",
-    query: "",
-    selected: { id: null, name: "" },
-    isValid: false,
-    errorMessage: "This field is required",
-  };
-
   const [modelIsSaving, setModelIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -186,7 +185,7 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
     value: modelData?.defaultCustomData?.negativeTags || [],
     isValid: true,
   });
-  const [subCatInputs, setSubCatInputs] = useState([subCatsDefData]);
+  const [subCatInputs, setSubCatInputs] = useState([]);
   const [tagSetsInputs, setTagSetsInputs] = useState([]);
   const [savedModel, setSavedModel] = useState(null);
   const [mainCategoryQuery, setMainCategoryQuery] = useState("");
@@ -222,15 +221,21 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
         )
     : [];
 
-  useEffect(() => {}, []);
-
   const selectMainCategoryHandler = (value, isValid, errorMessage) => {
     setMainCategorySelected({ ...value, isValid, errorMessage });
-    setSubCatInputs([subCatsDefData]);
+    setSubCatInputs([
+      { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
+    ]);
   };
 
   useEffect(() => {
-    if (!modelData) return;
+    if (!modelData) {
+      setSubCatInputs([
+        { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
+      ]);
+      return;
+    }
+
     const versionStatusInputData = Object.values(
       modelData?.modelVersionsCustomData
     )
@@ -247,10 +252,15 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
 
     setVersionsDownloadStatus(versionStatusInputData || []);
 
-    const subCats = modelData.sub.map((subId, i) => {
+    const subCats = modelData.sub.flatMap((subId, i) => {
       const subData = categories[modelData.modelType]
         ?.find((category) => category.id === modelData.main)
         ?.subcategories.find((sucategory) => sucategory.id === subId);
+
+      if (!subData) {
+        return [];
+      }
+
       return {
         type: "text",
         id: `subcat-${i}`,
@@ -908,7 +918,9 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
             value: "",
             isValid: false,
           });
-          setSubCatInputs([subCatsDefData]);
+          setSubCatInputs([
+            { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
+          ]);
           setShowErrorMessage(false);
           setMainCategorySelected({});
         }
@@ -1007,7 +1019,7 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
           query={subCategoryQuery}
           setQuery={setSubCategoryQuery}
           setSelected={subCatSelectHandler}
-          selected={sub.selected}
+          selected={{ ...sub.selected }}
           placeholder="Subcategory"
           validation={{
             required: true,
@@ -1135,7 +1147,9 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
               setModelTypeInput(value);
               setMainCategoryQuery("");
               setMainCategorySelected({});
-              setSubCatInputs([subCatsDefData]);
+              setSubCatInputs([
+                { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
+              ]);
             }}
             options={typeSelectOption}
           />

@@ -25,7 +25,7 @@ const Image = forwardRef(
         setImgIsLoading(true);
         setImgSrc(previewSrc);
       }
-    }, [src, imageIsVisible]);
+    }, [src, imageIsVisible, imageWidth]);
 
     const imgLoadHandler = () => {
       setImgIsLoading(false);

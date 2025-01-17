@@ -123,7 +123,9 @@ const GeneratedImages = memo(({ customData }) => {
   useEffect(() => {
     // console.log("LIST", versionsListRef?.current?.offsetHeight);
     // console.log("ITEM", versionsItemRef?.current?.offsetHeight);
-    const showAll = versionsListRef?.current?.offsetHeight > 32;
+    const showAll =
+      versionsListRef?.current?.offsetHeight >
+      versionsItemRef?.current?.offsetHeight;
     // const showAll =
     //   versionsListRef?.current?.offsetHeight >
     //   versionsItemRef?.current?.offsetHeight + 2;

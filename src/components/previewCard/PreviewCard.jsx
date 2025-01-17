@@ -13,12 +13,12 @@ import {
   SETTINGS_IMAGE_PREVIEW_WIDTH_CARD,
 } from "../../variables/constants";
 
-const PreviewCard = ({ previewData, onClick, layout }) => {
+const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
   const [currVersion, setCurrVersion] = useState({});
   const [currSidePanelData, setCurrSidePanelData] = useState({});
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const isMobile = useSelector((state) => state.general.isMobile);
-  const fullView = useSelector((state) => state.tabs.previewFullView);
+  // const fullView = useSelector((state) => state.tabs.previewFullView);
   const imgRef = useRef();
 
   useEffect(() => {
