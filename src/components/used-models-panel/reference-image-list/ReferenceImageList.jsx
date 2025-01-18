@@ -17,7 +17,8 @@ import {
 import { motion } from "framer-motion";
 
 const ReferenceImageList = ({ usedImages }) => {
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
+  const sfwValue = useSelector((state) => state.general.sfwValue);
   const dispatch = useDispatch();
 
   const openImageHandler = (e) => {
@@ -61,11 +62,12 @@ const ReferenceImageList = ({ usedImages }) => {
             className={classes["ref-images"]}
           >
             {[...Array(SETTINGS_REF_IMAGE_ROW_LENGTH).keys()].map(
-              (image, index) => {
+              (__, index) => {
                 const i = indexRow * SETTINGS_REF_IMAGE_ROW_LENGTH + index;
                 const nsfw =
                   usedImages[i]?.nsfw === false ||
                   usedImages[i]?.nsfw === "None" ||
+                  usedImages[i]?.nsfwLevel === sfwValue ||
                   usedImages[i]?.nsfwLevel === 1
                     ? false
                     : true;

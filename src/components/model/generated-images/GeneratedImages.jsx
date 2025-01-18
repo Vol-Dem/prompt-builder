@@ -34,6 +34,8 @@ import {
   ERROR_MESSAGE_OFFLINE,
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
+  SETTINGS_IMAGE_GENERATED_PER_PAGE,
+  SETTINGS_IMAGE_SAVED_POSTS_PER_PAGE,
 } from "../../../variables/constants";
 import GeneratedImagesGuide from "../../ui/guide/model/GeneratedImagesGuide";
 import { AnimatePresence } from "framer-motion";
@@ -42,10 +44,6 @@ import FolderSvg from "../../../assets/FolderSvg";
 import { motion } from "framer-motion";
 
 const firestore = getFirestore(firebaseApp);
-
-const postsPerPage = 16;
-
-const amountPerPage = 100;
 
 const GeneratedImages = memo(({ customData }) => {
   const [showAllVersions, setShowAllVersions] = useState(false);
@@ -61,7 +59,7 @@ const GeneratedImages = memo(({ customData }) => {
   const [examplesHtml, setExamplesHtml] = useState([]);
   const [curImagesModelVersionId, setCurImagesModelVersionId] = useState(null);
   const [imagesSortValue, setImagesSortValue] = useState("Newest");
-  // const [amountPerPage, setAmountPerPage] = useState(100);
+  // const [SETTINGS_IMAGE_GENERATED_PER_PAGE, setAmountPerPage] = useState(100);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
   const [isShowAll, setIsShowAll] = useState(false);
@@ -70,6 +68,7 @@ const GeneratedImages = memo(({ customData }) => {
   const savedImagesData = useSelector((state) => state.model.savedImages);
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
   const uid = useSelector((state) => state.auth.user.uid);
   const guideIsActive = useSelector((state) => state.guide.active);
   const guideStep = useSelector((state) => state.guide.model.step);
@@ -137,7 +136,7 @@ const GeneratedImages = memo(({ customData }) => {
 
   useEffect(() => {
     resetExamples();
-  }, [nsfwMode]);
+  }, [nsfwMode, nsfwLevel]);
 
   useEffect(() => {
     if (curImagesModelVersionId) return;
@@ -260,11 +259,13 @@ const GeneratedImages = memo(({ customData }) => {
         setErrorMessage("");
         const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
           versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
-        }${amountPerPage ? `&limit=${amountPerPage}` : ""}${
-          imagesSortValue ? `&sort=${imagesSortValue}` : ""
-        }${cursor ? `&cursor=${cursor}` : ""}${
-          nsfwMode ? `&nsfw=X` : `&nsfw=None`
-        }`;
+        }${
+          SETTINGS_IMAGE_GENERATED_PER_PAGE
+            ? `&limit=${SETTINGS_IMAGE_GENERATED_PER_PAGE}`
+            : ""
+        }${imagesSortValue ? `&sort=${imagesSortValue}` : ""}${
+          cursor ? `&cursor=${cursor}` : ""
+        }${`&nsfw=${nsfwLevel}`}`;
 
         const imgExampleResponse = await fetch(url, {
           signal: newAbortControler.signal,
@@ -349,7 +350,7 @@ const GeneratedImages = memo(({ customData }) => {
           // where("hasNsfw", "==", nsfwFilter),
           orderBy("createdAt", "desc"),
           startAfter(lastVisible),
-          limit(postsPerPage)
+          limit(SETTINGS_IMAGE_SAVED_POSTS_PER_PAGE)
         );
       } else {
         // console.log(curImagesModelVersionId);
@@ -362,7 +363,7 @@ const GeneratedImages = memo(({ customData }) => {
           // where("hasNsfw", "==", nsfwFilter),
           orderBy("createdAt", "desc"),
           startAfter(lastVisible),
-          limit(postsPerPage)
+          limit(SETTINGS_IMAGE_SAVED_POSTS_PER_PAGE)
         );
       }
 
@@ -370,7 +371,7 @@ const GeneratedImages = memo(({ customData }) => {
 
       const isLast =
         !modelImagesSnap.docs.length ||
-        modelImagesSnap.docs.length < postsPerPage;
+        modelImagesSnap.docs.length < SETTINGS_IMAGE_SAVED_POSTS_PER_PAGE;
 
       const data = modelImagesSnap.docs.flatMap((doc, i) => {
         return doc.data();

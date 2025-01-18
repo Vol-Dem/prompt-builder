@@ -29,6 +29,7 @@ import {
 } from "../variables/constants";
 import { guideActions } from "./guide";
 import { checkIsMobile } from "../utils/generalUtils";
+import { generalActions } from "./general";
 
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
@@ -495,8 +496,14 @@ export const getUserData = (uid) => {
           dispatch(tabActions.setBaseModels(userData.baseModels));
         if (userData?.presets)
           dispatch(promptActions.setPresets(userData.presets));
-        if (userData?.nsfwMode)
+        if (userData?.nsfwMode) {
           dispatch(modelActions.setNsfwMode(userData.nsfwMode));
+          dispatch(generalActions.setNsfwMode(userData.nsfwMode));
+        }
+        if (userData?.sfwValue)
+          dispatch(generalActions.setSfwValue(userData.sfwValue));
+        if (userData?.nsfwValue)
+          dispatch(generalActions.setNsfwValue(userData.nsfwValue));
         if (userData?.uiState) {
           dispatch(
             tabActions.setPreviewFullView(userData.uiState?.previewFullView)

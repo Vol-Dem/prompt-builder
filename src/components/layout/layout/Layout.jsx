@@ -28,7 +28,7 @@ import Spinner from "../../ui/Spinner";
 import Notification from "../../ui/Notification";
 import Prompt from "../../prompt/Prompt";
 import UsedModelsPanel from "../../used-models-panel/UsedModelsPanel";
-import { modelActions, switchNsfwMode } from "../../../store/model";
+import { modelActions } from "../../../store/model";
 import Search from "../../search/Search";
 import UploadingPanel from "../../uploading-panel/UploadingPanel";
 import ActiveCarousel from "../../active-carousel/ActiveCarousel";
@@ -45,6 +45,8 @@ import Maintenance from "../maintenance/Maintenance";
 import { AnimatePresence } from "framer-motion";
 import { usedModelsActions } from "../../../store/usedModels";
 import { useMemo } from "react";
+import { switchNsfwMode } from "../../../store/general";
+import NsfwSwitch from "../../ui/nsfw-switch/NsfwSwitch";
 
 const Layout = () => {
   const [cookificationIsOpen, setCookificationIsOpen] = useState(false);
@@ -74,7 +76,7 @@ const Layout = () => {
   // const notificationMessage = useSelector(
   //   (state) => state.notification.message
   // );
-  const isNsfwMode = useSelector((state) => state.model.nsfwMode);
+  // const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -99,9 +101,9 @@ const Layout = () => {
     }
   };
 
-  const nsfwSwitchHandler = () => {
-    dispatch(switchNsfwMode(!isNsfwMode));
-  };
+  // const nsfwSwitchHandler = () => {
+  //   dispatch(switchNsfwMode(!isNsfwMode));
+  // };
 
   useEffect(() => {
     if (!isAuth) {
@@ -262,7 +264,7 @@ const Layout = () => {
                     </span>
                     <UploadingPanel />
 
-                    <div className={classes["mode-switch"]}>
+                    {/* <div className={classes["mode-switch"]}>
                       <button
                         type="button"
                         onClick={nsfwSwitchHandler}
@@ -281,7 +283,8 @@ const Layout = () => {
                       >
                         NSFW
                       </button>
-                    </div>
+                    </div> */}
+                    <NsfwSwitch />
                   </>
                 )}
 

@@ -68,7 +68,9 @@ const Model = ({ title }) => {
   const { modelId } = useParams();
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
+  const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
+  const sfwValue = useSelector((state) => state.general.sfwValue);
   const versionsListRef = useRef(null);
   const versionsItemRef = useRef(null);
   let { state } = useLocation();
@@ -127,33 +129,40 @@ const Model = ({ title }) => {
     }
   }, [model?.id]);
 
-  const filterNsfwImages = useCallback((images) => {
-    return images?.filter((image) => {
-      if (image?.nsfwLevel) {
-        return image?.nsfwLevel <= 1 || image?.nsfwLevel === "None";
-      } else {
-        return image?.nsfw === "None" || image?.nsfw === false;
-      }
-    });
-  }, []);
+  const filterNsfwImages = useCallback(
+    (images) => {
+      return images?.filter((image) => {
+        if (image?.nsfwLevel) {
+          return (
+            image.nsfwLevel <= 1 ||
+            image.nsfwLevel === "None" ||
+            image.nsfwLevel === sfwValue
+          );
+        } else {
+          return image?.nsfw === "None" || image?.nsfw === false;
+        }
+      });
+    },
+    [sfwValue]
+  );
 
   useEffect(() => {
     if (
       curVersion?.id &&
       curVersionImages?.versionId === curVersion?.id &&
-      curVersionImages?.nsfw !== !!nsfwMode
+      curVersionImages?.nsfw !== nsfwMode
     ) {
-      const filteredModelImages = !!nsfwMode
+      const filteredModelImages = nsfwMode
         ? curVersionImages?.items
         : filterNsfwImages(curVersionImages?.items);
       setCurVersionImages({
         items: curVersionImages?.items,
         filteredItems: filteredModelImages,
         versionId: curVersion?.id,
-        nsfw: !!nsfwMode,
+        nsfw: nsfwMode,
       });
     }
-  }, [curVersionImages, curVersion?.id, nsfwMode, filterNsfwImages]);
+  }, [curVersionImages, curVersion?.id, nsfwMode, sfwValue, filterNsfwImages]);
 
   ///////////LOAD DEFAULT IMAGES FROM MODEL
   // const setDefaultVersionImages = useCallback(() => {

@@ -1,0 +1,115 @@
+@use "./../../../variables/variables.scss" as var;
+
+.container {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.6rem;
+
+  &:hover .btn-mode--cog {
+    transform: translate(100%);
+  }
+}
+
+.mode-switch {
+  font-size: 1.4rem;
+  border-radius: var.$border-radius;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid #5c5c5c;
+  overflow: hidden;
+  flex-shrink: 0;
+  z-index: 2;
+}
+.btn-mode {
+  position: relative;
+
+  width: 5rem;
+  font-size: 1rem;
+  background-color: transparent;
+  background-color: var.$color-background-secondary;
+  padding: 0.6rem 0.8rem;
+  border: none;
+  transition: all 0.3s;
+  color: #fff;
+  cursor: pointer;
+
+  &--active {
+    background-color: var.$color-primary;
+  }
+
+  &--cog {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 0.4rem;
+    position: absolute;
+    right: 0;
+    background-color: transparent;
+    border: none;
+    color: var.$color-text-gray;
+    width: 3rem;
+    height: 100%;
+    border-radius: 10px;
+    transition: all 0.3s;
+    cursor: pointer;
+
+    &:hover {
+      color: var.$color-primary;
+    }
+  }
+
+  &__icon {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+.mode {
+  &__form {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-items: flex-end;
+    gap: 1rem;
+  }
+
+  &__field {
+    display: flex;
+    border: 1px solid #5c5c5c;
+    border-radius: 10px;
+    overflow: hidden;
+    justify-self: flex-start;
+  }
+
+  &__dropdown {
+    width: 28rem;
+  }
+
+  &__input {
+    display: none;
+  }
+
+  &__label {
+    display: inline-flex;
+    padding: 0.1rem 0.8rem;
+    justify-content: center;
+    width: 6rem;
+    transition: all 0.3s;
+    border-left: 1px solid #98989836;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var.$color-background-secondary;
+    }
+  }
+
+  &__input:checked + label {
+    background-color: var.$color-primary;
+  }
+}
+
+@media (max-width: 768px) {
+  .btn-mode--cog {
+    transform: translate(100%);
+  }
+}

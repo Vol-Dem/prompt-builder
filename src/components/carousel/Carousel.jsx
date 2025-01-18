@@ -60,6 +60,7 @@ const Carousel = ({
   const model = useSelector((state) => state.model.model);
   const savedImages = useSelector((state) => state.model.savedImages);
   const queue = useSelector((state) => state.upload.queue);
+  const sfwValue = useSelector((state) => state.general.sfwValue);
   const isUploading = queue.find((item) => item.postId === postId);
   const dispatch = useDispatch();
 
@@ -229,6 +230,7 @@ const Carousel = ({
           nsfw={
             image?.nsfw === false ||
             image?.nsfw === "None" ||
+            image?.nsfwLevel === sfwValue ||
             image.nsfwLevel === 1
               ? false
               : true
@@ -265,6 +267,7 @@ const Carousel = ({
             nsfw={
               image?.nsfw === false ||
               image?.nsfw === "None" ||
+              image?.nsfwLevel === sfwValue ||
               image.nsfwLevel === 1
                 ? false
                 : true
@@ -298,6 +301,7 @@ const Carousel = ({
             nsfw={
               image?.nsfw === false ||
               image?.nsfw === "None" ||
+              image?.nsfwLevel === sfwValue ||
               image.nsfwLevel === 1
                 ? false
                 : true
@@ -320,6 +324,7 @@ const Carousel = ({
     saved,
     active,
     side,
+    sfwValue,
   ]);
 
   // useEffect(() => {

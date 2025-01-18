@@ -136,22 +136,22 @@ const modelSlice = createSlice({
   },
 });
 
-export const switchNsfwMode = (nsfw) => {
-  return async (dispatch, getState) => {
-    dispatch(modelActions.setNsfwMode(nsfw));
-    const uid = getState().auth.user.uid;
-    const userRef = doc(firestore, "users", uid);
-    await updateDoc(
-      userRef,
-      {
-        nsfwMode: nsfw,
-      },
-      {
-        merge: true,
-      }
-    );
-  };
-};
+// export const switchNsfwMode = (nsfw) => {
+//   return async (dispatch, getState) => {
+//     dispatch(modelActions.setNsfwMode(nsfw));
+//     const uid = getState().auth.user.uid;
+//     const userRef = doc(firestore, "users", uid);
+//     await updateDoc(
+//       userRef,
+//       {
+//         nsfwMode: nsfw,
+//       },
+//       {
+//         merge: true,
+//       }
+//     );
+//   };
+// };
 
 export const updateModel = (modelId) => {
   return async (dispatch, getState) => {
