@@ -61,10 +61,8 @@ const TagsTextarea = ({
   };
 
   const dragStartHandler = (e) => {
-    console.log(e.target);
     const targetTagContainer = e.target.closest(`.${classes["tag-container"]}`);
     const tagData = targetTagContainer.dataset.item;
-    // console.log(tagData);
 
     e.dataTransfer.setData("text/plain", tagData);
     e.dataTransfer.effectAllowed = "move";
@@ -474,7 +472,6 @@ const TagsTextarea = ({
   });
 
   const promptResizeHandler = () => {
-    console.log(fieldRef.current.offsetHeight);
     dispatch(
       promptActions.setPromptHeight({
         type: promptType,

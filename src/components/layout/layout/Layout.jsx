@@ -263,27 +263,6 @@ const Layout = () => {
                       <SearchSvg />
                     </span>
                     <UploadingPanel />
-
-                    {/* <div className={classes["mode-switch"]}>
-                      <button
-                        type="button"
-                        onClick={nsfwSwitchHandler}
-                        className={`${classes["btn-mode"]} ${
-                          !isNsfwMode ? classes["btn-mode--active"] : ""
-                        }`}
-                      >
-                        SFW
-                      </button>
-                      <button
-                        type="button"
-                        onClick={nsfwSwitchHandler}
-                        className={`${classes["btn-mode"]} ${
-                          isNsfwMode ? classes["btn-mode--active"] : ""
-                        }`}
-                      >
-                        NSFW
-                      </button>
-                    </div> */}
                     <NsfwSwitch />
                   </>
                 )}

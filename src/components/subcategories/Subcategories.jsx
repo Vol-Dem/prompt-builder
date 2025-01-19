@@ -25,6 +25,7 @@ const Subcategories = () => {
   const dispatch = useDispatch();
 
   const categorySwitchHandler = (e) => {
+    if (activeSubcategory === e.target.dataset.value) return;
     dispatch(tabActions.setCurrentSubcategory(e.target.dataset.value));
     dispatch(tabActions.resetModelsData());
   };

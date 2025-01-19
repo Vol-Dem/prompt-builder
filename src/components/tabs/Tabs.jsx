@@ -1,7 +1,7 @@
 import classes from "./Tabs.module.scss";
 import Categories from "../categories/Categories";
 import { useDispatch, useSelector } from "react-redux";
-import { tabActions } from "../../store/tabs";
+import { getModelsPreview, tabActions } from "../../store/tabs";
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
@@ -25,6 +25,7 @@ const Tabs = () => {
   const authIsOpen = useSelector((state) => state.auth.authFormIsOpen);
   const activeTab = useSelector((state) => state.tabs.currTab);
   const categories = useSelector((state) => state.tabs.categoriesData);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const formIsOpen = useSelector((state) => state.used.formIsOpen);
   const sidepanelIsOpen = useSelector((state) => state.used.panelIsOpen);
   const guideHomeState = useSelector((state) => state.guide.home);
@@ -41,7 +42,13 @@ const Tabs = () => {
   const dispatch = useDispatch();
 
   const categorySwitchHandler = (e) => {
+    if (activeTab === e.target.dataset.value) return;
     dispatch(tabActions.setCurrentTab(e.target.dataset.value));
+    if (e.target.dataset.value === "all") {
+      dispatch(
+        getModelsPreview(e.target.dataset.value, null, null, false, nsfwMode)
+      );
+    }
   };
 
   const modelTypesHtml = Object.keys(categories)

@@ -24,6 +24,13 @@
     z-index: 2;
   }
 
+  &__image {
+    transition: all 0.3s;
+    &:hover img {
+      transform: scale(1.04);
+    }
+  }
+
   &__full {
     min-height: 24rem;
     grid-template-columns: 2fr 3fr;
@@ -135,6 +142,11 @@
   text-overflow: ellipsis;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  transition: all 0.3s;
+
+  &:hover {
+    color: lighten(var.$color-primary, 20%);
+  }
 }
 
 .text {

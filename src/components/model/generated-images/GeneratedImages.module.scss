@@ -104,19 +104,18 @@
 
 .mode-switch {
   display: flex;
-  // font-size: 1.6rem;
   border-radius: var.$border-radius;
   border: 1px solid rgba(255, 255, 255, 0);
-  // width: 10rem;
-  overflow: hidden;
 }
+
 .btn-mode {
   display: flex;
   flex-shrink: 0;
   justify-content: center;
   width: 8rem;
   font-size: 1.8rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  // border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var.$color-gray-dark;
   // text-transform: uppercase;
   background-color: transparent;
   // background-color: #fff;

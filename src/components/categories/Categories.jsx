@@ -1,7 +1,7 @@
 import Subcategories from "../subcategories/Subcategories";
 import classes from "./Categories.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { tabActions } from "../../store/tabs";
+import { getModelsPreview, tabActions } from "../../store/tabs";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import { useState } from "react";
 import Modal from "../ui/Modal";
@@ -19,6 +19,7 @@ const Categories = () => {
   const activeCategory = useSelector((state) => state.tabs.currCategory);
   const activeTab = useSelector((state) => state.tabs.currTab);
   const categories = useSelector((state) => state.tabs.categoriesData);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const guideHomeState = useSelector((state) => state.guide.home);
   const userDataIsLoading = useSelector(
     (state) => state.auth.userDataIsLoading
@@ -26,7 +27,19 @@ const Categories = () => {
   const dispatch = useDispatch();
 
   const categorySwitchHandler = (e) => {
+    if (activeCategory === e.target.dataset.value) return;
     dispatch(tabActions.setCurrentCategory(e.target.dataset.value));
+    if (e.target.dataset.value === "all") {
+      dispatch(
+        getModelsPreview(
+          activeTab,
+          e.target.dataset.value,
+          null,
+          false,
+          nsfwMode
+        )
+      );
+    }
   };
 
   const catHtml = categories?.hasOwnProperty(activeTab)

@@ -86,7 +86,7 @@ const ReferenceImageList = ({ usedImages }) => {
                         src={usedImages[i].url}
                         alt={`Reference image ${i}`}
                         onClick={openImageHandler}
-                        className={`${
+                        className={`${classes["ref-images__image"]} ${
                           !nsfwMode && nsfw ? classes["ref-images__nsfw"] : ""
                         }`}
                         imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL}

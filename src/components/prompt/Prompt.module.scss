@@ -72,6 +72,7 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
   // width: 10rem;
   overflow: hidden;
+  transition: all 0.3s;
 }
 .btn-mode {
   width: 5rem;
@@ -84,6 +85,11 @@
   transition: all 0.3s;
   color: #fff;
   cursor: pointer;
+
+  &:not(.btn-mode--active):hover {
+    background-color: var.$color-background-secondary;
+  }
+
   &--active {
     background-color: var.$color-primary;
   }

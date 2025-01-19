@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import classes from "./UsedCard.module.scss";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import TagList from "../tag-list/TagList";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -13,7 +13,12 @@ import Arrow from "../ui/Arrow";
 import Image from "../ui/image/Image";
 import { modelActions } from "../../store/model";
 import { motion } from "framer-motion";
-import { SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM } from "../../variables/constants";
+import {
+  ANIMATIONS_FM_HOVER_SCALE,
+  ANIMATIONS_FM_TAP_SCALE,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
+} from "../../variables/constants";
 const taglistItemHeight = 68;
 
 const UsedCard = memo(({ previewData, fullView, layoutId }) => {
@@ -61,7 +66,7 @@ const UsedCard = memo(({ previewData, fullView, layoutId }) => {
 
   const closeCardHandler = () => {
     dispatch(removeModelFromPanel(previewData.id));
-    dispatch(promptActions.removeTag(previewData.mainTag));
+    // dispatch(promptActions.removeTag(previewData.mainTag));
   };
 
   const closePanelHandler = () => {
@@ -77,9 +82,7 @@ const UsedCard = memo(({ previewData, fullView, layoutId }) => {
     <motion.div
       layout
       layoutId={layoutId || null}
-      // initial={FM_ANIMTION_SLIDEIN_INITIAL}
       initial={{ opacity: 0, y: 30 }}
-      // animate={FM_ANIMTION_SLIDEIN}
       animate={
         !layoutId ? { opacity: [0, 0, 0, 1], y: 0 } : { opacity: 1, y: 0 }
       }
@@ -90,7 +93,9 @@ const UsedCard = memo(({ previewData, fullView, layoutId }) => {
       id={previewData.id}
       className={`${classes.card} card ${
         layoutId ? classes["card--motion"] : ""
-      } ${cardIsHidden ? classes["card--hidden"] : ""}`}
+      } 
+      ${cardIsHidden ? classes["card--hidden"] : ""} 
+      `}
     >
       <div className={classes.head}>
         <Link
@@ -108,7 +113,8 @@ const UsedCard = memo(({ previewData, fullView, layoutId }) => {
                 : previewData.customPreviewImgUrl || previewData.imgUrl
             }
             alt="Preview"
-            imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM}
+            imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_BIG}
+            className={classes.image}
           />
         </Link>
         <div className={classes.info}>
@@ -132,12 +138,16 @@ const UsedCard = memo(({ previewData, fullView, layoutId }) => {
               {previewData?.versionName}
             </div>
           )}
-          <div>
-            <span className={classes.type}>
+          <div className={classes["base-info"]}>
+            <span
+              className={`${classes["base-info__item"]} ${classes["base-info__item--type"]}`}
+            >
               {previewData.type || previewData.modelType}
             </span>
             {previewData?.baseModel && (
-              <span className={classes.models}>{previewData.baseModel}</span>
+              <span className={classes["base-info__item"]}>
+                {previewData.baseModel}
+              </span>
             )}
           </div>
         </div>

@@ -128,6 +128,8 @@ export const ANIMATIONS_FM_SLIDEOUT = { opacity: 1, y: 0 };
 export const ANIMATIONS_FM_FADEOUT_EXIT = { opacity: 0, scale: 0.8 };
 export const ANIMATIONS_FM_ZOOM_IN_INITIAL = { opacity: 0, scale: 0.95 };
 export const ANIMATIONS_FM_ZOOM_IN = { opacity: 1, scale: 1 };
+export const ANIMATIONS_FM_HOVER_SCALE = { scale: 1.02 };
+export const ANIMATIONS_FM_TAP_SCALE = { scale: 0.98 };
 
 export const DEFAULT_DATA_TAGSETS_INPUT = [
   [

@@ -35,7 +35,15 @@
 .category__link {
   position: relative;
   // margin-bottom: 1rem;
+  border-bottom: 1px solid transparent;
+  // border-radius: 10px;
+  // padding: 0.2rem 0.4rem;
   cursor: pointer;
+  transition: all 0.3s;
+
+  &:not(.active):hover {
+    color: lighten(var.$color-primary, 20%);
+  }
 
   &--all {
     // padding-right: 1rem;
@@ -45,15 +53,20 @@
     border-radius: 10px;
     padding: 0.2rem 1.3rem;
     font-size: 1.6rem;
+    transition: all 0.3s;
+
+    &:not(.active):hover {
+      border: 1px solid lighten(var.$color-primary, 20%);
+    }
 
     &.active {
-      border-color: aquamarine;
+      border-color: #7fffd4;
     }
   }
 }
 
 .active {
-  color: aquamarine;
+  color: #7fffd4;
 }
 
 @media (max-width: 480px) {

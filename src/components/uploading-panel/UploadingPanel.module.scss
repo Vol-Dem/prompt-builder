@@ -120,6 +120,10 @@
 
 .uploading .uploading-dropdown {
   width: 25rem;
+  top: 100%;
+  left: 100%;
+  z-index: 30;
+  transform: translateX(-100%);
 }
 
 .uploading-list {
@@ -220,5 +224,11 @@
 @keyframes loading {
   100% {
     transform: rotate(1turn);
+  }
+}
+
+@media (max-width: 600px) {
+  .uploading .uploading-dropdown {
+    transform: translateX(-30%);
   }
 }

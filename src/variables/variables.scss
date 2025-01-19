@@ -1,4 +1,21 @@
 //COLORS
+$color-primary: #6526a0;
+$color-secondary: #eacc48;
+$color-tertiary: #c2005e;
+$color-link: #7278f0;
+$color-red: #ca0000;
+$color-black: #000;
+$color-white: #fff;
+$color-yellow: #eacc48;
+$color-violet: #7d6b9a;
+$color-violet-dark: #8a2be2;
+$color-violet-light: #e9d8f6;
+$color-green: #2abead;
+$color-gray: #bdbdbd;
+$color-gray-light: #e6f2fb;
+$color-gray-dark: #5c5c5c;
+$color-violet-grey: #696976;
+//background
 $color-background-primary: #262c39;
 $color-background-secondary: #1a1e27;
 $color-background-tertiary: #201f2f;
@@ -8,6 +25,8 @@ $color-background-gray: #f6f9ff;
 $color-background-violet: #302838;
 $color-background-gray-light: #fafafa;
 $color-background-red: #9b1919;
+$color-input-bg: #212b3a;
+//text
 $color-text-primary: #304750;
 $color-text-light: #ffffff;
 $color-text-orange: #ad6c12;
@@ -19,23 +38,6 @@ $color-text-green: #49ab6b;
 $color-text-white: #e8e8e8;
 $color-text-gray: #acacac;
 $color-text-gray-dark: #808080;
-$color-link: #7278f0;
-$color-gray: #bdbdbd;
-$color-gray-light: #e6f2fb;
-$color-red: #ca0000;
-$color-black: #000;
-$color-primary: #6526a0;
-$color-primaryd: #d68023;
-$color-secondary: #eacc48;
-$color-tertiary: #c2005e;
-$color-white: #fff;
-$color-yellow: #eacc48;
-$color-violet: #7d6b9a;
-$color-violet-dark: #8a2be2;
-$color-violet-light: #e9d8f6;
-$color-violet-grey: #696976;
-$color-green: #2abead;
-$color-input-bg: #212b3a;
 
 //FONTS
 // $font-family-primary: "Raleway", sans-serif;
@@ -55,7 +57,7 @@ $box-shadow-dark: 0rem 0rem 1rem rgba(0, 0, 0, 0.9);
 $box-shadow-inset: inset 0rem 0rem 0.5rem rgba(0, 0, 0, 0.3);
 
 //BORDERS
-$border-radius: 1rem;
+$border-radius: 10px;
 
 $clip-path-arrow-left: polygon(
   60% 0,

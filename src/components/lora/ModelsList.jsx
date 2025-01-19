@@ -78,21 +78,21 @@ const ModelsList = () => {
     setIsIntersecting(isPageEnd);
   }, [isPageEnd]);
 
-  useEffect(() => {
-    dispatch(tabActions.resetModelsData());
-    dispatch(tabActions.setIsLastPage(false));
-    // if (
-    //   activeTab === "all" ||
-    //   activeCategory === "all" ||
-    //   activeSubcategory === "all"
-    // ) {
-    //   dispatch(tabActions.resetModelsData());
-    //   dispatch(tabActions.setIsLastPage(false));
-    // } else {
-    //   // dispatch(tabActions.setIsLastPage(false));
-    //   dispatch(tabActions.resetModelsData());
-    // }
-  }, [activeTab, activeCategory, activeSubcategory, dispatch]);
+  // useEffect(() => {
+  //   dispatch(tabActions.resetModelsData());
+  //   dispatch(tabActions.setIsLastPage(false));
+  //   // if (
+  //   //   activeTab === "all" ||
+  //   //   activeCategory === "all" ||
+  //   //   activeSubcategory === "all"
+  //   // ) {
+  //   //   dispatch(tabActions.resetModelsData());
+  //   //   dispatch(tabActions.setIsLastPage(false));
+  //   // } else {
+  //   //   // dispatch(tabActions.setIsLastPage(false));
+  //   //   dispatch(tabActions.resetModelsData());
+  //   // }
+  // }, [activeTab, activeCategory, activeSubcategory, dispatch]);
 
   useEffect(() => {
     if (

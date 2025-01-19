@@ -142,50 +142,44 @@ const UploadingPanel = () => {
       </button>
       <AnimatePresence>
         {uploadingListIsOpen && (
-          <motion.div
-            initial={ANIMATIONS_FM_ZOOM_IN_INITIAL}
-            animate={ANIMATIONS_FM_ZOOM_IN}
-            exit={ANIMATIONS_FM_ZOOM_IN_INITIAL}
+          <DropDownList
+            className={classes["uploading-dropdown"]}
+            onClose={closeUploadingLIstHandler}
           >
-            <DropDownList
-              className={classes["uploading-dropdown"]}
-              onClose={closeUploadingLIstHandler}
-            >
-              <ul className={classes["uploading-list"]}>{uploadingItems}</ul>
-              {!queue.length && (
-                <div className={classes["uploading__empty"]}>
-                  Uploading queue is empty
-                </div>
-              )}
-              {!!rejected?.length && (
-                <>
-                  <div className={classes["rejected-panel"]}>
-                    <div className={classes["rejected-panel__title"]}>
-                      -Rejected-
-                    </div>
-                    <div className={classes["btns-container"]}>
-                      <ButtonTertiary
-                        onClick={() => {
-                          dispatch(uploadActions.retryUploadingAll());
-                        }}
-                      >
-                        Retry All
-                      </ButtonTertiary>
-                      <ButtonTertiary
-                        onClick={() => {
-                          dispatch(uploadActions.clearRejected());
-                        }}
-                      >
-                        Clear All
-                      </ButtonTertiary>
-                    </div>
+            <ul className={classes["uploading-list"]}>{uploadingItems}</ul>
+            {!queue.length && (
+              <div className={classes["uploading__empty"]}>
+                Uploading queue is empty
+              </div>
+            )}
+            {!!rejected?.length && (
+              <>
+                <div className={classes["rejected-panel"]}>
+                  <div className={classes["rejected-panel__title"]}>
+                    -Rejected-
                   </div>
+                  <div className={classes["btns-container"]}>
+                    <ButtonTertiary
+                      onClick={() => {
+                        dispatch(uploadActions.retryUploadingAll());
+                      }}
+                    >
+                      Retry All
+                    </ButtonTertiary>
+                    <ButtonTertiary
+                      onClick={() => {
+                        dispatch(uploadActions.clearRejected());
+                      }}
+                    >
+                      Clear All
+                    </ButtonTertiary>
+                  </div>
+                </div>
 
-                  <ul className={classes["uploading-list"]}>{rejectedItems}</ul>
-                </>
-              )}
-            </DropDownList>
-          </motion.div>
+                <ul className={classes["uploading-list"]}>{rejectedItems}</ul>
+              </>
+            )}
+          </DropDownList>
         )}
       </AnimatePresence>
     </div>

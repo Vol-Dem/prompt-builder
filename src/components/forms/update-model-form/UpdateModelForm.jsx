@@ -407,7 +407,9 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
       // const subData = formdata.getAll("sub").filter(Boolean);
       // const sub = subData.map((el) => el?.trim());
       // console.log(subCatInputs);
-      const sub = subCatInputs.map((el) => el?.selected?.name?.trim());
+      const sub = [
+        ...new Set(subCatInputs.map((el) => el?.selected?.name?.trim())),
+      ];
       const mainTag = formdata.get("main-tag")?.trim() || "";
       const weight = parseFloat(formdata.get("weight")?.trim()) || null;
       const minWeight = parseFloat(minWeightInput.value) || null;

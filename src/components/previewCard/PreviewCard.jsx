@@ -7,8 +7,10 @@ import ActivationTag from "../activation-tag/ActivationTag";
 import ButtonSquareAdd from "../ui/ButtonSquareAdd";
 import { motion } from "framer-motion";
 import {
+  ANIMATIONS_FM_HOVER_SCALE,
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
+  ANIMATIONS_FM_TAP_SCALE,
   SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
   SETTINGS_IMAGE_PREVIEW_WIDTH_CARD,
 } from "../../variables/constants";
@@ -60,6 +62,9 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
         layout: { duration: 0 },
         // type: "spring",
       }}
+      // whileHover={!fullView ? ANIMATIONS_FM_HOVER_SCALE : null}
+      // whileTap={!fullView ? ANIMATIONS_FM_TAP_SCALE : null}
+      // onHoverStart={() => console.log('hover started!')}
       id={previewData.id}
       className={`${classes.card} ${fullView ? classes["card__full"] : ""} ${
         layout ? classes["card--motion"] : ""
@@ -82,6 +87,7 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
             }
             alt="Preview"
             imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_BIG}
+            className={true ? classes["card__image"] : ""}
           />
           {!fullView && (
             <div className={classes["card__content"]}>
