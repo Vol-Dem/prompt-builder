@@ -6,7 +6,9 @@
   align-items: center;
   gap: 0.6rem;
 
-  & svg {
+  &__external-icon {
     width: 1.6rem;
+    height: 1.6rem;
+    margin-bottom: 0.2rem;
   }
 }

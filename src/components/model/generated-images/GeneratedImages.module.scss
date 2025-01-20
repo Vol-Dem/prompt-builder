@@ -33,13 +33,6 @@
   flex-wrap: wrap;
 }
 
-.versions {
-  display: flex;
-  gap: 2rem;
-  list-style: none;
-  flex-wrap: wrap;
-}
-
 .version {
   transition: all 0.3s;
   border-radius: 0.5rem;
@@ -57,7 +50,11 @@
 }
 
 .versions {
-  overflow: hidden;
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  flex-wrap: wrap;
+  // overflow: hidden;
   transition: all 0.3s ease;
 
   &__list {

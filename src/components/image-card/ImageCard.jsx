@@ -61,10 +61,12 @@ const ImageCard = ({ activeImgNum }) => {
   const dispatch = useDispatch();
   const resorcesRef = useRef(null);
 
-  const openFormHandler = (newModelId, newModelVersionId) => {
+  const openFormHandler = (newModelId, newModelVersionId, modelType) => {
+    console.log(modelType);
     setModelToSave({
       modelId: newModelId,
       modelVersionId: newModelVersionId,
+      modelType,
     });
     setFormIsOpen(true);
   };
@@ -534,7 +536,8 @@ const ImageCard = ({ activeImgNum }) => {
                   onClick={openFormHandler.bind(
                     null,
                     resource?.modelId,
-                    resource?.modelVersionId || resource?.versionId
+                    resource?.modelVersionId || resource?.versionId,
+                    resource?.type
                   )}
                 />
               )}
@@ -802,6 +805,7 @@ const ImageCard = ({ activeImgNum }) => {
               newModelId={modelToSave?.modelId}
               newModelVersionId={modelToSave?.modelVersionId}
               onSave={updateImageResources}
+              newModelType={modelToSave?.modelType || null}
             />
           </Modal>
         )}

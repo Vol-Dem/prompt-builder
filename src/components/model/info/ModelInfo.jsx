@@ -60,7 +60,6 @@ const ModelInfo = ({ customData }) => {
           <LinkA
             external={true}
             href={`https://${model?.src}/models/${model?.id}?modelVersionId=${curVersion?.id}`}
-            className={classes.link}
           >
             civitai
           </LinkA>

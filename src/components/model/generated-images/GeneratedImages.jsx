@@ -145,6 +145,7 @@ const GeneratedImages = memo(({ customData }) => {
   }, [curImagesModelVersionId, curVersion, customData]);
 
   const openSavedVersionImagesHandler = (e) => {
+    if (+e.target.id === curImagesModelVersionId) return;
     resetExamples();
     //Temp
     if (e.target.id === "unsorted") {
@@ -311,9 +312,9 @@ const GeneratedImages = memo(({ customData }) => {
     [
       imagesSortValue,
       nextCursor,
-      nsfwMode,
       curImagesModelVersionId,
       sortExampleImages,
+      nsfwLevel
     ]
   );
 
@@ -609,6 +610,7 @@ const GeneratedImages = memo(({ customData }) => {
             visibleImgAmount={1}
             modelId={model.id}
             saved={true}
+            showInView={true}
           />
         );
       });
@@ -634,6 +636,7 @@ const GeneratedImages = memo(({ customData }) => {
             saved={!postId}
             modelId={model.id}
             versionId={curImagesModelVersionId}
+            showInView={true}
           />
         );
       });

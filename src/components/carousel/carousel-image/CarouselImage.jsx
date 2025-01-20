@@ -8,23 +8,16 @@ import {
 } from "../../../store/model";
 import ButttonTertiary from "../../ui/ButtonTertiary";
 import Modal from "../../ui/Modal";
-import Image from "../../ui/image/Image";
 import DeleteRequest from "../../ui/DeleteRequest";
 import ButtonAdd from "../../ui/ButtonSquareAdd";
 import ImageSvg from "../../../assets/ImageSvg";
 import DotsSvg from "../../../assets/DotsSvg";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  ANIMATIONS_FM_SLIDEIN,
-  ANIMATIONS_FM_SLIDEIN_INITIAL,
   ANIMATIONS_FM_ZOOM_IN,
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
   SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
-  SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
 } from "../../../variables/constants";
-import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
-import TagSetsForm from "../../forms/tag-sets-form/TagSetsForm";
-import Buttton from "../../ui/Button";
 import SetTagSetPreview from "../set-tagset-preview/SetTagSetPreview";
 import { transformSrcPreview } from "../../../utils/generalUtils";
 
@@ -43,23 +36,22 @@ const CarouselImage = ({
   onOpen,
   active,
   side,
+  imageWidth,
 }) => {
   const [imgIsLoading, setImgIsLoading] = useState(false);
   const [imgIsLoaded, setImgIsLoaded] = useState(false);
   const [imgIsSaved, setImgIsSaved] = useState(!!saved);
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
-  const [tagSetsFormIsOpen, setTagSetsFormIsOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState("#");
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [tagSetMenuIsOpen, settagSetMenuIsOpen] = useState(false);
-  const [showNsfwPreview, setShowNsfwPreview] = useState(false);
   const [curTagSetVersionId, setCurTagSetVersionId] = useState("tsv-def");
   const dispatch = useDispatch();
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
-  // console.log(id);
+
   useEffect(() => {
     if (src && !imgIsLoaded && !imgError) {
       const previewSrc = transformSrcPreview(
@@ -97,33 +89,6 @@ const CarouselImage = ({
     setMenuIsOpen((prevState) => !prevState);
   };
 
-  const setTagSetPreviwImgHandler = (e) => {
-    let curtagSet;
-    if (curTagSetVersionId === "tsv-def") {
-      curtagSet = model.defaultCustomData.tagSetsData;
-    } else {
-      curtagSet = model.modelVersionsCustomData[curTagSetVersionId].tagSetsData;
-    }
-
-    const imgKey = e.target.dataset.nsfw === "nsfw" ? "nsfwImgUrl" : "imgUrl";
-
-    const updatedTagSet = curtagSet.map((tagSet, i) => {
-      if (i === +e.target.dataset.id) {
-        return {
-          ...tagSet,
-          [imgKey]: src,
-        };
-      }
-      return tagSet;
-    });
-
-    dispatch(setTagSetPreviewImg(curTagSetVersionId, updatedTagSet));
-  };
-
-  const openTagSetVersionHandler = (e) => {
-    setCurTagSetVersionId(e.target.id);
-  };
-
   const openTagSetMenuHandler = () => {
     settagSetMenuIsOpen(true);
     setMenuIsOpen(false);
@@ -131,120 +96,8 @@ const CarouselImage = ({
 
   const closeTagSetMenuHandler = () => {
     settagSetMenuIsOpen(false);
-    setTagSetsFormIsOpen(false);
   };
 
-  const tagSetVersionsHtml =
-    model?.modelVersionsCustomData &&
-    Object.values(model?.modelVersionsCustomData)
-      ?.sort((a, b) => a?.index - b?.index)
-      .flatMap((version, i) => {
-        if (!version?.tagSetsData?.length) return [];
-        return (
-          <li
-            key={i}
-            id={`${version.versionId}`}
-            className={`${classes["tag-sets-versions__item"]} ${
-              curTagSetVersionId === `${version.versionId}`
-                ? classes["tag-sets-versions__item--active"]
-                : ""
-            }`}
-            onClick={openTagSetVersionHandler}
-          >
-            {version.name}
-          </li>
-        );
-      });
-
-  const defTagSetsHtml = model?.defaultCustomData?.tagSetsData?.map(
-    (tagSet, i) => {
-      return (
-        <motion.li
-          key={i}
-          initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-          animate={ANIMATIONS_FM_SLIDEIN}
-          data-id={i}
-          className={classes["tag-sets__item"]}
-        >
-          <div className={classes["tag-sets__img"]}>
-            <Image
-              src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl}
-              imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM}
-            />
-          </div>
-          <div className={classes["tag-sets__info"]}>
-            <h3 className={classes["tag-sets__name"]}>{tagSet.name}</h3>
-            <div className={classes["tag-sets__btn-container"]}>
-              <ButttonTertiary
-                type="button"
-                onClick={setTagSetPreviwImgHandler}
-                button={{ "data-id": i, "data-nsfw": "safe" }}
-              >
-                Set as preview
-              </ButttonTertiary>
-              {nsfwMode && (
-                <ButttonTertiary
-                  type="button"
-                  onClick={setTagSetPreviwImgHandler}
-                  button={{ "data-id": i, "data-nsfw": "nsfw" }}
-                >
-                  Set as NSFW preview
-                </ButttonTertiary>
-              )}
-            </div>
-          </div>
-        </motion.li>
-      );
-    }
-  );
-
-  const versionTagsetsHtml =
-    model?.modelVersionsCustomData &&
-    model?.modelVersionsCustomData[curTagSetVersionId]?.tagSetsData.map(
-      (tagSet, i) => {
-        return (
-          <motion.li
-            key={i}
-            initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-            animate={ANIMATIONS_FM_SLIDEIN}
-            data-id={i}
-            className={classes["tag-sets__item"]}
-          >
-            <div className={classes["tag-sets__img"]}>
-              <Image
-                src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl}
-                imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM}
-              />
-            </div>
-            <div className={classes["tag-sets__info"]}>
-              <h3 className={classes["tag-sets__name"]}>{tagSet.name}</h3>
-              <div className={classes["tag-sets__btn-container"]}>
-                <ButttonTertiary
-                  type="button"
-                  onClick={setTagSetPreviwImgHandler}
-                  button={{ "data-id": i, "data-nsfw": "safe" }}
-                >
-                  Set as preview
-                </ButttonTertiary>
-                {nsfwMode && (
-                  <ButttonTertiary
-                    type="button"
-                    onClick={setTagSetPreviwImgHandler}
-                    button={{ "data-id": i, "data-nsfw": "nsfw" }}
-                  >
-                    Set as NSFW preview
-                  </ButttonTertiary>
-                )}
-              </div>
-            </div>
-          </motion.li>
-        );
-      }
-    );
-
-  const nsfwSwitchHandler = () => {
-    setShowNsfwPreview((prevState) => !prevState);
-  };
   const deleteImgPostHandler = () => {
     const imgPostId = postId[0].postId;
     const postData = model?.savedImages[versionId]?.find(
@@ -286,13 +139,6 @@ const CarouselImage = ({
     };
   }, [menuIsOpen, closeMenuHandler]);
 
-  const openTagSetsForm = () => {
-    setTagSetsFormIsOpen(true);
-  };
-  const closeTagSetsForm = () => {
-    setTagSetsFormIsOpen(false);
-  };
-
   return (
     <motion.div
       // layoutId={id}
@@ -301,6 +147,7 @@ const CarouselImage = ({
           ? classes["container--shadow"]
           : ""
       }`}
+      style={{ width: imageWidth }}
     >
       {imgIsLoading && <div className={classes.loading}>Loading...</div>}
       {imgError && (
@@ -390,7 +237,6 @@ const CarouselImage = ({
       {!imgError && imgSrc !== "#" && (
         <>
           <motion.img
-            // layoutId={active ? src : null}
             className={`${classes.image} ${
               imageData?.width - imageData?.height < 0
                 ? classes["image--portrait"]
@@ -416,78 +262,6 @@ const CarouselImage = ({
             onClose={closeTagSetMenuHandler}
           >
             <SetTagSetPreview src={src} />
-            {/* <>
-              <div className={classes["tag-sets-head"]}>
-                <div className={classes["tag-sets-title"]}>Tag sets</div>
-
-                {!tagSetsFormIsOpen && (
-                  <Buttton onClick={openTagSetsForm}>Add tag set</Buttton>
-                )}
-                {nsfwMode && (
-                  <div className={classes["mode-switch"]}>
-                    <button
-                      type="button"
-                      onClick={nsfwSwitchHandler}
-                      className={`${classes["btn-mode"]} ${
-                        !showNsfwPreview ? classes["btn-mode--active"] : ""
-                      }`}
-                    >
-                      SFW
-                    </button>
-                    <button
-                      type="button"
-                      onClick={nsfwSwitchHandler}
-                      className={`${classes["btn-mode"]} ${
-                        showNsfwPreview ? classes["btn-mode--active"] : ""
-                      }`}
-                    >
-                      NSFW
-                    </button>
-                  </div>
-                )}
-              </div>
-              <ul className={classes["tag-sets-versions"]}>
-                {!!model.defaultCustomData?.tagSetsData?.length && (
-                  <li
-                    id={`tsv-def`}
-                    className={`${classes["tag-sets-versions__item"]} ${
-                      curTagSetVersionId === "tsv-def"
-                        ? classes["tag-sets-versions__item--active"]
-                        : ""
-                    }`}
-                    onClick={openTagSetVersionHandler}
-                  >
-                    Default
-                  </li>
-                )}
-                {tagSetVersionsHtml}
-                {tagSetsFormIsOpen && (
-                  <TagSetsForm
-                    modelId={model.id}
-                    // versionData={customVersionData}
-                    onClose={closeTagSetsForm}
-                  />
-                )}
-              </ul>
-              {!model.defaultCustomData?.tagSetsData?.length &&
-                !tagSetVersionsHtml?.length && (
-                  <div className={classes["notification"]}>
-                    <ExclamationCircleSvg
-                      className={classes["notification__svg"]}
-                    />
-                    <p className={classes["notification__text"]}>
-                      You don't have any tag sets. <br /> Press "Add tag set" to
-                      add new tag set!
-                    </p>
-                  </div>
-                )}
-              {curTagSetVersionId === "tsv-def" && (
-                <ul className={classes["tag-sets"]}>{defTagSetsHtml}</ul>
-              )}
-              {curTagSetVersionId !== "tsv-def" && (
-                <ul className={classes["tag-sets"]}>{versionTagsetsHtml}</ul>
-              )}
-            </> */}
           </Modal>
         )}
         {deleteRequestIsOpen && (

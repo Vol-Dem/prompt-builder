@@ -1,14 +1,50 @@
 export const MODEL_TYPES = [
-  { name: "LoRa/LoCon", value: "lora", position: 1 },
-  { name: "Checkpoint", value: "checkpoint", position: 2 },
-  { name: "Embedding", value: "embedding", position: 3 },
-  { name: "Hypernetwork", value: "hypernetwork", position: 4 },
-  { name: "Wildcard", value: "wildcard", position: 5 },
-  { name: "Motion", value: "motionmodule", position: 6 },
-  { name: "Controlnet", value: "controlnet", position: 7 },
-  { name: "VAE", value: "vae", position: 8 },
-  { name: "Wildcards", value: "wildcards", position: 9 },
-  { name: "Other", value: "other", position: 10 },
+  {
+    name: "LoRa/LoCon/DoRa",
+    value: "lora",
+    position: 1,
+    aliases: ["lora", "locon", "dora"],
+  },
+  {
+    name: "Checkpoint",
+    value: "checkpoint",
+    position: 2,
+    aliases: ["checkpoint"],
+  },
+  {
+    name: "Embedding",
+    value: "embedding",
+    position: 3,
+    aliases: ["embedding", "textualinversion"],
+  },
+  {
+    name: "Hypernetwork",
+    value: "hypernetwork",
+    position: 4,
+    aliases: ["hypernetwork"],
+  },
+  { name: "Wildcard", value: "wildcard", position: 5, aliases: ["wildcard"] },
+  {
+    name: "Motion",
+    value: "motionmodule",
+    position: 6,
+    aliases: ["motionmodule"],
+  },
+  {
+    name: "Controlnet",
+    value: "controlnet",
+    position: 7,
+    aliases: ["controlnet"],
+  },
+  { name: "VAE", value: "vae", position: 8, aliases: ["vae"] },
+  {
+    name: "Wildcards",
+    value: "wildcards",
+    position: 9,
+    aliases: ["wildcards"],
+  },
+  { name: "Upscaler", value: "upscaler", position: 10, aliases: ["upscaler"] },
+  { name: "Other", value: "other", position: 10, aliases: ["other"] },
 ];
 
 //SETTINGS
@@ -26,6 +62,12 @@ export const SETTINGS_IMAGE_GENERATED_PER_PAGE = 100;
 export const SETTINGS_SEARCH_RESULT_PER_PAGE = 10;
 export const SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE = 4;
 export const SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT = 5;
+export const SETTINGS_MODEL_TYPE_DEF = "lora";
+export const SETTINGS_MODEL_TYPE_UNKNOWN = "other";
+export const SETTINGS_CAROUSEL_IMAGE_HEIGHT = 390;
+export const SETTINGS_CAROUSEL_IMAGE_WIDTH = 266;
+export const SETTINGS_CAROUSEL_TRANSITION_DURATION = 300;
+export const SETTINGS_CAROUSEL_INTERSECTION_MARGIN = 1000;
 
 //URLS
 export const URL_CIV_MODELS = "https://civitai.com/api/v1/models/";

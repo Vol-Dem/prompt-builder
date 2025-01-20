@@ -48,6 +48,8 @@ import {
   ANIMATIONS_FM_FADEOUT_EXIT,
   DEFAULT_DATA_TAGSETS_INPUT,
   ERROR_MESSAGE_INVALID_DATA,
+  SETTINGS_MODEL_TYPE_UNKNOWN,
+  SETTINGS_MODEL_TYPE_DEF,
 } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
@@ -78,13 +80,20 @@ const subCatsDefData = {
   errorMessage: "This field is required",
 };
 
-const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
+const UpdateModelForm = ({
+  modelData,
+  id,
+  newModelId,
+  newModelVersionId,
+  newModelType,
+  onSave,
+}) => {
   const [modelIsSaving, setModelIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [modelTypeInput, setModelTypeInput] = useState(
-    modelData?.modelType || "lora"
+    modelData?.modelType || SETTINGS_MODEL_TYPE_DEF
   );
   const [srcInput, setSrcInput] = useState({
     value: "civitai.com",
@@ -233,70 +242,83 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
       setSubCatInputs([
         { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
       ]);
-      return;
+
+      if (newModelType) {
+        const existedModelType = MODEL_TYPES.find((type) =>
+          type.aliases.includes(newModelType.toLowerCase())
+        )?.value;
+
+        if (existedModelType) {
+          setModelTypeInput(existedModelType);
+        } else {
+          setModelTypeInput(SETTINGS_MODEL_TYPE_UNKNOWN);
+        }
+      }
     }
 
-    const versionStatusInputData = Object.values(
-      modelData?.modelVersionsCustomData
-    )
-      ?.sort((a, b) => a?.index - b?.index)
-      .map((version, i) => {
+    if (modelData) {
+      const versionStatusInputData = Object.values(
+        modelData?.modelVersionsCustomData
+      )
+        ?.sort((a, b) => a?.index - b?.index)
+        .map((version, i) => {
+          return {
+            type: "checkbox",
+            id: version.versionId + "in",
+            name: version.versionName,
+            label: version.name,
+            value: version.downloadStatus,
+          };
+        });
+
+      setVersionsDownloadStatus(versionStatusInputData || []);
+
+      const subCats = modelData.sub.flatMap((subId, i) => {
+        const subData = categories[modelData.modelType]
+          ?.find((category) => category.id === modelData.main)
+          ?.subcategories.find((sucategory) => sucategory.id === subId);
+
+        if (!subData) {
+          return [];
+        }
+
         return {
-          type: "checkbox",
-          id: version.versionId + "in",
-          name: version.versionName,
-          label: version.name,
-          value: version.downloadStatus,
+          type: "text",
+          id: `subcat-${i}`,
+          name: subCatsDefData.name,
+          placeholder: subCatsDefData.placeholder,
+          value: subData?.name || subId || "",
+          query: subData?.name || subId || "",
+          selected: { id: subData.id, name: subData.name },
+          isValid: true,
+          errorMessage: "",
         };
       });
 
-    setVersionsDownloadStatus(versionStatusInputData || []);
+      setSubCatInputs(subCats);
 
-    const subCats = modelData.sub.flatMap((subId, i) => {
-      const subData = categories[modelData.modelType]
-        ?.find((category) => category.id === modelData.main)
-        ?.subcategories.find((sucategory) => sucategory.id === subId);
+      const mainCategoryName = categories[modelData?.modelType]?.find(
+        (category) => category.id === modelData?.main
+      )?.name;
 
-      if (!subData) {
-        return [];
-      }
-
-      return {
-        type: "text",
-        id: `subcat-${i}`,
-        name: subCatsDefData.name,
-        placeholder: subCatsDefData.placeholder,
-        value: subData?.name || subId || "",
-        query: subData?.name || subId || "",
-        selected: { id: subData.id, name: subData.name },
+      setMainInput({
+        value: mainCategoryName || modelData?.main,
         isValid: true,
-        errorMessage: "",
-      };
-    });
+      });
+      setMainCategorySelected({
+        name: mainCategoryName || modelData?.main,
+        id: modelData?.main,
+        isValid: true,
+      });
 
-    setSubCatInputs(subCats);
-
-    const mainCategoryName = categories[modelData?.modelType]?.find(
-      (category) => category.id === modelData?.main
-    )?.name;
-
-    setMainInput({
-      value: mainCategoryName || modelData?.main,
-      isValid: true,
-    });
-    setMainCategorySelected({
-      name: mainCategoryName || modelData?.main,
-      id: modelData?.main,
-      isValid: true,
-    });
-
-    setTagSetsInputs(
-      createTagSetsInputData(
-        modelData?.defaultCustomData?.tagSetsData,
-        DEFAULT_DATA_TAGSETS_INPUT
-      )
-    );
-  }, [modelData, categories]);
+      setTagSetsInputs(
+        createTagSetsInputData(
+          modelData?.defaultCustomData?.tagSetsData,
+          DEFAULT_DATA_TAGSETS_INPUT
+        )
+      );
+    }
+  }, [modelData, categories, newModelType]);
 
   const createCategoryId = (id, categoriesData) => {
     if (!id) {
@@ -394,6 +416,10 @@ const UpdateModelForm = ({ modelData, id, newModelId, onSave }) => {
         modelId = +idInput.value;
       } else {
         [modelId, modelVersionId] = parseIdsFromInput(idInput.value);
+      }
+
+      if (newModelVersionId) {
+        modelVersionId = newModelVersionId;
       }
 
       const modelName = titleInput.value.trim();
