@@ -3,6 +3,8 @@ import {
   ERROR_MESSAGE_DEFAULT,
   REGEX_SPLIT_TAGS,
   SETTINGS_IMAGE_PREVIEW_WIDTH_DEF,
+  SETTINGS_NSFW_VALUES_DATA,
+  SETTINGS_PROMPT_DUPLICATE_EXCEPTIONS,
 } from "../variables/constants";
 
 export const clearObjectKeys = (obj) => {
@@ -43,7 +45,9 @@ export const addDelayPromise = (delay) => {
 
 export const splitTags = (arr) => {
   const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
-  return arr.split(splitRegEx).flatMap((tag) => tag.trim() || []);
+
+  const arrFixBreak = fixBreakInPrompt(arr);
+  return arrFixBreak?.split(splitRegEx)?.flatMap((tag) => tag?.trim() || []);
 };
 
 /**
@@ -335,7 +339,12 @@ export const markDuplicateTags = (tagsArr) => {
       const duplicate = tags
         .slice(i + 1)
         .find((nextTag) => nextTag.tag === tag.tag);
-      if (duplicate) {
+
+      const isException = SETTINGS_PROMPT_DUPLICATE_EXCEPTIONS.includes(
+        duplicate?.tag
+      );
+
+      if (duplicate && !isException) {
         duplicates.push(tag);
         return { ...tag, duplicateId: duplicates.length };
       } else {
@@ -490,4 +499,24 @@ export const parseIdsFromInput = (value) => {
       return [+modelId, +modelVersionId];
     }
   }
+};
+
+export const checkIsInCurrentNsfwRange = (curNsfwLevel, curNsfwvalue) => {
+  const nsfwValues = SETTINGS_NSFW_VALUES_DATA.map(
+    (nsfwValueData) => nsfwValueData.value
+  );
+  const curNsfwLevelIndex = nsfwValues.findIndex(
+    (nsfwValue) => nsfwValue === curNsfwLevel
+  );
+  const displayedValues = nsfwValues.slice(0, curNsfwLevelIndex + 1);
+
+  return displayedValues.includes(curNsfwvalue);
+};
+
+export const fixBreakInPrompt = (prompt) => {
+  const fixedPromt = prompt
+    ?.replaceAll("BREAK ", "BREAK, ")
+    ?.replaceAll("BREAK\n", "BREAK, ");
+
+  return fixedPromt;
 };

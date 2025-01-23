@@ -4,14 +4,14 @@ import { promptActions } from "../../store/prompt";
 import CrossSvg from "../../assets/CrossSvg";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { SPLIT_TAG_REGEX } from "../../variables/constants";
+import {
+  SETTINGS_PROMPT_BREAK_ALIASES,
+  SPLIT_TAG_REGEX,
+} from "../../variables/constants";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import Input from "./Input";
 
-const minInputWidth = 150;
-
 const TagsTextarea = ({
-  data,
   className,
   placeholder,
   aditionalPlacegholder,
@@ -21,14 +21,38 @@ const TagsTextarea = ({
   const [editTagInput, setEditTagInput] = useState({ value: "" });
   const [editWeightInput, setEditWeightInput] = useState({ value: "" });
   const [inputWidth, setInputWidth] = useState(null);
+  const [prevPromptLength, setPrevPromptLength] = useState(null);
   const dispatch = useDispatch();
-  const curPromptArr = useSelector((state) => state.prompt.curPromptArr);
+  const curPosPromptArr = useSelector((state) => state.prompt.curPromptArr);
   const curNegPromptArr = useSelector((state) => state.prompt.curNegPromptArr);
   const fieldRef = useRef(null);
+  const lastTagRef = useRef(null);
 
   useEffect(() => {
     const promptArr =
-      promptType === "positive" ? curPromptArr : curNegPromptArr;
+      promptType === "positive" ? curPosPromptArr : curNegPromptArr;
+    if (
+      lastTagRef?.current &&
+      curPrompt?.length === promptArr.length &&
+      curPrompt?.length > prevPromptLength
+    ) {
+      setPrevPromptLength(promptArr.length);
+      lastTagRef.current.scrollIntoView({
+        behavior: "smooth",
+        // block: autoScrollTo,
+      });
+    }
+  }, [
+    lastTagRef?.current,
+    curPrompt,
+    prevPromptLength,
+    curPosPromptArr,
+    curNegPromptArr,
+  ]);
+
+  useEffect(() => {
+    const promptArr =
+      promptType === "positive" ? curPosPromptArr : curNegPromptArr;
     const tagsData = promptArr.map((item, i) => {
       return {
         ...item,
@@ -47,8 +71,12 @@ const TagsTextarea = ({
     //       dropLeft: null,
     //     };
     //   });
-    setCurrentPrompt(tagsData);
-  }, [curPromptArr, curNegPromptArr, promptType]);
+
+    setCurrentPrompt((prevState) => {
+      setPrevPromptLength(prevState?.length || null);
+      return tagsData;
+    });
+  }, [curPosPromptArr, curNegPromptArr, promptType]);
 
   const removeTagHandler = (e) => {
     const value = e.target.closest(`.${classes.btn}`).dataset.value;
@@ -326,148 +354,156 @@ const TagsTextarea = ({
   };
 
   const tagItemsHtml = curPrompt.map((item, i) => {
-    return (
-      <motion.li
-        key={item.id}
-        layout
-        layoutId={item.id}
-        initial={{ opacity: 0, scale: 0.8 }}
-        variants={{
-          hidden: { opacity: 0, scale: 0.5 },
-          visible: {
-            opacity: 1,
-            scale: 1,
-            transition: { type: "spring" },
-          },
-        }}
-        animate="visible"
-        exit={{ y: -30, x: 30, opacity: 0, scale: 0.5 }}
-        // className={`${classes["tag-container"]}`}
-        className={`${classes["tag-container"]} ${
-          item.dropLeft !== null && item.dropLeft ? classes["drop-left"] : ""
-        } ${
-          item.dropLeft !== null && !item.dropLeft ? classes["drop-right"] : ""
-        }`}
-        onDragOver={dragOverHandler}
-        onDragLeave={dragLeaveHandler}
-        // onDrop={dropHandler}
+    const isLastItem = i === curPrompt.length - 1;
+    const isNewItem = curPrompt.length > prevPromptLength;
+    const isBreak = SETTINGS_PROMPT_BREAK_ALIASES.includes(item.tag.trim());
 
-        data-item={JSON.stringify({ ...item, type: promptType })}
-        data-id={item.id}
-        // data-tag={item.tag}
-        // data-type={promptType}
-      >
-        <div
-          className={`${classes.tag} ${
-            !item.duplicateId
-              ? ""
-              : classes[`tag--duplicate-${item.duplicateId}`]
+    return (
+      <li key={item.id} className={classes["tag-wrap"]}>
+        <motion.span
+          ref={isLastItem && isNewItem ? lastTagRef : null}
+          key={item.id}
+          layout
+          layoutId={item.id}
+          initial={{ opacity: 0, scale: 0.8 }}
+          variants={{
+            hidden: { opacity: 0, scale: 0.5 },
+            visible: {
+              opacity: 1,
+              scale: 1,
+              transition: { type: "spring" },
+            },
+          }}
+          animate="visible"
+          exit={{ y: -30, x: 30, opacity: 0, scale: 0.5 }}
+          // className={`${classes["tag-container"]}`}
+          className={`${classes["tag-container"]} ${
+            item.dropLeft !== null && item.dropLeft ? classes["drop-left"] : ""
+          } ${
+            item.dropLeft !== null && !item.dropLeft
+              ? classes["drop-right"]
+              : ""
           }`}
-          draggable={!item.edit ? "true" : "false"}
-          onDragStart={dragStartHandler}
-          onDragEnd={dragEndHandler}
+          onDragOver={dragOverHandler}
+          onDragLeave={dragLeaveHandler}
           data-item={JSON.stringify({ ...item, type: promptType })}
           data-id={item.id}
-          // data-tag={item.tag}
-          // data-type={promptType}
-          // contenteditable={item.edit ? "true" : "false"}
         >
-          <>
-            {!item.edit && (
-              <div className={classes["tag__content"]}>
-                <span
-                  onClick={openEditHandler}
-                  className={classes["tag__text"]}
-                >
-                  {item.tag.trim()}
-                </span>
-                <button
-                  type="button"
-                  className={classes.btn}
-                  onClick={removeTagHandler}
-                  data-value={JSON.stringify(item)}
-                  data-type=""
-                >
-                  <span className={classes["tag__cross"]}>
-                    {" "}
-                    <CrossSvg />{" "}
+          <div
+            className={`${classes.tag} ${
+              !item.duplicateId
+                ? ""
+                : classes[`tag--duplicate-${item.duplicateId}`]
+            } ${isBreak ? classes["tag--break"] : ""}`}
+            draggable={!item.edit ? "true" : "false"}
+            onDragStart={dragStartHandler}
+            onDragEnd={dragEndHandler}
+            data-item={JSON.stringify({ ...item, type: promptType })}
+            data-id={item.id}
+            // data-tag={item.tag}
+            // data-type={promptType}
+            // contenteditable={item.edit ? "true" : "false"}
+          >
+            <>
+              {!item.edit && (
+                <div className={classes["tag__content"]}>
+                  <span
+                    onClick={openEditHandler}
+                    className={classes["tag__text"]}
+                  >
+                    {item.tag.trim()}
                   </span>
-                </button>
-              </div>
-            )}
-            {item.edit && (
-              <form
-                onSubmit={submitEditHandler}
-                className={classes["tag__content"]}
-              >
-                <Input
-                  autoFocus={true}
-                  autoComplete="off"
-                  fitContent={true}
-                  type="text"
-                  name="tag"
-                  value={editTagInput.value}
-                  onChange={(e) => {
-                    setEditTagInput({ value: e.target.value });
-                  }}
-                  input={{
-                    style: { width: inputWidth ? inputWidth + 15 : "auto" },
-                  }}
-                />
-                <Input
-                  type="text"
-                  name="weight"
-                  value={editWeightInput.value}
-                  autoComplete="off"
-                  onChange={(e) => {
-                    setEditWeightInput({ value: e.target.value });
-                  }}
-                  className={classes["tag__weight"]}
-                />
-                {/* <div>{item.weight}</div> */}
-                <div className={classes["activation-tag__btn-container"]}>
                   <button
                     type="button"
-                    title="up"
-                    className={classes["activation-tag__btn"]}
-                    onClick={changeWeightHandler}
-                    data-type="inc"
+                    className={classes.btn}
+                    onClick={removeTagHandler}
+                    data-value={JSON.stringify(item)}
+                    data-type=""
                   >
-                    <span
-                      data-type="inc"
-                      className={`${classes["activation-tag__btn-arrow"]} ${classes["activation-tag__btn-arrow--up"]}`}
-                    ></span>
-                  </button>
-                  <button
-                    type="button"
-                    title="down"
-                    className={classes["activation-tag__btn"]}
-                    onClick={changeWeightHandler}
-                    data-type="dec"
-                  >
-                    <span
-                      data-type="dec"
-                      className={`${classes["activation-tag__btn-arrow"]} ${classes["activation-tag__btn-arrow--down"]}`}
-                    ></span>
+                    <span className={classes["tag__cross"]}>
+                      {" "}
+                      <CrossSvg />{" "}
+                    </span>
                   </button>
                 </div>
-                <button
-                  type="submit"
-                  className={`${classes.btn} ${classes["btn--submit"]}`}
-                  data-value={JSON.stringify(item)}
+              )}
+              {item.edit && (
+                <form
+                  onSubmit={submitEditHandler}
+                  className={classes["tag__content"]}
                 >
-                  <span
-                    className={`${classes["tag__cross"]} ${classes["tag__cross--submit"]}`}
+                  <Input
+                    autoFocus={true}
+                    autoComplete="off"
+                    fitContent={true}
+                    type="text"
+                    name="tag"
+                    value={editTagInput.value}
+                    onChange={(e) => {
+                      setEditTagInput({ value: e.target.value });
+                    }}
+                    input={{
+                      style: { width: inputWidth ? inputWidth + 15 : "auto" },
+                    }}
+                  />
+                  <Input
+                    type="text"
+                    name="weight"
+                    value={editWeightInput.value}
+                    autoComplete="off"
+                    onChange={(e) => {
+                      setEditWeightInput({ value: e.target.value });
+                    }}
+                    className={classes["tag__weight"]}
+                  />
+                  {/* <div>{item.weight}</div> */}
+                  <div className={classes["activation-tag__btn-container"]}>
+                    <button
+                      type="button"
+                      title="up"
+                      className={classes["activation-tag__btn"]}
+                      onClick={changeWeightHandler}
+                      data-type="inc"
+                    >
+                      <span
+                        data-type="inc"
+                        className={`${classes["activation-tag__btn-arrow"]} ${classes["activation-tag__btn-arrow--up"]}`}
+                      ></span>
+                    </button>
+                    <button
+                      type="button"
+                      title="down"
+                      className={classes["activation-tag__btn"]}
+                      onClick={changeWeightHandler}
+                      data-type="dec"
+                    >
+                      <span
+                        data-type="dec"
+                        className={`${classes["activation-tag__btn-arrow"]} ${classes["activation-tag__btn-arrow--down"]}`}
+                      ></span>
+                    </button>
+                  </div>
+                  <button
+                    type="submit"
+                    className={`${classes.btn} ${classes["btn--submit"]}`}
+                    data-value={JSON.stringify(item)}
                   >
-                    {" "}
-                    <CheckIcon />{" "}
-                  </span>
-                </button>
-              </form>
-            )}
-          </>
-        </div>
-      </motion.li>
+                    <span
+                      className={`${classes["tag__cross"]} ${classes["tag__cross--submit"]}`}
+                    >
+                      {" "}
+                      <CheckIcon />{" "}
+                    </span>
+                  </button>
+                </form>
+              )}
+            </>
+          </div>
+        </motion.span>
+        {SETTINGS_PROMPT_BREAK_ALIASES.includes(item.tag.trim()) && (
+          <hr className={classes["divider"]}></hr>
+        )}
+      </li>
     );
   });
 

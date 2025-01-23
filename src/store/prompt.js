@@ -74,9 +74,12 @@ const promptSlice = createSlice({
         }
       );
 
+      const newPosPromptArrDuplicates = markDuplicateTags(promptArr);
+      const newNegPromptArrDuplicates = markDuplicateTags(promptArrNeg);
+
       state.isTextMode = actions.payload;
-      state.curPromptArr = promptArr;
-      state.curNegPromptArr = promptArrNeg;
+      state.curPromptArr = newPosPromptArrDuplicates;
+      state.curNegPromptArr = newNegPromptArrDuplicates;
     },
     addTagToPosition(state, actions) {
       const { dropTargetType } = actions.payload;

@@ -14,6 +14,7 @@ import {
 } from "./generalUtils";
 import firebaseApp from "../firebase-config";
 import { getAuth } from "firebase/auth";
+import { SETTINGS_SFW_RANGE } from "../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
@@ -470,8 +471,10 @@ export const updateImagePostData = async (
     await addDelayPromise(delayTime);
 
     const batch = writeBatch(firestore);
-    // const nsfw = [...new Set(imagesData.map((image) => image.nsfw))];
-    const hasSfw = imagesData.find((image) => image.nsfw === false);
+
+    const hasSfw = !!imagesData.find((image) =>
+      SETTINGS_SFW_RANGE.includes(image?.nsfwLevel)
+    );
 
     batch.set(
       modelImagesRef,
@@ -486,7 +489,7 @@ export const updateImagePostData = async (
         // nsfw: imagesData[0].nsfw,
         // nsfwTypes: nsfw,
         // nsfwLevel: imagesData[0]?.nsfwLevel || "",
-        hasSfw: !!hasSfw,
+        hasSfw: hasSfw,
       },
       { merge: true }
     );

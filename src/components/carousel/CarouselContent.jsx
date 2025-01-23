@@ -637,7 +637,7 @@ const CarouselContent = ({
         <ul className={classes.pagination}>{paginationHtml}</ul>
       )}
       {!saved && !!postId && existedImgsAmount < images?.length && (
-        <span className={classes["btn-save-container"]}>
+        <div className={classes["btn-save-container"]}>
           <button
             className={`${classes["btn-save"]} ${
               isUploading ? classes["btn-save--saving"] : ""
@@ -649,11 +649,11 @@ const CarouselContent = ({
             {!isUploading ? <FolderSvg /> : <Spinner size="small" />}
           </button>
           {existedImgsAmount && existedImgsAmount < images.length && (
-            <span className={classes["btn-save__amount"]}>
+            <div className={classes["btn-save__amount"]}>
               {existedImgsAmount}/{images.length}
-            </span>
+            </div>
           )}
-        </span>
+        </div>
       )}
       {onUpdate && (
         <span className={classes["btn-save"]} onClick={updateExampleHandler}>

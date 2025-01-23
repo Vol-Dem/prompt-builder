@@ -68,6 +68,16 @@ export const SETTINGS_CAROUSEL_IMAGE_HEIGHT = 390;
 export const SETTINGS_CAROUSEL_IMAGE_WIDTH = 266;
 export const SETTINGS_CAROUSEL_TRANSITION_DURATION = 300;
 export const SETTINGS_CAROUSEL_INTERSECTION_MARGIN = 1000;
+export const SETTINGS_NSFW_VALUES_DATA = [
+  { name: "PG", value: "None", nsfwLevelIndex: 0 },
+  { name: "PG-13", value: "Soft", nsfwLevelIndex: 1 },
+  { name: "R", value: "Mature", nsfwLevelIndex: 2 },
+  { name: "X", value: "X", nsfwLevelIndex: 3 },
+];
+export const SETTINGS_SFW_RANGE = ["None", "Soft"];
+export const SETTINGS_NSFW_RANGE = ["Soft", "Mature", "X"];
+export const SETTINGS_PROMPT_DUPLICATE_EXCEPTIONS = ["BREAK", "<BREAK>"];
+export const SETTINGS_PROMPT_BREAK_ALIASES = ["BREAK", "<BREAK>"];
 
 //URLS
 export const URL_CIV_MODELS = "https://civitai.com/api/v1/models/";

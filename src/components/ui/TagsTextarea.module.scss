@@ -16,20 +16,18 @@
   letter-spacing: 0.1px;
   width: 100%;
   height: 100%;
+  font-size: 0;
   // resize: vertical;
-
   // &::-webkit-resizer {
   //   border: 2px solid yellow;
   //   background: blue;
   //   box-shadow: 0 0 2px 5px red;
   //   outline: 2px dashed green;
-
   //   /*size does not work*/
   //   display: block;
   //   width: 150px !important;
   //   height: 150px !important;
   // }
-
   @include var.custom-scroll;
 
   // &--positive {
@@ -90,6 +88,10 @@
   }
   &--duplicate-12 {
     outline: solid 1px rgb(229, 93, 3);
+  }
+
+  &--break {
+    background-color: var.$color-background-dark;
   }
 
   &__content {
@@ -228,6 +230,10 @@
   }
 }
 
+.tag-wrap {
+  display: inline;
+}
+
 .tag-container {
   display: inline-block;
   margin: 0 1rem 1rem 0;
@@ -300,6 +306,11 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
+}
+
+.divider {
+  opacity: 0.2;
+  margin-bottom: 0.8rem;
 }
 
 @media (max-width: 480px) {

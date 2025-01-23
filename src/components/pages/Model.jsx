@@ -45,6 +45,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
+import { checkIsInCurrentNsfwRange } from "../../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -130,14 +131,10 @@ const Model = ({ title }) => {
   }, [model?.id]);
 
   const filterNsfwImages = useCallback(
-    (images) => {
+    (images, nsfwLevel) => {
       return images?.filter((image) => {
         if (image?.nsfwLevel) {
-          return (
-            image.nsfwLevel <= 1 ||
-            image.nsfwLevel === "None" ||
-            image.nsfwLevel === sfwValue
-          );
+          return checkIsInCurrentNsfwRange(nsfwLevel, image.nsfwLevel);
         } else {
           return image?.nsfw === "None" || image?.nsfw === false;
         }
@@ -150,19 +147,21 @@ const Model = ({ title }) => {
     if (
       curVersion?.id &&
       curVersionImages?.versionId === curVersion?.id &&
-      curVersionImages?.nsfw !== nsfwMode
+      curVersionImages?.nsfwLevel !== nsfwLevel
     ) {
-      const filteredModelImages = nsfwMode
-        ? curVersionImages?.items
-        : filterNsfwImages(curVersionImages?.items);
+      const filteredModelImages = filterNsfwImages(
+        curVersionImages?.items,
+        nsfwLevel
+      );
       setCurVersionImages({
         items: curVersionImages?.items,
         filteredItems: filteredModelImages,
         versionId: curVersion?.id,
-        nsfw: nsfwMode,
+        // nsfw: nsfwMode,
+        nsfwLevel,
       });
     }
-  }, [curVersionImages, curVersion?.id, nsfwMode, sfwValue, filterNsfwImages]);
+  }, [curVersionImages, curVersion?.id, nsfwLevel, filterNsfwImages]);
 
   ///////////LOAD DEFAULT IMAGES FROM MODEL
   // const setDefaultVersionImages = useCallback(() => {

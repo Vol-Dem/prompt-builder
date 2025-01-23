@@ -42,6 +42,11 @@ import { AnimatePresence } from "framer-motion";
 import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
 import FolderSvg from "../../../assets/FolderSvg";
 import { motion } from "framer-motion";
+import useIntersection from "../../../hooks/use-intersection";
+import {
+  checkImageIsDisplayed,
+  checkIsInCurrentNsfwRange,
+} from "../../../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -60,15 +65,16 @@ const GeneratedImages = memo(({ customData }) => {
   const [curImagesModelVersionId, setCurImagesModelVersionId] = useState(null);
   const [imagesSortValue, setImagesSortValue] = useState("Newest");
   // const [SETTINGS_IMAGE_GENERATED_PER_PAGE, setAmountPerPage] = useState(100);
-  const [isIntersecting, setIsIntersecting] = useState(false);
+  // const [isIntersecting, setIsIntersecting] = useState(false);
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
   const [isShowAll, setIsShowAll] = useState(false);
   const [savedImages, setSavedImages] = useState({});
   const model = useSelector((state) => state.model.model);
   const savedImagesData = useSelector((state) => state.model.savedImages);
   const curVersion = useSelector((state) => state.model.curVersion);
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
+  const sfwValue = useSelector((state) => state.general.sfwValue);
   const uid = useSelector((state) => state.auth.user.uid);
   const guideIsActive = useSelector((state) => state.guide.active);
   const guideStep = useSelector((state) => state.guide.model.step);
@@ -76,7 +82,8 @@ const GeneratedImages = memo(({ customData }) => {
   const versionsListRef = useRef(null);
   const versionsItemRef = useRef(null);
   const abortControlerRef = useRef(null);
-  const isPageEnd = usePageEnd(600);
+  // const isPageEnd = usePageEnd(600);
+  const isIntersecting = useIntersection(endPageRef, false, 1200);
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
 
@@ -115,10 +122,10 @@ const GeneratedImages = memo(({ customData }) => {
     }
   }, [model?.id, savedImagesData]);
 
-  useEffect(() => {
-    // setIsIntersecting(intersecting);
-    setIsIntersecting(isPageEnd);
-  }, [isPageEnd]);
+  // useEffect(() => {
+  //   setIsIntersecting(isPageEnd);
+  // }, [isPageEnd]);
+
   useEffect(() => {
     // console.log("LIST", versionsListRef?.current?.offsetHeight);
     // console.log("ITEM", versionsItemRef?.current?.offsetHeight);
@@ -256,17 +263,13 @@ const GeneratedImages = memo(({ customData }) => {
         const newAbortControler = new AbortController();
         abortControlerRef.current = newAbortControler;
         clearTimeout(timeoutRef.current);
-        setIsIntersecting(false);
+        // setIsIntersecting(false);
         setErrorMessage("");
         const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
           versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
-        }${
-          SETTINGS_IMAGE_GENERATED_PER_PAGE
-            ? `&limit=${SETTINGS_IMAGE_GENERATED_PER_PAGE}`
-            : ""
-        }${imagesSortValue ? `&sort=${imagesSortValue}` : ""}${
-          cursor ? `&cursor=${cursor}` : ""
-        }${`&nsfw=${nsfwLevel}`}`;
+        }${SETTINGS_IMAGE_GENERATED_PER_PAGE ? `&limit=${100}` : ""}${
+          imagesSortValue ? `&sort=${imagesSortValue}` : ""
+        }${cursor ? `&cursor=${cursor}` : ""}${`&nsfw=${nsfwLevel}`}`;
 
         const imgExampleResponse = await fetch(url, {
           signal: newAbortControler.signal,
@@ -314,7 +317,7 @@ const GeneratedImages = memo(({ customData }) => {
       nextCursor,
       curImagesModelVersionId,
       sortExampleImages,
-      nsfwLevel
+      nsfwLevel,
     ]
   );
 
@@ -328,7 +331,7 @@ const GeneratedImages = memo(({ customData }) => {
       if (isLastPage) return;
       setExamplesIsLoading(true);
 
-      setIsIntersecting(false);
+      // setIsIntersecting(false);
       setErrorMessage("");
 
       // const nsfwFilter = !nsfwMode ? [false] : [true, false];
@@ -390,16 +393,23 @@ const GeneratedImages = memo(({ customData }) => {
                   ?.find((postData) => postData.postId === image.postId)
                   ?.imagesId?.includes(image.id);
 
-              const safe =
-                image?.nsfw === "None" ||
-                image?.nsfwLevel <= 1 ||
-                image?.nsfw === false;
+              const isInCurrentNsfwRange = checkIsInCurrentNsfwRange(
+                nsfwLevel,
+                image?.nsfwLevel
+              );
 
-              if (nsfwMode) {
-                return saved;
-              } else {
-                return saved && safe;
-              }
+              // const safe =
+              //   image?.nsfw === "None" ||
+              //   image?.nsfwLevel === sfwValue ||
+              //   image?.nsfwLevel <= 1 ||
+              //   image?.nsfw === false;
+
+              // if (nsfwMode) {
+              //   return saved;
+              // } else {
+              //   return saved && isInCurrentNsfwRange;
+              // }
+              return isInCurrentNsfwRange;
             })
             .sort((a, b) => {
               return Date.parse(a.createdAt) - Date.parse(b.createdAt);
@@ -495,7 +505,7 @@ const GeneratedImages = memo(({ customData }) => {
       if (curExampleImgsType === "all" && rule && !!nextCursor) {
         if (currCursor === nextCursor) return;
         setExamplesIsLoading(true);
-        setIsIntersecting(false);
+        // setIsIntersecting(false);
         clearTimeout(timeoutRef.current);
         timeoutRef.current = setTimeout(() => {
           getallExamples(model.id, curImagesModelVersionId, nextCursor);
@@ -507,7 +517,7 @@ const GeneratedImages = memo(({ customData }) => {
       ) {
         setExamplesIsLoading(true);
         clearTimeout(timeoutRef.current);
-        setIsIntersecting(false);
+        // setIsIntersecting(false);
         timeoutRef.current = setTimeout(() => {
           getImagesFromFirestore();
         }, 1000);
@@ -528,13 +538,6 @@ const GeneratedImages = memo(({ customData }) => {
     currCursor,
     isOnline,
   ]);
-
-  // const nextPageHandler = () => {
-  //   if (curExampleImgsType === "all") {
-  //     getallExamples(model.id, curImagesModelVersionId, nextCursor);
-  //   } else {
-  //   }
-  // };
 
   const retryImageLoadingHandler = () => {
     setErrorMessage("");
@@ -601,7 +604,13 @@ const GeneratedImages = memo(({ customData }) => {
     let examples;
     if (curExampleImgsType === "saved") {
       examples = examplesImgData.flatMap((item, i) => {
-        if (!nsfwMode && item.nsfw) return [];
+        // const isSfw = item?.nsfwLevel
+        //   ? item.nsfwLevel === sfwValue || item.nsfwLevel === "None"
+        //   : !item.nsfw;
+        // console.log(item);
+        // console.log(isSfw);
+        // if (!nsfwMode && !isSfw) return [];
+
         return (
           <Carousel
             key={i}
@@ -650,6 +659,7 @@ const GeneratedImages = memo(({ customData }) => {
     model,
     nsfwMode,
     savedImages,
+    sfwValue,
   ]);
 
   const addImgByIdHandler = () => {
@@ -673,20 +683,6 @@ const GeneratedImages = memo(({ customData }) => {
           >
             Saved
           </span>
-          {/* {(model?.examplesData?.length ||
-            (savedImages && !!Object.keys(savedImages).length)) && (
-            <span
-              className={`${classes["btn-mode"]} ${
-                curExampleImgsType === "saved"
-                  ? classes["btn-mode--active"]
-                  : ""
-              }`}
-              data-example="saved"
-              onClick={switchCurExamples}
-            >
-              Saved
-            </span>
-          )} */}
           <span
             className={`${classes["btn-mode"]} ${classes["btn-mode--right"]} ${
               curExampleImgsType === "all" ? classes["btn-mode--active"] : ""
@@ -700,27 +696,6 @@ const GeneratedImages = memo(({ customData }) => {
         <Buttton className={classes["button-add"]} onClick={addImgByIdHandler}>
           Add Image by ID
         </Buttton>
-        {/* SORT BUG TEMP DISABLED */}
-        {/* {curExampleImgsType === "all" && (
-          <div className={classes.sort}>
-            <span>Sort: </span>
-            <select
-              name="sort"
-              id="sort"
-              value={imagesSortValue}
-              className={classes.select}
-              onChange={(e) => {
-                resetExamples();
-                setImagesSortValue(e.target.value);
-              }}
-            >
-              <option value="">-</option>
-              <option value="Newest">Newest</option>
-              <option value="Most Comments">Most Comments</option>
-              <option value="Most Reactions">Most Reactions</option>
-            </select>
-          </div>
-        )} */}
       </div>
       <div
         className={classes["versions"]}

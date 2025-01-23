@@ -32,7 +32,8 @@ const SaveImageForm = ({ modelData, curVersion }) => {
     curVersion || modelData?.data?.modelVersions[0].id
   );
   const [postIdInput, setPostIdInput] = useState({ value: "", isValid: false });
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
+  const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
   const dispatch = useDispatch();
 
   const loadPostImagesHandler = async () => {
@@ -55,7 +56,7 @@ const SaveImageForm = ({ modelData, curVersion }) => {
       const imgExampleResponse = await fetch(
         `https://civitai.com/api/v1/images?postId=${postIdInput.value}${
           filterDisabledInput ? `&modelId=${modelData?.id}` : ""
-        }${nsfwMode ? `&nsfw=X` : `&nsfw=None`}`
+        }&nsfw=${nsfwLevel}`
       );
       const data = await imgExampleResponse.json();
       // console.log(data);

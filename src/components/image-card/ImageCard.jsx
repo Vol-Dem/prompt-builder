@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ButtonAdd from "../ui/ButtonSquareAdd";
 import { Link } from "react-router-dom";
 import LinkA from "../ui/LinkA";
-import { clearFileExtension } from "../../utils/generalUtils";
+import { clearFileExtension, splitTags } from "../../utils/generalUtils";
 import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 import CheckCircleSvg from "../../assets/CheckCircleSvg";
 import ErrorMessage from "../ui/ErrorMessage";
@@ -438,13 +438,8 @@ const ImageCard = ({ activeImgNum }) => {
     }
   }, [imageData, uid]);
 
-  const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
-  const positiveWordsArr = imageData?.meta?.prompt
-    ?.split(splitRegEx)
-    ?.flatMap((tag) => tag.trim() || []);
-  const negativeWordsArr = imageData?.meta?.negativePrompt
-    ?.split(splitRegEx)
-    ?.flatMap((tag) => tag.trim() || []);
+  const positiveWordsArr = splitTags(imageData?.meta?.prompt);
+  const negativeWordsArr = splitTags(imageData?.meta?.negativePrompt);
 
   const resourcesHtml = imageResources?.map((resource, i) => {
     const versiondId = resource?.modelVersionId || resource?.versionId;

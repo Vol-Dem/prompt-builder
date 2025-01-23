@@ -11,10 +11,10 @@ import { authActions } from "../../store/auth";
 import PromptGuide from "../ui/guide/model/PromptGuide";
 import { AnimatePresence } from "framer-motion";
 import Modal from "../ui/Modal";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 const positiveMinHeight = 100;
 const negativeMinHeight = 60;
-const showPromptBtnHeightFallback = 20;
 
 const Prompt = memo(() => {
   const [copiedType, setCopiedType] = useState("");
@@ -133,31 +133,18 @@ const Prompt = memo(() => {
     window.addEventListener("mouseup", onMouseUp);
   };
 
+  const addBreakHandler = () => {
+    dispatch(
+      promptActions.addTagToPrompt({ type: "positive", value: "BREAK" })
+    );
+  };
+
   return (
-    <div
-      className={classes.wrap}
-      // style={{
-      //   height: promptIsOpen
-      //     ? promptContainerRef?.current?.offsetHeight -
-      //       showPromptBtnRef.current.offsetHeight
-      //     : 0,
-      //   // transition: "height 0.3s",
-      // }}
-    >
+    <div className={classes.wrap}>
       <div
         className={`${classes.container} ${
           promptIsOpen ? classes["container--open"] : ""
         }`}
-        // style={{
-        //   transform: `translateY(${
-        //     promptIsOpen
-        //       ? 0
-        //       : `calc(-100% + ${
-        //           showPromptBtnRef?.current?.offsetHeight ||
-        //           showPromptBtnHeightFallback
-        //         }px)`
-        //   })`,
-        // }}
       >
         <div className={`${classes.content}`}>
           <div
@@ -189,6 +176,13 @@ const Prompt = memo(() => {
 
               <ButtonTertiary type="button" onClick={openPresetsHandler}>
                 Presets
+              </ButtonTertiary>
+              <ButtonTertiary
+                type="button"
+                onClick={addBreakHandler}
+                className={classes[""]}
+              >
+                <PlusIcon className={classes["plus-icon"]} /> BREAK
               </ButtonTertiary>
 
               <div className={classes["btn-container"]}>
@@ -229,7 +223,7 @@ const Prompt = memo(() => {
               >
                 {!promptTextMode && (
                   <TagsTextarea
-                    data={curPrompt}
+                    // data={curPrompt}
                     promptType="positive"
                     aditionalPlacegholder="Add tags from the model or image tag list, or switch view to text mode to enter manually"
                     placeholder="Prompt (tags mode)"
@@ -302,7 +296,7 @@ const Prompt = memo(() => {
               >
                 {!promptTextMode && (
                   <TagsTextarea
-                    data={curNegPrompt}
+                    // data={curNegPrompt}
                     promptType="negative"
                     placeholder="Negative prompt (tags mode)"
                     className={`${classes["tagarea"]} ${classes["tagarea--neg"]}`}
