@@ -57,8 +57,8 @@ export const SETTINGS_IMAGE_PREVIEW_WIDTH_DEF = 450;
 export const SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL = 250;
 export const SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM = 350;
 export const SETTINGS_IMAGE_PREVIEW_WIDTH_BIG = 450;
-export const SETTINGS_IMAGE_SAVED_POSTS_PER_PAGE = 16;
-export const SETTINGS_IMAGE_GENERATED_PER_PAGE = 100;
+export const SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE = 16;
+export const SETTINGS_IMAGES_NUMBER_PER_REQUEST = 50;
 export const SETTINGS_SEARCH_RESULT_PER_PAGE = 10;
 export const SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE = 4;
 export const SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT = 5;
@@ -68,11 +68,12 @@ export const SETTINGS_CAROUSEL_IMAGE_HEIGHT = 390;
 export const SETTINGS_CAROUSEL_IMAGE_WIDTH = 266;
 export const SETTINGS_CAROUSEL_TRANSITION_DURATION = 300;
 export const SETTINGS_CAROUSEL_INTERSECTION_MARGIN = 1000;
+export const SETTINGS_LOAD_MORE_MARGIN = 1200;
 export const SETTINGS_NSFW_VALUES_DATA = [
   { name: "PG", value: "None", nsfwLevelIndex: 0 },
   { name: "PG-13", value: "Soft", nsfwLevelIndex: 1 },
   { name: "R", value: "Mature", nsfwLevelIndex: 2 },
-  { name: "X", value: "X", nsfwLevelIndex: 3 },
+  { name: "XXX", value: "X", nsfwLevelIndex: 3 },
 ];
 export const SETTINGS_SFW_RANGE = ["None", "Soft"];
 export const SETTINGS_NSFW_RANGE = ["Soft", "Mature", "X"];

@@ -138,7 +138,7 @@ const ChooseImageForm = ({
             }`}
             src={image.label}
             alt={`Image-${i}`}
-            imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM}
+            imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL}
           />
         </label>
         <input

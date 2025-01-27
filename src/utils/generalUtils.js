@@ -509,6 +509,8 @@ export const checkIsInCurrentNsfwRange = (curNsfwLevel, curNsfwvalue) => {
     (nsfwValue) => nsfwValue === curNsfwLevel
   );
   const displayedValues = nsfwValues.slice(0, curNsfwLevelIndex + 1);
+  // console.log(curNsfwLevel);
+  // console.log(displayedValues);
 
   return displayedValues.includes(curNsfwvalue);
 };

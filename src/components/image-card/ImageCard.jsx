@@ -33,6 +33,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import ButtonSquareSave from "../ui/ButtonSquareSave";
 import Modal from "../ui/Modal";
 import UpdateModelForm from "../forms/update-model-form/UpdateModelForm";
+import NotificationMessage from "../ui/NotificationMessage";
 
 const firestore = getFirestore(firebaseApp);
 const civitDefEmb = [250708, 250712, 106916];
@@ -607,18 +608,32 @@ const ImageCard = ({ activeImgNum }) => {
                 }`}
               >
                 <ImageCardGuide />
-                <TagList
-                  name="Positive prompt"
-                  tags={positiveWordsArr}
-                  promptType="positive"
-                  className={classes["tags__list"]}
-                />
-                <TagList
-                  name="Negative prompt"
-                  tags={negativeWordsArr}
-                  promptType="negative"
-                  className={classes["tags__list"]}
-                />
+                {!!positiveWordsArr?.length && (
+                  <TagList
+                    name="Positive prompt"
+                    tags={positiveWordsArr}
+                    promptType="positive"
+                    className={classes["tags__list"]}
+                  />
+                )}
+                {!positiveWordsArr?.length && (
+                  <NotificationMessage type="notification">
+                    Positive prompt is not avalible for this image
+                  </NotificationMessage>
+                )}
+                {!!negativeWordsArr?.length && (
+                  <TagList
+                    name="Negative prompt"
+                    tags={negativeWordsArr}
+                    promptType="negative"
+                    className={classes["tags__list"]}
+                  />
+                )}
+                {!negativeWordsArr?.length && (
+                  <NotificationMessage type="notification">
+                    Negative prompt is not avalible for this image
+                  </NotificationMessage>
+                )}
               </div>
               <div className={classes["example__config"]}>
                 <div className={classes["example__config-block"]}>

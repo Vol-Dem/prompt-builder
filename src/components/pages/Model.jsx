@@ -130,18 +130,15 @@ const Model = ({ title }) => {
     }
   }, [model?.id]);
 
-  const filterNsfwImages = useCallback(
-    (images, nsfwLevel) => {
-      return images?.filter((image) => {
-        if (image?.nsfwLevel) {
-          return checkIsInCurrentNsfwRange(nsfwLevel, image.nsfwLevel);
-        } else {
-          return image?.nsfw === "None" || image?.nsfw === false;
-        }
-      });
-    },
-    [sfwValue]
-  );
+  const filterNsfwImages = useCallback((images, nsfwLevel) => {
+    return images?.filter((image) => {
+      if (image?.nsfwLevel) {
+        return checkIsInCurrentNsfwRange(nsfwLevel, image.nsfwLevel);
+      } else {
+        return image?.nsfw === "None" || image?.nsfw === false;
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (
@@ -232,7 +229,7 @@ const Model = ({ title }) => {
             curVersion
           );
         }
-        const modelImages = nsfwMode ? curImages : filterNsfwImages(curImages);
+        const modelImages = filterNsfwImages(curImages);
 
         setCurVersionImages({
           items: curImages,
@@ -278,6 +275,7 @@ const Model = ({ title }) => {
     const getModelData = async () => {
       try {
         setIsLoading(true);
+
         dispatch(modelActions.resetModelData());
 
         const modelRef = doc(firestore, "users", uid, "models", modelId);
@@ -321,6 +319,7 @@ const Model = ({ title }) => {
 
     const loadingImagesTimeout = loadingImagesTimeoutRef?.current;
     return () => {
+      console.log("RESET");
       setErrorMessage("");
       setCurVersionImages({});
       dispatch(modelActions.setCurVersion({}));
@@ -433,8 +432,11 @@ const Model = ({ title }) => {
       ? modelVersions?.find((version) => version.id === curVersionId)
       : modelVersions[0];
 
-    if (model.id !== curVersion?.modelId)
-      dispatch(modelActions.setCurVersion(curVersionData));
+    if (model.id !== curVersion?.modelId) {
+      dispatch(
+        modelActions.setCurVersion({ ...curVersionData, modelId: model.id })
+      );
+    }
   }, [model, dispatch, curVersion?.modelId, state?.versionId]);
 
   useEffect(() => {
@@ -493,7 +495,7 @@ const Model = ({ title }) => {
       (version) => version.id === id
     );
 
-    dispatch(modelActions.setCurVersion(curVer));
+    dispatch(modelActions.setCurVersion({ ...curVer, modelId: model.id }));
   };
 
   const modelVersionsHtml =
@@ -652,8 +654,8 @@ const Model = ({ title }) => {
             className={classes.versions}
             style={{
               maxHeight: showAllVersions
-                ? `${versionsListRef?.current?.offsetHeight}px`
-                : `${versionsItemRef?.current?.offsetHeight}px`,
+                ? `${versionsListRef?.current?.offsetHeight + 2}px`
+                : `${versionsItemRef?.current?.offsetHeight + 2}px`,
             }}
           >
             <ul ref={versionsListRef} className={classes["versions__list"]}>
@@ -786,7 +788,7 @@ const Model = ({ title }) => {
           )}
 
           <h2 className={classes["h2"]}>Generated images:</h2>
-          <GeneratedImages customData={curCustomVersionData} />
+          <GeneratedImages />
         </div>
       )}
     </div>
