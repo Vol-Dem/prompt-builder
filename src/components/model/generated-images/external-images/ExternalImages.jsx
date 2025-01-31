@@ -123,15 +123,20 @@ const ExternalImages = memo(
 
           const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
             versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
-          }${SETTINGS_IMAGES_NUMBER_PER_REQUEST ? `&limit=${100}` : ""}${
-            sortBy ? `&sort=${sortBy}` : ""
-          }${cursor ? `&cursor=${cursor}` : ""}${`&nsfw=${nsfwLevel}`}`;
+          }${
+            SETTINGS_IMAGES_NUMBER_PER_REQUEST
+              ? `&limit=${SETTINGS_IMAGES_NUMBER_PER_REQUEST}`
+              : ""
+          }${sortBy ? `&sort=${sortBy}` : ""}${
+            cursor ? `&cursor=${cursor}` : ""
+          }${`&nsfw=${nsfwLevel}`}`;
 
           const imgExampleResponse = await fetch(url, {
             signal: newAbortControler.signal,
           });
           const data = await imgExampleResponse.json();
           // console.log(data);
+
           if (!data?.items) {
             throwCustomError(ERROR_MESSAGE_INVALID_DATA);
           }
@@ -180,17 +185,16 @@ const ExternalImages = memo(
     );
 
     useEffect(() => {
-      const rule =
+      if (nextCursor && currCursor === nextCursor) return;
+
+      if (
         modelId &&
         !isLastPage &&
         isIntersecting &&
         !errorMessage &&
         isOnline &&
-        !examplesIsLoading;
-
-      if (rule) {
-        if (nextCursor && currCursor === nextCursor) return;
-
+        !examplesIsLoading
+      ) {
         setExamplesIsLoading(true);
         getallExamples(modelId, curImagesModelVersionId, nextCursor);
       }

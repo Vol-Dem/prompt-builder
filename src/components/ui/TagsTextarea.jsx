@@ -22,6 +22,7 @@ const TagsTextarea = ({
   const [editWeightInput, setEditWeightInput] = useState({ value: "" });
   const [inputWidth, setInputWidth] = useState(null);
   const [prevPromptLength, setPrevPromptLength] = useState(null);
+  const [draggedItemId, setDraggedItemId] = useState(null);
   const dispatch = useDispatch();
   const curPosPromptArr = useSelector((state) => state.prompt.curPromptArr);
   const curNegPromptArr = useSelector((state) => state.prompt.curNegPromptArr);
@@ -92,12 +93,20 @@ const TagsTextarea = ({
   const dragStartHandler = (e) => {
     const targetTagContainer = e.target.closest(`.${classes["tag-container"]}`);
     const tagData = targetTagContainer.dataset.item;
-
+    // console.log(tagData);
+    const {
+      id: dropTargetId,
+      tag: dropTargetTag,
+      position: dropTargetPosition,
+      type: dropTargetType,
+    } = JSON.parse(targetTagContainer.dataset.item);
+    setDraggedItemId(+dropTargetId);
     e.dataTransfer.setData("text/plain", tagData);
     e.dataTransfer.effectAllowed = "move";
   };
 
   const dragEndHandler = (e) => {
+    setDraggedItemId(null);
     const targetTag = e.target.closest(`.${classes["tag"]}`);
     if (!targetTag) return;
     setCurrentPrompt((prevState) => {
@@ -112,16 +121,23 @@ const TagsTextarea = ({
 
   const dragOverHandler = (e) => {
     e.preventDefault();
-
     const targetTagContainer = e.target.closest(`.${classes["tag-container"]}`);
     const targetTag = e.target.closest(`.${classes["tag"]}`);
-    if (!targetTagContainer || !targetTag) return;
+    // if (!targetTagContainer || !targetTag) return;
+    if (!targetTagContainer) return;
+    if (+targetTagContainer?.dataset?.id === draggedItemId) return;
 
-    const targetTagWidth = targetTag.offsetWidth;
+    const targetTagWidth = targetTag?.offsetWidth;
     const targetTagLeft = Math.round(
       targetTagContainer.getBoundingClientRect().left
     );
-    const isLeftSide = targetTagWidth / 2 + targetTagLeft > e.clientX;
+    const targetContainerWidth = targetTagContainer.offsetWidth;
+    const targetContainerLeft = Math.round(
+      targetTagContainer.getBoundingClientRect().left
+    );
+    // const isLeftSide = targetTagWidth / 2 + targetTagLeft > e.clientX;
+    const isLeftSide =
+      targetContainerWidth / 2 + targetContainerLeft > e.clientX;
 
     const curTargetData = curPrompt.find(
       (tagItem) => +tagItem.id === +targetTagContainer.dataset.id
@@ -142,43 +158,51 @@ const TagsTextarea = ({
 
   const dragLeaveHandler = (e) => {
     const targetTagContainer = e.target.closest(`.${classes["tag-container"]}`);
-    if (!targetTagContainer) return;
-
+    // if (!targetTagContainer) return;
     const curTargetData = curPrompt.find(
-      (tagItem) => +tagItem.id === +targetTagContainer.dataset.id
+      (tagItem) => +tagItem?.id === +targetTagContainer?.dataset?.id
     );
-    if (!curTargetData) return;
+    // if (!curTargetData) return;
     setCurrentPrompt((prevState) => {
       return prevState.map((tagItem) => {
-        if (tagItem.id !== curTargetData.id) {
-          return {
-            ...tagItem,
-            dropLeft: null,
-          };
-        }
-        return tagItem;
+        // if (tagItem.id === curTargetData?.id) {
+        //   return tagItem;
+        // }
+
+        return {
+          ...tagItem,
+          dropLeft: null,
+        };
+        // if (tagItem.id !== curTargetData?.id) {
+        //   return {
+        //     ...tagItem,
+        //     dropLeft: null,
+        //   };
+        // }
+        // return tagItem;
       });
     });
   };
 
   const dropHandler = (e) => {
+    setDraggedItemId(null);
+
     const tagData = e.dataTransfer.getData("text/plain");
     if (!tagData.trim()) return;
 
     const { id, tag, position, type } = JSON.parse(tagData);
     const targetTagContainer = e.target.closest(`.${classes["tag-container"]}`);
-    const fieldType = e.target?.dataset?.type;
-    // const fieldId = e.target?.dataset?.id;
-    // const dropTargetId = +targetTagContainer?.dataset?.id;
-    // const dropTargetType = targetTagContainer?.dataset?.type;
-    // if (targetTagContainer && fieldType && fieldId) return;
-    // console.log(targetTagContainer, fieldType, fieldId);
-    // console.log(e.target);
-    // console.log(targetTagContainer);
-    // console.log(fieldType);
-    // console.log(fieldId);
-    if (!targetTagContainer && fieldType === type) return;
+    const fieldType =
+      e.target?.dataset?.type || targetTagContainer?.dataset?.type;
+
+    if (!fieldType) return;
+
     if (!targetTagContainer) {
+      // console.log("DROP CONT");
+      // console.log(id);
+      // console.log(type);
+      // console.log(fieldType);
+
       dispatch(
         promptActions.removeTag({ id, type, dropTargetType: fieldType })
       );
@@ -247,6 +271,12 @@ const TagsTextarea = ({
       //     type: dropTargetType,
       //   })
       // );
+      // console.log("DROP");
+      // console.log(id);
+      // console.log(type);
+      // console.log(dropTargetType);
+      // console.log(position);
+      // console.log(newPosition);
       dispatch(promptActions.removeTag({ id, type, dropTargetType }));
       dispatch(
         promptActions.addTagToPosition({
@@ -358,6 +388,7 @@ const TagsTextarea = ({
     const isLastItem = i === curPrompt.length - 1;
     const isNewItem = curPrompt.length > prevPromptLength;
     const isBreak = SETTINGS_PROMPT_BREAK_ALIASES.includes(item.tag.trim());
+    const containerTargeted = true;
 
     return (
       <li key={item.id} className={classes["tag-wrap"]}>
@@ -389,13 +420,19 @@ const TagsTextarea = ({
           onDragLeave={dragLeaveHandler}
           data-item={JSON.stringify({ ...item, type: promptType })}
           data-id={item.id}
+          data-type={promptType}
+          // draggable={!item.edit ? "true" : "false"}
+          // onDragStart={dragStartHandler}
+          // onDragEnd={dragEndHandler}
         >
           <div
             className={`${classes.tag} ${
               !item.duplicateId
                 ? ""
                 : classes[`tag--duplicate-${item.duplicateId}`]
-            } ${isBreak ? classes["tag--break"] : ""}`}
+            } ${isBreak ? classes["tag--break"] : ""} ${
+              draggedItemId === item.id ? classes["tag__dragged"] : ""
+            }`}
             draggable={!item.edit ? "true" : "false"}
             onDragStart={dragStartHandler}
             onDragEnd={dragEndHandler}

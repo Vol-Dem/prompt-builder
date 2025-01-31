@@ -82,13 +82,19 @@ const promptSlice = createSlice({
       state.curNegPromptArr = newNegPromptArrDuplicates;
     },
     addTagToPosition(state, actions) {
+      // console.log("ADD POS");
+      // console.log(actions.payload);
       const { dropTargetType } = actions.payload;
 
       const curPromptArr =
         dropTargetType === "positive"
           ? state.curPromptArr
           : state.curNegPromptArr;
-
+      // console.log(
+      //   curPromptArr.map((item) => {
+      //     return { ...item };
+      //   })
+      // );
       const newPromptArr = addElementToIndex({
         ...actions.payload,
         curPromptArr,
@@ -103,6 +109,9 @@ const promptSlice = createSlice({
       }
     },
     addTagToPrompt(state, actions) {
+      // console.log("ADD");
+      // console.log(actions.payload);
+
       const allIds = [
         ...state.curPromptArr.map((tag) => tag.id),
         ...state.curNegPromptArr.map((tag) => tag.id),
@@ -146,6 +155,8 @@ const promptSlice = createSlice({
       }
     },
     removeTag(state, actions) {
+      // console.log("DEL");
+      // console.log(actions.payload);
       const { id, type, dropTargetType, value } = actions.payload;
 
       const promptArr =
@@ -160,7 +171,7 @@ const promptSlice = createSlice({
       if (Number.isFinite(id) && !value) {
         delIndex = promptArr.findIndex((tag) => tag.id === id);
       }
-
+      // console.log(delIndex);
       if (delIndex < 0) return;
 
       newPromptArr = promptArr.flatMap((tag) => {
@@ -180,7 +191,8 @@ const promptSlice = createSlice({
 
       if (type === "positive") {
         state.curPromptArr = newPromptArrDuplicates;
-      } else {
+      }
+      if (type === "negative") {
         state.curNegPromptArr = newPromptArrDuplicates;
       }
     },
