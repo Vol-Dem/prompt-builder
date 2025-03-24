@@ -37,6 +37,8 @@ const CarouselImage = ({
   active,
   side,
   imageWidth,
+  location,
+  locationId,
 }) => {
   const [imgIsLoading, setImgIsLoading] = useState(false);
   const [imgIsLoaded, setImgIsLoaded] = useState(false);
@@ -57,6 +59,7 @@ const CarouselImage = ({
       const previewSrc = transformSrcPreview(
         src,
         SETTINGS_IMAGE_PREVIEW_WIDTH_BIG
+        // imageData.type
       );
       setImgSrc(previewSrc);
       setImgIsLoading(true);
@@ -74,16 +77,19 @@ const CarouselImage = ({
   };
 
   const setPreviwImgHandler = (e) => {
-    dispatch(setPreviewImg(src, false));
+    dispatch(setPreviewImg(src, false, location, locationId));
     setMenuIsOpen(false);
   };
   const setNsfwPreviwImgHandler = (e) => {
-    dispatch(setPreviewImg(src, true));
+    dispatch(setPreviewImg(src, true, location, locationId));
     setMenuIsOpen(false);
   };
 
   const openMenuHandler = () => {
-    if (!!model?.modelVersionsCustomData[curVersion.id]?.tagSetsData?.length) {
+    if (
+      curVersion?.id &&
+      !!model?.modelVersionsCustomData[curVersion.id]?.tagSetsData?.length
+    ) {
       setCurTagSetVersionId(`${curVersion.id}`);
     }
     setMenuIsOpen((prevState) => !prevState);
@@ -111,7 +117,7 @@ const CarouselImage = ({
   };
 
   const showDeleteReqeustHandler = (e) => {
-    onDelete();
+    onDelete(e);
   };
 
   const closeDeleteReqeustHandler = () => {
@@ -183,12 +189,14 @@ const CarouselImage = ({
                   >
                     Set as preview
                   </li>
-                  <li
-                    className={classes["menu__item"]}
-                    onClick={openTagSetMenuHandler}
-                  >
-                    Set as tag set preview
-                  </li>
+                  {curVersion?.id && (
+                    <li
+                      className={classes["menu__item"]}
+                      onClick={openTagSetMenuHandler}
+                    >
+                      Set as tag set preview
+                    </li>
+                  )}
                   {nsfwMode && (
                     <li
                       className={classes["menu__item"]}

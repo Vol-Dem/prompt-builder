@@ -20,9 +20,10 @@
 
 .btn-copy {
   color: #bdbdbd;
+  font-size: 1.3rem;
   padding: 0.2rem 0.5rem;
   background: none;
-  border: 1px solid rgb(139 137 149 / 60%);
+  border: 1px solid var.$color-gray-dark;
   border-radius: 0.5rem;
   white-space: nowrap;
   margin-right: 0.4rem;

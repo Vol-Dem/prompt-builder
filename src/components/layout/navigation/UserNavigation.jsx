@@ -5,6 +5,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { authActions } from "../../../store/auth";
 import { tabActions } from "../../../store/tabs";
+import { imagesActions } from "../../../store/images";
+import { modelActions } from "../../../store/model";
 
 const UserNavigation = () => {
   const email = useSelector((state) => state.auth.user.email);
@@ -21,6 +23,8 @@ const UserNavigation = () => {
 
   const resetTabsHandler = () => {
     dispatch(tabActions.resetActiveTabs());
+    dispatch(imagesActions.resetCollectionListState());
+    dispatch(modelActions.setActiveCarouselData({}));
   };
 
   return (

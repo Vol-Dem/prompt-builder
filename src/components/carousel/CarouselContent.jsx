@@ -14,6 +14,12 @@ import ImageFullView from "../ui/ImageFullView";
 import FolderSvg from "../../assets/FolderSvg";
 import { AnimatePresence } from "framer-motion";
 import { SETTINGS_CAROUSEL_TRANSITION_DURATION } from "../../variables/constants";
+import {
+  FolderArrowDownIcon,
+  FolderPlusIcon,
+} from "@heroicons/react/24/outline";
+import SaveToCollectionForm from "../forms/save-to-collection-form/SaveToCollectionForm";
+import { updateCollectionPostsData } from "../../store/images";
 
 const CarouselContent = ({
   imagesData,
@@ -31,11 +37,14 @@ const CarouselContent = ({
   side,
   imageHeight,
   imageWidth,
+  location,
+  locationId,
+  curPostData,
 }) => {
   const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount || 0);
   const [initial, setInitial] = useState(true);
   const [images, setImages] = useState(imagesData);
-  const [imageFormType, setImageFormType] = useState("");
+  const [imageFormType, setImageFormType] = useState({});
   const [currImgNum, setCurrImgNum] = useState(0);
   const [translate, setTranslate] = useState(0);
   const [curTransitionDur, setCurTransitionDur] = useState(0);
@@ -61,6 +70,11 @@ const CarouselContent = ({
   const sfwValue = useSelector((state) => state.general.sfwValue);
   const isUploading = queue.find((item) => item.postId === postId);
   const dispatch = useDispatch();
+
+  const postData =
+    !!Object.keys(savedImages?.data)?.length &&
+    savedImages.data[versionId]?.find((post) => post.postId === postId);
+  const savedImageIds = postData?.imagesId || [];
 
   useEffect(() => {
     setImages(imagesData);
@@ -115,19 +129,27 @@ const CarouselContent = ({
     });
   }, [imagesRef, wrapRef]);
 
-  const openSaveImagesListHandler = () => {
-    if (images.length === 1) {
-      saveExampleHandler();
+  const openSaveImagesListHandler = (e) => {
+    const location = e.target.closest(`.${classes["save__btn"]}`).dataset
+      .location;
+    if (images.length === 1 && location === "models") {
+      saveExampleHandler("models", null, null, postData);
     } else {
-      setImageFormType("save");
+      // setImageFormType("save");
+      setImageFormType({ type: "save", location: location || null });
       setImagesListIsOpen(true);
     }
   };
 
-  const openDeleteListHandler = () => {
-    setImageFormType("del");
-    setImagesListIsOpen(true);
-  };
+  const openDeleteListHandler = useCallback(
+    (e) => {
+      // setImageFormType("del");
+      // console.log(location);
+      setImageFormType({ type: "del", location: location || null });
+      setImagesListIsOpen(true);
+    },
+    [location]
+  );
 
   const openFullViewHandler = () => {
     setFullViewIsOpen(true);
@@ -244,6 +266,8 @@ const CarouselContent = ({
               : true
           }
           imageWidth={imageWidth}
+          location={location}
+          locationId={locationId}
         />
       );
     });
@@ -282,6 +306,8 @@ const CarouselContent = ({
                 : true
             }
             imageWidth={imageWidth}
+            location={location}
+            locationId={locationId}
           />
         );
       });
@@ -317,6 +343,8 @@ const CarouselContent = ({
                 : true
             }
             imageWidth={imageWidth}
+            location={location}
+            locationId={locationId}
           />
         );
       });
@@ -337,6 +365,9 @@ const CarouselContent = ({
     side,
     sfwValue,
     imageWidth,
+    location,
+    locationId,
+    openDeleteListHandler,
   ]);
 
   useEffect(() => {
@@ -455,10 +486,15 @@ const CarouselContent = ({
     );
   });
 
-  const saveExampleHandler = async (e, ids) => {
-    const postData =
-      !!Object.keys(savedImages.data)?.length &&
-      savedImages.data[versionId]?.find((post) => post.postId === +postId);
+  const saveExampleHandler = async (
+    location,
+    ids,
+    collectionData,
+    postData
+  ) => {
+    // const postData =
+    //   !!Object.keys(savedImages.data)?.length &&
+    //   savedImages.data[versionId]?.find((post) => post.postId === +postId);
 
     const imagesForSaving = ids?.length
       ? imagesData.filter((image) => ids.includes(image?.id))
@@ -467,6 +503,8 @@ const CarouselContent = ({
     const postInfo = {
       postId,
       modelId,
+      location,
+      collectionData,
       modelName: modelName,
       versionId,
       nsfwMode,
@@ -476,41 +514,64 @@ const CarouselContent = ({
       existedAmount: existedImgsAmount,
       images: imagesForSaving,
     };
+
     dispatch(uploadActions.addToQueue(postInfo));
     setImagesListIsOpen(false);
   };
 
-  const deleteExampleHandler = async (e, ids) => {
+  const deleteExampleHandler = async (
+    location,
+    ids,
+    collectionData,
+    postData
+  ) => {
     try {
       const curPostId = images[0].postId;
-      const postData =
-        !!Object.keys(savedImages.data)?.length &&
-        savedImages.data[versionId]?.find((post) => post.postId === curPostId);
+      // console.log(ids);
+      // console.log(location);
+      // console.log(collectionData);
+      // console.log(postData);
+      // console.log(curPostData);
+      // return;
+      // const postData =
+      //   !!Object.keys(savedImages.data)?.length &&
+      //   savedImages.data[versionId]?.find((post) => post.postId === curPostId);
       setIsDeleting(true);
 
       const postInfo = {
         postId: curPostId,
         modelId,
+        location,
+        collectionData,
         modelName: modelName,
         versionId,
         nsfwMode,
-        postData: postData,
+        postData: curPostData,
         delete: true,
         imgUrl: images[0].url,
         ids: ids || [],
         existedAmount: existedImgsAmount,
       };
 
-      if (!!ids?.length && ids?.length !== postData?.imagesId?.length) {
-        const newImages = images.filter((image) => !ids?.includes(image.id));
-        const updatedPostData = await updateImagePostData(postInfo, newImages);
+      if (location === "collections") {
+        await dispatch(updateCollectionPostsData(postInfo, curPostData));
+      }
 
-        setImages(newImages);
-        dispatch(
-          modelActions.updateSavedImages({ postInfo, data: updatedPostData })
-        );
-      } else {
-        dispatch(deleteImgPost(postInfo, postData));
+      if (location === "models") {
+        if (!!ids?.length && ids?.length !== curPostData?.imagesId?.length) {
+          const newImages = images.filter((image) => !ids?.includes(image.id));
+          const updatedPostData = await updateImagePostData(
+            postInfo,
+            newImages
+          );
+
+          setImages(newImages);
+          dispatch(
+            modelActions.updateSavedImages({ postInfo, data: updatedPostData })
+          );
+        } else {
+          dispatch(deleteImgPost(postInfo, curPostData));
+        }
       }
       setIsDeleting(false);
       setImagesListIsOpen(false);
@@ -636,19 +697,51 @@ const CarouselContent = ({
       {images?.length > curVisibleAmount && (
         <ul className={classes.pagination}>{paginationHtml}</ul>
       )}
-      {!saved && !!postId && existedImgsAmount < images?.length && (
-        <div className={classes["btn-save-container"]}>
-          <button
-            className={`${classes["btn-save"]} ${
-              isUploading ? classes["btn-save--saving"] : ""
+      {true && (
+        <div className={classes["save"]}>
+          {!saved && !!postId && (
+            <div className={classes["save__btn"]} data-location="models">
+              <button
+                className={`${classes["btn-save"]} ${
+                  isUploading ? classes["btn-save--saving"] : ""
+                }`}
+                onClick={openSaveImagesListHandler}
+                disabled={!!isUploading || existedImgsAmount >= images?.length}
+                title="Save"
+              >
+                {!isUploading ? (
+                  <FolderArrowDownIcon />
+                ) : (
+                  <Spinner size="small" />
+                )}
+              </button>
+              <span className={classes["save__btn-text"]}>Save to model</span>
+            </div>
+          )}
+          <div
+            className={`${classes["save__btn"]} ${
+              classes["save__btn--collection"]
+            } ${
+              !saved && !!postId ? classes["save__btn--collection-hidden"] : ""
             }`}
-            onClick={openSaveImagesListHandler}
-            disabled={!!isUploading}
-            title="Save"
+            data-location="collections"
           >
-            {!isUploading ? <FolderSvg /> : <Spinner size="small" />}
-          </button>
-          {existedImgsAmount && existedImgsAmount < images.length && (
+            <button
+              className={`${classes["btn-save"]} ${
+                isUploading ? classes["btn-save--saving"] : ""
+              }`}
+              onClick={openSaveImagesListHandler}
+              // disabled={!!isUploading}
+              title="Save"
+            >
+              {!isUploading ? <FolderPlusIcon /> : <Spinner size="small" />}
+            </button>
+            <span className={classes["save__btn-text"]}>
+              Save to collection
+            </span>
+          </div>
+
+          {existedImgsAmount && !saved && (
             <div className={classes["btn-save__amount"]}>
               {existedImgsAmount}/{images.length}
             </div>
@@ -664,6 +757,7 @@ const CarouselContent = ({
         {fullViewIsOpen && (
           <ImageFullView
             src={images[currImgNum]?.url}
+            type={images[currImgNum]?.type}
             onClose={() => {
               setFullViewIsOpen(false);
               onActiveNumChange(currImgNum);
@@ -679,24 +773,54 @@ const CarouselContent = ({
               setImagesListIsOpen(false);
             }}
           >
-            <ChooseImageForm
-              type={imageFormType}
-              modelId={modelId}
-              versionId={versionId}
-              images={images}
-              activeImageIndex={currImgNum}
-              existedImgsAmount={existedImgsAmount}
-              onSave={
-                imageFormType === "save"
-                  ? saveExampleHandler
-                  : deleteExampleHandler
-              }
-              isDeleting={isDeleting}
-              onClose={() => {
-                setImageFormType("");
-                setImagesListIsOpen(false);
-              }}
-            />
+            {(imageFormType?.location === "models" ||
+              imageFormType.type === "del") && (
+              <ChooseImageForm
+                postId={postId}
+                postData={postData}
+                type={imageFormType.type}
+                location={imageFormType.location}
+                modelId={modelId}
+                versionId={versionId}
+                images={images}
+                activeImageIndex={currImgNum}
+                existedImgsAmount={existedImgsAmount}
+                savedImageIds={savedImageIds}
+                onSave={
+                  imageFormType.type === "save"
+                    ? saveExampleHandler
+                    : deleteExampleHandler
+                }
+                isDeleting={isDeleting}
+                onClose={() => {
+                  setImageFormType("");
+                  setImagesListIsOpen(false);
+                }}
+              />
+            )}
+            {imageFormType?.location === "collections" &&
+              imageFormType.type !== "del" && (
+                <SaveToCollectionForm
+                  postId={postId}
+                  type={imageFormType.type}
+                  location={imageFormType.location}
+                  modelId={modelId}
+                  versionId={versionId}
+                  images={images}
+                  activeImageIndex={currImgNum}
+                  existedImgsAmount={existedImgsAmount}
+                  onSave={
+                    imageFormType.type === "save"
+                      ? saveExampleHandler
+                      : deleteExampleHandler
+                  }
+                  isDeleting={isDeleting}
+                  onClose={() => {
+                    setImageFormType("");
+                    setImagesListIsOpen(false);
+                  }}
+                />
+              )}
           </Modal>
         )}
       </AnimatePresence>

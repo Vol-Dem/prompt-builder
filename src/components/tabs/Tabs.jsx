@@ -18,6 +18,9 @@ import IntroGuide from "../ui/guide/IntroGuide";
 import { guideActions } from "../../store/guide";
 import { motion } from "framer-motion";
 import ModelsList from "../lora/ModelsList";
+import CategoryList from "../ui/lists/CategoryList";
+import ButtonCategoryAll from "../ui/buttons/ButtonCategoryAll";
+import CategoryListItem from "../ui/lists/CategoryListItem";
 
 const Tabs = () => {
   const [guideIsOpen, setGuideIsOpen] = useState(true);
@@ -66,19 +69,30 @@ const Tabs = () => {
     .sort((a, b) => a.position - b.position)
     .map((category, i) => {
       return (
-        <motion.li
+        <CategoryListItem
           key={category.id}
-          data-value={category.id}
+          dataValue={category.id}
           onClick={categorySwitchHandler}
-          className={`${classes[`category__link`]} ${
-            activeTab === category.id ? classes.active : ""
-          }`}
+          active={activeTab === category.id}
         >
           {category.name}
           {guideHomeState?.active && i === 0 && !activeTab && (
             <OpenCategoryGuide />
           )}
-        </motion.li>
+        </CategoryListItem>
+        // <motion.li
+        //   key={category.id}
+        //   data-value={category.id}
+        //   onClick={categorySwitchHandler}
+        //   className={`${classes[`category__link`]} ${
+        //     activeTab === category.id ? classes.active : ""
+        //   }`}
+        // >
+        //   {category.name}
+        //   {guideHomeState?.active && i === 0 && !activeTab && (
+        //     <OpenCategoryGuide />
+        //   )}
+        // </motion.li>
       );
     });
 
@@ -86,22 +100,36 @@ const Tabs = () => {
     <>
       <div className={classes["tag-menu"]}>
         {!!modelTypesHtml?.length && (
-          <motion.ul
-            initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-            animate={ANIMATIONS_FM_SLIDEIN}
+          <CategoryList
+            activeCategory={activeTab}
+            onClick={categorySwitchHandler}
             className={classes["tag-menu__labels"]}
           >
-            <li
-              data-value="all"
+            <ButtonCategoryAll
               onClick={categorySwitchHandler}
               className={`${classes[`category__link`]} ${
-                classes[`category__link--all`]
-              } ${activeTab === "all" ? classes.active : ""}`}
-            >
-              All
-            </li>
+                activeTab === "all" ? classes.active : ""
+              }`}
+              activeCategory={activeTab}
+            />
             {modelTypesHtml}
-          </motion.ul>
+          </CategoryList>
+          // <motion.ul
+          //   initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+          //   animate={ANIMATIONS_FM_SLIDEIN}
+          //   className={classes["tag-menu__labels"]}
+          // >
+          //   <li
+          //     data-value="all"
+          //     onClick={categorySwitchHandler}
+          //     className={`${classes[`category__link`]} ${
+          //       classes[`category__link--all`]
+          //     } ${activeTab === "all" ? classes.active : ""}`}
+          //   >
+          //     All
+          //   </li>
+          //   {modelTypesHtml}
+          // </motion.ul>
         )}
         {activeTab && activeTab !== "all" && (
           <div>

@@ -121,10 +121,18 @@ const tabsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(authActions.logout, (state, actions) => {
+      state.currTab = "";
       state.currCategory = "";
       state.currSubcategory = "";
       state.categoriesData = [];
       state.subcategories = [];
+      state.modelsData = {
+        tab: "",
+        category: "",
+        subcategory: "",
+        nsfw: false,
+        previews: [],
+      };
     });
   },
 });

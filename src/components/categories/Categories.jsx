@@ -13,6 +13,10 @@ import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../variables/constants";
+import CategoryList from "../ui/lists/CategoryList";
+import ButtonCategoryAll from "../ui/buttons/ButtonCategoryAll";
+import CategoryListItem from "../ui/lists/CategoryListItem";
+import NotificationMessage from "../ui/NotificationMessage";
 
 const Categories = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
@@ -59,17 +63,12 @@ const Categories = () => {
         })
         .map((category, i) => {
           return (
-            <motion.li
+            <CategoryListItem
               key={`${activeTab}-${category.id}`}
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-              // animate={ANIMATIONS_FM_SLIDEIN}
-              // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
-              data-value={category.id}
               onClick={categorySwitchHandler}
-              className={`${classes[`category__link`]} ${
+              dataValue={category.id}
+              active={activeCategory === category.id}
+              className={`${
                 activeCategory === category.id ? classes.active : ""
               }`}
             >
@@ -77,7 +76,26 @@ const Categories = () => {
               {guideHomeState?.active && !activeCategory && i === 0 && (
                 <OpenCategoryGuide />
               )}
-            </motion.li>
+            </CategoryListItem>
+            // <motion.li
+            //   key={`${activeTab}-${category.id}`}
+            //   initial={{ opacity: 0, y: -5 }}
+            //   animate={{ opacity: 1, y: 0 }}
+            //   transition={{ duration: 0.3 }}
+            //   // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            //   // animate={ANIMATIONS_FM_SLIDEIN}
+            //   // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            //   data-value={category.id}
+            //   onClick={categorySwitchHandler}
+            //   className={`${classes[`category__link`]} ${
+            //     activeCategory === category.id ? classes.active : ""
+            //   }`}
+            // >
+            //   {category.name}
+            //   {guideHomeState?.active && !activeCategory && i === 0 && (
+            //     <OpenCategoryGuide />
+            //   )}
+            // </motion.li>
           );
         })
     : [];
@@ -88,8 +106,23 @@ const Categories = () => {
 
   return (
     <div className={classes["container"]}>
-      <div className={classes["category"]}>
-        <motion.ul
+      <>
+        {!!catHtml?.length && (
+          <CategoryList
+            activeCategory={activeCategory}
+            onClick={categorySwitchHandler}
+            className={classes["category__list"]}
+            onEdit={editCategoriesHandler}
+          >
+            <ButtonCategoryAll
+              onClick={categorySwitchHandler}
+              className={`${activeCategory === "all" ? classes.active : ""}`}
+              activeCategory={activeCategory}
+            />
+            {catHtml}
+          </CategoryList>
+        )}
+        {/* <motion.ul
           // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
           // animate={ANIMATIONS_FM_SLIDEIN}
           // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
@@ -108,8 +141,8 @@ const Categories = () => {
             All
           </motion.li>
           {catHtml}
-        </motion.ul>
-        {!!catHtml?.length && (
+        </motion.ul> */}
+        {/* {!!catHtml?.length && (
           <ButtonTertiary
             type="button"
             className={classes["category__edit"]}
@@ -118,16 +151,18 @@ const Categories = () => {
           >
             <EditSvg />
           </ButtonTertiary>
-        )}
-      </div>
-      {!catHtml?.length && <div>No categories found</div>}
+        )} */}
+      </>
+      {!catHtml?.length && !userDataIsLoading && (
+        <NotificationMessage>No categories found</NotificationMessage>
+      )}
       {activeCategory && activeTab && categories && (
         <Subcategories
           subcategories={categories[activeTab][activeCategory]}
           activeCategory={activeCategory}
         />
       )}
-      {!categories && !userDataIsLoading && <div>Nothing is here...</div>}
+      {/* {!categories && !userDataIsLoading && <div>Nothing is here...</div>} */}
       <AnimatePresence>
         {editIsOpen && (
           <Modal

@@ -72,6 +72,9 @@ const ComboSelect = ({
               validation,
               value || ""
             );
+            // console.log(value);
+            // console.log(isValid);
+            // console.log(id);
             setSelected(value, isValid, errorMessage, id);
             setInputErrorMessage(errorMessage);
           } else {
@@ -98,7 +101,12 @@ const ComboSelect = ({
                     : ""
                 }`}
                 displayValue={(options) => options?.name}
-                onChange={(event) => setQuery(event.target.value, true, "", id)}
+                onChange={(event) => {
+                  // console.log("query");
+                  // console.log(id);
+                  // console.log(event.target.value);
+                  setQuery(event.target.value, true, "", id);
+                }}
                 onBlur={(e) => {
                   if (onBlur) {
                     onBlur(e);

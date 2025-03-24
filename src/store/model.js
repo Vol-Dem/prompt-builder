@@ -16,6 +16,8 @@ import {
 } from "../utils/fetchUtils";
 import { getAuth } from "firebase/auth";
 import { saveToStorage } from "../variables/utils";
+import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
+import { authActions } from "./auth";
 
 const auth = getAuth(firebaseApp);
 
@@ -134,6 +136,17 @@ const modelSlice = createSlice({
       state.activeCarouselData = actions.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(authActions.logout, (state, actions) => {
+      console.log(state.model);
+      console.log(state.curExampleImgsType);
+      state.model = {};
+      state.modelPreview = [];
+      state.errorMessage = "";
+      state.curVersion = {};
+      state.activeCarouselData = {};
+    });
+  },
 });
 
 // export const switchNsfwMode = (nsfw) => {
@@ -222,21 +235,42 @@ export const updateModel = (modelId) => {
   };
 };
 
-export const setPreviewImg = (url, isNsfw = false) => {
+export const setPreviewImg = (url, isNsfw = false, location, locationId) => {
   return async (__, getState) => {
-    const uid = getState().auth.user.uid;
-    const id = getState().model.model.id;
+    try {
+      const uid = getState().auth.user.uid;
+      // const id = getState().model.model.id;
+      // console.log(url);
+      // console.log(isNsfw);
+      // console.log(location);
+      // console.log(locationId);
+      if (!url || !location || !locationId) {
+        throw new Error(ERROR_MESSAGE_DEFAULT);
+      }
 
-    const urlField = isNsfw ? "nsfwPreviewImgUrl" : "customPreviewImgUrl";
+      const urlField = isNsfw ? "nsfwPreviewImgUrl" : "customPreviewImgUrl";
 
-    const modelsPrevRef = doc(firestore, "users", uid, "preview", id + "");
-    await setDoc(
-      modelsPrevRef,
-      {
-        [`${urlField}`]: url,
-      },
-      { merge: true }
-    );
+      const dbCollectionName =
+        location === "models" ? "preview" : "collectionPreviews";
+
+      const locationPrevRef = doc(
+        firestore,
+        "users",
+        uid,
+        dbCollectionName,
+        locationId + ""
+      );
+
+      await setDoc(
+        locationPrevRef,
+        {
+          [`${urlField}`]: url,
+        },
+        { merge: true }
+      );
+    } catch (err) {
+      console.log(err);
+    }
   };
 };
 
@@ -291,6 +325,8 @@ export const setTagSetPreviewImg = (versionId, tagSetData) => {
 export const deleteImgPost = (postInfo, postData) => {
   return async (dispatch, getState) => {
     try {
+      console.log(postInfo);
+      console.log(postData);
       const { versionId, postId } = postInfo;
       const uid = getState().auth.user.uid;
       const id = getState().model.model.id;

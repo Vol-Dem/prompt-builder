@@ -11,7 +11,7 @@ import { authActions } from "../../store/auth";
 import PromptGuide from "../ui/guide/model/PromptGuide";
 import { AnimatePresence } from "framer-motion";
 import Modal from "../ui/Modal";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 const positiveMinHeight = 100;
 const negativeMinHeight = 60;
@@ -185,30 +185,34 @@ const Prompt = memo(() => {
                 <PlusIcon className={classes["plus-icon"]} /> BREAK
               </ButtonTertiary>
 
-              <div className={classes["btn-container"]}>
+              <div className={classes["clear"]}>
+                <span className={classes["clear__title"]}>Clear:</span>
                 <ButtonTertiary
                   type="button"
                   onClick={clearPromptHandler}
-                  className={classes["btn-clear"]}
+                  className={classes["clear__btn"]}
                 >
-                  Clear all
+                  <TrashIcon className={classes["clear__btn-svg"]} />
+                  <span>all</span>
                 </ButtonTertiary>
                 <div
-                  className={`${classes["btn-container"]} ${classes["btn-container--fields"]}`}
+                  className={`${classes["clear"]} ${classes["clear--fields"]}`}
                 >
                   <ButtonTertiary
                     type="button"
                     onClick={clearPositivePromptHandler}
-                    className={classes["btn-clear"]}
+                    className={classes["clear__btn"]}
                   >
-                    Clear positive
+                    <TrashIcon className={classes["clear__btn-svg"]} />
+                    <span>positive</span>
                   </ButtonTertiary>
                   <ButtonTertiary
                     type="button"
                     onClick={clearNegativePromptHandler}
-                    className={classes["btn-clear"]}
+                    className={classes["clear__btn"]}
                   >
-                    Clear negative
+                    <TrashIcon className={classes["clear__btn-svg"]} />
+                    <span>negative</span>
                   </ButtonTertiary>
                 </div>
               </div>

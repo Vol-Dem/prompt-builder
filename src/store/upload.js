@@ -1,7 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { transformImageData } from "../utils/generalUtils";
+import {
+  filterDuplicates,
+  handleErrors,
+  transformImageData,
+} from "../utils/generalUtils";
 import { updateImagePostData } from "../utils/fetchUtils";
 import { modelActions } from "./model";
+import { savePostToCollections } from "./images";
 
 const uploadSlice = createSlice({
   name: "upload",
@@ -49,7 +54,18 @@ const uploadSlice = createSlice({
 export const savePost = (postInfo) => {
   return async (dispatch, getState) => {
     try {
-      const { postId, modelId, versionId, nsfwMode, images } = postInfo;
+      const {
+        postId,
+        modelId,
+        versionId,
+        nsfwMode,
+        images,
+        location,
+        collectionData,
+        postData,
+      } = postInfo;
+      // console.log(location);
+      // console.log(postInfo);
 
       dispatch(uploadActions.setIsUploading(true));
       dispatch(uploadActions.setCurPostId(postId));
@@ -65,9 +81,10 @@ export const savePost = (postInfo) => {
 
         data = await imgExampleResponse.json();
       } else {
-        data = { items: images };
+        data = { items: filterDuplicates(images, "id") };
       }
 
+      // console.log(images);
       // console.log(data);
       if (!data?.items?.length) {
         throw new Error("0 items");
@@ -89,7 +106,24 @@ export const savePost = (postInfo) => {
         examplesDataWithRes
       );
 
-      dispatch(modelActions.updateSavedImages({ postInfo, data: newPostData }));
+      if (location === "collections") {
+        const imageIds = data.items.map((image) => image.id);
+        await dispatch(
+          savePostToCollections({
+            ...collectionData,
+            imageIds,
+            postId,
+            postData,
+            images: data.items,
+          })
+        );
+      }
+
+      if (location === "models") {
+        dispatch(
+          modelActions.updateSavedImages({ postInfo, data: newPostData })
+        );
+      }
 
       dispatch(uploadActions.setCurPostId(null));
       dispatch(uploadActions.removeFromQueue({ postId, versionId }));
@@ -105,6 +139,8 @@ export const savePost = (postInfo) => {
       dispatch(uploadActions.setCurPostId(null));
       dispatch(uploadActions.setIsUploading(false));
       console.error(err.message);
+      throw new Error(err);
+      // handleErrors(err);
     }
   };
 };

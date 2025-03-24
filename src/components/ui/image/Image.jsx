@@ -54,6 +54,11 @@ const Image = forwardRef(
             </div>
           )}
           <img
+            style={{
+              // width: `${width}px` || null,
+              width: `auto` || null,
+              // height: `${height}px` || null,
+            }}
             ref={ref}
             src={imgSrc}
             alt={alt}

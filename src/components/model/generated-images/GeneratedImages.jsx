@@ -46,9 +46,6 @@ const GeneratedImages = memo(({ customData }) => {
     const showAll =
       versionsListRef?.current?.offsetHeight >
       versionsItemRef?.current?.offsetHeight;
-    console.log(showAll);
-    console.log(versionsListRef?.current?.offsetHeight);
-    console.log(versionsItemRef?.current?.offsetHeight);
 
     setIsShowAll(showAll);
   }, [
@@ -63,7 +60,7 @@ const GeneratedImages = memo(({ customData }) => {
 
   const openSavedVersionImagesHandler = (e) => {
     if (+e.target.id === curImagesModelVersionId) return;
-
+    setErrorMessage("");
     //Temp
     if (e.target.id === "unsorted") {
       setCurImagesModelVersionId(e.target.id);
@@ -184,7 +181,10 @@ const GeneratedImages = memo(({ customData }) => {
         </ul>
       </div>
       {isShowAll && (
-        <ButtonTertiary onClick={showAllVersionsHandler}>
+        <ButtonTertiary
+          onClick={showAllVersionsHandler}
+          className={classes["btn-all"]}
+        >
           {showAllVersions ? "Hide" : "Show All"}
         </ButtonTertiary>
       )}
@@ -229,6 +229,8 @@ const GeneratedImages = memo(({ customData }) => {
             <SaveImageForm
               modelData={model}
               curVersion={curImagesModelVersionId}
+              location="models"
+              savedModelPosts={savedImagesData.data}
             />
           </Modal>
         )}

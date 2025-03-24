@@ -99,7 +99,11 @@ const UsedCard = memo(({ previewData, fullView, layoutId }) => {
     >
       <div className={classes.head}>
         <Link
-          to={`/models/${previewData.id}`}
+          to={
+            previewData.type === "collection"
+              ? `/images/${previewData.id}`
+              : `/models/${previewData.id}`
+          }
           state={{ versionId: previewData?.activeVersionId || null }}
           className={classes.link}
           onClick={closePanelHandler}
@@ -120,7 +124,11 @@ const UsedCard = memo(({ previewData, fullView, layoutId }) => {
         <div className={classes.info}>
           <div className={classes["title-container"]}>
             <Link
-              to={`/models/${previewData.id}`}
+              to={
+                previewData.type === "collection"
+                  ? `/images/${previewData.id}`
+                  : `/models/${previewData.id}`
+              }
               state={{ versionId: previewData?.activeVersionId || null }}
               className={classes.link}
               onClick={closePanelHandler}

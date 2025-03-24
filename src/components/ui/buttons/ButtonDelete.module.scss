@@ -1,0 +1,9 @@
+@use "./../../../variables/variables.scss" as var;
+
+.btn-del {
+  background-color: var.$color-background-red;
+
+  &:hover {
+    background-color: darken(var.$color-red, 10%);
+  }
+}

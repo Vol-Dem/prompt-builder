@@ -3,18 +3,24 @@ import {
   arrayUnion,
   deleteDoc,
   doc,
+  getDoc,
   getFirestore,
   setDoc,
   writeBatch,
 } from "firebase/firestore";
 import {
   addDelayPromise,
+  createCategoryId,
+  createCollectionId,
   transformImageData,
   transformModelData,
 } from "./generalUtils";
 import firebaseApp from "../firebase-config";
 import { getAuth } from "firebase/auth";
-import { SETTINGS_SFW_RANGE } from "../variables/constants";
+import {
+  ERROR_MESSAGE_INVALID_DATA,
+  SETTINGS_SFW_RANGE,
+} from "../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
@@ -436,9 +442,15 @@ export const updateImagePostData = async (
   replace = false
 ) => {
   try {
-    const { postId, modelId, versionId, postData } = postInfo;
+    const { postId, modelId, versionId, postData, location, collectionData } =
+      postInfo;
+    if (!location) {
+      throw new Error(ERROR_MESSAGE_INVALID_DATA);
+    }
+    // console.log(postInfo);
+    // console.log(imagesData);
     const uid = auth.currentUser.uid;
-    const modelRef = doc(firestore, "users", uid, "models", modelId + "");
+    const locationRef = doc(firestore, "users", uid, location, modelId + "");
     const modelImagesRef = doc(firestore, "users", uid, "images", postId + "");
     // const modelImagesRef = doc(
     //   firestore,
@@ -468,7 +480,7 @@ export const updateImagePostData = async (
 
     // console.log(newImgData);
 
-    await addDelayPromise(delayTime);
+    // await addDelayPromise(delayTime);
 
     const batch = writeBatch(firestore);
 
@@ -476,42 +488,64 @@ export const updateImagePostData = async (
       SETTINGS_SFW_RANGE.includes(image?.nsfwLevel)
     );
 
-    batch.set(
-      modelImagesRef,
-      {
-        versionsId: arrayUnion(versionId),
-        items: arrayUnion(...imagesData),
-        // items: imagesData,
-        // versionId,
-        // default: false,
-        createdAt: imagesData[0].createdAt,
-        // savedAt: new Date().toISOString(),
-        // nsfw: imagesData[0].nsfw,
-        // nsfwTypes: nsfw,
-        // nsfwLevel: imagesData[0]?.nsfwLevel || "",
-        hasSfw: hasSfw,
-      },
-      { merge: true }
-    );
+    const docSnap = await getDoc(modelImagesRef);
 
-    // if (postInfo?.delete) {
-    if (postData) {
-      batch.update(modelRef, {
-        [`savedImages.${versionId}`]: arrayRemove(postData),
-      });
+    let curPostData;
+
+    if (docSnap.exists()) {
+      curPostData = docSnap.data();
     }
 
-    if (imagesId?.length) {
+    const curImgIds = curPostData?.items?.map((item) => item?.id);
+
+    const newImagesData = imagesData.filter(
+      (image) => !curImgIds?.includes(image.id)
+    );
+    // console.log(newImagesData);
+
+    if (newImagesData?.length || !curPostData?.id || location === "models") {
       batch.set(
-        modelRef,
+        modelImagesRef,
         {
-          savedImages: {
-            [`${versionId}`]: arrayUnion(newImgData),
-          },
+          id: +postId,
+          versionsId: arrayUnion(versionId),
+          items: arrayUnion(...imagesData),
+          // items: imagesData,
+          // versionId,
+          // default: false,
+          createdAt: imagesData[0].createdAt,
+          // savedAt: new Date().toISOString(),
+          // nsfw: imagesData[0].nsfw,
+          // nsfwTypes: nsfw,
+          // nsfwLevel: imagesData[0]?.nsfwLevel || "",
+          hasSfw: hasSfw,
         },
         { merge: true }
       );
     }
+    // if (postInfo?.delete) {
+    if (location === "models") {
+      if (postData) {
+        batch.update(locationRef, {
+          [`savedImages.${versionId}`]: arrayRemove(postData),
+        });
+      }
+
+      if (imagesId?.length) {
+        batch.set(
+          locationRef,
+          {
+            savedImages: {
+              [`${versionId}`]: arrayUnion(newImgData),
+            },
+          },
+          { merge: true }
+        );
+      }
+    }
+
+    // if (location === "collections") {
+    // }
 
     // Commit the batch
     await batch.commit();
@@ -561,3 +595,124 @@ export const saveGuideData = async (guideData, uid) => {
     console.error(err.message);
   }
 };
+
+export const getCollectionData = async (collectionId) => {
+  const uid = auth.currentUser.uid;
+
+  const modelRef = doc(
+    firestore,
+    "users",
+    uid,
+    "collections",
+    collectionId + ""
+  );
+
+  const docSnap = await getDoc(modelRef);
+
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    // console.log(data);
+    return data;
+  } else {
+    throw new Error("Failed to load model");
+  }
+};
+
+// export const addNewCollectionCategories = async ({
+//   collectionData,
+//   categoryData,
+//   subcategoriesData,
+// }) => {
+//   try {
+//     const hasNewSubcategories = subcategoriesData?.find(
+//       (subcategory) => !subcategory?.id
+//     );
+
+//     //Check for new categories data
+//     if (!hasNewSubcategories && categoryData?.id && collectionData?.id) {
+//       return;
+//     }
+
+//     const uid = auth.currentUser.uid;
+//     const userRef = doc(firestore, "users", uid);
+
+//     const userDataDoc = await getDoc(userRef);
+
+//     const latestCategories = userDataDoc?.imageCategories || [];
+
+//     const curCategoryData = latestCategories.find(
+//       (category) => category.name === categoryData.name
+//     );
+
+//     const categoryId =
+//       categoryData?.id || createCategoryId(categoryData.name, latestCategories);
+//     const collectionId =
+//       collectionData?.id || createCollectionId(latestCategories);
+
+//     let newSubcategories = [];
+
+//     const subcategoryIds = subcategoriesData.flatMap((subcategory) => {
+//       if (!subcategory.name) {
+//         return [];
+//       }
+//       if (!subcategory.id) {
+//         const subData = {
+//           id: createCategoryId(
+//             subcategory.name,
+//             curCategoryData?.subcategories
+//           ),
+//           name: subcategory.name,
+//         };
+//         newSubcategories.push(subData);
+//         return subData.id;
+//       }
+//       return subcategory.id;
+//     });
+
+//     let updatedCategories;
+
+//     if (!latestCategories?.length || !categoryData.id) {
+//       console.log("NEW");
+//       updatedCategories = [
+//         ...latestCategories,
+//         {
+//           id: categoryId,
+//           name: categoryData.name,
+//           subcategories: newSubcategories,
+//           collectionNames: [{ id: collectionId, name: collectionData.name }],
+//         },
+//       ];
+//       // batch.set(
+//       //   userRef,
+//       //   {
+//       //     imageCategories: updatedCategories,
+//       //   },
+//       //   { merge: true }
+//       // );
+//     } else {
+//       console.log("UPD");
+//       updatedCategories = latestCategories.map((category) => {
+//         if (categoryData.id && categoryId === category.id) {
+//           const collectionNames = !collectionData.id
+//             ? [
+//                 ...category.collectionNames,
+//                 { id: collectionId, name: collectionData.name },
+//               ]
+//             : category.collectionNames;
+
+//           return {
+//             ...category,
+//             subcategories: [...category.subcategories, ...newSubcategories],
+//             collectionNames,
+//           };
+//         }
+//         return category;
+//       });
+//     }
+
+//     console.log(updatedCategories);
+//     return updatedCategories;
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };

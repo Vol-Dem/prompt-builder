@@ -22,7 +22,7 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
   const isMobile = useSelector((state) => state.general.isMobile);
   // const fullView = useSelector((state) => state.tabs.previewFullView);
   const imgRef = useRef();
-
+  // console.log(previewData);
   useEffect(() => {
     const curVersionData =
       previewData?.modelVersionsCustomData &&
@@ -41,7 +41,7 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
       versionName: curVersionData?.name,
       imgUrl: previewData?.imgUrl,
       nsfwPreviewImgUrl: previewData?.nsfwPreviewImgUrl,
-      type: previewData?.modelType,
+      type: previewData?.modelType || previewData?.type,
       baseModel: curVersionData?.baseModel || previewData?.baseModel,
       mainTag: curVersionData?.mainTag || previewData?.mainTag,
       weight: curVersionData?.weight || previewData?.weight,
@@ -58,6 +58,7 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
   return (
     <motion.div
       layoutId={layout && !isMobile ? previewData.id : Math.random()}
+      whileHover={{ borderColor: "rgba(255, 255, 255, 0.6)" }}
       transition={{
         layout: { duration: 0 },
         // type: "spring",
@@ -75,7 +76,21 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
           previewData={previewData}
           className={classes["btn-add"]}
         />
-        <Link to={`/models/${previewData.id}`} onClick={onClick}>
+        <Link
+          to={
+            previewData?.type === "collection"
+              ? `/images/${previewData.id}`
+              : `/models/${previewData.id}`
+          }
+          onClick={onClick}
+        >
+          <div
+            className={`${classes["type"]} ${classes["type--position"]} ${
+              fullView ? classes.hidden : ""
+            }`}
+          >
+            {previewData.type}
+          </div>
           <Image
             ref={imgRef}
             src={
@@ -96,6 +111,7 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
                   currVersion?.baseModel ||
                   previewData?.baseModel}
               </div> */}
+
               <ul className={classes["models"]}>
                 {previewData?.baseModels?.map((model, i) => (
                   <li key={i} className={classes["models__item"]}>
@@ -119,7 +135,11 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
         <div className={`${classes.content}`}>
           <div className={classes["title-container"]}>
             <Link
-              to={`/models/${previewData.id}`}
+              to={
+                previewData?.type === "collection"
+                  ? `/images/${previewData.id}`
+                  : `/models/${previewData.id}`
+              }
               className={classes.link}
               onClick={onClick}
             >

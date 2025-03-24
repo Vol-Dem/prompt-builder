@@ -29,7 +29,7 @@ const ImageCardGuide = (props) => {
       },
       {
         step: GUIDE_STEP_ADD_ALL_TO_PROMPT,
-        arrowPosition: 8,
+        arrowPosition: 1,
         next: true,
         text: (
           <>

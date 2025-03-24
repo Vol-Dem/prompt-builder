@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import GuideMessage from "../GuideMessage";
 import {
+  GUIDE_STEP_PROMPT_BREAK,
   GUIDE_STEP_PROMPT_COPY,
   GUIDE_STEP_PROMPT_DRAG_AND_DROP,
   GUIDE_STEP_PROMPT_EDIT_TAG,
@@ -43,6 +44,12 @@ const PromptGuide = (props) => {
             for both positive and negative words
           </>
         ),
+      },
+      {
+        step: GUIDE_STEP_PROMPT_BREAK,
+        arrowPosition: 8,
+        next: true,
+        text: <>Click +BREAK button to add BREAK to the prompt</>,
       },
       {
         step: GUIDE_STEP_PROMPT_DRAG_AND_DROP,

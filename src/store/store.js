@@ -9,6 +9,7 @@ import searchSlice from "./search";
 import uploadSlice from "./upload";
 import guideSlice from "./guide";
 import generalSlice from "./general";
+import imagesSlice from "./images";
 
 const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ const store = configureStore({
     notification: notificationSlice.reducer,
     upload: uploadSlice.reducer,
     guide: guideSlice.reducer,
+    images: imagesSlice.reducer,
   },
 });
 

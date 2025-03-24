@@ -45,7 +45,11 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
-import { checkIsInCurrentNsfwRange } from "../../utils/generalUtils";
+import {
+  checkIsInCurrentNsfwRange,
+  transformImageData,
+} from "../../utils/generalUtils";
+import NavigationPanel from "../layout/navigation-panel/NavigationPanel";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -85,9 +89,13 @@ const Model = ({ title }) => {
   const dispatch = useDispatch();
   const descriptionRef = useRef();
   const loadingImagesTimeoutRef = useRef();
-  const allHashtags = useMemo(() => {
-    return model?.hashtags || model?.data?.tags;
-  }, [model]);
+  const allHashtags = model?.hashtags?.length
+    ? model?.hashtags
+    : model?.data?.tags;
+
+  // const allHashtags = useMemo(() => {
+  //   return model?.hashtags || model?.data?.tags;
+  // }, [model]);
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -319,7 +327,7 @@ const Model = ({ title }) => {
 
     const loadingImagesTimeout = loadingImagesTimeoutRef?.current;
     return () => {
-      console.log("RESET");
+      // console.log("RESET");
       setErrorMessage("");
       setCurVersionImages({});
       dispatch(modelActions.setCurVersion({}));
@@ -585,11 +593,12 @@ const Model = ({ title }) => {
   };
 
   useEffect(() => {
-    if (!allHashtags) return;
+    if (!allHashtags?.length) return;
 
     const visibleHashtags = showAllHashtags
       ? allHashtags
       : allHashtags.slice(0, SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT);
+
     setHashtags(visibleHashtags);
   }, [model, showAllHashtags, allHashtags]);
 
@@ -619,7 +628,20 @@ const Model = ({ title }) => {
       )}
       {!isLoading && !defDataIsLoading && !errorMessage && model?.id && (
         <div className={classes.model}>
-          <div className={classes["panel"]}>
+          <NavigationPanel onBack={backHandler}>
+            <Link
+              to="/"
+              className={classes["link"]}
+              onClick={() => {
+                dispatch(tabActions.setCurrentTab(model.modelType));
+                dispatch(tabActions.setCurrentCategory(model.main));
+              }}
+            >
+              {mainCategoryName || model?.main}
+            </Link>
+            <ul className={classes["subcategories"]}>{subCatsHtml}</ul>
+          </NavigationPanel>
+          {/* <div className={classes["panel"]}>
             <Buttton className={classes["btn-back"]} onClick={backHandler}>
               <BackSvg />
 
@@ -642,7 +664,7 @@ const Model = ({ title }) => {
               <SettingsSvg />
               Edit
             </Link>
-          </div>
+          </div> */}
           <div className={classes["title-container"]}>
             <h1 className={classes.title}>
               {model?.name || model?.data?.name}
@@ -650,25 +672,29 @@ const Model = ({ title }) => {
             <ButtonSquareAdd previewData={modelPreview} />
             {guideIsActive && <AddModelToSidePanelGuide />}
           </div>
-          <div
-            className={classes.versions}
-            style={{
-              maxHeight: showAllVersions
-                ? `${versionsListRef?.current?.offsetHeight + 2}px`
-                : `${versionsItemRef?.current?.offsetHeight + 2}px`,
-            }}
-          >
-            <ul ref={versionsListRef} className={classes["versions__list"]}>
-              {modelVersionsHtml}
-            </ul>
+          <div className={classes["versions-container"]}>
+            <div
+              className={classes.versions}
+              style={{
+                maxHeight: showAllVersions
+                  ? `${versionsListRef?.current?.offsetHeight + 2}px`
+                  : `${versionsItemRef?.current?.offsetHeight + 2}px`,
+              }}
+            >
+              <ul ref={versionsListRef} className={classes["versions__list"]}>
+                {modelVersionsHtml}
+              </ul>
+            </div>
+            {versionsListRef?.current?.offsetHeight >
+              versionsItemRef?.current?.offsetHeight && (
+              <ButtonTertiary
+                onClick={showAllVersionsHandler}
+                className={classes["btn-all"]}
+              >
+                {showAllVersions ? "Hide" : "Show All"}
+              </ButtonTertiary>
+            )}
           </div>
-
-          {versionsListRef?.current?.offsetHeight >
-            versionsItemRef?.current?.offsetHeight && (
-            <ButtonTertiary onClick={showAllVersionsHandler}>
-              {showAllVersions ? "Hide" : "Show All"}
-            </ButtonTertiary>
-          )}
           <div
             className={`${classes["img-container"]} ${
               guideIsActive &&
@@ -685,6 +711,9 @@ const Model = ({ title }) => {
                     imagesData={curVersionImages?.filteredItems}
                     versionId={curVersion?.id}
                     saved={false}
+                    postId={curVersionImages?.filteredItems[0].postId}
+                    location="models"
+                    locationId={model.id}
                   />
                 )}
               {!curVersionImages?.filteredItems?.length &&
@@ -698,7 +727,7 @@ const Model = ({ title }) => {
             {curVersionImagesIsLoading && <Spinner />}
             {guideIsActive && <CarouselGuide />}
           </div>
-          {!!allHashtags?.length && (
+          {true && (
             <ul className={classes["hashtags"]}>
               {modelHashtagsHtml}{" "}
               {allHashtags.length > SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT && (

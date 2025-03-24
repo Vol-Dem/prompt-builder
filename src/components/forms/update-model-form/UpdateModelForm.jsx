@@ -19,10 +19,12 @@ import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
 import {
   clearFileExtension,
+  createCategoryId,
   createTagSetsInputData,
   handleErrors,
   parseIdFromInput,
   parseIdsFromInput,
+  parseModelIds,
   splitTags,
   throwCustomError,
 } from "../../../utils/generalUtils";
@@ -276,7 +278,7 @@ const UpdateModelForm = ({
       const subCats = modelData.sub.flatMap((subId, i) => {
         const subData = categories[modelData.modelType]
           ?.find((category) => category.id === modelData.main)
-          ?.subcategories.find((sucategory) => sucategory.id === subId);
+          ?.subcategories?.find((sucategory) => sucategory.id === subId);
 
         if (!subData) {
           return [];
@@ -302,13 +304,13 @@ const UpdateModelForm = ({
       )?.name;
 
       setMainInput({
-        value: mainCategoryName || modelData?.main,
-        isValid: true,
+        value: mainCategoryName || "",
+        isValid: mainCategoryName ? true : false,
       });
       setMainCategorySelected({
-        name: mainCategoryName || modelData?.main,
-        id: modelData?.main,
-        isValid: true,
+        name: mainCategoryName || "",
+        id: mainCategoryName ? modelData?.main : "",
+        isValid: mainCategoryName ? true : false,
       });
 
       setTagSetsInputs(
@@ -319,32 +321,6 @@ const UpdateModelForm = ({
       );
     }
   }, [modelData, categories, newModelType]);
-
-  const createCategoryId = (id, categoriesData) => {
-    if (!id) {
-      return;
-    }
-    let curId = id?.toLowerCase();
-    let mainIdExists;
-
-    //Check if category id is exists
-    mainIdExists = categoriesData?.find(
-      (category) => category.id?.toLowerCase() === curId
-    );
-
-    while (mainIdExists) {
-      const idArr = curId.split("-");
-      const lastNubmer = parseInt(idArr.slice(-1));
-
-      curId = lastNubmer
-        ? `${idArr.slice(0, -1).join("-")}-${lastNubmer + 1}`
-        : `${curId}-2`;
-
-      mainIdExists = categoriesData.find((category) => category.id === curId);
-    }
-
-    return curId;
-  };
 
   const saveModelHandler = async (e, update) => {
     let modelId;
@@ -415,7 +391,7 @@ const UpdateModelForm = ({
       if (Number.isFinite(+idInput.value)) {
         modelId = +idInput.value;
       } else {
-        [modelId, modelVersionId] = parseIdsFromInput(idInput.value);
+        [modelId, modelVersionId] = parseModelIds(idInput.value);
       }
 
       if (newModelVersionId) {
@@ -533,7 +509,8 @@ const UpdateModelForm = ({
         if (data?.error) {
           throwCustomError(data.error);
         }
-
+        // console.log(modelData);
+        // console.log(data);
         if (!data?.id) {
           throwCustomError(ERROR_MESSAGE_INVALID_DATA);
         }
@@ -587,7 +564,7 @@ const UpdateModelForm = ({
                   return splitTags(word);
                 }) || [],
               defFileName: fileName || "",
-              versionImageUrl: version.images[0]?.url || "",
+              versionImageUrl: version?.images ? version?.images[0]?.url : "",
               ...currVersionData,
               downloadStatus: isSingle && !i ? true : dlStatus,
             },
@@ -905,7 +882,7 @@ const UpdateModelForm = ({
           minWeight,
           maxWeight,
           size,
-          authorTags: hashtags || data.tags || [],
+          authorTags: hashtags?.length ? hashtags : data.tags,
           modelVersionsCustomData: previewModelVersionsCustomData,
           updatedAt: new Date().toISOString(),
           createdAt,
@@ -954,6 +931,7 @@ const UpdateModelForm = ({
         }
       }
     } catch (err) {
+      console.log(err);
       if (err.message === ERROR_MESSAGE_EXISTS) {
         setSavedModel(modelId);
       }
@@ -1181,7 +1159,7 @@ const UpdateModelForm = ({
             }}
             options={typeSelectOption}
           />
-          {true && (
+          {!modelData && (
             <Input
               id="id"
               name="id"

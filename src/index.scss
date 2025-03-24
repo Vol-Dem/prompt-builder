@@ -26,20 +26,6 @@
   font-weight: 700;
 }
 
-body {
-  margin: 0;
-  font-size: 1.4rem;
-  color: var.$color-text-white;
-  // overflow-x: hidden;
-  overflow: hidden scroll;
-  background-color: var.$color-background-primary;
-  // font-family: var.$font-family-primary;
-  font-family: "Nunito", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  @include var.custom-scroll(#443d62);
-}
-
 code {
   /* font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace; */
@@ -56,9 +42,28 @@ html {
   font-size: 62.5%;
 }
 
+body {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var.$color-text-white;
+  // overflow-x: hidden;
+  overflow: hidden scroll;
+  background-color: var.$color-background-primary;
+  // font-family: var.$font-family-primary;
+  font-family: "Nunito", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @include var.custom-scroll(#443d62);
+}
+
 main {
   display: flex;
   // padding-top: 2.2rem;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
 }
 
 .wrapper {

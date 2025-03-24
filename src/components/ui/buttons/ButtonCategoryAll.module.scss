@@ -1,0 +1,40 @@
+@use "./../../../variables/variables.scss" as var;
+
+.category__link {
+  position: relative;
+  // margin-bottom: 1rem;
+  border-bottom: 1px solid transparent;
+  // border-radius: 10px;
+  // padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:not(.active):hover {
+    color: lighten(var.$color-primary, 20%);
+  }
+
+  &--all {
+    // padding-right: 1rem;
+    // border-right: 1px solid var.$color-text-gray-dark;
+    // border: 1px solid var.$color-text-gray-dark;
+    border: 1px solid var.$color-violet-grey;
+    border-radius: 10px;
+    padding: 0.2rem 1.3rem;
+    font-size: 1.6rem;
+    transition: all 0.3s;
+    flex-shrink: 0;
+
+    &:not(.active):hover {
+      border: 1px solid lighten(var.$color-primary, 20%);
+    }
+
+    &.active {
+      //   border-color: #7fffd4;
+      border-color: var.$color-primary;
+    }
+  }
+}
+
+.active {
+  color: #8a2be2;
+}

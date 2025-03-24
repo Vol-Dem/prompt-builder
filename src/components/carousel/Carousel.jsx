@@ -25,6 +25,9 @@ const Carousel = ({
   showInView = false,
   imageHeight = SETTINGS_CAROUSEL_IMAGE_HEIGHT,
   imageWidth = SETTINGS_CAROUSEL_IMAGE_WIDTH,
+  location,
+  locationId,
+  curPostData,
 }) => {
   const carouselRef = useRef(null);
   const isInersecting = useIntersection(
@@ -60,6 +63,9 @@ const Carousel = ({
           showInView={showInView}
           imageHeight={imageHeight}
           imageWidth={imageWidth}
+          location={location}
+          locationId={locationId}
+          curPostData={curPostData}
         />
       )}
     </div>

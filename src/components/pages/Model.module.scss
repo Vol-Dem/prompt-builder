@@ -100,22 +100,13 @@
   }
 }
 
-.panel {
-  // display: flex;
-  // justify-content: space-between;
-  display: grid;
-  gap: 1.6rem;
-  grid-template-columns: 8rem 1fr 8rem;
-}
-
-.categories {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  opacity: 0.6;
-  font-size: 1.6rem;
-  justify-self: center;
-}
+// .panel {
+//   // display: flex;
+//   // justify-content: space-between;
+//   display: grid;
+//   gap: 1.6rem;
+//   grid-template-columns: 8rem 1fr 8rem;
+// }
 
 .subcategories {
   display: flex;
@@ -218,7 +209,11 @@
   & img {
     max-width: 100%;
     height: 50rem;
-    object-fit: cover;
+    // object-fit: cover;
+    object-fit: contain;
+    background: #323148;
+    border-radius: 10px;
+    padding: 1rem;
   }
 
   & a {
@@ -304,6 +299,12 @@
   flex-wrap: wrap;
 }
 
+.versions-container {
+  // display: flex;
+  // gap: 1rem;
+  // align-items: center;
+}
+
 .versions {
   overflow: hidden;
   padding-bottom: 2px;
@@ -344,60 +345,6 @@
   gap: 1rem;
 }
 
-.btn-back {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.4rem 1rem;
-  border: none;
-  border-radius: 1rem;
-  justify-self: left;
-  // position: absolute;
-  // top: 1rem;
-  // left: 1rem;
-  & svg {
-    width: 1.6rem;
-  }
-}
-
-.btn-edit {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var.$color-text-white;
-  font-family: var.$font-family-primary;
-  // font-size: 1.4rem;
-  font-weight: 500;
-  // min-height: 3.2rem;
-  background-color: var.$color-primary;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 0.2rem 0.5rem rgba(var.$color-black, 0.2);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.3s ease;
-  gap: 0.6rem;
-  padding: 0.4rem 1rem;
-  text-decoration: none;
-  justify-self: right;
-
-  &:hover {
-    background-color: darken(var.$color-primary, 10%);
-  }
-
-  &:active {
-    box-shadow: inset 0.2rem 0.3rem 0.5rem rgba(var.$color-black, 0.4);
-  }
-  // &--active {
-  //   color: #fff;
-  //   background-color: blueviolet;
-  // }
-
-  & svg {
-    width: 2rem;
-  }
-}
-
 .btn-examples {
   font-size: 2.6rem;
   cursor: pointer;
@@ -432,6 +379,14 @@
   position: sticky;
   top: 10rem;
   z-index: 14;
+}
+
+.btn-all {
+  background-color: transparent;
+  margin: auto;
+  width: 12rem;
+  box-shadow: none;
+  margin-top: 0.6rem;
 }
 
 @media (max-width: 1000px) {

@@ -62,7 +62,7 @@ const NsfwSwitch = () => {
         <button
           type="button"
           onClick={nsfwSwitchHandler}
-          className={`${classes["btn-mode"]} ${
+          className={`${classes["btn-mode"]} ${classes["btn-mode--left"]} ${
             !isNsfwMode ? classes["btn-mode--active"] : ""
           }`}
         >
@@ -71,7 +71,7 @@ const NsfwSwitch = () => {
         <button
           type="button"
           onClick={nsfwSwitchHandler}
-          className={`${classes["btn-mode"]} ${
+          className={`${classes["btn-mode"]} ${classes["btn-mode--right"]} ${
             isNsfwMode ? classes["btn-mode--active"] : ""
           }`}
         >

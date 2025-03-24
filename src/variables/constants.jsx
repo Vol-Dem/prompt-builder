@@ -59,6 +59,7 @@ export const SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM = 350;
 export const SETTINGS_IMAGE_PREVIEW_WIDTH_BIG = 450;
 export const SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE = 16;
 export const SETTINGS_IMAGES_NUMBER_PER_REQUEST = 50;
+export const SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE = 12;
 export const SETTINGS_SEARCH_RESULT_PER_PAGE = 10;
 export const SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE = 4;
 export const SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT = 5;
@@ -68,7 +69,8 @@ export const SETTINGS_CAROUSEL_IMAGE_HEIGHT = 390;
 export const SETTINGS_CAROUSEL_IMAGE_WIDTH = 266;
 export const SETTINGS_CAROUSEL_TRANSITION_DURATION = 300;
 export const SETTINGS_CAROUSEL_INTERSECTION_MARGIN = 1000;
-export const SETTINGS_LOAD_MORE_MARGIN = 1200;
+export const SETTINGS_LOAD_MORE_MARGIN = 1000;
+export const SETTINGS_LOAD_MORE_MARGIN_MEDIUM = 600;
 export const SETTINGS_NSFW_VALUES_DATA = [
   { name: "PG", value: "None", nsfwLevelIndex: 0 },
   { name: "PG-13", value: "Soft", nsfwLevelIndex: 1 },
@@ -105,6 +107,10 @@ export const VALIDATION_PASSWORD_MAX_LENGTH = 100;
 //MESSAGES
 export const MESSAGE_AGREEMENT =
   "You have to accept our Terms of Service and Privacy Policy";
+export const MESSAGE_DELETE_MODEL =
+  "Are you sure you want to delete this resource? This action can't be undone";
+export const MESSAGE_DELETE_COLLECTION =
+  "Are you sure you want to delete this collection? This action can't be undone";
 
 //SUCCESS MESSAGES
 export const SUCCESS_MESSAGE_SAVED = "Saved successfully";
@@ -128,6 +134,9 @@ export const ERROR_MESSAGE_OFFLINE =
 export const ERROR_MESSAGE_USER_DATA_LOAD =
   "Oops! Something went wrong. Try refreshing!";
 export const ERROR_MESSAGE_INVALID_DATA = "Invalid data";
+export const ERROR_MESSAGE_NO_IMAGE_SELECTED = "Select at least one image";
+export const ERROR_MESSAGE_DB_CONNECTION = "Connection error";
+export const ERROR_MESSAGE_UPLOAD_MODEL = "Failed to load model data";
 
 //GUIDE STEPS HOME PAGE
 export const GUIDE_STEP_OPEN_CATEGORY = 1;
@@ -145,23 +154,24 @@ export const GUIDE_STEP_SWITCH_IMAGE = 8;
 export const GUIDE_STEP_HIGHLIGHTING_WORDS = 9;
 export const GUIDE_STEP_PROMPT_VIEW = 10;
 export const GUIDE_STEP_PROMPT_PRESETS = 11;
-export const GUIDE_STEP_PROMPT_DRAG_AND_DROP = 12;
-export const GUIDE_STEP_PROMPT_EDIT_TAG = 13;
-export const GUIDE_STEP_PROMPT_RESIZE = 14;
-export const GUIDE_STEP_PROMPT_COPY = 15;
-export const GUIDE_STEP_IMAGE_RESOURCES = 16;
-export const GUIDE_STEP_CLOSE_IMAGE = 17;
-export const GUIDE_STEP_MODEL_TAGS_EDIT = 18;
+export const GUIDE_STEP_PROMPT_BREAK = 12;
+export const GUIDE_STEP_PROMPT_DRAG_AND_DROP = 13;
+export const GUIDE_STEP_PROMPT_EDIT_TAG = 14;
+export const GUIDE_STEP_PROMPT_RESIZE = 15;
+export const GUIDE_STEP_PROMPT_COPY = 16;
+export const GUIDE_STEP_IMAGE_RESOURCES = 17;
+export const GUIDE_STEP_CLOSE_IMAGE = 18;
+export const GUIDE_STEP_MODEL_TAGS_EDIT = 19;
 export const GUIDE_STEP_MODEL_TAGS_EDIT_FROM = null;
 export const GUIDE_STEP_MODEL_TAGS_ADD_TAGSET = null;
 export const GUIDE_STEP_MODEL_TAGS_CLOSE = null;
-export const GUIDE_STEP_MODEL_ADD_TAGSET = 19;
-export const GUIDE_STEP_MODEL_TAGSET = 20;
-export const GUIDE_STEP_GENERATED_IMAGES = 21;
-export const GUIDE_STEP_IMAGE_MENU = 22;
-export const GUIDE_STEP_SAVE_IMAGE = 23;
-export const GUIDE_STEP_SAVED_TAB = 24;
-export const GUIDE_STEP_MODEL_EDIT = 25;
+export const GUIDE_STEP_MODEL_ADD_TAGSET = 20;
+export const GUIDE_STEP_MODEL_TAGSET = 21;
+export const GUIDE_STEP_GENERATED_IMAGES = 22;
+export const GUIDE_STEP_IMAGE_MENU = 23;
+export const GUIDE_STEP_SAVE_IMAGE = 24;
+export const GUIDE_STEP_SAVED_TAB = 25;
+export const GUIDE_STEP_MODEL_EDIT = 26;
 
 //GUIDE STEPS EDIT PAGE
 export const GUIDE_STEP_EDIT_UPD_DEL = 1;

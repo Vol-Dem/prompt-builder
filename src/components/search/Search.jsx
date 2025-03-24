@@ -23,6 +23,7 @@ import {
   SETTINGS_SEARCH_RESULT_PER_PAGE,
 } from "../../variables/constants";
 import { AnimatePresence, motion } from "framer-motion";
+import { imagesActions } from "../../store/images";
 
 const searchTimeoutMs = 1000;
 
@@ -38,6 +39,7 @@ const Search = ({ className }) => {
   const uid = useSelector((state) => state.auth.user.uid);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const categories = useSelector((state) => state.tabs.categoriesData);
+  const collectionCategories = useSelector((state) => state.images.categories);
   const searchIsLoading = useSelector((state) => state.search.isLoading);
   const quickSerchResult = useSelector(
     (state) => state.search.quickSerchResult
@@ -76,8 +78,15 @@ const Search = ({ className }) => {
       });
     });
 
-    setCategoriesSearchData(categoriesArr);
-  }, [categories]);
+    const catCollArr = collectionCategories.map((category) => {
+      return {
+        type: "collection",
+        ...category,
+      };
+    });
+
+    setCategoriesSearchData([...categoriesArr, ...catCollArr]);
+  }, [categories, collectionCategories]);
 
   useEffect(() => {
     if (
@@ -197,7 +206,11 @@ const Search = ({ className }) => {
         className={classes["search__item"]}
       >
         <NavLink
-          to={`models/${modelPreveiw.id}`}
+          to={
+            modelPreveiw.type === "collection"
+              ? `images/${modelPreveiw.id}`
+              : `models/${modelPreveiw.id}`
+          }
           className={classes["search__link"]}
           onClick={() => {
             dispatch(searchActions.setSearchQuery(""));
@@ -224,7 +237,9 @@ const Search = ({ className }) => {
                   ? "Embedding"
                   : modelPreveiw.type}
               </span>
-              <span className={classes.models}>{modelPreveiw.baseModel}</span>
+              {modelPreveiw.baseModel && (
+                <span className={classes.models}>{modelPreveiw.baseModel}</span>
+              )}
             </div>
 
             <div className={classes["search__name"]}>{modelPreveiw.name}</div>
@@ -242,7 +257,7 @@ const Search = ({ className }) => {
     (result, i) => {
       return (
         <motion.li
-          key={result.id}
+          key={i}
           initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
           animate={ANIMATIONS_FM_SLIDEIN}
           exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
@@ -250,11 +265,16 @@ const Search = ({ className }) => {
         >
           <span className={classes["search__type"]}>{result.type}</span>{" "}
           <Link
-            to="/"
+            to={result.type === "collection" ? "/images" : "/"}
             className={classes["search__text-link"]}
             onClick={() => {
-              dispatch(tabActions.setCurrentTab(result.type));
-              dispatch(tabActions.setCurrentCategory(result.id));
+              if (result.type === "collection") {
+                dispatch(imagesActions.setActiveCategory(result.id));
+                dispatch(imagesActions.setActiveSubcategory(""));
+              } else {
+                dispatch(tabActions.setCurrentTab(result.type));
+                dispatch(tabActions.setCurrentCategory(result.id));
+              }
               dispatch(searchActions.setSearchQuery(""));
               dispatch(searchActions.setSearchResult([]));
             }}
@@ -263,12 +283,17 @@ const Search = ({ className }) => {
           </Link>{" "}
           -{" "}
           <Link
-            to="/"
+            to={result.type === "collection" ? "/images" : "/"}
             className={classes["search__text-link"]}
             onClick={() => {
-              dispatch(tabActions.setCurrentTab(result.type));
-              dispatch(tabActions.setCurrentCategory(result.id));
-              dispatch(tabActions.setCurrentSubcategory(result.subId));
+              if (result.type === "collection") {
+                dispatch(imagesActions.setActiveCategory(result.id));
+                dispatch(imagesActions.setActiveSubcategory(result.subId));
+              } else {
+                dispatch(tabActions.setCurrentTab(result.type));
+                dispatch(tabActions.setCurrentCategory(result.id));
+                dispatch(tabActions.setCurrentSubcategory(result.subId));
+              }
               dispatch(searchActions.setSearchQuery(""));
               dispatch(searchActions.setSearchResult([]));
             }}

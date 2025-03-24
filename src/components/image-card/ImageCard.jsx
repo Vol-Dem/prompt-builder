@@ -15,7 +15,11 @@ import { useDispatch, useSelector } from "react-redux";
 import ButtonAdd from "../ui/ButtonSquareAdd";
 import { Link } from "react-router-dom";
 import LinkA from "../ui/LinkA";
-import { clearFileExtension, splitTags } from "../../utils/generalUtils";
+import {
+  clearFileExtension,
+  parseModelIds,
+  splitTags,
+} from "../../utils/generalUtils";
 import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 import CheckCircleSvg from "../../assets/CheckCircleSvg";
 import ErrorMessage from "../ui/ErrorMessage";
@@ -129,6 +133,7 @@ const ImageCard = ({ activeImgNum }) => {
     // console.log(e.target.dataset.id);
     if (+e.target.dataset.id !== modelId) {
       dispatch(modelActions.resetModelData());
+      dispatch(modelActions.setActiveCarouselData({}));
     }
   };
 
@@ -166,6 +171,12 @@ const ImageCard = ({ activeImgNum }) => {
             modelQ = query(
               collection(firestore, "users", uid, `preview`),
               where("hashes", "array-contains", modelHash)
+            );
+          } else if (curImageData?.meta?.Model?.includes("urn:air")) {
+            const [modelId, versionId] = parseModelIds(curImageData.meta.Model);
+            modelQ = query(
+              collection(firestore, "users", uid, `preview`),
+              where("id", "==", modelId)
             );
           } else {
             const modelName = curImageData?.meta?.Model || "";
@@ -415,6 +426,14 @@ const ImageCard = ({ activeImgNum }) => {
           if (curImageData?.id === imageData?.id) {
             // console.log(filteredNewResult);
             setImageResources(filteredNewResult || []);
+          }
+          console.log(filteredNewResult);
+          const checkpointInfo = filteredNewResult.find(
+            (resource) => resource.type === "Checkpoint"
+          );
+          if (checkpointInfo) {
+            // setModelInfo(checkpointInfo);
+            setModelInfoCiv(checkpointInfo);
           }
           // setImageResources(filteredNewResult || []);
           // console.log(curImageData);
@@ -711,7 +730,11 @@ const ImageCard = ({ activeImgNum }) => {
                         !!modelInfoCiv?.modelName &&
                         modelInfoCiv?.modelName}
                       {!modelInfo?.id &&
+                        !!modelInfoCiv?.name &&
+                        modelInfoCiv?.name}
+                      {!modelInfo?.id &&
                         !modelInfoCiv?.modelName &&
+                        // !modelInfoCiv?.name &&
                         imageData?.meta?.Model}
                       {!!modelInfo?.id && (
                         <>

@@ -24,6 +24,11 @@ const generalSlice = createSlice({
     },
     setNsfwMode(state, actions) {
       state.nsfwMode = actions.payload;
+      if (actions.payload) {
+        state.nsfwLevel = state.nsfwValue;
+      } else {
+        state.nsfwLevel = state.sfwValue;
+      }
     },
     setNsfwLevel(state, actions) {
       state.nsfwLevel = actions.payload;

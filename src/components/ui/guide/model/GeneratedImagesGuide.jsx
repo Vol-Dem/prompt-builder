@@ -47,8 +47,8 @@ const GeneratedImagesGuide = (props) => {
         next: true,
         text: (
           <>
-            Click {downloadImage} to add image to your collection to use it
-            later as a reference.
+            Click {downloadImage} to add image to model or image collection to
+            use it as a reference later.
           </>
         ),
       },
@@ -56,7 +56,12 @@ const GeneratedImagesGuide = (props) => {
         step: GUIDE_STEP_SAVED_TAB,
         arrowPosition: 7,
         next: true,
-        text: <>You can view your saved images in the "Saved" tab.</>,
+        text: (
+          <>
+            Images saved to the model are located here, and you can find image
+            collections in the top menu by clicking on the "IMAGES" link.
+          </>
+        ),
       },
     ];
   }, []);

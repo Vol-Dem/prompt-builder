@@ -24,6 +24,11 @@ import PrivacyPolicy from "./components/pages/PrivacyPolicy";
 import { getAppInfo } from "./store/notification";
 import { generalActions } from "./store/general";
 import { checkIsMobile } from "./utils/generalUtils";
+import Images from "./components/pages/Images";
+import ImageCollection from "./components/pages/ImageCollection";
+import CollectionEdit from "./components/pages/CollectionEdit";
+import { imagesActions } from "./store/images";
+import { promptActions } from "./store/prompt";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -45,6 +50,9 @@ function App() {
       if (data?.categoriesById) {
         dispatch(tabActions.setCategories(data?.categoriesById));
       }
+      if (data?.imageCategories)
+        dispatch(imagesActions.setImageCategories(data.imageCategories));
+      if (data?.presets) dispatch(promptActions.setPresets(data.presets));
     });
 
     return () => {
@@ -76,6 +84,21 @@ function App() {
             element={<Edit title="Edit" />}
           ></Route>
         </Route>
+        <Route
+          path="images"
+          errorElement={<ErrorPage />}
+          element={<Images title="Images" />}
+        ></Route>
+        <Route
+          path="images/:collectionId"
+          errorElement={<ErrorPage />}
+          element={<ImageCollection title="Collection" />}
+        ></Route>
+        <Route
+          path="images/:collectionId/edit"
+          errorElement={<ErrorPage />}
+          element={<CollectionEdit title="Collection" />}
+        ></Route>
         <Route
           path="search"
           errorElement={<ErrorPage />}

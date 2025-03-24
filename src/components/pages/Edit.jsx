@@ -2,13 +2,14 @@ import { useParams } from "react-router-dom";
 import ModelSettings from "../model/model-settings/ModelSettings";
 import { useDispatch, useSelector } from "react-redux";
 import { modelActions } from "../../store/model";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
 import firebaseApp from "../../firebase-config";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import {
   ERROR_MESSAGE_DEFAULT,
+  ERROR_MESSAGE_UPLOAD_MODEL,
   GUIDE_STEP_MODEL_EDIT,
 } from "../../variables/constants";
 import { guideActions } from "../../store/guide";
@@ -16,8 +17,11 @@ import Modal from "../ui/Modal";
 import OutroGuide from "../ui/guide/OutroGuide";
 import classes from "./Edit.module.scss";
 import { AnimatePresence } from "framer-motion";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { handleErrors } from "../../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
+const functions = getFunctions(firebaseApp);
 
 const Edit = ({ title }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -49,37 +53,81 @@ const Edit = ({ title }) => {
     };
   }, [title, model?.name]);
 
+  const getDefModelData = useCallback(async () => {
+    try {
+      const modelDefDataRef = doc(firestore, "models", `${modelId}`);
+
+      const docSnap = await getDoc(modelDefDataRef);
+
+      if (docSnap.exists()) {
+        const modelDefData = docSnap.data();
+        // console.log(modelDefData);
+
+        dispatch(
+          modelActions.setModelData({
+            data: modelDefData,
+          })
+        );
+      } else {
+        // console.log("SAVE MODEL");
+        const updateModel = httpsCallable(functions, "updateModelCalldev");
+        const response = await updateModel({ id: modelId });
+        // console.log(response);
+        if (response?.modelData) {
+          dispatch(
+            modelActions.setModelData({
+              data: response.modelData,
+            })
+          );
+        } else {
+          throw new Error(ERROR_MESSAGE_UPLOAD_MODEL);
+        }
+      }
+    } catch (err) {
+      handleErrors(err);
+      // setErrorMessage(ERROR_MESSAGE_DEFAULT);
+    }
+  }, [modelId, dispatch]);
+
   useEffect(() => {
     if (!isAuth) return;
+
     let unsub;
-    try {
-      setIsLoading(true);
 
-      unsub = onSnapshot(
-        doc(firestore, "users", uid, "models", modelId),
-        (doc) => {
-          setErrorMessage("");
-          // const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
-          // console.log(source);
-          const data = doc.data();
+    const getModelData = async () => {
+      try {
+        setIsLoading(true);
 
-          // console.log(data);
-          if (!data) {
-            setErrorMessage("Failed to load model");
+        unsub = onSnapshot(
+          doc(firestore, "users", uid, "models", modelId),
+          (doc) => {
+            setErrorMessage("");
+            // const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+            // console.log(source);
+            const data = doc.data();
+
+            // console.log(data);
+            if (!data) {
+              setErrorMessage("Failed to load model");
+              setIsLoading(false);
+              unsub();
+              return;
+            }
+            dispatch(modelActions.setModelData(data));
+            dispatch(modelActions.setModelPreview({}));
             setIsLoading(false);
-            unsub();
-            return;
           }
-          dispatch(modelActions.setModelData(data));
-          dispatch(modelActions.setModelPreview({}));
-          setIsLoading(false);
-        }
-      );
-    } catch (err) {
-      setErrorMessage("Failed to load model");
-      dispatch(modelActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
-      setIsLoading(false);
-    }
+        );
+
+        await getDefModelData();
+      } catch (err) {
+        setErrorMessage("Failed to load model");
+        dispatch(modelActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
+        setIsLoading(false);
+      }
+    };
+    getModelData();
+
     return () => {
       setErrorMessage("");
       dispatch(modelActions.setCurVersion({}));
@@ -89,33 +137,13 @@ const Edit = ({ title }) => {
         unsub();
       }
     };
-  }, [modelId, isAuth, dispatch, uid]);
+  }, [modelId, isAuth, dispatch, uid, getDefModelData]);
 
-  useEffect(() => {
-    if (!modelId) return;
-    try {
-      const getDefModelData = async () => {
-        const modelDefDataRef = doc(firestore, "models", `${modelId}`);
+  // useEffect(() => {
+  //   if (!modelId) return;
 
-        const docSnap = await getDoc(modelDefDataRef);
-
-        if (docSnap.exists()) {
-          const modelDefData = docSnap.data();
-          // console.log(modelDefData);
-
-          dispatch(
-            modelActions.setModelData({
-              data: modelDefData,
-            })
-          );
-        }
-      };
-
-      getDefModelData();
-    } catch (err) {
-      setErrorMessage(ERROR_MESSAGE_DEFAULT);
-    }
-  }, [model?.id, dispatch, modelId]);
+  //   getDefModelData();
+  // }, [model?.id, dispatch, modelId]);
 
   return (
     <div>

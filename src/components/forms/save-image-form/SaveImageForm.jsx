@@ -20,10 +20,19 @@ import { uploadActions } from "../../../store/upload";
 import BackSvg from "../../../assets/BackSvg";
 import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 
-const SaveImageForm = ({ modelData, curVersion }) => {
+const SaveImageForm = ({
+  modelData,
+  curVersion,
+  location,
+  collectionInfo,
+  savedPosts,
+  savedModelPosts,
+}) => {
   const [filterDisabledInput, setFilterDisabledInput] = useState(true);
   const [imagesListIsOpen, setImagesListIsOpen] = useState(false);
   const [images, setImages] = useState([]);
+  const [postData, setPostData] = useState({});
+  const [savedImageIds, setSavedImageIds] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -41,6 +50,7 @@ const SaveImageForm = ({ modelData, curVersion }) => {
       setErrorMessage("");
       seteSuccessMessage("");
       setShowErrorMessage(true);
+      // console.log("LOAD IM");
 
       if (!postIdInput.isValid) {
         throwCustomError(ERROR_MESSAGE_INPUT_DEF);
@@ -52,15 +62,39 @@ const SaveImageForm = ({ modelData, curVersion }) => {
       if (!postIdInput?.value) return;
 
       setIsLoading(true);
+      const postId = +postIdInput.value;
 
       const imgExampleResponse = await fetch(
-        `https://civitai.com/api/v1/images?postId=${postIdInput.value}${
-          filterDisabledInput ? `&modelId=${modelData?.id}` : ""
+        `https://civitai.com/api/v1/images?postId=${postId}${
+          filterDisabledInput && modelData?.id
+            ? `&modelId=${modelData?.id}`
+            : ""
         }&nsfw=${nsfwLevel}`
       );
       const data = await imgExampleResponse.json();
       // console.log(data);
       setImages(data.items);
+
+      // console.log(savedPosts);
+      // console.log(savedModelPosts);
+      let curPostData;
+      let curImageIds;
+
+      if (location === "models") {
+        curPostData = savedModelPosts[versionIdInput]?.find(
+          (post) => post.postId === postId
+        );
+        curImageIds = curPostData?.imagesId;
+      }
+      if (location === "collections") {
+        curPostData = savedPosts?.find((post) => post.postId === postId);
+        curImageIds = curPostData?.imageIds;
+      }
+      // console.log(curPostData);
+      if (curPostData) {
+        setPostData(curPostData);
+        setSavedImageIds(curImageIds);
+      }
 
       if (!data.items.length) {
         throwCustomError(ERROR_MESSAGE_EMPTY);
@@ -70,6 +104,7 @@ const SaveImageForm = ({ modelData, curVersion }) => {
       setIsLoading(false);
     } catch (err) {
       setErrorMessage(handleErrors(err));
+      setIsLoading(false);
     }
   };
 
@@ -80,12 +115,27 @@ const SaveImageForm = ({ modelData, curVersion }) => {
     };
   });
 
-  const saveExampleHandler = async (e, ids) => {
+  // const saveExampleHandler = async (location, ids, collectionData) => {
+  //     const postData =
+  //       !!Object.keys(savedImages.data)?.length &&
+  //       savedImages.data[versionId]?.find((post) => post.postId === +postId);
+
+  //     const imagesForSaving = ids?.length
+  //       ? imagesData.filter((image) => ids.includes(image?.id))
+  //       : imagesData;
+
+  //   };
+
+  const saveExampleHandler = async (location, ids, collectionData) => {
     const postData =
-      modelData.hasOwnProperty("savedImages") &&
+      modelData?.hasOwnProperty("savedImages") &&
       modelData?.savedImages[versionIdInput?.value]?.find(
         (post) => post.postId === +postIdInput?.value
       );
+
+    const imagesForSaving = ids?.length
+      ? images.filter((image) => ids.includes(image?.id))
+      : images;
 
     dispatch(
       uploadActions.addToQueue({
@@ -97,7 +147,9 @@ const SaveImageForm = ({ modelData, curVersion }) => {
         postData: postData || null,
         imgUrl: images[0].url,
         ids: ids || [],
-        images,
+        images: imagesForSaving,
+        location,
+        collectionData,
       })
     );
     seteSuccessMessage("Added to download queue");
@@ -123,16 +175,18 @@ const SaveImageForm = ({ modelData, curVersion }) => {
           imagesListIsOpen ? classes["hidden"] : ""
         }`}
       >
-        <Select
-          label="Select version:"
-          name="curVersionId"
-          id="version-select"
-          selected={versionIdInput}
-          onChange={(value) => {
-            setVersionIdInput(value);
-          }}
-          options={versionSelectOption}
-        />
+        {location === "models" && (
+          <Select
+            label="Select version:"
+            name="curVersionId"
+            id="version-select"
+            selected={versionIdInput}
+            onChange={(value) => {
+              setVersionIdInput(value);
+            }}
+            options={versionSelectOption}
+          />
+        )}
         <Input
           id="post-id"
           name="post-id"
@@ -154,18 +208,20 @@ const SaveImageForm = ({ modelData, curVersion }) => {
           }}
           showError={showErrorMessage}
         />
-        <div className={classes.filter}>
-          <Checkbox
-            id="filter"
-            label="Show only images related to this model"
-            value={filterDisabledInput}
-            checked={filterDisabledInput}
-            className={classes["checkbox"]}
-            onChange={(e) => {
-              setFilterDisabledInput(e.target.checked);
-            }}
-          />
-        </div>
+        {location === "models" && (
+          <div className={classes.filter}>
+            <Checkbox
+              id="filter"
+              label="Show only images related to this model"
+              value={filterDisabledInput}
+              checked={filterDisabledInput}
+              className={classes["checkbox"]}
+              onChange={(e) => {
+                setFilterDisabledInput(e.target.checked);
+              }}
+            />
+          </div>
+        )}
         <Buttton
           type="button"
           disabled={isLoading}
@@ -181,8 +237,13 @@ const SaveImageForm = ({ modelData, curVersion }) => {
       </div>
       {imagesListIsOpen && (
         <ChooseImageForm
+          postId={+postIdInput.value}
           type="save"
+          postData={postData}
+          savedImageIds={savedImageIds}
           modelId={modelData?.id}
+          location={location}
+          collectionInfo={collectionInfo}
           images={images}
           onSave={saveExampleHandler}
           onClose={() => {

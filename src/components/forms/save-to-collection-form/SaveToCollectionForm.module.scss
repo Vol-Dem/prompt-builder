@@ -1,0 +1,195 @@
+@use "./../../../variables/variables.scss" as var;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 85vh;
+}
+
+.fields {
+  //   max-height: 25rem;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding: 1rem 0;
+  @include var.custom-scroll;
+}
+
+.images-list {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  list-style: none;
+  overflow-y: scroll;
+  max-height: 80vh;
+  min-width: 24rem;
+  @include var.custom-scroll;
+
+  &__item {
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  &__label {
+    display: block;
+    height: 14rem;
+  }
+
+  &__icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+
+    & svg {
+      width: 4rem;
+      height: 4rem;
+      opacity: 0.8;
+    }
+  }
+}
+
+.checkbox {
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: 0;
+}
+
+.image {
+  // min-width: 10rem;
+  // height: 14rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  // &__img {
+  //   min-width: 10rem;
+  //   height: 14rem;
+  // }
+
+  & img {
+    position: relative;
+    // min-width: 10rem;
+    // height: 14rem;
+  }
+
+  &:hover {
+  }
+
+  &--active {
+    &::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 123, 200, 0.6);
+      z-index: 1;
+    }
+  }
+
+  &--saved {
+    cursor: default;
+    &::before {
+      background-color: rgba(0, 200, 190, 0.6);
+      background-color: rgba(184, 184, 184, 0.85);
+    }
+  }
+  &--del {
+    &::before {
+      background-color: rgba(200, 20, 0, 0.6);
+    }
+  }
+}
+
+.btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.btn-del {
+  background-color: var.$color-background-red;
+
+  &:hover:enabled {
+    background-color: lighten(var.$color-background-red, 5%);
+    background-color: darken(var.$color-background-red, 5%);
+  }
+}
+
+.spiner-container {
+  position: relative;
+  height: 3rem;
+}
+
+.subcategory {
+  display: flex;
+  gap: 0.6rem;
+
+  &__input {
+    width: 100%;
+  }
+}
+
+.input__btn-del {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.6rem;
+  width: 2.6rem;
+  padding: 0.2rem;
+  flex-shrink: 0;
+
+  & svg {
+    color: var.$color-gray;
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+}
+
+.btn-secondary {
+  font-size: 1.6rem;
+  color: #818182;
+  text-align: right;
+
+  &:hover {
+    color: var.$color-primary;
+  }
+}
+
+.submit {
+  display: flex;
+  // position: sticky;
+  // bottom: 0;
+  // height: 3.2rem;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.6rem;
+  min-height: 3.4rem;
+  width: 100%;
+  margin-top: 0.4rem;
+  // width: 12rem;
+  // align-self: flex-end;
+}
+
+.status {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  // justify-content: space-between;
+
+  &__message {
+    width: 100%;
+  }
+}
+
+.link {
+  @include var.linkA;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}

@@ -354,7 +354,7 @@ const saveVersionImages = async (modelId, username, versionsData) => {
   const updatedModelversions = await Promise.all(
     versionsData?.map(async (version) => {
       const versionImagesRequest = await fetch(
-        `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${username}&nsfw=X`
+        `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${username}&nsfw=X&limit=200&sort=Oldest`
       );
       const versionImages = await versionImagesRequest.json();
 
@@ -704,6 +704,7 @@ exports.updateModelCall = onCall(
 
           return {
             modelId: responseData?.id,
+            modelData: responseData,
             message: "Upload complete",
           };
         } else {
@@ -868,6 +869,7 @@ exports.updateModelCallDev = onCall(async (request) => {
 
         return {
           modelId: responseData?.id,
+          modelData: responseData,
           message: "Upload complete",
         };
       } else {

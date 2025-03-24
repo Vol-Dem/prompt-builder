@@ -21,7 +21,8 @@
 }
 
 .active {
-  color: blueviolet;
+  color: var.$color-primary;
+  border-color: var.$color-primary;
 }
 
 .config {
@@ -40,12 +41,12 @@
 }
 
 .tag-menu__labels {
-  display: flex;
-  align-items: center;
+  // display: flex;
+  // align-items: center;
   gap: 2rem;
-  margin-bottom: 0.8rem;
-  list-style: none;
-  flex-wrap: wrap;
+  // margin-bottom: 0.8rem;
+  // list-style: none;
+  // flex-wrap: wrap;
   // cursor: pointer;
 }
 

@@ -9,6 +9,7 @@ import {
 } from "../../store/tabs";
 import Spinner from "../ui/Spinner";
 import Select from "../ui/Select";
+import NotificationMessage from "../ui/NotificationMessage";
 import usePageEnd from "../../hooks/use-page-end";
 import { useOnlineStatus } from "../../hooks/use-online-status";
 import ErrorMessage from "../ui/ErrorMessage";
@@ -194,7 +195,7 @@ const ModelsList = () => {
 
   const loraHtml = modelsData?.previews?.map((item, i) => {
     return (
-      <AddToPanelAnimContainer key={i} usedModels={usedModels}>
+      <AddToPanelAnimContainer key={i}>
         <PreviewCard
           layout={false}
           previewData={item}
@@ -209,7 +210,7 @@ const ModelsList = () => {
     );
   });
 
-  let sortSelectOption = sortTypes.map((version) => {
+  const sortSelectOption = sortTypes.map((version) => {
     return {
       name: version.name,
       value: version.value,
@@ -222,75 +223,77 @@ const ModelsList = () => {
 
   return (
     <div className={classes["container"]}>
-      <div className={classes.panel}>
-        <span className={classes["panel__title"]}>Sort by:</span>
-        <Select
-          id="sort"
-          name="sort"
-          selected={sortBy}
-          onChange={(value) => {
-            dispatch(tabActions.setSortBy(value));
-            dispatch(tabActions.setModelsData([]));
-            dispatch(
-              getModelsPreview(
-                activeTab,
-                activeCategory,
-                activeSubcategory,
-                false,
-                nsfwMode
-              )
-            );
-          }}
-          options={sortSelectOption}
-          className={classes.select}
-        />
-        <Select
-          id="model"
-          name="model"
-          selected={modelType}
-          onChange={(value) => {
-            dispatch(tabActions.setModelType(value));
-            dispatch(tabActions.setModelsData([]));
-            dispatch(
-              getModelsPreview(
-                activeTab,
-                activeCategory,
-                activeSubcategory,
-                false,
-                nsfwMode
-              )
-            );
-          }}
-          options={baseModelsData}
-          className={classes.select}
-        />
-        <div className={classes["panel__view"]}>
-          <ButtonTertiary
-            type="button"
-            className={`${classes["panel__btn"]} ${
-              !previewFullView ? classes["panel__btn--active"] : ""
-            }`}
-            onClick={() => {
-              dispatch(switchPreviewFullView(false));
+      {!!modelsData?.previews?.length && (
+        <div className={classes.panel}>
+          <span className={classes["panel__title"]}>Sort by:</span>
+          <Select
+            id="sort"
+            name="sort"
+            selected={sortBy}
+            onChange={(value) => {
+              dispatch(tabActions.setSortBy(value));
+              dispatch(tabActions.setModelsData([]));
+              dispatch(
+                getModelsPreview(
+                  activeTab,
+                  activeCategory,
+                  activeSubcategory,
+                  false,
+                  nsfwMode
+                )
+              );
             }}
-            title="Short view"
-          >
-            <Bars2Icon className={classes["panel__btn-icon"]} />
-          </ButtonTertiary>
-          <ButtonTertiary
-            type="button"
-            className={`${classes["panel__btn"]} ${
-              previewFullView ? classes["panel__btn--active"] : ""
-            }`}
-            onClick={() => {
-              dispatch(switchPreviewFullView(true));
+            options={sortSelectOption}
+            className={classes.select}
+          />
+          <Select
+            id="model"
+            name="model"
+            selected={modelType}
+            onChange={(value) => {
+              dispatch(tabActions.setModelType(value));
+              dispatch(tabActions.setModelsData([]));
+              dispatch(
+                getModelsPreview(
+                  activeTab,
+                  activeCategory,
+                  activeSubcategory,
+                  false,
+                  nsfwMode
+                )
+              );
             }}
-            title="Expanded view"
-          >
-            <Bars4Icon className={classes["panel__btn-icon"]} />
-          </ButtonTertiary>
+            options={baseModelsData}
+            className={classes.select}
+          />
+          <div className={classes["panel__view"]}>
+            <ButtonTertiary
+              type="button"
+              className={`${classes["panel__btn"]} ${
+                !previewFullView ? classes["panel__btn--active"] : ""
+              }`}
+              onClick={() => {
+                dispatch(switchPreviewFullView(false));
+              }}
+              title="Short view"
+            >
+              <Bars2Icon className={classes["panel__btn-icon"]} />
+            </ButtonTertiary>
+            <ButtonTertiary
+              type="button"
+              className={`${classes["panel__btn"]} ${
+                previewFullView ? classes["panel__btn--active"] : ""
+              }`}
+              onClick={() => {
+                dispatch(switchPreviewFullView(true));
+              }}
+              title="Expanded view"
+            >
+              <Bars4Icon className={classes["panel__btn-icon"]} />
+            </ButtonTertiary>
+          </div>
         </div>
-      </div>
+      )}
       <div
         className={`${classes["category"]} ${
           previewFullView ? classes["category__full"] : ""
@@ -304,7 +307,9 @@ const ModelsList = () => {
         !isLoading &&
         isOnline &&
         (getAllModels || getSubcategoryModels) && (
-          <div className={classes.empty}>This category is empty</div>
+          <NotificationMessage className={classes.empty} type="notification">
+            This category is empty
+          </NotificationMessage>
         )}
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}

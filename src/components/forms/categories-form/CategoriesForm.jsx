@@ -13,6 +13,7 @@ import {
 } from "../../../variables/constants";
 import { AnimatePresence } from "framer-motion";
 import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
+import { updateCollectionCategories } from "../../../store/images";
 
 const CategoriesForm = ({ modelType, activeCategory, categories }) => {
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
@@ -145,7 +146,11 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
             return category;
           });
 
-      dispatch(updateCategories(modelType, categoriesData));
+      if (modelType === "collections") {
+        dispatch(updateCollectionCategories(categoriesData));
+      } else {
+        dispatch(updateCategories(modelType, categoriesData));
+      }
     } catch (err) {
       setErrorMessage(handleErrors(err));
     }
@@ -173,9 +178,18 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
         updatedMainCategory,
         ...categories.slice(mainCategoryIndex + 1),
       ];
-      dispatch(updateCategories(modelType, updatedAllCategories));
+
+      if (modelType === "collections") {
+        dispatch(updateCollectionCategories(updatedAllCategories));
+      } else {
+        dispatch(updateCategories(modelType, updatedAllCategories));
+      }
     } else {
-      dispatch(updateCategories(modelType, updatedCategories));
+      if (modelType === "collections") {
+        dispatch(updateCollectionCategories(updatedCategories));
+      } else {
+        dispatch(updateCategories(modelType, updatedCategories));
+      }
     }
 
     setDeleteRequestIsOpen(false);

@@ -14,9 +14,11 @@ function Home({ title }) {
 
   return (
     <div className={classes["wrap"]}>
-      <div className={classes["config"]}>
-        <Outlet />
-      </div>
+      {isAuth && (
+        <div className={classes["config"]}>
+          <Outlet />
+        </div>
+      )}
       {!isAuth && location?.pathname === "/" && <Landing />}
     </div>
   );

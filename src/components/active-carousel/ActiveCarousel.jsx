@@ -33,6 +33,7 @@ const ActiveCarousel = () => {
   const guideIsActive = useSelector((state) => state.guide.active);
   const headerHeight = useSelector((state) => state.prompt.headerHeight);
   const dispatch = useDispatch();
+  // console.log(activeCarouselData);
 
   useEffect(() => {
     if (model?.id && model.id === savedImagesData?.modelId) {
@@ -141,11 +142,7 @@ const ActiveCarousel = () => {
                     imagesData={activeCarouselData?.images}
                     versionId={activeCarouselData?.versionId}
                     existedImgsAmount={existedExample?.imagesId?.length || null}
-                    postId={
-                      !activeCarouselData?.saved
-                        ? activeCarouselData?.postId
-                        : null
-                    }
+                    postId={activeCarouselData?.postId}
                     modelId={activeCarouselData?.modelId}
                     visibleImgAmount={1}
                     imgIsOpen={true}
@@ -154,6 +151,8 @@ const ActiveCarousel = () => {
                     saved={activeCarouselData?.saved}
                     onActiveNumChange={setActiveImageNumber}
                     side={activeCarouselData?.side}
+                    location={activeCarouselData?.location}
+                    locationId={activeCarouselData?.modelId}
                   />
                   <ImageCardCarouselGuide />
                 </>

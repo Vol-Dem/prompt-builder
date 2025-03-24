@@ -16,7 +16,10 @@ import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import ErrorMessage from "../../../ui/ErrorMessage";
 import Buttton from "../../../ui/Button";
 import { motion } from "framer-motion";
-import { throwCustomError } from "../../../../utils/generalUtils";
+import {
+  filterDuplicates,
+  throwCustomError,
+} from "../../../../utils/generalUtils";
 
 const ExternalImages = memo(
   ({
@@ -86,10 +89,7 @@ const ExternalImages = memo(
         if (!sortedExamples) return;
 
         const sortedExamplesArr = Object.keys(sortedExamples).sort((a, b) => {
-          return (
-            Date.parse(sortedExamples[b].slice(-1).pop().createdAt) -
-            Date.parse(sortedExamples[a].slice(-1).pop().createdAt)
-          );
+          return sortedExamples[b][0].postId - sortedExamples[a][0].postId;
         });
 
         const examples = sortedExamplesArr.map((key, i) => {
@@ -142,13 +142,14 @@ const ExternalImages = memo(
           }
 
           // Remove dublicate images (fix for civitai bug)
-          const dataUniq = data?.items?.filter((obj1, i, arr) => {
-            if (!!obj1?.id) {
-              return arr.findIndex((obj2) => obj2?.id === obj1?.id) === i;
-            } else {
-              return true;
-            }
-          });
+          const dataUniq = filterDuplicates(data?.items, "id");
+          // const dataUniq = data?.items?.filter((obj1, i, arr) => {
+          //   if (!!obj1?.id) {
+          //     return arr.findIndex((obj2) => obj2?.id === obj1?.id) === i;
+          //   } else {
+          //     return true;
+          //   }
+          // });
 
           setExamplesImages((prevState) => {
             const newExampleImages = [...dataUniq, ...prevState];
@@ -222,10 +223,11 @@ const ExternalImages = memo(
         savedImages[`${curImagesModelVersionId}`]?.find(
           (img) => img?.postId === +item[0]?.postId
         );
-      const postId =
-        existedExample && existedExample?.imagesId?.length >= item.length
-          ? ""
-          : item[0]?.postId;
+      const postId = item[0]?.postId;
+      // const postId =
+      //   existedExample && existedExample?.imagesId?.length >= item.length
+      //     ? ""
+      //     : item[0]?.postId;
 
       return (
         <Carousel
@@ -238,6 +240,8 @@ const ExternalImages = memo(
           modelId={modelId}
           versionId={curImagesModelVersionId}
           showInView={true}
+          location="models"
+          locationId={modelId}
         />
       );
     });

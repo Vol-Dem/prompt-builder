@@ -28,10 +28,12 @@ import { useLocation } from "react-router-dom";
 import ReferenceImageList from "./reference-image-list/ReferenceImageList";
 import { AnimatePresence, motion } from "framer-motion";
 import { guideActions } from "../../store/guide";
-import { Bars2Icon, Bars4Icon } from "@heroicons/react/24/outline";
+import { Bars2Icon, Bars4Icon, TrashIcon } from "@heroicons/react/24/outline";
+import SaveToCollectionForm from "../forms/save-to-collection-form/SaveToCollectionForm";
 
 const UsedModelsPanel = memo(() => {
   const [cursorInitialX, setCursorInitialX] = useState(null);
+  const [resourceType, setResourceType] = useState("model");
   const [cursorCurX, setCursorCurX] = useState(null);
   const usedModels = useSelector((state) => state.used.models);
   const usedImages = useSelector((state) => state.used.images);
@@ -81,6 +83,7 @@ const UsedModelsPanel = memo(() => {
     if (!isAuth) {
       dispatch(authActions.openAuthForm(true));
     } else {
+      setResourceType("model");
       dispatch(usedModelsActions.setFormIsOpen(!formIsOpen));
     }
   };
@@ -143,6 +146,13 @@ const UsedModelsPanel = memo(() => {
     dispatch(guideActions.guidePrevStep({ type: "model" }));
   };
 
+  const resourceTypeHandler = (e) => {
+    const type = e.target.dataset.value;
+    if (type) {
+      setResourceType(type);
+    }
+  };
+
   return (
     <motion.aside
       // layout
@@ -188,38 +198,68 @@ const UsedModelsPanel = memo(() => {
           }`}
         >
           <div className={classes["options"]}>
-            <Buttton
-              className={`${classes["btn-forms"]} ${
-                formIsOpen ? classes["btn-forms--close"] : ""
-              }`}
-              onClick={openFormHandler}
-              disabled={!!userDataLoadError || userDataIsLoading}
-            >
-              {!formIsOpen ? (
-                <>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
+            <div className={classes["options__btns"]}>
+              {formIsOpen && (
+                <div className={classes["options__type"]}>
+                  <button
+                    className={`${classes["options__type-btn"]} ${
+                      resourceType === "model"
+                        ? classes["options__type-btn--active"]
+                        : ""
+                    }`}
+                    onClick={resourceTypeHandler}
+                    data-value="model"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
-                    />
-                  </svg>
-                  New resource
-                </>
-              ) : (
-                <>
-                  <CrossSvg />
-                  Hide form
-                </>
+                    Model
+                  </button>
+                  <button
+                    className={`${classes["options__type-btn"]} ${
+                      resourceType === "collection"
+                        ? classes["options__type-btn--active"]
+                        : ""
+                    }`}
+                    onClick={resourceTypeHandler}
+                    data-value="collection"
+                  >
+                    Collection
+                  </button>
+                </div>
               )}
-            </Buttton>
+              <Buttton
+                title="Hide form"
+                className={`${classes["btn-forms"]} ${
+                  formIsOpen ? classes["btn-forms--close"] : ""
+                }`}
+                onClick={openFormHandler}
+                disabled={!!userDataLoadError || userDataIsLoading}
+              >
+                {!formIsOpen ? (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+                      />
+                    </svg>
+                    New resource
+                  </>
+                ) : (
+                  <>
+                    <CrossSvg />
+                    {/* Hide form */}
+                  </>
+                )}
+              </Buttton>
+            </div>
+
             {/* <div>
             <button onClick={prevStepHandler}>prev</button>
             <button onClick={nextStepHandler}>next</button>
@@ -232,13 +272,22 @@ const UsedModelsPanel = memo(() => {
             <AnimatePresence>
               {formIsOpen && isAuth && (
                 <div className={classes.forms}>
-                  <UpdateModelForm id="side-form" />
+                  {resourceType === "model" && (
+                    <UpdateModelForm id="side-form" />
+                  )}
+                  {resourceType === "collection" && (
+                    <SaveToCollectionForm id="side-form" />
+                  )}
                 </div>
               )}
             </AnimatePresence>
             <div className={classes["controls"]}>
-              <ButtonTertiary type="button" onClick={clearPanelHandler}>
-                Clear
+              <ButtonTertiary
+                className={classes["controls__clear"]}
+                type="button"
+                onClick={clearPanelHandler}
+              >
+                <TrashIcon className={classes["controls__svg"]} /> Clear
               </ButtonTertiary>
               <div>
                 <ButtonTertiary

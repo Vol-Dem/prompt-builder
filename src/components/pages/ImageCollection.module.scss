@@ -1,0 +1,61 @@
+@use "../../variables/variables.scss" as var;
+
+.collection {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  gap: 2rem;
+  // font-size: 2.2rem;
+  width: 100%;
+  color: var.$color-text-white;
+  // overflow: hidden;
+  // animation: show 0.4s ease-in forwards;
+  animation: show 0.6s ease-in forwards;
+}
+
+.images {
+  display: flex;
+  gap: 1.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.subcategories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  list-style: none;
+  border-left: 1px solid #fff;
+  padding-left: 1rem;
+}
+
+.title-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 2.8rem;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.h2 {
+  font-size: 2.4rem;
+  font-weight: 500;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.35;
+}
+
+.button-add {
+  align-self: flex-start;
+}
+
+.link {
+  @include var.linkA;
+}
+
+@include var.animation-show;

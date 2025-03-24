@@ -185,6 +185,8 @@ export const transformImageData = (imageData) => {
       browsingLevel: imageData?.browsingLevel,
     }),
     ...(imageData?.nsfwLevel && { nsfwLevel: imageData?.nsfwLevel }),
+    ...(imageData?.type && { type: imageData?.type }),
+    ...(imageData?.username && { username: imageData?.username }),
     ...(imageData?.meta && {
       meta: {
         ...(imageData?.meta?.ADetailerconfidence && {
@@ -269,6 +271,34 @@ export const transformImageData = (imageData) => {
         ...(imageData?.meta?.additionalResources && {
           additionalResources: imageData?.meta?.additionalResources,
         }),
+        //To large file size for firestore
+        // ...(imageData?.meta?.comfy && {
+        //   comfy: convertToString(imageData.meta.comfy),
+        // }),
+        ...(imageData?.meta?.controlNets && {
+          controlNets: convertToString(imageData.meta.controlNets),
+        }),
+        ...(imageData?.meta?.denoise && {
+          denoise: imageData.meta.denoise,
+        }),
+        ...(imageData?.meta?.modelIds && {
+          modelIds: imageData.meta.modelIds,
+        }),
+        ...(imageData?.meta?.models && {
+          models: imageData.meta.models,
+        }),
+        ...(imageData?.meta?.scheduler && {
+          scheduler: imageData.meta.scheduler,
+        }),
+        ...(imageData?.meta?.upscalers && {
+          upscalers: imageData.meta.upscalers,
+        }),
+        ...(imageData?.meta?.vaes && {
+          vaes: imageData.meta.vaes,
+        }),
+        ...(imageData?.meta?.versionIds && {
+          versionIds: imageData?.meta?.versionIds,
+        }),
       },
     }),
     height: imageData?.height || "",
@@ -276,6 +306,16 @@ export const transformImageData = (imageData) => {
   };
 
   return newImageData;
+};
+
+export const convertToString = (value) => {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (typeof value === "object") {
+    return JSON.stringify(value);
+  }
+  return "";
 };
 
 export const disableScrollHandler = (scrollTop, e) => {
@@ -449,7 +489,8 @@ export const disableAnimationsOnMobile = () => {
 
 export const transformSrcPreview = (
   src,
-  width = SETTINGS_IMAGE_PREVIEW_WIDTH_DEF
+  width = SETTINGS_IMAGE_PREVIEW_WIDTH_DEF,
+  type
 ) => {
   if (!src) return;
 
@@ -467,7 +508,7 @@ export const transformSrcPreview = (
   return previewSrc;
 };
 
-export const parseIdsFromInput = (value) => {
+export const parseModelIds = (value) => {
   if (value.includes("urn:air")) {
     const airArr = value.split(":");
     const ids = airArr[airArr.length - 1]
@@ -521,4 +562,75 @@ export const fixBreakInPrompt = (prompt) => {
     ?.replaceAll("BREAK\n", "BREAK, ");
 
   return fixedPromt;
+};
+
+export const filterDuplicates = (arr, field) => {
+  if (!Array.isArray(arr) || !arr?.length) return arr;
+
+  if (field) {
+    const values = arr.map((item) => item[field]);
+    return arr.filter(
+      (item, index) => !values.includes(item[field], index + 1)
+    );
+  } else {
+    return [...new Set(arr)];
+  }
+};
+
+export const createCategoryId = (id, categoriesData) => {
+  if (!id) {
+    return null;
+  }
+  let curId = id?.toString()?.toLowerCase();
+  let idExists;
+
+  //Check if category id is exists
+  idExists = categoriesData?.find(
+    (category) => category.id?.toString()?.toLowerCase() === curId
+  );
+
+  while (idExists) {
+    const idArr = curId.split("-");
+    const lastNubmer = parseInt(idArr.slice(-1));
+
+    curId = lastNubmer
+      ? `${idArr.slice(0, -1).join("-")}-${lastNubmer + 1}`
+      : `${curId}-2`;
+
+    idExists = categoriesData.find((category) => category.id === curId);
+  }
+
+  return curId;
+};
+
+export const createCollectionId = (collectionCategories) => {
+  const collectionIds = collectionCategories.flatMap(
+    (category) =>
+      category?.collectionNames.map((collectionName) => collectionName.id) || []
+  );
+
+  if (!collectionIds?.length) return 1;
+
+  return collectionIds.toSorted((a, b) => a - b)[collectionIds.length - 1] + 1;
+};
+
+export const sortArrayBy = (arr, field = null, direction) => {
+  if (!arr) return;
+
+  if (!direction) {
+    if (!field) return arr.toSorted((a, b) => a.localeCompare(b));
+
+    return arr.toSorted((a, b) => a[field]?.localeCompare(b[field]));
+  }
+
+  if (!field)
+    return arr.toSorted((a, b) => (direction === "asc" ? a - b : b - a));
+
+  return arr.toSorted((a, b) =>
+    direction === "asc" ? a[field] - b[field] : b[field] - a[field]
+  );
+};
+
+export const checkArraysIsEqual = (arr1, arr2) => {
+  return arr1?.toSorted().toString() === arr2?.toSorted().toString();
 };

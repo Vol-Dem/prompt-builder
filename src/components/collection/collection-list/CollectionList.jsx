@@ -1,0 +1,95 @@
+import { useSelector } from "react-redux";
+import { useOnlineStatus } from "../../../hooks/use-online-status";
+import usePageEnd from "../../../hooks/use-page-end";
+import Select from "../../ui/Select";
+import Spinner from "../../ui/Spinner";
+import CollectionPreview from "../collection-preview/CollectionPreview";
+import classes from "./CollectionList.module.scss";
+import { useEffect, useRef, useState } from "react";
+import ErrorMessage from "../../ui/ErrorMessage";
+import {
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+  ERROR_MESSAGE_OFFLINE,
+} from "../../../variables/constants";
+import Buttton from "../../ui/Button";
+import { motion } from "framer-motion";
+import NotificationMessage from "../../ui/NotificationMessage";
+import PreviewCard from "../../previewCard/PreviewCard";
+import AddToPanelAnimContainer from "../../ui/AddToPanelAnimContainer";
+
+const sortTypes = [
+  { name: "Newest", value: "createdAt" },
+  { name: "Name", value: "name" },
+];
+
+const CollectionList = ({ sortBy }) => {
+  const collectionPreviews = useSelector(
+    (state) => state.images.collectionPreviews
+  );
+  const isLoading = useSelector((state) => state.images.previewsIsLoading);
+  const errorMessage = useSelector(
+    (state) => state.images.previewsErrorMessage
+  );
+
+  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const endPage = useRef(null);
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const isPageEnd = usePageEnd(100);
+  const isOnline = useOnlineStatus();
+
+  useEffect(() => {
+    setIsIntersecting(isPageEnd);
+  }, [isPageEnd]);
+
+  let sortSelectOption = sortTypes.map((version) => {
+    return {
+      name: version.name,
+      value: version.value,
+    };
+  });
+
+  const collectionsHtml = collectionPreviews?.data?.map((collection, i) => {
+    return (
+      <AddToPanelAnimContainer key={i}>
+        <PreviewCard layout={false} previewData={collection} />
+        <PreviewCard layout={true} previewData={collection} />
+      </AddToPanelAnimContainer>
+    );
+  });
+
+  return (
+    <div className={classes["container"]}>
+      {!!collectionPreviews?.data?.length && (
+        <motion.div
+          initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+          animate={ANIMATIONS_FM_SLIDEIN}
+          exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
+          className={`${classes["collections"]}`}
+        >
+          {collectionsHtml}
+        </motion.div>
+      )}
+      {!collectionPreviews?.data?.length && !isLoading && (
+        <NotificationMessage>This category is empty</NotificationMessage>
+      )}
+      {/* {collectionPreviews?.data?.length &&
+        !errorMessage &&
+        !isLoading &&
+        isOnline &&
+        (getAllModels || getSubcategoryModels) && (
+          <div className={classes.empty}>This category is empty</div>
+        )} */}
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
+      <div ref={endPage}></div>
+      {isLoading && (
+        <div className={classes["spiner-container"]}>
+          <Spinner size="medium" />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default CollectionList;

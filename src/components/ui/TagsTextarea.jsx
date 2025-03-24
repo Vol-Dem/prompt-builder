@@ -345,7 +345,7 @@ const TagsTextarea = ({
         const isActivationTag = regex.test(editTagInput.value);
 
         let tag = editTagInput.value;
-
+        // console.log(editWeightInput.value);
         if (+editWeightInput.value !== item.weight) {
           if (editTagInput.value.includes(":")) {
             const tagName = editTagInput.value

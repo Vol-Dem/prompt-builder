@@ -13,6 +13,9 @@ import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../variables/constants";
+import SubcategoryList from "../ui/lists/SubcategoryList";
+import ButtonCategoryAll from "../ui/buttons/ButtonCategoryAll";
+import CategoryListItem from "../ui/lists/CategoryListItem";
 
 const Subcategories = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
@@ -50,23 +53,35 @@ const Subcategories = () => {
     })
     ?.map((subcategory, i) => {
       return (
-        <motion.li
+        <CategoryListItem
           key={`${activeCategory}-${subcategory.id}`}
-          initial={{ opacity: 0, y: -5 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-          // animate={ANIMATIONS_FM_SLIDEIN}
-          // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
-          data-value={subcategory.id}
           onClick={categorySwitchHandler}
+          dataValue={subcategory.id}
+          active={activeSubcategory === subcategory.id}
           className={`${classes[`subcategory__link`]} ${
             activeSubcategory === subcategory.id ? classes.active : ""
           }`}
         >
           {subcategory.name}
           {guideHomeState?.active && i === 0 && <OpenCategoryGuide />}
-        </motion.li>
+        </CategoryListItem>
+        // <motion.li
+        //   key={`${activeCategory}-${subcategory.id}`}
+        //   initial={{ opacity: 0, y: -5 }}
+        //   animate={{ opacity: 1, y: 0 }}
+        //   transition={{ duration: 0.3 }}
+        //   // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+        //   // animate={ANIMATIONS_FM_SLIDEIN}
+        //   // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
+        //   data-value={subcategory.id}
+        //   onClick={categorySwitchHandler}
+        //   className={`${classes[`subcategory__link`]} ${
+        //     activeSubcategory === subcategory.id ? classes.active : ""
+        //   }`}
+        // >
+        //   {subcategory.name}
+        //   {guideHomeState?.active && i === 0 && <OpenCategoryGuide />}
+        // </motion.li>
       );
     });
 
@@ -77,37 +92,15 @@ const Subcategories = () => {
   return (
     <div className={classes.category}>
       {!!subcategoriesData?.length && (
-        <div className={classes["subcategories-container"]}>
-          <motion.ul
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className={classes["subcategories"]}
-          >
-            <motion.li
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              data-value="all"
-              onClick={categorySwitchHandler}
-              className={`${classes[`subcategory__link`]} ${
-                classes[`subcategory__link--all`]
-              } ${activeSubcategory === "all" ? classes.active : ""}`}
-            >
-              All
-            </motion.li>
-            {subcategoriesHtml}
-          </motion.ul>
-          <ButtonTertiary
-            className={classes["subcategories__edit"]}
-            type="button"
-            onClick={editCategoriesHandler}
-          >
-            <EditSvg />
-          </ButtonTertiary>
-        </div>
+        <SubcategoryList onEdit={editCategoriesHandler}>
+          {" "}
+          <ButtonCategoryAll
+            onClick={categorySwitchHandler}
+            activeCategory={activeSubcategory}
+          />
+          {subcategoriesHtml}
+        </SubcategoryList>
       )}
-
       {/* {activeSubcategory && <ModelsList />} */}
       <AnimatePresence>
         {editIsOpen && (

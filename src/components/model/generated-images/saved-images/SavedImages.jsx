@@ -28,7 +28,10 @@ import ExclamationCircleSvg from "../../../../assets/ExclamationCircleSvg";
 import FolderSvg from "../../../../assets/FolderSvg";
 import { motion } from "framer-motion";
 import useIntersection from "../../../../hooks/use-intersection";
-import { checkIsInCurrentNsfwRange } from "../../../../utils/generalUtils";
+import {
+  checkIsInCurrentNsfwRange,
+  filterDuplicates,
+} from "../../../../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -40,6 +43,7 @@ const SavedImages = memo(
     const [examplesImgData, setExamplesImgData] = useState([]);
     const model = useSelector((state) => state.model.model);
     const savedImagesData = useSelector((state) => state.model.savedImages);
+    const curVersion = useSelector((state) => state.model.curVersion);
     const nsfwMode = useSelector((state) => state.general.nsfwMode);
     const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
     const uid = useSelector((state) => state.auth.user.uid);
@@ -120,8 +124,8 @@ const SavedImages = memo(
 
         const examples = data
           .map((post) => {
-            return post.items
-              .filter((image) => {
+            return filterDuplicates(
+              post.items.filter((image) => {
                 const saved =
                   savedImagesData.data.hasOwnProperty(
                     curImagesModelVersionId
@@ -135,11 +139,12 @@ const SavedImages = memo(
                   image?.nsfwLevel
                 );
 
-                return isInCurrentNsfwRange;
-              })
-              .sort((a, b) => {
-                return Date.parse(a.createdAt) - Date.parse(b.createdAt);
-              });
+                return saved && isInCurrentNsfwRange;
+              }),
+              "id"
+            ).sort((a, b) => {
+              return Date.parse(a.createdAt) - Date.parse(b.createdAt);
+            });
           })
           .filter((item) => !!item.length);
 
@@ -208,15 +213,23 @@ const SavedImages = memo(
     }, [savedImagesData.data, curImagesModelVersionId, examplesImgData]);
 
     const examplesHtml = examplesImgData.flatMap((item, i) => {
+      const postData = savedImagesData?.data[curVersion.id]?.find(
+        (post) => post.postId === item[0].postId
+      );
+
       return (
         <Carousel
           key={i}
           versionId={curImagesModelVersionId}
           imagesData={item}
+          postId={item[0].postId}
           visibleImgAmount={1}
           modelId={model.id}
           saved={true}
           showInView={true}
+          location="models"
+          locationId={model.id}
+          curPostData={postData}
         />
       );
     });
@@ -241,7 +254,8 @@ const SavedImages = memo(
               <FolderSvg
                 className={`${classes["svg"]} ${classes["svg--medium"]}`}
               />{" "}
-              at the top left corner of the image to add it to your collection.
+              at the top left corner of the image or use "Add image by ID"
+              button to add it to your collection.
             </span>
           </motion.div>
         )}

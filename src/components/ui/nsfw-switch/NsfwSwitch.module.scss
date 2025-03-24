@@ -14,25 +14,36 @@
 
 .mode-switch {
   font-size: 1.4rem;
-  border-radius: var.$border-radius;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border: 1px solid #5c5c5c;
-  overflow: hidden;
+  // border-radius: var.$border-radius;
+  // border: 1px solid rgba(255, 255, 255, 0.3);
+  // border: 1px solid #5c5c5c;
+  // overflow: hidden;
   flex-shrink: 0;
   z-index: 2;
 }
 .btn-mode {
   position: relative;
-
   width: 5rem;
   font-size: 1rem;
+  line-height: 1.1;
+  border: 1px solid #5c5c5c;
   background-color: transparent;
   background-color: var.$color-background-secondary;
   padding: 0.6rem 0.8rem;
-  border: none;
+  // border: none;
+  overflow: hidden;
   transition: all 0.3s;
   color: #fff;
   cursor: pointer;
+
+  &--left {
+    border-radius: 10px 0 0 10px;
+    border-right-color: transparent;
+  }
+  &--right {
+    border-radius: 0 10px 10px 0;
+    border-left-color: transparent;
+  }
 
   &:not(.btn-mode--active):hover {
     background-color: var.$color-background-primary;
@@ -87,7 +98,7 @@
 
   &__dropdown {
     width: 28rem;
-    top: 100%;
+    top: calc(100% + 1rem);
     left: 100%;
     z-index: 30;
     transform: translateX(-90%);

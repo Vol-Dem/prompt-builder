@@ -4,6 +4,8 @@ import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { tabActions } from "../../../store/tabs";
 import { createPortal } from "react-dom";
+import { imagesActions } from "../../../store/images";
+import { modelActions } from "../../../store/model";
 
 const MobileNavigation = () => {
   const [navIsOpen, setNavIsOpen] = useState(false);
@@ -12,6 +14,8 @@ const MobileNavigation = () => {
 
   const resetTabsHandler = () => {
     dispatch(tabActions.resetActiveTabs());
+    dispatch(imagesActions.resetCollectionListState());
+    dispatch(modelActions.setActiveCarouselData({}));
   };
 
   useEffect(() => {

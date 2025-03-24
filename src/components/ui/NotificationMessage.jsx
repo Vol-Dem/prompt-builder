@@ -4,7 +4,7 @@ import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 
 const NotificationMessage = ({ children, type, className }) => {
   return (
-    <div className={classes.notification}>
+    <div className={`${classes.notification}  ${className}`}>
       {type && (
         <div className={classes["notification__icon"]}>
           {type === "notification" && <ExclamationCircleIcon />}
