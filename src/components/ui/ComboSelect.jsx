@@ -34,11 +34,12 @@ const ComboSelect = ({
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
+  const nameExists = optionsData?.find((option) => option.name === query);
+
   useEffect(() => {
     setShowErrorMessage(showError);
   }, [showError]);
 
-  const nameExists = optionsData?.find((option) => option.name === query);
   // console.log(optionsData);
   useEffect(() => {
     if (!!validation) {
@@ -146,9 +147,10 @@ const ComboSelect = ({
                   {query.length > 0 && !nameExists && (
                     <ComboboxOption
                       value={{ id: null, name: query }}
-                      className={`${classes.option}`}
+                      className={`${classes.option} ${classes["option--create"]}`}
                     >
-                      Create <span className="font-bold">"{query}"</span>
+                      <span className={`${classes["create-btn"]}`}>Create</span>{" "}
+                      <span className="font-bold">"{query}"</span>
                     </ComboboxOption>
                   )}
                   {optionsData.map((options, i) => (

@@ -58,6 +58,26 @@ const TagSetsForm = ({ modelId, onClose }) => {
   const guideStep = useSelector((state) => state.guide.model.step);
   const dispatch = useDispatch();
 
+  const defTags = [
+    [
+      {
+        type: "text",
+        id: "set-name-def",
+        name: "set-name",
+        placeholder: "Set name",
+        value: "",
+        isValid: true,
+      },
+      {
+        id: "set-value-def",
+        name: "set-value",
+        placeholder: "Triger words",
+        value: "",
+        isValid: true,
+      },
+    ],
+  ];
+
   useEffect(() => {
     if (guideActive && guideStep === GUIDE_STEP_MODEL_TAGS_EDIT) {
       dispatch(
@@ -99,12 +119,8 @@ const TagSetsForm = ({ modelId, onClose }) => {
     //     ];
     //   });
     // }
-    setTagSetsInputs(
-      createTagSetsInputData(
-        versionData?.tagSetsData,
-        DEFAULT_DATA_TAGSETS_INPUT
-      )
-    );
+
+    setTagSetsInputs(createTagSetsInputData(versionData?.tagSetsData, defTags));
   }, [versionData]);
 
   const saveVersionHandler = async (e) => {

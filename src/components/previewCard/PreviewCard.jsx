@@ -20,6 +20,10 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
   const [currSidePanelData, setCurrSidePanelData] = useState({});
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const isMobile = useSelector((state) => state.general.isMobile);
+  const categoriesData = useSelector((state) => state.images.categories);
+  const imageCategoryData = categoriesData.find(
+    (category) => category.id === previewData?.category
+  );
   // const fullView = useSelector((state) => state.tabs.previewFullView);
   const imgRef = useRef();
   // console.log(previewData);
@@ -100,6 +104,11 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
                   previewData.imgUrl
                 : previewData.customPreviewImgUrl || previewData.imgUrl
             }
+            type={
+              isNsfwMode
+                ? previewData?.nsfwPreviewImgType || previewData.imgType
+                : previewData?.customPreviewImgType || previewData.imgType
+            }
             alt="Preview"
             imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_BIG}
             className={true ? classes["card__image"] : ""}
@@ -117,9 +126,13 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
                   <li key={i} className={classes["models__item"]}>
                     {model}
                   </li>
-                )) ||
-                  currVersion?.baseModel ||
-                  previewData?.baseModel}
+                )) || (
+                  <li className={classes["models__item"]}>
+                    {currVersion?.baseModel ||
+                      previewData?.baseModel ||
+                      imageCategoryData?.name}
+                  </li>
+                )}
               </ul>
               <h4
                 className={classes.title}

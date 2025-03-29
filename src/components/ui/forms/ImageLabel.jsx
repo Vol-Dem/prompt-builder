@@ -2,10 +2,18 @@ import classes from "./ImageLabel.module.scss";
 import Image from "../image/Image";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL } from "../../../variables/constants";
 import { useLayoutEffect, useRef, useState } from "react";
+import { transformSrcPreview } from "../../../utils/generalUtils";
 
 const ImageLabel = ({ htmlFor, imageData, type, className }) => {
   const [imageContainerWidtht, setImageContainerWidth] = useState(null);
   const imageContainerRef = useRef(null);
+  // console.log(imageData.data);
+  // const { previewSrc, previewVideoWebmSrc, previewVideoMp4Src } =
+  //   transformSrcPreview(
+  //     imageData.data.url,
+  //     SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
+  //     imageData.data.type
+  //   );
 
   useLayoutEffect(() => {
     if (imageContainerRef?.current?.offsetHeight)
@@ -19,7 +27,7 @@ const ImageLabel = ({ htmlFor, imageData, type, className }) => {
     <label
       htmlFor={htmlFor}
       ref={imageContainerRef}
-      className={classes["images-list__label"]}
+      className={`${classes["images-list__label"]} ${className || ""}`}
       style={{
         width: imageContainerWidtht ? `${imageContainerWidtht}px` : null,
       }}
@@ -30,7 +38,8 @@ const ImageLabel = ({ htmlFor, imageData, type, className }) => {
         } ${imageData?.saved ? classes["image--saved"] : ""} ${
           type === "del" ? classes["image--del"] : ""
         }`}
-        src={imageData.label}
+        type={imageData.data.type}
+        src={imageData.data.url}
         alt={`Image`}
         imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL}
       />

@@ -18,7 +18,7 @@ import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import { getCollectionData } from "../../utils/fetchUtils";
 
-const ImageCollection = () => {
+const ImageCollection = ({ title }) => {
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -42,6 +42,13 @@ const ImageCollection = () => {
   //     // console.log(postIds);
   //     // dispatch(getImagesByIds(postIds));
   //   }, [collectionData, dispatch]);
+  useEffect(() => {
+    document.title = collectionData?.name || title;
+
+    return () => {
+      document.title = "Prompt builder";
+    };
+  }, [title, collectionData?.name]);
 
   useEffect(() => {
     if (!isAuth || !collectionId) return;

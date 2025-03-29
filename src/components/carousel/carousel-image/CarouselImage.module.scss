@@ -330,6 +330,26 @@
   }
 }
 
+.play-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 5rem;
+  height: 5rem;
+
+  &__svg {
+    width: 2.8rem;
+    height: 2.8rem;
+  }
+}
+
 @keyframes loading {
   0% {
     background-color: #918b96;

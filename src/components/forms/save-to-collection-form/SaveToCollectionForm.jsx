@@ -353,7 +353,7 @@ const SaveToCollectionForm = ({
       const categoriesWithId = await dispatch(
         addNewCollectionCategories(collectionInputData)
       );
-      console.log("TEST", categoriesWithId);
+      // console.log("TEST", categoriesWithId);
       setCollectionInfo(categoriesWithId);
       if (images?.length) {
         if (postData?.imageIds?.length) {

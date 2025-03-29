@@ -89,8 +89,14 @@ const ExternalImages = memo(
         if (!sortedExamples) return;
 
         const sortedExamplesArr = Object.keys(sortedExamples).sort((a, b) => {
-          return sortedExamples[b][0].postId - sortedExamples[a][0].postId;
+          return (
+            Date.parse(sortedExamples[b].slice(-1).pop().createdAt) -
+            Date.parse(sortedExamples[a].slice(-1).pop().createdAt)
+          );
         });
+        // const sortedExamplesArr = Object.keys(sortedExamples).sort((a, b) => {
+        //   return sortedExamples[b][0].postId - sortedExamples[a][0].postId;
+        // });
 
         const examples = sortedExamplesArr.map((key, i) => {
           return sortedExamples[key];

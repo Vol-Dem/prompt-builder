@@ -21,7 +21,7 @@ import {
 } from "../../variables/constants";
 const taglistItemHeight = 68;
 
-const UsedCard = memo(({ previewData, fullView, layoutId }) => {
+const UsedCard = memo(({ previewData, fullView, layoutId, onClick }) => {
   const [tagsIsOpen, setTagsIsOpen] = useState(false);
   const [tagsHeight, setTagsHeight] = useState(null);
   const [taglistHeight, setTaglistHeight] = useState(null);
@@ -73,6 +73,7 @@ const UsedCard = memo(({ previewData, fullView, layoutId }) => {
     // if (previewData?.id !== model?.id) {
     //   dispatch(modelActions.resetModelData());
     // }
+    onClick && onClick(false);
     if (document.body.offsetWidth < 1024) {
       dispatch(usedModelsActions.panelState(false));
     }

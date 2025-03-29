@@ -123,13 +123,23 @@ const TagSetsInputFieldset = ({
       });
 
       if (curSetNameIndex !== -1) {
-        newState[curSetNameIndex][0].value = e.target.value;
-        newState[curSetNameIndex][0].isValid = isValid;
+        newState[curSetNameIndex][0] = {
+          ...newState[curSetNameIndex][0],
+          value: e.target.value,
+          isValid: isValid,
+        };
+        // newState[curSetNameIndex][0].value = e.target.value;
+        // newState[curSetNameIndex][0].isValid = isValid;
       }
 
       if (curSetTagsIndex !== -1) {
-        newState[curSetTagsIndex][1].value = e.target.value;
-        newState[curSetTagsIndex][1].isValid = isValid;
+        newState[curSetTagsIndex][1] = {
+          ...newState[curSetTagsIndex][1],
+          value: e.target.value,
+          isValid: isValid,
+        };
+        // newState[curSetTagsIndex][1].value = e.target.value;
+        // newState[curSetTagsIndex][1].isValid = isValid;
       }
 
       return newState;

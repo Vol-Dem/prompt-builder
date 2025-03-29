@@ -2,10 +2,20 @@ import React, { forwardRef, useEffect, useRef, useState } from "react";
 import classes from "./Image.module.scss";
 import ImageSvg from "../../../assets/ImageSvg";
 import { transformSrcPreview } from "../../../utils/generalUtils";
+import { SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM } from "../../../variables/constants";
 
 const Image = forwardRef(
   (
-    { id, src, type, alt, onClick, className, preloader = true, imageWidth },
+    {
+      id,
+      src,
+      alt,
+      onClick,
+      className,
+      type = "image",
+      preloader = true,
+      imageWidth = SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
+    },
     ref
   ) => {
     const [imgIsLoading, setImgIsLoading] = useState(true);
@@ -17,10 +27,9 @@ const Image = forwardRef(
 
     useEffect(() => {
       // if (!imgIsLoaded) setImgIsLoading(true);
-      if (imageIsVisible) {
-        const previewSrc = imageWidth
-          ? transformSrcPreview(src, imageWidth)
-          : src;
+      if (imageIsVisible && src) {
+        const { previewSrc } = transformSrcPreview(src, imageWidth, type);
+
         setImgError(false);
         setImgIsLoading(true);
         setImgSrc(previewSrc);
@@ -47,7 +56,7 @@ const Image = forwardRef(
           ref={imageRef}
           id={id}
         >
-          {type && <span className={classes.type}>{type}</span>}
+          {/* {type && <span className={classes.type}>{type}</span>} */}
           {preloader && (
             <div className={classes.preloader}>
               <ImageSvg />

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import classes from "./CarouselImage.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -20,6 +20,8 @@ import {
 } from "../../../variables/constants";
 import SetTagSetPreview from "../set-tagset-preview/SetTagSetPreview";
 import { transformSrcPreview } from "../../../utils/generalUtils";
+import useIntersection from "../../../hooks/use-intersection";
+import { PlayIcon } from "@heroicons/react/24/outline";
 
 const CarouselImage = ({
   id,
@@ -46,6 +48,7 @@ const CarouselImage = ({
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState("#");
+  const [videoSrc, setVideoSrc] = useState({ mp4: "#", webm: "#" });
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [tagSetMenuIsOpen, settagSetMenuIsOpen] = useState(false);
   const [curTagSetVersionId, setCurTagSetVersionId] = useState("tsv-def");
@@ -53,18 +56,56 @@ const CarouselImage = ({
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  // const activeCarouselData = useSelector(
+  //   (state) => state.model.activeCarouselData
+  // );
+  const videoRef = useRef(null);
+  const isInersecting = useIntersection(
+    imageData?.type === "video" ? videoRef : null,
+    false,
+    -300
+  );
 
+  // useEffect(() => {
+  //   if (imageData?.type !== "video" || !videoRef?.current) return;
+  //   console.log("IMG");
+  //   console.log(imageData.postId);
+  //   // console.log(activeCarouselData?.postId);
+  //   if (
+  //     // activeCarouselData?.postId &&
+  //     // imageData.postId !== activeCarouselData?.postId &&
+  //     !isInersecting
+  //   ) {
+  //     console.log("STOP");
+  //     videoRef.current.pause();
+  //   } else {
+  //     console.log("PLAY");
+  //     videoRef.current.play();
+  //   }
+  // }, [
+  //   // activeCarouselData?.postId,
+  //   // imageData?.type,
+  //   // imageData,
+  //   // videoRef?.current,
+  //   isInersecting,
+  // ]);
+  // console.log(activeCarouselData);
   useEffect(() => {
     if (src && !imgIsLoaded && !imgError) {
-      const previewSrc = transformSrcPreview(
-        src,
-        SETTINGS_IMAGE_PREVIEW_WIDTH_BIG
-        // imageData.type
-      );
+      const { previewSrc, previewVideoWebmSrc, previewVideoMp4Src } =
+        transformSrcPreview(
+          src,
+          SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
+          imageData.type
+        );
       setImgSrc(previewSrc);
-      setImgIsLoading(true);
+      setVideoSrc({
+        mp4: previewVideoMp4Src,
+        webm: previewVideoWebmSrc,
+      });
+      if (imageData.type !== "video") setImgIsLoading(true);
     }
-  }, [src, imgIsLoaded, imgError]);
+  }, [src, imgIsLoaded, imgError, imageData?.type]);
 
   const imgLoadHandler = () => {
     setImgIsLoading(false);
@@ -77,11 +118,14 @@ const CarouselImage = ({
   };
 
   const setPreviwImgHandler = (e) => {
-    dispatch(setPreviewImg(src, false, location, locationId));
+    dispatch(
+      setPreviewImg(imgSrc, false, location, locationId, imageData.type)
+    );
     setMenuIsOpen(false);
   };
   const setNsfwPreviwImgHandler = (e) => {
-    dispatch(setPreviewImg(src, true, location, locationId));
+    console.log(imgSrc);
+    dispatch(setPreviewImg(imgSrc, true, location, locationId, imageData.type));
     setMenuIsOpen(false);
   };
 
@@ -244,23 +288,58 @@ const CarouselImage = ({
       )}
       {!imgError && imgSrc !== "#" && (
         <>
-          <motion.img
-            className={`${classes.image} ${
-              imageData?.width - imageData?.height < 0
-                ? classes["image--portrait"]
-                : ""
-            } ${imgIsLoading && !imgIsLoaded ? classes["image--hidden"] : ""} ${
-              !nsfwMode && nsfw ? classes["image--nsfw"] : ""
-            }`}
-            draggable={false}
-            onClick={onClick}
-            onLoad={imgLoadHandler}
-            onError={imgErrorHandler}
-            data-position={dataset}
-            id={id}
-            src={imgSrc}
-            alt={alt}
-          />
+          {(imageData.type !== "video" || !active) && (
+            <motion.img
+              className={`${classes.image} ${
+                imageData?.width - imageData?.height < 0
+                  ? classes["image--portrait"]
+                  : ""
+              } ${
+                imgIsLoading && !imgIsLoaded ? classes["image--hidden"] : ""
+              } ${!nsfwMode && nsfw ? classes["image--nsfw"] : ""}`}
+              draggable={false}
+              onClick={onClick}
+              onLoad={imgLoadHandler}
+              onError={imgErrorHandler}
+              data-position={dataset}
+              id={id}
+              src={imgSrc}
+              alt={alt}
+            />
+          )}
+          {imageData.type === "video" && (
+            <div
+              className={classes["play-icon"]}
+              onClick={onClick}
+              data-position={dataset}
+            >
+              <PlayIcon className={classes["play-icon__svg"]} />
+            </div>
+          )}
+          {imageData.type === "video" && active && (
+            <video
+              ref={videoRef}
+              playsInline
+              autoPlay
+              // autostart={isInersecting ? 1 : 0}
+              // autostart={1}
+              loop
+              disablePictureInPicture
+              preload="none"
+              muted
+              poster={imgSrc}
+              onClick={onClick}
+              className={`${classes.image} ${
+                imageData?.width - imageData?.height < 0
+                  ? classes["image--portrait"]
+                  : ""
+              } ${!nsfwMode && nsfw ? classes["image--nsfw"] : ""}`}
+            >
+              <source src={videoSrc?.webm} type="video/webm" />
+              <source src={videoSrc?.mp4} type="video/mp4" />
+            </video>
+            // <video playsinline autoplay loop poster="https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e01572c0-315c-4a2e-b0da-04c2ee9baf91/anim=false,transcode=true,width=450/e01572c0-315c-4a2e-b0da-04c2ee9baf91.jpeg" disablepictureinpicture="" preload="none" style="opacity: 1;"><source src="https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e01572c0-315c-4a2e-b0da-04c2ee9baf91/transcode=true,width=450/62178949.webm" type="video/webm"><source src="https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e01572c0-315c-4a2e-b0da-04c2ee9baf91/transcode=true,width=450/62178949.mp4" type="video/mp4"></video>
+          )}
         </>
       )}
       <AnimatePresence>

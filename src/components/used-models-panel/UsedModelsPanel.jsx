@@ -19,7 +19,7 @@ import ArrowRightSvg from "../../assets/ArrowRight";
 import PlusSvg from "../../assets/PlusSvg";
 import Bars2Svg from "../../assets/Bars2Svg";
 import Bars4Svg from "../../assets/Bars4Svg";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SETTINGS_REF_IMAGE_ROW_LENGTH } from "../../variables/constants";
 import ErrorMessage from "../ui/ErrorMessage";
 import SidePanelGuide from "../ui/guide/model/SidePanelGuide";
@@ -35,6 +35,7 @@ const UsedModelsPanel = memo(() => {
   const [cursorInitialX, setCursorInitialX] = useState(null);
   const [resourceType, setResourceType] = useState("model");
   const [cursorCurX, setCursorCurX] = useState(null);
+  // const [formIsOpen, setFormIsOpen] = useState(false);
   const usedModels = useSelector((state) => state.used.models);
   const usedImages = useSelector((state) => state.used.images);
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
@@ -79,6 +80,7 @@ const UsedModelsPanel = memo(() => {
     dispatch(usedModelsActions.panelState(!panelIsOpen));
   };
   const openFormHandler = () => {
+    // setFormIsOpen((prevState) => !prevState);
     // if (!isAuth || !emailVerified) {
     if (!isAuth) {
       dispatch(authActions.openAuthForm(true));
@@ -92,6 +94,10 @@ const UsedModelsPanel = memo(() => {
   //   dispatch(usedModelsActions.cardViewState());
   // };
 
+  const closeFormHandler = useCallback((value) => {
+    // setFormIsOpen(value);
+  }, []);
+
   const usedModelsHtml = useMemo(() => {
     return usedModels.map((model, i) => {
       return (
@@ -100,8 +106,13 @@ const UsedModelsPanel = memo(() => {
             layoutId={model.id}
             previewData={model}
             fullView={fullCardView}
+            onClick={closeFormHandler}
           />
-          <UsedCard previewData={model} fullView={fullCardView} />
+          <UsedCard
+            previewData={model}
+            fullView={fullCardView}
+            onClick={closeFormHandler}
+          />
         </div>
       );
     });
@@ -192,7 +203,7 @@ const UsedModelsPanel = memo(() => {
         <OpenSidePanelGuide />
         <motion.div
           ref={sidePanelRef}
-          layout
+          // layout
           className={`${classes.panel} ${
             panelIsOpen ? classes["panel--open"] : ""
           }`}

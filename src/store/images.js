@@ -339,8 +339,8 @@ export const savePostToCollections = ({
           posts: [newPost],
         };
 
-        console.log(savedImagesToCatPrev);
-        console.log(savedImagesToCat);
+        // console.log(savedImagesToCatPrev);
+        // console.log(savedImagesToCat);
 
         batch.set(collectionsRef, savedImagesToCat, { merge: true });
         batch.set(collectionsPreviewRef, savedImagesToCatPrev, { merge: true });
@@ -1233,8 +1233,8 @@ export const addNewCollectionCategories = ({
           description: "",
           posts: [],
         };
-        console.log(savedImagesToCatPrev);
-        console.log(savedImagesToCat);
+        // console.log(savedImagesToCatPrev);
+        // console.log(savedImagesToCat);
         await setDoc(collectionsRef, savedImagesToCat, { merge: true });
         await setDoc(collectionsPreviewRef, savedImagesToCatPrev, {
           merge: true,

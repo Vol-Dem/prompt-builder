@@ -67,7 +67,7 @@ const ImageCard = ({ activeImgNum }) => {
   const resorcesRef = useRef(null);
 
   const openFormHandler = (newModelId, newModelVersionId, modelType) => {
-    console.log(modelType);
+    // console.log(modelType);
     setModelToSave({
       modelId: newModelId,
       modelVersionId: newModelVersionId,
@@ -427,7 +427,7 @@ const ImageCard = ({ activeImgNum }) => {
             // console.log(filteredNewResult);
             setImageResources(filteredNewResult || []);
           }
-          console.log(filteredNewResult);
+          // console.log(filteredNewResult);
           const checkpointInfo = filteredNewResult.find(
             (resource) => resource.type === "Checkpoint"
           );

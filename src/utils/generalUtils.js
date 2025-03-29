@@ -495,17 +495,53 @@ export const transformSrcPreview = (
   if (!src) return;
 
   let previewSrc;
-  let srcArr = src.split("/");
+  let previewVideoWebmSrc;
+  let previewVideoMp4Src;
+  let originalVideoMp4Src;
+  let originalVideoWebmSrc;
+  const srcArr = src.split("/");
   const widthIndex = srcArr.findIndex((srcSlice) => srcSlice.includes("width"));
 
   if (widthIndex < 0) {
     previewSrc = src;
+    previewVideoWebmSrc = src;
+    previewVideoMp4Src = src;
+    originalVideoMp4Src = src;
+    originalVideoWebmSrc = src;
   } else {
-    srcArr[widthIndex] = `width=${width}`;
-    previewSrc = srcArr.join("/");
+    const imgSrc =
+      type === "video"
+        ? `anim=false,transcode=true,width=${width}`
+        : `width=${width}`;
+
+    previewSrc = srcArr.toSpliced(widthIndex, 1, imgSrc).join("/");
+
+    if (type === "video") {
+      const videoSrc = `transcode=true,width=${width}`;
+      const videoOriginalSrc = `transcode=true,original=true,quality=90`;
+
+      previewVideoMp4Src = srcArr.toSpliced(widthIndex, 1, videoSrc).join("/");
+      originalVideoMp4Src = srcArr
+        .toSpliced(widthIndex, 1, videoOriginalSrc)
+        .join("/");
+      previewVideoWebmSrc = srcArr
+        .toSpliced(widthIndex, 1, videoSrc)
+        .join("/")
+        .replace(".mp4", "webm");
+      originalVideoWebmSrc = srcArr
+        .toSpliced(widthIndex, 1, videoOriginalSrc)
+        .join("/")
+        .replace(".mp4", "webm");
+    }
   }
 
-  return previewSrc;
+  return {
+    previewSrc,
+    previewVideoWebmSrc,
+    originalVideoWebmSrc,
+    previewVideoMp4Src,
+    originalVideoMp4Src,
+  };
 };
 
 export const parseModelIds = (value) => {

@@ -87,24 +87,54 @@
 
 .option {
   display: flex;
+  align-items: center;
   gap: 1rem;
   padding: 0.4rem 0.8rem;
   margin: 0.2rem 1rem;
   border-radius: 10px;
   transition: all 0.3s ease;
+  word-break: break-all;
   cursor: pointer;
 
   &:hover {
     background-color: var.$color-primary;
   }
 
+  &:hover .create-btn {
+    border: 1px solid var.$color-white;
+    color: var.$color-white;
+  }
+
   &:focus {
     background-color: var.$color-primary;
   }
 
-  &[data-focus] {
+  &[data-focus]:not(.option--create) {
     background-color: var.$color-primary;
   }
+
+  &--create {
+    // border: 1px solid var.$color-green;
+    // border: 1px solid #49ab6b;
+  }
+}
+
+.create-btn {
+  display: inline-block;
+  flex-shrink: 0;
+  color: var.$color-green;
+  color: #18bd51;
+  // color: var.$color-yellow;
+  // background-color: #2e8b4f;
+  border: 1px solid var.$color-green;
+  border: 1px solid #18bd51;
+  border-radius: 10px;
+  padding: 0.2rem 0.6rem;
+  height: 100%;
+  transition: all 0.3s;
+  // &:hover {
+  //   border: 1px solid var.$color-green;
+  // }
 }
 
 .selected {

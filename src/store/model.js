@@ -138,8 +138,8 @@ const modelSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(authActions.logout, (state, actions) => {
-      console.log(state.model);
-      console.log(state.curExampleImgsType);
+      // console.log(state.model);
+      // console.log(state.curExampleImgsType);
       state.model = {};
       state.modelPreview = [];
       state.errorMessage = "";
@@ -235,7 +235,13 @@ export const updateModel = (modelId) => {
   };
 };
 
-export const setPreviewImg = (url, isNsfw = false, location, locationId) => {
+export const setPreviewImg = (
+  url,
+  isNsfw = false,
+  location,
+  locationId,
+  type = "image"
+) => {
   return async (__, getState) => {
     try {
       const uid = getState().auth.user.uid;
@@ -249,6 +255,7 @@ export const setPreviewImg = (url, isNsfw = false, location, locationId) => {
       }
 
       const urlField = isNsfw ? "nsfwPreviewImgUrl" : "customPreviewImgUrl";
+      const typeField = isNsfw ? "nsfwPreviewImgType" : "customPreviewImgType";
 
       const dbCollectionName =
         location === "models" ? "preview" : "collectionPreviews";
@@ -260,11 +267,12 @@ export const setPreviewImg = (url, isNsfw = false, location, locationId) => {
         dbCollectionName,
         locationId + ""
       );
-
+      console.log(url);
       await setDoc(
         locationPrevRef,
         {
           [`${urlField}`]: url,
+          [`${typeField}`]: type,
         },
         { merge: true }
       );

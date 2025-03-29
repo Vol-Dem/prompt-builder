@@ -27,6 +27,7 @@ import {
   parseModelIds,
   splitTags,
   throwCustomError,
+  transformSrcPreview,
 } from "../../../utils/generalUtils";
 import { Link } from "react-router-dom";
 import Spinner from "../../ui/Spinner";
@@ -52,6 +53,7 @@ import {
   ERROR_MESSAGE_INVALID_DATA,
   SETTINGS_MODEL_TYPE_UNKNOWN,
   SETTINGS_MODEL_TYPE_DEF,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
 } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
@@ -580,12 +582,21 @@ const UpdateModelForm = ({
           (activePreviewId &&
             modelVersions
               ?.find((version) => version.id === activePreviewId)
-              .images?.filter((img, i) => img.type === "image")[0]?.url) ||
+              .images?.filter((img, i) => img.type === "image")[0]) ||
           "";
 
-        const previewImgDefault = modelVersions[0]?.images[0]?.url || "";
+        const previewImgDefault = modelVersions[0]?.images[0] || "";
 
-        const previewImg = activePreviewImg || previewImgDefault;
+        const previewImgData = activePreviewImg || previewImgDefault;
+        const { previewSrc } = transformSrcPreview(
+          previewImgData?.url,
+          SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
+          previewImgData?.type
+        );
+
+        // console.log(previewImgData);
+        // console.log(previewSrc);
+        const previewImg = previewSrc;
 
         const fileNames = modelVersions?.flatMap((version) => {
           if (version.hasOwnProperty("files") && version?.files) {
@@ -866,6 +877,7 @@ const UpdateModelForm = ({
           name: modelName || data.name || "",
           nameArr,
           imgUrl: previewImg || "",
+          imgType: previewImgData?.type || "",
           type: data.type,
           creator: data?.creator || "",
           nsfw: nsfwInput || false,

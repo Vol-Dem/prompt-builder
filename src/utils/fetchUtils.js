@@ -559,7 +559,7 @@ export const updateImagePostData = async (
 
 export const getVersionImagesFromCiv = async (modelId, username, version) => {
   const versionImagesRequest = await fetch(
-    `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${username}&nsfw=X`
+    `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${username}&nsfw=X&limit=200&sort=Oldest`
   );
   const versionImages = await versionImagesRequest.json();
   // console.log(versionImages);

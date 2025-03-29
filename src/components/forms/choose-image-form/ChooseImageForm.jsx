@@ -106,7 +106,7 @@ const ChooseImageForm = ({
         type: "checkbox",
         id: image.id,
         name: image.id,
-        label: image.url,
+        data: image,
         width: image.width,
         height: image.height,
         value: saved || checked || false,
