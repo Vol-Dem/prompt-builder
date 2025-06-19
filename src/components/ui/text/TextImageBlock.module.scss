@@ -1,0 +1,52 @@
+@use "./../../../variables/variables.scss" as var;
+
+.image-block {
+  display: grid;
+  margin: 4rem 0;
+
+  &--col-1 {
+    width: 80%;
+    margin: 4rem auto;
+    // height: 34rem;
+  }
+
+  &--col-2 {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    width: 100%;
+    // height: 22rem;
+  }
+
+  &--col-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+    width: 100%;
+    // height: 14rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .image-block--col-3 {
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    margin: 4rem auto;
+  }
+}
+
+@media (max-width: 540px) {
+  .image-block--col-1 {
+    width: 100%;
+  }
+
+  .image-block--col-2 {
+    grid-template-columns: 1fr;
+    width: 100%;
+    margin: 4rem auto;
+  }
+
+  .image-block--col-3 {
+    grid-template-columns: 1fr;
+    width: 100%;
+    margin: 4rem auto;
+  }
+}

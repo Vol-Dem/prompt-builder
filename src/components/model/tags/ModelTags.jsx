@@ -15,6 +15,9 @@ import {
 } from "../../../variables/constants";
 import { guideActions } from "../../../store/guide";
 import { AnimatePresence } from "framer-motion";
+import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
+import ButtonInfo from "../../ui/buttons/ButtonInfo";
+import InfoQuickEdit from "../../ui/guide/info/InfoQuickEdit";
 
 const ModelTags = ({ customData, modelPreview }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -68,16 +71,24 @@ const ModelTags = ({ customData, modelPreview }) => {
                   {(!customData?.mainTag ||
                     !model?.mainTag ||
                     customData?.defActTag) && (
-                    <Tooltip>
-                      <p className={classes["tags__notification-text"]}>
-                        The activation tag is generated automatically based on
-                        the file name.
-                      </p>
-                      <p className={classes["tags__notification-text"]}>
-                        It should work in most cases, but we advise you to
-                        replace it with an appropriate name from your local
-                        web-UI.
-                      </p>
+                    <Tooltip
+                      content={
+                        <div className={classes["tooltip__content"]}>
+                          <p className={classes["tags__notification-text"]}>
+                            The activation tag is generated automatically based
+                            on the file name.
+                          </p>
+                          <p className={classes["tags__notification-text"]}>
+                            It should work in most cases, but we advise you to
+                            replace it with an appropriate name from your local
+                            web-UI.
+                          </p>
+                        </div>
+                      }
+                    >
+                      <div className={classes.tooltip}>
+                        <ExclamationCircleSvg />
+                      </div>
                     </Tooltip>
                   )}
                 </div>
@@ -150,7 +161,17 @@ const ModelTags = ({ customData, modelPreview }) => {
         </div>
         <AnimatePresence>
           {modalIsOpen && (
-            <Modal title="Trigger words" onClose={closeTagsFormHabdler}>
+            <Modal
+              title={
+                <>
+                  Trigger words{" "}
+                  <ButtonInfo>
+                    <InfoQuickEdit />
+                  </ButtonInfo>
+                </>
+              }
+              onClose={closeTagsFormHabdler}
+            >
               <TagsForm
                 versionData={customData}
                 defaultData={model.defaultCustomData}

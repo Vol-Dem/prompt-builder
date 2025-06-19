@@ -1,11 +1,15 @@
 import Image from "../../ui/image/Image";
 import classes from "./UploadingItem.module.scss";
+import { Link } from "react-router-dom";
 
-const UploadingItem = ({ data, curPostId, rejected }) => {
+const UploadingItem = ({ data, curPostId, rejected, completed }) => {
+  // console.log(data);
   return (
     <li
       className={`${classes["uploading-list__item"]} ${
-        data.postId === curPostId ? classes["uploading-list__item--active"] : ""
+        data.postId === curPostId || completed
+          ? classes["uploading-list__item--active"]
+          : ""
       } ${rejected ? classes["uploading-list__item--rejected"] : ""}`}
     >
       <div className={classes["uploading-list__link"]}>
@@ -13,10 +17,25 @@ const UploadingItem = ({ data, curPostId, rejected }) => {
           <Image className={classes["img-container"]} src={data.imgUrl} />
         </>
         <div className={classes["uploading-list__content"]}>
-          <div className={classes["uploading-list__name"]}>{data.postId}</div>
-          <div className={classes["uploading-list__model"]}>
-            {data.modelName}
+          <div className={classes["uploading-list__name"]}>
+            ID: {data.postId}
           </div>
+          {!data?.collectionData?.collectionData?.id && (
+            <Link
+              to={`/models/${data?.modelId}`}
+              className={classes["uploading-list__collection"]}
+            >
+              {data.modelName}
+            </Link>
+          )}
+          {data?.collectionData?.collectionData?.id && (
+            <Link
+              to={`/images/${data.collectionData.collectionData.id}`}
+              className={classes["uploading-list__collection"]}
+            >
+              {data.collectionData.collectionData.name}
+            </Link>
+          )}
         </div>
       </div>
     </li>

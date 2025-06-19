@@ -24,7 +24,10 @@ const TagSetGuide = () => {
             <GuideActionMessage>
               Click "Add tag set" button
             </GuideActionMessage>{" "}
-            to create new set
+            to create multiple sets of trigger words
+            <div className={classes["guide__content__comment"]}>
+              (concepts, character outfits, appearances, etc.)
+            </div>
           </>
         ),
       },

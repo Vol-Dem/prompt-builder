@@ -50,27 +50,29 @@ const ButtonAdd = ({
 
       const sidePanelData = {
         id: previewData?.id,
-        activeVersionId: versionId,
-        src: previewData?.src,
-        main: previewData?.main,
-        sub: previewData?.sub,
-        title: previewData?.name || previewData.title,
-        versionName: curVersionData?.name || previewData?.versionName || "",
-        imgUrl: previewData?.customPreviewImgUrl || previewData?.imgUrl,
+        activeVersionId: versionId || null,
+        src: previewData?.src || null,
+        main: previewData?.main || null,
+        sub: previewData?.sub || null,
+        title: previewData?.name || previewData.title || null,
+        versionName: curVersionData?.name || previewData?.versionName || null,
+        imgUrl: previewData?.customPreviewImgUrl || previewData?.imgUrl || null,
         nsfwPreviewImgUrl: previewData?.nsfwPreviewImgUrl || null,
-        type: previewData?.type || previewData?.modelType,
-        baseModel: curVersionData?.baseModel || previewData?.baseModel,
+        type: previewData?.type || previewData?.modelType || null,
+        baseModel: curVersionData?.baseModel || previewData?.baseModel || null,
         mainTag:
           curVersionData?.mainTag ||
           previewData?.mainTag ||
-          curVersionData?.defActTag,
-        weight: curVersionData?.weight || previewData?.weight,
-        minWeight: curVersionData?.minWeight || previewData?.minWeight,
-        maxWeight: curVersionData?.maxWeight || previewData?.maxWeight,
-        size: curVersionData?.size || previewData?.size,
-        tags: curVersionData?.trainedWords || previewData?.tags,
-        helperTags: curVersionData?.helperTags || previewData?.helperTags,
-        updatedAt: previewData?.updatedAt,
+          curVersionData?.defActTag ||
+          null,
+        weight: curVersionData?.weight || previewData?.weight || null,
+        minWeight: curVersionData?.minWeight || previewData?.minWeight || null,
+        maxWeight: curVersionData?.maxWeight || previewData?.maxWeight || null,
+        size: curVersionData?.size || previewData?.size || null,
+        tags: curVersionData?.trainedWords || previewData?.tags || null,
+        helperTags:
+          curVersionData?.helperTags || previewData?.helperTags || null,
+        updatedAt: previewData?.updatedAt || null,
       };
       dispatch(addModelToPanel(sidePanelData));
     } else {

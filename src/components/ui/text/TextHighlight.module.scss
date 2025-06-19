@@ -1,0 +1,6 @@
+@use "./../../../variables/variables.scss" as var;
+
+.highlight {
+  color: lighten(var.$color-violet-dark, 15%);
+  //   color: aqua;
+}

@@ -14,11 +14,19 @@ import {
   ERROR_MESSAGE_EMPTY,
   VALIDATION_ID_MAX_LENGTH,
   ERROR_MESSAGE_OFFLINE,
+  VALIDATION_POST_URL_MAX_LENGTH,
+  ERROR_MESSAGE_INVALID_POST_ID,
 } from "../../../variables/constants";
 import ChooseImageForm from "../choose-image-form/ChooseImageForm";
 import { uploadActions } from "../../../store/upload";
 import BackSvg from "../../../assets/BackSvg";
-import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
+import {
+  getPostIdFromInput,
+  handleErrors,
+  throwCustomError,
+} from "../../../utils/generalUtils";
+import ButtonInfo from "../../ui/buttons/ButtonInfo";
+import InfoPostId from "../../ui/guide/info/InfoPostId";
 
 const SaveImageForm = ({
   modelData,
@@ -62,7 +70,13 @@ const SaveImageForm = ({
       if (!postIdInput?.value) return;
 
       setIsLoading(true);
-      const postId = +postIdInput.value;
+      // const postId = +postIdInput.value;
+      const postId = getPostIdFromInput(postIdInput.value);
+      // console.log(postId);
+
+      if (!postId) {
+        throwCustomError(ERROR_MESSAGE_INVALID_POST_ID);
+      }
 
       const imgExampleResponse = await fetch(
         `https://civitai.com/api/v1/images?postId=${postId}${
@@ -127,25 +141,27 @@ const SaveImageForm = ({
   //   };
 
   const saveExampleHandler = async (location, ids, collectionData) => {
+    const postId = getPostIdFromInput(postIdInput.value);
     const postData =
       modelData?.hasOwnProperty("savedImages") &&
       modelData?.savedImages[versionIdInput?.value]?.find(
-        (post) => post.postId === +postIdInput?.value
+        (post) => post.postId === +postId
       );
 
     const imagesForSaving = ids?.length
       ? images.filter((image) => ids.includes(image?.id))
       : images;
+    console.log(imagesForSaving);
 
     dispatch(
       uploadActions.addToQueue({
-        postId: +postIdInput?.value,
-        modelId: +modelData?.id,
-        modelName: modelData?.name,
-        versionId: +versionIdInput,
+        postId: postId,
+        modelId: +modelData?.id || null,
+        modelName: modelData?.name || null,
+        versionId: +versionIdInput || null,
         nsfwMode,
         postData: postData || null,
-        imgUrl: images[0].url,
+        imgUrl: imagesForSaving[0].url,
         ids: ids || [],
         images: imagesForSaving,
         location,
@@ -191,8 +207,15 @@ const SaveImageForm = ({
           id="post-id"
           name="post-id"
           type="text"
-          label="Post ID"
-          placeholder="post id"
+          label={
+            <>
+              Post ID or URL{" "}
+              <ButtonInfo className={classes["btn-info"]}>
+                <InfoPostId />
+              </ButtonInfo>
+            </>
+          }
+          placeholder="post id or url"
           input={{ disabled: isLoading }}
           value={postIdInput.value}
           onChange={(e, isValid) => {
@@ -203,8 +226,9 @@ const SaveImageForm = ({
           }`}
           validation={{
             required: true,
-            maxLength: VALIDATION_ID_MAX_LENGTH,
-            number: true,
+            // maxLength: VALIDATION_ID_MAX_LENGTH,
+            maxLength: VALIDATION_POST_URL_MAX_LENGTH,
+            // number: true,
           }}
           showError={showErrorMessage}
         />
@@ -237,7 +261,7 @@ const SaveImageForm = ({
       </div>
       {imagesListIsOpen && (
         <ChooseImageForm
-          postId={+postIdInput.value}
+          postId={getPostIdFromInput(postIdInput.value)}
           type="save"
           postData={postData}
           savedImageIds={savedImageIds}

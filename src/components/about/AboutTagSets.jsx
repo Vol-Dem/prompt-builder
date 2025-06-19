@@ -1,0 +1,157 @@
+import { DocumentArrowDownIcon, TrashIcon } from "@heroicons/react/24/outline";
+import Image from "../ui/image/Image";
+import LinkA from "../ui/LinkA";
+import TextButton from "../ui/text/text-buttons/TextButton";
+import TextHighlight from "../ui/text/TextHighlight";
+import classes from "./AboutTagSets.module.scss";
+import H2 from "../ui/text/H2";
+import Text from "../ui/text/Text";
+import TextImageBlock from "../ui/text/TextImageBlock";
+import TextContentBlock from "../ui/text/TextContentBlock";
+import TextButtonCreate from "../ui/text/text-buttons/TextButtonCreate";
+import TextButtonTertiary from "../ui/text/text-buttons/TextButtonTertiary";
+import ImageComparisonSlider from "../ImageComparisonSlider/ImageComparisonSlider";
+import TextButtonAll from "../ui/text/text-buttons/TextButtonAll";
+import H3 from "../ui/text/H3";
+import Video from "../ui/Video";
+import TextImageMenu from "../ui/text/text-buttons/TextImageMenu";
+import NotificationMessage from "../ui/NotificationMessage";
+
+const AboutTagSets = () => {
+  return (
+    <>
+      <>
+        <H3 id="sets">Tag Sets</H3>
+        <Text>
+          The tag sets feature allows you to create a set of trigger words for
+          generating specific <TextHighlight>outfits</TextHighlight>,{" "}
+          <TextHighlight>appearances</TextHighlight>, or other{" "}
+          <TextHighlight>concepts</TextHighlight>.
+        </Text>
+        <Video
+          width={1920}
+          height={1080}
+          playsInline
+          loop
+          disablePictureInPicture
+          preload="none"
+          muted
+          controls
+          poster={require("../../assets/guide/1-faq-tagsets-4k.jpg")}
+          mainSrc={{
+            src: require("../../assets/guide/1-faq-tagsets.mp4"),
+            type: "video/mp4",
+          }}
+          className={classes.video}
+        >
+          <source
+            src={require("../../assets/guide/1-faq-tagsets.mp4")}
+            type="video/mp4"
+          />
+        </Video>
+
+        <Text>
+          Click the <TextButton>Add tag set</TextButton> button on the model
+          page, then fill in the name and add trigger words. Save it.
+        </Text>
+        <Text>
+          {" "}
+          You can add multiple tag sets. To do this, click{" "}
+          <span className={classes["btn-secondary"]}>+ add new set</span>
+        </Text>
+        <TextImageBlock col={2}>
+          <Image
+            loading="lazy"
+            width={1909}
+            height={918}
+            fullView={true}
+            className={classes["img"]}
+            src={require("../../assets/about/12-tag-sets-12.jpg")}
+            alt="about-image"
+            srcSet={require("../../assets/about/12-tag-sets-12.webp")}
+            type="image/webp"
+          />
+          <Image
+            loading="lazy"
+            width={1909}
+            height={918}
+            fullView={true}
+            className={classes["img"]}
+            src={require("../../assets/about/12-tag-sets-22.jpg")}
+            alt="about-image"
+            srcSet={require("../../assets/about/12-tag-sets-22.webp")}
+            type="image/webp"
+          />
+        </TextImageBlock>
+        <Text>
+          When building a prompt, you can add all tags from a set with one click
+          using the <TextButtonAll>Add All</TextButtonAll> button, or add
+          individual tags from the set. Words already present in the prompt will
+          be highlighted. Pressing the
+          <TextButtonAll>Remove All</TextButtonAll> button will only remove tags
+          from that set in the prompt; the rest of the prompt will remain
+          unchanged.
+        </Text>
+        <H3>Tag Set Preview</H3>
+        <Text>
+          To easily understand what the tag set represents, you can add a
+          preview image for it. To do this, you can use any image available in
+          the list of generated images on the model's page.
+        </Text>
+        <Text>
+          Click <TextImageMenu /> in the upper right corner of the image to open
+          a menu and select{" "}
+          <TextHighlight>"Set as tag set preview"</TextHighlight> . Then click{" "}
+          <TextButtonTertiary>Set as preview</TextButtonTertiary> button for the
+          desired tag set.
+        </Text>
+        <TextImageBlock col={2}>
+          <Image
+            loading="lazy"
+            width={1909}
+            height={918}
+            fullView={true}
+            className={classes["img"]}
+            src={require("../../assets/about/12-tag-sets-3.jpg")}
+            alt="about-image"
+            srcSet={require("../../assets/about/12-tag-sets-3.webp")}
+            type="image/webp"
+          />
+          <Image
+            loading="lazy"
+            width={1909}
+            height={918}
+            fullView={true}
+            className={classes["img"]}
+            src={require("../../assets/about/12-tag-sets-4.jpg")}
+            alt="about-image"
+            srcSet={require("../../assets/about/12-tag-sets-4.webp")}
+            type="image/webp"
+          />
+        </TextImageBlock>
+        <Text>
+          If you are using NSFW mode, you can also set a separate preview for
+          NSFW. If the preview for NSFW is not set, the SFW version of the
+          preview will be displayed in both modes by default.
+        </Text>
+        <NotificationMessage
+          type="notification"
+          className={classes.notification}
+        >
+          <p>
+            Directly uploading your own image for a preview is not possible on
+            the site, but you can upload it to Civitai as part of a
+            corresponding model as a generation example (then it will appear in
+            the list of generated images) or upload it as a standalone post and{" "}
+            <LinkA href="#addbyid" smoothScroll>
+              add it to saved
+            </LinkA>{" "}
+            images using the <TextButton>Add Image by ID</TextButton> button.
+          </p>
+        </NotificationMessage>
+      </>
+    </>
+  );
+};
+
+export default AboutTagSets;

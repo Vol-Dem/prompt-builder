@@ -12,9 +12,13 @@ import PromptGuide from "../ui/guide/model/PromptGuide";
 import { AnimatePresence } from "framer-motion";
 import Modal from "../ui/Modal";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import ButtonInfo from "../ui/buttons/ButtonInfo";
+import InfoPrompt from "../ui/guide/info/InfoPrompt";
+import InfoPresets from "../ui/guide/info/InfoPresets";
 
 const positiveMinHeight = 100;
 const negativeMinHeight = 60;
+const negativeMaxHeight = 180;
 
 const Prompt = memo(() => {
   const [copiedType, setCopiedType] = useState("");
@@ -32,6 +36,7 @@ const Prompt = memo(() => {
   const timeoutCopiedRef = useRef(null);
   const showPromptBtnRef = useRef(null);
   const promptContainerRef = useRef(null);
+  const positiveMaxHeight = document.body.offsetHeight - 300;
 
   useEffect(() => {
     // if (promptContainerRef?.current?.offsetHeight) return;
@@ -96,29 +101,44 @@ const Prompt = memo(() => {
     }
   };
 
+  const clamp = (x, min, max) => {
+    return Math.min(Math.max(x, min), max);
+  };
+
   const onMouseDown = (e) => {
+    // console.log(e.target);
     const promptType = e.target.dataset.type;
     const startHeight =
       promptType === "positive" ? positivePromptHeight : negativePromptHeight;
     const minHeight =
       promptType === "positive" ? positiveMinHeight : negativeMinHeight;
-    const startY = e.clientY;
+    const maxHeight =
+      promptType === "positive" ? positiveMaxHeight : negativeMaxHeight;
+    const startY = e.clientY || e.touches[0].clientY;
 
     const onMouseMove = (moveEvent) => {
-      const newHeight = startHeight + (moveEvent.clientY - startY);
+      const moveEventY = moveEvent.clientY || moveEvent.touches[0].clientY;
+      const newHeight = clamp(
+        startHeight + (moveEventY - startY),
+        minHeight,
+        maxHeight
+      );
+
       // setWidth(Math.max(50, newWidth)); // Min size
       if (promptType === "positive") {
-        setPositivePromptHeight(Math.max(minHeight, newHeight));
+        // setPositivePromptHeight(Math.max(minHeight, newHeight));
+        setPositivePromptHeight(newHeight);
         // dispatch(
         //   promptActions.setPromptHeight({ type: "positive", value: newHeight })
         // );
       }
       if (promptType === "negative") {
-        setNegativePromptHeight(Math.max(minHeight, newHeight));
+        setNegativePromptHeight(newHeight);
         // dispatch(
         //   promptActions.setPromptHeight({ type: "negative", value: newHeight })
         // );
       }
+      // console.log(promptContainerRef.current.offsetHeight);
       dispatch(
         promptActions.setPromptHeight(promptContainerRef.current.offsetHeight)
       );
@@ -127,10 +147,14 @@ const Prompt = memo(() => {
     const onMouseUp = () => {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("touchmove", onMouseMove);
+      window.removeEventListener("touchend", onMouseUp);
     };
 
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("touchmove", onMouseMove);
+    window.addEventListener("touchend", onMouseUp);
   };
 
   const addBreakHandler = () => {
@@ -184,7 +208,9 @@ const Prompt = memo(() => {
               >
                 <PlusIcon className={classes["plus-icon"]} /> BREAK
               </ButtonTertiary>
-
+              <ButtonInfo className={classes.info}>
+                <InfoPrompt />
+              </ButtonInfo>
               <div className={classes["clear"]}>
                 <span className={classes["clear__title"]}>Clear:</span>
                 <ButtonTertiary
@@ -246,6 +272,7 @@ const Prompt = memo(() => {
                 )}
                 <div
                   onMouseDown={onMouseDown}
+                  onTouchStart={onMouseDown}
                   className={classes["prompt__resize-box"]}
                   data-type="positive"
                 ></div>
@@ -318,6 +345,7 @@ const Prompt = memo(() => {
                 )}
                 <div
                   onMouseDown={onMouseDown}
+                  onTouchStart={onMouseDown}
                   className={classes["prompt__resize-box"]}
                   data-type="negative"
                 ></div>
@@ -386,7 +414,14 @@ const Prompt = memo(() => {
         <AnimatePresence>
           {presetsIsOpen && (
             <Modal
-              title="Presets"
+              title={
+                <>
+                  Presets{" "}
+                  <ButtonInfo className={classes["btn-info"]}>
+                    <InfoPresets />
+                  </ButtonInfo>{" "}
+                </>
+              }
               onClose={() => {
                 setPresetsIsOpen(false);
               }}

@@ -71,6 +71,7 @@ export const SETTINGS_CAROUSEL_TRANSITION_DURATION = 300;
 export const SETTINGS_CAROUSEL_INTERSECTION_MARGIN = 1000;
 export const SETTINGS_LOAD_MORE_MARGIN = 1000;
 export const SETTINGS_LOAD_MORE_MARGIN_MEDIUM = 600;
+export const SETTINGS_SCROLL_TOP = 600;
 export const SETTINGS_NSFW_VALUES_DATA = [
   { name: "PG", value: "None", nsfwLevelIndex: 0 },
   { name: "PG-13", value: "Soft", nsfwLevelIndex: 1 },
@@ -81,6 +82,7 @@ export const SETTINGS_SFW_RANGE = ["None", "Soft"];
 export const SETTINGS_NSFW_RANGE = ["Soft", "Mature", "X"];
 export const SETTINGS_PROMPT_DUPLICATE_EXCEPTIONS = ["BREAK", "<BREAK>"];
 export const SETTINGS_PROMPT_BREAK_ALIASES = ["BREAK", "<BREAK>"];
+export const SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV = false;
 
 //URLS
 export const URL_CIV_MODELS = "https://civitai.com/api/v1/models/";
@@ -100,6 +102,7 @@ export const VALIDATION_TITLE_MAX_LENGTH = 500;
 export const VALIDATION_DESCRIPTION_MAX_LENGTH = 100000;
 export const VALIDATION_TRIGER_WORDS_MAX_LENGTH = 5000;
 export const VALIDATION_ID_MAX_LENGTH = 20;
+export const VALIDATION_POST_URL_MAX_LENGTH = 45;
 export const VALIDATION_NUMBER_MAX_LENGTH = 5;
 export const VALIDATION_EMAIL_MAX_LENGTH = 50;
 export const VALIDATION_PASSWORD_MAX_LENGTH = 100;
@@ -134,9 +137,12 @@ export const ERROR_MESSAGE_OFFLINE =
 export const ERROR_MESSAGE_USER_DATA_LOAD =
   "Oops! Something went wrong. Try refreshing!";
 export const ERROR_MESSAGE_INVALID_DATA = "Invalid data";
+export const ERROR_MESSAGE_INVALID_POST_ID = "Invalid post ID";
 export const ERROR_MESSAGE_NO_IMAGE_SELECTED = "Select at least one image";
 export const ERROR_MESSAGE_DB_CONNECTION = "Connection error";
 export const ERROR_MESSAGE_UPLOAD_MODEL = "Failed to load model data";
+export const ERROR_MESSAGE_CIV_CONNECTION =
+  "Failed to conect to Civitai API. There may be heavy load or maintenance at the moment. Try again later.";
 
 //GUIDE STEPS HOME PAGE
 export const GUIDE_STEP_OPEN_CATEGORY = 1;

@@ -1,12 +1,14 @@
-import { useEffect } from "react";
+import { lazy, useEffect } from "react";
 import classes from "./Home.module.scss";
 import { Outlet, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
-import Landing from "../landing/Landing";
+// import { useSelector } from "react-redux";
+// import Landing from "../landing/Landing";
+// const Landing = lazy(() => import("../landing/Landing"));
 
 function Home({ title }) {
-  const isAuth = useSelector((state) => state.auth.isLoggedIn);
-  const location = useLocation();
+  // const isAuth = useSelector((state) => state.auth.isLoggedIn);
+  // const initialAuth = useSelector((state) => state.auth.initialAuth);
+  // const location = useLocation();
 
   useEffect(() => {
     document.title = title;
@@ -14,12 +16,10 @@ function Home({ title }) {
 
   return (
     <div className={classes["wrap"]}>
-      {isAuth && (
-        <div className={classes["config"]}>
-          <Outlet />
-        </div>
-      )}
-      {!isAuth && location?.pathname === "/" && <Landing />}
+      <div className={classes["config"]}>
+        <Outlet />
+      </div>
+      {/* {!isAuth && initialAuth && location?.pathname === "/" && <Landing />} */}
     </div>
   );
 }

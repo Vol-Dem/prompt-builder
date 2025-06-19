@@ -16,6 +16,7 @@ import {
   GUIDE_STEP_PROMPT_VIEW,
 } from "../../variables/constants";
 import { AnimatePresence, motion } from "framer-motion";
+import CarouselImageList from "../carousel/carousel-image-list/CarouselImageList";
 
 // const defHeight = 315;
 // const defHeightS = 110;
@@ -121,44 +122,46 @@ const ActiveCarousel = () => {
           }`}
         >
           <div
-            className={`${classes.wrap}`}
-            // style={
-            //   !!activeCarouselData?.images?.length && headerHeight
-            //     ? {
-            //         // height: `${`calc(100vh - ${headerHeight + 40}px)`}`,
-            //         // height: `${
-            //         //   promptIsOpen
-            //         //     ? `calc(100vh - ${headerHeight || defHeight}px)`
-            //         //     : `calc(100vh - ${headerHeight || defHeightS}px)`
-            //         // }`,
-            //       }
-            //     : {}
-            // }
+            className={`${classes.wrap} ${
+              activeCarouselData?.currImgNum === null ? classes.scroll : ""
+            }`}
           >
-            <div className={classes["carousel"]}>
-              {!!activeCarouselData?.images?.length && (
-                <>
-                  <Carousel
-                    imagesData={activeCarouselData?.images}
-                    versionId={activeCarouselData?.versionId}
-                    existedImgsAmount={existedExample?.imagesId?.length || null}
-                    postId={activeCarouselData?.postId}
-                    modelId={activeCarouselData?.modelId}
-                    visibleImgAmount={1}
-                    imgIsOpen={true}
-                    activeImgNum={activeCarouselData?.currImgNum || 0}
-                    active={true}
-                    saved={activeCarouselData?.saved}
-                    onActiveNumChange={setActiveImageNumber}
-                    side={activeCarouselData?.side}
-                    location={activeCarouselData?.location}
-                    locationId={activeCarouselData?.modelId}
-                  />
-                  <ImageCardCarouselGuide />
-                </>
-              )}
-            </div>
-            <ImageCard activeImgNum={activeImageNumber} />
+            {activeCarouselData?.currImgNum !== null && (
+              <>
+                <div className={classes["carousel"]}>
+                  {!!activeCarouselData?.images?.length && (
+                    <>
+                      <Carousel
+                        imagesData={activeCarouselData?.images}
+                        versionId={activeCarouselData?.versionId}
+                        existedImgsAmount={
+                          existedExample?.imagesId?.length || null
+                        }
+                        postId={activeCarouselData?.postId}
+                        modelId={activeCarouselData?.modelId}
+                        visibleImgAmount={1}
+                        imgIsOpen={true}
+                        activeImgNum={activeCarouselData?.currImgNum || 0}
+                        active={true}
+                        saved={activeCarouselData?.saved}
+                        onActiveNumChange={setActiveImageNumber}
+                        side={activeCarouselData?.side}
+                        location={activeCarouselData?.location}
+                        locationId={
+                          activeCarouselData?.locationId ||
+                          activeCarouselData?.modelId
+                        }
+                      />
+                      <ImageCardCarouselGuide />
+                    </>
+                  )}
+                </div>
+                <ImageCard activeImgNum={activeImageNumber} />
+              </>
+            )}
+            {activeCarouselData?.currImgNum === null && (
+              <CarouselImageList images={activeCarouselData.images} />
+            )}
             <div
               className={classes["btn__close"]}
               onClick={closeActiveCarouselHandler}

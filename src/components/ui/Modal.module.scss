@@ -42,6 +42,7 @@
     max-height: 95vh;
     border-radius: 10px;
     box-shadow: var.$box-shadow;
+    width: max-content;
     // overflow-y: scroll;
     // @include var.custom-scroll;
   }
@@ -72,6 +73,9 @@
 }
 
 .title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   margin-bottom: 1rem;
 }
 

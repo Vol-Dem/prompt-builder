@@ -3,12 +3,17 @@
 
 .guide__content {
   &--0 {
-    top: -10rem;
+    top: -16rem;
     left: 12rem;
   }
   &--1 {
     top: -9rem;
     left: 15rem;
+  }
+
+  &__comment {
+    font-size: 1.4rem;
+    color: var.$color-text-gray;
   }
 }
 

@@ -349,6 +349,15 @@
   width: 28rem;
   margin-bottom: 0.4rem;
   line-height: 1;
+
+  &__title {
+    white-space: nowrap;
+  }
+
+  & img {
+    width: 100%;
+    height: auto;
+  }
 }
 
 @media (max-width: 1160px) {

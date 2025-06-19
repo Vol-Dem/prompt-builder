@@ -121,6 +121,12 @@ export const liveSearch = (
 
       const nsfwFilter = !nsfw ? [false] : [true, false];
 
+      const capitalized = searchString
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+      // console.log(capitalized);
+
       const queryByNameRule = or(
         // query as-is:
         and(
@@ -144,6 +150,12 @@ export const liveSearch = (
               searchString.slice(1) +
               "\uf8ff"
           ),
+          where("nsfw", "in", nsfwFilter)
+        ),
+        // capitalize all:
+        and(
+          where("name", ">=", capitalized),
+          where("name", "<=", capitalized + "\uf8ff"),
           where("nsfw", "in", nsfwFilter)
         ),
         // caps:
@@ -215,6 +227,12 @@ export const liveSearch = (
           ),
           and(
             where("authorTags", "array-contains-any", [searchString]),
+            where("nsfw", "in", nsfwFilter)
+          ),
+          and(
+            where("authorTags", "array-contains-any", [
+              searchString.toLowerCase(),
+            ]),
             where("nsfw", "in", nsfwFilter)
           )
         );

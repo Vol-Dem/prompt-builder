@@ -5,8 +5,18 @@ import { useDispatch } from "react-redux";
 import { authActions } from "../../store/auth";
 import LinkA from "../ui/LinkA";
 import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
+import Image from "../ui/image/Image";
+import TextHighlight from "../ui/text/TextHighlight";
+import { PlayIcon } from "@heroicons/react/24/outline";
+import { lazy, Suspense, useState } from "react";
+import Modal from "../ui/Modal";
+import YoutubeVideo from "../ui/YoutubeVideo";
+import Video from "../ui/Video";
+import Spinner from "../ui/Spinner";
+// const Carousel3d = lazy(() => import("../carousel3d/Carousel3d"));
 
 const Landing = () => {
+  const [showVideo, setShowVideo] = useState(false);
   const dispatch = useDispatch();
   const openAuthFormHandler = () => {
     dispatch(authActions.openAuthForm(true));
@@ -18,7 +28,12 @@ const Landing = () => {
         <Carousel3d />
         <div className={classes["section--hero__content"]}>
           <div className={classes.logo}>
-            <img src={require("../../assets/logo5.png")} alt="Logo" />
+            <img
+              src={require("../../assets/logo5.png")}
+              width={1088}
+              height={188}
+              alt="Logo"
+            />
           </div>
           <div>
             <p className={classes["section--hero__text"]}>
@@ -32,12 +47,87 @@ const Landing = () => {
               process.
             </p>
           </div>
-          <Buttton
-            className={classes["btn-hero"]}
-            onClick={openAuthFormHandler}
-          >
-            Get started
-          </Buttton>
+          <div className={classes["btn-container"]}>
+            <Buttton
+              className={classes["btn-hero"]}
+              onClick={openAuthFormHandler}
+            >
+              Get started
+            </Buttton>
+            <Buttton
+              onClick={() => {
+                setShowVideo(true);
+              }}
+              className={classes["btn-yt"]}
+              title="Video"
+            >
+              <PlayIcon />
+            </Buttton>
+          </div>
+        </div>
+      </section>
+      <section className={classes["section"]}>
+        <div className={classes["section__content"]}>
+          <div>
+            <h2 className={classes["section__title"]}>
+              Advanced prompt building
+            </h2>
+            <p className={classes["section__content__text"]}>
+              Make your prompt building clear and effortless: the system
+              automatically splits your prompt into tags with the option to
+              switch between modes at any moment.{" "}
+              <span className={classes["section__subtext"]}>
+                There should be a transition to the bullet points, so pretend
+                it's here:
+              </span>
+            </p>
+            <ul className={classes["section__list"]}>
+              <li>
+                {" "}
+                <TextHighlight>Track and remove duplicates:</TextHighlight> each
+                of them has a unique highlighted color that makes it easy to
+                manage.
+              </li>
+              <li>
+                {" "}
+                <TextHighlight>Easily insert BREAKs</TextHighlight> using a
+                separate button to organize your prompt and improve its logic
+                and readability.
+              </li>
+              <li>
+                {" "}
+                <TextHighlight>Use drag and drop</TextHighlight> to quickly
+                adjust the position of trigger words.
+              </li>
+              <li>
+                <TextHighlight>Adjust the weight and content</TextHighlight> of
+                trigger words by simply clicking on a tag.
+              </li>
+            </ul>
+          </div>
+          <div className={classes["section__img-wrap"]}>
+            {/* <Image
+              fullView={true}
+              className={classes["section__img"]}
+              src={require("../../assets/home/prompt.png")}
+              alt=""
+            /> */}
+            <Video
+              playsInline
+              autoPlay
+              loop
+              disablePictureInPicture
+              preload="none"
+              muted
+              poster={require("../../assets/home/1-main-prompt.webp")}
+              className={classes["section__video"]}
+            >
+              <source
+                src={require("../../assets/home/1-main-prompt.mp4")}
+                type="video/mp4"
+              />
+            </Video>
+          </div>
         </div>
       </section>
       <section className={classes["section"]}>
@@ -47,43 +137,57 @@ const Landing = () => {
               Store data in one place
             </h2>
             <p className={classes["section__content__text"]}>
-              AIDE-TOOLS lets you store all information about your models in one
-              place and use the builded prompts in any web interface of your
+              AIDE-TOOLS lets you <TextHighlight>store</TextHighlight> all
+              information about your <TextHighlight>models</TextHighlight> in
+              one place and use the builded prompts in any web interface of your
               choice.
             </p>
             <p className={classes["section__content__text"]}>
-              Even if the model has been removed from Civitai, you will retain
-              information about the generation settings and trigger words, as
-              well as ability to view images generated with that model. This
-              way, you can continue working with the model if you have
-              downloaded its file.
+              Even if the model has been removed from Civitai, you will{" "}
+              <TextHighlight>retain</TextHighlight> information about the
+              generation <TextHighlight>settings and</TextHighlight>{" "}
+              <TextHighlight>trigger words</TextHighlight>, as well as{" "}
+              <TextHighlight>ability to view images</TextHighlight> generated
+              with that model. This way, you can continue working with the model
+              if you have downloaded its file.
             </p>
             <div className={classes["notification"]}>
               <ExclamationCircleSvg className={classes["notification__svg"]} />
               <p className={classes["notification__text"]}>
-                The service only stores information about the images and models
-                generation setting, and does not store any files or images.
+                The service only stores information about the images prompt and
+                models generation setting, and does not store any files or
+                images.
               </p>
             </div>
           </div>
           <div className={classes["section__img-wrap"]}>
-            <img
+            {/* <Image
+              fullView={true}
               className={classes["section__img"]}
               src={require("../../assets/about/5-added-models.jpg")}
               alt=""
-            />
+            /> */}
+            <Video
+              playsInline
+              autoPlay
+              loop
+              disablePictureInPicture
+              preload="none"
+              muted
+              poster={require("../../assets/home/2-main-store.webp")}
+              className={classes["section__video"]}
+            >
+              {/* <source src={videoSrc?.webm} type="video/webm" /> */}
+              <source
+                src={require("../../assets/home/2-main-store.mp4")}
+                type="video/mp4"
+              />
+            </Video>
           </div>
         </div>
       </section>
       <section className={classes["section"]}>
         <div className={classes["section__content"]}>
-          <div className={classes["section__img-wrap"]}>
-            <img
-              className={classes["section__img"]}
-              src={require("../../assets/home/tag-system.jpg")}
-              alt=""
-            />
-          </div>
           <div>
             <h2 className={classes["section__title"]}>
               Tag system for prompt building
@@ -91,20 +195,105 @@ const Landing = () => {
 
             <p className={classes["section__content__text"]}>
               Make your prompt building fast and simple: built-in tag system
-              allows you to add trigger words to prompt with just one click from
-              models and prompt of generated images.
+              allows you to{" "}
+              <TextHighlight>
+                add trigger words to prompt with just one click
+              </TextHighlight>{" "}
+              from models and prompt of generated images.
             </p>
             <p className={classes["section__content__text"]}>
-              Easily track which trigger words are already in the prompt: each
-              trigger word present in the prompt is highlighted, making it
-              simple to manage them. It allows you to see if any words from the
-              current prompt are present in the prompts of images or model's
-              trigger words, helping you avoid adding duplicates.
+              Easily{" "}
+              <TextHighlight>
+                track which trigger words are already in the prompt
+              </TextHighlight>
+              : each trigger word present in the prompt is highlighted, making
+              it simple to manage them. It allows you to see if any words from
+              the current prompt are present in the prompts of images or model's
+              trigger words, helping you to{" "}
+              <TextHighlight> avoid duplicates</TextHighlight>.
             </p>
             <p className={classes["section__content__text"]}>
               Switch between text and tag modes to add new trigger words or edit
               prompt.
             </p>
+          </div>
+          <div className={classes["section__img-wrap"]}>
+            {/* <Image
+              fullView={true}
+              className={classes["section__img"]}
+              src={require("../../assets/home/tag-system.jpg")}
+              alt=""
+            /> */}
+            <Video
+              playsInline
+              autoPlay
+              loop
+              disablePictureInPicture
+              preload="none"
+              muted
+              poster={require("../../assets/home/3-main-tagsystem.webp")}
+              className={classes["section__video"]}
+            >
+              {/* <source src={videoSrc?.webm} type="video/webm" /> */}
+              <source
+                src={require("../../assets/home/3-main-tagsystem.mp4")}
+                type="video/mp4"
+              />
+            </Video>
+          </div>
+        </div>
+      </section>
+      <section className={classes["section"]}>
+        <div className={classes["section__content"]}>
+          <div>
+            <h2 className={classes["section__title"]}>
+              {" "}
+              Save images for future reference
+            </h2>
+            <p className={classes["section__content__text"]}>
+              AIDE-TOOLS offers two options for saving and using images with
+              speed and simplicity:
+            </p>
+            <ul className={classes["section__list"]}>
+              <li>
+                <TextHighlight>
+                  Save images directly to the model,
+                </TextHighlight>{" "}
+                and they’ll always be linked to that specific model, keeping
+                your collection of reference images organized and easily
+                accessible.
+              </li>
+              <li>
+                <TextHighlight>Create a separate collection</TextHighlight> to
+                categorize your images by theme, and assign any image as a
+                collection preview. This way, you can easily navigate and
+                structure your image collections for even more efficient use.
+              </li>
+            </ul>
+          </div>
+          <div className={classes["section__img-wrap"]}>
+            {/* <Image
+              fullView={true}
+              className={classes["section__img"]}
+              src={require("../../assets/home/tag-system.jpg")}
+              alt=""
+            /> */}
+            <Video
+              playsInline
+              autoPlay
+              loop
+              disablePictureInPicture
+              preload="none"
+              muted
+              poster={require("../../assets/home/4-main-images.webp")}
+              className={classes["section__video"]}
+            >
+              {/* <source src={videoSrc?.webm} type="video/webm" /> */}
+              <source
+                src={require("../../assets/home/4-main-images.mp4")}
+                type="video/mp4"
+              />
+            </Video>
           </div>
         </div>
       </section>
@@ -113,56 +302,103 @@ const Landing = () => {
           <div>
             <h2 className={classes["section__title"]}>Edit and organize</h2>
             <p className={classes["section__content__text"]}>
-              Organize information about the model: edit existing model
-              information and add additional, set the weight and image size, and
-              choose a preview from the generated images.
+              Organize information about the model:{" "}
+              <TextHighlight>edit existing model information</TextHighlight> and
+              add additional, set the weight and image size, and{" "}
+              <TextHighlight>choose a preview</TextHighlight> from the generated
+              images.
             </p>
             <p className={classes["section__content__text"]}>
-              Split trigger words by related groups (positive, negative, helper,
-              sets) to easily work with them. Add or remove an entire group of
+              <TextHighlight>
+                Split trigger words by related groups
+              </TextHighlight>{" "}
+              (positive, negative, helper, sets) to easily work with them.{" "}
+              <TextHighlight>Add or remove an entire group</TextHighlight> of
               trigger words with ease and a single click, without worrying about
               duplicates or affecting the rest of the prompt content.
             </p>
             <p className={classes["section__content__text"]}>
-              Mark versions as downloaded to easily track on the model page and
-              in image resources which ones you already have.
+              <TextHighlight>Mark versions</TextHighlight> as downloaded to
+              easily <TextHighlight>track</TextHighlight> on the model page and
+              in image resources which ones{" "}
+              <TextHighlight>you already have.</TextHighlight>
             </p>
           </div>
           <div className={classes["section__img-wrap"]}>
-            <img
+            {/* <Image
+              fullView={true}
               className={classes["section__img"]}
               src={require("../../assets/home/keep-safe.jpg")}
               alt=""
-            />
+            /> */}
+            <Video
+              playsInline
+              autoPlay
+              loop
+              disablePictureInPicture
+              preload="none"
+              muted
+              poster={require("../../assets/home/5-main-oraganize.webp")}
+              className={classes["section__video"]}
+            >
+              {/* <source src={videoSrc?.webm} type="video/webm" /> */}
+              <source
+                src={require("../../assets/home/5-main-oraganize.mp4")}
+                type="video/mp4"
+              />
+            </Video>
           </div>
         </div>
       </section>
       <section className={classes["section"]}>
         <div className={classes["section__content"]}>
-          <div className={classes["section__img-wrap"]}>
-            <img
-              className={classes["section__img"]}
-              src={require("../../assets/home/quick-tools.jpg")}
-              alt=""
-            />
-          </div>
           <div>
             <h2 className={classes["section__title"]}>Quick access tools</h2>
 
             <p className={classes["section__content__text"]}>
-              Add models and up to three reference images to sidebar, combine
-              their prompts and quickly switch between them to create unique and
-              original content without losing much time.
+              <TextHighlight>
+                Add models, collection, and reference images to sidebar,
+              </TextHighlight>{" "}
+              combine their prompts and quickly switch between them to create
+              unique and original content without losing much time.
             </p>
             <p className={classes["section__content__text"]}>
-              Switch to extended view to access the model's base trigger words
+              Switch to extended view to{" "}
+              <TextHighlight>
+                access the model's base trigger words
+              </TextHighlight>{" "}
               and weight directly from the sidebar.
             </p>
             <p className={classes["section__content__text"]}>
-              Save your favorite combinations of quality trigger words as
-              presets for positive and negative prompts, and easily add them to
-              your prompt from the Presets window.
+              <TextHighlight> Save</TextHighlight> your favorite combinations of{" "}
+              <TextHighlight>quality trigger words as presets</TextHighlight>{" "}
+              for positive and negative prompts, and easily add them to your
+              prompt from the Presets window.
             </p>
+          </div>
+          <div className={classes["section__img-wrap"]}>
+            {/* <Image
+              fullView={true}
+              className={classes["section__img"]}
+              src={require("../../assets/home/quick-tools.jpg")}
+              alt=""
+            /> */}
+            <Video
+              playsInline
+              autoPlay
+              loop
+              disablePictureInPicture
+              preload="none"
+              muted
+              poster={require("../../assets/home/6-main-quick.webp")}
+              className={classes["section__video"]}
+            >
+              {/* <source src={videoSrc?.webm} type="video/webm" /> */}
+              <source
+                src={require("../../assets/home/6-main-quick.mp4")}
+                type="video/mp4"
+              />
+            </Video>
           </div>
         </div>
       </section>
@@ -170,22 +406,44 @@ const Landing = () => {
         <div className={classes["section__content"]}>
           <div>
             <h2 className={classes["section__title"]}>Quick search</h2>
-
             <p className={classes["section__content__text"]}>
-              Search for models by name, activation tag, or file name and easily
-              add them to the sidebar directly from the search results.
+              Search for <TextHighlight>image collections</TextHighlight> and{" "}
+              <TextHighlight>models</TextHighlight> by{" "}
+              <TextHighlight>name</TextHighlight>,{" "}
+              <TextHighlight>activation tag</TextHighlight>, or{" "}
+              <TextHighlight>file name</TextHighlight> and easily add them to
+              the sidebar directly from the search results.
             </p>
             <p className={classes["section__content__text"]}>
-              Get quick access to desired subcategories through quick search
+              Get quick access to desired{" "}
+              <TextHighlight>categories</TextHighlight> or{" "}
+              <TextHighlight>subcategories</TextHighlight> through quick search
               field — no need to look for them manually.
             </p>
           </div>
           <div className={classes["section__img-wrap"]}>
-            <img
+            {/* <Image
+              fullView={true}
               className={classes["section__img"]}
               src={require("../../assets/home/search.jpg")}
               alt=""
-            />
+            /> */}
+            <Video
+              playsInline
+              autoPlay
+              loop
+              disablePictureInPicture
+              preload="none"
+              muted
+              poster={require("../../assets/home/7-main-search.webp")}
+              className={classes["section__video"]}
+            >
+              {/* <source src={videoSrc?.webm} type="video/webm" /> */}
+              <source
+                src={require("../../assets/home/7-main-search.mp4")}
+                type="video/mp4"
+              />
+            </Video>
           </div>
         </div>
       </section>
@@ -215,6 +473,28 @@ const Landing = () => {
           </Buttton>
         </div>
       </section>
+      {showVideo && (
+        <Modal
+          onClose={() => {
+            setShowVideo(false);
+          }}
+        >
+          <Video
+            playsInline
+            disablePictureInPicture
+            controls
+            width={1280}
+            height={720}
+            poster={require("../../assets/home/intro.jpg")}
+            className={classes["video"]}
+          >
+            <source
+              src={require("../../assets/home/intro.mp4")}
+              type="video/mp4"
+            />
+          </Video>
+        </Modal>
+      )}
     </div>
   );
 };

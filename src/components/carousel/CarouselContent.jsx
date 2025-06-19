@@ -17,6 +17,7 @@ import { SETTINGS_CAROUSEL_TRANSITION_DURATION } from "../../variables/constants
 import {
   FolderArrowDownIcon,
   FolderPlusIcon,
+  Squares2X2Icon,
 } from "@heroicons/react/24/outline";
 import SaveToCollectionForm from "../forms/save-to-collection-form/SaveToCollectionForm";
 import { updateCollectionPostsData } from "../../store/images";
@@ -129,7 +130,7 @@ const CarouselContent = ({
     });
   }, [imagesRef, wrapRef]);
 
-  const openSaveImagesListHandler = (e) => {
+  const showSaveImagesListHandler = (e) => {
     const location = e.target.closest(`.${classes["save__btn"]}`).dataset
       .location;
     if (images.length === 1 && location === "models") {
@@ -157,10 +158,16 @@ const CarouselContent = ({
 
   const openCarouselHandler = useCallback(
     (e) => {
-      if (imgIsOpen) return;
-      const imgNum = e.target.dataset.position - visibleAmount;
-      const currImg = imgNum >= 0 ? imgNum : images?.length + imgNum;
-
+      let currImgNum;
+      const imgNum = +e?.target?.dataset?.position - visibleAmount;
+      if (imgNum || imgNum === 0) {
+        currImgNum = imgNum >= 0 ? imgNum : images?.length + imgNum;
+      } else {
+        currImgNum = null;
+      }
+      // console.log(currImgNum);
+      // if (imgIsOpen && currImgNum !== null) return;
+      // console.log("LID", locationId);
       dispatch(
         modelActions.setActiveCarouselData({
           images,
@@ -170,7 +177,9 @@ const CarouselContent = ({
           saved,
           versionId,
           existedImgsAmount,
-          currImgNum: +currImg,
+          currImgNum: currImgNum,
+          location,
+          locationId,
         })
       );
     },
@@ -502,14 +511,14 @@ const CarouselContent = ({
 
     const postInfo = {
       postId,
-      modelId,
+      modelId: modelId || null,
       location,
       collectionData,
       modelName: modelName,
-      versionId,
+      versionId: versionId || null,
       nsfwMode,
       postData: postData,
-      imgUrl: images[0].url,
+      imgUrl: imagesForSaving[0].url,
       ids: ids || [],
       existedAmount: existedImgsAmount,
       images: imagesForSaving,
@@ -697,56 +706,61 @@ const CarouselContent = ({
       {images?.length > curVisibleAmount && (
         <ul className={classes.pagination}>{paginationHtml}</ul>
       )}
-      {true && (
-        <div className={classes["save"]}>
-          {!saved && !!postId && (
-            <div className={classes["save__btn"]} data-location="models">
-              <button
-                className={`${classes["btn-save"]} ${
-                  isUploading ? classes["btn-save--saving"] : ""
-                }`}
-                onClick={openSaveImagesListHandler}
-                disabled={!!isUploading || existedImgsAmount >= images?.length}
-                title="Save"
-              >
-                {!isUploading ? (
-                  <FolderArrowDownIcon />
-                ) : (
-                  <Spinner size="small" />
-                )}
-              </button>
-              <span className={classes["save__btn-text"]}>Save to model</span>
-            </div>
-          )}
-          <div
-            className={`${classes["save__btn"]} ${
-              classes["save__btn--collection"]
-            } ${
-              !saved && !!postId ? classes["save__btn--collection-hidden"] : ""
-            }`}
-            data-location="collections"
-          >
+      <div className={classes["save"]}>
+        {!saved && !!postId && (
+          <div className={classes["save__btn"]} data-location="models">
             <button
               className={`${classes["btn-save"]} ${
                 isUploading ? classes["btn-save--saving"] : ""
               }`}
-              onClick={openSaveImagesListHandler}
-              // disabled={!!isUploading}
+              onClick={showSaveImagesListHandler}
+              disabled={!!isUploading || existedImgsAmount >= images?.length}
               title="Save"
             >
-              {!isUploading ? <FolderPlusIcon /> : <Spinner size="small" />}
+              {!isUploading ? (
+                <FolderArrowDownIcon />
+              ) : (
+                <Spinner size="small" />
+              )}
             </button>
-            <span className={classes["save__btn-text"]}>
-              Save to collection
-            </span>
+            <span className={classes["save__btn-text"]}>Save to model</span>
           </div>
-
-          {existedImgsAmount && !saved && (
-            <div className={classes["btn-save__amount"]}>
-              {existedImgsAmount}/{images.length}
-            </div>
-          )}
+        )}
+        <div
+          className={`${classes["save__btn"]} ${
+            classes["save__btn--collection"]
+          } ${
+            !saved && !!postId ? classes["save__btn--collection-hidden"] : ""
+          }`}
+          data-location="collections"
+        >
+          <button
+            className={`${classes["btn-save"]} ${
+              isUploading ? classes["d"] : ""
+            }`}
+            onClick={showSaveImagesListHandler}
+            // disabled={!!isUploading}
+            title="Save"
+          >
+            <FolderPlusIcon />
+          </button>
+          <span className={classes["save__btn-text"]}>Save to collection</span>
         </div>
+
+        {existedImgsAmount && !saved && (
+          <div className={classes["btn-save__amount"]}>
+            {existedImgsAmount}/{images.length}
+          </div>
+        )}
+      </div>
+      {images?.length > 1 && (
+        <button
+          className={classes["btn-all"]}
+          onClick={openCarouselHandler}
+          title="Show All Images"
+        >
+          <Squares2X2Icon />
+        </button>
       )}
       {onUpdate && (
         <span className={classes["btn-save"]} onClick={updateExampleHandler}>

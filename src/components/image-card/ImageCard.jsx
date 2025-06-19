@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import LinkA from "../ui/LinkA";
 import {
   clearFileExtension,
+  filterDuplicates,
   parseModelIds,
   splitTags,
 } from "../../utils/generalUtils";
@@ -38,6 +39,15 @@ import ButtonSquareSave from "../ui/ButtonSquareSave";
 import Modal from "../ui/Modal";
 import UpdateModelForm from "../forms/update-model-form/UpdateModelForm";
 import NotificationMessage from "../ui/NotificationMessage";
+import Tooltip from "../ui/Tooltip";
+import ButtonInfo from "../ui/buttons/ButtonInfo";
+import InfoResources from "../ui/guide/info/InfoResources";
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
+import ButtonSquare from "../ui/ButtonSquare";
 
 const firestore = getFirestore(firebaseApp);
 const civitDefEmb = [250708, 250712, 106916];
@@ -54,9 +64,11 @@ const ImageCard = ({ activeImgNum }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [imageCivResources, setImageCivResources] = useState([]);
   const [imageResources, setImageResources] = useState([]);
   const [modelInfoCiv, setModelInfoCiv] = useState({});
   const [modelInfo, setModelInfo] = useState({});
+  const [civConnectionError, setCivConnectionError] = useState(false);
   const uid = useSelector((state) => state.auth.user.uid);
   const modelId = useSelector((state) => state.model.model.id);
   const guideModelActive = useSelector((state) => state.guide.model.active);
@@ -155,11 +167,67 @@ const ImageCard = ({ activeImgNum }) => {
     if (imageData?.url) {
       setErrorMessage("");
 
-      const loadResoursesInfo = async (curImageData) => {
+      let imageResources = [];
+
+      if (imageData.meta?.resources) {
+        imageResources = [...imageResources, ...imageData.meta?.resources];
+      }
+      if (imageData.meta?.additionalResources) {
+        imageResources = [
+          ...imageResources,
+          ...imageData.meta?.additionalResources.map((res) => {
+            const [modelId, modelVersionId] = parseModelIds(res.name);
+            return {
+              ...res,
+              modelId,
+              modelVersionId,
+            };
+          }),
+        ];
+      }
+      if (imageData.meta?.civitaiResources) {
+        imageResources = [
+          ...imageResources,
+          ...imageData.meta?.civitaiResources,
+        ];
+      }
+
+      // console.log(imageResources);
+
+      // const uniqImageResources = imageResources;
+      const uniqImageResources = filterDuplicates(
+        imageResources,
+        "modelVersionId"
+      );
+
+      // console.log(uniqImageResources);
+
+      const loadResourcesInfoFromCiv = async (curImageData) => {
         try {
-          setIsLoading(true);
           // console.log(curImageData);
-          //MODEL
+          // console.log(uniqImageResources);
+          setIsLoading(true);
+          setCivConnectionError(false);
+          // throw new Error("err");
+          const resourcesInfoCiv = await getImageInfo(
+            uniqImageResources,
+            curImageData
+          );
+          // setImageCivResources(resourcesInfoCiv);
+          // console.log(resourcesInfoCiv);
+          await loadResourcesInfoFromDB(resourcesInfoCiv, curImageData);
+        } catch (err) {
+          console.log(err);
+          setCivConnectionError(true);
+          await loadResourcesInfoFromDB(uniqImageResources, curImageData);
+        }
+      };
+
+      const loadResourcesInfoFromDB = async (
+        resourcesInfoCiv,
+        curImageData
+      ) => {
+        try {
           let modelHash = "";
           if (curImageData?.meta?.hasOwnProperty("Model hash")) {
             modelHash = curImageData?.meta["Model hash"];
@@ -193,69 +261,31 @@ const ImageCard = ({ activeImgNum }) => {
             return doc.data();
           });
 
-          // console.log(modelInfoData);
-
-          //RESOURCES
-          const imageWithResCiv = await getImageInfo(curImageData);
-          // console.log(imageWithResCiv);
-
-          let resourcesInfoCiv = [];
-
-          if (!!imageWithResCiv?.meta?.civitaiResources?.length) {
-            resourcesInfoCiv = [
-              ...resourcesInfoCiv,
-              ...imageWithResCiv.meta.civitaiResources,
-            ].filter(
-              (resource) => !civitDefEmb.includes(resource.modelVersionId)
-            );
-          }
-
-          if (!!imageWithResCiv?.meta?.resources?.length) {
-            resourcesInfoCiv = [
-              ...resourcesInfoCiv,
-              ...imageWithResCiv.meta.resources,
-            ];
-          }
-
-          if (!!imageWithResCiv?.meta?.additionalResources?.length) {
-            resourcesInfoCiv = [
-              ...resourcesInfoCiv,
-              ...imageWithResCiv.meta.additionalResources,
-            ];
-          }
-
-          if (!!imageWithResCiv?.meta?.hashResources?.length) {
-            resourcesInfoCiv = [
-              ...resourcesInfoCiv,
-              ...imageWithResCiv.meta.hashResources,
-            ];
-          }
-
+          // console.log("DB");
           // console.log(resourcesInfoCiv);
-
           let modelsIds = [];
           let modelsVersionIds = [];
           let modelsHashes = [];
           let modelsNames = [];
           let allModelsPreviews = [];
 
-          resourcesInfoCiv?.forEach((resourse) => {
-            if (resourse?.modelId) {
-              modelsIds.push(resourse?.modelId);
-            } else if (resourse?.versionId) {
-              modelsVersionIds.push(resourse?.versionId);
-            } else if (resourse?.hash) {
-              modelsHashes.push(resourse?.hash);
-            } else if (resourse?.name) {
+          resourcesInfoCiv?.forEach((resource) => {
+            if (resource?.modelId) {
+              modelsIds.push(resource?.modelId);
+            } else if (resource?.versionId || resource?.modelVersionId) {
+              modelsVersionIds.push(
+                resource?.versionId || resource?.modelVersionId
+              );
+            } else if (resource?.hash) {
+              modelsHashes.push(resource?.hash);
+            } else if (resource?.name) {
               modelsNames.push(
-                clearFileExtension(resourse?.name).toLowerCase()
+                clearFileExtension(resource?.name).toLowerCase()
               );
             }
           });
 
           if (!!modelsIds.length) {
-            // console.log(modelsIds);
-
             const q = query(
               collection(firestore, "users", uid, `preview`),
               //firestore query limit 30
@@ -267,12 +297,11 @@ const ImageCard = ({ activeImgNum }) => {
               // doc.data() is never undefined for query doc snapshots
               return doc.data();
             });
-            // console.log(modelsPrewiewById);
+
             allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewById];
           }
 
           if (!!modelsVersionIds.length) {
-            // console.log(modelsVersionIds);
             const q = query(
               collection(firestore, "users", uid, `preview`),
               where("versionIds", "array-contains-any", modelsVersionIds)
@@ -283,7 +312,6 @@ const ImageCard = ({ activeImgNum }) => {
               // doc.data() is never undefined for query doc snapshots
               return doc.data();
             });
-            // console.log(modelsPrewiewByVersionId);
             allModelsPreviews = [
               ...allModelsPreviews,
               ...modelsPrewiewByVersionId,
@@ -291,7 +319,6 @@ const ImageCard = ({ activeImgNum }) => {
           }
 
           if (!!modelsHashes.length) {
-            // console.log(modelsHashes);
             const q = query(
               collection(firestore, "users", uid, `preview`),
               where("hashes", "array-contains-any", modelsHashes)
@@ -302,8 +329,6 @@ const ImageCard = ({ activeImgNum }) => {
               // doc.data() is never undefined for query doc snapshots
               return doc.data();
             });
-            // console.log(allModelsPreviews);
-            // console.log(modelsPrewiewByHash);
             allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewByHash];
           }
 
@@ -312,21 +337,7 @@ const ImageCard = ({ activeImgNum }) => {
               (name) =>
                 !allModelsPreviews.find((model) => {
                   const nameArr = name.split("-");
-                  // console.log(nameArr);
                   if (Number.isFinite(+nameArr[nameArr?.length - 1])) {
-                    // console.log(nameArr[nameArr?.length - 1]);
-                    // console.log(
-                    //   name
-                    //     .replace(`-${nameArr[nameArr?.length - 1]}`, "")
-                    //     .toLowerCase()
-                    // );
-                    // console.log(
-                    //   model?.fileNames?.includes(
-                    //     name
-                    //       .replace(`-${nameArr[nameArr?.length - 1]}`, "")
-                    //       .toLowerCase()
-                    //   )
-                    // );
                     return model?.fileNames?.includes(
                       name
                         .replace(`-${nameArr[nameArr?.length - 1]}`, "")
@@ -349,7 +360,6 @@ const ImageCard = ({ activeImgNum }) => {
                 // doc.data() is never undefined for query doc snapshots
                 return doc.data();
               });
-              // console.log(modelsPrewiewByName);
               allModelsPreviews = [
                 ...allModelsPreviews,
                 ...modelsPrewiewByName,
@@ -357,13 +367,6 @@ const ImageCard = ({ activeImgNum }) => {
             }
           }
 
-          // console.log(modelsIds);
-          // console.log(modelsVersionIds);
-          // console.log(modelsHashes);
-          // console.log(modelsNames);
-          // console.log(allModelsPreviews);
-
-          // console.log("All", allModelsPreviews);
           const resources = resourcesInfoCiv?.map((resource) => {
             const versionId = resource?.modelVersionId || resource?.versionId;
             const preview = allModelsPreviews.find(
@@ -387,12 +390,6 @@ const ImageCard = ({ activeImgNum }) => {
           // console.log(resources);
 
           //Remove not uniq items from the end of array//////
-          // const reversedArr = resources.toReversed();
-          // const ids = reversedArr
-          // .map((resource) => resource?.preview?.id)
-          // .filter(Boolean);
-          // console.log(ids);
-
           const filteredNewResult = resources
             .filter((obj1, i, arr) => {
               if (!!obj1?.preview?.id) {
@@ -409,51 +406,337 @@ const ImageCard = ({ activeImgNum }) => {
                 return true;
               }
             })
-            ?.filter((resourse) => {
-              if (resourse?.name && resourse.name?.includes("urn:air:")) {
+            ?.filter((resource) => {
+              if (resource?.name && resource.name?.includes("urn:air:")) {
                 return false;
               } else {
                 return true;
               }
             });
-          // console.log(filteredNewResult);
           ////////////////////////////////////////////////////
 
           if (!!modelInfoData?.length) {
             setModelInfo(modelInfoData[0]);
           }
-          // setImageResources(resources || []);
+
           if (curImageData?.id === imageData?.id) {
-            // console.log(filteredNewResult);
             setImageResources(filteredNewResult || []);
           }
-          // console.log(filteredNewResult);
           const checkpointInfo = filteredNewResult.find(
             (resource) => resource.type === "Checkpoint"
           );
+          // console.log(checkpointInfo);
           if (checkpointInfo) {
-            // setModelInfo(checkpointInfo);
             setModelInfoCiv(checkpointInfo);
           }
-          // setImageResources(filteredNewResult || []);
-          // console.log(curImageData);
-          setIsLoading(false);
         } catch (err) {
-          const defResources = !!curImageData?.meta?.civitaiResources?.length
-            ? curImageData.meta?.civitaiResources
-            : curImageData.meta?.resources;
-          if (curImageData?.id === imageData?.id) {
-            setImageResources(defResources);
-          }
-          // console.log(err);
-          // console.log(err.code);
-          // setErrorMessage(err.message);
+          console.log(err);
+        } finally {
           setIsLoading(false);
         }
       };
+
+      // const loadResourcesInfo = async (curImageData) => {
+      //   try {
+      //     setIsLoading(true);
+      //     console.log(curImageData);
+      //     //MODEL
+      //     let modelHash = "";
+      //     if (curImageData?.meta?.hasOwnProperty("Model hash")) {
+      //       modelHash = curImageData?.meta["Model hash"];
+      //     } else if (curImageData?.meta?.hasOwnProperty("Modelhash")) {
+      //       modelHash = curImageData?.meta["Modelhash"];
+      //     }
+      //     let modelQ;
+      //     if (!!modelHash) {
+      //       modelQ = query(
+      //         collection(firestore, "users", uid, `preview`),
+      //         where("hashes", "array-contains", modelHash)
+      //       );
+      //     } else if (curImageData?.meta?.Model?.includes("urn:air")) {
+      //       const [modelId, versionId] = parseModelIds(curImageData.meta.Model);
+      //       modelQ = query(
+      //         collection(firestore, "users", uid, `preview`),
+      //         where("id", "==", modelId)
+      //       );
+      //     } else {
+      //       const modelName = curImageData?.meta?.Model || "";
+      //       modelQ = query(
+      //         collection(firestore, "users", uid, `preview`),
+      //         where("fileNames", "array-contains", modelName?.toLowerCase())
+      //       );
+      //     }
+
+      //     const modelQuerySnapshot = await getDocs(modelQ);
+
+      //     const modelInfoData = modelQuerySnapshot.docs.map((doc) => {
+      //       // doc.data() is never undefined for query doc snapshots
+      //       return doc.data();
+      //     });
+
+      //     // console.log(modelInfoData);
+
+      //     //RESOURCES
+      //     const resourcesInfoCiv = await getImageInfo(curImageData);
+      //     // console.log(imageWithResCiv);
+
+      //     // let resourcesInfoCiv = [];
+
+      //     // if (!!imageWithResCiv?.meta?.civitaiResources?.length) {
+      //     //   resourcesInfoCiv = [
+      //     //     ...resourcesInfoCiv,
+      //     //     ...imageWithResCiv.meta.civitaiResources,
+      //     //   ].filter(
+      //     //     (resource) => !civitDefEmb.includes(resource.modelVersionId)
+      //     //   );
+      //     // }
+
+      //     // if (!!imageWithResCiv?.meta?.resources?.length) {
+      //     //   resourcesInfoCiv = [
+      //     //     ...resourcesInfoCiv,
+      //     //     ...imageWithResCiv.meta.resources,
+      //     //   ];
+      //     // }
+
+      //     // if (!!imageWithResCiv?.meta?.additionalResources?.length) {
+      //     //   resourcesInfoCiv = [
+      //     //     ...resourcesInfoCiv,
+      //     //     ...imageWithResCiv.meta.additionalResources,
+      //     //   ];
+      //     // }
+
+      //     // if (!!imageWithResCiv?.meta?.hashResources?.length) {
+      //     //   resourcesInfoCiv = [
+      //     //     ...resourcesInfoCiv,
+      //     //     ...imageWithResCiv.meta.hashResources,
+      //     //   ];
+      //     // }
+
+      //     // console.log(resourcesInfoCiv);
+
+      //     let modelsIds = [];
+      //     let modelsVersionIds = [];
+      //     let modelsHashes = [];
+      //     let modelsNames = [];
+      //     let allModelsPreviews = [];
+
+      //     resourcesInfoCiv?.forEach((resource) => {
+      //       if (resource?.modelId) {
+      //         modelsIds.push(resource?.modelId);
+      //       } else if (resource?.versionId) {
+      //         modelsVersionIds.push(resource?.versionId);
+      //       } else if (resource?.hash) {
+      //         modelsHashes.push(resource?.hash);
+      //       } else if (resource?.name) {
+      //         modelsNames.push(
+      //           clearFileExtension(resource?.name).toLowerCase()
+      //         );
+      //       }
+      //     });
+
+      //     if (!!modelsIds.length) {
+      //       // console.log(modelsIds);
+
+      //       const q = query(
+      //         collection(firestore, "users", uid, `preview`),
+      //         //firestore query limit 30
+      //         where("id", "in", modelsIds.slice(0, 29))
+      //       );
+      //       const querySnapshot = await getDocs(q);
+
+      //       const modelsPrewiewById = querySnapshot.docs.map((doc) => {
+      //         // doc.data() is never undefined for query doc snapshots
+      //         return doc.data();
+      //       });
+      //       // console.log(modelsPrewiewById);
+      //       allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewById];
+      //     }
+
+      //     if (!!modelsVersionIds.length) {
+      //       // console.log(modelsVersionIds);
+      //       const q = query(
+      //         collection(firestore, "users", uid, `preview`),
+      //         where("versionIds", "array-contains-any", modelsVersionIds)
+      //       );
+      //       const querySnapshot = await getDocs(q);
+
+      //       const modelsPrewiewByVersionId = querySnapshot.docs.map((doc) => {
+      //         // doc.data() is never undefined for query doc snapshots
+      //         return doc.data();
+      //       });
+      //       // console.log(modelsPrewiewByVersionId);
+      //       allModelsPreviews = [
+      //         ...allModelsPreviews,
+      //         ...modelsPrewiewByVersionId,
+      //       ];
+      //     }
+
+      //     if (!!modelsHashes.length) {
+      //       // console.log(modelsHashes);
+      //       const q = query(
+      //         collection(firestore, "users", uid, `preview`),
+      //         where("hashes", "array-contains-any", modelsHashes)
+      //       );
+      //       const querySnapshot = await getDocs(q);
+
+      //       const modelsPrewiewByHash = querySnapshot.docs.map((doc) => {
+      //         // doc.data() is never undefined for query doc snapshots
+      //         return doc.data();
+      //       });
+      //       // console.log(allModelsPreviews);
+      //       // console.log(modelsPrewiewByHash);
+      //       allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewByHash];
+      //     }
+
+      //     if (!!modelsNames.length) {
+      //       const uniqModelsNames = modelsNames.filter(
+      //         (name) =>
+      //           !allModelsPreviews.find((model) => {
+      //             const nameArr = name.split("-");
+      //             // console.log(nameArr);
+      //             if (Number.isFinite(+nameArr[nameArr?.length - 1])) {
+      //               // console.log(nameArr[nameArr?.length - 1]);
+      //               // console.log(
+      //               //   name
+      //               //     .replace(`-${nameArr[nameArr?.length - 1]}`, "")
+      //               //     .toLowerCase()
+      //               // );
+      //               // console.log(
+      //               //   model?.fileNames?.includes(
+      //               //     name
+      //               //       .replace(`-${nameArr[nameArr?.length - 1]}`, "")
+      //               //       .toLowerCase()
+      //               //   )
+      //               // );
+      //               return model?.fileNames?.includes(
+      //                 name
+      //                   .replace(`-${nameArr[nameArr?.length - 1]}`, "")
+      //                   .toLowerCase()
+      //               );
+      //             } else {
+      //               return model?.fileNames?.includes(name.toLowerCase());
+      //             }
+      //           })
+      //       );
+
+      //       if (!!uniqModelsNames.length) {
+      //         const q = query(
+      //           collection(firestore, "users", uid, `preview`),
+      //           where("fileNames", "array-contains-any", uniqModelsNames)
+      //         );
+      //         const querySnapshot = await getDocs(q);
+
+      //         const modelsPrewiewByName = querySnapshot.docs.map((doc) => {
+      //           // doc.data() is never undefined for query doc snapshots
+      //           return doc.data();
+      //         });
+      //         // console.log(modelsPrewiewByName);
+      //         allModelsPreviews = [
+      //           ...allModelsPreviews,
+      //           ...modelsPrewiewByName,
+      //         ];
+      //       }
+      //     }
+
+      //     // console.log(modelsIds);
+      //     // console.log(modelsVersionIds);
+      //     // console.log(modelsHashes);
+      //     // console.log(modelsNames);
+      //     // console.log(allModelsPreviews);
+
+      //     // console.log("All", allModelsPreviews);
+      //     const resources = resourcesInfoCiv?.map((resource) => {
+      //       const versionId = resource?.modelVersionId || resource?.versionId;
+      //       const preview = allModelsPreviews.find(
+      //         (preview) =>
+      //           preview?.id === resource.modelId ||
+      //           preview?.versionIds?.includes(versionId) ||
+      //           preview?.hashes?.includes(resource.hash) ||
+      //           preview?.fileNames?.includes(
+      //             clearFileExtension(resource.name)?.toLowerCase()
+      //           )
+      //       );
+      //       // console.log(preview);
+      //       if (preview) {
+      //         return {
+      //           ...resource,
+      //           preview,
+      //         };
+      //       }
+      //       return resource;
+      //     });
+      //     // console.log(resources);
+
+      //     //Remove not uniq items from the end of array//////
+      //     // const reversedArr = resources.toReversed();
+      //     // const ids = reversedArr
+      //     // .map((resource) => resource?.preview?.id)
+      //     // .filter(Boolean);
+      //     // console.log(ids);
+
+      //     const filteredNewResult = resources
+      //       .filter((obj1, i, arr) => {
+      //         if (!!obj1?.preview?.id) {
+      //           return (
+      //             arr.findIndex(
+      //               (obj2) => obj2?.preview?.id === obj1?.preview?.id
+      //             ) === i
+      //           );
+      //         } else if (!!obj1?.modelId) {
+      //           return (
+      //             arr.findIndex((obj2) => obj2?.modelId === obj1?.modelId) === i
+      //           );
+      //         } else {
+      //           return true;
+      //         }
+      //       })
+      //       ?.filter((resource) => {
+      //         if (resource?.name && resource.name?.includes("urn:air:")) {
+      //           return false;
+      //         } else {
+      //           return true;
+      //         }
+      //       });
+      //     // console.log(filteredNewResult);
+      //     ////////////////////////////////////////////////////
+
+      //     if (!!modelInfoData?.length) {
+      //       setModelInfo(modelInfoData[0]);
+      //     }
+      //     // setImageResources(resources || []);
+      //     if (curImageData?.id === imageData?.id) {
+      //       // console.log(filteredNewResult);
+      //       setImageResources(filteredNewResult || []);
+      //     }
+      //     // console.log(filteredNewResult);
+      //     const checkpointInfo = filteredNewResult.find(
+      //       (resource) => resource.type === "Checkpoint"
+      //     );
+      //     if (checkpointInfo) {
+      //       // setModelInfo(checkpointInfo);
+      //       setModelInfoCiv(checkpointInfo);
+      //     }
+      //     // setImageResources(filteredNewResult || []);
+      //     // console.log(curImageData);
+      //     setIsLoading(false);
+      //   } catch (err) {
+      //     const defResources = !!curImageData?.meta?.civitaiResources?.length
+      //       ? curImageData.meta?.civitaiResources
+      //       : curImageData.meta?.resources;
+      //     if (curImageData?.id === imageData?.id) {
+      //       setImageResources(defResources);
+      //     }
+      //     console.log(err);
+      //     // console.log(err.code);
+      //     // setErrorMessage(err.message);
+      //     setIsLoading(false);
+      //   }
+      // };
+
       clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(() => {
-        loadResoursesInfo(imageData);
+        // loadResourcesInfo(imageData);
+        loadResourcesInfoFromCiv(imageData);
       }, timeoutDelay);
     }
   }, [imageData, uid]);
@@ -556,41 +839,87 @@ const ImageCard = ({ activeImgNum }) => {
                   )}
                 />
               )}
+            {civConnectionError && (
+              <ButtonSquare
+                className={`${classes["resource__add"]} ${classes["resource__unavailable"]}`}
+              >
+                <Tooltip
+                  className={`${classes["tooltip"]} ${classes["tooltip--centered"]}`}
+                  defSide="left"
+                  content={
+                    <div className={classes["resource__version-tooltip"]}>
+                      <p>Failed to conect to Civitai API.</p>
+                      <p>
+                        There may be heavy load or maintenance at the moment.
+                      </p>
+                    </div>
+                  }
+                >
+                  <ExclamationTriangleIcon />{" "}
+                </Tooltip>
+              </ButtonSquare>
+            )}
           </div>
         )}
-        <div
-          className={classes["resource__version"]}
-          title={`${
-            versionIsSaved ? "Version downloaded" : "Version not downloaded"
-          }`}
+        <Tooltip
+          className={classes["tooltip--align-left"]}
+          defSide="left"
+          content={
+            <div className={classes["resource__version-tooltip"]}>
+              {`${
+                versionIsSaved ? "Version downloaded" : "Version not downloaded"
+              }`}
+            </div>
+          }
         >
-          {!versionIsSaved && !!resource?.preview && (
-            <ExclamationCircleSvg
-              className={classes["resource__version-svg"]}
-            />
-          )}
-          {versionIsSaved && (
-            <CheckCircleSvg
-              className={`${classes["resource__version-svg"]} ${classes["resource__version-svg--saved"]}`}
-            />
-          )}{" "}
-          <span className={classes["resource__version-name"]}>
-            {versionName || resource?.versionName}
-          </span>
-        </div>
-        {resource?.modelId && (
+          <div className={classes["resource__version"]}>
+            {!versionIsSaved && !!resource?.preview && (
+              <ExclamationCircleIcon
+                className={classes["resource__version-svg"]}
+              />
+            )}
+            {versionIsSaved && (
+              <CheckCircleIcon
+                className={`${classes["resource__version-svg"]} ${classes["resource__version-svg--saved"]}`}
+              />
+            )}{" "}
+            <span className={classes["resource__version-name"]}>
+              {versionName || resource?.versionName}
+            </span>
+          </div>
+        </Tooltip>
+        {(resource?.modelId || civConnectionError) && (
           <div className={classes["resource__field"]}>
             Source:{" "}
-            <LinkA
-              external={true}
-              href={`https://civitai.com/models/${resource?.modelId}${
-                resource?.versionId
-                  ? `?modelVersionId=${resource?.versionId}`
-                  : ""
-              }`}
-            >
-              civitai
-            </LinkA>
+            {!civConnectionError && (
+              <LinkA
+                external={true}
+                href={`https://civitai.com/models/${resource?.modelId}${
+                  resource?.versionId
+                    ? `?modelVersionId=${resource?.versionId}`
+                    : ""
+                }`}
+              >
+                civitai
+              </LinkA>
+            )}
+            {civConnectionError && (
+              <Tooltip
+                className={classes["tooltip--align-left"]}
+                defSide="left"
+                content={
+                  <div className={classes["resource__version-tooltip"]}>
+                    <p>Failed to conect to Civitai API.</p>
+                    <p>There may be heavy load or maintenance at the moment.</p>
+                  </div>
+                }
+              >
+                <span className={classes["resource__connection-error"]}>
+                  {/* <ExclamationTriangleIcon /> */}
+                  Unavailable
+                </span>
+              </Tooltip>
+            )}
           </div>
         )}
         <div className={classes["resource__info"]}>
@@ -604,7 +933,10 @@ const ImageCard = ({ activeImgNum }) => {
   });
 
   const copyHandler = (e) => {
-    navigator.clipboard.writeText(e.target.innerText);
+    const seed = e.target.closest(`.${classes.seed}`)?.innerText;
+    if (!seed) return;
+
+    navigator.clipboard.writeText(seed);
     setCopied(true);
     setTimeout(() => {
       setCopied(false);
@@ -716,7 +1048,6 @@ const ImageCard = ({ activeImgNum }) => {
                     </div>
                   )}
                   {(modelInfo?.id ||
-                    modelInfo?.id ||
                     modelInfoCiv?.modelId ||
                     modelInfoCiv?.modelName ||
                     imageData?.meta?.Model) && (
@@ -807,15 +1138,20 @@ const ImageCard = ({ activeImgNum }) => {
                 )}
                 {!isLoading && !!resourcesHtml?.length && (
                   <div ref={resorcesRef}>
-                    Resources:
+                    <div className={classes["title-container"]}>
+                      <h4 className={classes["h4"]}>Resources:</h4>
+                      <ButtonInfo className={classes["info-btn"]}>
+                        <InfoResources />
+                      </ButtonInfo>
+                    </div>
                     <motion.ul
                       variants={{
                         visible: { transition: { staggerChildren: 0.05 } },
                       }}
-                      className={`${classes["example__resourses"]} ${
+                      className={`${classes["example__resources"]} ${
                         guideIsActive &&
                         guideStep === GUIDE_STEP_IMAGE_RESOURCES
-                          ? classes["example__resourses--guide"]
+                          ? classes["example__resources--guide"]
                           : ""
                       }`}
                     >

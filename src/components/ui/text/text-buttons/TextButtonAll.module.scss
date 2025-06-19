@@ -1,0 +1,18 @@
+@use "./../../../../variables/variables.scss" as var;
+
+.btn {
+  display: inline-block;
+  color: #bdbdbd;
+  font-size: 1.3rem;
+  padding: 0.2rem 0.5rem;
+  background: none;
+  border: 1px solid var.$color-gray-dark;
+  border-radius: 0.5rem;
+  white-space: nowrap;
+  margin: 0.4rem 0;
+
+  & svg {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+}

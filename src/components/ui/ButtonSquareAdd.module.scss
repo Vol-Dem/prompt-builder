@@ -9,7 +9,7 @@
 
   &.resource__add--active {
     // background-color: rgba(38, 160, 43, 0.6);
-    background-color: rgba(#49ab6b, 0.6);
+    background-color: rgba(var.$color-text-green, 0.6);
     // cursor: default;
 
     &:hover {

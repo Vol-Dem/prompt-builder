@@ -2,8 +2,8 @@ import { useRef, useState } from "react";
 import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 import classes from "./Tooltip.module.scss";
 
-const Tooltip = (props) => {
-  const [translateX, setTranslateX] = useState(100);
+const Tooltip = ({ children, content, className, defSide = "right" }) => {
+  const [translateX, setTranslateX] = useState(defSide === "right" ? 100 : 0);
   const [translateY, setTranslateY] = useState(-100);
   const [borderRadius, setBorderRadius] = useState("10px 10px 10px 0");
   const tooltipRef = useRef();
@@ -14,7 +14,8 @@ const Tooltip = (props) => {
     const contentSize = contentRef.current.getBoundingClientRect();
     const positionDownRule = tooltipSize.top - contentSize.height - 50 < 0;
     const positionLeftRule =
-      document.body.offsetWidth - tooltipSize.right - contentSize.width < 0;
+      document.body.offsetWidth - tooltipSize.right - contentSize.width < 0 ||
+      defSide === "left";
 
     if (positionDownRule) {
       setTranslateY(0);
@@ -42,10 +43,11 @@ const Tooltip = (props) => {
   return (
     <div
       ref={tooltipRef}
-      className={classes["tooltip"]}
+      className={`${classes["tooltip"]} ${className || ""}`}
       onMouseEnter={setTranslateHandler}
     >
-      <ExclamationCircleSvg />
+      {/* <ExclamationCircleSvg /> */}
+      {children}
       <div
         ref={contentRef}
         className={classes["tooltip-content"]}
@@ -56,7 +58,7 @@ const Tooltip = (props) => {
           borderRadius: borderRadius,
         }}
       >
-        {props.children}
+        {content}
       </div>
     </div>
   );

@@ -70,10 +70,10 @@ const UsedCard = memo(({ previewData, fullView, layoutId, onClick }) => {
   };
 
   const closePanelHandler = () => {
+    dispatch(modelActions.setActiveCarouselData({}));
     // if (previewData?.id !== model?.id) {
     //   dispatch(modelActions.resetModelData());
     // }
-    onClick && onClick(false);
     if (document.body.offsetWidth < 1024) {
       dispatch(usedModelsActions.panelState(false));
     }

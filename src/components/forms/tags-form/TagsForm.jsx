@@ -164,18 +164,18 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
 
       const formdata = new FormData(e.target);
       const mainTag = formdata.get("main-tag").trim();
-      const tagSetsValues = formdata.getAll("set-value");
+      // const tagSetsValues = formdata.getAll("set-value");
       const trainedWords = formdata
         .get("triger")
         .trim()
         .split(splitRegEx)
         .filter(Boolean)
         .map((tag) => tag.trim());
-      const tagSetNames = formdata.getAll("set-name");
-      const tagSetsInputData = tagSetNames.flatMap((setName, i) => {
-        if (!setName && !tagSetsValues[i]) return [];
-        return [{ name: setName, value: tagSetsValues[i] }];
-      });
+      // const tagSetNames = formdata.getAll("set-name");
+      // const tagSetsInputData = tagSetNames.flatMap((setName, i) => {
+      //   if (!setName && !tagSetsValues[i]) return [];
+      //   return [{ name: setName, value: tagSetsValues[i] }];
+      // });
       const helperTags = formdata
         .get("helper-tags")
         .trim()
@@ -189,17 +189,17 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
         .filter(Boolean)
         .map((tag) => tag.trim());
 
-      let tagSetsData;
-      if (!versionData?.tagSetsData?.length) {
-        tagSetsData = tagSetsInputData;
-      } else {
-        tagSetsData = tagSetsInputData.map((tagSet, i) => {
-          return {
-            ...versionData.tagSetsData[i],
-            ...tagSet,
-          };
-        });
-      }
+      // let tagSetsData;
+      // if (!versionData?.tagSetsData?.length) {
+      //   tagSetsData = tagSetsInputData;
+      // } else {
+      //   tagSetsData = tagSetsInputData.map((tagSet, i) => {
+      //     return {
+      //       ...versionData.tagSetsData[i],
+      //       ...tagSet,
+      //     };
+      //   });
+      // }
 
       const updatedVersionData = {
         ...versionData,
@@ -207,7 +207,7 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
         helperTags,
         negativeTags,
         trainedWords,
-        tagSetsData,
+        // tagSetsData,
       };
 
       const modelsRef = doc(firestore, "users", uid, "models", modelId + "");
@@ -420,12 +420,12 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
               }}
               showError={showErrorMessage}
             ></Textarea>
-            <TagSetsInputFieldset
+            {/* <TagSetsInputFieldset
               tagSetsInputs={tagSetsInputs}
               setTagSetsInputs={setTagSetsInputs}
               showErrorMessage={showErrorMessage}
               isSaving={isSaving}
-            />
+            /> */}
             {/* <Fieldset legend="Tag sets" className={classes.fieldset}>
               {tagSetsHtml}
               <ButttonSecondary

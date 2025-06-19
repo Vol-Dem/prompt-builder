@@ -25,6 +25,10 @@ const SetTagSetPreview = ({ src }) => {
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
 
   useEffect(() => {
+    setShowNsfwPreview(nsfwMode);
+  }, [nsfwMode]);
+
+  useEffect(() => {
     if (!!model?.modelVersionsCustomData[curVersion.id]?.tagSetsData?.length) {
       setCurTagSetVersionId(`${curVersion.id}`);
     }
@@ -38,7 +42,11 @@ const SetTagSetPreview = ({ src }) => {
       curtagSet = model.modelVersionsCustomData[curTagSetVersionId].tagSetsData;
     }
 
-    const imgKey = e.target.dataset.nsfw === "nsfw" ? "nsfwImgUrl" : "imgUrl";
+    const isNsfw = e.target.dataset.nsfw === "nsfw";
+
+    const imgKey = isNsfw ? "nsfwImgUrl" : "imgUrl";
+
+    setShowNsfwPreview(isNsfw);
 
     const updatedTagSet = curtagSet.map((tagSet, i) => {
       if (i === +e.target.dataset.id) {

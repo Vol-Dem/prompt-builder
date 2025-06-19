@@ -26,6 +26,7 @@ import {
   ERROR_MESSAGE_AUTH,
   ERROR_MESSAGE_DEFAULT,
   GUIDE_STEP_OPEN_IMAGE,
+  SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV,
   SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT,
   SETTINGS_SEARCH_RESULT_PER_PAGE,
   URL_CIV_MODELS,
@@ -50,6 +51,7 @@ import {
   transformImageData,
 } from "../../utils/generalUtils";
 import NavigationPanel from "../layout/navigation-panel/NavigationPanel";
+import ButtonInfo from "../ui/buttons/ButtonInfo";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -208,7 +210,7 @@ const Model = ({ title }) => {
         //   setWarningMessage(LONG_LOADING_WARNING_MESSAGE);
         // }, defImagesTimeotSec * 1000);
 
-        const docSnap = await getDoc(modelDefImagesRef);
+        const defImagesSnap = await getDoc(modelDefImagesRef);
 
         if (loadingImagesTimeoutRef?.current) {
           clearTimeout(loadingImagesTimeoutRef.current);
@@ -216,8 +218,8 @@ const Model = ({ title }) => {
 
         let curImages;
 
-        if (docSnap.exists()) {
-          const versionImages = docSnap.data()?.items;
+        if (defImagesSnap.exists()) {
+          const versionImages = defImagesSnap.data()?.items;
 
           if (!versionImages?.length) {
             curImages = model?.data?.modelVersions.find(
@@ -230,7 +232,7 @@ const Model = ({ title }) => {
           // setCurVersionImagesIsLoading(false);
         } else {
           ///LOAD DEFAULT IMAGES FROM MODEL
-          // setImageMessage(INITIAL_IMG_LOADING_MESSAGE);
+
           curImages = await getVersionImagesFromCiv(
             model.id,
             model?.data?.creator?.username,
@@ -343,6 +345,7 @@ const Model = ({ title }) => {
 
   const getDefModelDataFromFirestore = useCallback(async () => {
     try {
+      // console.log("GET DB");
       const modelDefDataRef = doc(firestore, "models", `${model.id}`);
       const docSnap = await getDoc(modelDefDataRef);
 
@@ -363,43 +366,51 @@ const Model = ({ title }) => {
     }
   }, [dispatch, model.id]);
 
+  const getDefModelDataFromCivitai = useCallback(async () => {
+    try {
+      // console.log("GET CIV");
+      setDefDataIsLoading(true);
+      const responseCiv = await fetch(
+        `https://civitai.com/api/v1/models/${model.id}`
+      );
+
+      const responseData = await responseCiv.json();
+      // console.log(responseData);
+
+      if (!responseData?.id) {
+        throw new Error("Civitai failed");
+      }
+
+      dispatch(
+        modelActions.setModelData({
+          data: responseData,
+        })
+      );
+      setDefDataIsLoading(false);
+    } catch (err) {
+      console.log(err.message);
+      getDefModelDataFromFirestore();
+    }
+  }, [dispatch, model.id]);
+
   useEffect(() => {
     if (!model?.id) return;
 
     const getDefModelData = async () => {
       try {
-        setDefDataIsLoading(true);
-        const responseCiv = await fetch(
-          `https://civitai.com/api/v1/models/${modelId}`
-        );
-
-        const responseData = await responseCiv.json();
-        // console.log(responseData);
-
-        if (!responseData?.id) {
-          throw new Error("Civitai failed");
+        if (SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV) {
+          await getDefModelDataFromCivitai();
+        } else {
+          await getDefModelDataFromFirestore();
         }
-
-        dispatch(
-          modelActions.setModelData({
-            data: responseData,
-          })
-        );
-        setDefDataIsLoading(false);
       } catch (err) {
         console.log(err.message);
-        getDefModelDataFromFirestore();
+        // getDefModelDataFromFirestore();
       }
     };
 
     getDefModelData();
-  }, [
-    model?.id,
-    dispatch,
-    model?.data?.id,
-    modelId,
-    getDefModelDataFromFirestore,
-  ]);
+  }, [model?.id, dispatch, getDefModelDataFromFirestore]);
 
   useEffect(() => {
     if (
@@ -711,6 +722,7 @@ const Model = ({ title }) => {
                     imagesData={curVersionImages?.filteredItems}
                     versionId={curVersion?.id}
                     saved={false}
+                    modelId={model.id}
                     postId={curVersionImages?.filteredItems[0].postId}
                     location="models"
                     locationId={model.id}
@@ -730,7 +742,7 @@ const Model = ({ title }) => {
           {true && (
             <ul className={classes["hashtags"]}>
               {modelHashtagsHtml}{" "}
-              {allHashtags.length > SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT && (
+              {allHashtags?.length > SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT && (
                 <li>
                   <button
                     onClick={showAllHashtagsHandler}
@@ -762,7 +774,6 @@ const Model = ({ title }) => {
               )}
             </ul>
           )}
-
           <div className={classes["info-container"]}>
             <ModelInfo customData={curCustomVersionData} />
             <ModelTags
@@ -803,7 +814,9 @@ const Model = ({ title }) => {
             <div
               ref={descriptionRef}
               dangerouslySetInnerHTML={{
-                __html: model?.defaultCustomData?.description,
+                __html:
+                  model?.defaultCustomData?.description ||
+                  model?.data?.description,
               }}
             />
           </div>
@@ -815,8 +828,7 @@ const Model = ({ title }) => {
               {!descriptionIsOpen ? "Read more" : "Hide"}
             </span>
           )}
-
-          <h2 className={classes["h2"]}>Generated images:</h2>
+          <h2 className={classes["h2"]}>Generated images:</h2>{" "}
           <GeneratedImages />
         </div>
       )}

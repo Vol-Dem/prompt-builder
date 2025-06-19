@@ -1,0 +1,15 @@
+@use "./../../../../variables/variables.scss" as var;
+
+.btn {
+  border: 1px solid #5c5c5c;
+  border-radius: 10px 0 0 10px;
+  color: #fff;
+  display: inline-flex;
+  flex-shrink: 0;
+  font-size: 1.5rem;
+  justify-content: center;
+  padding: 0.2rem 0.3rem;
+  transition: all 0.3s;
+  width: 7rem;
+  margin: 0.4rem 0;
+}

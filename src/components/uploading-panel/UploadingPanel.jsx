@@ -16,6 +16,8 @@ const UploadingPanel = () => {
   const uid = useSelector((state) => state.auth.user.uid);
   const queue = useSelector((state) => state.upload.queue);
   const rejected = useSelector((state) => state.upload.rejected);
+  const completed = useSelector((state) => state.upload.completed);
+  const completedAmount = useSelector((state) => state.upload.completedAmount);
   const curPostId = useSelector((state) => state.upload.curPostId);
   const dispatch = useDispatch();
 
@@ -72,6 +74,17 @@ const UploadingPanel = () => {
         data={item}
         curPostId={curPostId}
         rejected={isRejected}
+      />
+    );
+  });
+  const completedItems = completed.map((item, i) => {
+    return (
+      <UploadingItem
+        key={i}
+        data={item}
+        curPostId={curPostId}
+        rejected={false}
+        completed={true}
       />
     );
   });
@@ -132,6 +145,13 @@ const UploadingPanel = () => {
             {queue.length}
           </span>
         )}
+        {!!completedAmount && !rejected.length && (
+          <span
+            className={`${classes["uploading__amount"]} ${classes["uploading__amount--completed"]}`}
+          >
+            {completedAmount}
+          </span>
+        )}
         {!!rejected.length && (
           <span
             className={`${classes["uploading__amount"]} ${classes["uploading__amount--rejected"]}`}
@@ -143,6 +163,7 @@ const UploadingPanel = () => {
       <AnimatePresence>
         {uploadingListIsOpen && (
           <DropDownList
+            title="Uploading queue"
             className={classes["uploading-dropdown"]}
             onClose={closeUploadingLIstHandler}
           >
@@ -155,7 +176,9 @@ const UploadingPanel = () => {
             {!!rejected?.length && (
               <>
                 <div className={classes["rejected-panel"]}>
-                  <div className={classes["rejected-panel__title"]}>
+                  <div
+                    className={`${classes["rejected-panel__title"]} ${classes["rejected-panel__title--rejected"]}`}
+                  >
                     -Rejected-
                   </div>
                   <div className={classes["btns-container"]}>
@@ -177,6 +200,28 @@ const UploadingPanel = () => {
                 </div>
 
                 <ul className={classes["uploading-list"]}>{rejectedItems}</ul>
+              </>
+            )}
+            {!!completed?.length && (
+              <>
+                <div className={classes["rejected-panel"]}>
+                  <div
+                    className={`${classes["rejected-panel__title"]} ${classes["rejected-panel__title--completed"]}`}
+                  >
+                    -Completed-
+                  </div>
+                  <div className={classes["btns-container"]}>
+                    <ButtonTertiary
+                      onClick={() => {
+                        dispatch(uploadActions.clearCompleted());
+                      }}
+                    >
+                      Clear All
+                    </ButtonTertiary>
+                  </div>
+                </div>
+
+                <ul className={classes["uploading-list"]}>{completedItems}</ul>
               </>
             )}
           </DropDownList>

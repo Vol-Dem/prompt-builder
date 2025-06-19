@@ -46,13 +46,16 @@ const ModelsList = () => {
   const previewFullView = useSelector((state) => state.tabs.previewFullView);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const guideState = useSelector((state) => state.guide.home);
-  const usedModels = useSelector((state) => state.used.models);
   const endPage = useRef(null);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const isPageEnd = usePageEnd(100);
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
   const dispatch = useDispatch();
+
+  //Rerender component for sidepanel animation
+  const usedModels = useSelector((state) => state.used.models);
+
   const getAllModels = useMemo(
     () =>
       activeTab === "all" ||

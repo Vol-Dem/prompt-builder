@@ -1,10 +1,14 @@
 import classes from "./Carousel3d.module.scss";
-import carouselImage1 from "../../assets/about/1-start-1.webp";
-import carouselImage2 from "../../assets/about/1-start-2.webp";
-import carouselImage3 from "../../assets/about/5-added-models.webp";
+import carouselImage1 from "../../assets/3dcarousel/slide-1.webp";
+import carouselImage2 from "../../assets/3dcarousel/slide-2.webp";
+import carouselImage3 from "../../assets/3dcarousel/slide-3.webp";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-const carouselImages = [carouselImage1, carouselImage2, carouselImage3];
+const carouselImages = [
+  { url: carouselImage1, width: 700, height: 336 },
+  { url: carouselImage2, width: 700, height: 336 },
+  { url: carouselImage3, width: 700, height: 336 },
+];
 const slideDelaySec = 4;
 
 const Carousel3d = () => {
@@ -67,7 +71,13 @@ const Carousel3d = () => {
               zIndex: carouselImages.length * 2 - i,
             }}
           >
-            <img className={classes.image} src={image} alt={`slide${i + 1}`} />
+            <img
+              className={classes.image}
+              src={image.url}
+              width={image.width}
+              height={image.height}
+              alt={`slide${i + 1}`}
+            />
           </li>
         );
       }),
@@ -92,7 +102,13 @@ const Carousel3d = () => {
               zIndex: carouselImages.length - i,
             }}
           >
-            <img className={classes.image} src={image} alt={`slide${i + 1}`} />
+            <img
+              className={classes.image}
+              src={image.url}
+              width={image.width}
+              height={image.height}
+              alt={`slide${i + 1}`}
+            />
           </li>
         );
       }),

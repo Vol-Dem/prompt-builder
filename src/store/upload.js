@@ -2,17 +2,21 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   filterDuplicates,
   handleErrors,
+  throwCustomError,
   transformImageData,
 } from "../utils/generalUtils";
 import { updateImagePostData } from "../utils/fetchUtils";
 import { modelActions } from "./model";
 import { savePostToCollections } from "./images";
+import { ERROR_MESSAGE_INVALID_POST_ID } from "../variables/constants";
 
 const uploadSlice = createSlice({
   name: "upload",
   initialState: {
     queue: [],
     rejected: [],
+    completed: [],
+    completedAmount: 0,
     curPostId: null,
     isUploading: false,
   },
@@ -38,6 +42,10 @@ const uploadSlice = createSlice({
         state.rejected.push(actions.payload);
       }
     },
+    addToCompleted(state, actions) {
+      state.completedAmount = state.completedAmount + 1;
+      state.completed = [actions.payload, ...state.completed].slice(0, 10);
+    },
     setIsUploading(state, actions) {
       state.isUploading = actions.payload;
     },
@@ -48,6 +56,10 @@ const uploadSlice = createSlice({
     clearRejected(state, actions) {
       state.rejected = [];
     },
+    clearCompleted(state, actions) {
+      state.completed = [];
+      state.completedAmount = 0;
+    },
   },
 });
 
@@ -55,8 +67,8 @@ export const savePost = (postInfo) => {
   return async (dispatch, getState) => {
     try {
       const {
-        postId,
         modelId,
+        postId,
         versionId,
         nsfwMode,
         images,
@@ -66,6 +78,9 @@ export const savePost = (postInfo) => {
       } = postInfo;
       // console.log(location);
       // console.log(postInfo);
+      if (!postId) {
+        throwCustomError(ERROR_MESSAGE_INVALID_POST_ID);
+      }
 
       dispatch(uploadActions.setIsUploading(true));
       dispatch(uploadActions.setCurPostId(postId));
@@ -127,6 +142,7 @@ export const savePost = (postInfo) => {
 
       dispatch(uploadActions.setCurPostId(null));
       dispatch(uploadActions.removeFromQueue({ postId, versionId }));
+      dispatch(uploadActions.addToCompleted(postInfo));
       dispatch(uploadActions.setIsUploading(false));
     } catch (err) {
       dispatch(uploadActions.addToRejected(postInfo));

@@ -12,6 +12,8 @@ import {
   addDelayPromise,
   createCategoryId,
   createCollectionId,
+  filterDuplicates,
+  parseModelIds,
   transformImageData,
   transformModelData,
 } from "./generalUtils";
@@ -108,52 +110,23 @@ export const getImagesInfo = async (images) => {
   }
 };
 
-export const getImageInfo = async (image) => {
+export const getImageInfo = async (imageResources, image) => {
   try {
-    const updatedImgData = { ...image };
+    // const updatedImgData = { ...image };
+    let updatedImgResources = [];
 
-    if (image.meta?.resources) {
+    if (imageResources?.length) {
       const updatedRes = await makeBatchRequest(
-        image.meta.resources,
+        imageResources,
         addResourcesInfo
       );
       // console.log(updatedRes);
       if (!updatedRes) {
         throw new Error("failed to update res");
       }
-      updatedImgData.meta = {
-        ...updatedImgData.meta,
-        resources: updatedRes,
-      };
+      updatedImgResources = [...updatedImgResources, ...updatedRes];
     }
-    if (image.meta?.civitaiResources) {
-      const updatedCivRes = await makeBatchRequest(
-        image.meta.civitaiResources,
-        addResourcesInfo
-      );
-      // console.log(updatedCivRes);
-      if (!updatedCivRes) {
-        throw new Error("failed to update res");
-      }
-      updatedImgData.meta = {
-        ...updatedImgData.meta,
-        civitaiResources: updatedCivRes,
-      };
-    }
-    if (image.meta?.additionalResources) {
-      const updatedCivRes = await makeBatchRequest(
-        image.meta.additionalResources,
-        addResourcesInfo
-      );
-      // console.log(updatedCivRes);
-      if (!updatedCivRes) {
-        throw new Error("failed to update res");
-      }
-      updatedImgData.meta = {
-        ...updatedImgData.meta,
-        additionalResources: updatedCivRes,
-      };
-    }
+
     if (image.meta?.hashes) {
       const hashes = { ...image.meta?.hashes, vae: null };
       const hashesData = Object.values(hashes)
@@ -175,26 +148,110 @@ export const getImageInfo = async (image) => {
           return [];
         });
 
-      const updatedCivRes = await makeBatchRequest(
+      const updatedHashRes = await makeBatchRequest(
         hashesData,
         addResourcesInfo
       );
-      // console.log(updatedCivRes);
-      if (!updatedCivRes) {
+      // console.log(updatedHashRes);
+      if (!updatedHashRes) {
         throw new Error("failed to update res");
       }
-      updatedImgData.meta = {
-        ...updatedImgData.meta,
-        hashResources: updatedCivRes,
-      };
+      updatedImgResources = [...updatedImgResources, ...updatedHashRes];
     }
     // console.log(updatedImgData);
-    return await updatedImgData;
+    return filterDuplicates(updatedImgResources, "modelVersionId");
   } catch (err) {
     // console.log(err);
     throw new Error(err);
   }
 };
+// export const getImageInfo = async (image) => {
+//   try {
+//     const updatedImgData = { ...image };
+
+//     if (image.meta?.resources) {
+//       const updatedRes = await makeBatchRequest(
+//         image.meta.resources,
+//         addResourcesInfo
+//       );
+//       // console.log(updatedRes);
+//       if (!updatedRes) {
+//         throw new Error("failed to update res");
+//       }
+//       updatedImgData.meta = {
+//         ...updatedImgData.meta,
+//         resources: updatedRes,
+//       };
+//     }
+//     if (image.meta?.civitaiResources) {
+//       const updatedCivRes = await makeBatchRequest(
+//         image.meta.civitaiResources,
+//         addResourcesInfo
+//       );
+//       // console.log(updatedCivRes);
+//       if (!updatedCivRes) {
+//         throw new Error("failed to update res");
+//       }
+//       updatedImgData.meta = {
+//         ...updatedImgData.meta,
+//         civitaiResources: updatedCivRes,
+//       };
+//     }
+//     if (image.meta?.additionalResources) {
+//       const updatedCivRes = await makeBatchRequest(
+//         image.meta.additionalResources,
+//         addResourcesInfo
+//       );
+//       // console.log(updatedCivRes);
+//       if (!updatedCivRes) {
+//         throw new Error("failed to update res");
+//       }
+//       updatedImgData.meta = {
+//         ...updatedImgData.meta,
+//         additionalResources: updatedCivRes,
+//       };
+//     }
+//     if (image.meta?.hashes) {
+//       const hashes = { ...image.meta?.hashes, vae: null };
+//       const hashesData = Object.values(hashes)
+//         .filter(Boolean)
+//         .flatMap((hash) => {
+//           const isInRes = image.meta?.resources?.find(
+//             (res) => res.hash === hash
+//           );
+//           const isInCivRes = image.meta?.civitaiResources?.find(
+//             (res) => res.hash === hash
+//           );
+//           const isInAddRes = image.meta?.additionalResources?.find(
+//             (res) => res.hash === hash
+//           );
+
+//           if (!isInRes && !isInCivRes && !isInAddRes) {
+//             return { hash };
+//           }
+//           return [];
+//         });
+
+//       const updatedCivRes = await makeBatchRequest(
+//         hashesData,
+//         addResourcesInfo
+//       );
+//       // console.log(updatedCivRes);
+//       if (!updatedCivRes) {
+//         throw new Error("failed to update res");
+//       }
+//       updatedImgData.meta = {
+//         ...updatedImgData.meta,
+//         hashResources: updatedCivRes,
+//       };
+//     }
+//     // console.log(updatedImgData);
+//     return await updatedImgData;
+//   } catch (err) {
+//     // console.log(err);
+//     throw new Error(err);
+//   }
+// };
 
 export const getModelInfo = async (resourcesData) => {
   try {
@@ -553,7 +610,7 @@ export const updateImagePostData = async (
   } catch (err) {
     console.error(err.message);
     // console.log(err);
-    // throw new Error(err);
+    throw new Error(err);
   }
 };
 

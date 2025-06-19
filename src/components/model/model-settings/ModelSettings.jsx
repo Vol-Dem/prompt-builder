@@ -55,12 +55,20 @@ const ModelSettings = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const customData = model.modelVersionsCustomData[curTab];
-    const defData = model.data?.modelVersions?.find(
-      (version) => version.id === +curTab
-    );
+  const DEFAULT_VERSION_ID = "def-ver";
 
+  useEffect(() => {
+    const customData =
+      curTab === DEFAULT_VERSION_ID
+        ? model.defaultCustomData
+        : model.modelVersionsCustomData[curTab];
+
+    const defData =
+      curTab === DEFAULT_VERSION_ID
+        ? model.defaultCustomData
+        : model.data?.modelVersions?.find((version) => version.id === +curTab);
+    // console.log(customData);
+    // console.log(model);
     if (customData) {
       setCurVersionData(customData);
       setCurVersionDefData(defData);
@@ -306,39 +314,60 @@ const ModelSettings = () => {
       <ButtonTertiary className={classes["btn-menu"]} onClick={openMenuHandler}>
         {!mobileMenuIsOpen ? "Menu" : "Close"}
       </ButtonTertiary>
-      <ul
-        className={`${classes["menu"]} ${
-          !mobileMenuIsOpen ? classes["menu--hidden"] : ""
-        }`}
-      >
-        <motion.li
-          initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-          animate={ANIMATIONS_FM_SLIDEIN}
-          className={`${classes["menu-item"]} ${
-            curTab === "general" ? classes["menu-item--active"] : ""
+      <div className={`${classes["menu-container"]}`}>
+        <ul
+          // animate={{ x: !mobileMenuIsOpen ? "-100%" : 0 }}
+          // transition={{ bounce: 0 }}
+          className={`${classes["menu"]} ${
+            !mobileMenuIsOpen ? classes["menu--hidden"] : ""
           }`}
-          id="general"
-          onClick={switchTabHandler}
         >
-          General settings
-        </motion.li>
-        <motion.li
-          initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-          animate={ANIMATIONS_FM_SLIDEIN}
-          className={`${classes["menu-item"]} ${
-            curTab === "versions" ? classes["menu-item--active"] : ""
-          }`}
-          id="versions"
-          onClick={switchTabHandler}
-        >
-          Version settings
-        </motion.li>
-        <li>
-          <AnimatePresence>
-            <ul className={classes.versions}>{modelVersionsHtml}</ul>
-          </AnimatePresence>
-        </li>
-      </ul>
+          <motion.li
+            initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            animate={ANIMATIONS_FM_SLIDEIN}
+            className={`${classes["menu-item"]} ${
+              curTab === "general" ? classes["menu-item--active"] : ""
+            }`}
+            id="general"
+            onClick={switchTabHandler}
+          >
+            General settings
+          </motion.li>
+          <motion.li
+            initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            animate={ANIMATIONS_FM_SLIDEIN}
+            className={`${classes["menu-item"]} ${
+              curTab === "versions" ? classes["menu-item--active"] : ""
+            }`}
+            id="versions"
+            onClick={switchTabHandler}
+          >
+            Version settings
+          </motion.li>
+          <li>
+            <AnimatePresence>
+              <ul className={classes.versions}>
+                <motion.li
+                  initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+                  animate={ANIMATIONS_FM_SLIDEIN}
+                  exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
+                  id={DEFAULT_VERSION_ID}
+                  data-version="def"
+                  onClick={switchTabHandler}
+                  className={`${classes["menu-item"]} ${
+                    curTab === DEFAULT_VERSION_ID
+                      ? classes["menu-item--active"]
+                      : ""
+                  }`}
+                >
+                  Default for All
+                </motion.li>
+                {modelVersionsHtml}
+              </ul>
+            </AnimatePresence>
+          </li>
+        </ul>
+      </div>
       {mobileMenuIsOpen && (
         <div
           className={classes["menu-overlay"]}
@@ -404,6 +433,7 @@ const ModelSettings = () => {
               defaultData={curVersionDefData}
               modelId={model.id}
               modelType={model.modelType}
+              isDefault={curTab === DEFAULT_VERSION_ID}
             />
           </motion.div>
         )}

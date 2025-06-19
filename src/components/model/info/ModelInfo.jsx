@@ -35,18 +35,18 @@ const ModelInfo = ({ customData }) => {
         <span className={classes["info__name"]}>Base model: </span>
         <span className={classes.model}>{curVersion?.baseModel}</span>
       </div>
-      {size && (
+      {!!size && (
         <div>
           <span className={classes["info__name"]}>Size:</span> {size}
         </div>
       )}
-      {minWeight && maxWeight && (
+      {!!minWeight && !!maxWeight && (
         <div>
           {" "}
           <span className={classes["info__name"]}>Weight:</span> {weightRange}
         </div>
       )}
-      {weight && (
+      {!!weight && (
         <div>
           <span className={classes["info__name"]}>Best weight:</span> {weight}
         </div>

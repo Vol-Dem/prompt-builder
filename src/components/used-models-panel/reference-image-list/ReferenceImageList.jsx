@@ -29,6 +29,8 @@ const ReferenceImageList = ({ usedImages }) => {
       dispatch(
         modelActions.setActiveCarouselData({
           images: [image],
+          postId: image.postId,
+          saved: true,
           side: true,
         })
       );

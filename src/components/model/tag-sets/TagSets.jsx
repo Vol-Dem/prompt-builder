@@ -16,6 +16,8 @@ import Modal from "../../ui/Modal";
 import TagSetsForm from "../../forms/tag-sets-form/TagSetsForm";
 import { AnimatePresence, motion } from "framer-motion";
 import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
+import ButtonInfo from "../../ui/buttons/ButtonInfo";
+import InfoTagsets from "../../ui/guide/info/InfoTagSets";
 
 const defVisibleTags = 2;
 
@@ -156,7 +158,13 @@ const TagSets = ({ customData, defaultData }) => {
   return (
     <div className={classes["tag-sets__wrap"]}>
       <div className={classes["tag-sets__header"]}>
-        <div className={classes.title}>Tag sets:</div>
+        <div className={classes.title}>
+          Tag sets:{" "}
+          <ButtonInfo>
+            <InfoTagsets />
+          </ButtonInfo>
+        </div>
+
         <Buttton onClick={openTagSetsForm}>Add tag set</Buttton>
       </div>
       {!tagSets?.length && (

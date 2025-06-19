@@ -17,6 +17,8 @@
 
   &__message {
     color: var.$color-text-gray;
+    // flex-shrink: 0;
+    width: 100%;
   }
 }
 

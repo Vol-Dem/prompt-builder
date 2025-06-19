@@ -12,7 +12,18 @@
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+  -webkit-user-select: none;
   user-select: none;
+}
+
+.btn-info {
+  width: 2.4rem;
+  height: 2.4rem;
+
+  & svg {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
 }
 
 .container {
@@ -49,6 +60,15 @@
   padding: 0 2rem;
   background-color: rgb(var.$color-background-primary, 0.9);
   transition: all 0.3s;
+}
+
+.info {
+  width: 2.4rem;
+  height: 2.4rem;
+  & svg {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
 }
 
 .settings {
@@ -155,7 +175,8 @@
     // height: 10rem;
     resize: none;
     flex-grow: 1;
-    font-family: "Segoe UI", sans-serif;
+    // font-family: "Segoe UI", sans-serif;
+    font-family: "Nunito", sans-serif;
     word-spacing: 0.4rem;
     letter-spacing: 0.1px;
     // max-height: calc(100vh - 300px);
@@ -346,6 +367,10 @@
     height: 2.2rem;
   }
 
+  .clear__title {
+    display: none;
+  }
+
   .clear--fields {
     display: none;
   }
@@ -363,9 +388,9 @@
     }
   }
   .field {
-    height: 17rem;
+    min-height: 17rem;
     &--neg {
-      height: 9rem;
+      min-height: 9rem;
     }
   }
 
@@ -385,5 +410,9 @@
   .btn-open {
     width: 14rem;
     height: 2.2rem;
+  }
+
+  .info {
+    display: none;
   }
 }

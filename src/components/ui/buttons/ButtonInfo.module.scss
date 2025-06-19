@@ -1,0 +1,19 @@
+@use "./../../../variables/variables.scss" as var;
+
+.btn {
+  width: 2.6rem;
+  height: 2.6rem;
+  cursor: pointer;
+  // background-color: var.$color-background-red;
+  & svg {
+    width: 2.6rem;
+    height: 2.6rem;
+    color: #898996;
+    transition: all 0.2s;
+
+    &:hover {
+      color: var.$color-primary;
+      // color: #aeaebc;
+    }
+  }
+}

@@ -94,9 +94,9 @@ const UsedModelsPanel = memo(() => {
   //   dispatch(usedModelsActions.cardViewState());
   // };
 
-  const closeFormHandler = useCallback((value) => {
-    // setFormIsOpen(value);
-  }, []);
+  // const closeFormHandler = useCallback((value) => {
+  //   // setFormIsOpen(value);
+  // }, []);
 
   const usedModelsHtml = useMemo(() => {
     return usedModels.map((model, i) => {
@@ -106,12 +106,12 @@ const UsedModelsPanel = memo(() => {
             layoutId={model.id}
             previewData={model}
             fullView={fullCardView}
-            onClick={closeFormHandler}
+            // onClick={closeFormHandler}
           />
           <UsedCard
             previewData={model}
             fullView={fullCardView}
-            onClick={closeFormHandler}
+            // onClick={closeFormHandler}
           />
         </div>
       );
@@ -271,10 +271,10 @@ const UsedModelsPanel = memo(() => {
               </Buttton>
             </div>
 
-            {/* <div>
-            <button onClick={prevStepHandler}>prev</button>
-            <button onClick={nextStepHandler}>next</button>
-          </div> */}
+            <div>
+              {/* <button onClick={prevStepHandler}>prev</button>
+              <button onClick={nextStepHandler}>next</button> */}
+            </div>
             {userDataLoadError && (
               <ErrorMessage>{userDataLoadError}</ErrorMessage>
             )}
@@ -346,14 +346,15 @@ const UsedModelsPanel = memo(() => {
             )}
           </div>
           <div className={classes["support"]}>
-            Support project:{" "}
+            <span className={classes["support__title"]}>Support project:</span>{" "}
             <a
               href="https://www.patreon.com/aidetools"
               target="_blank"
               rel="noreferrer nofollow"
             >
               <img
-                height="16"
+                width={520}
+                height={108}
                 src={require("../../assets/patreon-w.png")}
                 border="0"
                 alt="patreon"
@@ -365,8 +366,10 @@ const UsedModelsPanel = memo(() => {
               rel="noreferrer nofollow"
             >
               <img
-                height="28"
-                src="https://storage.ko-fi.com/cdn/brandasset/kofi_bg_tag_dark.png"
+                width={341}
+                height={129}
+                src={require("../../assets/kofi_bg_tag_dark.webp")}
+                // src="https://storage.ko-fi.com/cdn/brandasset/kofi_bg_tag_dark.png"
                 border="0"
                 alt="ko-fi"
               />

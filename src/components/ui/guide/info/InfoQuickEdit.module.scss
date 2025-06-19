@@ -1,0 +1,58 @@
+@use "./../../../../variables/variables.scss" as var;
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+  padding-right: 1.6rem;
+  font-size: 1.6rem;
+  max-width: 70rem;
+  max-height: 85vh;
+  overflow-y: scroll;
+  @include var.custom-scroll;
+}
+
+.image {
+  background-color: transparent;
+  border-radius: 10px;
+  margin: 1.4rem 0;
+
+  & img {
+    position: relative;
+    height: auto;
+  }
+}
+
+.video {
+  margin: auto;
+  margin-top: 2rem;
+}
+
+.text {
+  margin-bottom: 0.4rem;
+}
+
+.h3 {
+  display: inline-block;
+  margin-top: 1rem;
+  width: fit-content;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var.$color-primary;
+}
+
+.text-white {
+  color: var.$color-text-white;
+}
+
+.saved {
+  border: 1px solid #5c5c5c;
+  border-radius: 10px 0 0 10px;
+  color: #fff;
+  display: inline-flex;
+  flex-shrink: 0;
+  font-size: 1.5rem;
+  justify-content: center;
+  padding: 0.2rem 0.3rem;
+  transition: all 0.3s;
+  width: 7rem;
+}

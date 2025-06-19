@@ -164,16 +164,14 @@ const TagSetsInputFieldset = ({
       >
         <div className={classes["tagset__header"]}>
           <span className={classes["tagset__title"]}>{`Tagset ${i + 1}`}</span>{" "}
-          {i !== 0 && (
-            <ButtonTertiary
-              type="button"
-              title="Delete tag set"
-              className={classes["input__btn-del"]}
-              onClick={deleteTagsetInputHandler.bind(null, i)}
-            >
-              <CrossSvg />
-            </ButtonTertiary>
-          )}
+          <ButtonTertiary
+            type="button"
+            title="Delete tag set"
+            className={classes["input__btn-del"]}
+            onClick={deleteTagsetInputHandler.bind(null, i)}
+          >
+            <CrossSvg />
+          </ButtonTertiary>
         </div>
         <Input
           id={tagSet[0].id}

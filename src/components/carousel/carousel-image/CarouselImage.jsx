@@ -21,7 +21,8 @@ import {
 import SetTagSetPreview from "../set-tagset-preview/SetTagSetPreview";
 import { transformSrcPreview } from "../../../utils/generalUtils";
 import useIntersection from "../../../hooks/use-intersection";
-import { PlayIcon } from "@heroicons/react/24/outline";
+import { PlayIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
+import ButtonSquare from "../../ui/ButtonSquare";
 
 const CarouselImage = ({
   id,
@@ -60,11 +61,11 @@ const CarouselImage = ({
   //   (state) => state.model.activeCarouselData
   // );
   const videoRef = useRef(null);
-  const isInersecting = useIntersection(
-    imageData?.type === "video" ? videoRef : null,
-    false,
-    -300
-  );
+  // const isInersecting = useIntersection(
+  //   imageData?.type === "video" ? videoRef : null,
+  //   false,
+  //   -300
+  // );
 
   // useEffect(() => {
   //   if (imageData?.type !== "video" || !videoRef?.current) return;
@@ -124,7 +125,7 @@ const CarouselImage = ({
     setMenuIsOpen(false);
   };
   const setNsfwPreviwImgHandler = (e) => {
-    console.log(imgSrc);
+    // console.log(imgSrc);
     dispatch(setPreviewImg(imgSrc, true, location, locationId, imageData.type));
     setMenuIsOpen(false);
   };
@@ -305,6 +306,8 @@ const CarouselImage = ({
               id={id}
               src={imgSrc}
               alt={alt}
+              // width={imageData.width}
+              // height={imageData.height}
             />
           )}
           {imageData.type === "video" && (
@@ -313,7 +316,10 @@ const CarouselImage = ({
               onClick={onClick}
               data-position={dataset}
             >
-              <PlayIcon className={classes["play-icon__svg"]} />
+              <PlayIcon
+                className={classes["play-icon__svg"]}
+                data-position={dataset}
+              />
             </div>
           )}
           {imageData.type === "video" && active && (
@@ -327,6 +333,8 @@ const CarouselImage = ({
               disablePictureInPicture
               preload="none"
               muted
+              // width={imageData.width}
+              // height={imageData.height}
               poster={imgSrc}
               onClick={onClick}
               className={`${classes.image} ${

@@ -12,6 +12,25 @@
     align-items: center;
   }
 }
+.tooltip {
+  color: #898996;
+  width: 2.5rem;
+  height: 2.5rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #aeaebc;
+  }
+
+  & svg {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  &__content {
+    width: 30rem;
+  }
+}
 
 .tags {
   display: flex;
@@ -181,6 +200,12 @@
   &__btn {
     margin-top: 2rem;
     margin-left: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .tooltip__content {
+    width: 20rem;
   }
 }
 

@@ -334,6 +334,36 @@ const promptSlice = createSlice({
         }
       )
       .addMatcher(
+        (action) =>
+          action.type.startsWith("prompt/setCurrentPrompt") ||
+          action.type.startsWith("prompt/setCurrentNegPrompt"),
+        (state, actions) => {
+          const allIds = [];
+
+          const promptArr = convertPromptToArr(state.curPrompt).map(
+            (tag, i) => {
+              const newId = allIds[allIds.length - 1] + 1 || 0;
+              allIds.push(newId);
+              return createPromptItem(tag, newId, i);
+            }
+          );
+
+          const promptArrNeg = convertPromptToArr(state.curNegPrompt).map(
+            (tag, i) => {
+              const newId = allIds[allIds.length - 1] + 1 || 0;
+              allIds.push(newId);
+              return createPromptItem(tag, newId, i);
+            }
+          );
+
+          const newPosPromptArrDuplicates = markDuplicateTags(promptArr);
+          const newNegPromptArrDuplicates = markDuplicateTags(promptArrNeg);
+
+          state.curPromptArr = newPosPromptArrDuplicates;
+          state.curNegPromptArr = newNegPromptArrDuplicates;
+        }
+      )
+      .addMatcher(
         (action) => action.type.startsWith("prompt/"),
         (state, action) => {
           const uid = auth?.currentUser?.uid;

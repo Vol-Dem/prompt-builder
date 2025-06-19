@@ -24,6 +24,7 @@ import {
 } from "../../variables/constants";
 import { AnimatePresence, motion } from "framer-motion";
 import { imagesActions } from "../../store/images";
+import { modelActions } from "../../store/model";
 
 const searchTimeoutMs = 1000;
 
@@ -215,6 +216,7 @@ const Search = ({ className }) => {
           onClick={() => {
             dispatch(searchActions.setSearchQuery(""));
             dispatch(searchActions.setSearchResult([]));
+            dispatch(modelActions.setActiveCarouselData({}));
           }}
         >
           <>

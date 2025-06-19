@@ -1,0 +1,9 @@
+@use "./../../../variables/variables.scss" as var;
+
+.content {
+  padding: 2rem 3rem;
+  border-radius: 10px;
+  background-color: var.$color-background-tertiary;
+  background-color: rgba(var.$color-background-tertiary, 0.7);
+  // background-color: lighten(var.$color-background-secondary, 2%);
+}

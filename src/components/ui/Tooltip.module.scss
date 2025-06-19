@@ -2,18 +2,18 @@
 
 .tooltip {
   position: relative;
-  height: 2.5rem;
-  color: #898996;
+  // height: 2.5rem;
+  // color: #898996;
   transition: all 0.3s ease;
-  cursor: pointer;
+  // cursor: pointer;
 
-  & svg {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-  &:hover {
-    color: #aeaebc;
-  }
+  // & svg {
+  //   width: 2.5rem;
+  //   height: 2.5rem;
+  // }
+  // &:hover {
+  //   color: #aeaebc;
+  // }
 
   &:hover &-content {
     display: block;
@@ -28,7 +28,8 @@
     right: 0;
     transform: translate(100%, -100%);
     font-size: 1.4rem;
-    width: 30rem;
+    color: #aeaebc;
+    // width: 30rem;
     padding: 1rem;
     border-radius: 10px 10px 10px 0;
     border: 1px solid var.$color-text-gray-dark;
@@ -47,8 +48,8 @@
   }
 }
 
-@media (max-width: 768px) {
-  .tooltip-content {
-    width: 20rem;
-  }
-}
+// @media (max-width: 768px) {
+//   .tooltip-content {
+//     width: 20rem;
+//   }
+// }

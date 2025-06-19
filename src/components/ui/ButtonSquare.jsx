@@ -3,11 +3,11 @@ import classes from "./ButtonSquare.module.scss";
 const ButtonSquare = ({ children, onClick, title, disabled, className }) => {
   return (
     <button
-      className={`${classes["button"]} ${
-        disabled ? classes["button--disabled"] : ""
+      className={`${classes["button"]} ${onClick ? classes["active"] : ""} ${
+        disabled ? classes["active--disabled"] : ""
       } ${className || ""}`}
       onClick={onClick}
-      title={title}
+      title={title || ""}
     >
       {children}
     </button>

@@ -4,6 +4,10 @@ import classes from "./Modal.module.scss";
 import { createPortal } from "react-dom";
 import CrossSvg from "../../assets/CrossSvg";
 import { motion } from "framer-motion";
+import {
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+} from "../../variables/constants";
 
 const Modal = (props) => {
   useEffect(() => {
@@ -40,12 +44,9 @@ const Modal = (props) => {
           <motion.div
             layout
             variants={{
-              hidden: { opacity: 0, y: 30 },
-              visible: { opacity: 1, y: 0 },
-              exit: { opacity: 0, y: 30 },
-              // hidden: { opacity: 0, y: "-30%", x: "-50%" },
-              // visible: { opacity: 1, y: "-50%", x: "-50%" },
-              // exit: { opacity: 0, y: "-30%", x: "-50%" },
+              hidden: ANIMATIONS_FM_SLIDEIN_INITIAL,
+              visible: ANIMATIONS_FM_SLIDEIN,
+              exit: ANIMATIONS_FM_SLIDEIN_INITIAL,
             }}
             initial="hidden"
             animate="visible"

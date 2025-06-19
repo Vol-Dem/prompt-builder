@@ -139,7 +139,7 @@ const ComboSelect = ({
                   className={`${classes.options} ${
                     !!optionsData?.length ? classes["options__border"] : ""
                   }`}
-                  onAnimationComplete={() => setQuery("")}
+                  // onAnimationComplete={() => setQuery("")}
                   data-id={id}
                   modal={false}
                   // portal={false}
@@ -155,7 +155,7 @@ const ComboSelect = ({
                   )}
                   {optionsData.map((options, i) => (
                     <ComboboxOption
-                      key={options?.id}
+                      key={options?.id || i}
                       value={options}
                       className={`${classes.option} ${
                         options?.name && options?.name === selected?.name

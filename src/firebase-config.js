@@ -19,6 +19,9 @@ const firebaseConfig = {
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 
+//Get debug token for localhost
+// window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+
 initializeAppCheck(firebaseApp, {
   provider: new ReCaptchaV3Provider(process.env.REACT_APP_FIREBASE_REC),
 

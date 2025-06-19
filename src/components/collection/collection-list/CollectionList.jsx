@@ -38,6 +38,9 @@ const CollectionList = ({ sortBy }) => {
   const isPageEnd = usePageEnd(100);
   const isOnline = useOnlineStatus();
 
+  //Rerender component for sidepanel animation
+  const usedModels = useSelector((state) => state.used.models);
+
   useEffect(() => {
     setIsIntersecting(isPageEnd);
   }, [isPageEnd]);
@@ -52,15 +55,15 @@ const CollectionList = ({ sortBy }) => {
   const collectionsHtml = collectionPreviews?.data?.map((collection, i) => {
     return (
       <AddToPanelAnimContainer key={i}>
-        <PreviewCard layout={false} previewData={collection} />
-        <PreviewCard layout={true} previewData={collection} />
+        <PreviewCard layout={false} previewData={collection} fullView={false} />
+        <PreviewCard layout={true} previewData={collection} fullView={false} />
       </AddToPanelAnimContainer>
     );
   });
 
   return (
     <div className={classes["container"]}>
-      {!!collectionPreviews?.data?.length && (
+      {/* {!!collectionPreviews?.data?.length && (
         <motion.div
           initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
           animate={ANIMATIONS_FM_SLIDEIN}
@@ -69,6 +72,9 @@ const CollectionList = ({ sortBy }) => {
         >
           {collectionsHtml}
         </motion.div>
+      )} */}
+      {!!collectionPreviews?.data?.length && (
+        <div className={`${classes["collections"]}`}>{collectionsHtml}</div>
       )}
       {!collectionPreviews?.data?.length && !isLoading && (
         <NotificationMessage>This category is empty</NotificationMessage>

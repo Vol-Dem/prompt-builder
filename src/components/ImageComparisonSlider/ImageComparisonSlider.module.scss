@@ -1,0 +1,67 @@
+@use "./../../variables/variables.scss" as var;
+.container {
+  position: relative;
+}
+
+.image-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.image {
+  display: block;
+  //   margin-top: 2rem;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+
+  &--2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: auto;
+  }
+}
+
+.control {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0.6rem;
+  height: 100%;
+  background-color: var.$color-gray;
+  border-radius: 10px;
+  cursor: col-resize;
+
+  &__arrows {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background-color: var.$color-gray;
+
+    & svg {
+      transform: rotate(90deg);
+      color: var.$color-primary;
+      width: 3.4rem;
+      height: 3.4rem;
+    }
+  }
+}

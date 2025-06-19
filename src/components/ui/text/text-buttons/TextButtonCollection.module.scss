@@ -1,0 +1,12 @@
+@use "./../../../../variables/variables.scss" as var;
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var.$color-primary;
+  border-radius: 1rem;
+  color: #e8e8e8;
+  font-weight: 600;
+  padding: 0.6rem 1.6rem;
+}

@@ -1,5 +1,6 @@
 import { MotionGlobalConfig } from "framer-motion";
 import {
+  ERROR_MESSAGE_CIV_CONNECTION,
   ERROR_MESSAGE_DEFAULT,
   REGEX_SPLIT_TAGS,
   SETTINGS_IMAGE_PREVIEW_WIDTH_DEF,
@@ -442,6 +443,10 @@ export const handleErrors = (err) => {
     console.error(err);
   }
 
+  if (err.message.includes("prisma")) {
+    errorMessage = ERROR_MESSAGE_CIV_CONNECTION;
+  }
+
   return errorMessage;
 };
 
@@ -449,7 +454,7 @@ export const createTagSetsInputData = (tagSetsData, defTagSetData) => {
   let tagSets;
 
   if (!tagSetsData?.length) {
-    tagSets = defTagSetData;
+    tagSets = structuredClone(defTagSetData);
   } else {
     tagSets = tagSetsData.map((tagSet, i) => {
       return [
@@ -518,7 +523,7 @@ export const transformSrcPreview = (
 
     if (type === "video") {
       const videoSrc = `transcode=true,width=${width}`;
-      const videoOriginalSrc = `transcode=true,original=true,quality=90`;
+      const videoOriginalSrc = `anim=true,transcode=true`;
 
       previewVideoMp4Src = srcArr.toSpliced(widthIndex, 1, videoSrc).join("/");
       originalVideoMp4Src = srcArr
@@ -605,9 +610,10 @@ export const filterDuplicates = (arr, field) => {
 
   if (field) {
     const values = arr.map((item) => item[field]);
-    return arr.filter(
-      (item, index) => !values.includes(item[field], index + 1)
-    );
+    return arr.filter((item, index) => {
+      if (!item[field]) return item;
+      return !values.includes(item[field], index + 1);
+    });
   } else {
     return [...new Set(arr)];
   }
@@ -669,4 +675,18 @@ export const sortArrayBy = (arr, field = null, direction) => {
 
 export const checkArraysIsEqual = (arr1, arr2) => {
   return arr1?.toSorted().toString() === arr2?.toSorted().toString();
+};
+
+export const getPostIdFromInput = (postInput) => {
+  if (Number.isFinite(+postInput)) {
+    return +postInput;
+  }
+  const postInputArr = postInput.split("/");
+  const postId = postInputArr[postInputArr.length - 1];
+
+  if (Number.isFinite(+postId)) {
+    return +postId;
+  } else {
+    return null;
+  }
 };

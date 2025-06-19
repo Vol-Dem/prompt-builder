@@ -50,11 +50,20 @@ const MobileNavigation = () => {
             <ul className={classes["mobile-nav__links"]} onClick={navSwitch}>
               <li>
                 <NavLink to="/" onClick={resetTabsHandler}>
-                  Home
+                  {isAuth ? "Models" : "Home"}
                 </NavLink>
               </li>
               {isAuth && (
                 <>
+                  <li>
+                    <NavLink
+                      to="images"
+                      className={(nav) => (nav.isActive ? classes.active : "")}
+                      onClick={resetTabsHandler}
+                    >
+                      Images
+                    </NavLink>
+                  </li>
                   <li>
                     <NavLink to="profile" onClick={resetTabsHandler}>
                       Profile

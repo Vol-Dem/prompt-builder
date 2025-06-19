@@ -89,6 +89,11 @@
       top: -2px;
       background-color: var.$color-red;
     }
+
+    &--completed {
+      top: -2px;
+      background-color: var.$color-green;
+    }
   }
 
   &__empty {
@@ -110,6 +115,13 @@
     text-align: center;
     background-color: darken(var.$color-background-primary, 4%);
     box-shadow: var.$box-shadow;
+
+    &--completed {
+      color: var.$color-text-green;
+    }
+    &--rejected {
+      color: var.$color-text-red;
+    }
   }
 }
 
@@ -120,6 +132,7 @@
 
 .uploading .uploading-dropdown {
   width: 25rem;
+  max-height: 50rem;
   top: 100%;
   left: 100%;
   z-index: 30;

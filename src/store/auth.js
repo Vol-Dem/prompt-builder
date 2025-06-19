@@ -38,6 +38,7 @@ const provider = new GoogleAuthProvider();
 
 const authInitialState = {
   isLoggedIn: false,
+  initialAuth: false,
   authFormIsOpen: false,
   reAuthFormIsOpen: false,
   showResetPassword: false,
@@ -81,6 +82,9 @@ const authSlice = createSlice({
     },
     openAuthForm(state) {
       state.authFormIsOpen = true;
+    },
+    setInitialAuth(state, actions) {
+      state.initialAuth = actions.payload;
     },
     closeAuthForm(state) {
       state.authFormIsOpen = false;
@@ -133,6 +137,7 @@ export const initAuth = () => {
         dispatch(uploadPromptFromStorage(user.uid));
         dispatch(getUserData(user.uid));
       }
+      dispatch(authActions.setInitialAuth(true));
     });
   };
 };

@@ -267,7 +267,7 @@ export const setPreviewImg = (
         dbCollectionName,
         locationId + ""
       );
-      console.log(url);
+      // console.log(url);
       await setDoc(
         locationPrevRef,
         {
@@ -333,8 +333,8 @@ export const setTagSetPreviewImg = (versionId, tagSetData) => {
 export const deleteImgPost = (postInfo, postData) => {
   return async (dispatch, getState) => {
     try {
-      console.log(postInfo);
-      console.log(postData);
+      // console.log(postInfo);
+      // console.log(postData);
       const { versionId, postId } = postInfo;
       const uid = getState().auth.user.uid;
       const id = getState().model.model.id;

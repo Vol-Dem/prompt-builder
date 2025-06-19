@@ -17,21 +17,40 @@ import SaveImageForm from "../forms/save-image-form/SaveImageForm";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import { getCollectionData } from "../../utils/fetchUtils";
+import ButtonSquareAdd from "../ui/ButtonSquareAdd";
 
 const ImageCollection = ({ title }) => {
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [collectionPreview, setCollectionPreview] = useState(null);
   const isAuth = useSelector((state) => state.auth.user.uid);
   const { collectionId } = useParams();
   const dispatch = useDispatch();
   const collectionData = useSelector((state) => state.images.collectionData);
+  const collectionPreviews = useSelector(
+    (state) => state.images.collectionPreviews
+  );
   const activeCategory = useSelector((state) => state.images.activeCategory);
   const categoriesData = useSelector((state) => state.images.categories);
   // const isLoading = useSelector((state) => state.images.collectionIsLoading);
   const collectionImages = useSelector(
     (state) => state.images.collectionImages
   );
+
+  useEffect(() => {
+    const collPrev = collectionPreviews?.data?.find(
+      (preview) => preview.id === collectionData.id
+    );
+    if (collPrev) setCollectionPreview(collPrev);
+
+    return () => {
+      setCollectionPreview(null);
+    };
+  }, [collectionData, collectionPreviews]);
+
+  // console.log(collectionData);
+  // console.log(collectionPreviews);
   //   const postIds = collectionData?.posts?.map((post) => post.postId);
 
   //   useEffect(() => {
@@ -53,7 +72,7 @@ const ImageCollection = ({ title }) => {
   useEffect(() => {
     if (!isAuth || !collectionId) return;
     // let unsub;
-    const getModelData = async () => {
+    const getCollectionData = async () => {
       try {
         // console.log("RUN");
         setIsLoading(true);
@@ -66,7 +85,7 @@ const ImageCollection = ({ title }) => {
         setIsLoading(false);
       }
     };
-    getModelData();
+    getCollectionData();
 
     return () => {
       dispatch(imagesActions.resetCollectionData());
@@ -162,7 +181,12 @@ const ImageCollection = ({ title }) => {
           </NavigationPanel>
           <div className={classes["title-container"]}>
             <h1 className={classes.title}>{collectionData?.name}</h1>
-            {/* <ButtonSquareAdd previewData={modelPreview} /> */}
+            {collectionPreview && (
+              <ButtonSquareAdd
+                previewData={collectionPreview}
+                type="collection"
+              />
+            )}
           </div>
           {collectionData?.description && <p>{collectionData?.description}</p>}
 
@@ -179,7 +203,7 @@ const ImageCollection = ({ title }) => {
           <AnimatePresence>
             {addImgModalIsOpen && (
               <Modal
-                title="Add images by ID"
+                title="Add images by Post ID"
                 onClose={() => {
                   setAddImgModalIsOpen(false);
                 }}

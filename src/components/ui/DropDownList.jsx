@@ -7,7 +7,7 @@ import {
 import classes from "./DropDownList.module.scss";
 import { motion } from "framer-motion";
 
-const DropDownList = ({ children, className, onClose }) => {
+const DropDownList = ({ children, className, onClose, title }) => {
   return (
     <div className={`${classes["dropdown"]} ${className || ""}`}>
       <motion.div
@@ -17,6 +17,7 @@ const DropDownList = ({ children, className, onClose }) => {
         className={classes["dropdown__container"]}
       >
         <div className={classes["dropdown__settings"]}>
+          <span className={classes["dropdown__title"]}>{title}</span>
           <button
             className={classes["btn-close"]}
             onClick={() => {

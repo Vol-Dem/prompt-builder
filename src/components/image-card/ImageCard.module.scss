@@ -1,5 +1,25 @@
 @use "./../../variables/variables.scss" as var;
 
+.title-container {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.h4 {
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.info-btn {
+  width: 2.4rem;
+  height: 2.4rem;
+  & svg {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+}
+
 .example {
   // position: absolute;
   // left: 0;
@@ -87,7 +107,7 @@
     padding-right: 1rem;
   }
 
-  &__resourses {
+  &__resources {
     position: relative;
     list-style: none;
 
@@ -291,6 +311,11 @@
     }
   }
 
+  &__version-tooltip {
+    width: max-content;
+    max-width: 16rem;
+  }
+
   &__version-name {
     word-break: break-word;
     @include var.ellipsis(1) // display: -webkit-box;
@@ -308,10 +333,39 @@
     right: 0;
     top: 50%;
     transform: translate(20%, -50%);
+    z-index: 5;
+  }
+
+  &__unavailable {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    & svg {
+      width: 2.4rem;
+      color: var.$color-text-gray;
+    }
   }
 
   &__field {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
     // margin-top: 0.2rem;
+  }
+
+  &__connection-error {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var.$color-text-gray;
+    // border: 1px solid var.$color-text-gray;
+    border-radius: 5px;
+    padding: 0.1rem 0.3rem;
+
+    & svg {
+      width: 1.4rem;
+      height: 1.4rem;
+    }
   }
 }
 
@@ -325,6 +379,19 @@
   }
 }
 
+.tooltip {
+  text-align: left;
+
+  &--align-left {
+    margin-right: auto;
+  }
+  &--centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 .spiner-container {
   position: relative;
   height: 3rem;
@@ -332,6 +399,7 @@
   margin: 0 auto;
   margin-top: 1rem;
 }
+
 .plus {
   display: inline-block;
   width: 1.5rem;
@@ -376,7 +444,7 @@
     width: 100%;
   }
 
-  .example__resourses {
+  .example__resources {
     display: flex;
     flex-wrap: wrap;
     gap: 2rem;
@@ -398,9 +466,12 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 490px) {
   .resource {
     font-size: 1.6rem;
     width: 100%;
+  }
+  .example__resources {
+    gap: 1rem;
   }
 }

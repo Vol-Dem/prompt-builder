@@ -1,0 +1,60 @@
+@use "./../../../../variables/variables.scss" as var;
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+  padding-right: 1.6rem;
+  font-size: 1.6rem;
+  max-width: 70rem;
+  max-height: 85vh;
+  overflow-y: scroll;
+  @include var.custom-scroll;
+}
+
+.image {
+  background-color: transparent;
+  border-radius: 10px;
+  margin: 1.4rem 0;
+
+  & img {
+    position: relative;
+    height: auto;
+  }
+}
+
+.video {
+  margin: auto;
+  flex-shrink: 0;
+  width: 100%;
+  height: auto;
+}
+
+.text {
+  margin-bottom: 0.4rem;
+}
+
+.h3 {
+  display: inline-block;
+  margin-top: 1rem;
+  // margin-bottom: 1rem;
+  width: fit-content;
+  // margin-left: 1.4rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var.$color-primary;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  font-weight: 600;
+  font-family: inherit;
+  font-size: 1.6rem;
+  color: var.$color-text-gray;
+  border: 1px solid var.$color-primary;
+  width: 14rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 10px;
+  text-align: center;
+  justify-content: center;
+  align-self: flex-end;
+}

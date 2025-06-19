@@ -15,6 +15,8 @@ import GeneratedImagesGuide from "../../ui/guide/model/GeneratedImagesGuide";
 import { AnimatePresence } from "framer-motion";
 import SavedImages from "./saved-images/SavedImages";
 import ExternalImages from "./external-images/ExternalImages";
+import ButtonInfo from "../../ui/buttons/ButtonInfo";
+import InfoGeneratedImages from "../../ui/guide/info/InfoGeneratedImages";
 
 const GeneratedImages = memo(({ customData }) => {
   const [showAllVersions, setShowAllVersions] = useState(false);
@@ -167,6 +169,9 @@ const GeneratedImages = memo(({ customData }) => {
         <Buttton className={classes["button-add"]} onClick={addImgByIdHandler}>
           Add Image by ID
         </Buttton>
+        <ButtonInfo>
+          <InfoGeneratedImages />
+        </ButtonInfo>
       </div>
       <div
         className={classes["versions"]}
@@ -221,7 +226,7 @@ const GeneratedImages = memo(({ customData }) => {
       <AnimatePresence>
         {addImgModalIsOpen && (
           <Modal
-            title="Add images by ID"
+            title="Add images by Post ID"
             onClose={() => {
               setAddImgModalIsOpen(false);
             }}

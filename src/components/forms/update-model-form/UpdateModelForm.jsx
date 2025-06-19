@@ -54,6 +54,7 @@ import {
   SETTINGS_MODEL_TYPE_UNKNOWN,
   SETTINGS_MODEL_TYPE_DEF,
   SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
+  ERROR_MESSAGE_UPLOAD_MODEL,
 } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
@@ -66,6 +67,8 @@ import { modelActions } from "../../../store/model";
 import EditDefaultGuide from "../../ui/guide/edit/EditDefaultGuide";
 import { AnimatePresence, motion } from "framer-motion";
 import TagSetsInputFieldset from "../../ui/TagSetsInputFieldset";
+import ButtonInfo from "../../ui/buttons/ButtonInfo";
+import InfoEditDefault from "../../ui/guide/info/InfoEditDefault";
 
 const firestore = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp);
@@ -109,7 +112,10 @@ const UpdateModelForm = ({
     isValid: true,
   });
   const [descriptionInput, setDescriptionInput] = useState({
-    value: modelData?.defaultCustomData?.description || "",
+    value:
+      modelData?.defaultCustomData?.description ||
+      modelData?.data?.description ||
+      "",
     isValid: true,
   });
   const [idInput, setIdInput] = useState({
@@ -493,7 +499,19 @@ const UpdateModelForm = ({
         if (!modelData) {
           //Upload model to database
           const updateModel = httpsCallable(functions, "updateModelCall");
-          updateModel({ id: modelData?.id || modelId });
+
+          const uploadResponse = await updateModel({
+            id: modelData?.id || modelId,
+          });
+
+          // console.log(uploadResponse);
+
+          if (uploadResponse?.error) {
+            throw new Error(uploadResponse.error);
+            // throwCustomError(ERROR_MESSAGE_UPLOAD_MODEL);
+          }
+
+          // console.log(uploadResponse);
 
           const responseCiv = await fetch(`${URL_CIV_MODELS}${modelId}`);
 
@@ -772,6 +790,8 @@ const UpdateModelForm = ({
         }
 
         const modelInfo = {
+          defaultCustomData: {},
+          ...modelData,
           id: modelData?.id || +modelId,
           versionIds,
           modelType,
@@ -782,60 +802,60 @@ const UpdateModelForm = ({
           mainTag,
           nsfw: nsfwInput || false,
           src: "civitai.com",
-          defaultCustomData: {
-            type: data?.type || "",
-            description: !!modelData ? description : data?.description,
-            ...(tagSetsData?.length && {
-              tagSetsData,
-            }),
-            ...(weight && {
-              weight,
-            }),
-            ...(minWeight && {
-              minWeight,
-            }),
-            ...(maxWeight && {
-              maxWeight,
-            }),
-            ...(size && {
-              size,
-            }),
-            ...(fileName && {
-              fileName,
-            }),
-            ...(helperTags?.length && {
-              helperTags,
-            }),
-            ...(negativeTags?.length && {
-              negativeTags,
-            }),
-            ...(modelType === "checkpoint" && {
-              ...(steps && {
-                steps,
-              }),
-              ...(sampler && {
-                sampler,
-              }),
-              ...(cfgScale && {
-                cfgScale,
-              }),
-              ...(hiresUpscaler && {
-                hiresUpscaler,
-              }),
-              ...(hiresUpscaleBy && {
-                hiresUpscaleBy,
-              }),
-              ...(hiresUpscaleSteps && {
-                hiresUpscaleSteps,
-              }),
-              ...(denoisingStrength && {
-                denoisingStrength,
-              }),
-              ...(vae && {
-                vae,
-              }),
-            }),
-          },
+          // defaultCustomData: {
+          //   type: data?.type || "",
+          //   description: !!modelData ? description : data?.description,
+          //   ...(tagSetsData?.length && {
+          //     tagSetsData,
+          //   }),
+          //   ...(weight && {
+          //     weight,
+          //   }),
+          //   ...(minWeight && {
+          //     minWeight,
+          //   }),
+          //   ...(maxWeight && {
+          //     maxWeight,
+          //   }),
+          //   ...(size && {
+          //     size,
+          //   }),
+          //   ...(fileName && {
+          //     fileName,
+          //   }),
+          //   ...(helperTags?.length && {
+          //     helperTags,
+          //   }),
+          //   ...(negativeTags?.length && {
+          //     negativeTags,
+          //   }),
+          //   ...(modelType === "checkpoint" && {
+          //     ...(steps && {
+          //       steps,
+          //     }),
+          //     ...(sampler && {
+          //       sampler,
+          //     }),
+          //     ...(cfgScale && {
+          //       cfgScale,
+          //     }),
+          //     ...(hiresUpscaler && {
+          //       hiresUpscaler,
+          //     }),
+          //     ...(hiresUpscaleBy && {
+          //       hiresUpscaleBy,
+          //     }),
+          //     ...(hiresUpscaleSteps && {
+          //       hiresUpscaleSteps,
+          //     }),
+          //     ...(denoisingStrength && {
+          //       denoisingStrength,
+          //     }),
+          //     ...(vae && {
+          //       vae,
+          //     }),
+          //   }),
+          // },
           modelVersionsCustomData,
           savedImages: modelData?.savedImages || {},
           updatedAt: new Date().toISOString(),
@@ -923,6 +943,7 @@ const UpdateModelForm = ({
         }
 
         setModelIsSaving(false);
+        setShowErrorMessage(false);
         setSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
         setSavedModel(modelId);
         if (onSave) onSave(loraPrevData);
@@ -938,7 +959,6 @@ const UpdateModelForm = ({
           setSubCatInputs([
             { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
           ]);
-          setShowErrorMessage(false);
           setMainCategorySelected({});
         }
       }
@@ -1127,6 +1147,21 @@ const UpdateModelForm = ({
             }}
             showError={showErrorMessage}
           ></Textarea>
+          <Textarea
+            label="Hashtags"
+            id="hashtags"
+            name="hashtags"
+            rows="2"
+            placeholder="Hashtags"
+            value={hashtagsInput.value}
+            onChange={(e, isValid) => {
+              setHashtagsInput({ value: e.target.value, isValid });
+            }}
+            validation={{
+              maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+            }}
+            showError={showErrorMessage}
+          />
           <Checkbox
             id="nsfw"
             name="nsfw"
@@ -1143,23 +1178,29 @@ const UpdateModelForm = ({
           )}
         </FieldCategory>
       )}
-      {modelData && (
-        <h3 className={classes.subtitle}>Default data for all versions</h3>
-      )}
+      {/* {modelData && (
+        <div className={classes["title-container"]}>
+          <h3 className={classes.subtitle}>Default data for all versions</h3>
+          <ButtonInfo>
+            <InfoEditDefault />
+          </ButtonInfo>
+        </div>
+      )} */}
       <div
         className={`${classes.fields} ${
+          modelData ? classes["fields--edit"] : ""
+        } ${
           modelData && guideIsActive && guideStep === GUIDE_STEP_EDIT_DEFAULT
             ? classes["fields--guide"]
             : ""
         }`}
       >
         {modelData && <EditDefaultGuide />}
-        <FieldCategory title={modelData ? "Categories" : ""}>
+        <FieldCategory>
           <Select
             label="Type"
             name="type"
             id="type"
-            // id={id}
             selected={modelTypeInput}
             onChange={(value) => {
               setModelTypeInput(value);
@@ -1191,24 +1232,6 @@ const UpdateModelForm = ({
               showError={showErrorMessage}
             />
           )}
-          {/* <Input
-            id="main"
-            name="main"
-            type="text"
-            label="Category"
-            placeholder="Main category"
-            value={mainInput.value}
-            onChange={(e, isValid, errorMessage) => {
-              setMainInput({ value: e.target.value, isValid, errorMessage });
-            }}
-            readOnly={!!modelData}
-            validation={{
-              required: true,
-              maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-            }}
-            showError={showErrorMessage}
-            errorMessage={mainInput.errorMessage}
-          /> */}
           <ComboSelect
             label="Category"
             optionsData={mainCategoryOptions}
@@ -1223,34 +1246,21 @@ const UpdateModelForm = ({
             }}
             showError={showErrorMessage}
           />
-          <Fieldset legend="Subcategories">
-            <AnimatePresence>{subCatHtml}</AnimatePresence>
-            {subCatInputs?.length < SUBCATEGORIES_MAX_AMOUNT && (
-              <ButttonSecondary
-                type="button"
-                id="sub"
-                onClick={addSubHandler}
-                className={classes["btn-secondary"]}
-              >
-                + add subcategory
-              </ButttonSecondary>
-            )}
-          </Fieldset>
-          {/* <ComboSelect
-            optionsData={subCategoryOptions}
-            query={subCategoryQuery}
-            setQuery={setSubCategoryQuery}
-            setSelected={setSubCategorySelected}
-            selected={subCategorySelected}
-            placeholder="Subcategory"
-            validation={{
-              required: true,
-              maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-            }}
-            showError={showErrorMessage}
-          /> */}
         </FieldCategory>
-        {modelData && (
+        <Fieldset legend="Subcategories">
+          <AnimatePresence>{subCatHtml}</AnimatePresence>
+          {subCatInputs?.length < SUBCATEGORIES_MAX_AMOUNT && (
+            <ButttonSecondary
+              type="button"
+              id="sub"
+              onClick={addSubHandler}
+              className={classes["btn-secondary"]}
+            >
+              + add subcategory
+            </ButttonSecondary>
+          )}
+        </Fieldset>
+        {/* {modelData && (
           <>
             <FieldCategory title="Trigger words">
               <Input
@@ -1318,21 +1328,7 @@ const UpdateModelForm = ({
                 tagSetsInputs={tagSetsInputs}
                 setTagSetsInputs={setTagSetsInputs}
                 showErrorMessage={showErrorMessage}
-                // isSaving={isSaving}
               />
-              {/* <Fieldset legend="Tag sets (default)">
-                {tagSetsHtml}
-                {tagSetsInputs?.length < TAGSETS_MAX_AMOUNT && (
-                  <ButttonSecondary
-                    type="button"
-                    onClick={addtagSetHandler}
-                    disabled={modelIsSaving}
-                    className={classes["btn-secondary"]}
-                  >
-                    + add new set
-                  </ButttonSecondary>
-                )}
-              </Fieldset> */}
             </FieldCategory>
             <FieldCategory title="Info">
               <Input
@@ -1432,21 +1428,7 @@ const UpdateModelForm = ({
                 }}
                 showError={showErrorMessage}
               />
-              <Textarea
-                label="Hashtags"
-                id="hashtags"
-                name="hashtags"
-                rows="5"
-                placeholder="Hashtags"
-                value={hashtagsInput.value}
-                onChange={(e, isValid) => {
-                  setHashtagsInput({ value: e.target.value, isValid });
-                }}
-                validation={{
-                  maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
-                }}
-                showError={showErrorMessage}
-              />
+              
               {modelTypeInput === "checkpointssss" && (
                 <>
                   <Input
@@ -1580,7 +1562,7 @@ const UpdateModelForm = ({
               )}
             </FieldCategory>
           </>
-        )}
+        )} */}
       </div>
       <div className={classes["submit-container"]}>
         {(errorMessage || successMessage) && (

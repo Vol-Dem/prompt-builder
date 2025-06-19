@@ -6,6 +6,7 @@ import { useOnlineStatus } from "../../../../hooks/use-online-status";
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
+  ERROR_MESSAGE_CIV_CONNECTION,
   ERROR_MESSAGE_INVALID_DATA,
   SETTINGS_IMAGES_NUMBER_PER_REQUEST,
   SETTINGS_LOAD_MORE_MARGIN,
@@ -41,12 +42,19 @@ const ExternalImages = memo(
     const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
     const endPageRef = useRef(null);
     const abortControlerRef = useRef(null);
-    const isIntersecting = useIntersection(
+    const [isIntersecting, setIsIntersecting] = useState(false);
+    const intersecting = useIntersection(
       endPageRef,
       false,
       SETTINGS_LOAD_MORE_MARGIN
     );
+    const intersectingSmall = useIntersection(endPageRef, false, 0);
     const isOnline = useOnlineStatus();
+
+    useEffect(() => {
+      // console.log("i", intersecting);
+      setIsIntersecting(intersecting || intersectingSmall);
+    }, [intersecting, intersectingSmall]);
 
     const resetExamples = () => {
       setCurrCursor(null);
@@ -118,6 +126,7 @@ const ExternalImages = memo(
     const getallExamples = useCallback(
       async (modelId, versionId, cursor) => {
         try {
+          // console.log("RUN");
           setExamplesIsLoading(true);
           if (abortControlerRef.current) {
             abortControlerRef.current.abort();
@@ -171,11 +180,10 @@ const ExternalImages = memo(
           } else {
             setIsLastPage(true);
           }
+          setIsIntersecting(false);
         } catch (err) {
           if (err.name !== "AbortError") {
-            setErrorMessage(
-              "Failed to connect to Civitai. There may be maintenance going on at the moment. Try again later."
-            );
+            setErrorMessage(ERROR_MESSAGE_CIV_CONNECTION);
           }
         } finally {
           setExamplesIsLoading(false);
@@ -192,10 +200,13 @@ const ExternalImages = memo(
     );
 
     useEffect(() => {
+      // console.log(examplesIsLoading);
+      // console.log(isLastPage);
       if (nextCursor && currCursor === nextCursor) return;
 
       if (
         modelId &&
+        curImagesModelVersionId &&
         !isLastPage &&
         isIntersecting &&
         !errorMessage &&
@@ -262,7 +273,30 @@ const ExternalImages = memo(
           {!examplesIsLoading && (
             <div>
               {errorMessage && !!nextCursor && (
-                <Buttton onClick={retryImageLoadingHandler}>Retry</Buttton>
+                <Buttton
+                  className={classes["btn-more"]}
+                  onClick={retryImageLoadingHandler}
+                >
+                  Retry
+                </Buttton>
+              )}
+            </div>
+          )}
+          {!examplesIsLoading && !isLastPage && (
+            <div>
+              {!errorMessage && !!nextCursor && (
+                <Buttton
+                  className={classes["btn-more"]}
+                  onClick={() => {
+                    getallExamples(
+                      modelId,
+                      curImagesModelVersionId,
+                      nextCursor
+                    );
+                  }}
+                >
+                  Load more
+                </Buttton>
               )}
             </div>
           )}

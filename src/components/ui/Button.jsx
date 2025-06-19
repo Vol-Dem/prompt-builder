@@ -8,6 +8,7 @@ const Buttton = (props) => {
       onClick={props.onClick}
       disabled={props.disabled}
       style={props.style}
+      title={props.title}
       {...props.button}
     >
       {props.children}

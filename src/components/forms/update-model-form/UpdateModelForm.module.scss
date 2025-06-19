@@ -11,8 +11,15 @@
 .fields {
   position: relative;
   display: flex;
+  display: grid;
+  grid-template-columns: 1fr;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 1rem;
+
+  &--edit {
+    grid-template-columns: 1fr 1fr;
+    align-items: flex-start;
+  }
 
   &--guide {
     @include var.pulse;
@@ -113,6 +120,12 @@
 }
 .subtitle {
   font-size: 2rem;
+}
+
+.title-container {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   border-bottom: 1px solid #949494;
   padding-bottom: 1rem;
   margin: 1rem 0 2rem;
@@ -161,3 +174,9 @@
 }
 
 @include var.animation-show;
+
+@media (max-width: 940px) {
+  .fields--edit {
+    grid-template-columns: 1fr;
+  }
+}

@@ -11,6 +11,8 @@ import {
 import { CheckIcon } from "@heroicons/react/20/solid";
 import Input from "./Input";
 
+const inputControlsWidth = 165;
+
 const TagsTextarea = ({
   className,
   placeholder,
@@ -297,8 +299,15 @@ const TagsTextarea = ({
     // console.log("START");
     const id = +e.target.closest(`.${classes["tag-container"]}`).dataset.id;
     const fieldWidth = e.target.offsetWidth;
-    setInputWidth(fieldWidth);
-    // console.log(fieldWidth);
+    const containerWidth = fieldRef.current.offsetWidth;
+    const maxInputWidth = Math.round(containerWidth - inputControlsWidth);
+    const newInputWidth =
+      fieldWidth < maxInputWidth ? fieldWidth : maxInputWidth;
+    setInputWidth(newInputWidth);
+    console.log("F", fieldWidth);
+    console.log("C", containerWidth);
+    console.log("M", maxInputWidth);
+    console.log("N", newInputWidth);
     setCurrentPrompt((prevState) => {
       return prevState.map((item) => {
         if (item.id === id) {
@@ -388,7 +397,6 @@ const TagsTextarea = ({
     const isLastItem = i === curPrompt.length - 1;
     const isNewItem = curPrompt.length > prevPromptLength;
     const isBreak = SETTINGS_PROMPT_BREAK_ALIASES.includes(item.tag.trim());
-    const containerTargeted = true;
 
     return (
       <li key={item.id} className={classes["tag-wrap"]}>
@@ -396,7 +404,7 @@ const TagsTextarea = ({
           ref={isLastItem && isNewItem ? lastTagRef : null}
           key={item.id}
           layout
-          layoutId={item.id}
+          layoutId={`t-${item.id}`}
           initial={{ opacity: 0, scale: 0.8 }}
           variants={{
             hidden: { opacity: 0, scale: 0.5 },

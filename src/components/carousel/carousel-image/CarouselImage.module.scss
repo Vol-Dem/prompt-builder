@@ -34,6 +34,8 @@
 
   & img {
     max-width: 100%;
+    // height: 21rem;
+    // width: auto;
   }
 }
 
@@ -159,7 +161,7 @@
   @include var.custom-scroll;
 
   &__modal {
-    width: 60rem;
+    width: 65rem;
   }
 
   &__item {

@@ -4,6 +4,7 @@
   position: relative;
   // margin-left: 7rem;
   width: 100%;
+  // height: auto;
   max-width: 43rem;
   // height: 24rem;
   //   padding: 2rem 3rem;
@@ -43,6 +44,7 @@
 
 .image {
   width: 100%;
+  height: auto;
   box-shadow: var.$box-shadow;
   //   transform: skew(3deg, -9deg);
   //   transform: scale3d(0.5, 1, 1.7);

@@ -47,6 +47,7 @@ import { usedModelsActions } from "../../../store/usedModels";
 import { useMemo } from "react";
 import { switchNsfwMode } from "../../../store/general";
 import NsfwSwitch from "../../ui/nsfw-switch/NsfwSwitch";
+import ScrollToTop from "../../ui/ScrollToTop";
 
 const Layout = () => {
   const [cookificationIsOpen, setCookificationIsOpen] = useState(false);
@@ -243,6 +244,8 @@ const Layout = () => {
                     <img
                       src={require("../../../assets/logo5.png")}
                       alt="Logo"
+                      width={1088}
+                      height={188}
                     />
                   </NavLink>
                 </div>
@@ -318,7 +321,7 @@ const Layout = () => {
             This website uses cookies to ensure you get the best experience on
             our website. By using our site you consent cookies.{" "}
             <Link className={classes.link} to="/privacy">
-              Learn more
+              Read more
             </Link>
           </Notification>
         )}
@@ -326,6 +329,7 @@ const Layout = () => {
         <Footer />
       </div>
       {!maintenance && <UsedModelsPanel />}
+      <ScrollToTop />
     </div>
   );
 };

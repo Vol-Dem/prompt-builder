@@ -11,6 +11,7 @@ import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
 import {
   clearFileExtension,
+  createTagSetsInputData,
   handleErrors,
   throwCustomError,
 } from "../../../utils/generalUtils";
@@ -25,6 +26,7 @@ import {
   SUCCESS_MESSAGE_UPLOADED,
   VALIDATION_TITLE_MAX_LENGTH,
   VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+  DEFAULT_DATA_TAGSETS_INPUT,
 } from "../../../variables/constants";
 import InputNumber from "../../ui/InputNumber";
 // import { useOnlineStatus } from "../../../hooks/use-online-status";
@@ -34,7 +36,13 @@ import CrossSvg from "../../../assets/CrossSvg";
 
 const firestore = getFirestore(firebaseApp);
 
-const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
+const VersionForm = ({
+  versionData,
+  defaultData,
+  modelId,
+  modelType,
+  isDefault,
+}) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -116,25 +124,25 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
     isValid: true,
   });
   const [tagSetsInputs, setTagSetsInputs] = useState([
-    [
-      {
-        type: "text",
-        id: "set-name-def",
-        name: "set-name",
-        placeholder: "Set name",
-        value: "",
-        isValid: true,
-        errorMessage: "",
-      },
-      {
-        id: "set-value-def",
-        name: "set-value",
-        placeholder: "Trigger words",
-        value: "",
-        isValid: true,
-        errorMessage: "",
-      },
-    ],
+    // [
+    //   {
+    //     type: "text",
+    //     id: "set-name-def",
+    //     name: "set-name",
+    //     placeholder: "Set name",
+    //     value: "",
+    //     isValid: true,
+    //     errorMessage: "",
+    //   },
+    //   {
+    //     id: "set-value-def",
+    //     name: "set-value",
+    //     placeholder: "Trigger words",
+    //     value: "",
+    //     isValid: true,
+    //     errorMessage: "",
+    //   },
+    // ],
   ]);
   const uid = useSelector((state) => state.auth.user.uid);
   const model = useSelector((state) => state.model.model);
@@ -191,30 +199,38 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
   }, [versionData, defaultData]);
 
   useEffect(() => {
-    if (!versionData) return;
-    if (!versionData.tagSetsData?.length) return;
-    const tagSets = versionData.tagSetsData.map((tagSet, i) => {
-      return [
-        {
-          type: "text",
-          id: "set-name" + i,
-          name: "set-name",
-          placeholder: "Set name",
-          value: tagSet.name,
-          isValid: true,
-          errorMessage: "",
-        },
-        {
-          id: "set-value" + i,
-          name: "set-value",
-          placeholder: "Trigger words",
-          value: tagSet.value,
-          isValid: true,
-          errorMessage: "",
-        },
-      ];
-    });
-    setTagSetsInputs(tagSets);
+    // if (!versionData) return;
+    // if (!versionData?.tagSetsData?.length) return;
+    // console.log(versionData);
+    setTagSetsInputs(
+      createTagSetsInputData(
+        versionData?.tagSetsData,
+        DEFAULT_DATA_TAGSETS_INPUT
+      )
+    );
+
+    // const tagSets = versionData.tagSetsData.map((tagSet, i) => {
+    //   return [
+    //     {
+    //       type: "text",
+    //       id: "set-name" + i,
+    //       name: "set-name",
+    //       placeholder: "Set name",
+    //       value: tagSet.name,
+    //       isValid: true,
+    //       errorMessage: "",
+    //     },
+    //     {
+    //       id: "set-value" + i,
+    //       name: "set-value",
+    //       placeholder: "Trigger words",
+    //       value: tagSet.value,
+    //       isValid: true,
+    //       errorMessage: "",
+    //     },
+    //   ];
+    // });
+    // setTagSetsInputs(tagSets);
   }, [versionData]);
 
   const saveVersionHandler = async (e) => {
@@ -350,9 +366,11 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         }),
       };
 
+      const versionId = isDefault ? "def" : versionData.versionId;
+
       const allUpdatedVersions = {
         ...model.modelVersionsCustomData,
-        [versionData.versionId]: updatedVersionData,
+        [versionId]: updatedVersionData,
       };
 
       const mainTags = Object.values(allUpdatedVersions)
@@ -380,7 +398,9 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
         modelId + ""
       );
 
-      const versionPath = `modelVersionsCustomData.${versionData.versionId}`;
+      const versionPath = isDefault
+        ? "defaultCustomData"
+        : `modelVersionsCustomData.${versionData.versionId}`;
       await updateDoc(
         modelsRef,
         {
@@ -506,39 +526,43 @@ const VersionForm = ({ versionData, defaultData, modelId, modelType }) => {
   return (
     <form onSubmit={saveVersionHandler} className={classes["form"]}>
       <div className={classes.subtitle}>
-        Version ID: {versionData?.id || defaultData?.id}
+        Version ID: {isDefault ? "Default" : versionData?.id || defaultData?.id}
       </div>
-      <Input
-        label="Version name"
-        id="name"
-        name="name"
-        type="text"
-        placeholder="name"
-        value={titleInput.value}
-        onChange={(e, isValid) => {
-          setTitleInput({ value: e.target.value, isValid });
-        }}
-        validation={{
-          required: true,
-          maxLength: VALIDATION_NAME_MAX_LENGTH,
-        }}
-        showError={showErrorMessage}
-      />
-      <Textarea
-        label="Description"
-        id="description"
-        name="description"
-        rows="5"
-        placeholder="Description"
-        value={descriptionInput.value}
-        onChange={(e, isValid) => {
-          setDescriptionInput({ value: e.target.value, isValid });
-        }}
-        validation={{
-          maxLength: VALIDATION_DESCRIPTION_MAX_LENGTH,
-        }}
-        showError={showErrorMessage}
-      ></Textarea>
+      {!isDefault && (
+        <>
+          <Input
+            label="Version name"
+            id="name"
+            name="name"
+            type="text"
+            placeholder="name"
+            value={titleInput.value}
+            onChange={(e, isValid) => {
+              setTitleInput({ value: e.target.value, isValid });
+            }}
+            validation={{
+              required: true,
+              maxLength: VALIDATION_NAME_MAX_LENGTH,
+            }}
+            showError={showErrorMessage}
+          />
+          <Textarea
+            label="Description"
+            id="description"
+            name="description"
+            rows="5"
+            placeholder="Description"
+            value={descriptionInput.value}
+            onChange={(e, isValid) => {
+              setDescriptionInput({ value: e.target.value, isValid });
+            }}
+            validation={{
+              maxLength: VALIDATION_DESCRIPTION_MAX_LENGTH,
+            }}
+            showError={showErrorMessage}
+          ></Textarea>
+        </>
+      )}
       <div className={classes.fields}>
         <FieldCategory title="Trigger words">
           <Input
