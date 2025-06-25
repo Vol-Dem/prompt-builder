@@ -1,4 +1,9 @@
-import { DocumentArrowDownIcon, TrashIcon } from "@heroicons/react/24/outline";
+import {
+  ChevronUpIcon,
+  DocumentArrowDownIcon,
+  DocumentDuplicateIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 import Image from "../ui/image/Image";
 import LinkA from "../ui/LinkA";
 import TextButton from "../ui/text/text-buttons/TextButton";
@@ -13,12 +18,35 @@ import TextButtonTertiary from "../ui/text/text-buttons/TextButtonTertiary";
 import ImageComparisonSlider from "../ImageComparisonSlider/ImageComparisonSlider";
 import TextButtonAll from "../ui/text/text-buttons/TextButtonAll";
 import H3 from "../ui/text/H3";
+import Video from "../ui/Video";
+import NotificationMessage from "../ui/NotificationMessage";
 
 const AboutWorkingWithPrompts = () => {
   return (
     <>
       <H2 id="prompt">Working with Prompts</H2>
       <TextContentBlock>
+        <Video
+          width={1920}
+          height={1080}
+          playsInline
+          loop
+          disablePictureInPicture
+          preload="none"
+          muted
+          controls
+          poster={require("../../assets/guide/3-faq-prompt.jpg")}
+          mainSrc={{
+            src: require("../../assets/guide/3-faq-prompt.mp4"),
+            type: "video/mp4",
+          }}
+          className={classes.video}
+        >
+          <source
+            src={require("../../assets/guide/3-faq-prompt.mp4")}
+            type="video/mp4"
+          />
+        </Video>
         <Text>
           Prompt input is available in two modes:{" "}
           <TextHighlight>tag mode</TextHighlight> and{" "}
@@ -27,9 +55,69 @@ const AboutWorkingWithPrompts = () => {
         <ImageComparisonSlider
           loading="lazy"
           className={classes.comparison}
+          imgWidth="1714"
+          imgHeight="626"
           srcLeft={require("../../assets/guide/prompt-text.jpg")}
           srcRight={require("../../assets/guide/prompt-tags.jpg")}
         />
+        <NotificationMessage>
+          <ul className={classes.list}>
+            <li className={classes["list__item"]}>
+              <span className={classes["btn-type"]}>
+                <div className={classes["btn-type__text"]}>Text</div>
+                <div className={classes["btn-type__tags"]}>Tags</div>
+              </span>{" "}
+              — <TextHighlight>Switch between text and tag modes</TextHighlight>
+              . Switch to Text Mode to edit the prompt manually. Switching to
+              Tag Mode will automatically{" "}
+              <TextHighlight>split the prompt into tags</TextHighlight>, which
+              you can <TextHighlight>edit</TextHighlight>,{" "}
+              <TextHighlight>drag</TextHighlight>, or{" "}
+              <TextHighlight>remove</TextHighlight> with a single click.
+            </li>
+            <li className={classes["list__item"]}>
+              <TextButtonTertiary>Presets</TextButtonTertiary> — Allows you to
+              create a presets of your most frequently used trigger words for
+              both the positive and negative prompts.
+            </li>
+            <li className={classes["list__item"]}>
+              <TextButtonTertiary>+ BREAK</TextButtonTertiary> — Lets you insert
+              a BREAK into the prompt with one click for better prompt
+              structuring.
+            </li>
+            <li className={classes["list__item"]}>
+              <TextButtonTertiary>
+                <TrashIcon /> all
+              </TextButtonTertiary>{" "}
+              <TextButtonTertiary>
+                <TrashIcon /> positive
+              </TextButtonTertiary>{" "}
+              <TextButtonTertiary>
+                <TrashIcon /> negative
+              </TextButtonTertiary>{" "}
+              — You can clear the prompt fields — either the positive, the
+              negative, or both at once.
+            </li>
+            <li className={classes["list__item"]}>
+              <span className={classes["resize"]}></span> — Allows you to resize
+              the prompt window for more comfortable editing.
+            </li>
+            <li className={classes["list__item"]}>
+              <DocumentDuplicateIcon
+                className={`${classes.svg} ${classes.copy}`}
+              />{" "}
+              — Copy and use the built prompt in the Civitai online generator or
+              your local web UI.
+            </li>
+            <li className={classes["list__item"]}>
+              <span className={classes["btn-hide"]}>
+                <ChevronUpIcon className={classes.svg} /> Hide prompt
+              </span>{" "}
+              — Hide the prompt to get more workspace for working with models or
+              images.
+            </li>
+          </ul>
+        </NotificationMessage>
         <Text>
           Trigger words of each model, as well as generation prompt of all
           images, are displayed as tags. The tag system allows you to add and
@@ -87,7 +175,8 @@ const AboutWorkingWithPrompts = () => {
           Text mode allows you to enter the prompt manually. When switching from
           text mode to tag mode, the entered text is also converted into tags.
         </Text>
-        <Text>
+
+        {/* <Text>
           <TextButtonTertiary>
             <TrashIcon /> all
           </TextButtonTertiary>{" "}
@@ -99,17 +188,115 @@ const AboutWorkingWithPrompts = () => {
           </TextButtonTertiary>{" "}
           — You can clear the prompt fields — either the positive, the negative,
           or both at once.
+        </Text> */}
+        {/* <H2>Tag system</H2> */}
+        {/* <Text>
+          The tag system allows you to{" "}
+          <TextHighlight>add, edit and remove</TextHighlight> trigger words in
+          the prompt <TextHighlight>in one click</TextHighlight>, easily compare
+          your prompt with the prompt of the generated reference image,
+          <TextHighlight>
+            {" "}
+            track which trigger words are already in the prompt
+          </TextHighlight>{" "}
+          and which need to be added.
         </Text>
+        <H3>Add and track tags</H3>
+        <div>
+          <Text>
+            {" "}
+            <TextHighlight>Paste your prompt</TextHighlight> in Text Mode and
+            then <TextHighlight>switch to Tag Mode</TextHighlight> for easier
+            editing.{" "}
+          </Text>
+          <ImageComparisonSlider
+            className={classes.comparison}
+            srcLeft={require("../../assets/guide/prompt-text.jpg")}
+            srcRight={require("../../assets/guide/prompt-tags.jpg")}
+          />
+        </div>
+        <div>
+          <p>
+            Click on a tag in the prompt section of a generated image to{" "}
+            <TextHighlight> instantly add that trigger word</TextHighlight> to
+            your prompt. <TextHighlight>Tags already included</TextHighlight> in
+            your prompt are <TextHighlight> highlighted</TextHighlight>, so you
+            can <TextHighlight>easily keep track</TextHighlight> of what’s been
+            added
+          </p>
+          <TextImageBlock>
+            <Image
+              width={1565}
+              height={574}
+              className={classes["img"]}
+              src={require("../../assets/guide/tracking.jpg")}
+            />
+          </TextImageBlock>
+        </div> */}
+        <H3>Duplicates</H3>
+        <div>
+          <p>
+            {" "}
+            <TextHighlight>Duplicate tags are marked</TextHighlight> with
+            different highlight colors{" "}
+            <TextHighlight>to help you spot and manage </TextHighlight>them.
+          </p>
+          <TextImageBlock>
+            <Image
+              width={1670}
+              height={330}
+              className={classes["img"]}
+              src={require("../../assets/guide/duplicates.png")}
+            />
+          </TextImageBlock>
+        </div>
+        <H3>Quick edit</H3>
+        <div>
+          <Text>
+            Click on any tag to{" "}
+            <TextHighlight>
+              {" "}
+              edit its content or adjust its weight
+            </TextHighlight>{" "}
+            using the arrows next to it.
+          </Text>
+          <TextImageBlock>
+            <Image
+              width={901}
+              height={75}
+              className={classes["img"]}
+              src={require("../../assets/guide/tag-edit.png")}
+            />
+          </TextImageBlock>
+        </div>
+        <H3>Drag & Drop</H3>
+        <div>
+          <Text>
+            {" "}
+            Use drag-and-drop to quickly{" "}
+            <TextHighlight>
+              {" "}
+              rearrange and structure your prompt
+            </TextHighlight>{" "}
+            for better control and clarity.
+          </Text>
+          <TextImageBlock>
+            <Image
+              width={851}
+              height={134}
+              className={classes["img"]}
+              src={require("../../assets/guide/dnd.png")}
+            />
+          </TextImageBlock>
+        </div>
         <H3 id="preset">Adding Presets</H3>
         <Text>
           You can add commonly used trigger words into presets (for example,
           quality tags or a standard set of negative words). To do this, use the{" "}
           <TextButtonTertiary>Presets</TextButtonTertiary> button next to the
-          prompt field. You can create presets for both positive and negative
-          words. Created presets can be edited or deleted as needed. To add a
-          preset to the prompt, click on its name in the list
+          prompt field.
         </Text>
-        <TextImageBlock col={3}>
+        <TextImageBlock>
           <Image
             loading="lazy"
             width={1909}
@@ -121,7 +308,7 @@ const AboutWorkingWithPrompts = () => {
             srcSet={require("../../assets/about/8-presets-1.webp")}
             type="image/webp"
           />
-          <Image
+          {/* <Image
             loading="lazy"
             width={1909}
             height={918}
@@ -142,8 +329,48 @@ const AboutWorkingWithPrompts = () => {
             alt="about-image"
             srcSet={require("../../assets/about/8-presets-3.webp")}
             type="image/webp"
-          />
+          /> */}
         </TextImageBlock>
+        <Text>
+          <Text>
+            Click the <TextButton>Add preset</TextButton> button and select the
+            type: <TextHighlight>positive</TextHighlight> or{" "}
+            <TextHighlight>negative</TextHighlight>. Then enter a name and add
+            your trigger words. Click <TextButton>Save</TextButton>
+          </Text>
+          <TextImageBlock>
+            <Image
+              width={1248}
+              height={660}
+              className={`${classes["img"]}`}
+              src={require("../../assets/guide/preset-add.jpg")}
+              alt=""
+            />
+          </TextImageBlock>
+        </Text>
+        <Text>
+          To add a preset to your prompt,{" "}
+          <TextHighlight>click its name</TextHighlight> in the list — all
+          missing trigger words will be automatically added to the prompt,
+          without creating duplicates.
+          <TextImageBlock>
+            <Image
+              width={1380}
+              height={423}
+              className={`${classes["img"]}`}
+              src={require("../../assets/guide/preset.jpg")}
+              alt=""
+            />
+          </TextImageBlock>
+        </Text>
+        <Text>
+          In the presets list, you can also edit a preset by clicking the{" "}
+          <TextButtonTertiary>Change</TextButtonTertiary> button or delete it by
+          clicking{" "}
+          <TextButtonTertiary className={`${classes["btn-del"]}`}>
+            Delete
+          </TextButtonTertiary>
+        </Text>
       </TextContentBlock>
     </>
   );

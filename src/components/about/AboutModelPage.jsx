@@ -374,8 +374,11 @@ const AboutModelPage = () => {
             <LinkA href="#settings" smoothScroll>
               model settings
             </LinkA>{" "}
-            by clicking the <TextButton>Edit</TextButton> button on the model
-            page.
+            by clicking the{" "}
+            <TextButton>
+              <Cog6ToothIcon /> Edit
+            </TextButton>{" "}
+            button on the model page.
           </Text>
           <Text>
             <CheckCircleIcon

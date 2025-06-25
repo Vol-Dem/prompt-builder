@@ -81,12 +81,13 @@ const CollectionImages = memo(() => {
   const getImagesFromFirestore = useCallback(
     async (posts) => {
       try {
-        // console.log("GET IMAGES");
+        console.log("GET IMAGES");
+
         if (isLastPage) return;
         setExamplesIsLoading(true);
         // setErrorMessage("");
         // console.log("GETCH");
-        // console.log(posts);
+        console.log(posts);
         // const nsfwFilter = !nsfwMode ? [true] : [true, false];
         // const from = pageIndex * SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE;
         // const to =

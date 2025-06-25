@@ -642,7 +642,7 @@ export const getColectionImagesByIds = (posts, collectionId) => {
 
       const curPosts = fileteredPosts.slice(from, to);
       const ids = curPosts?.map((post) => post.postId);
-      // console.log(ids);
+      console.log(ids);
 
       const q = query(
         collection(firestore, "users", uid, "images"),
@@ -655,15 +655,18 @@ export const getColectionImagesByIds = (posts, collectionId) => {
 
       const modelImagesSnap = await getDocs(q);
 
-      const isLast =
-        !modelImagesSnap.docs.length ||
-        modelImagesSnap.docs.length <= SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE;
+      // const isLast =
+      //   !modelImagesSnap.docs.length ||
+      //   modelImagesSnap.docs.length <= SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE;
+      const isLast = ids.length <= SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE;
 
       const data = modelImagesSnap.docs.flatMap((doc, i) => {
         return doc.data();
       });
 
       // console.log(data);
+      // console.log(data.length);
+      // console.log(isLast);
 
       const examples = data
         .map((post) => {

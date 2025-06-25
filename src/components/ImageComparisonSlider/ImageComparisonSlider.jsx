@@ -2,7 +2,13 @@ import { useRef, useState } from "react";
 import classes from "./ImageComparisonSlider.module.scss";
 import { ChevronUpDownIcon } from "@heroicons/react/24/outline";
 
-const ImageComparisonSlider = ({ srcLeft, srcRight, className }) => {
+const ImageComparisonSlider = ({
+  srcLeft,
+  srcRight,
+  imgWidth,
+  imgHeight,
+  className,
+}) => {
   const [imageWidth, setImageWidth] = useState(50);
   const sliderRef = useRef(null);
 
@@ -37,6 +43,8 @@ const ImageComparisonSlider = ({ srcLeft, srcRight, className }) => {
     <div className={`${classes.container} ${className || ""}`} ref={sliderRef}>
       <div className={classes["image-containers"]} draggable={false}>
         <img
+          width={imgWidth || null}
+          height={imgHeight || null}
           className={classes["image"]}
           src={srcRight}
           alt=""
@@ -49,6 +57,8 @@ const ImageComparisonSlider = ({ srcLeft, srcRight, className }) => {
         draggable={false}
       >
         <img
+          width={imgWidth || null}
+          height={imgHeight || null}
           className={`${classes["image"]} ${classes["image--2"]}`}
           src={srcLeft}
           alt=""

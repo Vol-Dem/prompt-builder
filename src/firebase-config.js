@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 import { getFirestore } from "firebase/firestore";
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+// import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -22,13 +22,13 @@ const firebaseApp = initializeApp(firebaseConfig);
 //Get debug token for localhost
 // window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
 
-initializeAppCheck(firebaseApp, {
-  provider: new ReCaptchaV3Provider(process.env.REACT_APP_FIREBASE_REC),
+// initializeAppCheck(firebaseApp, {
+//   provider: new ReCaptchaV3Provider(process.env.REACT_APP_FIREBASE_REC),
 
-  // Optional argument. If true, the SDK automatically refreshes App Check
-  // tokens as needed.
-  isTokenAutoRefreshEnabled: true,
-});
+//   // Optional argument. If true, the SDK automatically refreshes App Check
+//   // tokens as needed.
+//   isTokenAutoRefreshEnabled: true,
+// });
 
 export const dbfr = getFirestore(firebaseApp);
 export const db = getDatabase();

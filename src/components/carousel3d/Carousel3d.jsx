@@ -3,6 +3,7 @@ import carouselImage1 from "../../assets/3dcarousel/slide-1.webp";
 import carouselImage2 from "../../assets/3dcarousel/slide-2.webp";
 import carouselImage3 from "../../assets/3dcarousel/slide-3.webp";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 
 const carouselImages = [
   { url: carouselImage1, width: 700, height: 336 },
@@ -14,6 +15,7 @@ const slideDelaySec = 4;
 const Carousel3d = () => {
   const [curSlideIndex, setCurSlideIndex] = useState(0);
   const [transitionSec, setTransitionSec] = useState(0.9);
+  const isMobal = useSelector((state) => state.general.isMobile);
   const intervalRef = useRef(null);
 
   const transitionEndHandler = useCallback(() => {
@@ -26,15 +28,17 @@ const Carousel3d = () => {
   }, [curSlideIndex]);
 
   useEffect(() => {
-    if (curSlideIndex > 2 && !!carouselImages?.length) {
+    if (curSlideIndex > 2 && !!carouselImages?.length && !isMobal) {
       document.removeEventListener("transitionend", transitionEndHandler);
       document.addEventListener("transitionend", transitionEndHandler);
+    } else {
+      document.removeEventListener("transitionend", transitionEndHandler);
     }
 
     return () => {
       document.removeEventListener("transitionend", transitionEndHandler);
     };
-  }, [transitionEndHandler, curSlideIndex]);
+  }, [transitionEndHandler, curSlideIndex, isMobal]);
 
   useEffect(() => {
     if (carouselImages?.length) {

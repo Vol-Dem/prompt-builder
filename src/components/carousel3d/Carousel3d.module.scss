@@ -6,7 +6,7 @@
   width: 100%;
   // height: auto;
   max-width: 43rem;
-  // height: 24rem;
+  height: 30rem;
   //   padding: 2rem 3rem;
   //   border-radius: 10px;
   //   background-color: var.$color-background-tertiary;
@@ -19,6 +19,8 @@
   list-style: none;
   padding-bottom: 50%;
   margin-left: 15%;
+  top: 50%;
+  transform: translateY(-50%);
   // width: 43rem;
   // height: 24rem;
   //   margin: 2rem;
@@ -52,6 +54,12 @@
   transform: perspective(11cm) rotateX(-7deg) rotateY(34deg);
   // transform: rotateX(-7deg) rotateY(34deg);
   //   border: 1px solid #fff;
+}
+
+@media (max-width: 375px) {
+  .container {
+    height: 20rem;
+  }
 }
 
 @keyframes slideUp {

@@ -63,7 +63,7 @@ const CarouselImageList = ({ images }) => {
         <Image
           onClick={openImageHandler}
           className={classes.image}
-          imageData={image}
+          // imageData={image}
           src={image?.url}
           imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL}
           width={image.width}

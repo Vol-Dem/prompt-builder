@@ -16,6 +16,7 @@ import H3 from "../ui/text/H3";
 import Video from "../ui/Video";
 import TextImageMenu from "../ui/text/text-buttons/TextImageMenu";
 import NotificationMessage from "../ui/NotificationMessage";
+import TextButtonSecondary from "../ui/text/text-buttons/TextButtonSecondary";
 
 const AboutTagSets = () => {
   return (
@@ -57,7 +58,7 @@ const AboutTagSets = () => {
         <Text>
           {" "}
           You can add multiple tag sets. To do this, click{" "}
-          <span className={classes["btn-secondary"]}>+ add new set</span>
+          <TextButtonSecondary>+ add new set</TextButtonSecondary>
         </Text>
         <TextImageBlock col={2}>
           <Image

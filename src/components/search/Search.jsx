@@ -298,6 +298,7 @@ const Search = ({ className }) => {
               }
               dispatch(searchActions.setSearchQuery(""));
               dispatch(searchActions.setSearchResult([]));
+              dispatch(modelActions.setActiveCarouselData({}));
             }}
           >
             {result.subName}

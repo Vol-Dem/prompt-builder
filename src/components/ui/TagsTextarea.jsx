@@ -188,7 +188,7 @@ const TagsTextarea = ({
 
   const dropHandler = (e) => {
     setDraggedItemId(null);
-
+    console.log(e.target);
     const tagData = e.dataTransfer.getData("text/plain");
     if (!tagData.trim()) return;
 
@@ -200,10 +200,10 @@ const TagsTextarea = ({
     if (!fieldType) return;
 
     if (!targetTagContainer) {
-      // console.log("DROP CONT");
-      // console.log(id);
-      // console.log(type);
-      // console.log(fieldType);
+      console.log("DROP CONT");
+      console.log(id);
+      console.log(type);
+      console.log(fieldType);
 
       dispatch(
         promptActions.removeTag({ id, type, dropTargetType: fieldType })
@@ -233,11 +233,15 @@ const TagsTextarea = ({
       if (containerData.dropLeft === null) return;
 
       let newPosition;
-      // if (containerData.dropLeft || containerData.position < position) {
-      //   newPosition = containerData.position;
-      // } else {
-      //   newPosition = containerData.position + 1;
-      // }
+
+      //Abort when droped on the same position
+      if (
+        position === containerData.position ||
+        (position - 1 === containerData.position && !containerData.dropLeft) ||
+        (position === containerData.position - 1 && containerData.dropLeft)
+      )
+        return;
+
       if (
         (containerData.dropLeft && position > containerData.position) ||
         (!containerData.dropLeft && position < containerData.position)
@@ -304,10 +308,10 @@ const TagsTextarea = ({
     const newInputWidth =
       fieldWidth < maxInputWidth ? fieldWidth : maxInputWidth;
     setInputWidth(newInputWidth);
-    console.log("F", fieldWidth);
-    console.log("C", containerWidth);
-    console.log("M", maxInputWidth);
-    console.log("N", newInputWidth);
+    // console.log("F", fieldWidth);
+    // console.log("C", containerWidth);
+    // console.log("M", maxInputWidth);
+    // console.log("N", newInputWidth);
     setCurrentPrompt((prevState) => {
       return prevState.map((item) => {
         if (item.id === id) {
@@ -364,7 +368,7 @@ const TagsTextarea = ({
               .join(":");
             if (isActivationTag) {
               tag = `<${tagName}:${editWeightInput.value}>`;
-            } else if (!isActivationTag && editWeightInput.value === 1) {
+            } else if (!isActivationTag && +editWeightInput.value === 1) {
               tag = tagName;
             } else {
               tag = `(${tagName}:${editWeightInput.value})`;

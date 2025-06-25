@@ -27,6 +27,7 @@ import LinkA from "../../ui/LinkA";
 import SuccessMessage from "../../ui/SuccessMessage";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { ReactComponent as GoogleLogo } from "../../../assets/google.svg";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -168,11 +169,12 @@ const AuthForm = () => {
                 dispatch(authWithGoogle());
               }}
             >
-              <img
+              {/* <img
                 className={classes["icon"]}
                 alt="google-icon"
-                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-              ></img>{" "}
+                src={require("../../../assets/google.svg")}
+              />{" "} */}
+              <GoogleLogo className={classes["icon"]} />
               Sign in with Google
             </Buttton>
           )}

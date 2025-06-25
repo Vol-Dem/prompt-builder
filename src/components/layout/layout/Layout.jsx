@@ -321,7 +321,7 @@ const Layout = () => {
             This website uses cookies to ensure you get the best experience on
             our website. By using our site you consent cookies.{" "}
             <Link className={classes.link} to="/privacy">
-              Read more
+              Privacy policy
             </Link>
           </Notification>
         )}

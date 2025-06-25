@@ -79,6 +79,7 @@ const NsfwSwitch = () => {
         </button>
       </div>
       <button
+        title="NSFW Settings"
         className={classes["btn-mode--cog"]}
         onClick={openSettingsHandler}
       >

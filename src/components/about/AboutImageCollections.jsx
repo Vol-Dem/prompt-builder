@@ -176,6 +176,19 @@ const AboutImageCollections = () => {
           <TextHighlight>Set as NSFW preview</TextHighlight> — in that case, the
           selected preview will only be shown when NSFW mode is enabled.
         </Text>
+        <TextImageBlock>
+          <Image
+            loading="lazy"
+            width={1909}
+            height={918}
+            fullView={true}
+            className={classes["img"]}
+            src={require("../../assets/about/20-collections-prev.jpg")}
+            alt="about-image"
+            srcSet={require("../../assets/about/20-collections-prev.webp")}
+            type="image/webp"
+          />
+        </TextImageBlock>
       </TextContentBlock>
     </>
   );

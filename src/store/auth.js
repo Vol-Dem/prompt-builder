@@ -32,6 +32,9 @@ import { checkIsMobile } from "../utils/generalUtils";
 import { generalActions } from "./general";
 import { imagesActions } from "./images";
 
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+import { getAppInfo } from "./notification";
+
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 const provider = new GoogleAuthProvider();
@@ -71,6 +74,14 @@ const authSlice = createSlice({
         userName: actions.payload.displayName,
         emailVerified: actions.payload.emailVerified,
       };
+
+      initializeAppCheck(firebaseApp, {
+        provider: new ReCaptchaV3Provider(process.env.REACT_APP_FIREBASE_REC),
+
+        // Optional argument. If true, the SDK automatically refreshes App Check
+        // tokens as needed.
+        isTokenAutoRefreshEnabled: true,
+      });
     },
     logout(state) {
       state.isLoggedIn = false;
@@ -133,6 +144,7 @@ export const initAuth = () => {
             emailVerified: user.emailVerified,
           })
         );
+        dispatch(getAppInfo());
         dispatch(uploadPanelStateFromStorage(user.uid));
         dispatch(uploadPromptFromStorage(user.uid));
         dispatch(getUserData(user.uid));
@@ -189,6 +201,9 @@ export const authRequest = (isLogin, email, password) => {
       let errMessage;
       switch (error.code) {
         case "auth/invalid-login-credentials":
+          errMessage = "Invalid login credentials";
+          break;
+        case "auth/invalid-credential":
           errMessage = "Invalid login credentials";
           break;
         case "auth/invalid-email":

@@ -35,15 +35,75 @@ const AboutTopPanel = () => {
     <>
       <H2 id="top">Top Panel</H2>
       <TextContentBlock>
+        <H3 id="search">Search</H3>
+        <Text>
+          The quick search shows the first five results and allows you to search
+          not only for models but also for categories or subcategories, and open
+          them by click. By pressing the Enter button or{" "}
+          <TextButtonTertiary>Show More</TextButtonTertiary>, you will go to the
+          search page where you can see all results for models.
+        </Text>
+        <Text>
+          The sidebar gives you quick access to the models and images you want
+          to use right now. You can add up to three reference images and as many
+          models as you like.
+        </Text>
+        <TextImageBlock col={2}>
+          <Image
+            loading="lazy"
+            width={1909}
+            height={918}
+            fullView={true}
+            className={classes["img"]}
+            src={require("../../assets/about/17-search.jpg")}
+            alt="about-image"
+            srcSet={require("../../assets/about/17-search.webp")}
+            type="image/webp"
+          />
+          <Image
+            loading="lazy"
+            width={1909}
+            height={918}
+            fullView={true}
+            className={classes["img"]}
+            src={require("../../assets/about/17-search-2.jpg")}
+            alt="about-image"
+            srcSet={require("../../assets/about/17-search-2.webp")}
+            type="image/webp"
+          />
+        </TextImageBlock>
         <H3 id="queue">Download Queue</H3>
         <Text>
           When you click the image <TextHighlight>Download</TextHighlight>{" "}
-          button, the image is added to the
-          <TextHighlight>download queue</TextHighlight> in the Top Bar. If there
-          are any connection issues with the server (maintenance on Civitai,
-          etc) or if the internet connection is lost during the upload, the
-          image will be moved to <TextHighlight>"Rejected"</TextHighlight>. When
-          the connection is restored, press the{" "}
+          button, the image is added to the{" "}
+          <TextHighlight>uploading queue</TextHighlight> in the Top Bar.
+        </Text>
+        <Text>
+          Images <TextHighlight>successfully</TextHighlight> saved to a model or
+          collection are displayed in the download queue in{" "}
+          <span className={classes.green}>-Completed-</span>. You can use the
+          download queue to <TextHighlight>quickly access</TextHighlight> the
+          locations where you saved the latest images.
+        </Text>
+        <TextImageBlock>
+          <Image
+            loading="lazy"
+            width={1909}
+            height={918}
+            fullView={true}
+            className={classes["img"]}
+            src={require("../../assets/about/15-queue-complete.jpg")}
+            alt="about-image"
+            srcSet={require("../../assets/about/15-queue-complete.webp")}
+            type="image/webp"
+          />
+        </TextImageBlock>
+        <Text>
+          If there are any <TextHighlight>connection issues</TextHighlight> with
+          the server (maintenance on Civitai, etc) or if the internet connection
+          is lost during the upload, the image will be moved to{" "}
+          <span className={classes.red}>-Rejected-</span>. When the connection
+          is restored, press the{" "}
           <TextButtonTertiary>Retry all</TextButtonTertiary> button in the
           download window to continue the upload. If the upload does not resume,
           try again after later.
@@ -51,8 +111,8 @@ const AboutTopPanel = () => {
         <TextImageBlock>
           <Image
             loading="lazy"
-            width={1800}
-            height={900}
+            width={1909}
+            height={918}
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/15-queue.jpg")}
@@ -99,43 +159,6 @@ const AboutTopPanel = () => {
             examples.
           </Text>
         </NotificationMessage>
-        <H3 id="search">Search</H3>
-        <Text>
-          The quick search shows the first five results and allows you to search
-          not only for models but also for categories or subcategories, and open
-          them by click. By pressing the Enter button or{" "}
-          <TextButtonTertiary>Show More</TextButtonTertiary>, you will go to the
-          search page where you can see all results for models.
-        </Text>
-        <Text>
-          The sidebar gives you quick access to the models and images you want
-          to use right now. You can add up to three reference images and as many
-          models as you like.
-        </Text>
-        <TextImageBlock col={2}>
-          <Image
-            loading="lazy"
-            width={1909}
-            height={918}
-            fullView={true}
-            className={classes["img"]}
-            src={require("../../assets/about/17-search.jpg")}
-            alt="about-image"
-            srcSet={require("../../assets/about/17-search.webp")}
-            type="image/webp"
-          />
-          <Image
-            loading="lazy"
-            width={1909}
-            height={918}
-            fullView={true}
-            className={classes["img"]}
-            src={require("../../assets/about/17-search-2.jpg")}
-            alt="about-image"
-            srcSet={require("../../assets/about/17-search-2.webp")}
-            type="image/webp"
-          />
-        </TextImageBlock>
       </TextContentBlock>
     </>
   );

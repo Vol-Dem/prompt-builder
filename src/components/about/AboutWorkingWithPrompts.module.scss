@@ -1,5 +1,12 @@
 @use "../../variables/variables.scss" as var;
 
+.list {
+  list-style: none;
+  &__item {
+    margin: 1.8rem 0;
+  }
+}
+
 .img {
   // display: block;
   // width: 100%;
@@ -49,4 +56,77 @@
 .comparison {
   width: 90%;
   margin: 1.6rem auto;
+}
+
+.copy {
+  position: relative;
+  bottom: -0.3rem;
+}
+
+.resize {
+  position: relative;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  bottom: -0.2rem;
+
+  &::before {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    content: "";
+    border: 1px solid var.$color-text-gray;
+    width: 100%;
+    transform: rotate(130deg) translate(-10%, 80%);
+  }
+
+  &::after {
+    position: absolute;
+    top: 70%;
+    left: 40%;
+    content: "";
+    border: 1px solid var.$color-text-gray;
+    width: 50%;
+    transform: rotate(130deg) translate(-10%, 80%);
+  }
+}
+
+.btn-hide {
+  position: relative;
+  bottom: -0.3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: #e8e8e8;
+  font-size: 1.4rem;
+  width: 18rem;
+  background-color: var.$color-primary;
+  height: 2rem;
+  border-radius: 0 0 1rem 1rem;
+}
+
+.btn-type {
+  display: inline-flex;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+  text-align: center;
+
+  &__text {
+    width: 5rem;
+    font-size: 1.2rem;
+    background-color: transparent;
+    padding: 0.4rem 0.6rem;
+  }
+  &__tags {
+    width: 5rem;
+    font-size: 1.2rem;
+    background-color: #6526a0;
+    padding: 0.4rem 0.6rem;
+  }
+}
+
+.btn-del {
+  background-color: var.$color-background-red !important;
 }

@@ -121,9 +121,9 @@ const About = ({ title }) => {
               Adjust the weight and content of trigger words
             </TextHighlight>{" "}
             by simply clicking on a tag.
-          </li>
-          <li>
             <ImageComparisonSlider
+              imgWidth="1714"
+              imgHeight="626"
               className={classes.comparison}
               srcLeft={require("../../assets/guide/prompt-text.jpg")}
               srcRight={require("../../assets/guide/prompt-tags.jpg")}

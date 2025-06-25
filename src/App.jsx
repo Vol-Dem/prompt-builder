@@ -58,13 +58,14 @@ function App() {
   //Authorizes user on application load
   useEffect(() => {
     dispatch(generalActions.setIsMobile(checkIsMobile()));
-    dispatch(getAppInfo());
+    // dispatch(getAppInfo());
     dispatch(initAuth());
   }, [dispatch]);
 
   useEffect(() => {
     if (!uid) return;
     const unsub = onSnapshot(doc(firestore, "users", uid), (doc) => {
+      // console.log("FSTORE");
       const data = doc.data();
       if (data?.categoriesById) {
         dispatch(tabActions.setCategories(data?.categoriesById));

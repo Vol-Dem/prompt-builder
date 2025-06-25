@@ -355,6 +355,7 @@ const UsedModelsPanel = memo(() => {
               <img
                 width={520}
                 height={108}
+                loading="lazy"
                 src={require("../../assets/patreon-w.png")}
                 border="0"
                 alt="patreon"
@@ -368,6 +369,7 @@ const UsedModelsPanel = memo(() => {
               <img
                 width={341}
                 height={129}
+                loading="lazy"
                 src={require("../../assets/kofi_bg_tag_dark.webp")}
                 // src="https://storage.ko-fi.com/cdn/brandasset/kofi_bg_tag_dark.png"
                 border="0"

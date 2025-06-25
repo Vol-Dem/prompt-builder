@@ -39,6 +39,7 @@ export const getAppInfo = () => {
       const appInfoDoc = await getDoc(appInfoRef);
       if (appInfoDoc.exists()) {
         const appData = appInfoDoc.data();
+
         dispatch(notificationActions.setNotifications(appData.notifications));
         dispatch(notificationActions.setMaintenance(appData.maintenance));
       }

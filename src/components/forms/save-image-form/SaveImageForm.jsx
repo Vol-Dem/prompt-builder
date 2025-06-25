@@ -215,6 +215,7 @@ const SaveImageForm = ({
               </ButtonInfo>
             </>
           }
+          autoFocus
           placeholder="post id or url"
           input={{ disabled: isLoading }}
           value={postIdInput.value}

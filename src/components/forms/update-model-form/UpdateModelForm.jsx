@@ -1218,6 +1218,7 @@ const UpdateModelForm = ({
               name="id"
               label="Model ID or URL"
               type="text"
+              autoFocus
               placeholder="Model ID or URL"
               value={idInput.value}
               input={{ hidden: modelData ? true : false }}

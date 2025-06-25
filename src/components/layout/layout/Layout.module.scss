@@ -35,6 +35,11 @@
   width: 12rem;
   flex-shrink: 0;
 
+  & a {
+    display: block;
+    line-height: 0;
+  }
+
   & img {
     width: 100%;
     height: auto;

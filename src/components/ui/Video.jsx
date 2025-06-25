@@ -17,11 +17,18 @@ const Video = ({
   width,
   height,
   children,
+  loading,
+  ...video
   //   type,
 }) => {
   // console.log(playsInline);
   const videoRef = useRef(null);
   const isIntersecting = useIntersection(autoPlay ? videoRef : null, false);
+  const isIntersectingPoster = useIntersection(
+    loading === "lazy" ? videoRef : null,
+    true,
+    500
+  );
 
   useEffect(() => {
     // console.log(isIntersecting);
@@ -66,9 +73,10 @@ const Video = ({
       disablePictureInPicture={!!disablePictureInPicture}
       preload={preload}
       muted={!!muted}
-      poster={poster}
+      poster={loading === "lazy" && !isIntersectingPoster ? "#" : poster}
       controls={controls}
       className={`${classes["video"]} ${className || ""}`}
+      {...video}
     >
       {children}
       {/* <source

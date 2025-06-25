@@ -29,9 +29,9 @@ const Landing = () => {
         <div className={classes["section--hero__content"]}>
           <div className={classes.logo}>
             <img
-              src={require("../../assets/logo5.png")}
               width={1088}
               height={188}
+              src={require("../../assets/logo5.png")}
               alt="Logo"
             />
           </div>
@@ -106,12 +106,6 @@ const Landing = () => {
             </ul>
           </div>
           <div className={classes["section__img-wrap"]}>
-            {/* <Image
-              fullView={true}
-              className={classes["section__img"]}
-              src={require("../../assets/home/prompt.png")}
-              alt=""
-            /> */}
             <Video
               playsInline
               autoPlay
@@ -119,6 +113,7 @@ const Landing = () => {
               disablePictureInPicture
               preload="none"
               muted
+              // loading="lazy"
               poster={require("../../assets/home/1-main-prompt.webp")}
               className={classes["section__video"]}
             >
@@ -161,12 +156,6 @@ const Landing = () => {
             </div>
           </div>
           <div className={classes["section__img-wrap"]}>
-            {/* <Image
-              fullView={true}
-              className={classes["section__img"]}
-              src={require("../../assets/about/5-added-models.jpg")}
-              alt=""
-            /> */}
             <Video
               playsInline
               autoPlay
@@ -174,6 +163,7 @@ const Landing = () => {
               disablePictureInPicture
               preload="none"
               muted
+              // loading="lazy"
               poster={require("../../assets/home/2-main-store.webp")}
               className={classes["section__video"]}
             >
@@ -218,12 +208,6 @@ const Landing = () => {
             </p>
           </div>
           <div className={classes["section__img-wrap"]}>
-            {/* <Image
-              fullView={true}
-              className={classes["section__img"]}
-              src={require("../../assets/home/tag-system.jpg")}
-              alt=""
-            /> */}
             <Video
               playsInline
               autoPlay
@@ -231,10 +215,10 @@ const Landing = () => {
               disablePictureInPicture
               preload="none"
               muted
+              loading="lazy"
               poster={require("../../assets/home/3-main-tagsystem.webp")}
               className={classes["section__video"]}
             >
-              {/* <source src={videoSrc?.webm} type="video/webm" /> */}
               <source
                 src={require("../../assets/home/3-main-tagsystem.mp4")}
                 type="video/mp4"
@@ -272,12 +256,6 @@ const Landing = () => {
             </ul>
           </div>
           <div className={classes["section__img-wrap"]}>
-            {/* <Image
-              fullView={true}
-              className={classes["section__img"]}
-              src={require("../../assets/home/tag-system.jpg")}
-              alt=""
-            /> */}
             <Video
               playsInline
               autoPlay
@@ -285,10 +263,10 @@ const Landing = () => {
               disablePictureInPicture
               preload="none"
               muted
+              loading="lazy"
               poster={require("../../assets/home/4-main-images.webp")}
               className={classes["section__video"]}
             >
-              {/* <source src={videoSrc?.webm} type="video/webm" /> */}
               <source
                 src={require("../../assets/home/4-main-images.mp4")}
                 type="video/mp4"
@@ -325,12 +303,6 @@ const Landing = () => {
             </p>
           </div>
           <div className={classes["section__img-wrap"]}>
-            {/* <Image
-              fullView={true}
-              className={classes["section__img"]}
-              src={require("../../assets/home/keep-safe.jpg")}
-              alt=""
-            /> */}
             <Video
               playsInline
               autoPlay
@@ -338,10 +310,10 @@ const Landing = () => {
               disablePictureInPicture
               preload="none"
               muted
+              loading="lazy"
               poster={require("../../assets/home/5-main-oraganize.webp")}
               className={classes["section__video"]}
             >
-              {/* <source src={videoSrc?.webm} type="video/webm" /> */}
               <source
                 src={require("../../assets/home/5-main-oraganize.mp4")}
                 type="video/mp4"
@@ -377,12 +349,6 @@ const Landing = () => {
             </p>
           </div>
           <div className={classes["section__img-wrap"]}>
-            {/* <Image
-              fullView={true}
-              className={classes["section__img"]}
-              src={require("../../assets/home/quick-tools.jpg")}
-              alt=""
-            /> */}
             <Video
               playsInline
               autoPlay
@@ -390,10 +356,10 @@ const Landing = () => {
               disablePictureInPicture
               preload="none"
               muted
+              loading="lazy"
               poster={require("../../assets/home/6-main-quick.webp")}
               className={classes["section__video"]}
             >
-              {/* <source src={videoSrc?.webm} type="video/webm" /> */}
               <source
                 src={require("../../assets/home/6-main-quick.mp4")}
                 type="video/mp4"
@@ -422,12 +388,6 @@ const Landing = () => {
             </p>
           </div>
           <div className={classes["section__img-wrap"]}>
-            {/* <Image
-              fullView={true}
-              className={classes["section__img"]}
-              src={require("../../assets/home/search.jpg")}
-              alt=""
-            /> */}
             <Video
               playsInline
               autoPlay
@@ -435,10 +395,10 @@ const Landing = () => {
               disablePictureInPicture
               preload="none"
               muted
+              loading="lazy"
               poster={require("../../assets/home/7-main-search.webp")}
               className={classes["section__video"]}
             >
-              {/* <source src={videoSrc?.webm} type="video/webm" /> */}
               <source
                 src={require("../../assets/home/7-main-search.mp4")}
                 type="video/mp4"
