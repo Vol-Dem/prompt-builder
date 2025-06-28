@@ -17,7 +17,7 @@ import CopySvg from "../../../../assets/CopySvg";
 
 const guideType = "model";
 
-const PromptGuide = (props) => {
+const PromptGuide = () => {
   const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
   const isTextMode = useSelector((state) => state.prompt.isTextMode);
 

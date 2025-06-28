@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 import classes from "./Tooltip.module.scss";
 
 const Tooltip = ({ children, content, className, defSide = "right" }) => {
@@ -46,7 +45,6 @@ const Tooltip = ({ children, content, className, defSide = "right" }) => {
       className={`${classes["tooltip"]} ${className || ""}`}
       onMouseEnter={setTranslateHandler}
     >
-      {/* <ExclamationCircleSvg /> */}
       {children}
       <div
         ref={contentRef}

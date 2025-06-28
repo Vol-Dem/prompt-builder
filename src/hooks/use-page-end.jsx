@@ -10,14 +10,12 @@ const usePageEnd = (distance = 300) => {
         document.documentElement.offsetHeight &&
       !isPageEnd
     ) {
-      // console.log("PAGE END");
       setIsPageEnd(true);
     } else if (
       window.innerHeight + document.documentElement.scrollTop + distanceToBot <=
         document.documentElement.offsetHeight &&
       isPageEnd
     ) {
-      // console.log("NOT PAGE END");
       setIsPageEnd(false);
     }
   }, [isPageEnd]);

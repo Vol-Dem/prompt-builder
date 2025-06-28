@@ -1,15 +1,9 @@
 import {
   ArrowDownTrayIcon,
-  Cog6ToothIcon,
-  DocumentArrowDownIcon,
   FolderArrowDownIcon,
   FolderPlusIcon,
-  PencilSquareIcon,
-  PlusIcon,
-  TrashIcon,
 } from "@heroicons/react/24/outline";
 import Image from "../ui/image/Image";
-import LinkA from "../ui/LinkA";
 import TextButton from "../ui/text/text-buttons/TextButton";
 import TextHighlight from "../ui/text/TextHighlight";
 import classes from "./AboutImageCollections.module.scss";
@@ -18,15 +12,9 @@ import Text from "../ui/text/Text";
 import TextImageBlock from "../ui/text/TextImageBlock";
 import TextContentBlock from "../ui/text/TextContentBlock";
 import TextButtonCreate from "../ui/text/text-buttons/TextButtonCreate";
-import TextButtonTertiary from "../ui/text/text-buttons/TextButtonTertiary";
-import ImageComparisonSlider from "../ImageComparisonSlider/ImageComparisonSlider";
-import TextButtonAll from "../ui/text/text-buttons/TextButtonAll";
 import H3 from "../ui/text/H3";
-import Video from "../ui/Video";
 import TextImageMenu from "../ui/text/text-buttons/TextImageMenu";
-import NotificationMessage from "../ui/NotificationMessage";
 import TextButtonSquare from "../ui/text/text-buttons/TextButtonSquare";
-import TextButtonSaved from "../ui/text/text-buttons/TextButtonSaved";
 import TextButtonCollection from "../ui/text/text-buttons/TextButtonCollection";
 import AboutAddImageById from "./AboutAddImageById";
 
@@ -146,13 +134,6 @@ const AboutImageCollections = () => {
           />
         </TextImageBlock>
         <H3 id="coll-post">Add image by post ID</H3>
-        {/* <Text>
-          You can add images to a collection not only from the list of generated
-          ones, but also using a post ID. To do this, copy the{" "}
-          <TextHighlight>post ID</TextHighlight> from Civitai (if you’ve opened
-          a single image, you need to click "View post" first and then copy the
-          ID). Then click "Add image by ID" on the collection’s page.
-        </Text> */}
         <Text>
           Use the <TextButton>Add image by ID</TextButton> button to save an
           image by the post ID from Civitai. To add an image, use the{" "}

@@ -1,12 +1,10 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 import classes from "./Header.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { promptActions } from "../../../store/prompt";
 import { SETTINGS_STICKY_SWITCH_HEIGHT } from "../../../variables/constants";
 import { generalActions } from "../../../store/general";
 
 const Header = ({ children }) => {
-  // const [isFixed, setIsFixed] = useState(false);
   const sidePanelIsOpen = useSelector((state) => state.used.panelIsOpen);
   const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
   const sidePanelWidth = useSelector((state) => state.used.sidePanelWidth);
@@ -28,8 +26,6 @@ const Header = ({ children }) => {
     const scrollHandler = () => {
       const scrollToTop = document.documentElement.scrollTop;
 
-      // setIsFixed(scrollToTop > SETTINGS_STICKY_SWITCH_HEIGHT);
-      // onFixed(scrollToTop > SETTINGS_STICKY_SWITCH_HEIGHT);
       dispatch(
         generalActions.setHeaderIsFixed(
           scrollToTop >= SETTINGS_STICKY_SWITCH_HEIGHT
@@ -42,7 +38,6 @@ const Header = ({ children }) => {
         }
 
         transitionRef.current = setTimeout(() => {
-          // headerRef.current.style.transition = "all 0.3s";
           headerRef.current.style.transitionDuration = "0.3s";
         }, 500);
       } else {
@@ -61,30 +56,6 @@ const Header = ({ children }) => {
     headerRef.current?.offsetHeight,
     dispatch,
   ]);
-
-  // useLayoutEffect(() => {
-  //   // dispatch(promptActions.setHeaderHeight(headerRef.current?.offsetHeight));
-  //   // onFixed(isFixed);
-  //   // const mainEl = document.querySelector("main");
-  //   // if (isFixed && headerRef?.current) {
-  //   //   mainEl.style.paddingTop = `${headerRef.current.offsetHeight}px`;
-  //   // } else {
-  //   //   mainEl.style.paddingTop = null;
-  //   // }
-  //   // console.log("HEADER", headerRef.current?.offsetHeight);
-  //   // onHeightChange(headerRef.current?.offsetHeight);
-  //   // dispatch(promptActions.setHeaderHeight(headerRef.current?.offsetHeight));
-  // }, [
-  //   isFixed,
-  //   onFixed,
-  //   dispatch,
-  //   headerRef?.current?.offsetHeight,
-  //   // promptIsOpen,
-  //   // positivePromptHeight,
-  //   // negativePromptHeight,
-  //   // onFixed,
-  //   // onHeightChange,
-  // ]);
 
   return (
     <header

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Buttton from "../ui/Button";
-import Modal from "../ui/Modal";
 import classes from "./Presets.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { promptActions, updatePresets } from "../../store/prompt";

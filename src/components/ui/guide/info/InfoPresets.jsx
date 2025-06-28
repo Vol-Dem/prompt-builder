@@ -1,4 +1,3 @@
-import ButtonTertiary from "../../ButtonTertiary";
 import Image from "../../image/Image";
 import NotificationMessage from "../../NotificationMessage";
 import TextButton from "../../text/text-buttons/TextButton";

@@ -77,12 +77,6 @@ const AuthForm = () => {
     } else {
       dispatch(authActions.setErrorMessage(ERROR_MESSAGE_INPUT_DEF));
     }
-
-    // if (!email.isValid || !password.isValid) {
-    //   dispatch(authActions.setErrorMessage(ERROR_MESSAGE_INPUT_DEF));
-    // } else {
-    //   dispatch(authRequest(isLogin, email.value, password.value));
-    // }
   };
 
   const switchSignType = () => {
@@ -169,11 +163,6 @@ const AuthForm = () => {
                 dispatch(authWithGoogle());
               }}
             >
-              {/* <img
-                className={classes["icon"]}
-                alt="google-icon"
-                src={require("../../../assets/google.svg")}
-              />{" "} */}
               <GoogleLogo className={classes["icon"]} />
               Sign in with Google
             </Buttton>
@@ -197,15 +186,6 @@ const AuthForm = () => {
               maxLength: VALIDATION_EMAIL_MAX_LENGTH,
               disableErrorOnBlur: !isLogin ? false : true,
             }}
-            // validation={
-            //   !isLogin
-            //     ? {
-            //         required: true,
-            //         email: true,
-            //         maxLength: VALIDATION_EMAIL_MAX_LENGTH,
-            //       }
-            //     : false
-            // }
             showError={showErrorMessage}
             value={email.value}
           />
@@ -227,15 +207,6 @@ const AuthForm = () => {
               maxLength: VALIDATION_PASSWORD_MAX_LENGTH,
               disableErrorOnBlur: !isLogin ? false : true,
             }}
-            // validation={
-            //   !isLogin
-            //     ? {
-            //         required: true,
-            //         password: true,
-            //         maxLength: VALIDATION_PASSWORD_MAX_LENGTH,
-            //       }
-            //     : false
-            // }
             showError={showErrorMessage}
             value={password.value}
           />

@@ -6,7 +6,6 @@ const firestore = getFirestore(firebaseApp);
 
 const notificationSlice = createSlice({
   name: "notification",
-  // initialState: { isShown: false, title: "", message: "" },
   initialState: { maintenance: false, notifications: [] },
   reducers: {
     setNotifications(state, actions) {
@@ -45,7 +44,6 @@ export const getAppInfo = () => {
       }
     } catch (err) {
       console.error(err.message);
-      // dispatch(authActions.setUserDataLoadError(err.message));
     }
   };
 };

@@ -1,4 +1,3 @@
-import React from "react";
 import classes from "./Footer.module.scss";
 import { Link } from "react-router-dom";
 import LinkA from "../../ui/LinkA";

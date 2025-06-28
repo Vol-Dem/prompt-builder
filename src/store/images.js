@@ -49,7 +49,6 @@ const imagesSlice = createSlice({
     collectionPreviews: [],
     isLastPage: false,
     isLastPreviewsPage: false,
-    // collectionIsLoading: false,
     imagesIsLoading: false,
     previewsIsLoading: false,
     collectionDataIsSaving: false,
@@ -80,9 +79,6 @@ const imagesSlice = createSlice({
     setIsLastPreviewsPage(state, actions) {
       state.isLastPreviewsPage = actions.payload;
     },
-    // setCollectionIsLoading(state, actions) {
-    //   state.collectionIsLoading = actions.payload;
-    // },
     setImagesIsLoading(state, actions) {
       state.imagesIsLoading = actions.payload;
     },
@@ -99,7 +95,6 @@ const imagesSlice = createSlice({
       state.previewsErrorMessage = actions.payload;
     },
     setCollectionImages(state, actions) {
-      // console.log("PAYLOAD", actions.payload);
       state.collectionImages = actions.payload;
     },
     resetCollectionData(state, action) {
@@ -158,11 +153,6 @@ export const savePostToCollections = ({
 }) => {
   return async (dispatch, getState) => {
     try {
-      // console.log(collectionData, categoryData, subcategoriesData);
-      // console.log(postId, imageIds);
-      // console.log(postData);
-      // console.log(curCollectionSabcategories);
-
       if (!collectionData?.name) {
         throwCustomError("Invalid collection name");
       }
@@ -175,10 +165,7 @@ export const savePostToCollections = ({
         throwCustomError("Invalid post ID");
       }
 
-      // return;
       const batch = writeBatch(firestore);
-
-      // const collectionId = collectionData.id;
 
       const uid = getState().auth.user.uid;
       const categories = getState().images.categories;
@@ -241,7 +228,6 @@ export const savePostToCollections = ({
       let updatedCategories;
 
       if (!categories?.length || !categoryData.id) {
-        // console.log("NEW");
         updatedCategories = [
           ...categories,
           {
@@ -257,15 +243,7 @@ export const savePostToCollections = ({
             ],
           },
         ];
-        // batch.set(
-        //   userRef,
-        //   {
-        //     imageCategories: updatedCategories,
-        //   },
-        //   { merge: true }
-        // );
       } else {
-        // console.log("UPD");
         updatedCategories = categories.map((category) => {
           if (categoryData.id && categoryId === category.id) {
             let collectionNames;
@@ -282,10 +260,6 @@ export const savePostToCollections = ({
               const prevCollectionNames = category.collectionNames.filter(
                 (prevCollectionName) => prevCollectionName.id !== collectionId
               );
-              // const prevSubcategories =
-              //   prevCollectionNames.find(
-              //     (prevCollectionName) => prevCollectionName.id === collectionId
-              //   )?.subcategories || [];
 
               collectionNames = [
                 ...prevCollectionNames,
@@ -306,9 +280,6 @@ export const savePostToCollections = ({
           return category;
         });
       }
-      //
-
-      //
 
       if (postData?.postId) {
         batch.update(
@@ -338,9 +309,6 @@ export const savePostToCollections = ({
           description: "",
           posts: [newPost],
         };
-
-        // console.log(savedImagesToCatPrev);
-        // console.log(savedImagesToCat);
 
         batch.set(collectionsRef, savedImagesToCat, { merge: true });
         batch.set(collectionsPreviewRef, savedImagesToCatPrev, { merge: true });
@@ -378,7 +346,7 @@ export const savePostToCollections = ({
       }
 
       await batch.commit();
-      // console.log("SAVED");
+
       dispatch(imagesActions.setImageCategories(updatedCategories));
       const collectionImagesData = getState().images.collectionImages;
       if (
@@ -392,8 +360,7 @@ export const savePostToCollections = ({
             posts: [...(curCollectionData?.posts || []), newPost],
           })
         );
-        // console.log(collectionImagesData);
-        // console.log(images);
+
         if (
           !collectionImagesData?.collectionId ||
           collectionId === collectionImagesData.collectionId
@@ -425,18 +392,12 @@ export const savePostToCollections = ({
 export const getCollection = (collectionId) => {
   return async (dispatch, getState) => {
     try {
-      // dispatch(imagesActions.setCollectionIsLoading(true));
-
       const collectionData = await getCollectionData(collectionId);
 
       dispatch(imagesActions.setCollectionData(collectionData));
     } catch (err) {
-      // console.log(err);
       throw new Error(err.message);
     }
-    //  finally {
-    //   dispatch(imagesActions.setCollectionIsLoading(false));
-    // }
   };
 };
 
@@ -457,17 +418,14 @@ export const getCollectionPreviews = (
       const activeCategory = getState().images.activeCategory;
       const activeSubcategory = getState().images.activeSubcategory;
       const isLastPreviewsPage = getState().images.isLastPreviewsPage;
-      //   const sortBy = getState().tabs.sortBy;
       const sortBy = "name";
       const collectionPreviews = getState().images.collectionPreviews;
-      // console.log(activeCategory);
-      // console.log(activeSubcategory);
+
       if (isLastPreviewsPage || !activeCategory) return;
 
       dispatch(imagesActions.setPreviewsIsLoading(true));
       const direction = sortBy === "name" ? "asc" : "desc";
       const order = orderBy(sortBy, direction);
-      // let q;
 
       const nsfwFilter = !nsfwMode ? [false] : [true, false];
 
@@ -481,11 +439,6 @@ export const getCollectionPreviews = (
           where("subcategories", "array-contains", activeSubcategory)
         );
       }
-      //   if (baseModel && baseModel !== "-") {
-      //     optionalWhere.push(where("baseModel", "==", baseModel));
-      //   }
-      // console.log(activeCategory);
-      // console.log(activeSubcategory);
 
       const q = query(
         collection(firestore, "users", uid, `collectionPreviews`),
@@ -502,7 +455,6 @@ export const getCollectionPreviews = (
         // doc.data() is never undefined for query doc snapshots
         return { type: "collection", ...doc.data() };
       });
-      // console.log(collectionsData);
 
       const isLast =
         !querySnapshot.docs.length || querySnapshot.docs.length < amountPerPage;
@@ -510,11 +462,10 @@ export const getCollectionPreviews = (
       if (!isLast) {
         lastVisiblePreview = querySnapshot.docs[querySnapshot.docs.length - 1];
       }
-      // console.log(collectionPreviews);
+
       if (collectionsData)
         dispatch(
           imagesActions.setCollectionPreviews({
-            // tab: activeTab,
             category: activeCategory,
             subcategory: activeSubcategory,
             nsfw: nsfwMode,
@@ -533,78 +484,13 @@ export const getCollectionPreviews = (
   };
 };
 
-// export const getImagesByIds = (ids, loadMore = false, nsfwMode) => {
-//   return async (dispatch, getState) => {
-//     try {
-//       dispatch(imagesActions.setErrorMessage(""));
-//       if (!loadMore) {
-//         lastVisiblePost = "";
-//         dispatch(imagesActions.setIsLastPage(false));
-//       }
-//       const uid = getState().auth.user.uid;
-//       const isLastPage = getState().images.isLastPage;
-//       //   const sortBy = getState().tabs.sortBy;
-//       const sortBy = "createdAt";
-//       const curCollectionImages = getState().images.collectionImages;
-
-//       //   if (isLastPage) return;
-
-//       dispatch(imagesActions.setImagesIsLoading(true));
-//       //   const direction = "desc";
-//       const direction = "asc";
-//       const order = orderBy(sortBy, direction);
-
-//       const nsfwFilter = nsfwMode ? [false] : [true, false];
-
-//       const q = query(
-//         collection(firestore, "users", uid, `images`),
-//         where("id", "in", ids),
-//         where("hasSfw", "in", nsfwFilter),
-//         order,
-//         startAfter(lastVisiblePost),
-//         limit(amountPerPage)
-//       );
-
-//       const querySnapshot = await getDocs(q);
-
-//       const collectionsData = querySnapshot.docs.map((doc) => {
-//         // doc.data() is never undefined for query doc snapshots
-//         return doc.data();
-//       });
-//       console.log(collectionsData);
-
-//       const isLast =
-//         !querySnapshot.docs.length || querySnapshot.docs.length < amountPerPage;
-
-//       if (!isLast) {
-//         lastVisiblePost = querySnapshot.docs[querySnapshot.docs.length - 1];
-//       }
-//       if (collectionsData)
-//         dispatch(
-//           imagesActions.setCollectionImages([
-//             ...curCollectionImages,
-//             ...collectionsData,
-//           ])
-//         );
-
-//       dispatch(imagesActions.setIsLastPage(isLast));
-//       dispatch(imagesActions.setImagesIsLoading(false));
-//     } catch (err) {
-//       dispatch(imagesActions.setImagesIsLoading(false));
-//       dispatch(imagesActions.setErrorMessage(handleErrors(err)));
-//     }
-//   };
-// };
 export const getColectionImagesByIds = (posts, collectionId) => {
   return async (dispatch, getState) => {
     try {
-      // dispatch(imagesActions.setImagesIsLoading(true));
       const uid = getState().auth.user.uid;
       const collectionImages = getState().images.collectionImages;
-      // console.log(posts);
       const fileteredPosts = posts.filter((post) => post?.postId);
-      // console.log(fileteredPosts);
-      // console.log(collectionImages);
+
       if (collectionImages?.isLastPage) return;
       const savedImagesData = getState().images.collectionData?.posts?.toSorted(
         (a, b) => b.createdAt - a.createdAt
@@ -612,15 +498,12 @@ export const getColectionImagesByIds = (posts, collectionId) => {
       const nsfwMode = getState().general.nsfwMode;
       const nsfwLevel = getState().general.nsfwLevel;
       const lastVisibleId = collectionImages?.lastVisibleId;
-      // console.log(collectionImages);
       const lastVisibleIndex = fileteredPosts.findIndex(
         (post) => post.postId === lastVisibleId
       );
-      // console.log(fileteredPosts);
-      // console.log(lastVisibleIndex);
-      // setExamplesIsLoading(true);
       let from;
       let to;
+
       if (lastVisibleIndex < 0 && !lastVisibleId) {
         from = 0;
         to = SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE + 1;
@@ -629,17 +512,7 @@ export const getColectionImagesByIds = (posts, collectionId) => {
         to = lastVisibleIndex + SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE + 1;
       }
 
-      // from = pageIndex * SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE;
-      //   to =
-      //   pageIndex * SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE +
-      //     SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE;
-      // setErrorMessage("");
-      // console.log("GETCH");
       const nsfwFilter = !nsfwMode ? [true] : [true, false];
-
-      // console.log(pageIndex);
-      // console.log(from, to);
-
       const curPosts = fileteredPosts.slice(from, to);
       const ids = curPosts?.map((post) => post.postId);
       console.log(ids);
@@ -649,24 +522,16 @@ export const getColectionImagesByIds = (posts, collectionId) => {
         where("id", "in", ids),
         where("hasSfw", "in", nsfwFilter),
         orderBy("createdAt", "desc"),
-        //   startAfter(lastVisible),
         limit(SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE + 1)
       );
 
       const modelImagesSnap = await getDocs(q);
 
-      // const isLast =
-      //   !modelImagesSnap.docs.length ||
-      //   modelImagesSnap.docs.length <= SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE;
       const isLast = ids.length <= SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE;
 
       const data = modelImagesSnap.docs.flatMap((doc, i) => {
         return doc.data();
       });
-
-      // console.log(data);
-      // console.log(data.length);
-      // console.log(isLast);
 
       const examples = data
         .map((post) => {
@@ -689,26 +554,6 @@ export const getColectionImagesByIds = (posts, collectionId) => {
             return Date.parse(a.createdAt) - Date.parse(b.createdAt);
           });
         })
-        // .map((post) => {
-        //   const savedPostImages = post.items.filter((image) => {
-        //     const saved =
-        //       savedImagesData?.length &&
-        //       savedImagesData
-        //         ?.find((postData) => postData.postId === image.postId)
-        //         ?.imageIds?.includes(image.id);
-
-        //     const isInCurrentNsfwRange = checkIsInCurrentNsfwRange(
-        //       nsfwLevel,
-        //       image?.nsfwLevel
-        //     );
-
-        //     return saved && isInCurrentNsfwRange;
-        //   });
-
-        //   return filterDuplicates(savedPostImages, "id").toSorted((a, b) => {
-        //     return Date.parse(a.createdAt) - Date.parse(b.createdAt);
-        //   });
-        // })
         .filter((item) => !!item.length)
         .toSorted((a, b) => {
           return (
@@ -718,15 +563,6 @@ export const getColectionImagesByIds = (posts, collectionId) => {
         })
         .slice(0, SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE);
 
-      // setExamplesImgData((prevState) => [...prevState, ...examples]);
-
-      // const lastVisiblePost =
-      //   modelImagesSnap.docs[modelImagesSnap.docs.length - 1];
-      // if (!isLast) {
-      //   setLastVisible(lastVisiblePost);
-      // }
-      // console.log(examples);
-
       dispatch(
         imagesActions.setCollectionImages({
           collectionId,
@@ -735,9 +571,6 @@ export const getColectionImagesByIds = (posts, collectionId) => {
           isLastPage: isLast,
         })
       );
-
-      // setIsLastPage(isLast);
-      // setPageIndex((prevState) => prevState + 1);
     } catch (err) {
       console.log(err);
       // setErrorMessage(err);
@@ -762,27 +595,20 @@ export const editCollectionData = ({
       dispatch(imagesActions.setCollectionDataIsSaving(true));
 
       const batch = writeBatch(firestore);
-
-      // const collectionId = collectionData.id;
-
       const uid = getState().auth.user.uid;
       const categories = getState().images.categories;
       const curCollectionData = getState().images.collectionData;
-
       const curCategoryData = categories.find(
         (category) => category.name === categoryData.name
       );
-      // console.log(curCategoryData);
       const existedCollectionName = curCategoryData?.collectionNames?.find(
         (collection) => collection.id === collectionData?.id
       )?.name;
-
       const categoryId =
         categoryData?.id || createCategoryId(categoryData.name, categories);
       const collectionId =
         collectionData?.id ||
         createCategoryId(collectionData.name, curCategoryData?.collectionNames);
-
       let newSubcategories = [];
 
       const newSubcategoryIds = subcategoriesData.flatMap((subcategory) => {
@@ -802,15 +628,6 @@ export const editCollectionData = ({
         }
         return subcategory.id;
       });
-
-      // const newCollectionSubcategoryIds = filterDuplicates([
-      //   ...newSubcategoryIds,
-      //   ...curCollectionSabcategories,
-      // ]);
-
-      // const curCollectionSubcategoriesFFF = curCollectionSabcategories.collectionNames.find(collectionName=> {
-      //   collectionName.id === collectionData?.name
-      // })?.subcategories
 
       const clollectionSubcategoriesIsChanged = !checkArraysIsEqual(
         newSubcategoryIds,
@@ -837,7 +654,6 @@ export const editCollectionData = ({
       let collectionNames;
 
       if (!categories?.length || !categoryData.id) {
-        // console.log("NEW");
         collectionNames = [
           {
             id: collectionId,
@@ -855,7 +671,6 @@ export const editCollectionData = ({
           },
         ];
       } else {
-        // console.log("UPD");
         updatedCategories = categories.map((category) => {
           if (categoryData.id && categoryId === category.id) {
             const prevCollectionNames = category.collectionNames.filter(
@@ -874,13 +689,6 @@ export const editCollectionData = ({
                 subcategories: newSubcategoryIds,
               },
             ];
-
-            // const collectionNames = !collectionData.id
-            //   ? [
-            //       ...category.collectionNames,
-            //       { id: collectionId, name: collectionData.name },
-            //     ]
-            //   : category.collectionNames;
 
             return {
               ...category,
@@ -912,8 +720,7 @@ export const editCollectionData = ({
 
       batch.update(collectionsPreviewRef, preview, { merge: true });
       batch.update(collectionsRef, collection, { merge: true });
-      // console.log(existedCollectionName);
-      // console.log(collectionData?.name);
+
       if (
         !collectionData.id ||
         !categoryData.id ||
@@ -944,21 +751,13 @@ export const updateCollectionPostsData = (postInfo, postData) => {
   return async (dispatch, getState) => {
     try {
       const uid = getState().auth.user.uid;
-
       const collectionData = getState().images.collectionData;
-
-      // console.log(postInfo);
-      // console.log(postData);
-      // console.log(collectionData);
-
       const imageIds = postInfo?.ids?.length
         ? postData.imageIds.filter((imageId) => !postInfo.ids.includes(imageId))
         : [];
-
       let updatedPosts;
 
       if (!imageIds?.length) {
-        // console.log("FILTER");
         updatedPosts = collectionData.posts.filter(
           (post) => post.postId !== postData.postId
         );
@@ -975,8 +774,6 @@ export const updateCollectionPostsData = (postInfo, postData) => {
         });
       }
 
-      // console.log(updatedPosts);
-
       const collectionsRef = doc(
         firestore,
         "users",
@@ -984,30 +781,7 @@ export const updateCollectionPostsData = (postInfo, postData) => {
         "collections",
         collectionData.id + ""
       );
-
       const batch = writeBatch(firestore);
-
-      // batch.update(
-      //   collectionsRef,
-      //   {
-      //     posts: arrayRemove(postData),
-      //   },
-      //   { merge: true }
-      // );
-
-      // if (!!imageIds.length) {
-      //   batch.update(
-      //     collectionsRef,
-      //     {
-      //       posts: arrayUnion({
-      //         postId: postData.postId,
-      //         imageIds,
-      //         createdAt: postData.createdAt,
-      //       }),
-      //     },
-      //     { merge: true }
-      //   );
-      // }
 
       batch.update(
         collectionsRef,
@@ -1026,8 +800,6 @@ export const updateCollectionPostsData = (postInfo, postData) => {
       );
       const collectionImagesData = getState().images.collectionImages;
       if (collectionImagesData?.collectionId) {
-        // console.log(collectionImagesData);
-        // console.log(imageIds);
         let updatedImages;
         if (!imageIds.length) {
           updatedImages = collectionImagesData.images.filter(
@@ -1087,10 +859,9 @@ export const addNewCollectionCategories = ({
       const hasNewSubcategories = subcategoriesData?.find(
         (subcategory) => !subcategory?.id
       );
-      // console.log(collectionData, categoryData, subcategoriesData);
+
       //Check for new categories data
       if (!hasNewSubcategories && categoryData?.id && collectionData?.id) {
-        // console.log("NO NEW");
         return {
           collectionData,
           categoryData,
@@ -1112,7 +883,6 @@ export const addNewCollectionCategories = ({
       } else {
         throwCustomError(ERROR_MESSAGE_DB_CONNECTION);
       }
-      // console.log(latestCategories);
 
       const curCategoryData = latestCategories.find(
         (category) => category.name === categoryData.name
@@ -1156,7 +926,6 @@ export const addNewCollectionCategories = ({
       let updatedCategories;
 
       if (!latestCategories?.length || !categoryData.id) {
-        // console.log("NEW");
         updatedCategories = [
           ...latestCategories,
           {
@@ -1172,15 +941,7 @@ export const addNewCollectionCategories = ({
             ],
           },
         ];
-        // batch.set(
-        //   userRef,
-        //   {
-        //     imageCategories: updatedCategories,
-        //   },
-        //   { merge: true }
-        // );
       } else {
-        // console.log("UPD");
         updatedCategories = latestCategories.map((category) => {
           if (categoryData.id && categoryId === category.id) {
             const collectionNames = !collectionData.id
@@ -1204,7 +965,6 @@ export const addNewCollectionCategories = ({
         });
       }
 
-      // console.log(updatedCategories);
       if (!collectionData?.id && collectionId) {
         const collectionsRef = doc(
           firestore,
@@ -1236,8 +996,7 @@ export const addNewCollectionCategories = ({
           description: "",
           posts: [],
         };
-        // console.log(savedImagesToCatPrev);
-        // console.log(savedImagesToCat);
+
         await setDoc(collectionsRef, savedImagesToCat, { merge: true });
         await setDoc(collectionsPreviewRef, savedImagesToCatPrev, {
           merge: true,
@@ -1246,7 +1005,7 @@ export const addNewCollectionCategories = ({
 
       await dispatch(updateCollectionCategories(updatedCategories));
       dispatch(imagesActions.setImageCategories(updatedCategories));
-      // return updatedCategories;
+
       return {
         collectionData: { name: collectionData.name, id: collectionId },
         categoryData: { name: categoryData.name, id: categoryId },

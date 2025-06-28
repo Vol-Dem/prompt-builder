@@ -12,7 +12,7 @@ import GuideActionMessage from "../GuideActionMessage";
 
 const guideType = "model";
 
-const OpenSidePanelGuide = (props) => {
+const OpenSidePanelGuide = () => {
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
 
   const guideSteps = useMemo(() => {

@@ -1,10 +1,8 @@
 import {
-  ArrowUpIcon,
   ChevronUpIcon,
   DocumentDuplicateIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-import ButtonTertiary from "../../ButtonTertiary";
 import Video from "../../Video";
 import classes from "./InfoPrompt.module.scss";
 import TextHighlight from "../../text/TextHighlight";

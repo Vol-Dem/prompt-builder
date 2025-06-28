@@ -21,8 +21,6 @@ import {
   parseModelIds,
   splitTags,
 } from "../../utils/generalUtils";
-import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
-import CheckCircleSvg from "../../assets/CheckCircleSvg";
 import ErrorMessage from "../ui/ErrorMessage";
 import { modelActions } from "../../store/model";
 import CopySvg from "../../assets/CopySvg";
@@ -79,7 +77,6 @@ const ImageCard = ({ activeImgNum }) => {
   const resorcesRef = useRef(null);
 
   const openFormHandler = (newModelId, newModelVersionId, modelType) => {
-    // console.log(modelType);
     setModelToSave({
       modelId: newModelId,
       modelVersionId: newModelVersionId,
@@ -122,18 +119,6 @@ const ImageCard = ({ activeImgNum }) => {
         })
       );
     }
-
-    // if (
-    //   imageData?.url &&
-    //   guideStep &&
-    //   resorcesRef?.current &&
-    //   guideStep === GUIDE_STEP_IMAGE_RESOURCES
-    // ) {
-    //   resorcesRef.current.scrollIntoView({
-    //     behavior: "smooth",
-    //     block: "nearest",
-    //   });
-    // }
   }, [guideStep, imageData?.url, dispatch, guideIsActive]);
 
   const activeCarouselData = useSelector(
@@ -141,8 +126,6 @@ const ImageCard = ({ activeImgNum }) => {
   );
 
   const resetModelData = (e) => {
-    // console.log(modelId);
-    // console.log(e.target.dataset.id);
     if (+e.target.dataset.id !== modelId) {
       dispatch(modelActions.resetModelData());
       dispatch(modelActions.setActiveCarouselData({}));
@@ -192,29 +175,20 @@ const ImageCard = ({ activeImgNum }) => {
         ];
       }
 
-      // console.log(imageResources);
-
-      // const uniqImageResources = imageResources;
       const uniqImageResources = filterDuplicates(
         imageResources,
         "modelVersionId"
       );
 
-      // console.log(uniqImageResources);
-
       const loadResourcesInfoFromCiv = async (curImageData) => {
         try {
-          // console.log(curImageData);
-          // console.log(uniqImageResources);
           setIsLoading(true);
           setCivConnectionError(false);
-          // throw new Error("err");
           const resourcesInfoCiv = await getImageInfo(
             uniqImageResources,
             curImageData
           );
-          // setImageCivResources(resourcesInfoCiv);
-          // console.log(resourcesInfoCiv);
+
           await loadResourcesInfoFromDB(resourcesInfoCiv, curImageData);
         } catch (err) {
           console.log(err);
@@ -261,8 +235,6 @@ const ImageCard = ({ activeImgNum }) => {
             return doc.data();
           });
 
-          // console.log("DB");
-          // console.log(resourcesInfoCiv);
           let modelsIds = [];
           let modelsVersionIds = [];
           let modelsHashes = [];
@@ -378,7 +350,7 @@ const ImageCard = ({ activeImgNum }) => {
                   clearFileExtension(resource.name)?.toLowerCase()
                 )
             );
-            // console.log(preview);
+
             if (preview) {
               return {
                 ...resource,
@@ -387,7 +359,6 @@ const ImageCard = ({ activeImgNum }) => {
             }
             return resource;
           });
-          // console.log(resources);
 
           //Remove not uniq items from the end of array//////
           const filteredNewResult = resources
@@ -425,7 +396,7 @@ const ImageCard = ({ activeImgNum }) => {
           const checkpointInfo = filteredNewResult.find(
             (resource) => resource.type === "Checkpoint"
           );
-          // console.log(checkpointInfo);
+
           if (checkpointInfo) {
             setModelInfoCiv(checkpointInfo);
           }
@@ -436,306 +407,8 @@ const ImageCard = ({ activeImgNum }) => {
         }
       };
 
-      // const loadResourcesInfo = async (curImageData) => {
-      //   try {
-      //     setIsLoading(true);
-      //     console.log(curImageData);
-      //     //MODEL
-      //     let modelHash = "";
-      //     if (curImageData?.meta?.hasOwnProperty("Model hash")) {
-      //       modelHash = curImageData?.meta["Model hash"];
-      //     } else if (curImageData?.meta?.hasOwnProperty("Modelhash")) {
-      //       modelHash = curImageData?.meta["Modelhash"];
-      //     }
-      //     let modelQ;
-      //     if (!!modelHash) {
-      //       modelQ = query(
-      //         collection(firestore, "users", uid, `preview`),
-      //         where("hashes", "array-contains", modelHash)
-      //       );
-      //     } else if (curImageData?.meta?.Model?.includes("urn:air")) {
-      //       const [modelId, versionId] = parseModelIds(curImageData.meta.Model);
-      //       modelQ = query(
-      //         collection(firestore, "users", uid, `preview`),
-      //         where("id", "==", modelId)
-      //       );
-      //     } else {
-      //       const modelName = curImageData?.meta?.Model || "";
-      //       modelQ = query(
-      //         collection(firestore, "users", uid, `preview`),
-      //         where("fileNames", "array-contains", modelName?.toLowerCase())
-      //       );
-      //     }
-
-      //     const modelQuerySnapshot = await getDocs(modelQ);
-
-      //     const modelInfoData = modelQuerySnapshot.docs.map((doc) => {
-      //       // doc.data() is never undefined for query doc snapshots
-      //       return doc.data();
-      //     });
-
-      //     // console.log(modelInfoData);
-
-      //     //RESOURCES
-      //     const resourcesInfoCiv = await getImageInfo(curImageData);
-      //     // console.log(imageWithResCiv);
-
-      //     // let resourcesInfoCiv = [];
-
-      //     // if (!!imageWithResCiv?.meta?.civitaiResources?.length) {
-      //     //   resourcesInfoCiv = [
-      //     //     ...resourcesInfoCiv,
-      //     //     ...imageWithResCiv.meta.civitaiResources,
-      //     //   ].filter(
-      //     //     (resource) => !civitDefEmb.includes(resource.modelVersionId)
-      //     //   );
-      //     // }
-
-      //     // if (!!imageWithResCiv?.meta?.resources?.length) {
-      //     //   resourcesInfoCiv = [
-      //     //     ...resourcesInfoCiv,
-      //     //     ...imageWithResCiv.meta.resources,
-      //     //   ];
-      //     // }
-
-      //     // if (!!imageWithResCiv?.meta?.additionalResources?.length) {
-      //     //   resourcesInfoCiv = [
-      //     //     ...resourcesInfoCiv,
-      //     //     ...imageWithResCiv.meta.additionalResources,
-      //     //   ];
-      //     // }
-
-      //     // if (!!imageWithResCiv?.meta?.hashResources?.length) {
-      //     //   resourcesInfoCiv = [
-      //     //     ...resourcesInfoCiv,
-      //     //     ...imageWithResCiv.meta.hashResources,
-      //     //   ];
-      //     // }
-
-      //     // console.log(resourcesInfoCiv);
-
-      //     let modelsIds = [];
-      //     let modelsVersionIds = [];
-      //     let modelsHashes = [];
-      //     let modelsNames = [];
-      //     let allModelsPreviews = [];
-
-      //     resourcesInfoCiv?.forEach((resource) => {
-      //       if (resource?.modelId) {
-      //         modelsIds.push(resource?.modelId);
-      //       } else if (resource?.versionId) {
-      //         modelsVersionIds.push(resource?.versionId);
-      //       } else if (resource?.hash) {
-      //         modelsHashes.push(resource?.hash);
-      //       } else if (resource?.name) {
-      //         modelsNames.push(
-      //           clearFileExtension(resource?.name).toLowerCase()
-      //         );
-      //       }
-      //     });
-
-      //     if (!!modelsIds.length) {
-      //       // console.log(modelsIds);
-
-      //       const q = query(
-      //         collection(firestore, "users", uid, `preview`),
-      //         //firestore query limit 30
-      //         where("id", "in", modelsIds.slice(0, 29))
-      //       );
-      //       const querySnapshot = await getDocs(q);
-
-      //       const modelsPrewiewById = querySnapshot.docs.map((doc) => {
-      //         // doc.data() is never undefined for query doc snapshots
-      //         return doc.data();
-      //       });
-      //       // console.log(modelsPrewiewById);
-      //       allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewById];
-      //     }
-
-      //     if (!!modelsVersionIds.length) {
-      //       // console.log(modelsVersionIds);
-      //       const q = query(
-      //         collection(firestore, "users", uid, `preview`),
-      //         where("versionIds", "array-contains-any", modelsVersionIds)
-      //       );
-      //       const querySnapshot = await getDocs(q);
-
-      //       const modelsPrewiewByVersionId = querySnapshot.docs.map((doc) => {
-      //         // doc.data() is never undefined for query doc snapshots
-      //         return doc.data();
-      //       });
-      //       // console.log(modelsPrewiewByVersionId);
-      //       allModelsPreviews = [
-      //         ...allModelsPreviews,
-      //         ...modelsPrewiewByVersionId,
-      //       ];
-      //     }
-
-      //     if (!!modelsHashes.length) {
-      //       // console.log(modelsHashes);
-      //       const q = query(
-      //         collection(firestore, "users", uid, `preview`),
-      //         where("hashes", "array-contains-any", modelsHashes)
-      //       );
-      //       const querySnapshot = await getDocs(q);
-
-      //       const modelsPrewiewByHash = querySnapshot.docs.map((doc) => {
-      //         // doc.data() is never undefined for query doc snapshots
-      //         return doc.data();
-      //       });
-      //       // console.log(allModelsPreviews);
-      //       // console.log(modelsPrewiewByHash);
-      //       allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewByHash];
-      //     }
-
-      //     if (!!modelsNames.length) {
-      //       const uniqModelsNames = modelsNames.filter(
-      //         (name) =>
-      //           !allModelsPreviews.find((model) => {
-      //             const nameArr = name.split("-");
-      //             // console.log(nameArr);
-      //             if (Number.isFinite(+nameArr[nameArr?.length - 1])) {
-      //               // console.log(nameArr[nameArr?.length - 1]);
-      //               // console.log(
-      //               //   name
-      //               //     .replace(`-${nameArr[nameArr?.length - 1]}`, "")
-      //               //     .toLowerCase()
-      //               // );
-      //               // console.log(
-      //               //   model?.fileNames?.includes(
-      //               //     name
-      //               //       .replace(`-${nameArr[nameArr?.length - 1]}`, "")
-      //               //       .toLowerCase()
-      //               //   )
-      //               // );
-      //               return model?.fileNames?.includes(
-      //                 name
-      //                   .replace(`-${nameArr[nameArr?.length - 1]}`, "")
-      //                   .toLowerCase()
-      //               );
-      //             } else {
-      //               return model?.fileNames?.includes(name.toLowerCase());
-      //             }
-      //           })
-      //       );
-
-      //       if (!!uniqModelsNames.length) {
-      //         const q = query(
-      //           collection(firestore, "users", uid, `preview`),
-      //           where("fileNames", "array-contains-any", uniqModelsNames)
-      //         );
-      //         const querySnapshot = await getDocs(q);
-
-      //         const modelsPrewiewByName = querySnapshot.docs.map((doc) => {
-      //           // doc.data() is never undefined for query doc snapshots
-      //           return doc.data();
-      //         });
-      //         // console.log(modelsPrewiewByName);
-      //         allModelsPreviews = [
-      //           ...allModelsPreviews,
-      //           ...modelsPrewiewByName,
-      //         ];
-      //       }
-      //     }
-
-      //     // console.log(modelsIds);
-      //     // console.log(modelsVersionIds);
-      //     // console.log(modelsHashes);
-      //     // console.log(modelsNames);
-      //     // console.log(allModelsPreviews);
-
-      //     // console.log("All", allModelsPreviews);
-      //     const resources = resourcesInfoCiv?.map((resource) => {
-      //       const versionId = resource?.modelVersionId || resource?.versionId;
-      //       const preview = allModelsPreviews.find(
-      //         (preview) =>
-      //           preview?.id === resource.modelId ||
-      //           preview?.versionIds?.includes(versionId) ||
-      //           preview?.hashes?.includes(resource.hash) ||
-      //           preview?.fileNames?.includes(
-      //             clearFileExtension(resource.name)?.toLowerCase()
-      //           )
-      //       );
-      //       // console.log(preview);
-      //       if (preview) {
-      //         return {
-      //           ...resource,
-      //           preview,
-      //         };
-      //       }
-      //       return resource;
-      //     });
-      //     // console.log(resources);
-
-      //     //Remove not uniq items from the end of array//////
-      //     // const reversedArr = resources.toReversed();
-      //     // const ids = reversedArr
-      //     // .map((resource) => resource?.preview?.id)
-      //     // .filter(Boolean);
-      //     // console.log(ids);
-
-      //     const filteredNewResult = resources
-      //       .filter((obj1, i, arr) => {
-      //         if (!!obj1?.preview?.id) {
-      //           return (
-      //             arr.findIndex(
-      //               (obj2) => obj2?.preview?.id === obj1?.preview?.id
-      //             ) === i
-      //           );
-      //         } else if (!!obj1?.modelId) {
-      //           return (
-      //             arr.findIndex((obj2) => obj2?.modelId === obj1?.modelId) === i
-      //           );
-      //         } else {
-      //           return true;
-      //         }
-      //       })
-      //       ?.filter((resource) => {
-      //         if (resource?.name && resource.name?.includes("urn:air:")) {
-      //           return false;
-      //         } else {
-      //           return true;
-      //         }
-      //       });
-      //     // console.log(filteredNewResult);
-      //     ////////////////////////////////////////////////////
-
-      //     if (!!modelInfoData?.length) {
-      //       setModelInfo(modelInfoData[0]);
-      //     }
-      //     // setImageResources(resources || []);
-      //     if (curImageData?.id === imageData?.id) {
-      //       // console.log(filteredNewResult);
-      //       setImageResources(filteredNewResult || []);
-      //     }
-      //     // console.log(filteredNewResult);
-      //     const checkpointInfo = filteredNewResult.find(
-      //       (resource) => resource.type === "Checkpoint"
-      //     );
-      //     if (checkpointInfo) {
-      //       // setModelInfo(checkpointInfo);
-      //       setModelInfoCiv(checkpointInfo);
-      //     }
-      //     // setImageResources(filteredNewResult || []);
-      //     // console.log(curImageData);
-      //     setIsLoading(false);
-      //   } catch (err) {
-      //     const defResources = !!curImageData?.meta?.civitaiResources?.length
-      //       ? curImageData.meta?.civitaiResources
-      //       : curImageData.meta?.resources;
-      //     if (curImageData?.id === imageData?.id) {
-      //       setImageResources(defResources);
-      //     }
-      //     console.log(err);
-      //     // console.log(err.code);
-      //     // setErrorMessage(err.message);
-      //     setIsLoading(false);
-      //   }
-      // };
-
       clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(() => {
-        // loadResourcesInfo(imageData);
         loadResourcesInfoFromCiv(imageData);
       }, timeoutDelay);
     }
@@ -915,7 +588,6 @@ const ImageCard = ({ activeImgNum }) => {
                 }
               >
                 <span className={classes["resource__connection-error"]}>
-                  {/* <ExclamationTriangleIcon /> */}
                   Unavailable
                 </span>
               </Tooltip>
@@ -1065,7 +737,6 @@ const ImageCard = ({ activeImgNum }) => {
                         modelInfoCiv?.name}
                       {!modelInfo?.id &&
                         !modelInfoCiv?.modelName &&
-                        // !modelInfoCiv?.name &&
                         imageData?.meta?.Model}
                       {!!modelInfo?.id && (
                         <>

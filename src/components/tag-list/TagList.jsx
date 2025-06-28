@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from "react";
+import { forwardRef, useState } from "react";
 import Tag from "../tag/Tag";
 import classes from "./TagList.module.scss";
 import { useDispatch } from "react-redux";
@@ -7,10 +7,6 @@ import ButtonTertiary from "../ui/ButtonTertiary";
 import CopiedSvg from "../../assets/CopiedSvg";
 import CopySvg from "../../assets/CopySvg";
 import { motion } from "framer-motion";
-import {
-  ANIMATIONS_FM_SLIDEIN,
-  ANIMATIONS_FM_SLIDEIN_INITIAL,
-} from "../../variables/constants";
 
 const TagList = forwardRef(function TagList(props, ref) {
   const [copied, setCopied] = useState(false);
@@ -55,7 +51,6 @@ const TagList = forwardRef(function TagList(props, ref) {
 
         <span>
           <button
-            // id="negativePrompt"
             data-type={props?.promptType}
             onClick={addAllPromptHandler}
             className={classes["btn-copy"]}
@@ -63,7 +58,6 @@ const TagList = forwardRef(function TagList(props, ref) {
             Add all
           </button>
           <button
-            // id="prompt"
             data-type={props?.promptType}
             onClick={removeAllPromptHandler}
             className={classes["btn-copy"]}
@@ -82,12 +76,7 @@ const TagList = forwardRef(function TagList(props, ref) {
           {copied && <CopiedSvg />}
         </ButtonTertiary>
       </div>
-      <motion.ul
-        // key={Date.now()}
-        // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-        // animate={ANIMATIONS_FM_SLIDEIN}
-        className={classes.tags}
-      >
+      <motion.ul className={classes.tags}>
         {!!props?.tags?.length &&
           props?.tags?.map((tag, i) => {
             return (

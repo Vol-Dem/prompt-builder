@@ -3,7 +3,6 @@ import classes from "./UploadingItem.module.scss";
 import { Link } from "react-router-dom";
 
 const UploadingItem = ({ data, curPostId, rejected, completed }) => {
-  // console.log(data);
   return (
     <li
       className={`${classes["uploading-list__item"]} ${

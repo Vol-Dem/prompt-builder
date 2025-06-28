@@ -252,11 +252,7 @@ const SetTagSetPreview = ({ src }) => {
       )}
       {tagSetsFormIsOpen && (
         <Modal onClose={closeTagSetsForm}>
-          <TagSetsForm
-            modelId={model.id}
-            // versionData={customVersionData}
-            onClose={closeTagSetsForm}
-          />
+          <TagSetsForm modelId={model.id} onClose={closeTagSetsForm} />
         </Modal>
       )}
     </div>

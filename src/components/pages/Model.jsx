@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import classes from "./Model.module.scss";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Carousel from "../carousel/Carousel";
@@ -19,7 +13,6 @@ import TagSets from "../model/tag-sets/TagSets";
 import { tabActions } from "../../store/tabs";
 import Spinner from "../ui/Spinner";
 import ButtonSquareAdd from "../ui/ButtonSquareAdd";
-import Buttton from "../ui/Button";
 import ErrorMessage from "../ui/ErrorMessage";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import {
@@ -29,29 +22,17 @@ import {
   SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV,
   SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT,
   SETTINGS_SEARCH_RESULT_PER_PAGE,
-  URL_CIV_MODELS,
 } from "../../variables/constants";
-import BackSvg from "../../assets/BackSvg";
 import { getVersionImagesFromCiv } from "../../utils/fetchUtils";
 import CarouselGuide from "../ui/guide/model/CarouselGuide";
 import AddModelToSidePanelGuide from "../ui/guide/model/AddModelToSidePanelGuide";
 import { guideActions } from "../../store/guide";
-import SettingsSvg from "../../assets/SettingsSvg";
 import { AnimatePresence } from "framer-motion";
 import ImageSvg from "../../assets/ImageSvg";
 import { liveSearch, searchActions } from "../../store/search";
-import ButttonSecondary from "../ui/ButtonSecondary";
-import {
-  ArrowRightIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "@heroicons/react/24/outline";
-import {
-  checkIsInCurrentNsfwRange,
-  transformImageData,
-} from "../../utils/generalUtils";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { checkIsInCurrentNsfwRange } from "../../utils/generalUtils";
 import NavigationPanel from "../layout/navigation-panel/NavigationPanel";
-import ButtonInfo from "../ui/buttons/ButtonInfo";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -127,12 +108,6 @@ const Model = ({ title }) => {
     };
   }, [title, model?.name]);
 
-  // useEffect(() => {
-  //   return () => {
-  //     dispatch(modelActions.resetModelData());
-  //   };
-  // }, [dispatch]);
-
   useEffect(() => {
     if (model?.id) {
       setDescriptionIsOpen(false);
@@ -164,7 +139,6 @@ const Model = ({ title }) => {
         items: curVersionImages?.items,
         filteredItems: filteredModelImages,
         versionId: curVersion?.id,
-        // nsfw: nsfwMode,
         nsfwLevel,
       });
     }
@@ -206,10 +180,6 @@ const Model = ({ title }) => {
           clearTimeout(loadingImagesTimeoutRef.current);
         }
 
-        // loadingImagesTimeoutRef.current = setTimeout(() => {
-        //   setWarningMessage(LONG_LOADING_WARNING_MESSAGE);
-        // }, defImagesTimeotSec * 1000);
-
         const defImagesSnap = await getDoc(modelDefImagesRef);
 
         if (loadingImagesTimeoutRef?.current) {
@@ -228,11 +198,8 @@ const Model = ({ title }) => {
           } else {
             curImages = versionImages;
           }
-
-          // setCurVersionImagesIsLoading(false);
         } else {
           ///LOAD DEFAULT IMAGES FROM MODEL
-
           curImages = await getVersionImagesFromCiv(
             model.id,
             model?.data?.creator?.username,
@@ -253,7 +220,6 @@ const Model = ({ title }) => {
           clearTimeout(loadingImagesTimeoutRef.current);
         }
         ///LOAD DEFAULT IMAGES FROM MODEL
-        // setDefaultVersionImages();
         setCurVersionImagesIsLoading(false);
         console.error(err.message);
       }
@@ -269,7 +235,6 @@ const Model = ({ title }) => {
     uid,
     curVersionImages?.versionId,
     filterNsfwImages,
-    // setDefaultVersionImages,
   ]);
 
   useEffect(() => {
@@ -280,7 +245,6 @@ const Model = ({ title }) => {
 
   useEffect(() => {
     if (!isAuth) return;
-    // let unsub;
 
     const getModelData = async () => {
       try {
@@ -300,25 +264,6 @@ const Model = ({ title }) => {
         } else {
           throw new Error("Failed to load model");
         }
-
-        // unsub = onSnapshot(
-        //   doc(firestore, "users", uid, "models", modelId),
-        //   (doc) => {
-        //     setErrorMessage("");
-        //     const data = doc.data();
-
-        //     // console.log(data);
-        //     if (!data) {
-        //       setErrorMessage("Failed to load model");
-        //       setIsLoading(false);
-        //       unsub();
-        //       return;
-        //     }
-        //     dispatch(modelActions.setModelData(data));
-        //     dispatch(modelActions.setModelPreview({}));
-        //     setIsLoading(false);
-        //   }
-        // );
       } catch (err) {
         setErrorMessage("Failed to load model");
         dispatch(modelActions.setErrorMessage(err.message));
@@ -329,7 +274,6 @@ const Model = ({ title }) => {
 
     const loadingImagesTimeout = loadingImagesTimeoutRef?.current;
     return () => {
-      // console.log("RESET");
       setErrorMessage("");
       setCurVersionImages({});
       dispatch(modelActions.setCurVersion({}));
@@ -337,15 +281,11 @@ const Model = ({ title }) => {
       dispatch(modelActions.setActiveCarouselData({}));
       dispatch(modelActions.resetModelData());
       clearTimeout(loadingImagesTimeout);
-      // if (unsub) {
-      //   unsub();
-      // }
     };
   }, [modelId, isAuth, dispatch, uid]);
 
   const getDefModelDataFromFirestore = useCallback(async () => {
     try {
-      // console.log("GET DB");
       const modelDefDataRef = doc(firestore, "models", `${model.id}`);
       const docSnap = await getDoc(modelDefDataRef);
 
@@ -368,14 +308,12 @@ const Model = ({ title }) => {
 
   const getDefModelDataFromCivitai = useCallback(async () => {
     try {
-      // console.log("GET CIV");
       setDefDataIsLoading(true);
       const responseCiv = await fetch(
         `https://civitai.com/api/v1/models/${model.id}`
       );
 
       const responseData = await responseCiv.json();
-      // console.log(responseData);
 
       if (!responseData?.id) {
         throw new Error("Civitai failed");
@@ -472,7 +410,6 @@ const Model = ({ title }) => {
         curVersionCustomData?.name ||
         curVersionCustomData?.versionName ||
         curVersion.name,
-
       imgUrl: curVersionImages?.items?.length
         ? curVersionImages?.items[0]?.url
         : "",
@@ -652,30 +589,6 @@ const Model = ({ title }) => {
             </Link>
             <ul className={classes["subcategories"]}>{subCatsHtml}</ul>
           </NavigationPanel>
-          {/* <div className={classes["panel"]}>
-            <Buttton className={classes["btn-back"]} onClick={backHandler}>
-              <BackSvg />
-
-              <span>Back</span>
-            </Buttton>
-            <div className={classes.categories}>
-              <Link
-                to="/"
-                className={classes["link"]}
-                onClick={() => {
-                  dispatch(tabActions.setCurrentTab(model.modelType));
-                  dispatch(tabActions.setCurrentCategory(model.main));
-                }}
-              >
-                {mainCategoryName || model?.main}
-              </Link>
-              <ul className={classes["subcategories"]}>{subCatsHtml}</ul>
-            </div>
-            <Link className={`${classes["btn-edit"]}`} to="edit">
-              <SettingsSvg />
-              Edit
-            </Link>
-          </div> */}
           <div className={classes["title-container"]}>
             <h1 className={classes.title}>
               {model?.name || model?.data?.name}

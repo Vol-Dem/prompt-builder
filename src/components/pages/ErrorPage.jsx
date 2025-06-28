@@ -1,4 +1,3 @@
-import React from "react";
 import { NavLink, useRouteError } from "react-router-dom";
 import Card from "../ui/Card";
 import classes from "./ErrorPage.module.scss";
@@ -33,7 +32,6 @@ const ErrorPage = () => {
           Sorry, an unexpected error has occurred.
         </p>
         <p className={classes["error-page__message"]}>
-          {/* <i>{error.statusText || error.message}</i> */}
           {error.status !== 404 && <i>{ERROR_MESSAGE_DEFAULT}</i>}
           {error.status === 404 && <i>Page not found</i>}
         </p>

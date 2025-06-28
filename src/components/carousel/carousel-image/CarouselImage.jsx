@@ -1,11 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import classes from "./CarouselImage.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  deleteImgPost,
-  setPreviewImg,
-  setTagSetPreviewImg,
-} from "../../../store/model";
+import { deleteImgPost, setPreviewImg } from "../../../store/model";
 import ButttonTertiary from "../../ui/ButtonTertiary";
 import Modal from "../../ui/Modal";
 import DeleteRequest from "../../ui/DeleteRequest";
@@ -20,9 +16,7 @@ import {
 } from "../../../variables/constants";
 import SetTagSetPreview from "../set-tagset-preview/SetTagSetPreview";
 import { transformSrcPreview } from "../../../utils/generalUtils";
-import useIntersection from "../../../hooks/use-intersection";
-import { PlayIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
-import ButtonSquare from "../../ui/ButtonSquare";
+import { PlayIcon } from "@heroicons/react/24/outline";
 
 const CarouselImage = ({
   id,
@@ -57,40 +51,8 @@ const CarouselImage = ({
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
-  // const activeCarouselData = useSelector(
-  //   (state) => state.model.activeCarouselData
-  // );
   const videoRef = useRef(null);
-  // const isInersecting = useIntersection(
-  //   imageData?.type === "video" ? videoRef : null,
-  //   false,
-  //   -300
-  // );
 
-  // useEffect(() => {
-  //   if (imageData?.type !== "video" || !videoRef?.current) return;
-  //   console.log("IMG");
-  //   console.log(imageData.postId);
-  //   // console.log(activeCarouselData?.postId);
-  //   if (
-  //     // activeCarouselData?.postId &&
-  //     // imageData.postId !== activeCarouselData?.postId &&
-  //     !isInersecting
-  //   ) {
-  //     console.log("STOP");
-  //     videoRef.current.pause();
-  //   } else {
-  //     console.log("PLAY");
-  //     videoRef.current.play();
-  //   }
-  // }, [
-  //   // activeCarouselData?.postId,
-  //   // imageData?.type,
-  //   // imageData,
-  //   // videoRef?.current,
-  //   isInersecting,
-  // ]);
-  // console.log(activeCarouselData);
   useEffect(() => {
     if (src && !imgIsLoaded && !imgError) {
       const { previewSrc, previewVideoWebmSrc, previewVideoMp4Src } =
@@ -306,8 +268,6 @@ const CarouselImage = ({
               id={id}
               src={imgSrc}
               alt={alt}
-              // width={imageData.width}
-              // height={imageData.height}
             />
           )}
           {imageData.type === "video" && (
@@ -327,14 +287,10 @@ const CarouselImage = ({
               ref={videoRef}
               playsInline
               autoPlay
-              // autostart={isInersecting ? 1 : 0}
-              // autostart={1}
               loop
               disablePictureInPicture
               preload="none"
               muted
-              // width={imageData.width}
-              // height={imageData.height}
               poster={imgSrc}
               onClick={onClick}
               className={`${classes.image} ${
@@ -346,7 +302,6 @@ const CarouselImage = ({
               <source src={videoSrc?.webm} type="video/webm" />
               <source src={videoSrc?.mp4} type="video/mp4" />
             </video>
-            // <video playsinline autoplay loop poster="https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e01572c0-315c-4a2e-b0da-04c2ee9baf91/anim=false,transcode=true,width=450/e01572c0-315c-4a2e-b0da-04c2ee9baf91.jpeg" disablepictureinpicture="" preload="none" style="opacity: 1;"><source src="https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e01572c0-315c-4a2e-b0da-04c2ee9baf91/transcode=true,width=450/62178949.webm" type="video/webm"><source src="https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/e01572c0-315c-4a2e-b0da-04c2ee9baf91/transcode=true,width=450/62178949.mp4" type="video/mp4"></video>
           )}
         </>
       )}

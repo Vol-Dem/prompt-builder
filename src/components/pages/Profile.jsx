@@ -345,18 +345,7 @@ const Profile = ({ title }) => {
                 {errorMessage}
               </ErrorMessage>
             )}
-            {!userData.emailVerified && (
-              <VerifyEmailMessage />
-              // <WarningMessage>
-              //   Email is not verified{" "}
-              //   <span
-              //     className={classes.link}
-              //     onClick={resendVerificationEmailHandler}
-              //   >
-              //     resend request
-              //   </span>{" "}
-              // </WarningMessage>
-            )}
+            {!userData.emailVerified && <VerifyEmailMessage />}
             {successMessageAuth && (
               <SuccessMessage className={classes["auth__error"]}>
                 {successMessageAuth}

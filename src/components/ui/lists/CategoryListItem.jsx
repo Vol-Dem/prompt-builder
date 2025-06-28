@@ -20,7 +20,6 @@ const CategoryListItem = ({
       } ${className || ""}`}
     >
       {children}
-      {/* {guideHomeState?.active && i === 0 && !activeTab && <OpenCategoryGuide />} */}
     </motion.li>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import classes from "./VersionForm.module.scss";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
@@ -29,7 +29,6 @@ import {
   DEFAULT_DATA_TAGSETS_INPUT,
 } from "../../../variables/constants";
 import InputNumber from "../../ui/InputNumber";
-// import { useOnlineStatus } from "../../../hooks/use-online-status";
 import Spinner from "../../ui/Spinner";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
@@ -124,25 +123,6 @@ const VersionForm = ({
     isValid: true,
   });
   const [tagSetsInputs, setTagSetsInputs] = useState([
-    // [
-    //   {
-    //     type: "text",
-    //     id: "set-name-def",
-    //     name: "set-name",
-    //     placeholder: "Set name",
-    //     value: "",
-    //     isValid: true,
-    //     errorMessage: "",
-    //   },
-    //   {
-    //     id: "set-value-def",
-    //     name: "set-value",
-    //     placeholder: "Trigger words",
-    //     value: "",
-    //     isValid: true,
-    //     errorMessage: "",
-    //   },
-    // ],
   ]);
   const uid = useSelector((state) => state.auth.user.uid);
   const model = useSelector((state) => state.model.model);
@@ -199,9 +179,6 @@ const VersionForm = ({
   }, [versionData, defaultData]);
 
   useEffect(() => {
-    // if (!versionData) return;
-    // if (!versionData?.tagSetsData?.length) return;
-    // console.log(versionData);
     setTagSetsInputs(
       createTagSetsInputData(
         versionData?.tagSetsData,
@@ -209,28 +186,6 @@ const VersionForm = ({
       )
     );
 
-    // const tagSets = versionData.tagSetsData.map((tagSet, i) => {
-    //   return [
-    //     {
-    //       type: "text",
-    //       id: "set-name" + i,
-    //       name: "set-name",
-    //       placeholder: "Set name",
-    //       value: tagSet.name,
-    //       isValid: true,
-    //       errorMessage: "",
-    //     },
-    //     {
-    //       id: "set-value" + i,
-    //       name: "set-value",
-    //       placeholder: "Trigger words",
-    //       value: tagSet.value,
-    //       isValid: true,
-    //       errorMessage: "",
-    //     },
-    //   ];
-    // });
-    // setTagSetsInputs(tagSets);
   }, [versionData]);
 
   const saveVersionHandler = async (e) => {

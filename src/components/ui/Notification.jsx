@@ -8,13 +8,6 @@ import { motion } from "framer-motion";
 
 const Notification = (props) => {
   const { type = "notification", title } = props;
-  // const dispatch = useDispatch();
-  // const closeNotificationHandler = () => {
-  //   if (props?.onClick) {
-  //     props?.onClick();
-  //   }
-  //   dispatch(notificationActions.closeNotification());
-  // };
 
   return (
     <>

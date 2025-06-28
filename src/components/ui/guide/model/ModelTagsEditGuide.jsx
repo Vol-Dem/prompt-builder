@@ -10,7 +10,7 @@ import GuideActionMessage from "../GuideActionMessage";
 
 const guideType = "model";
 
-const ModelTagsFormGuide = (props) => {
+const ModelTagsFormGuide = () => {
   const guideSteps = useMemo(() => {
     return [
       {

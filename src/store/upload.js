@@ -76,8 +76,6 @@ export const savePost = (postInfo) => {
         collectionData,
         postData,
       } = postInfo;
-      // console.log(location);
-      // console.log(postInfo);
       if (!postId) {
         throwCustomError(ERROR_MESSAGE_INVALID_POST_ID);
       }
@@ -99,8 +97,6 @@ export const savePost = (postInfo) => {
         data = { items: filterDuplicates(images, "id") };
       }
 
-      // console.log(images);
-      // console.log(data);
       if (!data?.items?.length) {
         throw new Error("0 items");
       }

@@ -10,7 +10,7 @@ import useGuideIndex from "../../../../hooks/use-guide-index";
 
 const guideType = "model";
 
-const SidePanelGuide = (props) => {
+const SidePanelGuide = () => {
   const guideIsActive = useSelector((state) => state.guide.active);
   const modelGuideIsActive = useSelector((state) => state.guide.model.active);
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);

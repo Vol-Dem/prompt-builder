@@ -40,10 +40,8 @@ const ComboSelect = ({
     setShowErrorMessage(showError);
   }, [showError]);
 
-  // console.log(optionsData);
   useEffect(() => {
     if (!!validation) {
-      // console.log(selected);
       const { errorMessage } = validateInput(validation, selected?.name || "");
 
       setInputErrorMessage(errorMessage);
@@ -51,7 +49,6 @@ const ComboSelect = ({
   }, [validation, selected]);
 
   const conditionalPlaceholder = !loading ? placeholder : "Loading...";
-  // console.log(optionsData);
 
   return (
     <div className={classes["container"]}>
@@ -62,20 +59,15 @@ const ComboSelect = ({
       )}
       <Combobox
         as={motion.div}
-        // initial={ANIMATIONS_FM_SLIDEOUT_INITIAL}
         animate={ANIMATIONS_FM_SLIDEOUT}
         immediate
         value={selected}
         onChange={(value) => {
           if (validation) {
-            // console.log(value);
             const { isValid, errorMessage } = validateInput(
               validation,
               value || ""
             );
-            // console.log(value);
-            // console.log(isValid);
-            // console.log(id);
             setSelected(value, isValid, errorMessage, id);
             setInputErrorMessage(errorMessage);
           } else {
@@ -103,9 +95,6 @@ const ComboSelect = ({
                 }`}
                 displayValue={(options) => options?.name}
                 onChange={(event) => {
-                  // console.log("query");
-                  // console.log(id);
-                  // console.log(event.target.value);
                   setQuery(event.target.value, true, "", id);
                 }}
                 onBlur={(e) => {
@@ -139,10 +128,8 @@ const ComboSelect = ({
                   className={`${classes.options} ${
                     !!optionsData?.length ? classes["options__border"] : ""
                   }`}
-                  // onAnimationComplete={() => setQuery("")}
                   data-id={id}
                   modal={false}
-                  // portal={false}
                 >
                   {query.length > 0 && !nameExists && (
                     <ComboboxOption

@@ -5,15 +5,11 @@ import { useDispatch } from "react-redux";
 import { authActions } from "../../store/auth";
 import LinkA from "../ui/LinkA";
 import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
-import Image from "../ui/image/Image";
 import TextHighlight from "../ui/text/TextHighlight";
 import { PlayIcon } from "@heroicons/react/24/outline";
-import { lazy, Suspense, useState } from "react";
+import { useState } from "react";
 import Modal from "../ui/Modal";
-import YoutubeVideo from "../ui/YoutubeVideo";
 import Video from "../ui/Video";
-import Spinner from "../ui/Spinner";
-// const Carousel3d = lazy(() => import("../carousel3d/Carousel3d"));
 
 const Landing = () => {
   const [showVideo, setShowVideo] = useState(false);

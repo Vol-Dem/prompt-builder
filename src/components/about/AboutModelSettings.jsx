@@ -1,10 +1,5 @@
-import {
-  Cog6ToothIcon,
-  DocumentArrowDownIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
+import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import Image from "../ui/image/Image";
-import LinkA from "../ui/LinkA";
 import TextButton from "../ui/text/text-buttons/TextButton";
 import TextHighlight from "../ui/text/TextHighlight";
 import classes from "./AboutModelSettings.module.scss";
@@ -12,14 +7,7 @@ import H2 from "../ui/text/H2";
 import Text from "../ui/text/Text";
 import TextImageBlock from "../ui/text/TextImageBlock";
 import TextContentBlock from "../ui/text/TextContentBlock";
-import TextButtonCreate from "../ui/text/text-buttons/TextButtonCreate";
-import TextButtonTertiary from "../ui/text/text-buttons/TextButtonTertiary";
-import ImageComparisonSlider from "../ImageComparisonSlider/ImageComparisonSlider";
-import TextButtonAll from "../ui/text/text-buttons/TextButtonAll";
 import H3 from "../ui/text/H3";
-import Video from "../ui/Video";
-import TextImageMenu from "../ui/text/text-buttons/TextImageMenu";
-import NotificationMessage from "../ui/NotificationMessage";
 
 const AboutModelSettings = () => {
   return (

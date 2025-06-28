@@ -2,11 +2,7 @@ import classes from "./Tabs.module.scss";
 import Categories from "../categories/Categories";
 import { useDispatch, useSelector } from "react-redux";
 import { getModelsPreview, tabActions } from "../../store/tabs";
-import {
-  ANIMATIONS_FM_SLIDEIN,
-  ANIMATIONS_FM_SLIDEIN_INITIAL,
-  MODEL_TYPES,
-} from "../../variables/constants";
+import { MODEL_TYPES } from "../../variables/constants";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import LinkA from "../ui/LinkA";
@@ -16,7 +12,6 @@ import OpenCategoryGuide from "../ui/guide/home/OpenCategoryGuide";
 import Modal from "../ui/Modal";
 import IntroGuide from "../ui/guide/IntroGuide";
 import { guideActions } from "../../store/guide";
-import { motion } from "framer-motion";
 import ModelsList from "../lora/ModelsList";
 import CategoryList from "../ui/lists/CategoryList";
 import ButtonCategoryAll from "../ui/buttons/ButtonCategoryAll";
@@ -80,19 +75,6 @@ const Tabs = () => {
             <OpenCategoryGuide />
           )}
         </CategoryListItem>
-        // <motion.li
-        //   key={category.id}
-        //   data-value={category.id}
-        //   onClick={categorySwitchHandler}
-        //   className={`${classes[`category__link`]} ${
-        //     activeTab === category.id ? classes.active : ""
-        //   }`}
-        // >
-        //   {category.name}
-        //   {guideHomeState?.active && i === 0 && !activeTab && (
-        //     <OpenCategoryGuide />
-        //   )}
-        // </motion.li>
       );
     });
 
@@ -114,22 +96,6 @@ const Tabs = () => {
             />
             {modelTypesHtml}
           </CategoryList>
-          // <motion.ul
-          //   initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-          //   animate={ANIMATIONS_FM_SLIDEIN}
-          //   className={classes["tag-menu__labels"]}
-          // >
-          //   <li
-          //     data-value="all"
-          //     onClick={categorySwitchHandler}
-          //     className={`${classes[`category__link`]} ${
-          //       classes[`category__link--all`]
-          //     } ${activeTab === "all" ? classes.active : ""}`}
-          //   >
-          //     All
-          //   </li>
-          //   {modelTypesHtml}
-          // </motion.ul>
         )}
         {activeTab && activeTab !== "all" && (
           <div>
@@ -182,7 +148,6 @@ const Tabs = () => {
                 onClose={() => {
                   dispatch(guideActions.setIntroDisabled(true));
                 }}
-                // disableClass={classes["guide-intro"]}
               >
                 <IntroGuide />
               </Modal>

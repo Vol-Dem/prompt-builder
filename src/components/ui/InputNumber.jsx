@@ -68,7 +68,6 @@ const InputNumber = (props) => {
             }
           }}
           onChange={(e) => {
-            // onChange(e, inputIsValid);
             if (validation) {
               const { isValid, errorMessage } = validateInput(
                 validation,
@@ -80,7 +79,6 @@ const InputNumber = (props) => {
             } else {
               onChange(e);
             }
-            // validateInput(e.target.value);
           }}
           onClick={onClick}
           onFocus={onFocus}

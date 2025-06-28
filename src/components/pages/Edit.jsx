@@ -15,7 +15,6 @@ import {
 import { guideActions } from "../../store/guide";
 import Modal from "../ui/Modal";
 import OutroGuide from "../ui/guide/OutroGuide";
-import classes from "./Edit.module.scss";
 import { AnimatePresence } from "framer-motion";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { handleErrors } from "../../utils/generalUtils";
@@ -61,7 +60,6 @@ const Edit = ({ title }) => {
 
       if (docSnap.exists()) {
         const modelDefData = docSnap.data();
-        // console.log(modelDefData);
 
         dispatch(
           modelActions.setModelData({
@@ -69,10 +67,9 @@ const Edit = ({ title }) => {
           })
         );
       } else {
-        // console.log("SAVE MODEL");
         const updateModel = httpsCallable(functions, "updateModelCalldev");
         const response = await updateModel({ id: modelId });
-        // console.log(response);
+
         if (response?.modelData) {
           dispatch(
             modelActions.setModelData({
@@ -85,7 +82,6 @@ const Edit = ({ title }) => {
       }
     } catch (err) {
       handleErrors(err);
-      // setErrorMessage(ERROR_MESSAGE_DEFAULT);
     }
   }, [modelId, dispatch]);
 
@@ -102,11 +98,8 @@ const Edit = ({ title }) => {
           doc(firestore, "users", uid, "models", modelId),
           (doc) => {
             setErrorMessage("");
-            // const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
-            // console.log(source);
             const data = doc.data();
 
-            // console.log(data);
             if (!data) {
               setErrorMessage("Failed to load model");
               setIsLoading(false);
@@ -139,12 +132,6 @@ const Edit = ({ title }) => {
     };
   }, [modelId, isAuth, dispatch, uid, getDefModelData]);
 
-  // useEffect(() => {
-  //   if (!modelId) return;
-
-  //   getDefModelData();
-  // }, [model?.id, dispatch, modelId]);
-
   return (
     <div>
       {!isLoading && !errorMessage && model?.id && <ModelSettings />}
@@ -158,7 +145,6 @@ const Edit = ({ title }) => {
             onClose={() => {
               dispatch(guideActions.setOutroIsActive(false));
             }}
-            // disableClass={classes["guide-outro"]}
           >
             <OutroGuide />
           </Modal>

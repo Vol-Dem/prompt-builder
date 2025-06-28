@@ -7,7 +7,7 @@ import GuideActionMessage from "../GuideActionMessage";
 
 const guideType = "model";
 
-const CloseImageGuide = (props) => {
+const CloseImageGuide = () => {
   const guideSteps = useMemo(() => {
     return [
       {

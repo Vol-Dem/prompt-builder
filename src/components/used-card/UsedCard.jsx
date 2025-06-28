@@ -1,24 +1,18 @@
-import React, { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import classes from "./UsedCard.module.scss";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import TagList from "../tag-list/TagList";
 import { useDispatch, useSelector } from "react-redux";
 import {
   removeModelFromPanel,
   usedModelsActions,
 } from "../../store/usedModels";
-import { promptActions } from "../../store/prompt";
 import ActivationTag from "../activation-tag/ActivationTag";
 import Arrow from "../ui/Arrow";
 import Image from "../ui/image/Image";
 import { modelActions } from "../../store/model";
 import { motion } from "framer-motion";
-import {
-  ANIMATIONS_FM_HOVER_SCALE,
-  ANIMATIONS_FM_TAP_SCALE,
-  SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
-  SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
-} from "../../variables/constants";
+import { SETTINGS_IMAGE_PREVIEW_WIDTH_BIG } from "../../variables/constants";
 const taglistItemHeight = 68;
 
 const UsedCard = memo(({ previewData, fullView, layoutId, onClick }) => {
@@ -28,7 +22,6 @@ const UsedCard = memo(({ previewData, fullView, layoutId, onClick }) => {
   const [cardLayuotId, setcardLayuotId] = useState(previewData.id);
   const [cardIsHidden, setCardIsHidden] = useState(false);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
-  // const model = useSelector((state) => state.model.model);
   const fullCardView = useSelector((state) => state.used.fullCardView);
   const dispatch = useDispatch();
   const tagsRef = useRef();
@@ -38,7 +31,6 @@ const UsedCard = memo(({ previewData, fullView, layoutId, onClick }) => {
     setTimeout(() => {
       setCardIsHidden(true);
     }, 1000);
-    // setcardLayuotId(Math.random());
   }, []);
 
   useEffect(() => {
@@ -48,7 +40,6 @@ const UsedCard = memo(({ previewData, fullView, layoutId, onClick }) => {
   }, [
     previewData,
     taglistHeight,
-    // taglistItemHeight,
     tagsRef?.current?.clientHeight,
     fullCardView,
   ]);
@@ -66,14 +57,10 @@ const UsedCard = memo(({ previewData, fullView, layoutId, onClick }) => {
 
   const closeCardHandler = () => {
     dispatch(removeModelFromPanel(previewData.id));
-    // dispatch(promptActions.removeTag(previewData.mainTag));
   };
 
   const closePanelHandler = () => {
     dispatch(modelActions.setActiveCarouselData({}));
-    // if (previewData?.id !== model?.id) {
-    //   dispatch(modelActions.resetModelData());
-    // }
     if (document.body.offsetWidth < 1024) {
       dispatch(usedModelsActions.panelState(false));
     }
@@ -87,10 +74,7 @@ const UsedCard = memo(({ previewData, fullView, layoutId, onClick }) => {
       animate={
         !layoutId ? { opacity: [0, 0, 0, 1], y: 0 } : { opacity: 1, y: 0 }
       }
-      // animate={!layoutId ? { opacity: [0, 0, 1], y: 0 } : FM_ANIMTION_SLIDEIN}
       exit={{ opacity: 0, y: 30 }}
-      // layoutRoot
-      // exit={FM_ANIMTION_SLIDEIN_INITIAL}
       id={previewData.id}
       className={`${classes.card} card ${
         layoutId ? classes["card--motion"] : ""
@@ -230,7 +214,6 @@ const UsedCard = memo(({ previewData, fullView, layoutId, onClick }) => {
                       />
                     </div>
                   </div>
-                  {/* {taglistHeight > taglistItemHeight && ( */}
                   {taglistHeight > taglistItemHeight && (
                     <button
                       className={`${classes["tags__btn"]} ${

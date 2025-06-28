@@ -2,26 +2,21 @@ import { useState } from "react";
 import classes from "./PresetForm.module.scss";
 import { updatePresets } from "../../../store/prompt";
 import { useDispatch, useSelector } from "react-redux";
-import Select from "../../ui/Select";
 import Textarea from "../../ui/Textarea";
 import Buttton from "../../ui/Button";
 import Input from "../../ui/Input";
 import Fieldset from "../../ui/Fieldset";
 import ErrorMessage from "../../ui/ErrorMessage";
 import {
-  DEF_ERROR_MESSAGE,
   ERROR_MESSAGE_INPUT_DEF,
-  ERROR_MESSAGES,
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   VALIDATION_NAME_MAX_LENGTH,
   ERROR_MESSAGE_OFFLINE,
   VALIDATION_TRIGER_WORDS_MAX_LENGTH,
-  ERROR_MESSAGE_UNIQUE,
 } from "../../../variables/constants";
 import { motion } from "framer-motion";
 import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
-// import { useOnlineStatus } from "../../../hooks/use-online-status";
 
 const promptTypes = [
   { name: "Positive", value: "positive" },
@@ -133,23 +128,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
       className={classes["form"]}
       onSubmit={submitHandler}
     >
-      {/* <Select
-        label="Type"
-        id="type"
-        name="type"
-        selected={promptType}
-        onChange={(value) => {
-          setPromptType(value);
-        }}
-        options={typeSelectOption}
-      /> */}
-      <fieldset
-        className={classes["types"]}
-        // onChange={(e) => {
-        //   console.log(e.target.value);
-        //   setPromptType(e.target.value);
-        // }}
-      >
+      <fieldset className={classes["types"]}>
         <div className={classes["type"]}>
           <input
             type="radio"

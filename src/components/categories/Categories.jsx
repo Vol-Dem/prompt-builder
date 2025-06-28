@@ -2,17 +2,11 @@ import Subcategories from "../subcategories/Subcategories";
 import classes from "./Categories.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { getModelsPreview, tabActions } from "../../store/tabs";
-import ButtonTertiary from "../ui/ButtonTertiary";
 import { useState } from "react";
 import Modal from "../ui/Modal";
 import CategoriesForm from "../forms/categories-form/CategoriesForm";
-import EditSvg from "../../assets/EditSvg";
 import OpenCategoryGuide from "../ui/guide/home/OpenCategoryGuide";
-import { AnimatePresence, motion } from "framer-motion";
-import {
-  ANIMATIONS_FM_SLIDEIN,
-  ANIMATIONS_FM_SLIDEIN_INITIAL,
-} from "../../variables/constants";
+import { AnimatePresence } from "framer-motion";
 import CategoryList from "../ui/lists/CategoryList";
 import ButtonCategoryAll from "../ui/buttons/ButtonCategoryAll";
 import CategoryListItem from "../ui/lists/CategoryListItem";
@@ -77,25 +71,6 @@ const Categories = () => {
                 <OpenCategoryGuide />
               )}
             </CategoryListItem>
-            // <motion.li
-            //   key={`${activeTab}-${category.id}`}
-            //   initial={{ opacity: 0, y: -5 }}
-            //   animate={{ opacity: 1, y: 0 }}
-            //   transition={{ duration: 0.3 }}
-            //   // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-            //   // animate={ANIMATIONS_FM_SLIDEIN}
-            //   // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
-            //   data-value={category.id}
-            //   onClick={categorySwitchHandler}
-            //   className={`${classes[`category__link`]} ${
-            //     activeCategory === category.id ? classes.active : ""
-            //   }`}
-            // >
-            //   {category.name}
-            //   {guideHomeState?.active && !activeCategory && i === 0 && (
-            //     <OpenCategoryGuide />
-            //   )}
-            // </motion.li>
           );
         })
     : [];
@@ -122,36 +97,6 @@ const Categories = () => {
             {catHtml}
           </CategoryList>
         )}
-        {/* <motion.ul
-          // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-          // animate={ANIMATIONS_FM_SLIDEIN}
-          // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
-          className={classes["category__list"]}
-        >
-          <motion.li
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            data-value="all"
-            onClick={categorySwitchHandler}
-            className={`${classes[`category__link`]} ${
-              classes["category__link--all"]
-            } ${activeCategory === "all" ? classes.active : ""}`}
-          >
-            All
-          </motion.li>
-          {catHtml}
-        </motion.ul> */}
-        {/* {!!catHtml?.length && (
-          <ButtonTertiary
-            type="button"
-            className={classes["category__edit"]}
-            onClick={editCategoriesHandler}
-            title="Edit categories"
-          >
-            <EditSvg />
-          </ButtonTertiary>
-        )} */}
       </>
       {!catHtml?.length && !userDataIsLoading && (
         <NotificationMessage>No categories found</NotificationMessage>
@@ -162,7 +107,6 @@ const Categories = () => {
           activeCategory={activeCategory}
         />
       )}
-      {/* {!categories && !userDataIsLoading && <div>Nothing is here...</div>} */}
       <AnimatePresence>
         {editIsOpen && (
           <Modal

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import classes from "./ModelTags.module.scss";
 import TagList from "../../tag-list/TagList";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,12 +8,6 @@ import TagsForm from "../../forms/tags-form/TagsForm";
 import EditSvg from "../../../assets/EditSvg";
 import Tooltip from "../../ui/Tooltip";
 import ModelTagsGuide from "../../ui/guide/model/ModelTagsGuide";
-import {
-  GUIDE_STEP_MODEL_TAGS_CLOSE,
-  GUIDE_STEP_MODEL_TAGS_EDIT_FROM,
-  GUIDE_STEP_MODEL_TAGSET,
-} from "../../../variables/constants";
-import { guideActions } from "../../../store/guide";
 import { AnimatePresence } from "framer-motion";
 import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
@@ -32,17 +26,6 @@ const ModelTags = ({ customData, modelPreview }) => {
 
   const closeTagsFormHabdler = () => {
     setModalIsOpen(false);
-    // if (
-    //   guideStep >= GUIDE_STEP_MODEL_TAGS_EDIT_FROM &&
-    //   guideStep <= GUIDE_STEP_MODEL_TAGS_CLOSE
-    // ) {
-    //   dispatch(
-    //     guideActions.setGuideStep({
-    //       type: "model",
-    //       value: GUIDE_STEP_MODEL_TAGSET,
-    //     })
-    //   );
-    // }
   };
 
   return (

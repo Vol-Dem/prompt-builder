@@ -3,7 +3,6 @@ import Buttton from "../Button";
 import classes from "./ButtonDelete.module.scss";
 import { AnimatePresence } from "framer-motion";
 import DeleteRequest from "../DeleteRequest";
-import { MESSAGE_DELETE_COLLECTION } from "../../../variables/constants";
 
 const ButtonDelete = ({
   isLoading,

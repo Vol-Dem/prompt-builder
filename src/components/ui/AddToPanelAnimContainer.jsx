@@ -7,9 +7,6 @@ import {
 const AddToPanelAnimContainer = (props) => {
   return (
     <motion.div
-      //   initial={{ opacity: 0 }}
-      //   animate={{ opacity: 1 }}
-      //   exit={{ opacity: 0 }}
       initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
       animate={ANIMATIONS_FM_SLIDEIN}
       exit={ANIMATIONS_FM_SLIDEIN_INITIAL}

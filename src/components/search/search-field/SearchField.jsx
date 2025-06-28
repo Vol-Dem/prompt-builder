@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import Input from "../../ui/Input";
 import classes from "./SearchField.module.scss";
 import {
   and,
@@ -14,10 +13,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import firebaseApp from "../../../firebase-config";
 import { clearFileExtension } from "../../../utils/generalUtils";
-import Image from "../../ui/image/Image";
-import { NavLink, useNavigate } from "react-router-dom";
-import { tabActions } from "../../../store/tabs";
-import { addModelToPanel } from "../../../store/usedModels";
+import { useNavigate } from "react-router-dom";
 import { ReactComponent as SearchIcon } from "./../../../assets/search.svg";
 
 const firestore = getFirestore(firebaseApp);

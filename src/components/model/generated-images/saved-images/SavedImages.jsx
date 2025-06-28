@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import classes from "./SavedImages.module.scss";
 import { useSelector } from "react-redux";
 import Carousel from "../../../carousel/Carousel";
@@ -15,7 +15,6 @@ import {
 import firebaseApp from "../../../../firebase-config";
 import Spinner from "../../../ui/Spinner";
 import ErrorMessage from "../../../ui/ErrorMessage";
-
 import { useOnlineStatus } from "../../../../hooks/use-online-status";
 import {
   ERROR_MESSAGE_DEFAULT,
@@ -182,10 +181,6 @@ const SavedImages = memo(
       ) {
         setExamplesIsLoading(true);
         clearTimeout(timeoutRef.current);
-
-        // timeoutRef.current = setTimeout(() => {
-        //   getImagesFromFirestore();
-        // }, 1000);
         getImagesFromFirestore();
       }
     }, [

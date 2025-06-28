@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import classes from "./SaveImageForm.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import Input from "../../ui/Input";
@@ -9,10 +9,8 @@ import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
 import Spinner from "../../ui/Spinner";
 import {
-  DEF_ERROR_MESSAGE,
   ERROR_MESSAGE_INPUT_DEF,
   ERROR_MESSAGE_EMPTY,
-  VALIDATION_ID_MAX_LENGTH,
   ERROR_MESSAGE_OFFLINE,
   VALIDATION_POST_URL_MAX_LENGTH,
   ERROR_MESSAGE_INVALID_POST_ID,
@@ -58,7 +56,6 @@ const SaveImageForm = ({
       setErrorMessage("");
       seteSuccessMessage("");
       setShowErrorMessage(true);
-      // console.log("LOAD IM");
 
       if (!postIdInput.isValid) {
         throwCustomError(ERROR_MESSAGE_INPUT_DEF);
@@ -70,9 +67,8 @@ const SaveImageForm = ({
       if (!postIdInput?.value) return;
 
       setIsLoading(true);
-      // const postId = +postIdInput.value;
+
       const postId = getPostIdFromInput(postIdInput.value);
-      // console.log(postId);
 
       if (!postId) {
         throwCustomError(ERROR_MESSAGE_INVALID_POST_ID);
@@ -86,11 +82,8 @@ const SaveImageForm = ({
         }&nsfw=${nsfwLevel}`
       );
       const data = await imgExampleResponse.json();
-      // console.log(data);
       setImages(data.items);
 
-      // console.log(savedPosts);
-      // console.log(savedModelPosts);
       let curPostData;
       let curImageIds;
 
@@ -104,7 +97,7 @@ const SaveImageForm = ({
         curPostData = savedPosts?.find((post) => post.postId === postId);
         curImageIds = curPostData?.imageIds;
       }
-      // console.log(curPostData);
+
       if (curPostData) {
         setPostData(curPostData);
         setSavedImageIds(curImageIds);
@@ -128,17 +121,6 @@ const SaveImageForm = ({
       value: version.id,
     };
   });
-
-  // const saveExampleHandler = async (location, ids, collectionData) => {
-  //     const postData =
-  //       !!Object.keys(savedImages.data)?.length &&
-  //       savedImages.data[versionId]?.find((post) => post.postId === +postId);
-
-  //     const imagesForSaving = ids?.length
-  //       ? imagesData.filter((image) => ids.includes(image?.id))
-  //       : imagesData;
-
-  //   };
 
   const saveExampleHandler = async (location, ids, collectionData) => {
     const postId = getPostIdFromInput(postIdInput.value);
@@ -227,9 +209,7 @@ const SaveImageForm = ({
           }`}
           validation={{
             required: true,
-            // maxLength: VALIDATION_ID_MAX_LENGTH,
             maxLength: VALIDATION_POST_URL_MAX_LENGTH,
-            // number: true,
           }}
           showError={showErrorMessage}
         />

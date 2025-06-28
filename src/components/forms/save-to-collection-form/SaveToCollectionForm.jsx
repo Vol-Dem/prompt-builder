@@ -1,24 +1,17 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Buttton from "../../ui/Button";
 import ChooseImageForm from "../choose-image-form/ChooseImageForm";
 import classes from "./SaveToCollectionForm.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../../ui/Spinner";
-import CheckSvg from "../../../assets/CheckSvg";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import ErrorMessage from "../../ui/ErrorMessage";
 import {
-  ERROR_MESSAGE_DEFAULT,
-  ERROR_MESSAGE_OFFLINE,
-  SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
-  SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-  // SUBCATEGORIES_MAX_AMOUNT,
   ANIMATIONS_FM_SLIDEOUT,
   ANIMATIONS_FM_FADEOUT_EXIT,
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
   ERROR_MESSAGE_INPUT_DEF,
-  ERROR_MESSAGE_NO_IMAGE_SELECTED,
   SUCCESS_MESSAGE_SAVED,
 } from "../../../variables/constants";
 import { AnimatePresence, motion } from "framer-motion";
@@ -28,15 +21,11 @@ import ButttonSecondary from "../../ui/ButtonSecondary";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
 import {
-  createCategoryId,
   filterDuplicates,
   sortArrayBy,
   throwCustomError,
 } from "../../../utils/generalUtils";
-import {
-  addNewCollectionCategories,
-  savePostToCollections,
-} from "../../../store/images";
+import { addNewCollectionCategories } from "../../../store/images";
 import { getCollectionData } from "../../../utils/fetchUtils";
 import SuccessMessage from "../../ui/SuccessMessage";
 import { Link } from "react-router-dom";
@@ -58,7 +47,6 @@ const SaveToCollectionForm = ({
   postId,
   type,
   location,
-  //   collectionInfo,
   images,
   modelId,
   versionId,
@@ -94,7 +82,6 @@ const SaveToCollectionForm = ({
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   const categories = useSelector((state) => state.images.categories);
-  // const subcategories = useSelector((state) => state.images.subcategories);
   const isOnline = useOnlineStatus();
   const dispatch = useDispatch();
 
@@ -250,25 +237,6 @@ const SaveToCollectionForm = ({
     );
   });
 
-  // const getSavedImagesInfo = useCallback(async () => {
-  //   if (!collectionInfo?.collectionData?.id) return;
-  //   console.log("START");
-  //   setCollectionInfoIsLoading(true);
-  //   const collectionData = await getCollectionData(
-  //     collectionInfo.collectionData.id
-  //   );
-  //   console.log(collectionData);
-  //   const postData = collectionData?.posts?.find(
-  //     (post) => post.postId === postId
-  //   );
-
-  //   if (postData?.imageIds?.length) {
-  //     setSavedPostData(postData);
-  //   }
-  //   setCollectionInfoIsLoading(false);
-  //   setChooseImageIsOpen(true);
-  // }, []);
-
   const submitHandler = async (e) => {
     try {
       e.preventDefault();
@@ -301,18 +269,6 @@ const SaveToCollectionForm = ({
           (category) => category.id === mainCategorySelected.id
         ).subcategories;
         curCollectionSabcategories = collectionData.subcategories;
-        // console.log(collectionData.subcategories);
-        // return;
-        // curCollectionSabcategories = collectionData.subcategories.map(
-        //   (subcategoryId) => {
-        //     return {
-        //       id: subcategoryId,
-        //       name: curSubcategories.find(
-        //         (subcategory) => subcategory.id === subcategoryId
-        //       ).name,
-        //     };
-        //   }
-        // );
       } else {
         curCollectionSabcategories = [];
       }
@@ -332,8 +288,6 @@ const SaveToCollectionForm = ({
         }
       );
 
-      // console.log(subcategories);
-
       const collectionInputData = {
         collectionData: {
           id: collectionNameSelected.id,
@@ -345,15 +299,12 @@ const SaveToCollectionForm = ({
         },
         subcategoriesData: subcategories,
         curCollectionSabcategories,
-        // postId,
       };
 
-      // console.log(collectionInputData);
-      // setCategoriesIsUpdating(true);
       const categoriesWithId = await dispatch(
         addNewCollectionCategories(collectionInputData)
       );
-      // console.log("TEST", categoriesWithId);
+
       setCollectionInfo(categoriesWithId);
       if (images?.length) {
         if (postData?.imageIds?.length) {
@@ -369,15 +320,9 @@ const SaveToCollectionForm = ({
       setErrorMessage(err.errorMessage);
       setShowErrorMessage(true);
     } finally {
-      // setCategoriesIsUpdating(false);
       setCollectionInfoIsLoading(false);
     }
   };
-
-  // useEffect(() => {
-
-  //   getSavedImagesInfo();
-  // }, [collectionInfo, postId]);
 
   return (
     <>
@@ -438,11 +383,6 @@ const SaveToCollectionForm = ({
                 <Link
                   to={`/images/${collectionInfo?.collectionData?.id}`}
                   className={classes.link}
-                  // onClick={() => {
-                  //   if (savedModel !== curModel.id) {
-                  //     dispatch(modelActions.resetModelData());
-                  //   }
-                  // }}
                 >
                   Show collection
                 </Link>

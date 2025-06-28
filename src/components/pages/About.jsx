@@ -2,40 +2,14 @@ import { useEffect } from "react";
 import classes from "./About.module.scss";
 import LinkA from "../ui/LinkA";
 import Image from "../ui/image/Image";
-import {
-  ArrowDownTrayIcon,
-  Bars2Icon,
-  Bars4Icon,
-  CheckIcon,
-  Cog6ToothIcon,
-  DocumentArrowDownIcon,
-  FolderArrowDownIcon,
-  FolderPlusIcon,
-  PencilSquareIcon,
-  PlusIcon,
-  TrashIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
 import TextHighlight from "../ui/text/TextHighlight";
-import TextButton from "../ui/text/text-buttons/TextButton";
-import TextButtonAll from "../ui/text/text-buttons/TextButtonAll";
-import TextButtonTertiary from "../ui/text/text-buttons/TextButtonTertiary";
-import TextButtonSaved from "../ui/text/text-buttons/TextButtonSaved";
-import TextButtonSquare from "../ui/text/text-buttons/TextButtonSquare";
-import TextImageMenu from "../ui/text/text-buttons/TextImageMenu";
 import ImageComparisonSlider from "../ImageComparisonSlider/ImageComparisonSlider";
 import NotificationMessage from "../ui/NotificationMessage";
-import Video from "../ui/Video";
-import InfoPostId from "../ui/guide/info/InfoPostId";
-import StartAddingModels from "../about/AboutStartAddingModels";
-import WorkingWithPrompts from "../about/AboutWorkingWithPrompts";
 import AboutStartAddingModels from "../about/AboutStartAddingModels";
 import AboutWorkingWithPrompts from "../about/AboutWorkingWithPrompts";
 import H2 from "../ui/text/H2";
 import Text from "../ui/text/Text";
 import TextContentBlock from "../ui/text/TextContentBlock";
-import TextImageBlock from "../ui/text/TextImageBlock";
-import AboutTagSets from "../about/AboutTagSets";
 import AboutModelSettings from "../about/AboutModelSettings";
 import AboutModelPage from "../about/AboutModelPage";
 import AboutImageCollections from "../about/AboutImageCollections";
@@ -48,9 +22,9 @@ const About = ({ title }) => {
     document.title = title;
   }, [title]);
 
-  // useEffect(() => {
-  //   window.scrollTo(0, 0);
-  // }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className={classes.about}>

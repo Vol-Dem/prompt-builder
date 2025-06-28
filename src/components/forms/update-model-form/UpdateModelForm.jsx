@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import  { useEffect, useMemo, useState } from "react";
 import classes from "./UpdateModelForm.module.scss";
 import {
   arrayUnion,
@@ -22,8 +22,6 @@ import {
   createCategoryId,
   createTagSetsInputData,
   handleErrors,
-  parseIdFromInput,
-  parseIdsFromInput,
   parseModelIds,
   splitTags,
   throwCustomError,
@@ -38,8 +36,6 @@ import {
   VALIDATION_DESCRIPTION_MAX_LENGTH,
   ERROR_MESSAGE_EXISTS,
   GUIDE_STEP_EDIT_DEFAULT,
-  VALIDATION_NAME_MAX_LENGTH,
-  VALIDATION_NUMBER_MAX_LENGTH,
   ERROR_MESSAGE_OFFLINE,
   SUCCESS_MESSAGE_UPLOADED,
   VALIDATION_TITLE_MAX_LENGTH,
@@ -54,11 +50,9 @@ import {
   SETTINGS_MODEL_TYPE_UNKNOWN,
   SETTINGS_MODEL_TYPE_DEF,
   SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
-  ERROR_MESSAGE_UPLOAD_MODEL,
 } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
-import InputNumber from "../../ui/InputNumber";
 import { tabActions } from "../../../store/tabs";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
@@ -66,9 +60,6 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { modelActions } from "../../../store/model";
 import EditDefaultGuide from "../../ui/guide/edit/EditDefaultGuide";
 import { AnimatePresence, motion } from "framer-motion";
-import TagSetsInputFieldset from "../../ui/TagSetsInputFieldset";
-import ButtonInfo from "../../ui/buttons/ButtonInfo";
-import InfoEditDefault from "../../ui/guide/info/InfoEditDefault";
 
 const firestore = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp);
@@ -408,15 +399,12 @@ const UpdateModelForm = ({
 
       const modelName = titleInput.value.trim();
       const description = descriptionInput.value.trim();
-      // const main = formdata.get("main")?.trim().toLowerCase();
+
       const main = mainCategorySelected.name;
       const hashtags = hashtagsInput.value
         .split(",")
         .map((hashtag) => hashtag.trim())
         .filter(Boolean);
-      // const subData = formdata.getAll("sub").filter(Boolean);
-      // const sub = subData.map((el) => el?.trim());
-      // console.log(subCatInputs);
       const sub = [
         ...new Set(subCatInputs.map((el) => el?.selected?.name?.trim())),
       ];
@@ -504,14 +492,10 @@ const UpdateModelForm = ({
             id: modelData?.id || modelId,
           });
 
-          // console.log(uploadResponse);
-
           if (uploadResponse?.error) {
             throw new Error(uploadResponse.error);
             // throwCustomError(ERROR_MESSAGE_UPLOAD_MODEL);
           }
-
-          // console.log(uploadResponse);
 
           const responseCiv = await fetch(`${URL_CIV_MODELS}${modelId}`);
 
@@ -529,8 +513,6 @@ const UpdateModelForm = ({
         if (data?.error) {
           throwCustomError(data.error);
         }
-        // console.log(modelData);
-        // console.log(data);
         if (!data?.id) {
           throwCustomError(ERROR_MESSAGE_INVALID_DATA);
         }
@@ -538,7 +520,6 @@ const UpdateModelForm = ({
         let modelVersionsCustomData = modelData?.modelVersionsCustomData || {};
 
         modelVersions.forEach((version, i) => {
-          // const isSingle = modelVersions.length === 1;
           const isSingle =
             !modelVersionId && !Object.keys(modelVersionsCustomData).length;
           let curVersionDlStatus;
@@ -611,9 +592,6 @@ const UpdateModelForm = ({
           SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
           previewImgData?.type
         );
-
-        // console.log(previewImgData);
-        // console.log(previewSrc);
         const previewImg = previewSrc;
 
         const fileNames = modelVersions?.flatMap((version) => {
@@ -687,7 +665,6 @@ const UpdateModelForm = ({
         let mainId;
         let subIds;
         const mainCategoryData = categories[modelType]?.find(
-          // (category) => category.name === main
           (category) => category.name?.toLowerCase() === main?.toLowerCase()
         );
 
@@ -755,7 +732,6 @@ const UpdateModelForm = ({
         const categoryField = `categoriesById.${modelType}`;
 
         if (newBaseModel || newCategory || newSubcategory) {
-          // if (false) {
           if (!categories) {
             batch.set(
               userRef,
@@ -776,9 +752,6 @@ const UpdateModelForm = ({
             );
           }
         }
-        //     return { mainId, subIds };
-        //   }
-        // );
 
         let createdAt;
         if (modelData?.createdAt) {

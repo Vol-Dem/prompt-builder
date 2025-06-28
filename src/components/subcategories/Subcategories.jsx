@@ -1,18 +1,11 @@
 import classes from "./Subcategories.module.scss";
-import ModelsList from "../lora/ModelsList";
 import { useDispatch, useSelector } from "react-redux";
 import { tabActions } from "../../store/tabs";
-import ButtonTertiary from "../ui/ButtonTertiary";
 import { useState } from "react";
 import Modal from "../ui/Modal";
 import CategoriesForm from "../forms/categories-form/CategoriesForm";
-import EditSvg from "../../assets/EditSvg";
 import OpenCategoryGuide from "../ui/guide/home/OpenCategoryGuide";
-import { AnimatePresence, motion } from "framer-motion";
-import {
-  ANIMATIONS_FM_SLIDEIN,
-  ANIMATIONS_FM_SLIDEIN_INITIAL,
-} from "../../variables/constants";
+import { AnimatePresence } from "framer-motion";
 import SubcategoryList from "../ui/lists/SubcategoryList";
 import ButtonCategoryAll from "../ui/buttons/ButtonCategoryAll";
 import CategoryListItem from "../ui/lists/CategoryListItem";
@@ -65,23 +58,6 @@ const Subcategories = () => {
           {subcategory.name}
           {guideHomeState?.active && i === 0 && <OpenCategoryGuide />}
         </CategoryListItem>
-        // <motion.li
-        //   key={`${activeCategory}-${subcategory.id}`}
-        //   initial={{ opacity: 0, y: -5 }}
-        //   animate={{ opacity: 1, y: 0 }}
-        //   transition={{ duration: 0.3 }}
-        //   // initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-        //   // animate={ANIMATIONS_FM_SLIDEIN}
-        //   // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
-        //   data-value={subcategory.id}
-        //   onClick={categorySwitchHandler}
-        //   className={`${classes[`subcategory__link`]} ${
-        //     activeSubcategory === subcategory.id ? classes.active : ""
-        //   }`}
-        // >
-        //   {subcategory.name}
-        //   {guideHomeState?.active && i === 0 && <OpenCategoryGuide />}
-        // </motion.li>
       );
     });
 
@@ -101,7 +77,6 @@ const Subcategories = () => {
           {subcategoriesHtml}
         </SubcategoryList>
       )}
-      {/* {activeSubcategory && <ModelsList />} */}
       <AnimatePresence>
         {editIsOpen && (
           <Modal

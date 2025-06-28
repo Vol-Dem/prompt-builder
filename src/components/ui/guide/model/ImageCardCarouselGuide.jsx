@@ -7,7 +7,7 @@ import ArrowRightSvg from "../../../../assets/ArrowRight";
 
 const guideType = "model";
 
-const ImageCardCarouselGuide = (props) => {
+const ImageCardCarouselGuide = () => {
   const guideSteps = useMemo(() => {
     return [
       {

@@ -1,9 +1,7 @@
 import classes from "./InfoTagsets.module.scss";
 import NotificationMessage from "./../../NotificationMessage";
-import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import Image from "../../image/Image";
 import Video from "../../Video";
-import ButtonTertiary from "../../ButtonTertiary";
 import TextHighlight from "../../text/TextHighlight";
 import TextButton from "../../text/text-buttons/TextButton";
 import TextImageMenu from "../../text/text-buttons/TextImageMenu";
@@ -12,13 +10,6 @@ import TextButtonTertiary from "../../text/text-buttons/TextButtonTertiary";
 const InfoTagsets = () => {
   return (
     <div className={classes.info}>
-      {/* <Image
-        // fullView={true}
-        // onClick={openFullVeiwHandler}
-        className={classes["image"]}
-        src={require("../../../../assets/guide/tagsets.png")}
-        alt=""
-      /> */}
       <Video
         width={1920}
         height={1080}

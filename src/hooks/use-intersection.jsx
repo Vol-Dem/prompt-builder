@@ -8,9 +8,6 @@ export const useIntersection = (ref, once = true, rootMargin = 0) => {
     if (!ref) return;
     observerRef.current = new IntersectionObserver(
       ([entry]) => {
-        // if (!once) {
-        //   console.log("Int", entry.isIntersecting);
-        // }
         setIsIntersecting(entry.isIntersecting);
         if (entry.isIntersecting && once) observerRef.current.disconnect();
       },

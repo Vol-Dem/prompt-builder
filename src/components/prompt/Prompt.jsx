@@ -39,8 +39,6 @@ const Prompt = memo(() => {
   const positiveMaxHeight = document.body.offsetHeight - 300;
 
   useEffect(() => {
-    // if (promptContainerRef?.current?.offsetHeight) return;
-    // console.log("PROMPT", promptContainerRef.current.offsetHeight);
     dispatch(
       promptActions.setPromptHeight(promptContainerRef.current.offsetHeight)
     );
@@ -106,7 +104,6 @@ const Prompt = memo(() => {
   };
 
   const onMouseDown = (e) => {
-    // console.log(e.target);
     const promptType = e.target.dataset.type;
     const startHeight =
       promptType === "positive" ? positivePromptHeight : negativePromptHeight;
@@ -124,21 +121,13 @@ const Prompt = memo(() => {
         maxHeight
       );
 
-      // setWidth(Math.max(50, newWidth)); // Min size
       if (promptType === "positive") {
-        // setPositivePromptHeight(Math.max(minHeight, newHeight));
         setPositivePromptHeight(newHeight);
-        // dispatch(
-        //   promptActions.setPromptHeight({ type: "positive", value: newHeight })
-        // );
       }
       if (promptType === "negative") {
         setNegativePromptHeight(newHeight);
-        // dispatch(
-        //   promptActions.setPromptHeight({ type: "negative", value: newHeight })
-        // );
       }
-      // console.log(promptContainerRef.current.offsetHeight);
+
       dispatch(
         promptActions.setPromptHeight(promptContainerRef.current.offsetHeight)
       );

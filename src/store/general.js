@@ -75,12 +75,8 @@ export const switchNsfwMode = (nsfw) => {
 
 export const setNsfwValues = (sfw, nsfw) => {
   return async (dispatch, getState) => {
-    // console.log("SET", sfw, nsfw);
-    // const nsfwMode = getState().general.nsfwMode;
-    // const nsfwLevel = nsfwMode ? nsfw : sfw;
     dispatch(generalActions.setSfwValue(sfw));
     dispatch(generalActions.setNsfwValue(nsfw));
-    // dispatch(generalActions.setNsfwLevel(nsfwLevel));
 
     const uid = getState().auth.user.uid;
 

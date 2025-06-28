@@ -19,9 +19,7 @@ const Video = ({
   children,
   loading,
   ...video
-  //   type,
 }) => {
-  // console.log(playsInline);
   const videoRef = useRef(null);
   const isIntersecting = useIntersection(autoPlay ? videoRef : null, false);
   const isIntersectingPoster = useIntersection(
@@ -31,7 +29,6 @@ const Video = ({
   );
 
   useEffect(() => {
-    // console.log(isIntersecting);
     const playVideo = async () => {
       try {
         if (videoRef.current) {
@@ -68,7 +65,6 @@ const Video = ({
       width={width}
       height={height}
       playsInline={!!playsInline}
-      // autoPlay={!!autoPlay}
       loop={!!loop}
       disablePictureInPicture={!!disablePictureInPicture}
       preload={preload}
@@ -79,20 +75,6 @@ const Video = ({
       {...video}
     >
       {children}
-      {/* <source
-        src={mainSrc?.internal ? require(mainSrc.src) : mainSrc.src}
-        type={mainSrc.type}
-      />
-      {secondarySrc && (
-        <source
-          src={
-            secondarySrc?.internal
-              ? require(secondarySrc.src)
-              : secondarySrc.src
-          }
-          type={secondarySrc.type}
-        />
-      )} */}
     </video>
   );
 };

@@ -5,11 +5,7 @@ import { savePost, uploadActions } from "../../store/upload";
 import DropDownList from "../ui/DropDownList";
 import UploadingItem from "./uploading-item/UploadingItem";
 import ButtonTertiary from "../ui/ButtonTertiary";
-import { AnimatePresence, motion } from "framer-motion";
-import {
-  ANIMATIONS_FM_ZOOM_IN,
-  ANIMATIONS_FM_ZOOM_IN_INITIAL,
-} from "../../variables/constants";
+import { AnimatePresence } from "framer-motion";
 
 const UploadingPanel = () => {
   const [uploadingListIsOpen, setUploadingLIstIsOpen] = useState(false);

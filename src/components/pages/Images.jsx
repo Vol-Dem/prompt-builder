@@ -1,20 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
 import classes from "./Images.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { modelActions } from "../../store/model";
-import {
-  getCollection,
-  getCollectionPreviews,
-  getCollections,
-  imagesActions,
-} from "../../store/images";
+import { getCollectionPreviews, imagesActions } from "../../store/images";
 import usePageEnd from "../../hooks/use-page-end";
 import { useOnlineStatus } from "../../hooks/use-online-status";
 import ErrorMessage from "../ui/ErrorMessage";
 import Spinner from "../ui/Spinner";
 import { ERROR_MESSAGE_OFFLINE } from "../../variables/constants";
-import CollectionPreview from "../collection/collection-preview/CollectionPreview";
 import CollectionList from "../collection/collection-list/CollectionList";
 import CategoryList from "../ui/lists/CategoryList";
 import ButtonCategoryAll from "../ui/buttons/ButtonCategoryAll";
@@ -78,22 +71,9 @@ const Images = () => {
         onClick={openCategoryHandler}
         dataValue={category.id}
         active={category.id === activeCategory}
-        // className={`${
-        //   category.id === activeCategory ? classes["category--active"] : ""
-        // }`}
       >
         {category.name}
       </CategoryListItem>
-      // <li
-      //   key={category.id}
-      //   data-value={category.id}
-      //   onClick={openCategoryHandler}
-      //   className={`${classes["category"]} ${
-      //     category.id === activeCategory ? classes["category--active"] : ""
-      //   }`}
-      // >
-      //   {category.name}
-      // </li>
     );
   });
 
@@ -113,32 +93,14 @@ const Images = () => {
         >
           {subcategory.name}
         </CategoryListItem>
-        // <li
-        //   key={subcategory.id}
-        //   data-value={subcategory.id}
-        //   onClick={openSubcategoryHandler}
-        //   className={`${classes["subcategory"]} ${
-        //     subcategory.id === activeSubcategory
-        //       ? classes["subcategory--active"]
-        //       : ""
-        //   }`}
-        // >
-        //   {subcategory.name}
-        // </li>
       );
     }
   );
 
   //Load initial previews
   useEffect(() => {
-    // console.log("USEEFECT");
     const rule =
       activeSubcategory || activeCategory === "all" || !subcategories?.length;
-    // console.log(isLastPage);
-    // console.log(activeSubcategory)
-    // console.log(activeCategory)
-    // console.log(subcategories?.length)
-    // console.log(collectionPreviews);
     if (
       !collectionPreviews?.data?.length &&
       !isLastPage &&
@@ -200,25 +162,7 @@ const Images = () => {
     isLoading,
   ]);
 
-  // const collectionsHtml = collectionPreviews?.data?.map((collection) => {
-  //   return (
-  //     // <li
-
-  //     //   data-value={collection.id}
-  //     //   // onClick={openSubcategoryHandler}
-  //     //   className={`${classes["collection"]} `}
-  //     // >
-  //     //   <Link to={`/images/${collection.id}`} onClick={openSubcategoryHandler}>
-  //     //     {collection.name}
-  //     //   </Link>
-  //     // </li>
-  //     <CollectionPreview key={collection.id} previewData={collection} />
-  //   );
-  // });
-
   const editCategoriesHandler = (isSub) => {
-    // console.log(categories);
-    // console.log(subcategories);
     setIsSubcategory(isSub);
     setEditIsOpen(true);
   };

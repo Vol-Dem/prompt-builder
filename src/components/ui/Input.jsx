@@ -3,8 +3,6 @@ import classes from "./Input.module.scss";
 import { validateInput } from "../../utils/generalUtils";
 import { motion } from "framer-motion";
 import {
-  ANIMATIONS_FM_SLIDEIN,
-  ANIMATIONS_FM_SLIDEIN_INITIAL,
   ANIMATIONS_FM_SLIDEOUT,
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
 } from "../../variables/constants";
@@ -39,21 +37,12 @@ const Input = (props) => {
     setShowErrorMessage(showError);
   }, [showError]);
 
-  // useEffect(() => {
-  //   if (fitContent && inputRef.current) {
-  //     inputRef.current.style.width = `${inputRef.current.scrollWidth + 5}px`;
-  //   }
-  // }, [fitContent, inputRef.current]);
-
   useEffect(() => {
     if (!!validation) {
       const { errorMessage } = validateInput(validation, value);
 
       setInputErrorMessage(errorMessage);
     }
-    // if (!validation) {
-    //   setShowErrorMessage(false);
-    // }
   }, [value, validation]);
 
   return (
@@ -64,13 +53,11 @@ const Input = (props) => {
         </label>
       )}
       <motion.input
-        // initial={ANIMATIONS_FM_SLIDEOUT_INITIAL}
         animate={ANIMATIONS_FM_SLIDEOUT}
         ref={inputRef}
         id={id}
         type={type}
         name={name}
-        // style={{ width: 0 }}
         onBlur={(e) => {
           if (onBlur) {
             onBlur(e);
@@ -98,7 +85,6 @@ const Input = (props) => {
           } else {
             onChange(e);
           }
-          // validateInput(e.target.value);
         }}
         onClick={onClick}
         onFocus={onFocus}

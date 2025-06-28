@@ -28,7 +28,6 @@ const SearchPage = ({ title }) => {
   const isPageEnd = usePageEnd(600);
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
-  // console.log(searchIsLoading);
 
   useEffect(() => {
     setIsIntersecting(isPageEnd);

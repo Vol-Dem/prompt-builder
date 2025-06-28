@@ -15,77 +15,12 @@ import {
   ANIMATIONS_FM_FADEOUT_EXIT,
 } from "../../variables/constants";
 
-const defTagSetData = [
-  [
-    {
-      type: "text",
-      id: "set-name-def",
-      name: "set-name",
-      placeholder: "Set name",
-      value: "",
-      isValid: true,
-    },
-    {
-      id: "set-value-def",
-      name: "set-value",
-      placeholder: "Triger words",
-      value: "",
-      isValid: true,
-    },
-  ],
-];
-
 const TagSetsInputFieldset = ({
   tagSetsInputs,
   setTagSetsInputs,
   showErrorMessage,
   isSaving,
 }) => {
-  //   const [tagSetsInputs, setTagSetsInputs] = useState([]);
-
-  // useEffect(() => {
-  //   if (!tagSetsInputs?.length) {
-  //     setTagSetsInputs(defTagSetData);
-  //   }
-  // }, [tagSetsInputs]);
-
-  //   const model = useSelector((state) => state.model.model);
-  //   const curVersion = useSelector((state) => state.model.curVersion);
-  //   const versionData = model.modelVersionsCustomData[curVersion.id];
-
-  //   useEffect(() => {
-  //     if (!versionData) return;
-
-  //     let tagSets;
-
-  //     if (!versionData?.tagSetsData?.length) {
-  //       tagSets = defTagSetData;
-  //     } else {
-  //       tagSets = versionData.tagSetsData.map((tagSet, i) => {
-  //         return [
-  //           {
-  //             type: "text",
-  //             id: "set-name" + i,
-  //             name: "set-name",
-  //             placeholder: "Set name",
-  //             value: tagSet.name,
-  //             isValid: true,
-  //             errorMessage: "",
-  //           },
-  //           {
-  //             id: "set-value" + i,
-  //             name: "set-value",
-  //             placeholder: "Triger words",
-  //             value: tagSet.value,
-  //             isValid: true,
-  //             errorMessage: "",
-  //           },
-  //         ];
-  //       });
-  //     }
-  //     setTagSetsInputs(tagSets);
-  //   }, [versionData]);
-
   const addtagSetHandler = () => {
     const newFields = [...tagSetsInputs];
     newFields.push([
@@ -128,8 +63,6 @@ const TagSetsInputFieldset = ({
           value: e.target.value,
           isValid: isValid,
         };
-        // newState[curSetNameIndex][0].value = e.target.value;
-        // newState[curSetNameIndex][0].isValid = isValid;
       }
 
       if (curSetTagsIndex !== -1) {
@@ -138,8 +71,6 @@ const TagSetsInputFieldset = ({
           value: e.target.value,
           isValid: isValid,
         };
-        // newState[curSetTagsIndex][1].value = e.target.value;
-        // newState[curSetTagsIndex][1].isValid = isValid;
       }
 
       return newState;

@@ -7,12 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import {
-  ERROR_MESSAGE_DEFAULT,
-  ERROR_MESSAGE_OFFLINE,
-  SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
-  SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-  // SUBCATEGORIES_MAX_AMOUNT,
   ANIMATIONS_FM_SLIDEOUT,
   ANIMATIONS_FM_FADEOUT_EXIT,
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
@@ -83,7 +78,7 @@ const CollectionEditForm = ({ collectionData }) => {
   const collectionDataIsSaving = useSelector(
     (state) => state.images.collectionDataIsSaving
   );
-  // const subcategories = useSelector((state) => state.images.subcategories);
+
   const isOnline = useOnlineStatus();
   const dispatch = useDispatch();
 
@@ -95,15 +90,6 @@ const CollectionEditForm = ({ collectionData }) => {
       "name"
     );
   }, [categories, mainCategoryQuery]);
-
-  // const collectionNameOptions =
-  //   categories
-  //     .find((category) => category.name === mainCategorySelected.name)
-  //     ?.collectionNames?.filter((collection) =>
-  //       collection.name
-  //         .toLowerCase()
-  //         .includes(collectionNameQuery.toLowerCase())
-  //     ) || [];
 
   const subcategories = categories.find(
     (category) => category.name === mainCategorySelected.name
@@ -118,11 +104,6 @@ const CollectionEditForm = ({ collectionData }) => {
 
   const selectMainCategoryHandler = (value, isValid, errorMessage) => {
     setMainCategorySelected({ ...value, isValid, errorMessage });
-    // setCollectionNameSelected({
-    //   name: "",
-    //   id: "",
-    //   isValid: false,
-    // });
     setSubCatInputs([
       { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
     ]);
@@ -136,7 +117,6 @@ const CollectionEditForm = ({ collectionData }) => {
 
   useEffect(() => {
     if (!collectionData?.id || !categories) return;
-    // console.log(collectionData);
 
     setCollectionNameInput({
       value: collectionData.name,
@@ -194,9 +174,6 @@ const CollectionEditForm = ({ collectionData }) => {
         { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
       ];
     }
-    // console.log(categoryData);
-    // console.log(collectionData);
-    // console.log(subcategoriesInputData);
 
     if (subcategoriesInputData?.length) setSubCatInputs(subcategoriesInputData);
   }, [collectionData, categories]);
@@ -313,7 +290,6 @@ const CollectionEditForm = ({ collectionData }) => {
         description: descriptionInput.value,
         nsfw: nsfwInput,
       };
-      // console.log(collection);
 
       await dispatch(editCollectionData(collection));
 

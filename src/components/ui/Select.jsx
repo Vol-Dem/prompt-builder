@@ -1,5 +1,4 @@
 import classes from "./Select.module.scss";
-// import { ReactComponent as BoxEmptyImg } from "./../assets/layout/boxempty.svg";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Input from "./Input";
 import ArrowDownSvg from "../../assets/ArrowDownSvg";

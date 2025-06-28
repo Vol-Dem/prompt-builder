@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import classes from "./CarouselContent.module.scss";
 import { useRef } from "react";
 import { useEffect } from "react";
@@ -11,7 +11,6 @@ import { deleteImgPost, modelActions } from "../../store/model";
 import Modal from "../ui/Modal";
 import ChooseImageForm from "../forms/choose-image-form/ChooseImageForm";
 import ImageFullView from "../ui/ImageFullView";
-import FolderSvg from "../../assets/FolderSvg";
 import { AnimatePresence } from "framer-motion";
 import { SETTINGS_CAROUSEL_TRANSITION_DURATION } from "../../variables/constants";
 import {
@@ -165,9 +164,7 @@ const CarouselContent = ({
       } else {
         currImgNum = null;
       }
-      // console.log(currImgNum);
-      // if (imgIsOpen && currImgNum !== null) return;
-      // console.log("LID", locationId);
+
       dispatch(
         modelActions.setActiveCarouselData({
           images,
@@ -501,10 +498,6 @@ const CarouselContent = ({
     collectionData,
     postData
   ) => {
-    // const postData =
-    //   !!Object.keys(savedImages.data)?.length &&
-    //   savedImages.data[versionId]?.find((post) => post.postId === +postId);
-
     const imagesForSaving = ids?.length
       ? imagesData.filter((image) => ids.includes(image?.id))
       : imagesData;
@@ -536,15 +529,7 @@ const CarouselContent = ({
   ) => {
     try {
       const curPostId = images[0].postId;
-      // console.log(ids);
-      // console.log(location);
-      // console.log(collectionData);
-      // console.log(postData);
-      // console.log(curPostData);
-      // return;
-      // const postData =
-      //   !!Object.keys(savedImages.data)?.length &&
-      //   savedImages.data[versionId]?.find((post) => post.postId === curPostId);
+
       setIsDeleting(true);
 
       const postInfo = {
@@ -739,7 +724,6 @@ const CarouselContent = ({
               isUploading ? classes["d"] : ""
             }`}
             onClick={showSaveImagesListHandler}
-            // disabled={!!isUploading}
             title="Save"
           >
             <FolderPlusIcon />

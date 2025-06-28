@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_MODEL_TAGS_EDIT } from "../../../../variables/constants";
 import useGuideIndex from "../../../../hooks/use-guide-index";
-import GuideActionMessage from "../GuideActionMessage";
 import EditSvg from "../../../../assets/EditSvg";
 
 const guideType = "model";

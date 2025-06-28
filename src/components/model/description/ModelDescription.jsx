@@ -1,4 +1,3 @@
-import React from "react";
 import classes from "./ModelDescription.module.scss";
 
 const ModelDescription = ({ mainTag, versionData }) => {

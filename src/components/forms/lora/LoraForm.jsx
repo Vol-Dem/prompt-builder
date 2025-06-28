@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import classes from "./LoraForm.module.scss";
 import { ref, set, get } from "firebase/database";
 import { db } from "../../../firebase-config";
@@ -20,21 +20,9 @@ const LoraForm = () => {
     const main = formdata.get("main").trim().toLowerCase();
     const subData = formdata.getAll("sub").filter(Boolean);
     const sub = subData.map((el) => el.trim());
-    // const title = formdata.get("title").trim();
-    // const type = formdata.get("type").trim();
-    // const baseModel = formdata.get("base-model").trim();
     const mainTag = formdata.get("main-tag").trim();
     const weight = formdata.get("weight").trim();
     const size = formdata.get("size").trim();
-    // const clipSkip = formdata.get("clip-skip").trim();
-    // const version = formdata.get("version").trim();
-    // const description = formdata.get("description").trim();
-    // const tags = formdata
-    //   .get("tags")
-    //   .trim()
-    //   .split(",")
-    //   .filter(Boolean)
-    //   .map((tag) => tag.trim());
 
     const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
     const helperTags = formdata
@@ -50,35 +38,6 @@ const LoraForm = () => {
       .filter(Boolean)
       .map((tag) => tag.trim());
     const exemplePromts = formdata.getAll("example").filter(Boolean);
-    // const exemplePromts = formdata.getAll("example").map((example) => {
-    //   const indexNegative = example.indexOf("Negative prompt:");
-    //   const stepsIndex = example.indexOf("Steps:");
-    //   const positiveTags = example.slice(0, indexNegative);
-    //   const negativeTags = example
-    //     .slice(indexNegative, stepsIndex)
-    //     .replace("Negative prompt: ", "")
-    //     .trim();
-    //   // const ex = example.slice(indexNegative).map((el) => el.trim());
-    //   let config = {};
-
-    //   example
-    //     .slice(stepsIndex)
-    //     .split(",")
-    //     .forEach((el) => {
-    //       const elArr = el.split(":");
-    //       config[elArr[0]?.trim().replace(/[^\w\s]/gi, "")] = elArr[1]?.trim();
-    //     });
-    //   console.log(config);
-
-    //   return {
-    //     positive: positiveTags,
-    //     negative: negativeTags,
-    //     config,
-    //     example,
-    //   };
-    // });
-
-    // .filter(Boolean)
 
     const clearObjectKeys = (obj) => {
       const convertedMetaArr = Object.entries(obj).map((entry, i) => {
@@ -107,7 +66,7 @@ const LoraForm = () => {
               const imgExampleResponse = await fetch(
                 `https://civitai.com/api/v1/images?postId=${example}&modelId=${modelId}`
               );
-              // console.log(imgExampleResponse);
+
               return await imgExampleResponse.json();
             })
           );
@@ -143,16 +102,9 @@ const LoraForm = () => {
           src,
           main,
           sub,
-          // title,
-          // type,
-          // baseModel,
           mainTag,
           weight,
           size,
-          // clipSkip,
-          // version,
-          // description,
-          // tags,
           helperTags,
           negativeTags,
           exemplePromts,
@@ -186,7 +138,6 @@ const LoraForm = () => {
         get(modelsPrevRef).then((snapshot) => {
           if (snapshot.exists()) {
             const curData = snapshot.val();
-            // curData[main] = tags;
             set(modelsPrevRef, [...curData, loraPrevData]);
           } else {
             console.log("prev", loraPrevData);
@@ -194,31 +145,15 @@ const LoraForm = () => {
           }
         });
         set(modelsRef, loraData);
-        // push(modelsRef, loraData);
       } catch (err) {
         console.log(err.message);
       }
     };
 
     getModelData();
-
-    // console.log(exemplePromts);
-
-    // e.target.reset();
-    // setSubCatAmount([{ type: "text", id: 1, name: "sub", placeholder: "sub" }]);
-    // setExamplePromtsAmount([
-    //   {
-    //     id: 1,
-    //     name: "example",
-    //     placeholder: "example",
-    //     cols: "30",
-    //     rows: "10",
-    //   },
-    // ]);
   };
 
   const addSubHandler = (e) => {
-    // console.log(e.target.id);
     const elId = e.target.id;
     if (elId === "sub") {
       const newFields = [...subCatAmount];
@@ -266,19 +201,6 @@ const LoraForm = () => {
     );
   });
 
-  // for (let i = 0; i < examplePromtsAmount; i++) {
-  //   exemplePromtsHtml.push(
-  //     <textarea
-  //       key={i}
-  //       name="example"
-  //       id=""
-  //       cols="30"
-  //       rows="10"
-  //       placeholder="example"
-  //     ></textarea>
-  //   );
-  // }
-
   return (
     <form onSubmit={addGeneralTagsHandler} className={classes["form"]}>
       <input
@@ -294,34 +216,9 @@ const LoraForm = () => {
       <button type="button" id="sub" onClick={addSubHandler}>
         Add sub
       </button>
-      {/* <input name="title" type="text" placeholder="title" />
-      <input name="type" type="text" placeholder="type" />
-      <input
-        name="base-model"
-        type="text"
-        placeholder="base-model"
-        value="SD 1.5"
-        readOnly
-      /> */}
       <input name="main-tag" type="text" placeholder="main-tag" />
       <input name="weight" type="text" placeholder="weight" />
       <input name="size" type="text" placeholder="size" />
-      {/* <input name="clip-skip" type="text" placeholder="clip skip" /> */}
-      {/* <input name="version" type="text" placeholder="version" /> */}
-      {/* <textarea
-        name="description"
-        id=""
-        cols="30"
-        rows="10"
-        placeholder="description"
-      ></textarea>
-      <textarea
-        name="tags"
-        id=""
-        cols="30"
-        rows="10"
-        placeholder="tags"
-      ></textarea> */}
       <textarea
         name="helper-tags"
         id=""

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import classes from "./PreviewCard.module.scss";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -6,14 +6,7 @@ import Image from "../ui/image/Image";
 import ActivationTag from "../activation-tag/ActivationTag";
 import ButtonSquareAdd from "../ui/ButtonSquareAdd";
 import { motion } from "framer-motion";
-import {
-  ANIMATIONS_FM_HOVER_SCALE,
-  ANIMATIONS_FM_SLIDEIN,
-  ANIMATIONS_FM_SLIDEIN_INITIAL,
-  ANIMATIONS_FM_TAP_SCALE,
-  SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
-  SETTINGS_IMAGE_PREVIEW_WIDTH_CARD,
-} from "../../variables/constants";
+import { SETTINGS_IMAGE_PREVIEW_WIDTH_BIG } from "../../variables/constants";
 
 const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
   const [currVersion, setCurrVersion] = useState({});
@@ -24,9 +17,8 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
   const imageCategoryData = categoriesData.find(
     (category) => category.id === previewData?.category
   );
-  // const fullView = useSelector((state) => state.tabs.previewFullView);
   const imgRef = useRef();
-  // console.log(previewData);
+
   useEffect(() => {
     const curVersionData =
       previewData?.modelVersionsCustomData &&
@@ -66,11 +58,7 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
       whileHover={{ borderColor: "rgba(255, 255, 255, 0.6)" }}
       transition={{
         layout: { duration: 0 },
-        // type: "spring",
       }}
-      // whileHover={!fullView ? ANIMATIONS_FM_HOVER_SCALE : null}
-      // whileTap={!fullView ? ANIMATIONS_FM_TAP_SCALE : null}
-      // onHoverStart={() => console.log('hover started!')}
       id={previewData.id}
       className={`${classes.card} ${fullView ? classes["card__full"] : ""} ${
         layout ? classes["card--motion"] : ""
@@ -116,12 +104,6 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
           />
           {!fullView && (
             <div className={classes["card__content"]}>
-              {/* <div className={classes["models__item"]}>
-                {previewData?.baseModels[0] ||
-                  currVersion?.baseModel ||
-                  previewData?.baseModel}
-              </div> */}
-
               <ul className={classes["models"]}>
                 {previewData?.baseModels?.map((model, i) => (
                   <li key={i} className={classes["models__item"]}>

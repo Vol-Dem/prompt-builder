@@ -1,5 +1,4 @@
 import classes from "./Guide.module.scss";
-// import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import LinkA from "../LinkA";
 import ArrowRightSvg from "../../../assets/ArrowRight";
@@ -11,17 +10,6 @@ import { useState } from "react";
 
 const Guide = (props) => {
   const [copied, setCopied] = useState(false);
-
-  // useEffect(() => {
-  //   const scrollTop = document.documentElement.scrollTop;
-  //   const disableScrollHandler = (e) => {
-  //     window.scrollTo(0, scrollTop);
-  //   };
-  //   window.addEventListener("scroll", disableScrollHandler);
-  //   return () => {
-  //     window.removeEventListener("scroll", disableScrollHandler);
-  //   };
-  // }, []);
 
   const copyHandler = (e) => {
     navigator.clipboard.writeText("727427");
@@ -69,8 +57,7 @@ const Guide = (props) => {
                 </li>
                 <li className={classes["guide__content__item"]}>
                   <p className={classes["guide__content__text"]}>
-                    Copy the model ID or URL from
-                    {/* <br /> */}{" "}
+                    Copy the model ID or URL from{" "}
                     <LinkA external href="https://civitai.com">
                       Civitai
                     </LinkA>{" "}
@@ -97,9 +84,6 @@ const Guide = (props) => {
                     Enter the category name <br /> and click "Create" in the
                     dropdown
                     <br />
-                    {/* <span className={classes["guide__content__comment"]}>
-                      The category will be created automatically
-                    </span> */}
                   </p>
 
                   <ArrowRightSvg />

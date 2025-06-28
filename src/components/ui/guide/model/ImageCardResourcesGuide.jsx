@@ -7,7 +7,7 @@ import useGuideIndex from "../../../../hooks/use-guide-index";
 
 const guideType = "model";
 
-const ImageCardResourcesGuide = (props) => {
+const ImageCardResourcesGuide = () => {
   const guideSteps = useMemo(() => {
     const plusImage = (
       <span className={classes["btn-container"]}>

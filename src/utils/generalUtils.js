@@ -434,7 +434,6 @@ export const throwCustomError = (message) => {
 };
 
 export const handleErrors = (err) => {
-  // const isStandardError = ERROR_MESSAGES.includes(err.message);
   let errorMessage = ERROR_MESSAGE_DEFAULT;
 
   if (err.isCustom) {
@@ -558,7 +557,6 @@ export const parseModelIds = (value) => {
 
     return ids;
   } else {
-    //urn:air:sdxl:checkpoint:civitai:827184@1283437
     const urlArr = value.split("/");
     const modelIdIndex =
       urlArr.findIndex((urlPart) => urlPart === "models") + 1;
@@ -591,8 +589,6 @@ export const checkIsInCurrentNsfwRange = (curNsfwLevel, curNsfwvalue) => {
     (nsfwValue) => nsfwValue === curNsfwLevel
   );
   const displayedValues = nsfwValues.slice(0, curNsfwLevelIndex + 1);
-  // console.log(curNsfwLevel);
-  // console.log(displayedValues);
 
   return displayedValues.includes(curNsfwvalue);
 };

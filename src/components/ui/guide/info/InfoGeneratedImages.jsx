@@ -1,5 +1,4 @@
 import {
-  EllipsisHorizontalIcon,
   FolderArrowDownIcon,
   FolderPlusIcon,
   PlusIcon,
@@ -12,7 +11,6 @@ import InfoPostId from "./InfoPostId";
 import TextHighlight from "../../text/TextHighlight";
 import TextButton from "../../text/text-buttons/TextButton";
 import TextButtonSquare from "../../text/text-buttons/TextButtonSquare";
-import ButtonTertiary from "../../ButtonTertiary";
 import TextImageMenu from "../../text/text-buttons/TextImageMenu";
 import Image from "../../image/Image";
 import TextButtonSaved from "../../text/text-buttons/TextButtonSaved";

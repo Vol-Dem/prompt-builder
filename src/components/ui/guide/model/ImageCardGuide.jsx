@@ -10,7 +10,7 @@ import useGuideIndex from "../../../../hooks/use-guide-index";
 
 const guideType = "model";
 
-const ImageCardGuide = (props) => {
+const ImageCardGuide = () => {
   const guideSteps = useMemo(() => {
     return [
       {

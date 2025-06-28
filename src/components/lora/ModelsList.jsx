@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import classes from "./ModelsList.module.scss";
 import PreviewCard from "../previewCard/PreviewCard";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,12 +16,9 @@ import ErrorMessage from "../ui/ErrorMessage";
 import {
   GUIDE_STEP_OPEN_MODEL,
   ERROR_MESSAGE_OFFLINE,
-  ANIMATIONS_FM_SLIDEIN_INITIAL,
-  ANIMATIONS_FM_SLIDEIN,
 } from "../../variables/constants";
 import OpenModelGuide from "../ui/guide/home/OpenModelGuide";
 import { guideActions } from "../../store/guide";
-import { motion } from "framer-motion";
 import AddToPanelAnimContainer from "../ui/AddToPanelAnimContainer";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import { Bars2Icon, Bars4Icon } from "@heroicons/react/24/outline";
@@ -81,22 +78,6 @@ const ModelsList = () => {
   useEffect(() => {
     setIsIntersecting(isPageEnd);
   }, [isPageEnd]);
-
-  // useEffect(() => {
-  //   dispatch(tabActions.resetModelsData());
-  //   dispatch(tabActions.setIsLastPage(false));
-  //   // if (
-  //   //   activeTab === "all" ||
-  //   //   activeCategory === "all" ||
-  //   //   activeSubcategory === "all"
-  //   // ) {
-  //   //   dispatch(tabActions.resetModelsData());
-  //   //   dispatch(tabActions.setIsLastPage(false));
-  //   // } else {
-  //   //   // dispatch(tabActions.setIsLastPage(false));
-  //   //   dispatch(tabActions.resetModelsData());
-  //   // }
-  // }, [activeTab, activeCategory, activeSubcategory, dispatch]);
 
   useEffect(() => {
     if (

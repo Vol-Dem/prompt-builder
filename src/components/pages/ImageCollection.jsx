@@ -2,12 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import classes from "./ImageCollection.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getCollection,
-  getImagesByIds,
-  imagesActions,
-} from "../../store/images";
-import Carousel from "../carousel/Carousel";
+import { getCollection, imagesActions } from "../../store/images";
 import CollectionImages from "../collection/collection-images/CollectionImages";
 import NavigationPanel from "../layout/navigation-panel/NavigationPanel";
 import Buttton from "../ui/Button";
@@ -16,7 +11,6 @@ import Modal from "../ui/Modal";
 import SaveImageForm from "../forms/save-image-form/SaveImageForm";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
-import { getCollectionData } from "../../utils/fetchUtils";
 import ButtonSquareAdd from "../ui/ButtonSquareAdd";
 
 const ImageCollection = ({ title }) => {
@@ -33,7 +27,6 @@ const ImageCollection = ({ title }) => {
   );
   const activeCategory = useSelector((state) => state.images.activeCategory);
   const categoriesData = useSelector((state) => state.images.categories);
-  // const isLoading = useSelector((state) => state.images.collectionIsLoading);
   const collectionImages = useSelector(
     (state) => state.images.collectionImages
   );
@@ -49,18 +42,6 @@ const ImageCollection = ({ title }) => {
     };
   }, [collectionData, collectionPreviews]);
 
-  // console.log(collectionData);
-  // console.log(collectionPreviews);
-  //   const postIds = collectionData?.posts?.map((post) => post.postId);
-
-  //   useEffect(() => {
-  //     if (!collectionData?.posts?.length) return;
-
-  //     // console.log(collectionData);
-
-  //     // console.log(postIds);
-  //     // dispatch(getImagesByIds(postIds));
-  //   }, [collectionData, dispatch]);
   useEffect(() => {
     document.title = collectionData?.name || title;
 
@@ -71,14 +52,11 @@ const ImageCollection = ({ title }) => {
 
   useEffect(() => {
     if (!isAuth || !collectionId) return;
-    // let unsub;
     const getCollectionData = async () => {
       try {
-        // console.log("RUN");
         setIsLoading(true);
         setErrorMessage("");
         await dispatch(getCollection(collectionId));
-        // await getCollectionData(collectionId);
       } catch (err) {
         setErrorMessage(err.message);
       } finally {
@@ -91,24 +69,6 @@ const ImageCollection = ({ title }) => {
       dispatch(imagesActions.resetCollectionData());
     };
   }, [collectionId, isAuth, dispatch]);
-
-  // console.log(collectionImages);
-
-  // const examplesHtml =
-  //   collectionImages?.length &&
-  //   collectionImages?.flatMap((item, i) => {
-  //     return (
-  //       <Carousel
-  //         key={i}
-  //         versionId={222}
-  //         imagesData={item.items}
-  //         visibleImgAmount={1}
-  //         modelId={111}
-  //         saved={true}
-  //         showInView={true}
-  //       />
-  //     );
-  //   });
 
   const openCategoriesHandler = (category, subcategory) => {
     dispatch(imagesActions.setActiveCategory(category));
@@ -125,8 +85,7 @@ const ImageCollection = ({ title }) => {
   const activeCategoryData = categoriesData.find(
     (category) => category.id === collectionData?.category
   );
-  // console.log(collectionData);
-  // console.log(categoriesData);
+
   const subcategoriesHtml = collectionData?.subcategories?.flatMap(
     (subcategoryId, i) => {
       const subcategoryName = activeCategoryData?.subcategories?.find(
@@ -189,8 +148,6 @@ const ImageCollection = ({ title }) => {
             )}
           </div>
           {collectionData?.description && <p>{collectionData?.description}</p>}
-
-          {/* <h2 className={classes["h2"]}>Images:</h2> */}
           <Buttton
             className={classes["button-add"]}
             onClick={addImgByIdHandler}

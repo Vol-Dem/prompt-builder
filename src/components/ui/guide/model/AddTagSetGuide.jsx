@@ -13,7 +13,6 @@ const AddTagSetGuide = () => {
       {
         step: GUIDE_STEP_MODEL_TAGS_ADD_TAGSET,
         arrowPosition: 7,
-        // next: true,
         text: (
           <>
             Here you can create custom trigger word sets. Try to{" "}

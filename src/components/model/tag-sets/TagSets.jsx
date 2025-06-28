@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import classes from "./TagSets.module.scss";
 import TagList from "../../tag-list/TagList";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,7 +15,6 @@ import { guideActions } from "../../../store/guide";
 import Modal from "../../ui/Modal";
 import TagSetsForm from "../../forms/tag-sets-form/TagSetsForm";
 import { AnimatePresence, motion } from "framer-motion";
-import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import InfoTagsets from "../../ui/guide/info/InfoTagSets";
 
@@ -29,7 +28,6 @@ const TagSets = ({ customData, defaultData }) => {
   const [tagsetItemHeight, setTagsetItemHeight] = useState(500);
   const [tagsetListHeight, setTagsetListHeight] = useState(500);
   const model = useSelector((state) => state.model.model);
-  // const curVersion = useSelector((state) => state.model.curVersion);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const guideActive = useSelector((state) => state.guide.model.active);
   const guideStep = useSelector((state) => state.guide.model.step);
@@ -42,13 +40,6 @@ const TagSets = ({ customData, defaultData }) => {
     if (guideActive && guideStep === GUIDE_STEP_MODEL_TAGSET) {
       if (!tagSets?.length)
         dispatch(guideActions.guideNextStep({ type: "model" }));
-      // if (guideTimeoutRef.current) {
-      //   clearTimeout(guideTimeoutRef.current);
-      // }
-      // guideTimeoutRef.current = setTimeout(() => {
-      //   if (!tagSets?.length)
-      //     dispatch(guideActions.guideNextStep({ type: "model" }));
-      // }, 1000);
     }
   }, [guideStep, dispatch, guideActive, tagSets]);
 
@@ -66,7 +57,6 @@ const TagSets = ({ customData, defaultData }) => {
   ]);
 
   useEffect(() => {
-    // const tagSetsData = customData?.length ? customData : defaultData;
     let tagSetsData = [];
 
     const defaultDataWithDefMark = defaultData?.map((tagSet) => {
@@ -116,7 +106,6 @@ const TagSets = ({ customData, defaultData }) => {
       key={i}
       initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
       animate={ANIMATIONS_FM_SLIDEIN}
-      // exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
       exit={{ opacity: 0, y: 30, transition: { delay: 1 } }}
       ref={i === 0 ? tagSetItemRef : null}
       className={classes["tag-sets"]}
@@ -133,7 +122,6 @@ const TagSets = ({ customData, defaultData }) => {
       {
         <TagList
           name={tagSet.name}
-          // coment={!customData?.length && !!defaultData?.length && "Default"}
           coment={tagSet?.default && "Default"}
           tags={splitTags(tagSet.value)}
           promptType="positive"
@@ -169,7 +157,6 @@ const TagSets = ({ customData, defaultData }) => {
       </div>
       {!tagSets?.length && (
         <div className={classes["notification"]}>
-          {/* <ExclamationCircleSvg className={classes["notification__svg"]} /> */}
           <p className={classes["notification__text"]}>
             You don't have any tag sets. Press "Add tag set" to add new tag set.
           </p>

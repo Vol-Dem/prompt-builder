@@ -2,7 +2,6 @@ import classes from "./UsedModelsPanel.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import UsedCard from "../used-card/UsedCard";
 import {
-  removeImageFromPanel,
   switchSidePanelfullView,
   usedModelsActions,
 } from "../../store/usedModels";
@@ -10,21 +9,14 @@ import UpdateModelForm from "../forms/update-model-form/UpdateModelForm";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import Buttton from "../ui/Button";
 import CrossSvg from "../../assets/CrossSvg";
-import Image from "../ui/image/Image";
-import { modelActions } from "../../store/model";
-import ImageSvg from "../../assets/ImageSvg";
 import { authActions } from "../../store/auth";
 import ArrowLeftSvg from "../../assets/ArrowLeft";
 import ArrowRightSvg from "../../assets/ArrowRight";
 import PlusSvg from "../../assets/PlusSvg";
-import Bars2Svg from "../../assets/Bars2Svg";
-import Bars4Svg from "../../assets/Bars4Svg";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { SETTINGS_REF_IMAGE_ROW_LENGTH } from "../../variables/constants";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import ErrorMessage from "../ui/ErrorMessage";
 import SidePanelGuide from "../ui/guide/model/SidePanelGuide";
 import OpenSidePanelGuide from "../ui/guide/model/OpenSidePanelGuide";
-import { useLocation } from "react-router-dom";
 import ReferenceImageList from "./reference-image-list/ReferenceImageList";
 import { AnimatePresence, motion } from "framer-motion";
 import { guideActions } from "../../store/guide";
@@ -35,7 +27,6 @@ const UsedModelsPanel = memo(() => {
   const [cursorInitialX, setCursorInitialX] = useState(null);
   const [resourceType, setResourceType] = useState("model");
   const [cursorCurX, setCursorCurX] = useState(null);
-  // const [formIsOpen, setFormIsOpen] = useState(false);
   const usedModels = useSelector((state) => state.used.models);
   const usedImages = useSelector((state) => state.used.images);
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
@@ -44,29 +35,15 @@ const UsedModelsPanel = memo(() => {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const sidePanelRef = useRef({ offsetWidth: 0 });
   const openPanelBtnRef = useRef({ offsetWidth: 20 });
-  // const location = useLocation();
-  // const location = false;
   const userDataIsLoading = useSelector(
     (state) => state.auth.userDataIsLoading
   );
   const userDataLoadError = useSelector(
     (state) => state.auth.userDataLoadError
   );
-  // const emailVerified = useSelector((state) => state.auth.user.emailVerified);
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   if (location?.pathname) {
-  //     dispatch(usedModelsActions.setFormIsOpen(false));
-  //   }
-  // }, [location?.pathname, dispatch]);
-
   useEffect(() => {
-    // console.log(
-    //   "SIDE",
-    //   sidePanelRef.current.offsetWidth,
-    //   openPanelBtnRef.current.offsetWidth
-    // );
     if (sidePanelRef?.current && openPanelBtnRef?.current) {
       dispatch(
         usedModelsActions.setSidePanelWidth(
@@ -80,8 +57,6 @@ const UsedModelsPanel = memo(() => {
     dispatch(usedModelsActions.panelState(!panelIsOpen));
   };
   const openFormHandler = () => {
-    // setFormIsOpen((prevState) => !prevState);
-    // if (!isAuth || !emailVerified) {
     if (!isAuth) {
       dispatch(authActions.openAuthForm(true));
     } else {
@@ -89,14 +64,6 @@ const UsedModelsPanel = memo(() => {
       dispatch(usedModelsActions.setFormIsOpen(!formIsOpen));
     }
   };
-
-  // const chageCardViewHandler = () => {
-  //   dispatch(usedModelsActions.cardViewState());
-  // };
-
-  // const closeFormHandler = useCallback((value) => {
-  //   // setFormIsOpen(value);
-  // }, []);
 
   const usedModelsHtml = useMemo(() => {
     return usedModels.map((model, i) => {
@@ -106,13 +73,8 @@ const UsedModelsPanel = memo(() => {
             layoutId={model.id}
             previewData={model}
             fullView={fullCardView}
-            // onClick={closeFormHandler}
           />
-          <UsedCard
-            previewData={model}
-            fullView={fullCardView}
-            // onClick={closeFormHandler}
-          />
+          <UsedCard previewData={model} fullView={fullCardView} />
         </div>
       );
     });
@@ -139,9 +101,7 @@ const UsedModelsPanel = memo(() => {
     const offcet = Math.round(cursorInitialX) - Math.round(cursorCurX);
     setCursorCurX(null);
     setCursorInitialX(null);
-    // console.log(offcet);
-    // console.log(cursorInitialX);
-    // console.log(cursorCurX);
+
     if (!!offcet && offcet > 0 && Math.abs(offcet) > 40) {
       dispatch(usedModelsActions.panelState(true));
     } else if (!!offcet && offcet < 0 && Math.abs(offcet) > 40) {
@@ -174,20 +134,11 @@ const UsedModelsPanel = memo(() => {
       onTouchStart={mouseDownHandler}
       onTouchMove={moveElement}
       animate={{
-        // transform: `translateX(${
-        //   !panelIsOpen ? sidePanelRef?.current?.offsetWidth : 0
-        // }px)`,
         width: panelIsOpen
           ? sidePanelRef?.current?.offsetWidth +
             openPanelBtnRef?.current?.offsetWidth
           : openPanelBtnRef?.current?.offsetWidth,
       }}
-      // style={{
-      //   transform: `translateX(${sidePanelRef?.current?.offsetWidth || 0}px)`,
-      //   // transform: `translateX(100% - ${
-      //   //   openPanelBtnRef?.current?.offsetWidth || 0
-      //   // }px)`,
-      // }}
     >
       <>
         <button
@@ -265,21 +216,16 @@ const UsedModelsPanel = memo(() => {
                 ) : (
                   <>
                     <CrossSvg />
-                    {/* Hide form */}
                   </>
                 )}
               </Buttton>
             </div>
 
-            <div>
-              {/* <button onClick={prevStepHandler}>prev</button>
-              <button onClick={nextStepHandler}>next</button> */}
-            </div>
+            <div></div>
             {userDataLoadError && (
               <ErrorMessage>{userDataLoadError}</ErrorMessage>
             )}
             {/* <UpdateDb /> */}
-            {/* {formIsOpen && isAuth && emailVerified && ( */}
             <AnimatePresence>
               {formIsOpen && isAuth && (
                 <div className={classes.forms}>
@@ -371,7 +317,6 @@ const UsedModelsPanel = memo(() => {
                 height={129}
                 loading="lazy"
                 src={require("../../assets/kofi_bg_tag_dark.webp")}
-                // src="https://storage.ko-fi.com/cdn/brandasset/kofi_bg_tag_dark.png"
                 border="0"
                 alt="ko-fi"
               />

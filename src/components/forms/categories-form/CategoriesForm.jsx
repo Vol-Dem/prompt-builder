@@ -7,8 +7,6 @@ import ButtonTertiary from "../../ui/ButtonTertiary";
 import DeleteRequest from "../../ui/DeleteRequest";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-  DEF_ERROR_MESSAGE,
-  ERROR_MESSAGES,
   ERROR_MESSAGE_OFFLINE,
 } from "../../../variables/constants";
 import { AnimatePresence } from "framer-motion";

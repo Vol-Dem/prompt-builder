@@ -10,7 +10,7 @@ import GuideActionMessage from "../GuideActionMessage";
 
 const guideType = "model";
 
-const AddModelToSidePanelGuide = (props) => {
+const AddModelToSidePanelGuide = () => {
   const usedModels = useSelector((state) => state.used.models);
   const dispatch = useDispatch();
 

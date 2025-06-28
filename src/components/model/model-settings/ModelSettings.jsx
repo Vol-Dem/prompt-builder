@@ -28,7 +28,6 @@ import {
   URL_CF_UPDATE_MODEL,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   ANIMATIONS_FM_SLIDEIN,
-  ANIMATIONS_FM_ZOOM_IN_INITIAL,
 } from "../../../variables/constants";
 import { modelActions } from "../../../store/model";
 import { tabActions } from "../../../store/tabs";
@@ -67,8 +66,7 @@ const ModelSettings = () => {
       curTab === DEFAULT_VERSION_ID
         ? model.defaultCustomData
         : model.data?.modelVersions?.find((version) => version.id === +curTab);
-    // console.log(customData);
-    // console.log(model);
+
     if (customData) {
       setCurVersionData(customData);
       setCurVersionDefData(defData);

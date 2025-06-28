@@ -16,14 +16,7 @@ import UserNavigation from "../navigation/UserNavigation";
 import Buttton from "../../ui/Button";
 import Modal from "../../ui/Modal";
 import AuthForm from "../../forms/Auth/AuthForm";
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Spinner from "../../ui/Spinner";
 import Notification from "../../ui/Notification";
 import Prompt from "../../prompt/Prompt";
@@ -45,7 +38,6 @@ import Maintenance from "../maintenance/Maintenance";
 import { AnimatePresence } from "framer-motion";
 import { usedModelsActions } from "../../../store/usedModels";
 import { useMemo } from "react";
-import { switchNsfwMode } from "../../../store/general";
 import NsfwSwitch from "../../ui/nsfw-switch/NsfwSwitch";
 import ScrollToTop from "../../ui/ScrollToTop";
 
@@ -53,11 +45,8 @@ const Layout = () => {
   const [cookificationIsOpen, setCookificationIsOpen] = useState(false);
   const [activeNotification, setActiveNotification] = useState({});
   const [allNotification, setAllNotification] = useState([]);
-  // const [headerIsFixed, setHeaderIsFixed] = useState(false);
-  // const [headerHeight, setHeaderHeight] = useState(null);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
-  // const headerHeight = useSelector((state) => state.prompt.headerHeight);
   const promptBtnHeight = useSelector((state) => state.prompt.promptBtnHeight);
   const promptHeight = useSelector((state) => state.prompt.promptHeight);
   const emailVerified = useSelector((state) => state.auth.user.emailVerified);
@@ -65,19 +54,10 @@ const Layout = () => {
   const headerIsFixed = useSelector((state) => state.general.headerIsFixed);
   const mainRef = useRef(null);
   const headerRef = useRef(null);
-  // const notificationIsShown = useSelector(
-  //   (state) => state.notification.isShown
-  // );
   const notifications = useSelector(
     (state) => state.notification.notifications
   );
   const maintenance = useSelector((state) => state.notification.maintenance);
-  // const notificationType = useSelector((state) => state.notification.type);
-  // const notificationTitle = useSelector((state) => state.notification.title);
-  // const notificationMessage = useSelector(
-  //   (state) => state.notification.message
-  // );
-  // const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -102,14 +82,9 @@ const Layout = () => {
     }
   };
 
-  // const nsfwSwitchHandler = () => {
-  //   dispatch(switchNsfwMode(!isNsfwMode));
-  // };
-
   useEffect(() => {
     if (!isAuth) {
       const cookies = uploadStorage(`cookies`);
-      // console.log(cookies);
       if (!cookies?.accepted) {
         setCookificationIsOpen(true);
       }
@@ -119,8 +94,6 @@ const Layout = () => {
   useEffect(() => {
     if (isAuth) {
       const noticeInfo = uploadLocalStorage(`notifications`);
-      // console.log(noticeInfo);
-
       const updatedNitice = notifications.map((message) => {
         const notice = noticeInfo?.messages?.find(
           (userNotice) => userNotice.id === message.id
@@ -130,7 +103,7 @@ const Layout = () => {
           readed: notice ? notice.readed : message.readed,
         };
       });
-      // console.log(updatedNitice);
+
       setAllNotification(updatedNitice);
     }
   }, [notifications, isAuth]);
@@ -145,7 +118,6 @@ const Layout = () => {
   const closeNotificationHandler = () => {
     const noticeInfo = allNotification.map((message) => {
       return {
-        // id: message.id,
         ...message,
         readed: activeNotification.id === message.id ? true : message.readed,
       };
@@ -185,50 +157,11 @@ const Layout = () => {
     promptIsOpen,
     promptBtnHeight,
   ]);
-  // useLayoutEffect(() => {
-  //   if (
-  //     headerIsFixed &&
-  //     headerRef?.current?.offsetHeight &&
-  //     promptHeight &&
-  //     promptIsOpen
-  //   ) {
-  //     mainRef.current.style.paddingTop = `${
-  //       headerRef.current.offsetHeight + promptHeight + promptBtnHeight
-  //     }px`;
-  //   } else if (
-  //     headerIsFixed &&
-  //     headerRef?.current?.offsetHeight &&
-  //     promptHeight &&
-  //     !promptIsOpen
-  //   ) {
-  //     mainRef.current.style.paddingTop = `${
-  //       headerRef.current.offsetHeight + promptBtnHeight
-  //     }px`;
-  //   } else {
-  //     mainRef.current.style.paddingTop = null;
-  //   }
-  // }, [
-  //   headerIsFixed,
-  //   headerRef.current?.offsetHeight,
-  //   promptHeight,
-  //   promptIsOpen,
-  //   promptBtnHeight,
-  // ]);
-
-  // const setHeaderIsFixedHandler = useCallback((value) => {
-  //   setHeaderIsFixed(value);
-  // }, []);
-  // const setHeaderHeightHandler = useCallback((value) => {
-  //   // setHeaderHeight(value);
-  // }, []);
 
   return (
     <div className={classes.wrapper}>
       <div className={classes.content}>
-        <Header
-        // onFixed={setHeaderIsFixedHandler}
-        // onHeightChange={setHeaderHeightHandler}
-        >
+        <Header>
           <div ref={headerRef} className={classes["menu-container"]}>
             <div className="wrapper">
               <div className={classes.menu}>
@@ -279,11 +212,7 @@ const Layout = () => {
               </div>
             </div>
           </div>
-          {!maintenance && (
-            // <div className={classes.wrap}>
-            <Prompt />
-            // </div>
-          )}
+          {!maintenance && <Prompt />}
           <AnimatePresence>
             <ActiveCarousel />
           </AnimatePresence>

@@ -1,4 +1,3 @@
-import React from "react";
 import classes from "./ModelInfo.module.scss";
 import { useSelector } from "react-redux";
 import LinkA from "../../ui/LinkA";

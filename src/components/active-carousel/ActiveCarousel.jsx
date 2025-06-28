@@ -18,9 +18,6 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import CarouselImageList from "../carousel/carousel-image-list/CarouselImageList";
 
-// const defHeight = 315;
-// const defHeightS = 110;
-
 const ActiveCarousel = () => {
   const [activeImageNumber, setActiveImageNumber] = useState(null);
   const [savedImages, setSavedImages] = useState({});
@@ -34,7 +31,6 @@ const ActiveCarousel = () => {
   const guideIsActive = useSelector((state) => state.guide.active);
   const headerHeight = useSelector((state) => state.prompt.headerHeight);
   const dispatch = useDispatch();
-  // console.log(activeCarouselData);
 
   useEffect(() => {
     if (model?.id && model.id === savedImagesData?.modelId) {

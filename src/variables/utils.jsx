@@ -7,7 +7,6 @@ export const timeout = function (s) {
 };
 
 export const saveToStorage = (key, data) => {
-  // localStorage.setItem(key, JSON.stringify(data));
   window.sessionStorage.setItem(key, JSON.stringify(data));
 };
 

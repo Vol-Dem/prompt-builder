@@ -4,10 +4,7 @@ import { promptActions } from "../../store/prompt";
 import CrossSvg from "../../assets/CrossSvg";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  SETTINGS_PROMPT_BREAK_ALIASES,
-  SPLIT_TAG_REGEX,
-} from "../../variables/constants";
+import { SETTINGS_PROMPT_BREAK_ALIASES } from "../../variables/constants";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import Input from "./Input";
 
@@ -42,7 +39,6 @@ const TagsTextarea = ({
       setPrevPromptLength(promptArr.length);
       lastTagRef.current.scrollIntoView({
         behavior: "smooth",
-        // block: autoScrollTo,
       });
     }
   }, [
@@ -63,18 +59,6 @@ const TagsTextarea = ({
         dropLeft: null,
       };
     });
-    // console.log(tagsData);
-    // const tagsData = data
-    //   .trim()
-    //   .split(SPLIT_TAG_REGEX)
-    //   .flatMap((item, i) => {
-    //     if (!item) return [];
-    //     return {
-    //       id: i,
-    //       tag: item.trim(),
-    //       dropLeft: null,
-    //     };
-    //   });
 
     setCurrentPrompt((prevState) => {
       setPrevPromptLength(prevState?.length || null);
@@ -95,7 +79,6 @@ const TagsTextarea = ({
   const dragStartHandler = (e) => {
     const targetTagContainer = e.target.closest(`.${classes["tag-container"]}`);
     const tagData = targetTagContainer.dataset.item;
-    // console.log(tagData);
     const {
       id: dropTargetId,
       tag: dropTargetTag,
@@ -125,7 +108,6 @@ const TagsTextarea = ({
     e.preventDefault();
     const targetTagContainer = e.target.closest(`.${classes["tag-container"]}`);
     const targetTag = e.target.closest(`.${classes["tag"]}`);
-    // if (!targetTagContainer || !targetTag) return;
     if (!targetTagContainer) return;
     if (+targetTagContainer?.dataset?.id === draggedItemId) return;
 
@@ -137,7 +119,6 @@ const TagsTextarea = ({
     const targetContainerLeft = Math.round(
       targetTagContainer.getBoundingClientRect().left
     );
-    // const isLeftSide = targetTagWidth / 2 + targetTagLeft > e.clientX;
     const isLeftSide =
       targetContainerWidth / 2 + targetContainerLeft > e.clientX;
 
@@ -160,28 +141,16 @@ const TagsTextarea = ({
 
   const dragLeaveHandler = (e) => {
     const targetTagContainer = e.target.closest(`.${classes["tag-container"]}`);
-    // if (!targetTagContainer) return;
     const curTargetData = curPrompt.find(
       (tagItem) => +tagItem?.id === +targetTagContainer?.dataset?.id
     );
-    // if (!curTargetData) return;
+
     setCurrentPrompt((prevState) => {
       return prevState.map((tagItem) => {
-        // if (tagItem.id === curTargetData?.id) {
-        //   return tagItem;
-        // }
-
         return {
           ...tagItem,
           dropLeft: null,
         };
-        // if (tagItem.id !== curTargetData?.id) {
-        //   return {
-        //     ...tagItem,
-        //     dropLeft: null,
-        //   };
-        // }
-        // return tagItem;
       });
     });
   };
@@ -220,9 +189,6 @@ const TagsTextarea = ({
       position: dropTargetPosition,
       type: dropTargetType,
     } = JSON.parse(targetTagContainer.dataset.item);
-    // console.log(targetTagContainer.dataset.item);
-    // console.log(dropTargetType);
-    // console.log(dropTargetId);
 
     if (Number.isFinite(dropTargetId) && dropTargetType) {
       if (id === dropTargetId && dropTargetType === type) return;
@@ -245,7 +211,6 @@ const TagsTextarea = ({
       if (
         (containerData.dropLeft && position > containerData.position) ||
         (!containerData.dropLeft && position < containerData.position)
-        // || (containerData.dropLeft && position <= containerData.position && containerData.position === 0)
       ) {
         newPosition = containerData.position;
       } else if (
@@ -260,29 +225,7 @@ const TagsTextarea = ({
       ) {
         newPosition = containerData.position + 1;
       }
-      // console.log(containerData);
-      // console.log("new", newPosition);
 
-      // dispatch(
-      //   promptActions.removeTag({
-      //     id: id,
-      //     type: type,
-      //     value: tag,
-      //   })
-      // );
-      // dispatch(
-      //   promptActions.addTagToPosition({
-      //     position: newPosition,
-      //     tag,
-      //     type: dropTargetType,
-      //   })
-      // );
-      // console.log("DROP");
-      // console.log(id);
-      // console.log(type);
-      // console.log(dropTargetType);
-      // console.log(position);
-      // console.log(newPosition);
       dispatch(promptActions.removeTag({ id, type, dropTargetType }));
       dispatch(
         promptActions.addTagToPosition({
@@ -300,18 +243,14 @@ const TagsTextarea = ({
   };
 
   const openEditHandler = (e) => {
-    // console.log("START");
     const id = +e.target.closest(`.${classes["tag-container"]}`).dataset.id;
     const fieldWidth = e.target.offsetWidth;
     const containerWidth = fieldRef.current.offsetWidth;
     const maxInputWidth = Math.round(containerWidth - inputControlsWidth);
     const newInputWidth =
       fieldWidth < maxInputWidth ? fieldWidth : maxInputWidth;
+
     setInputWidth(newInputWidth);
-    // console.log("F", fieldWidth);
-    // console.log("C", containerWidth);
-    // console.log("M", maxInputWidth);
-    // console.log("N", newInputWidth);
     setCurrentPrompt((prevState) => {
       return prevState.map((item) => {
         if (item.id === id) {
@@ -338,27 +277,13 @@ const TagsTextarea = ({
   const submitEditHandler = (e) => {
     e.preventDefault();
     const id = +e.target.closest(`.${classes["tag-container"]}`).dataset.id;
-    // console.log(id);
-    // const formData = new FormData(e.target);
-    // const tagName = formData.get("tag").trim();
-    // console.log(tagName);
-    // console.log(editTagInput.value);
-    // setCurrentPrompt((prevState) => {
-    //   const newPrompt = prevState.map((item) => {
-    //     if (item.id === id) {
-    //       return { ...item, tag: tagName, edit: false };
-    //     }
-    //     return { ...item, edit: false };
-    //   });
-    //   return newPrompt
-    // });
+
     const newPrompt = curPrompt.map((item) => {
       if (item.id === id) {
         let regex = /\<[^>]*\>/i;
         const isActivationTag = regex.test(editTagInput.value);
-
         let tag = editTagInput.value;
-        // console.log(editWeightInput.value);
+
         if (+editWeightInput.value !== item.weight) {
           if (editTagInput.value.includes(":")) {
             const tagName = editTagInput.value
@@ -374,9 +299,7 @@ const TagsTextarea = ({
               tag = `(${tagName}:${editWeightInput.value})`;
             }
           } else {
-            // console.log(editTagInput.value);
             const tagName = editTagInput.value.replace(/^\(+|\)+$/g, "");
-            // console.log(tagName);
             tag = `(${tagName}:${editWeightInput.value})`;
           }
         }
@@ -420,7 +343,6 @@ const TagsTextarea = ({
           }}
           animate="visible"
           exit={{ y: -30, x: 30, opacity: 0, scale: 0.5 }}
-          // className={`${classes["tag-container"]}`}
           className={`${classes["tag-container"]} ${
             item.dropLeft !== null && item.dropLeft ? classes["drop-left"] : ""
           } ${
@@ -433,9 +355,6 @@ const TagsTextarea = ({
           data-item={JSON.stringify({ ...item, type: promptType })}
           data-id={item.id}
           data-type={promptType}
-          // draggable={!item.edit ? "true" : "false"}
-          // onDragStart={dragStartHandler}
-          // onDragEnd={dragEndHandler}
         >
           <div
             className={`${classes.tag} ${
@@ -450,9 +369,6 @@ const TagsTextarea = ({
             onDragEnd={dragEndHandler}
             data-item={JSON.stringify({ ...item, type: promptType })}
             data-id={item.id}
-            // data-tag={item.tag}
-            // data-type={promptType}
-            // contenteditable={item.edit ? "true" : "false"}
           >
             <>
               {!item.edit && (
@@ -506,7 +422,6 @@ const TagsTextarea = ({
                     }}
                     className={classes["tag__weight"]}
                   />
-                  {/* <div>{item.weight}</div> */}
                   <div className={classes["activation-tag__btn-container"]}>
                     <button
                       type="button"

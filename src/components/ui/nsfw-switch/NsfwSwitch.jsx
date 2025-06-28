@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setNsfwValues, switchNsfwMode } from "../../../store/general";
 import classes from "./NsfwSwitch.module.scss";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import DropDownList from "../DropDownList";
 import { AnimatePresence } from "framer-motion";
 
@@ -36,25 +36,6 @@ const NsfwSwitch = () => {
     setNsfwInput(e.target.value);
     dispatch(setNsfwValues(sfwInput, e.target.value));
   };
-
-  // const closeSettingsHandler = useCallback((e) => {
-  //   if (!e.target.closest(`.${classes["mode__form"]}`)) {
-  //     setSettingsIsOpen(false);
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   if (settingsIsOpen) {
-  //     document.removeEventListener("click", closeSettingsHandler);
-  //     document.addEventListener("click", closeSettingsHandler);
-  //   } else {
-  //     document.removeEventListener("click", closeSettingsHandler);
-  //   }
-
-  //   return () => {
-  //     document.removeEventListener("click", closeSettingsHandler);
-  //   };
-  // }, [settingsIsOpen, closeSettingsHandler]);
 
   return (
     <div className={classes["container"]}>

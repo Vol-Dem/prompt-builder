@@ -15,7 +15,7 @@ import SettingsSvg from "../../../../assets/SettingsSvg";
 
 const guideType = "model";
 
-const CarouselGuide = (props) => {
+const CarouselGuide = () => {
   const usedImages = useSelector((state) => state.used.images);
   const dispatch = useDispatch();
 

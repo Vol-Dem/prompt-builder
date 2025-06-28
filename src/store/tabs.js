@@ -13,7 +13,6 @@ import {
 } from "firebase/firestore";
 import firebaseApp from "../firebase-config";
 import { authActions } from "./auth";
-import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 import { handleErrors } from "../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
@@ -137,22 +136,6 @@ const tabsSlice = createSlice({
   },
 });
 
-// export const getUserCategories = (uid) => {
-//   return async (dispatch, getState) => {
-//     try {
-//       const userRef = doc(firestore, "users", uid);
-
-//       const categoriesDoc = await getDoc(userRef);
-//       if (categoriesDoc.exists()) {
-//         const categoriesData = categoriesDoc.data();
-//         dispatch(tabActions.setCategories(categoriesData.categoriesById));
-//       }
-//     } catch (err) {
-//       console.error(err.message);
-//     }
-//   };
-// };
-
 export const getModelsPreview = (
   activeTab,
   activeCategory,
@@ -215,7 +198,6 @@ export const getModelsPreview = (
         // doc.data() is never undefined for query doc snapshots
         return doc.data();
       });
-      // console.log(modelsData);
 
       const isLast =
         !querySnapshot.docs.length || querySnapshot.docs.length < amountPerPage;

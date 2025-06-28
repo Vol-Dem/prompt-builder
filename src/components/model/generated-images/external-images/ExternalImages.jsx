@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import classes from "./ExternalImages.module.scss";
 import { useSelector } from "react-redux";
 import Carousel from "../../../carousel/Carousel";
@@ -52,7 +52,6 @@ const ExternalImages = memo(
     const isOnline = useOnlineStatus();
 
     useEffect(() => {
-      // console.log("i", intersecting);
       setIsIntersecting(intersecting || intersectingSmall);
     }, [intersecting, intersectingSmall]);
 
@@ -102,9 +101,6 @@ const ExternalImages = memo(
             Date.parse(sortedExamples[a].slice(-1).pop().createdAt)
           );
         });
-        // const sortedExamplesArr = Object.keys(sortedExamples).sort((a, b) => {
-        //   return sortedExamples[b][0].postId - sortedExamples[a][0].postId;
-        // });
 
         const examples = sortedExamplesArr.map((key, i) => {
           return sortedExamples[key];
@@ -126,7 +122,6 @@ const ExternalImages = memo(
     const getallExamples = useCallback(
       async (modelId, versionId, cursor) => {
         try {
-          // console.log("RUN");
           setExamplesIsLoading(true);
           if (abortControlerRef.current) {
             abortControlerRef.current.abort();
@@ -150,7 +145,6 @@ const ExternalImages = memo(
             signal: newAbortControler.signal,
           });
           const data = await imgExampleResponse.json();
-          // console.log(data);
 
           if (!data?.items) {
             throwCustomError(ERROR_MESSAGE_INVALID_DATA);
@@ -158,13 +152,6 @@ const ExternalImages = memo(
 
           // Remove dublicate images (fix for civitai bug)
           const dataUniq = filterDuplicates(data?.items, "id");
-          // const dataUniq = data?.items?.filter((obj1, i, arr) => {
-          //   if (!!obj1?.id) {
-          //     return arr.findIndex((obj2) => obj2?.id === obj1?.id) === i;
-          //   } else {
-          //     return true;
-          //   }
-          // });
 
           setExamplesImages((prevState) => {
             const newExampleImages = [...dataUniq, ...prevState];
@@ -200,8 +187,6 @@ const ExternalImages = memo(
     );
 
     useEffect(() => {
-      // console.log(examplesIsLoading);
-      // console.log(isLastPage);
       if (nextCursor && currCursor === nextCursor) return;
 
       if (
@@ -241,10 +226,6 @@ const ExternalImages = memo(
           (img) => img?.postId === +item[0]?.postId
         );
       const postId = item[0]?.postId;
-      // const postId =
-      //   existedExample && existedExample?.imagesId?.length >= item.length
-      //     ? ""
-      //     : item[0]?.postId;
 
       return (
         <Carousel

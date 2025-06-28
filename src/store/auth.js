@@ -9,7 +9,6 @@ import {
   updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
-  // getRedirectResult,
   sendPasswordResetEmail,
   sendEmailVerification,
   reauthenticateWithCredential,
@@ -28,7 +27,6 @@ import {
   ERROR_MESSAGE_USER_DATA_LOAD,
 } from "../variables/constants";
 import { guideActions } from "./guide";
-import { checkIsMobile } from "../utils/generalUtils";
 import { generalActions } from "./general";
 import { imagesActions } from "./images";
 
@@ -552,38 +550,6 @@ export const getUserData = (uid) => {
     }
   };
 };
-
-// export const setGuideData = (data) => {
-//   return async (dispatch, getState) => {
-//     try {
-//       if (!data) return;
-//       const uid = getState().auth.user.uid;
-//       const guideData = getState().auth.guide;
-
-//       const userRef = doc(firestore, "users", uid);
-
-//       let newGuideData;
-
-//       if (!Object.keys(guideData)?.length) {
-//         newGuideData = data;
-//       } else {
-//         newGuideData = { ...guideData, ...data };
-//       }
-
-//       await setDoc(
-//         userRef,
-//         {
-//           guide: newGuideData,
-//         },
-//         { merge: true }
-//       );
-
-//       dispatch(authActions.setGuide(newGuideData));
-//     } catch (err) {
-//       console.error(err.message);
-//     }
-//   };
-// };
 
 export const authActions = authSlice.actions;
 

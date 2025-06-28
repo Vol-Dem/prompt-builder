@@ -101,10 +101,6 @@ const modelSlice = createSlice({
           (post) => post.postId === postId
         );
         if (existedPostIndex !== -1) {
-          // const updatedSavedImages = [...state.savedImages.data[versionId]];
-          // updatedSavedImages[existedPostIndex] = actions.payload.data;
-
-          // state.savedImages.data[versionId] = updatedSavedImages;
           state.savedImages.data[versionId].splice(existedPostIndex, 1);
         }
       }
@@ -138,8 +134,6 @@ const modelSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(authActions.logout, (state, actions) => {
-      // console.log(state.model);
-      // console.log(state.curExampleImgsType);
       state.model = {};
       state.modelPreview = [];
       state.errorMessage = "";
@@ -148,23 +142,6 @@ const modelSlice = createSlice({
     });
   },
 });
-
-// export const switchNsfwMode = (nsfw) => {
-//   return async (dispatch, getState) => {
-//     dispatch(modelActions.setNsfwMode(nsfw));
-//     const uid = getState().auth.user.uid;
-//     const userRef = doc(firestore, "users", uid);
-//     await updateDoc(
-//       userRef,
-//       {
-//         nsfwMode: nsfw,
-//       },
-//       {
-//         merge: true,
-//       }
-//     );
-//   };
-// };
 
 export const updateModel = (modelId) => {
   return async (dispatch, getState) => {
@@ -245,11 +222,7 @@ export const setPreviewImg = (
   return async (__, getState) => {
     try {
       const uid = getState().auth.user.uid;
-      // const id = getState().model.model.id;
-      // console.log(url);
-      // console.log(isNsfw);
-      // console.log(location);
-      // console.log(locationId);
+
       if (!url || !location || !locationId) {
         throw new Error(ERROR_MESSAGE_DEFAULT);
       }
@@ -267,7 +240,7 @@ export const setPreviewImg = (
         dbCollectionName,
         locationId + ""
       );
-      // console.log(url);
+
       await setDoc(
         locationPrevRef,
         {
@@ -287,7 +260,6 @@ export const setTagSetPreviewImg = (versionId, tagSetData) => {
     const uid = getState().auth.user.uid;
     const id = getState().model.model.id;
     const model = getState().model.model;
-    // console.log(model);
 
     const urlField =
       versionId === "tsv-def"
@@ -333,8 +305,6 @@ export const setTagSetPreviewImg = (versionId, tagSetData) => {
 export const deleteImgPost = (postInfo, postData) => {
   return async (dispatch, getState) => {
     try {
-      // console.log(postInfo);
-      // console.log(postData);
       const { versionId, postId } = postInfo;
       const uid = getState().auth.user.uid;
       const id = getState().model.model.id;

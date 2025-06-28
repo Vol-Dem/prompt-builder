@@ -1,11 +1,10 @@
-import React, { forwardRef, useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import classes from "./Image.module.scss";
 import ImageSvg from "../../../assets/ImageSvg";
 import { transformSrcPreview } from "../../../utils/generalUtils";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM } from "../../../variables/constants";
 import { AnimatePresence } from "framer-motion";
 import ImageFullView from "../ImageFullView";
-import useIntersection from "../../../hooks/use-intersection";
 
 const Image = forwardRef(
   (
@@ -30,15 +29,10 @@ const Image = forwardRef(
     const [fullViewIsOpen, setFullViewIsOpen] = useState(false);
     const [imgIsLoading, setImgIsLoading] = useState(true);
     const [imgError, setImgError] = useState(false);
-    // const [imgIsLoaded, setiImgIsLoaded] = useState(false);
     const [imgSrc, setImgSrc] = useState("#");
     const imageRef = useRef();
-    // const intersecting = useIntersection(imageRef, true);
-    // const imageIsVisible = true;
 
     useEffect(() => {
-      // console.log(intersecting);
-      // if (!imgIsLoaded) setImgIsLoading(true);
       if (src) {
         const { previewSrc } = transformSrcPreview(src, imageWidth, "image");
 
@@ -52,12 +46,10 @@ const Image = forwardRef(
 
     const imgLoadHandler = () => {
       setImgIsLoading(false);
-      // setiImgIsLoaded(true);
       setImgError(false);
     };
 
     const imgErrorHandler = () => {
-      // console.log("ERRR");
       setImgIsLoading(false);
       setImgError(true);
     };
@@ -76,12 +68,6 @@ const Image = forwardRef(
       <img
         width={width}
         height={height}
-        // loading="lazy"
-        style={
-          {
-            // width: `auto` || null,
-          }
-        }
         ref={ref}
         src={imgSrc}
         alt={alt || `image-${id || ""}`}
@@ -104,7 +90,6 @@ const Image = forwardRef(
           ref={imageRef}
           id={id}
         >
-          {/* {type && <span className={classes.type}>{type}</span>} */}
           {preloader && (
             <div
               className={`${classes.preloader} ${

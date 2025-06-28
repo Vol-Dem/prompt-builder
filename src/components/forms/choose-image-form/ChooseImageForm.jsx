@@ -1,65 +1,26 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Buttton from "../../ui/Button";
-import Image from "../../ui/image/Image";
 import classes from "./ChooseImageForm.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../../ui/Spinner";
 import CheckSvg from "../../../assets/CheckSvg";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import ErrorMessage from "../../ui/ErrorMessage";
-import {
-  ERROR_MESSAGE_DEFAULT,
-  ERROR_MESSAGE_OFFLINE,
-  SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
-  SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
-  VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-  // SUBCATEGORIES_MAX_AMOUNT,
-  ANIMATIONS_FM_SLIDEOUT,
-  ANIMATIONS_FM_FADEOUT_EXIT,
-  ANIMATIONS_FM_SLIDEOUT_INITIAL,
-  ERROR_MESSAGE_INPUT_DEF,
-  ERROR_MESSAGE_NO_IMAGE_SELECTED,
-} from "../../../variables/constants";
-import { AnimatePresence, motion } from "framer-motion";
-import ComboSelect from "../../ui/ComboSelect";
-import Fieldset from "../../ui/Fieldset";
-import ButttonSecondary from "../../ui/ButtonSecondary";
-import ButtonTertiary from "../../ui/ButtonTertiary";
-import CrossSvg from "../../../assets/CrossSvg";
-import {
-  createCategoryId,
-  filterDuplicates,
-  handleErrors,
-} from "../../../utils/generalUtils";
-import { savePostToCollections } from "../../../store/images";
+import { ERROR_MESSAGE_OFFLINE } from "../../../variables/constants";
+import { handleErrors } from "../../../utils/generalUtils";
 import ImageLabel from "../../ui/forms/ImageLabel";
 import SuccessMessage from "../../ui/SuccessMessage";
 import { savePost } from "../../../store/upload";
-
-// const SUBCATEGORIES_MAX_AMOUNT = 8;
-// const subCatsDefData = {
-//   type: "text",
-//   id: "subcat-def",
-//   name: "sub",
-//   placeholder: "Subcategory",
-//   value: "",
-//   query: "",
-//   selected: { id: null, name: "" },
-//   isValid: true,
-//   errorMessage: "",
-// };
 
 const ChooseImageForm = ({
   postId,
   type,
   location,
   collectionInfo,
-  curCollectionSubcategories,
   images,
   modelId,
   versionId,
   activeImageIndex,
-  // existedImgsAmount,
   onSave,
   isDeleting,
   postData,
@@ -84,9 +45,6 @@ const ChooseImageForm = ({
 
   useEffect(() => {
     if (!images.length) return;
-    // console.log(images);
-    // console.log(savedImageIds);
-    // console.log("CHECK");
 
     const versionStatusInputData = images?.map((image, i) => {
       let checked;
@@ -100,7 +58,6 @@ const ChooseImageForm = ({
       }
       const curStatus = imagesInputs.find((input) => input.id === image.id);
       checked = curStatus ? curStatus.value : activeImageIndex === i;
-      // checked = activeImageIndex === i ? true : false;
 
       return {
         type: "checkbox",
@@ -130,7 +87,6 @@ const ChooseImageForm = ({
     uid,
     savedImages,
     versionId,
-    // imagesInputs,
   ]);
 
   const imageStatusChangeHandler = (e) => {
@@ -201,9 +157,7 @@ const ChooseImageForm = ({
   };
 
   const submitHandler = (saveAll) => {
-    // console.log("TEST");
     setSuccessMessage("");
-    // e.preventDefault();
     let imageIds;
 
     if (saveAll) {
@@ -220,29 +174,6 @@ const ChooseImageForm = ({
       collectionData = collectionInfo;
     }
 
-    // console.log(location, imageIds, collectionData);
-
-    // if (saveAll) {
-    //   onSave(location, null, collectionData, postData);
-    //   return;
-    // }
-
-    // return;
-    // const hasNewImages =
-    //   location === "collections"
-    //     ? !!imageIds?.length
-    //     : !!imageIds?.filter((id) => !savedImageIds.includes(id))?.length;
-
-    // if (!hasNewImages) {
-    //   setErrorMessage(ERROR_MESSAGE_NO_IMAGE_SELECTED);
-    //   return;
-    // }
-    // console.log(type);
-    // if (location === "collections" && type === "save") {
-    //   saveToColection(imageIds, collectionData);
-    // } else {
-    //   onSave(location, imageIds, collectionData, postData);
-    // }
     onSave(location, imageIds, collectionData, postData);
   };
 

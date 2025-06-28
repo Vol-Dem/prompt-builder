@@ -1,19 +1,11 @@
 import { useSelector } from "react-redux";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import usePageEnd from "../../../hooks/use-page-end";
-import Select from "../../ui/Select";
 import Spinner from "../../ui/Spinner";
-import CollectionPreview from "../collection-preview/CollectionPreview";
 import classes from "./CollectionList.module.scss";
 import { useEffect, useRef, useState } from "react";
 import ErrorMessage from "../../ui/ErrorMessage";
-import {
-  ANIMATIONS_FM_SLIDEIN,
-  ANIMATIONS_FM_SLIDEIN_INITIAL,
-  ERROR_MESSAGE_OFFLINE,
-} from "../../../variables/constants";
-import Buttton from "../../ui/Button";
-import { motion } from "framer-motion";
+import { ERROR_MESSAGE_OFFLINE } from "../../../variables/constants";
 import NotificationMessage from "../../ui/NotificationMessage";
 import PreviewCard from "../../previewCard/PreviewCard";
 import AddToPanelAnimContainer from "../../ui/AddToPanelAnimContainer";
@@ -63,29 +55,12 @@ const CollectionList = ({ sortBy }) => {
 
   return (
     <div className={classes["container"]}>
-      {/* {!!collectionPreviews?.data?.length && (
-        <motion.div
-          initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-          animate={ANIMATIONS_FM_SLIDEIN}
-          exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
-          className={`${classes["collections"]}`}
-        >
-          {collectionsHtml}
-        </motion.div>
-      )} */}
       {!!collectionPreviews?.data?.length && (
         <div className={`${classes["collections"]}`}>{collectionsHtml}</div>
       )}
       {!collectionPreviews?.data?.length && !isLoading && (
         <NotificationMessage>This category is empty</NotificationMessage>
       )}
-      {/* {collectionPreviews?.data?.length &&
-        !errorMessage &&
-        !isLoading &&
-        isOnline &&
-        (getAllModels || getSubcategoryModels) && (
-          <div className={classes.empty}>This category is empty</div>
-        )} */}
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
       <div ref={endPage}></div>

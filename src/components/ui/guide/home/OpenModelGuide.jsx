@@ -13,7 +13,6 @@ const OpenModelGuide = (props) => {
       {
         step: GUIDE_STEP_OPEN_MODEL,
         arrowPosition: 7,
-        // next: true,
         text: (
           <>
             <GuideActionMessage>Click on the title or image</GuideActionMessage>{" "}

@@ -10,10 +10,7 @@ import {
 } from "firebase/firestore";
 import {
   addDelayPromise,
-  createCategoryId,
-  createCollectionId,
   filterDuplicates,
-  parseModelIds,
   transformImageData,
   transformModelData,
 } from "./generalUtils";
@@ -68,7 +65,6 @@ export const getImagesInfo = async (images) => {
       images.map(async (item) => {
         const updatedImgData = { ...item };
         const newMeta = item?.meta && (await getModelInfo(item.meta));
-        // console.log(newMeta);
         if (newMeta) updatedImgData.meta = newMeta;
 
         if (item.meta?.resources) {
@@ -112,7 +108,6 @@ export const getImagesInfo = async (images) => {
 
 export const getImageInfo = async (imageResources, image) => {
   try {
-    // const updatedImgData = { ...image };
     let updatedImgResources = [];
 
     if (imageResources?.length) {
@@ -120,7 +115,6 @@ export const getImageInfo = async (imageResources, image) => {
         imageResources,
         addResourcesInfo
       );
-      // console.log(updatedRes);
       if (!updatedRes) {
         throw new Error("failed to update res");
       }
@@ -152,106 +146,17 @@ export const getImageInfo = async (imageResources, image) => {
         hashesData,
         addResourcesInfo
       );
-      // console.log(updatedHashRes);
       if (!updatedHashRes) {
         throw new Error("failed to update res");
       }
       updatedImgResources = [...updatedImgResources, ...updatedHashRes];
     }
-    // console.log(updatedImgData);
     return filterDuplicates(updatedImgResources, "modelVersionId");
   } catch (err) {
     // console.log(err);
     throw new Error(err);
   }
 };
-// export const getImageInfo = async (image) => {
-//   try {
-//     const updatedImgData = { ...image };
-
-//     if (image.meta?.resources) {
-//       const updatedRes = await makeBatchRequest(
-//         image.meta.resources,
-//         addResourcesInfo
-//       );
-//       // console.log(updatedRes);
-//       if (!updatedRes) {
-//         throw new Error("failed to update res");
-//       }
-//       updatedImgData.meta = {
-//         ...updatedImgData.meta,
-//         resources: updatedRes,
-//       };
-//     }
-//     if (image.meta?.civitaiResources) {
-//       const updatedCivRes = await makeBatchRequest(
-//         image.meta.civitaiResources,
-//         addResourcesInfo
-//       );
-//       // console.log(updatedCivRes);
-//       if (!updatedCivRes) {
-//         throw new Error("failed to update res");
-//       }
-//       updatedImgData.meta = {
-//         ...updatedImgData.meta,
-//         civitaiResources: updatedCivRes,
-//       };
-//     }
-//     if (image.meta?.additionalResources) {
-//       const updatedCivRes = await makeBatchRequest(
-//         image.meta.additionalResources,
-//         addResourcesInfo
-//       );
-//       // console.log(updatedCivRes);
-//       if (!updatedCivRes) {
-//         throw new Error("failed to update res");
-//       }
-//       updatedImgData.meta = {
-//         ...updatedImgData.meta,
-//         additionalResources: updatedCivRes,
-//       };
-//     }
-//     if (image.meta?.hashes) {
-//       const hashes = { ...image.meta?.hashes, vae: null };
-//       const hashesData = Object.values(hashes)
-//         .filter(Boolean)
-//         .flatMap((hash) => {
-//           const isInRes = image.meta?.resources?.find(
-//             (res) => res.hash === hash
-//           );
-//           const isInCivRes = image.meta?.civitaiResources?.find(
-//             (res) => res.hash === hash
-//           );
-//           const isInAddRes = image.meta?.additionalResources?.find(
-//             (res) => res.hash === hash
-//           );
-
-//           if (!isInRes && !isInCivRes && !isInAddRes) {
-//             return { hash };
-//           }
-//           return [];
-//         });
-
-//       const updatedCivRes = await makeBatchRequest(
-//         hashesData,
-//         addResourcesInfo
-//       );
-//       // console.log(updatedCivRes);
-//       if (!updatedCivRes) {
-//         throw new Error("failed to update res");
-//       }
-//       updatedImgData.meta = {
-//         ...updatedImgData.meta,
-//         hashResources: updatedCivRes,
-//       };
-//     }
-//     // console.log(updatedImgData);
-//     return await updatedImgData;
-//   } catch (err) {
-//     // console.log(err);
-//     throw new Error(err);
-//   }
-// };
 
 export const getModelInfo = async (resourcesData) => {
   try {
@@ -268,7 +173,6 @@ export const getModelInfo = async (resourcesData) => {
     );
     const data = await response.json();
 
-    // console.log(data);
     if (data?.error) {
       throw new Error(data.error);
     }
@@ -307,7 +211,6 @@ export const addResourcesInfo = async (resourcesData) => {
         return await response.json();
       })
     );
-    // console.log(modelsData);
 
     const updatedResources = resourcesData.map((resource, i) => {
       return {
@@ -338,7 +241,6 @@ export const getModelData = async (modelId, curModelVersionsData) => {
     if (!response.ok) {
       throw new Error(`Error status (${response.status})`);
     }
-    // console.log(responseData);
 
     let newVersions = responseData?.modelVersions;
 
@@ -392,7 +294,6 @@ export const saveVersionImages = async (versionsData) => {
         `https://civitai.com/api/v1/images?modelId=${version.modelId}&modelVersionId=${version.id}&username=${version.username}&nsfw=X`
       );
       const versionImages = await versionImagesRequest.json();
-      // console.log(versionImages);
       const updatedImages = version?.images?.map((image) => {
         const fullImgData =
           versionImages?.items?.find((verImg) => verImg.hash === image.hash) ||
@@ -413,8 +314,6 @@ export const saveVersionImages = async (versionsData) => {
         "defaultImages",
         version.id + ""
       );
-
-      // await addDelayPromise(delayTime);
 
       const nsfw = [...new Set(updatedImages.map((image) => image.nsfw))];
 
@@ -501,43 +400,23 @@ export const updateImagePostData = async (
   try {
     const { postId, modelId, versionId, postData, location, collectionData } =
       postInfo;
+
     if (!location) {
       throw new Error(ERROR_MESSAGE_INVALID_DATA);
     }
-    // console.log(postInfo);
-    // console.log(imagesData);
+
     const uid = auth.currentUser.uid;
     const locationRef = doc(firestore, "users", uid, location, modelId + "");
     const modelImagesRef = doc(firestore, "users", uid, "images", postId + "");
-    // const modelImagesRef = doc(
-    //   firestore,
-    //   "users",
-    //   uid,
-    //   "models",
-    //   modelId + "",
-    //   "images",
-    //   postId + ""
-    // );
-
-    // console.log(postId, modelId, versionId);
-
     const newImagesId = imagesData.map((image) => image.id);
-
     const oldImagesId = postData?.imagesId || [];
-
     const imagesId = postInfo?.delete
       ? newImagesId
       : [...new Set([...oldImagesId, ...newImagesId])];
-
     const newImgData = {
       postId: +postId,
-      // amount: imagesData.length,
       imagesId,
     };
-
-    // console.log(newImgData);
-
-    // await addDelayPromise(delayTime);
 
     const batch = writeBatch(firestore);
 
@@ -558,7 +437,6 @@ export const updateImagePostData = async (
     const newImagesData = imagesData.filter(
       (image) => !curImgIds?.includes(image.id)
     );
-    // console.log(newImagesData);
 
     if (newImagesData?.length || !curPostData?.id || location === "models") {
       batch.set(
@@ -567,20 +445,13 @@ export const updateImagePostData = async (
           id: +postId,
           versionsId: arrayUnion(versionId),
           items: arrayUnion(...imagesData),
-          // items: imagesData,
-          // versionId,
-          // default: false,
           createdAt: imagesData[0].createdAt,
-          // savedAt: new Date().toISOString(),
-          // nsfw: imagesData[0].nsfw,
-          // nsfwTypes: nsfw,
-          // nsfwLevel: imagesData[0]?.nsfwLevel || "",
           hasSfw: hasSfw,
         },
         { merge: true }
       );
     }
-    // if (postInfo?.delete) {
+
     if (location === "models") {
       if (postData) {
         batch.update(locationRef, {
@@ -601,15 +472,11 @@ export const updateImagePostData = async (
       }
     }
 
-    // if (location === "collections") {
-    // }
-
     // Commit the batch
     await batch.commit();
     return newImgData;
   } catch (err) {
     console.error(err.message);
-    // console.log(err);
     throw new Error(err);
   }
 };
@@ -619,7 +486,6 @@ export const getVersionImagesFromCiv = async (modelId, username, version) => {
     `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${username}&nsfw=X&limit=200&sort=Oldest`
   );
   const versionImages = await versionImagesRequest.json();
-  // console.log(versionImages);
   const updatedImages = version?.images?.flatMap((image) => {
     const fullImgData = versionImages?.items?.find(
       (verImg) => verImg.hash === image.hash
@@ -668,108 +534,8 @@ export const getCollectionData = async (collectionId) => {
 
   if (docSnap.exists()) {
     const data = docSnap.data();
-    // console.log(data);
     return data;
   } else {
     throw new Error("Failed to load model");
   }
 };
-
-// export const addNewCollectionCategories = async ({
-//   collectionData,
-//   categoryData,
-//   subcategoriesData,
-// }) => {
-//   try {
-//     const hasNewSubcategories = subcategoriesData?.find(
-//       (subcategory) => !subcategory?.id
-//     );
-
-//     //Check for new categories data
-//     if (!hasNewSubcategories && categoryData?.id && collectionData?.id) {
-//       return;
-//     }
-
-//     const uid = auth.currentUser.uid;
-//     const userRef = doc(firestore, "users", uid);
-
-//     const userDataDoc = await getDoc(userRef);
-
-//     const latestCategories = userDataDoc?.imageCategories || [];
-
-//     const curCategoryData = latestCategories.find(
-//       (category) => category.name === categoryData.name
-//     );
-
-//     const categoryId =
-//       categoryData?.id || createCategoryId(categoryData.name, latestCategories);
-//     const collectionId =
-//       collectionData?.id || createCollectionId(latestCategories);
-
-//     let newSubcategories = [];
-
-//     const subcategoryIds = subcategoriesData.flatMap((subcategory) => {
-//       if (!subcategory.name) {
-//         return [];
-//       }
-//       if (!subcategory.id) {
-//         const subData = {
-//           id: createCategoryId(
-//             subcategory.name,
-//             curCategoryData?.subcategories
-//           ),
-//           name: subcategory.name,
-//         };
-//         newSubcategories.push(subData);
-//         return subData.id;
-//       }
-//       return subcategory.id;
-//     });
-
-//     let updatedCategories;
-
-//     if (!latestCategories?.length || !categoryData.id) {
-//       console.log("NEW");
-//       updatedCategories = [
-//         ...latestCategories,
-//         {
-//           id: categoryId,
-//           name: categoryData.name,
-//           subcategories: newSubcategories,
-//           collectionNames: [{ id: collectionId, name: collectionData.name }],
-//         },
-//       ];
-//       // batch.set(
-//       //   userRef,
-//       //   {
-//       //     imageCategories: updatedCategories,
-//       //   },
-//       //   { merge: true }
-//       // );
-//     } else {
-//       console.log("UPD");
-//       updatedCategories = latestCategories.map((category) => {
-//         if (categoryData.id && categoryId === category.id) {
-//           const collectionNames = !collectionData.id
-//             ? [
-//                 ...category.collectionNames,
-//                 { id: collectionId, name: collectionData.name },
-//               ]
-//             : category.collectionNames;
-
-//           return {
-//             ...category,
-//             subcategories: [...category.subcategories, ...newSubcategories],
-//             collectionNames,
-//           };
-//         }
-//         return category;
-//       });
-//     }
-
-//     console.log(updatedCategories);
-//     return updatedCategories;
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };

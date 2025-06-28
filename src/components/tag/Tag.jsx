@@ -1,9 +1,8 @@
-import React, { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { promptActions } from "../../store/prompt";
 import classes from "./Tag.module.scss";
 import { addModelToPanel } from "../../store/usedModels";
-import { motion } from "framer-motion";
 
 const Tag = forwardRef((props, ref) => {
   const [isInPrompt, setIsInPrompt] = useState(false);
@@ -51,16 +50,6 @@ const Tag = forwardRef((props, ref) => {
 
   return (
     <div
-      // initial={{ opacity: 0, scale: 0.9 }}
-      // variants={{
-      //   hidden: { opacity: 0.4, scale: 0.5 },
-      //   visible: {
-      //     opacity: 1,
-      //     scale: 1,
-      //     transition: { type: "spring" },
-      //   },
-      // }}
-      // animate="visible"
       ref={ref}
       onClick={addTagHandler}
       data-type={props?.promptType}

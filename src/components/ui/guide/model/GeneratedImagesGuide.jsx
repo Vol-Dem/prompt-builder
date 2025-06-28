@@ -13,7 +13,7 @@ import DotsSvg from "../../../../assets/DotsSvg";
 
 const guideType = "model";
 
-const GeneratedImagesGuide = (props) => {
+const GeneratedImagesGuide = () => {
   const guideSteps = useMemo(() => {
     const downloadImage = (
       <FolderSvg className={`${classes["svg"]} ${classes["svg--medium"]}`} />

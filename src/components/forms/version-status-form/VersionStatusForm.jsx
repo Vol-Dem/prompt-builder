@@ -14,7 +14,6 @@ import {
   ERROR_MESSAGE_OFFLINE,
   SUCCESS_MESSAGE_UPLOADED,
 } from "../../../variables/constants";
-// import { useOnlineStatus } from "../../../hooks/use-online-status";
 import Spinner from "../../ui/Spinner";
 
 const firestore = getFirestore(firebaseApp);

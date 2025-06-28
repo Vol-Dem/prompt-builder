@@ -25,8 +25,6 @@ const ExtendedInput = (props) => {
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [searchInput, setSearchInput] = useState("");
-  // const [searchResultIsOpen, setSearchResultIsOpen] = useState(false);
-  // const [searchResult, setSearchResult] = useState({});
   const [categoriesSearchData, setCategoriesSearchData] = useState([]);
   const [subcategoriesSearchResult, setSubcategoriesSearchResult] = useState(
     []
@@ -73,7 +71,6 @@ const ExtendedInput = (props) => {
 
   useEffect(() => {
     subcategoriesSearch(searchInput);
-    // console.log(subcategoriesSearchResult);
   }, [searchInput, subcategoriesSearch]);
 
   useEffect(() => {
@@ -123,7 +120,6 @@ const ExtendedInput = (props) => {
           } else {
             onChange(e);
           }
-          // validateInput(e.target.value);
         }}
         onClick={onClick}
         onFocus={onFocus}

@@ -1,6 +1,5 @@
 import {
   ChevronUpIcon,
-  DocumentArrowDownIcon,
   DocumentDuplicateIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
@@ -13,7 +12,6 @@ import H2 from "../ui/text/H2";
 import Text from "../ui/text/Text";
 import TextImageBlock from "../ui/text/TextImageBlock";
 import TextContentBlock from "../ui/text/TextContentBlock";
-import TextButtonCreate from "../ui/text/text-buttons/TextButtonCreate";
 import TextButtonTertiary from "../ui/text/text-buttons/TextButtonTertiary";
 import ImageComparisonSlider from "../ImageComparisonSlider/ImageComparisonSlider";
 import TextButtonAll from "../ui/text/text-buttons/TextButtonAll";
@@ -175,64 +173,6 @@ const AboutWorkingWithPrompts = () => {
           Text mode allows you to enter the prompt manually. When switching from
           text mode to tag mode, the entered text is also converted into tags.
         </Text>
-
-        {/* <Text>
-          <TextButtonTertiary>
-            <TrashIcon /> all
-          </TextButtonTertiary>{" "}
-          <TextButtonTertiary>
-            <TrashIcon /> positive
-          </TextButtonTertiary>{" "}
-          <TextButtonTertiary>
-            <TrashIcon /> negative
-          </TextButtonTertiary>{" "}
-          — You can clear the prompt fields — either the positive, the negative,
-          or both at once.
-        </Text> */}
-        {/* <H2>Tag system</H2> */}
-        {/* <Text>
-          The tag system allows you to{" "}
-          <TextHighlight>add, edit and remove</TextHighlight> trigger words in
-          the prompt <TextHighlight>in one click</TextHighlight>, easily compare
-          your prompt with the prompt of the generated reference image,
-          <TextHighlight>
-            {" "}
-            track which trigger words are already in the prompt
-          </TextHighlight>{" "}
-          and which need to be added.
-        </Text>
-        <H3>Add and track tags</H3>
-        <div>
-          <Text>
-            {" "}
-            <TextHighlight>Paste your prompt</TextHighlight> in Text Mode and
-            then <TextHighlight>switch to Tag Mode</TextHighlight> for easier
-            editing.{" "}
-          </Text>
-          <ImageComparisonSlider
-            className={classes.comparison}
-            srcLeft={require("../../assets/guide/prompt-text.jpg")}
-            srcRight={require("../../assets/guide/prompt-tags.jpg")}
-          />
-        </div>
-        <div>
-          <p>
-            Click on a tag in the prompt section of a generated image to{" "}
-            <TextHighlight> instantly add that trigger word</TextHighlight> to
-            your prompt. <TextHighlight>Tags already included</TextHighlight> in
-            your prompt are <TextHighlight> highlighted</TextHighlight>, so you
-            can <TextHighlight>easily keep track</TextHighlight> of what’s been
-            added
-          </p>
-          <TextImageBlock>
-            <Image
-              width={1565}
-              height={574}
-              className={classes["img"]}
-              src={require("../../assets/guide/tracking.jpg")}
-            />
-          </TextImageBlock>
-        </div> */}
         <H3>Duplicates</H3>
         <div>
           <p>
@@ -308,28 +248,6 @@ const AboutWorkingWithPrompts = () => {
             srcSet={require("../../assets/about/8-presets-1.webp")}
             type="image/webp"
           />
-          {/* <Image
-            loading="lazy"
-            width={1909}
-            height={918}
-            fullView={true}
-            className={classes["img"]}
-            src={require("../../assets/about/8-presets-2.jpg")}
-            alt="about-image"
-            srcSet={require("../../assets/about/8-presets-2.webp")}
-            type="image/webp"
-          />
-          <Image
-            loading="lazy"
-            width={1909}
-            height={918}
-            fullView={true}
-            className={classes["img"]}
-            src={require("../../assets/about/8-presets-3.jpg")}
-            alt="about-image"
-            srcSet={require("../../assets/about/8-presets-3.webp")}
-            type="image/webp"
-          /> */}
         </TextImageBlock>
         <Text>
           <Text>

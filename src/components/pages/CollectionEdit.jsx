@@ -9,10 +9,8 @@ import {
   imagesActions,
 } from "../../store/images";
 import Spinner from "../ui/Spinner";
-import Buttton from "../ui/Button";
 import ButtonDelete from "../ui/buttons/ButtonDelete";
 import { MESSAGE_DELETE_COLLECTION } from "../../variables/constants";
-import { handleErrors } from "../../utils/generalUtils";
 import ErrorMessage from "../ui/ErrorMessage";
 
 const CollectionEdit = () => {
@@ -23,7 +21,6 @@ const CollectionEdit = () => {
   const isAuth = useSelector((state) => state.auth.user.uid);
   const collectionData = useSelector((state) => state.images.collectionData);
   const categoriesData = useSelector((state) => state.images.categories);
-  // const isLoading = useSelector((state) => state.images.collectionIsLoading);
   const { collectionId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
