@@ -34,7 +34,6 @@ const TagSets = ({ customData, defaultData }) => {
   const tagSetItemRef = useRef();
   const tagSetListRef = useRef();
   const dispatch = useDispatch();
-  const guideTimeoutRef = useRef(null);
 
   useEffect(() => {
     if (guideActive && guideStep === GUIDE_STEP_MODEL_TAGSET) {

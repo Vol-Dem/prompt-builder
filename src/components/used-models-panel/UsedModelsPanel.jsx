@@ -22,6 +22,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { guideActions } from "../../store/guide";
 import { Bars2Icon, Bars4Icon, TrashIcon } from "@heroicons/react/24/outline";
 import SaveToCollectionForm from "../forms/save-to-collection-form/SaveToCollectionForm";
+import { DEV_GUIDE_TEST } from "../../variables/constants";
 
 const UsedModelsPanel = memo(() => {
   const [cursorInitialX, setCursorInitialX] = useState(null);
@@ -109,6 +110,7 @@ const UsedModelsPanel = memo(() => {
     }
   };
 
+  //guide test
   const nextStepHandler = () => {
     dispatch(guideActions.guideNextStep({ type: "model" }));
   };
@@ -116,6 +118,7 @@ const UsedModelsPanel = memo(() => {
   const prevStepHandler = () => {
     dispatch(guideActions.guidePrevStep({ type: "model" }));
   };
+  //////////////
 
   const resourceTypeHandler = (e) => {
     const type = e.target.dataset.value;
@@ -160,6 +163,12 @@ const UsedModelsPanel = memo(() => {
           }`}
         >
           <div className={classes["options"]}>
+            {DEV_GUIDE_TEST && (
+              <div>
+                <button onClick={prevStepHandler}>prev</button>
+                <button onClick={nextStepHandler}>next</button>
+              </div>
+            )}
             <div className={classes["options__btns"]}>
               {formIsOpen && (
                 <div className={classes["options__type"]}>

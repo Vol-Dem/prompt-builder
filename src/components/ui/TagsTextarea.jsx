@@ -81,9 +81,9 @@ const TagsTextarea = ({
     const tagData = targetTagContainer.dataset.item;
     const {
       id: dropTargetId,
-      tag: dropTargetTag,
-      position: dropTargetPosition,
-      type: dropTargetType,
+      // tag: dropTargetTag,
+      // position: dropTargetPosition,
+      // type: dropTargetType,
     } = JSON.parse(targetTagContainer.dataset.item);
     setDraggedItemId(+dropTargetId);
     e.dataTransfer.setData("text/plain", tagData);
@@ -107,14 +107,9 @@ const TagsTextarea = ({
   const dragOverHandler = (e) => {
     e.preventDefault();
     const targetTagContainer = e.target.closest(`.${classes["tag-container"]}`);
-    const targetTag = e.target.closest(`.${classes["tag"]}`);
     if (!targetTagContainer) return;
     if (+targetTagContainer?.dataset?.id === draggedItemId) return;
 
-    const targetTagWidth = targetTag?.offsetWidth;
-    const targetTagLeft = Math.round(
-      targetTagContainer.getBoundingClientRect().left
-    );
     const targetContainerWidth = targetTagContainer.offsetWidth;
     const targetContainerLeft = Math.round(
       targetTagContainer.getBoundingClientRect().left
@@ -140,11 +135,6 @@ const TagsTextarea = ({
   };
 
   const dragLeaveHandler = (e) => {
-    const targetTagContainer = e.target.closest(`.${classes["tag-container"]}`);
-    const curTargetData = curPrompt.find(
-      (tagItem) => +tagItem?.id === +targetTagContainer?.dataset?.id
-    );
-
     setCurrentPrompt((prevState) => {
       return prevState.map((tagItem) => {
         return {
@@ -185,8 +175,8 @@ const TagsTextarea = ({
 
     const {
       id: dropTargetId,
-      tag: dropTargetTag,
-      position: dropTargetPosition,
+      // tag: dropTargetTag,
+      // position: dropTargetPosition,
       type: dropTargetType,
     } = JSON.parse(targetTagContainer.dataset.item);
 

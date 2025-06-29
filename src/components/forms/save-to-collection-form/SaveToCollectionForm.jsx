@@ -4,7 +4,6 @@ import ChooseImageForm from "../choose-image-form/ChooseImageForm";
 import classes from "./SaveToCollectionForm.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../../ui/Spinner";
-import { useOnlineStatus } from "../../../hooks/use-online-status";
 import ErrorMessage from "../../ui/ErrorMessage";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
@@ -57,11 +56,7 @@ const SaveToCollectionForm = ({
 }) => {
   const [chooseImageIsOpen, setChooseImageIsOpen] = useState(false);
   const [collectionInfoIsLoading, setCollectionInfoIsLoading] = useState(false);
-  const [categoriesIsUpdating, setCategoriesIsUpdating] = useState(false);
   const [collectionInfo, setCollectionInfo] = useState({});
-  const [curCollectionSubcategories, setCurCollectionSubcategories] = useState(
-    []
-  );
   const [savedPostData, setSavedPostData] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -82,7 +77,6 @@ const SaveToCollectionForm = ({
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   const categories = useSelector((state) => state.images.categories);
-  const isOnline = useOnlineStatus();
   const dispatch = useDispatch();
 
   const mainCategoryOptions = useMemo(() => {
@@ -265,9 +259,6 @@ const SaveToCollectionForm = ({
           (post) => post.postId === postId
         );
 
-        const curSubcategories = categories.find(
-          (category) => category.id === mainCategorySelected.id
-        ).subcategories;
         curCollectionSabcategories = collectionData.subcategories;
       } else {
         curCollectionSabcategories = [];
@@ -390,7 +381,7 @@ const SaveToCollectionForm = ({
             )}
           </div>
           <Buttton type="submit" className={classes.submit}>
-            {collectionInfoIsLoading || categoriesIsUpdating ? (
+            {collectionInfoIsLoading ? (
               <Spinner size="small" />
             ) : images?.length ? (
               "Choose images"
@@ -406,7 +397,6 @@ const SaveToCollectionForm = ({
           type={type}
           location={location}
           collectionInfo={collectionInfo}
-          curCollectionSubcategories={curCollectionSubcategories}
           modelId={modelId}
           postData={savedPostData}
           savedImageIds={savedPostData.imageIds}

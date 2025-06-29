@@ -20,7 +20,6 @@ const CollectionEdit = () => {
   const [deleteErrorMessage, setDeleteErrorMessage] = useState("");
   const isAuth = useSelector((state) => state.auth.user.uid);
   const collectionData = useSelector((state) => state.images.collectionData);
-  const categoriesData = useSelector((state) => state.images.categories);
   const { collectionId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();

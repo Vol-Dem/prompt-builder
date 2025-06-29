@@ -1,7 +1,7 @@
 import { useState } from "react";
 import classes from "./ModelTags.module.scss";
 import TagList from "../../tag-list/TagList";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import ActivationTag from "../../activation-tag/ActivationTag";
 import Modal from "../../ui/Modal";
 import TagsForm from "../../forms/tags-form/TagsForm";
@@ -17,8 +17,6 @@ const ModelTags = ({ customData, modelPreview }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
-  const guideStep = useSelector((state) => state.guide.model.step);
-  const dispatch = useDispatch();
 
   const openEditHandler = () => {
     setModalIsOpen(true);

@@ -18,11 +18,6 @@ import {
 import { motion } from "framer-motion";
 import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 
-const promptTypes = [
-  { name: "Positive", value: "positive" },
-  { name: "Negative", value: "negative" },
-];
-
 const PresetForm = ({ type, id, name, words, onClose }) => {
   const [promptType, setPromptType] = useState(type || "positive");
   const [presetName, setPresetName] = useState({
@@ -113,13 +108,6 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
       setErrorMessage(handleErrors(err));
     }
   };
-
-  let typeSelectOption = promptTypes.map((version) => {
-    return {
-      name: version.name,
-      value: version.value,
-    };
-  });
 
   return (
     <motion.form

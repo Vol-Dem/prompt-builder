@@ -132,7 +132,7 @@ export const uploadPanelStateFromStorage = () => {
     const storageData = uploadStorage(`${uid}-side`);
     const storageImgData = uploadStorage(`${uid}-side-img`);
     const storagePanelState = uploadStorage(`${uid}-side-state`);
-    const storageViewState = uploadStorage(`${uid}-side-view`);
+    // const storageViewState = uploadStorage(`${uid}-side-view`);
 
     if (storageData) dispatch(usedModelsActions.addModelsToPanel(storageData));
     if (storageImgData)

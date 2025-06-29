@@ -58,7 +58,6 @@ const Model = ({ title }) => {
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
-  const sfwValue = useSelector((state) => state.general.sfwValue);
   const versionsListRef = useRef(null);
   const versionsItemRef = useRef(null);
   let { state } = useLocation();

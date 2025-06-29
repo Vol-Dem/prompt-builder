@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
 import Buttton from "../../ui/Button";
 import classes from "./ChooseImageForm.module.scss";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Spinner from "../../ui/Spinner";
 import CheckSvg from "../../../assets/CheckSvg";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { ERROR_MESSAGE_OFFLINE } from "../../../variables/constants";
-import { handleErrors } from "../../../utils/generalUtils";
 import ImageLabel from "../../ui/forms/ImageLabel";
 import SuccessMessage from "../../ui/SuccessMessage";
-import { savePost } from "../../../store/upload";
 
 const ChooseImageForm = ({
-  postId,
   type,
   location,
   collectionInfo,
@@ -26,22 +23,14 @@ const ChooseImageForm = ({
   postData,
   savedImageIds,
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [imagesInputs, setImagesInputs] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
   const uid = useSelector((state) => state.auth.user.uid);
   const selectedAmount = imagesInputs.filter(
     (input) => input?.value && !input?.saved
   )?.length;
-  // const model = useSelector((state) => state.model.model);
   const savedImages = useSelector((state) => state.model.savedImages);
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
-  const categories = useSelector((state) => state.images.categories);
-  // const subcategories = useSelector((state) => state.images.subcategories);
   const isOnline = useOnlineStatus();
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!images.length) return;
@@ -124,38 +113,6 @@ const ChooseImageForm = ({
     );
   });
 
-  const saveToColection = async (imageIds, collectionData) => {
-    try {
-      setIsSaving(true);
-      const imagesForSaving = imageIds?.length
-        ? images.filter((image) => imageIds.includes(image?.id))
-        : images;
-
-      const postInfo = {
-        postId,
-        modelId: null,
-        location,
-        collectionData,
-        modelName: null,
-        versionId: null,
-        nsfwMode,
-        postData: postData,
-        imgUrl: null,
-        ids: imageIds || [],
-        existedAmount: null,
-        images: imagesForSaving,
-      };
-
-      await dispatch(savePost(postInfo));
-      setSuccessMessage("Saved");
-    } catch (err) {
-      console.log(err);
-      setErrorMessage(handleErrors(err));
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   const submitHandler = (saveAll) => {
     setSuccessMessage("");
     let imageIds;
@@ -179,19 +136,9 @@ const ChooseImageForm = ({
 
   return (
     <form className={classes["container"]}>
-      {!isLoading && isOnline && (
-        <ul className={classes["images-list"]}>{imagesListHtml}</ul>
-      )}
-      {isLoading && (
-        <div className={classes["spiner-container"]}>
-          <Spinner size="medium" />
-        </div>
-      )}
-      {!!errorMessage && isOnline && (
-        <ErrorMessage>{errorMessage}</ErrorMessage>
-      )}
+      {isOnline && <ul className={classes["images-list"]}>{imagesListHtml}</ul>}
       {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
-      {!successMessage && !isSaving && (
+      {!successMessage && (
         <div className={classes["btns"]}>
           <Buttton
             className={`${type === "del" ? classes["btn-del"] : ""}`}
@@ -204,26 +151,16 @@ const ChooseImageForm = ({
           <Buttton
             className={`${type === "del" ? classes["btn-del"] : ""}`}
             type="button"
-            disabled={isLoading || !!isDeleting || !isOnline || !selectedAmount}
+            disabled={!!isDeleting || !isOnline || !selectedAmount}
             onClick={submitHandler.bind(null, false)}
           >
             {type === "save" ? `Save (${selectedAmount}) selected` : ""}
-            {type === "del" && !isLoading && !isDeleting
-              ? "Delete selected"
-              : ""}
+            {type === "del" && !isDeleting ? "Delete selected" : ""}
             {!!isDeleting && <Spinner size="small" />}
           </Buttton>
         </div>
       )}
       {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
-      {isSaving && (
-        <div className={classes["uploading-message"]}>
-          Uploading...
-          <div className={classes.spiner}>
-            <Spinner size="small" />
-          </div>
-        </div>
-      )}
     </form>
   );
 };

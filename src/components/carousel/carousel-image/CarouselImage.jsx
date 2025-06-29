@@ -46,7 +46,6 @@ const CarouselImage = ({
   const [videoSrc, setVideoSrc] = useState({ mp4: "#", webm: "#" });
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [tagSetMenuIsOpen, settagSetMenuIsOpen] = useState(false);
-  const [curTagSetVersionId, setCurTagSetVersionId] = useState("tsv-def");
   const dispatch = useDispatch();
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
@@ -93,12 +92,6 @@ const CarouselImage = ({
   };
 
   const openMenuHandler = () => {
-    if (
-      curVersion?.id &&
-      !!model?.modelVersionsCustomData[curVersion.id]?.tagSetsData?.length
-    ) {
-      setCurTagSetVersionId(`${curVersion.id}`);
-    }
     setMenuIsOpen((prevState) => !prevState);
   };
 

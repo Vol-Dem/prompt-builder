@@ -49,8 +49,6 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
 
   const uid = useSelector((state) => state.auth.user.uid);
   const model = useSelector((state) => state.model.model);
-  const guideActive = useSelector((state) => state.guide.model.active);
-  const guideStep = useSelector((state) => state.guide.model.step);
   const dispatch = useDispatch();
 
   useEffect(() => {

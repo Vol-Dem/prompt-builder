@@ -48,7 +48,6 @@ import {
 import ButtonSquare from "../ui/ButtonSquare";
 
 const firestore = getFirestore(firebaseApp);
-const civitDefEmb = [250708, 250712, 106916];
 const timeoutDelay = 1000;
 const modelToSaveDefState = {
   modelId: null,
@@ -62,7 +61,6 @@ const ImageCard = ({ activeImgNum }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [imageCivResources, setImageCivResources] = useState([]);
   const [imageResources, setImageResources] = useState([]);
   const [modelInfoCiv, setModelInfoCiv] = useState({});
   const [modelInfo, setModelInfo] = useState({});
@@ -215,7 +213,7 @@ const ImageCard = ({ activeImgNum }) => {
               where("hashes", "array-contains", modelHash)
             );
           } else if (curImageData?.meta?.Model?.includes("urn:air")) {
-            const [modelId, versionId] = parseModelIds(curImageData.meta.Model);
+            const [modelId] = parseModelIds(curImageData.meta.Model);
             modelQ = query(
               collection(firestore, "users", uid, `preview`),
               where("id", "==", modelId)

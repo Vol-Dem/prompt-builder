@@ -25,11 +25,7 @@ const ImageCollection = ({ title }) => {
   const collectionPreviews = useSelector(
     (state) => state.images.collectionPreviews
   );
-  const activeCategory = useSelector((state) => state.images.activeCategory);
   const categoriesData = useSelector((state) => state.images.categories);
-  const collectionImages = useSelector(
-    (state) => state.images.collectionImages
-  );
 
   useEffect(() => {
     const collPrev = collectionPreviews?.data?.find(

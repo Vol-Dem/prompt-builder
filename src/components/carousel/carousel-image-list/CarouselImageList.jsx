@@ -5,8 +5,6 @@ import { modelActions } from "../../../store/model";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL } from "../../../variables/constants";
 import ButtonAdd from "../../ui/ButtonSquareAdd";
 
-const IMAGE_HEIGHT = 250;
-
 const CarouselImageList = ({ images }) => {
   const activeCarouselData = useSelector(
     (state) => state.model.activeCarouselData

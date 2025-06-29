@@ -26,10 +26,8 @@ const ActiveCarousel = () => {
   );
   const model = useSelector((state) => state.model.model);
   const savedImagesData = useSelector((state) => state.model.savedImages);
-  const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
   const guideStep = useSelector((state) => state.guide.model.step);
   const guideIsActive = useSelector((state) => state.guide.active);
-  const headerHeight = useSelector((state) => state.prompt.headerHeight);
   const dispatch = useDispatch();
 
   useEffect(() => {

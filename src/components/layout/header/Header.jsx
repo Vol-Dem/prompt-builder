@@ -9,12 +9,6 @@ const Header = ({ children }) => {
   const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
   const sidePanelWidth = useSelector((state) => state.used.sidePanelWidth);
   const isFixed = useSelector((state) => state.general.headerIsFixed);
-  const positivePromptHeight = useSelector(
-    (state) => state.prompt.positivePromptHeight
-  );
-  const negativePromptHeight = useSelector(
-    (state) => state.prompt.negativePromptHeight
-  );
   const activeCarouselData = useSelector(
     (state) => state.model.activeCarouselData
   );

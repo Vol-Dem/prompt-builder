@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   filterDuplicates,
-  handleErrors,
   throwCustomError,
   transformImageData,
 } from "../utils/generalUtils";

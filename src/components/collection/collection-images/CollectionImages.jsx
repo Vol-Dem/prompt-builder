@@ -2,8 +2,6 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import classes from "./CollectionImages.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import Carousel from "../../carousel/Carousel";
-import { getFirestore } from "firebase/firestore";
-import firebaseApp from "../../../firebase-config";
 import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
 
@@ -18,8 +16,6 @@ import FolderSvg from "../../../assets/FolderSvg";
 import { motion } from "framer-motion";
 import useIntersection from "../../../hooks/use-intersection";
 import { getColectionImagesByIds, imagesActions } from "../../../store/images";
-
-const firestore = getFirestore(firebaseApp);
 
 const CollectionImages = memo(() => {
   const [examplesIsLoading, setExamplesIsLoading] = useState(false);

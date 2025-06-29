@@ -19,7 +19,6 @@ const UsedCard = memo(({ previewData, fullView, layoutId, onClick }) => {
   const [tagsIsOpen, setTagsIsOpen] = useState(false);
   const [tagsHeight, setTagsHeight] = useState(null);
   const [taglistHeight, setTaglistHeight] = useState(null);
-  const [cardLayuotId, setcardLayuotId] = useState(previewData.id);
   const [cardIsHidden, setCardIsHidden] = useState(false);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const fullCardView = useSelector((state) => state.used.fullCardView);

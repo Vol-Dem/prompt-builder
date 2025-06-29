@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import classes from "./Images.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { modelActions } from "../../store/model";
 import { getCollectionPreviews, imagesActions } from "../../store/images";
 import usePageEnd from "../../hooks/use-page-end";
 import { useOnlineStatus } from "../../hooks/use-online-status";
@@ -23,7 +22,6 @@ const Images = () => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [isSubcategory, setIsSubcategory] = useState(false);
-  const isAuth = useSelector((state) => state.auth.user.uid);
   const categories = useSelector((state) => state.images.categories);
   const collectionPreviews = useSelector(
     (state) => state.images.collectionPreviews

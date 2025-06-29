@@ -5,7 +5,6 @@ import classes from "./CollectionEditForm.module.scss";
 import ButttonSecondary from "../../ui/ButtonSecondary";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useOnlineStatus } from "../../../hooks/use-online-status";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
   ANIMATIONS_FM_SLIDEOUT,
@@ -44,20 +43,14 @@ const subCatsDefData = {
 };
 
 const CollectionEditForm = ({ collectionData }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [saveToModel, setSaveToModel] = useState(true);
-  const [saveToImages, setSaveToImages] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [savedImagesIds, setSavedImagesIds] = useState([]);
-  const [imagesInputs, setImagesInputs] = useState([]);
   const [mainCategoryQuery, setMainCategoryQuery] = useState("");
   const [mainCategorySelected, setMainCategorySelected] = useState({
     name: "",
     id: "",
     isValid: false,
   });
-  const [collectionNameQuery, setCollectionNameQuery] = useState("");
   const [collectionNameInput, setCollectionNameInput] = useState({
     value: "",
     isValid: true,
@@ -70,16 +63,10 @@ const CollectionEditForm = ({ collectionData }) => {
   });
   const [nsfwInput, setNsfwInput] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const uid = useSelector((state) => state.auth.user.uid);
-  const selectedAmount = imagesInputs.filter((input) => input?.value)?.length;
-  // const model = useSelector((state) => state.model.model);
-  const savedImages = useSelector((state) => state.model.savedImages);
   const categories = useSelector((state) => state.images.categories);
   const collectionDataIsSaving = useSelector(
     (state) => state.images.collectionDataIsSaving
   );
-
-  const isOnline = useOnlineStatus();
   const dispatch = useDispatch();
 
   const mainCategoryOptions = useMemo(() => {

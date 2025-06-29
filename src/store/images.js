@@ -36,7 +36,6 @@ import { authActions } from "./auth";
 const firestore = getFirestore(firebaseApp);
 
 let lastVisiblePreview = "";
-let lastVisiblePost = "";
 
 const amountPerPage = 12;
 
@@ -676,10 +675,6 @@ export const editCollectionData = ({
             const prevCollectionNames = category.collectionNames.filter(
               (prevCollectionName) => prevCollectionName.id !== collectionId
             );
-            const prevSubcategories =
-              prevCollectionNames.find(
-                (prevCollectionName) => prevCollectionName.id === collectionId
-              )?.subcategories || [];
 
             collectionNames = [
               ...prevCollectionNames,

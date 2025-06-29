@@ -23,7 +23,6 @@ import {
 
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
-const delayTime = 4000;
 
 export const makeBatchRequest = async (
   data,
@@ -398,8 +397,7 @@ export const updateImagePostData = async (
   replace = false
 ) => {
   try {
-    const { postId, modelId, versionId, postData, location, collectionData } =
-      postInfo;
+    const { postId, modelId, versionId, postData, location } = postInfo;
 
     if (!location) {
       throw new Error(ERROR_MESSAGE_INVALID_DATA);

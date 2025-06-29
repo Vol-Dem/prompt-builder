@@ -1,3 +1,4 @@
+export const DEV_GUIDE_TEST = false;
 export const MODEL_TYPES = [
   {
     name: "LoRa/LoCon/DoRa",

@@ -370,7 +370,7 @@ export const addElementToIndex = ({
 
 export const markDuplicateTags = (tagsArr) => {
   const duplicates = [];
-  let duplicatesAmount = 0;
+
   return tagsArr.map((tag, i, tags) => {
     const duplicateIndex = duplicates.findIndex(
       (duplicate) => duplicate.tag === tag.tag

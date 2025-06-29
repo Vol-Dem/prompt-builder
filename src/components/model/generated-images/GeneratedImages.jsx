@@ -23,7 +23,8 @@ const GeneratedImages = memo(({ customData }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [curExampleImgsType, setCurExampleImgsType] = useState("all");
   const [curImagesModelVersionId, setCurImagesModelVersionId] = useState(null);
-  const [imagesSortValue, setImagesSortValue] = useState("Newest");
+  // const [imagesSortValue, setImagesSortValue] = useState("Newest");
+  const imagesSortValue = "Newest";
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
   const [isShowAll, setIsShowAll] = useState(false);
   const [savedImages, setSavedImages] = useState({});

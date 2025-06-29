@@ -201,10 +201,6 @@ const ModelsList = () => {
     };
   });
 
-  const changeViewHandler = (e) => {
-    dispatch(tabActions.setPreviewFullView(true));
-  };
-
   return (
     <div className={classes["container"]}>
       {!!modelsData?.previews?.length && (
