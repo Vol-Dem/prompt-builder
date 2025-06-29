@@ -143,8 +143,6 @@ const CarouselContent = ({
 
   const openDeleteListHandler = useCallback(
     (e) => {
-      // setImageFormType("del");
-      // console.log(location);
       setImageFormType({ type: "del", location: location || null });
       setImagesListIsOpen(true);
     },
@@ -188,9 +186,10 @@ const CarouselContent = ({
       modelId,
       versionId,
       existedImgsAmount,
-      imgIsOpen,
       visibleAmount,
       saved,
+      location,
+      locationId,
     ]
   );
 

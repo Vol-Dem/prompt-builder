@@ -25,7 +25,6 @@ const CollectionImages = memo(() => {
   )?.posts?.toSorted((a, b) => b.createdAt - a.createdAt);
   const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
-  const uid = useSelector((state) => state.auth.user.uid);
   const collectionData = useSelector((state) => state.images.collectionData);
   const collectionImages = useSelector(
     (state) => state.images.collectionImages
@@ -51,12 +50,12 @@ const CollectionImages = memo(() => {
   const getImagesFromFirestore = useCallback(
     async (posts) => {
       try {
-        console.log("GET IMAGES");
-
         if (isLastPage) return;
         setExamplesIsLoading(true);
 
-        await dispatch(getColectionImagesByIds(posts, collectionData?.id));
+        if (nsfwMode || nsfwLevel) {
+          await dispatch(getColectionImagesByIds(posts, collectionData?.id));
+        }
       } catch (err) {
         setErrorMessage(err);
       } finally {
@@ -65,10 +64,8 @@ const CollectionImages = memo(() => {
     },
     [
       isLastPage,
-      savedImagesData,
       nsfwMode,
       nsfwLevel,
-      uid,
       setErrorMessage,
       dispatch,
       collectionData?.id,

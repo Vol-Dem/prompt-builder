@@ -46,7 +46,6 @@ const SavedImages = memo(
     const nsfwMode = useSelector((state) => state.general.nsfwMode);
     const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
     const uid = useSelector((state) => state.auth.user.uid);
-    const abortControlerRef = useRef(null);
     const endPageRef = useRef(null);
     const isIntersecting = useIntersection(
       endPageRef,
@@ -54,7 +53,6 @@ const SavedImages = memo(
       SETTINGS_LOAD_MORE_MARGIN
     );
     const isOnline = useOnlineStatus();
-    const timeoutRef = useRef(null);
 
     const resetExamples = () => {
       setExamplesImgData([]);
@@ -66,11 +64,6 @@ const SavedImages = memo(
       resetExamples();
       return () => {
         resetExamples();
-        clearTimeout(timeoutRef.current);
-
-        if (abortControlerRef.current) {
-          abortControlerRef.current.abort();
-        }
       };
     }, [curImagesModelVersionId]);
 
@@ -80,11 +73,6 @@ const SavedImages = memo(
 
     const getImagesFromFirestore = useCallback(async () => {
       try {
-        if (abortControlerRef.current) {
-          abortControlerRef.current.abort();
-        }
-        clearTimeout(timeoutRef.current);
-
         if (isLastPage) return;
         setExamplesIsLoading(true);
 
@@ -180,7 +168,7 @@ const SavedImages = memo(
         !examplesIsLoading
       ) {
         setExamplesIsLoading(true);
-        clearTimeout(timeoutRef.current);
+        // clearTimeout(timeoutRef.current);
         getImagesFromFirestore();
       }
     }, [

@@ -23,6 +23,7 @@ const TagsTextarea = ({
   const [prevPromptLength, setPrevPromptLength] = useState(null);
   const [draggedItemId, setDraggedItemId] = useState(null);
   const dispatch = useDispatch();
+  const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
   const curPosPromptArr = useSelector((state) => state.prompt.curPromptArr);
   const curNegPromptArr = useSelector((state) => state.prompt.curNegPromptArr);
   const fieldRef = useRef(null);
@@ -32,6 +33,7 @@ const TagsTextarea = ({
     const promptArr =
       promptType === "positive" ? curPosPromptArr : curNegPromptArr;
     if (
+      promptIsOpen &&
       lastTagRef?.current &&
       curPrompt?.length === promptArr.length &&
       curPrompt?.length > prevPromptLength
@@ -42,7 +44,7 @@ const TagsTextarea = ({
       });
     }
   }, [
-    lastTagRef?.current,
+    lastTagRef,
     curPrompt,
     prevPromptLength,
     curPosPromptArr,
@@ -147,7 +149,6 @@ const TagsTextarea = ({
 
   const dropHandler = (e) => {
     setDraggedItemId(null);
-    console.log(e.target);
     const tagData = e.dataTransfer.getData("text/plain");
     if (!tagData.trim()) return;
 
@@ -159,11 +160,6 @@ const TagsTextarea = ({
     if (!fieldType) return;
 
     if (!targetTagContainer) {
-      console.log("DROP CONT");
-      console.log(id);
-      console.log(type);
-      console.log(fieldType);
-
       dispatch(
         promptActions.removeTag({ id, type, dropTargetType: fieldType })
       );
@@ -270,14 +266,14 @@ const TagsTextarea = ({
 
     const newPrompt = curPrompt.map((item) => {
       if (item.id === id) {
-        let regex = /\<[^>]*\>/i;
+        let regex = /<[^>]*>/i;
         const isActivationTag = regex.test(editTagInput.value);
         let tag = editTagInput.value;
 
         if (+editWeightInput.value !== item.weight) {
           if (editTagInput.value.includes(":")) {
             const tagName = editTagInput.value
-              .replace(/^\(+|\<+|\)+|\>$/g, "")
+              .replace(/^\(+|<+|\)+|>$/g, "")
               .split(":")
               .slice(0, -1)
               .join(":");

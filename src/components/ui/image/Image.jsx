@@ -56,7 +56,6 @@ const Image = forwardRef(
 
     const clickHandler = (e) => {
       if (fullView) {
-        console.log(children);
         setFullViewIsOpen(true);
       }
       if (onClick) {

@@ -16,7 +16,11 @@ import {
   VALIDATION_TRIGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
 import { motion } from "framer-motion";
-import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
+import {
+  createCategoryId,
+  handleErrors,
+  throwCustomError,
+} from "../../../utils/generalUtils";
 
 const PresetForm = ({ type, id, name, words, onClose }) => {
   const [promptType, setPromptType] = useState(type || "positive");
@@ -32,30 +36,6 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const presets = useSelector((state) => state.prompt.presets);
   const dispatch = useDispatch();
-
-  const createPresetId = (id, presetsData) => {
-    if (!id) {
-      return;
-    }
-    let curId = id;
-    let mainIdExists;
-
-    //Check if category id is exists
-    mainIdExists = presetsData?.find((preset) => preset.id === curId);
-
-    while (mainIdExists) {
-      const idArr = curId.split("-");
-      const lastNubmer = parseInt(idArr.slice(-1));
-
-      curId = lastNubmer
-        ? `${idArr.slice(0, -1).join("-")}-${lastNubmer + 1}`
-        : `${curId}-2`;
-
-      mainIdExists = presetsData.find((preset) => preset.id === curId);
-    }
-
-    return curId;
-  };
 
   const submitHandler = (e) => {
     try {
@@ -84,7 +64,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
         updatedPresets = [
           ...curPresets,
           {
-            id: createPresetId(presetName.value, curPresets),
+            id: createCategoryId(presetName.value, curPresets),
             name: presetName.value,
             words: presetWords.value,
           },

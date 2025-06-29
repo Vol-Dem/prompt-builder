@@ -21,7 +21,7 @@ const ImageFullView = (props) => {
 
   useEffect(() => {
     if (props.type !== "video") setImgIsLoading(true);
-  }, [props.src]);
+  }, [props.src, props.type]);
 
   const imgLoadHandler = () => {
     setImgIsLoading(false);

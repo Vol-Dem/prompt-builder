@@ -36,8 +36,9 @@ const ChooseImageForm = ({
     if (!images.length) return;
 
     const versionStatusInputData = images?.map((image, i) => {
-      let checked;
+      const checked = activeImageIndex === i;
       let saved;
+
       if (
         savedImageIds?.length &&
         type === "save"
@@ -45,8 +46,6 @@ const ChooseImageForm = ({
       ) {
         saved = savedImageIds.includes(image?.id);
       }
-      const curStatus = imagesInputs.find((input) => input.id === image.id);
-      checked = curStatus ? curStatus.value : activeImageIndex === i;
 
       return {
         type: "checkbox",

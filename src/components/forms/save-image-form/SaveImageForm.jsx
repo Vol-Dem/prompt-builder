@@ -133,7 +133,6 @@ const SaveImageForm = ({
     const imagesForSaving = ids?.length
       ? images.filter((image) => ids.includes(image?.id))
       : images;
-    console.log(imagesForSaving);
 
     dispatch(
       uploadActions.addToQueue({

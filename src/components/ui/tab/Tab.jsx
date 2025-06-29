@@ -6,9 +6,6 @@ const Tab = (props) => {
 
   const openTabHandler = (e) => {
     setCurTab(e.target.id);
-    console.log(e.target.id);
-    console.log(props.children);
-    console.log(curTab);
   };
 
   const tabsHtml = props.tabsNames.map((tab, i) => (

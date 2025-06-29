@@ -328,7 +328,7 @@ const Model = ({ title }) => {
       console.log(err.message);
       getDefModelDataFromFirestore();
     }
-  }, [dispatch, model.id]);
+  }, [dispatch, model.id, getDefModelDataFromFirestore]);
 
   useEffect(() => {
     if (!model?.id) return;
@@ -347,7 +347,12 @@ const Model = ({ title }) => {
     };
 
     getDefModelData();
-  }, [model?.id, dispatch, getDefModelDataFromFirestore]);
+  }, [
+    model?.id,
+    dispatch,
+    getDefModelDataFromFirestore,
+    getDefModelDataFromCivitai,
+  ]);
 
   useEffect(() => {
     if (

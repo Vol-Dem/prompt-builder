@@ -56,8 +56,6 @@ const LoraForm = () => {
         );
 
         const data = await response.json();
-        console.log(response);
-        console.log(data);
 
         let examplesData = [];
         if (exemplePromts.length) {
@@ -70,7 +68,7 @@ const LoraForm = () => {
               return await imgExampleResponse.json();
             })
           );
-          console.log(examplesData);
+
           examplesData.forEach((post) => {
             post.items.forEach((image) => {
               if (image.meta) {
@@ -82,7 +80,6 @@ const LoraForm = () => {
           });
         }
 
-        console.log(examplesData);
         data.modelVersions.forEach((version) => {
           version.images.forEach((image) => {
             if (image.meta) {
@@ -113,8 +110,6 @@ const LoraForm = () => {
           updatedAt: new Date().toISOString(),
         };
 
-        console.log(loraData);
-
         const loraPrevData = {
           id: modelId,
           src,
@@ -140,7 +135,6 @@ const LoraForm = () => {
             const curData = snapshot.val();
             set(modelsPrevRef, [...curData, loraPrevData]);
           } else {
-            console.log("prev", loraPrevData);
             set(modelsPrevRef, [loraPrevData]);
           }
         });

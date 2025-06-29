@@ -86,7 +86,6 @@ const CarouselImage = ({
     setMenuIsOpen(false);
   };
   const setNsfwPreviwImgHandler = (e) => {
-    // console.log(imgSrc);
     dispatch(setPreviewImg(imgSrc, true, location, locationId, imageData.type));
     setMenuIsOpen(false);
   };

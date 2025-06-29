@@ -1,5 +1,5 @@
 import classes from "./TagSetsForm.module.scss";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
 import { useDispatch, useSelector } from "react-redux";
@@ -41,27 +41,31 @@ const TagSetsForm = ({ modelId, onClose }) => {
   const guideStep = useSelector((state) => state.guide.model.step);
   const dispatch = useDispatch();
 
-  const defTags = [
-    [
-      {
-        type: "text",
-        id: "set-name-def",
-        name: "set-name",
-        placeholder: "Set name",
-        value: "",
-        isValid: true,
-      },
-      {
-        id: "set-value-def",
-        name: "set-value",
-        placeholder: "Triger words",
-        value: "",
-        isValid: true,
-      },
+  const defTags = useMemo(
+    () => [
+      [
+        {
+          type: "text",
+          id: "set-name-def",
+          name: "set-name",
+          placeholder: "Set name",
+          value: "",
+          isValid: true,
+        },
+        {
+          id: "set-value-def",
+          name: "set-value",
+          placeholder: "Triger words",
+          value: "",
+          isValid: true,
+        },
+      ],
     ],
-  ];
+    []
+  );
 
   useEffect(() => {
+    console.log("REND");
     if (guideActive && guideStep === GUIDE_STEP_MODEL_TAGS_EDIT) {
       dispatch(
         guideActions.setGuideStep({
@@ -76,7 +80,7 @@ const TagSetsForm = ({ modelId, onClose }) => {
     if (!versionData) return;
 
     setTagSetsInputs(createTagSetsInputData(versionData?.tagSetsData, defTags));
-  }, [versionData]);
+  }, [versionData, defTags]);
 
   const saveVersionHandler = async (e) => {
     try {

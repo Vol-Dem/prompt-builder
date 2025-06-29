@@ -150,13 +150,7 @@ const Layout = () => {
     } else {
       return null;
     }
-  }, [
-    headerIsFixed,
-    headerRef?.current?.offsetHeight,
-    promptHeight,
-    promptIsOpen,
-    promptBtnHeight,
-  ]);
+  }, [headerIsFixed, headerRef, promptHeight, promptIsOpen, promptBtnHeight]);
 
   return (
     <div className={classes.wrapper}>

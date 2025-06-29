@@ -514,7 +514,6 @@ export const getColectionImagesByIds = (posts, collectionId) => {
       const nsfwFilter = !nsfwMode ? [true] : [true, false];
       const curPosts = fileteredPosts.slice(from, to);
       const ids = curPosts?.map((post) => post.postId);
-      console.log(ids);
 
       const q = query(
         collection(firestore, "users", uid, "images"),
