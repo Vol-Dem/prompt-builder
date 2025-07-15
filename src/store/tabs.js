@@ -37,7 +37,7 @@ const tabsSlice = createSlice({
       nsfw: false,
       previews: [],
     },
-    previewFullView: true,
+    previewFullView: false,
     subcategories: [],
     baseModels: [],
     sortBy: "createdAt",

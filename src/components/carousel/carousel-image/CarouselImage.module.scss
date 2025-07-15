@@ -6,7 +6,7 @@
   align-items: center;
   height: 100%;
   // width: 26.6rem;
-  cursor: pointer;
+  // cursor: pointer;
 
   &--shadow::before {
     content: "";
@@ -107,6 +107,7 @@
 .image {
   max-width: 100%;
   animation: show 0.4s ease-in forwards;
+  cursor: pointer;
   &--hidden {
     display: none;
   }

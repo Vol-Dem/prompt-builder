@@ -63,7 +63,7 @@ const AboutTagSets = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/12-tag-sets-12.jpg")}
-            alt="about-image"
+            alt="Tag sets"
             srcSet={require("../../assets/about/12-tag-sets-12.webp")}
             type="image/webp"
           />
@@ -74,7 +74,7 @@ const AboutTagSets = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/12-tag-sets-22.jpg")}
-            alt="about-image"
+            alt="Tag sets 2"
             srcSet={require("../../assets/about/12-tag-sets-22.webp")}
             type="image/webp"
           />
@@ -109,7 +109,7 @@ const AboutTagSets = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/12-tag-sets-3.jpg")}
-            alt="about-image"
+            alt="Tag sets 3"
             srcSet={require("../../assets/about/12-tag-sets-3.webp")}
             type="image/webp"
           />
@@ -120,7 +120,7 @@ const AboutTagSets = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/12-tag-sets-4.jpg")}
-            alt="about-image"
+            alt="Tag sets 4"
             srcSet={require("../../assets/about/12-tag-sets-4.webp")}
             type="image/webp"
           />

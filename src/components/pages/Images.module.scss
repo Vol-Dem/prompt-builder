@@ -45,3 +45,29 @@
 .notification {
   margin-top: 1rem;
 }
+
+.img {
+  // display: block;
+  // width: 100%;
+  // height: auto;
+  box-shadow: var.$box-shadow-dark;
+  transition: all 0.2s ease-in;
+  // padding-bottom: 48%;
+  cursor: pointer;
+
+  & img {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  & picture {
+    width: 100%;
+    height: auto;
+  }
+
+  &:hover {
+    transform: scale(1.02);
+  }
+}

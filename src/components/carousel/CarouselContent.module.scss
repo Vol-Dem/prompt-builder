@@ -298,6 +298,21 @@
   }
 }
 
+@media (max-width: 768px) {
+  .save {
+    overflow: visible;
+  }
+  .save__btn--collection {
+    top: 0;
+    opacity: 1;
+    z-index: 1;
+  }
+
+  .btn-save__amount {
+    top: 7.8rem;
+  }
+}
+
 @keyframes open {
   0% {
     opacity: 0;

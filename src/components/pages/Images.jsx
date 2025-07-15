@@ -17,6 +17,14 @@ import { AnimatePresence } from "framer-motion";
 import CategoriesForm from "../forms/categories-form/CategoriesForm";
 import { sortArrayBy } from "../../utils/generalUtils";
 import NotificationMessage from "../ui/NotificationMessage";
+import AboutImageCollection from "../about/AboutImageCollections";
+import TextButton from "../ui/text/text-buttons/TextButton";
+import TextButtonCollection from "../ui/text/text-buttons/TextButtonCollection";
+import TextHighlight from "../ui/text/TextHighlight";
+import TextImageBlock from "../ui/text/TextImageBlock";
+import Image from "../ui/image/Image";
+import Text from "../ui/text/Text";
+import TextButtonCreate from "../ui/text/text-buttons/TextButtonCreate";
 
 const Images = () => {
   const [isIntersecting, setIsIntersecting] = useState(false);
@@ -179,13 +187,42 @@ const Images = () => {
           </CategoryList>
         )}
         {!categories?.length && (
-          <NotificationMessage className={classes.notification}>
-            <p className={classes["tip__content__text"]}>
-              To create a new collection, open the side panel using the button
-              on the right and click "New resource". Fill in the requered fields
-              and click "Save".
-            </p>
-          </NotificationMessage>
+          <>
+            <NotificationMessage className={classes.notification}>
+              {/* <p className={classes["tip__content__text"]}>
+                To create a new collection, open the side panel using the button
+                on the right and click "New resource". Fill in the requered
+                fields and click "Save".
+              </p> */}
+              <Text>You don't have any collections!</Text>
+            </NotificationMessage>
+            <NotificationMessage className={classes.notification}>
+              <Text>
+                To create a new collection, open sidebar and click the{" "}
+                <TextButton>New resource</TextButton> button and select{" "}
+                <TextButtonCollection />. Then enter and click{" "}
+                <TextButtonCreate /> for the category, subcategories, and the
+                collection name then click <TextButton>Create</TextButton>.
+              </Text>
+              <Text>
+                In this case, an empty collection will appear and it will be
+                available in the dropdown list when saving images later.
+              </Text>
+              {/* <TextImageBlock>
+                <Image
+                  loading="lazy"
+                  width={1909}
+                  height={918}
+                  fullView={true}
+                  className={classes["img"]}
+                  src={require("../../assets/about/21-collections-sidebar.jpg")}
+                  alt="Collections model 5"
+                  srcSet={require("../../assets/about/21-collections-sidebar.webp")}
+                  type="image/webp"
+                />
+              </TextImageBlock> */}
+            </NotificationMessage>
+          </>
         )}
         {!!activeCategory &&
           activeCategory !== "all" &&

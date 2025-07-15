@@ -181,6 +181,14 @@
   display: block;
 }
 
+.save {
+  width: 14rem;
+}
+
+.notification {
+  margin-top: 1rem;
+}
+
 @media (max-width: 600px) {
   .guide {
     display: none;

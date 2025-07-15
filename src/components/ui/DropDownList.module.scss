@@ -26,6 +26,7 @@
     border-radius: 10px 0 0 0;
     background-color: darken(var.$color-background-primary, 4%);
     box-shadow: var.$box-shadow;
+    min-height: 2rem;
   }
 
   &__content {

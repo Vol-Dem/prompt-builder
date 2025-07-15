@@ -92,7 +92,7 @@ const InfoGeneratedImages = () => {
             height={375}
             className={`${classes["image"]}`}
             src={require("../../../../assets/guide/image-select.png")}
-            alt=""
+            alt="Image select"
           />
         </NotificationMessage>
         <h3 className={classes.h3}>To a separate collection:</h3>
@@ -121,7 +121,7 @@ const InfoGeneratedImages = () => {
             height={78}
             className={`${classes["image"]}`}
             src={require("../../../../assets/guide/menu.png")}
-            alt=""
+            alt="Menu"
           />
         </NotificationMessage>
         <h3 className={classes.h3}>Add image by ID:</h3>

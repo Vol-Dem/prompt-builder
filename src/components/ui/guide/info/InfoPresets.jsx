@@ -23,7 +23,7 @@ const InfoPresets = () => {
           height={660}
           className={`${classes["image"]}`}
           src={require("../../../../assets/guide/preset-add.jpg")}
-          alt=""
+          alt="Add preset"
         />
       </NotificationMessage>
       <h3 className={classes.h3}>Use preset</h3>
@@ -37,7 +37,7 @@ const InfoPresets = () => {
           height={423}
           className={`${classes["image"]}`}
           src={require("../../../../assets/guide/preset.jpg")}
-          alt=""
+          alt="Preset"
         />
       </NotificationMessage>
       <h3 className={classes.h3}>Managing presets</h3>

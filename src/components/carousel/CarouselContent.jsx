@@ -74,7 +74,6 @@ const CarouselContent = ({
   const postData =
     !!Object.keys(savedImages?.data)?.length &&
     savedImages.data[versionId]?.find((post) => post.postId === postId);
-  const savedImageIds = postData?.imagesId || [];
 
   useEffect(() => {
     setImages(imagesData);
@@ -782,7 +781,7 @@ const CarouselContent = ({
                 images={images}
                 activeImageIndex={currImgNum}
                 existedImgsAmount={existedImgsAmount}
-                savedImageIds={savedImageIds}
+                savedImageIds={postData?.imagesId || []}
                 onSave={
                   imageFormType.type === "save"
                     ? saveExampleHandler

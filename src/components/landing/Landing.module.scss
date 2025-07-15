@@ -258,7 +258,10 @@ video.video {
       grid-template-columns: 1fr;
       justify-items: center;
     }
-    &__img-wrap {
+    // &__img-wrap {
+    //   grid-row: 2;
+    // }
+    &:nth-child(2n + 1) &__img-wrap {
       grid-row: 2;
     }
   }

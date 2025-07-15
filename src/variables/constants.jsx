@@ -138,6 +138,8 @@ export const ERROR_MESSAGE_OFFLINE =
 export const ERROR_MESSAGE_USER_DATA_LOAD =
   "Oops! Something went wrong. Try refreshing!";
 export const ERROR_MESSAGE_INVALID_DATA = "Invalid data";
+export const ERROR_MESSAGE_INVALID_MODEL_ID =
+  "Invalid model data. Use only model ID or URL from Civitai";
 export const ERROR_MESSAGE_INVALID_POST_ID = "Invalid post ID";
 export const ERROR_MESSAGE_NO_IMAGE_SELECTED = "Select at least one image";
 export const ERROR_MESSAGE_DB_CONNECTION = "Connection error";

@@ -55,8 +55,8 @@ const AboutWorkingWithPrompts = () => {
           className={classes.comparison}
           imgWidth="1714"
           imgHeight="626"
-          srcLeft={require("../../assets/guide/prompt-text.jpg")}
-          srcRight={require("../../assets/guide/prompt-tags.jpg")}
+          srcLeft={require("../../assets/guide/prompt-text.webp")}
+          srcRight={require("../../assets/guide/prompt-tags.webp")}
         />
         <NotificationMessage>
           <ul className={classes.list}>
@@ -75,8 +75,8 @@ const AboutWorkingWithPrompts = () => {
             </li>
             <li className={classes["list__item"]}>
               <TextButtonTertiary>Presets</TextButtonTertiary> — Allows you to
-              create a presets of your most frequently used trigger words for
-              both the positive and negative prompts.
+              create presets of your most frequently used trigger words for both
+              the positive and negative prompts.
             </li>
             <li className={classes["list__item"]}>
               <TextButtonTertiary>+ BREAK</TextButtonTertiary> — Lets you insert
@@ -132,7 +132,7 @@ const AboutWorkingWithPrompts = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/6-prompt.jpg")}
-            alt="about-image"
+            alt="Prompt"
             srcSet={require("../../assets/about/6-prompt.webp")}
             type="image/webp"
           />
@@ -160,7 +160,7 @@ const AboutWorkingWithPrompts = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/7-tags.jpg")}
-            alt="about-image"
+            alt="Tags"
             srcSet={require("../../assets/about/7-tags.webp")}
             type="image/webp"
           />
@@ -183,10 +183,15 @@ const AboutWorkingWithPrompts = () => {
           </p>
           <TextImageBlock>
             <Image
+              fullView={true}
+              loading="lazy"
               width={1670}
               height={330}
               className={classes["img"]}
               src={require("../../assets/guide/duplicates.png")}
+              alt="Duplicates"
+              srcSet={require("../../assets/guide/duplicates.webp")}
+              type="image/webp"
             />
           </TextImageBlock>
         </div>
@@ -202,10 +207,15 @@ const AboutWorkingWithPrompts = () => {
           </Text>
           <TextImageBlock>
             <Image
+              fullView={true}
+              loading="lazy"
               width={901}
               height={75}
               className={classes["img"]}
               src={require("../../assets/guide/tag-edit.png")}
+              alt="Tag edit"
+              srcSet={require("../../assets/guide/tag-edit.webp")}
+              type="image/webp"
             />
           </TextImageBlock>
         </div>
@@ -222,10 +232,15 @@ const AboutWorkingWithPrompts = () => {
           </Text>
           <TextImageBlock>
             <Image
+              fullView={true}
+              loading="lazy"
               width={851}
               height={134}
               className={classes["img"]}
               src={require("../../assets/guide/dnd.png")}
+              alt="Drag and drop"
+              srcSet={require("../../assets/guide/dnd.webp")}
+              type="image/webp"
             />
           </TextImageBlock>
         </div>
@@ -244,12 +259,12 @@ const AboutWorkingWithPrompts = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/8-presets-1.jpg")}
-            alt="about-image"
+            alt="Presets"
             srcSet={require("../../assets/about/8-presets-1.webp")}
             type="image/webp"
           />
         </TextImageBlock>
-        <Text>
+        <div>
           <Text>
             Click the <TextButton>Add preset</TextButton> button and select the
             type: <TextHighlight>positive</TextHighlight> or{" "}
@@ -258,29 +273,37 @@ const AboutWorkingWithPrompts = () => {
           </Text>
           <TextImageBlock>
             <Image
+              fullView={true}
+              loading="lazy"
               width={1248}
               height={660}
-              className={`${classes["img"]}`}
+              className={classes["img"]}
               src={require("../../assets/guide/preset-add.jpg")}
-              alt=""
+              alt="Add preset"
+              srcSet={require("../../assets/guide/preset-add.webp")}
+              type="image/webp"
             />
           </TextImageBlock>
-        </Text>
+        </div>
         <Text>
           To add a preset to your prompt,{" "}
           <TextHighlight>click its name</TextHighlight> in the list — all
           missing trigger words will be automatically added to the prompt,
           without creating duplicates.
-          <TextImageBlock>
-            <Image
-              width={1380}
-              height={423}
-              className={`${classes["img"]}`}
-              src={require("../../assets/guide/preset.jpg")}
-              alt=""
-            />
-          </TextImageBlock>
         </Text>
+        <TextImageBlock>
+          <Image
+            fullView={true}
+            loading="lazy"
+            width={1380}
+            height={423}
+            className={classes["img"]}
+            src={require("../../assets/guide/preset.jpg")}
+            alt="Preset 2"
+            srcSet={require("../../assets/guide/preset.webp")}
+            type="image/webp"
+          />
+        </TextImageBlock>
         <Text>
           In the presets list, you can also edit a preset by clicking the{" "}
           <TextButtonTertiary>Change</TextButtonTertiary> button or delete it by

@@ -37,8 +37,8 @@ const InfoPrompt = () => {
       </Video>
       <p className={classes.text}>
         <span className={classes["btn-type"]}>
-          <div className={classes["btn-type__text"]}>Text</div>
-          <div className={classes["btn-type__tags"]}>Tags</div>
+          <span className={classes["btn-type__text"]}>Text</span>
+          <span className={classes["btn-type__tags"]}>Tags</span>
         </span>{" "}
         — <TextHighlight>Switch between text and tag modes</TextHighlight>.
         Switch to Text Mode to edit the prompt manually. Switching to Tag Mode
@@ -124,6 +124,7 @@ const InfoPrompt = () => {
           height={574}
           className={classes["image"]}
           src={require("../../../../assets/guide/tracking.jpg")}
+          alt="Tracking"
         />
       </NotificationMessage>
       <h3 className={classes.h3}>Duplicates</h3>
@@ -139,6 +140,7 @@ const InfoPrompt = () => {
           height={330}
           className={classes["image"]}
           src={require("../../../../assets/guide/duplicates.png")}
+          alt="Duplicates"
         />
       </NotificationMessage>
       <h3 className={classes.h3}>Quick edit</h3>
@@ -153,6 +155,7 @@ const InfoPrompt = () => {
           height={75}
           className={classes["image"]}
           src={require("../../../../assets/guide/tag-edit.png")}
+          alt="Tag edit"
         />
       </NotificationMessage>
       <h3 className={classes.h3}>Drag & Drop</h3>
@@ -171,6 +174,7 @@ const InfoPrompt = () => {
           height={134}
           className={classes["image"]}
           src={require("../../../../assets/guide/dnd.png")}
+          alt=">Drag and drop"
         />
       </NotificationMessage>
     </div>

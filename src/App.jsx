@@ -8,14 +8,9 @@ import Layout from "./components/layout/layout/Layout";
 import { useDispatch, useSelector } from "react-redux";
 import { lazy, useEffect } from "react";
 import { initAuth } from "./store/auth";
-import { doc, getFirestore, onSnapshot } from "firebase/firestore";
-import firebaseApp from "./firebase-config";
-import { tabActions } from "./store/tabs";
 import ErrorPage from "./components/pages/ErrorPage";
 import { generalActions } from "./store/general";
 import { checkIsMobile } from "./utils/generalUtils";
-import { imagesActions } from "./store/images";
-import { promptActions } from "./store/prompt";
 
 const About = lazy(() => import("./components/pages/About"));
 const ToS = lazy(() => import("./components/pages/ToS"));
@@ -33,10 +28,7 @@ const Tabs = lazy(() => import("./components/tabs/Tabs"));
 const Home = lazy(() => import("./components/pages/Home"));
 const Landing = lazy(() => import("./components/landing/Landing"));
 
-const firestore = getFirestore(firebaseApp);
-
 function App() {
-  const uid = useSelector((state) => state.auth.user.uid);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const initialAuth = useSelector((state) => state.auth.initialAuth);
   const dispatch = useDispatch();
@@ -46,23 +38,6 @@ function App() {
     dispatch(generalActions.setIsMobile(checkIsMobile()));
     dispatch(initAuth());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (!uid) return;
-    const unsub = onSnapshot(doc(firestore, "users", uid), (doc) => {
-      const data = doc.data();
-      if (data?.categoriesById) {
-        dispatch(tabActions.setCategories(data?.categoriesById));
-      }
-      if (data?.imageCategories)
-        dispatch(imagesActions.setImageCategories(data.imageCategories));
-      if (data?.presets) dispatch(promptActions.setPresets(data.presets));
-    });
-
-    return () => {
-      unsub();
-    };
-  }, [uid, dispatch]);
 
   const router = createBrowserRouter(
     createRoutesFromElements(

@@ -16,6 +16,10 @@ import ModelsList from "../lora/ModelsList";
 import CategoryList from "../ui/lists/CategoryList";
 import ButtonCategoryAll from "../ui/buttons/ButtonCategoryAll";
 import CategoryListItem from "../ui/lists/CategoryListItem";
+import TextButton from "../ui/text/text-buttons/TextButton";
+import TextHighlight from "../ui/text/TextHighlight";
+import NotificationMessage from "../ui/NotificationMessage";
+import Text from "../ui/text/Text";
 
 const Tabs = () => {
   const [guideIsOpen, setGuideIsOpen] = useState(true);
@@ -106,16 +110,26 @@ const Tabs = () => {
           !modelTypesHtml?.length &&
           !userDataLoadError &&
           isAuth && (
-            <div className={classes.tip}>
-              <p className={classes["tip__content__text"]}>
-                To add a model, open the side panel using the button on the
-                right and click "New resource". Copy the model ID or URL from
-                the{" "}
-                <LinkA external href="https://civitai.com">
-                  Civitai
-                </LinkA>{" "}
-                , fill in the remaining fields and click "Save".
-              </p>
+            <div>
+              <NotificationMessage className={classes.notification}>
+                <Text>You don't have any models!</Text>
+              </NotificationMessage>
+              <NotificationMessage className={classes.notification}>
+                <Text>
+                  To add a model,{" "}
+                  <TextHighlight>open the side panel</TextHighlight> using the
+                  button on the right and click{" "}
+                  <TextButton>New resource</TextButton>. Copy the model{" "}
+                  <TextHighlight>ID</TextHighlight> or{" "}
+                  <TextHighlight>URL</TextHighlight> from the{" "}
+                  <LinkA external href="https://civitai.com">
+                    Civitai
+                  </LinkA>{" "}
+                  , fill in the remaining fields and click{" "}
+                  <TextButton className={classes.save}>Save</TextButton>
+                </Text>
+              </NotificationMessage>
+              <p className={classes["tip__content__text"]}></p>
               {guideIsOpen &&
                 sidepanelIsOpen &&
                 !authIsOpen &&

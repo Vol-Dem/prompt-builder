@@ -270,7 +270,7 @@ const AuthForm = () => {
       )}
       {isLogin && (
         <div className={classes["privacy"]}>
-          By continuing, you are indicating that you accept our
+          By continuing, you are indicating that you accept our{" "}
           <Link className={classes.link} to="tos" target="blank">
             Terms of Service
           </Link>{" "}

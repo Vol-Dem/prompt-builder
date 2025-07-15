@@ -43,6 +43,7 @@ const InfoPostId = ({ className }) => {
           className={`${classes["image"]} ${classes["image--short"]}`}
           src={require("../../../../assets/guide/url.png")}
           srcSet={require("../../../../assets/guide/url.webp")}
+          alt="Url"
         />
       </NotificationMessage>
       <NotificationMessage>
@@ -74,6 +75,7 @@ const InfoPostId = ({ className }) => {
           className={classes["image"]}
           src={require("../../../../assets/guide/civ-share.png")}
           srcSet={require("../../../../assets/guide/civ-share.webp")}
+          alt="Civ share"
         />
       </NotificationMessage>
     </div>

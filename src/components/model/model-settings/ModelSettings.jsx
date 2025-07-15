@@ -246,6 +246,11 @@ const ModelSettings = () => {
         { merge: true }
       );
 
+      dispatch(
+        modelActions.setModelData({
+          data: newModelData,
+        })
+      );
       seteSuccessMessage("Updated");
       setIsLoading(false);
     } catch (err) {

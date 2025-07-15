@@ -106,6 +106,7 @@ const Edit = ({ title }) => {
               unsub();
               return;
             }
+
             dispatch(modelActions.setModelData(data));
             dispatch(modelActions.setModelPreview({}));
             setIsLoading(false);

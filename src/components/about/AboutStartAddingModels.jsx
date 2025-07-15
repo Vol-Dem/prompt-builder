@@ -30,7 +30,7 @@ const AboutStartAddingModels = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/3-new-resource.jpg")}
-            alt="about-image"
+            alt="New resource"
             srcSet={require("../../assets/about/3-new-resource.webp")}
             type="image/webp"
           />
@@ -57,7 +57,7 @@ const AboutStartAddingModels = () => {
             src={require("../../assets/about/4-add-model.jpg")}
             srcSet={require("../../assets/about/4-add-model.webp")}
             type="image/webp"
-            alt="about-image"
+            alt="Add model"
           />
         </TextImageBlock>
         <Text>
@@ -84,7 +84,7 @@ const AboutStartAddingModels = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/5-added-models.jpg")}
-            alt="about-image"
+            alt="Added models"
             srcSet={require("../../assets/about/5-added-models.webp")}
             type="image/webp"
           />

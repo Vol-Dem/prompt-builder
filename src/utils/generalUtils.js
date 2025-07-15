@@ -2,6 +2,7 @@ import { MotionGlobalConfig } from "framer-motion";
 import {
   ERROR_MESSAGE_CIV_CONNECTION,
   ERROR_MESSAGE_DEFAULT,
+  ERROR_MESSAGE_INVALID_MODEL_ID,
   REGEX_SPLIT_TAGS,
   SETTINGS_IMAGE_PREVIEW_WIDTH_DEF,
   SETTINGS_NSFW_VALUES_DATA,
@@ -111,6 +112,14 @@ export const validateInput = (rules, value) => {
       const errorMessage = isValid
         ? ""
         : `Value cannot be less than ${validTypes[type]} characters`;
+      if (!!errorMessage) {
+        errorMessages.push(errorMessage);
+      }
+    }
+    if (!!validTypes[type] && type === "modelId") {
+      const [modelId] = parseModelIds(value.toString());
+      const isValid = !!modelId;
+      const errorMessage = isValid ? "" : ERROR_MESSAGE_INVALID_MODEL_ID;
       if (!!errorMessage) {
         errorMessages.push(errorMessage);
       }
@@ -567,7 +576,7 @@ export const parseModelIds = (value) => {
     if (modelIdIndex < 0) {
       throwCustomError("Invalid ID");
     } else {
-      const modelId = parseInt(urlArr[modelIdIndex]);
+      const modelId = parseInt(urlArr[modelIdIndex]) || null;
       let modelVersionId = null;
 
       if (modelVersionIdUrlArr?.length) {
@@ -576,7 +585,7 @@ export const parseModelIds = (value) => {
           null;
       }
 
-      return [+modelId, +modelVersionId];
+      return [modelId, modelVersionId];
     }
   }
 };

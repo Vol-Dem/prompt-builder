@@ -20,7 +20,7 @@ import firebaseApp from "../firebase-config";
 import { uploadPanelStateFromStorage, usedModelsActions } from "./usedModels";
 import { promptActions, uploadPromptFromStorage } from "./prompt";
 import { tabActions } from "./tabs";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
+import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
 import { modelActions } from "./model";
 import {
   ERROR_MESSAGE_DEFAULT,
@@ -36,6 +36,7 @@ import { getAppInfo } from "./notification";
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 const provider = new GoogleAuthProvider();
+let unsubUserData;
 
 const authInitialState = {
   isLoggedIn: false,
@@ -88,6 +89,10 @@ const authSlice = createSlice({
       );
 
       signOut(auth);
+
+      if (unsubUserData) {
+        unsubUserData();
+      }
     },
     openAuthForm(state) {
       state.authFormIsOpen = true;
@@ -503,6 +508,16 @@ export const getUserData = (uid) => {
     try {
       dispatch(authActions.setUserDataLoadError(""));
       dispatch(authActions.setUserDataIsLoading(true));
+
+      unsubUserData = onSnapshot(doc(firestore, "users", uid), (doc) => {
+        const data = doc.data();
+        if (data?.categoriesById) {
+          dispatch(tabActions.setCategories(data?.categoriesById));
+        }
+        if (data?.imageCategories)
+          dispatch(imagesActions.setImageCategories(data.imageCategories));
+        if (data?.presets) dispatch(promptActions.setPresets(data.presets));
+      });
 
       const userRef = doc(firestore, "users", uid);
 

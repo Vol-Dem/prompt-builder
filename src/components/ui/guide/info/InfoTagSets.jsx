@@ -65,7 +65,7 @@ const InfoTagsets = () => {
           height={463}
           className={classes["image"]}
           src={require("../../../../assets/guide/tsprev.jpg")}
-          alt=""
+          alt="Tag sets preview"
         />
         <p className={classes.text}>
           If you are using NSFW mode, you can also set a separate preview for

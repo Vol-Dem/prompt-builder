@@ -1,6 +1,7 @@
 import classes from "./Guide.module.scss";
 import { createPortal } from "react-dom";
 import LinkA from "../LinkA";
+import TextButtonCreate from "../text/text-buttons/TextButtonCreate";
 import ArrowRightSvg from "../../../assets/ArrowRight";
 import ArrowUp from "../../../assets/ArrowUp";
 import ButtonTertiary from "../ButtonTertiary";
@@ -81,7 +82,8 @@ const Guide = (props) => {
                 </li>
                 <li className={classes["guide__content__item"]}>
                   <p className={classes["guide__content__text"]}>
-                    Enter the category name <br /> and click "Create" in the
+                    Enter the category name <br /> and click{" "}
+                    <TextButtonCreate className={classes.create} /> in the
                     dropdown
                     <br />
                   </p>

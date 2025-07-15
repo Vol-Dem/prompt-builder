@@ -47,7 +47,7 @@ const ImageComparisonSlider = ({
           height={imgHeight || null}
           className={classes["image"]}
           src={srcRight}
-          alt=""
+          alt="slide-1"
           draggable={false}
         />
       </div>
@@ -61,7 +61,7 @@ const ImageComparisonSlider = ({
           height={imgHeight || null}
           className={`${classes["image"]} ${classes["image--2"]}`}
           src={srcLeft}
-          alt=""
+          alt="slide-2"
           draggable={false}
         />
       </div>

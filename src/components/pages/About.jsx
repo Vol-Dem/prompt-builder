@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import classes from "./About.module.scss";
 import LinkA from "../ui/LinkA";
-import Image from "../ui/image/Image";
+// import Image from "../ui/image/Image";
 import TextHighlight from "../ui/text/TextHighlight";
 import ImageComparisonSlider from "../ImageComparisonSlider/ImageComparisonSlider";
 import NotificationMessage from "../ui/NotificationMessage";
@@ -16,6 +16,7 @@ import AboutImageCollections from "../about/AboutImageCollections";
 import AboutTopPanel from "../about/AboutTopPanel";
 import AboutSidebar from "../about/AboutSidebar";
 import AboutCategoryEdit from "../about/AboutCategoryEdit";
+import Video from "../ui/Video";
 
 const About = ({ title }) => {
   useEffect(() => {
@@ -30,19 +31,54 @@ const About = ({ title }) => {
     <div className={classes.about}>
       <div className="terminal-header__date-time"></div>
       <h1 className={classes["about__h1"]}>About</h1>
+      {/* <TextContentBlock>
+        <div className={classes["video-container"]}>
+          <Video
+            playsInline
+            disablePictureInPicture
+            controls
+            width={1280}
+            height={720}
+            poster={require("../../assets/home/intro.jpg")}
+            className={classes["video"]}
+          >
+            <source
+              src={require("../../assets/home/intro.mp4")}
+              type="video/mp4"
+            />
+          </Video>
+        </div>
+      </TextContentBlock> */}
       <Text>
-        This platform offers a variety of features, such as the using trigger
-        words from models and images as tags for quick and easy modification of
+        This platform offers a variety of features, such as using trigger words
+        from models and images as tags for quick and easy modification of
         prompts, adding current models and image references to the sidebar for
-        quick access, and extended configuration options, etc.
+        quick access, extended configuration options, and other customization
+        features.
       </Text>
       <Text>
         AIDE-TOOLS provides a centralized solution for storing and managing
         collections. It is versatile and independent of popular web interfaces,
-        so, you can use the generated prompt in any web interface or for online
+        so you can use the generated prompt in any web interface or for online
         generation on Civitai.
       </Text>
-      <div className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}>
+      <div className={classes["video-container"]}>
+        <Video
+          playsInline
+          disablePictureInPicture
+          controls
+          width={1280}
+          height={720}
+          poster={require("../../assets/home/intro-s.webp")}
+          className={classes["video"]}
+        >
+          <source
+            src={require("../../assets/home/intro.mp4")}
+            type="video/mp4"
+          />
+        </Video>
+      </div>
+      {/* <div className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}>
         <Image
           loading="lazy"
           width={1909}
@@ -64,22 +100,28 @@ const About = ({ title }) => {
           srcSet={require("../../assets/about/1-start-2.webp")}
           alt="about-image"
         />
-      </div>
+      </div> */}
       <Text>
-        With the help of the AIde-tools platform you can create your own
+        With the help of the AIDE-TOOLS platform you can create your own
         collection of your favorite models and easily work with them:
       </Text>
       <TextContentBlock>
         <ul className={classes["about__list"]}>
-          <li className={classes["about__list-item"]}>
+          {/* <li className={classes["about__list-item"]}>
             Make your prompt building clear and effortless: the system
             automatically{" "}
             <TextHighlight>splits your prompt into tags</TextHighlight> with the
             option to switch between modes at any moment.
+          </li> */}
+          <li className={classes["about__list-item"]}>
+            <TextHighlight>Split your prompt into tags</TextHighlight>{" "}
+            automatically with the option to switch between modes at any moment
+            and make your prompt building clear and effortless
           </li>
           <li className={classes["about__list-item"]}>
-            <TextHighlight>Track and remove duplicates</TextHighlight>: each of
-            them has a unique highlighted color that makes it easy to manage.
+            <TextHighlight>Track and remove duplicates</TextHighlight>: each
+            duplicate is highlighted in a unique color that makes it easy to
+            manage.
           </li>
           <li className={classes["about__list-item"]}>
             <TextHighlight>Easily insert BREAKs</TextHighlight> using a separate
@@ -99,13 +141,13 @@ const About = ({ title }) => {
               imgWidth="1714"
               imgHeight="626"
               className={classes.comparison}
-              srcLeft={require("../../assets/guide/prompt-text.jpg")}
-              srcRight={require("../../assets/guide/prompt-tags.jpg")}
+              srcLeft={require("../../assets/guide/prompt-text.webp")}
+              srcRight={require("../../assets/guide/prompt-tags.webp")}
             />
           </li>
           <li className={classes["about__list-item"]}>
             <TextHighlight>
-              Add trigger words to prompt from models and images
+              Add trigger words to the prompt from models and images
             </TextHighlight>{" "}
             with just one click using the built-in tag system.
           </li>
@@ -131,8 +173,8 @@ const About = ({ title }) => {
             <TextHighlight>
               Edit, organize and update model information
             </TextHighlight>
-            : edit existing model information and add additional, add activation
-            tag, set the recommended weight.
+            : edit existing model information and add additional data, add
+            activation tag, set the recommended weight.
           </li>
           <li className={classes["about__list-item"]}>
             <TextHighlight>
@@ -143,7 +185,7 @@ const About = ({ title }) => {
           </li>
           <li className={classes["about__list-item"]}>
             <TextHighlight>
-              Create a sets of trigger words for generating specific outfits,
+              Create sets of trigger words for generating specific outfits,
               appearances, or other concepts
             </TextHighlight>
             , and assign preview images to easily tell them apart.
@@ -174,7 +216,7 @@ const About = ({ title }) => {
               {" "}
               Get quick access to desired categories or subcategories
             </TextHighlight>{" "}
-            through quick search field.
+            through the quick search field.
           </li>
         </ul>
       </TextContentBlock>

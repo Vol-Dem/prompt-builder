@@ -122,7 +122,18 @@ const ComboSelect = ({
                   as={motion.div}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
+                  exit={{
+                    opacity: 0,
+                    scale: 0.95,
+                    zIndex: -1,
+                    transition: {
+                      duration: 0.2,
+                      zIndex: {
+                        delay: 0.1,
+                        duration: 0.1,
+                      },
+                    },
+                  }}
                   anchor="bottom"
                   transition
                   className={`${classes.options} ${

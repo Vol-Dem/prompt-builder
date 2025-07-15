@@ -18,15 +18,10 @@ const AboutTopPanel = () => {
         <H3 id="search">Search</H3>
         <Text>
           The quick search shows the first five results and allows you to search
-          not only for models but also for categories or subcategories, and open
-          them by click. By pressing the Enter button or{" "}
+          not only for models but also for subcategories, and open them by
+          click. By pressing the Enter button or{" "}
           <TextButtonTertiary>Show More</TextButtonTertiary>, you will go to the
           search page where you can see all results for models.
-        </Text>
-        <Text>
-          The sidebar gives you quick access to the models and images you want
-          to use right now. You can add up to three reference images and as many
-          models as you like.
         </Text>
         <TextImageBlock col={2}>
           <Image
@@ -36,7 +31,7 @@ const AboutTopPanel = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/17-search.jpg")}
-            alt="about-image"
+            alt="Search"
             srcSet={require("../../assets/about/17-search.webp")}
             type="image/webp"
           />
@@ -47,23 +42,24 @@ const AboutTopPanel = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/17-search-2.jpg")}
-            alt="about-image"
+            alt="Search 2"
             srcSet={require("../../assets/about/17-search-2.webp")}
             type="image/webp"
           />
         </TextImageBlock>
         <H3 id="queue">Download Queue</H3>
         <Text>
-          When you click the image <TextHighlight>Download</TextHighlight>{" "}
-          button, the image is added to the{" "}
+          When you click the <TextHighlight>Save</TextHighlight> button on the
+          image, it is added to the{" "}
           <TextHighlight>uploading queue</TextHighlight> in the Top Bar.
         </Text>
         <Text>
           Images <TextHighlight>successfully</TextHighlight> saved to a model or
-          collection are displayed in the download queue in{" "}
+          collection are displayed in the download queue under{" "}
           <span className={classes.green}>-Completed-</span>. You can use the
-          download queue to <TextHighlight>quickly access</TextHighlight> the
-          locations where you saved the latest images.
+          use the Uploading queue to{" "}
+          <TextHighlight>quickly access</TextHighlight> your recently saved
+          images
         </Text>
         <TextImageBlock>
           <Image
@@ -73,7 +69,7 @@ const AboutTopPanel = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/15-queue-complete.jpg")}
-            alt="about-image"
+            alt="Queue"
             srcSet={require("../../assets/about/15-queue-complete.webp")}
             type="image/webp"
           />
@@ -86,7 +82,7 @@ const AboutTopPanel = () => {
           is restored, press the{" "}
           <TextButtonTertiary>Retry all</TextButtonTertiary> button in the
           download window to continue the upload. If the upload does not resume,
-          try again after later.
+          try again later.
         </Text>
         <TextImageBlock>
           <Image
@@ -96,7 +92,7 @@ const AboutTopPanel = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/15-queue.jpg")}
-            alt="about-image"
+            alt="Queue 2"
             srcSet={require("../../assets/about/15-queue.webp")}
             type="image/webp"
           />
@@ -124,7 +120,7 @@ const AboutTopPanel = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/16-nsfw.jpg")}
-            alt="about-image"
+            alt="Switch"
             srcSet={require("../../assets/about/16-nsfw.webp")}
             type="image/webp"
           />

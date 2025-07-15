@@ -145,9 +145,8 @@ const Landing = () => {
             <div className={classes["notification"]}>
               <ExclamationCircleSvg className={classes["notification__svg"]} />
               <p className={classes["notification__text"]}>
-                The service only stores information about the images prompt and
-                models generation setting, and does not store any files or
-                images.
+                The service stores only the text-based prompts and model
+                generation settings, and does not store any files or images.
               </p>
             </div>
           </div>
@@ -441,7 +440,7 @@ const Landing = () => {
             controls
             width={1280}
             height={720}
-            poster={require("../../assets/home/intro.jpg")}
+            poster={require("../../assets/home/intro-s.webp")}
             className={classes["video"]}
           >
             <source

@@ -15,8 +15,8 @@ const EditDefaultGuide = (props) => {
         next: true,
         text: (
           <>
-            Here you can change the category/subcategories of the model, and add
-            or change default trigger words and tag sets.
+            Here you can change the type, category and subcategories of the
+            model
           </>
         ),
       },

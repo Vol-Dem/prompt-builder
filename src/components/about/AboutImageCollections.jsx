@@ -25,7 +25,7 @@ const AboutImageCollections = () => {
       <TextContentBlock>
         <Text>
           You can save images into collections for easy access,{" "}
-          <TextHighlight>organize</TextHighlight> them by theme,{" "}
+          <TextHighlight>organize</TextHighlight> by topic or purpose,{" "}
           <TextHighlight>store your favorite references</TextHighlight>, keep
           everything neatly arranged, and quickly{" "}
           <TextHighlight>add them to the sidebar</TextHighlight> for even more
@@ -47,6 +47,7 @@ const AboutImageCollections = () => {
             <FolderPlusIcon />
           </TextButtonSquare>{" "}
           Save to collection. Enter the name of a category and click{" "}
+          <TextButtonCreate />
         </Text>
         <Text>
           {" "}
@@ -64,7 +65,7 @@ const AboutImageCollections = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/20-collections-model-1.jpg")}
-            alt="about-image"
+            alt="Collections model 1"
             srcSet={require("../../assets/about/20-collections-model-1.webp")}
             type="image/webp"
           />
@@ -75,7 +76,7 @@ const AboutImageCollections = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/20-collections-model-2.jpg")}
-            alt="about-image"
+            alt="Collections model 2"
             srcSet={require("../../assets/about/20-collections-model-2.webp")}
             type="image/webp"
           />
@@ -86,7 +87,7 @@ const AboutImageCollections = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/20-collections-model-3.jpg")}
-            alt="about-image"
+            alt="Collections model 3"
             srcSet={require("../../assets/about/20-collections-model-3.webp")}
             type="image/webp"
           />
@@ -106,7 +107,7 @@ const AboutImageCollections = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/20-collections-model-4.jpg")}
-            alt="about-image"
+            alt="Collections model 4"
             srcSet={require("../../assets/about/20-collections-model-4.webp")}
             type="image/webp"
           />
@@ -128,7 +129,7 @@ const AboutImageCollections = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/21-collections-sidebar.jpg")}
-            alt="about-image"
+            alt="Collections model 5"
             srcSet={require("../../assets/about/21-collections-sidebar.webp")}
             type="image/webp"
           />
@@ -165,7 +166,7 @@ const AboutImageCollections = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/20-collections-prev.jpg")}
-            alt="about-image"
+            alt="Collections model 6"
             srcSet={require("../../assets/about/20-collections-prev.webp")}
             type="image/webp"
           />

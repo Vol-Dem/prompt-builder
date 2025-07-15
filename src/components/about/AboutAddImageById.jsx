@@ -41,7 +41,7 @@ const AboutAddImageById = () => {
         className={classes["img-short"]}
         src={require("../../assets/guide/url.png")}
         srcSet={require("../../assets/guide/url.webp")}
-        alt="about-image"
+        alt="Url"
       />
       <p>
         <TextHighlight>Alternatively</TextHighlight>, on the post page, you can
@@ -72,7 +72,7 @@ const AboutAddImageById = () => {
           fullView={true}
           className={classes["img"]}
           src={require("../../assets/guide/civ-share.jpg")}
-          alt="about-image"
+          alt="Civ share"
           srcSet={require("../../assets/guide/civ-share.webp")}
           type="image/webp"
         />

@@ -23,7 +23,13 @@ const AboutSidebar = () => {
         Sidebar
       </H2>
       <TextContentBlock>
-        <p id="references" className={classes["about__text"]}>
+        <Text>
+          The sidebar gives you quick access to the models and images you want
+          to use right now.
+          {/* You can add up to three reference images and as many
+          models as you like. */}
+        </Text>
+        <Text id="references" className={classes["about__text"]}>
           To add an image as a reference, go to the model page and click the{" "}
           <TextButtonSquare>
             <PlusIcon />
@@ -45,11 +51,11 @@ const AboutSidebar = () => {
           <TextButtonSquare>
             <PlusIcon />
           </TextButtonSquare>{" "}
-          button on other images will be inactive until you remove at least one
-          from the sidebar. To view information about an added reference image,
-          click on it in the sidebar. A pop-up window will show details about
-          the generation, including the prompt, used resources, and more.
-        </p>
+          button on other images will be disabled until you remove at least one
+          from the sidebar. To view details of a reference image, click it in
+          the sidebar. A pop-up window will show details about the generation,
+          including the prompt, used resources, and more.
+        </Text>
         <TextImageBlock>
           <Image
             loading="lazy"
@@ -58,12 +64,12 @@ const AboutSidebar = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/18-sidebar-1.jpg")}
-            alt="about-image"
+            alt="Sidebar"
             srcSet={require("../../assets/about/18-sidebar-1.webp")}
             type="image/webp"
           />
         </TextImageBlock>
-        <p id="addmodels" className={classes["about__text"]}>
+        <Text id="addmodels" className={classes["about__text"]}>
           To add a model to the sidebar, click the{" "}
           <TextButtonSquare>
             <PlusIcon />
@@ -73,7 +79,7 @@ const AboutSidebar = () => {
             <PlusIcon />
           </TextButtonSquare>{" "}
           next to the name on the model page.
-        </p>
+        </Text>
         <TextImageBlock>
           <Image
             loading="lazy"
@@ -82,12 +88,12 @@ const AboutSidebar = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/18-sidebar-2.jpg")}
-            alt="about-image"
+            alt="Sidebar 2"
             srcSet={require("../../assets/about/18-sidebar-2.webp")}
             type="image/webp"
           />
         </TextImageBlock>
-        <p id="expanded" className={classes["about__text"]}>
+        <Text id="expanded" className={classes["about__text"]}>
           You can toggle the model info display in the sidebar between compact
           and expanded views using the{" "}
           <TextButtonSquare>
@@ -102,7 +108,7 @@ const AboutSidebar = () => {
           the weight, activation tag, and trigger words. You can add or remove
           trigger words from the prompt by clicking them in the sidebar, just
           like on the model page.
-        </p>
+        </Text>
         <Text>
           To clear all references and models from the sidebar, use the{" "}
           <TextButtonTertiary>

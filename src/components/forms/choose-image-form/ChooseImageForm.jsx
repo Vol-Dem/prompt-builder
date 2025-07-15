@@ -64,7 +64,6 @@ const ChooseImageForm = ({
     if (!hasNotSaved) {
       setSuccessMessage("All images are already in the collection");
     }
-
     setImagesInputs(versionStatusInputData || []);
   }, [
     images,

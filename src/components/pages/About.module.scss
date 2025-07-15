@@ -126,8 +126,12 @@
   }
 }
 
+.video-container {
+  width: 90%;
+  margin: 3rem auto;
+}
+
 .video {
-  margin: 2.4rem auto;
   flex-shrink: 0;
   width: 100%;
   height: auto;

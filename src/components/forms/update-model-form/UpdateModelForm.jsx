@@ -50,6 +50,7 @@ import {
   SETTINGS_MODEL_TYPE_UNKNOWN,
   SETTINGS_MODEL_TYPE_DEF,
   SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
+  ERROR_MESSAGE_INVALID_MODEL_ID,
 } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
@@ -291,6 +292,10 @@ const UpdateModelForm = ({
       } else {
         [modelId, modelVersionId] = parseModelIds(idInput.value);
       }
+      console.log(modelId, modelVersionId);
+      if (!modelId) {
+        throwCustomError(ERROR_MESSAGE_INVALID_MODEL_ID);
+      }
 
       if (newModelVersionId) {
         modelVersionId = newModelVersionId;
@@ -306,7 +311,7 @@ const UpdateModelForm = ({
         .filter(Boolean);
       const sub = [
         ...new Set(subCatInputs.map((el) => el?.selected?.name?.trim())),
-      ];
+      ].filter(Boolean);
       const mainTag = formdata.get("main-tag")?.trim() || "";
       const size = formdata.get("size")?.trim() || "";
       const fileName = formdata.get("file-name")?.trim() || "";
@@ -716,7 +721,7 @@ const UpdateModelForm = ({
         }
       }
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       if (err.message === ERROR_MESSAGE_EXISTS) {
         setSavedModel(modelId);
       }
@@ -947,6 +952,7 @@ const UpdateModelForm = ({
               validation={{
                 required: true,
                 maxLength: VALIDATION_TITLE_MAX_LENGTH,
+                modelId: true,
               }}
               showError={showErrorMessage}
             />

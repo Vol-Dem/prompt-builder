@@ -44,7 +44,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/13-model-page-1.jpg")}
-            alt="about-image"
+            alt="Model page 1"
             srcSet={require("../../assets/about/13-model-page-1.webp")}
             type="image/webp"
           />
@@ -62,7 +62,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/13-model-page-2.jpg")}
-            alt="about-image"
+            alt="Model page 2"
             srcSet={require("../../assets/about/13-model-page-2.webp")}
             type="image/webp"
           />
@@ -95,7 +95,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/22-edit-btn-model-1.jpg")}
-            alt="about-image"
+            alt="Edit button model 1"
             srcSet={require("../../assets/about/22-edit-btn-model-1.webp")}
             type="image/webp"
           />
@@ -106,7 +106,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/22-edit-btn-model.jpg")}
-            alt="about-image"
+            alt="Edit button model 2"
             srcSet={require("../../assets/about/22-edit-btn-model.webp")}
             type="image/webp"
           />
@@ -143,7 +143,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-1.jpg")}
-            alt="about-image"
+            alt="Image examples 1"
             srcSet={require("../../assets/about/14-img-examples-1.webp")}
             type="image/webp"
           />
@@ -154,7 +154,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-2.jpg")}
-            alt="about-image"
+            alt="Image examples 2"
             srcSet={require("../../assets/about/14-img-examples-2.webp")}
             type="image/webp"
           />
@@ -170,7 +170,7 @@ const AboutModelPage = () => {
         {/* <InfoPostId /> */}
         <Text>
           Return to the site and enter the post ID, select the model version,
-          and select images you want to save.
+          and select the images that you want to save.
         </Text>
         <TextImageBlock col={2}>
           <Image
@@ -180,7 +180,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-5.jpg")}
-            alt="about-image"
+            alt="Image examples 3"
             srcSet={require("../../assets/about/14-img-examples-5.webp")}
             type="image/webp"
           />
@@ -191,7 +191,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-52.jpg")}
-            alt="about-image"
+            alt="Image examples 4"
             srcSet={require("../../assets/about/14-img-examples-52.webp")}
             type="image/webp"
           />
@@ -220,7 +220,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-3.jpg")}
-            alt="about-image"
+            alt="Image examples 3"
             srcSet={require("../../assets/about/14-img-examples-3.webp")}
             type="image/webp"
           />
@@ -231,7 +231,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-4.jpg")}
-            alt="about-image"
+            alt="Image examples 4"
             srcSet={require("../../assets/about/14-img-examples-4.webp")}
             type="image/webp"
           />
@@ -242,7 +242,7 @@ const AboutModelPage = () => {
             <PlusIcon />
           </TextButtonSquare>{" "}
           button, any image can be added to the sidebar as a reference. Clicking
-          the button again will remove image from the sidebar.
+          the button again will remove the image from the sidebar.
         </Text>
         <TextImageBlock>
           <Image
@@ -252,7 +252,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-6.jpg")}
-            alt="about-image"
+            alt="Image examples 5"
             srcSet={require("../../assets/about/14-img-examples-6.webp")}
             type="image/webp"
           />
@@ -273,7 +273,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-7.jpg")}
-            alt="about-image"
+            alt="Image examples 6"
             srcSet={require("../../assets/about/14-img-examples-7.webp")}
             type="image/webp"
           />
@@ -284,7 +284,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-8.jpg")}
-            alt="about-image"
+            alt="Image examples 7"
             srcSet={require("../../assets/about/14-img-examples-8.webp")}
             type="image/webp"
           />
@@ -293,8 +293,8 @@ const AboutModelPage = () => {
           type="notification"
           className={classes["notification"]}
         >
-          You cannot upload your own image directly to the site, but you can
-          upload it to Civitai under the corresponding model as a generation
+          You cannot upload your own image directly to the site. However, you
+          can upload it to Civitai under the corresponding model as a generation
           example or simply as a separate post, and then add it to saved images
           using the <TextButton>Add Image by ID</TextButton> button. After this,
           you can use the image as a model preview or tag sets.
@@ -311,7 +311,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-9.jpg")}
-            alt="about-image"
+            alt="Image examples 8"
             srcSet={require("../../assets/about/14-img-examples-9.webp")}
             type="image/webp"
           />
@@ -328,7 +328,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-resources3.jpg")}
-            alt="about-image"
+            alt="Image examples resources"
             srcSet={require("../../assets/about/14-img-examples-resources3.webp")}
             type="image/webp"
           />
@@ -352,41 +352,37 @@ const AboutModelPage = () => {
           again will remove the model from the sidebar.
         </Text>
         <Text>
-          <Text>
-            If the model is already in your collection, its name will appear as
-            a <span className={classes.link}>blue link</span> — click it to
-            navigate to the model’s page.
-          </Text>
+          If the model is already in your collection, its name will appear as a{" "}
+          <span className={classes.link}>blue link</span> — click it to navigate
+          to the model’s page.
         </Text>
         <H3>Version tracking</H3>
         <Text>
-          <Text>
-            If the resource is downloaded, you’ll see two indicators to help
-            track its versions.
-          </Text>
-          <Text>
-            You can mark versions as downloaded or not downloaded in the{" "}
-            <LinkA href="#settings" smoothScroll>
-              model settings
-            </LinkA>{" "}
-            by clicking the{" "}
-            <TextButton>
-              <Cog6ToothIcon /> Edit
-            </TextButton>{" "}
-            button on the model page.
-          </Text>
-          <Text>
-            <CheckCircleIcon
-              className={`${classes["status"]} ${classes["status--saved"]}`}
-            />{" "}
-            - Indicates that the version used as a resource is{" "}
-            <TextHighlight>marked</TextHighlight> as downloaded.
-          </Text>
-          <Text>
-            <ExclamationCircleIcon className={classes["status"]} /> - Indicates
-            that the version used as a resource is{" "}
-            <TextHighlight>not marked</TextHighlight> as downloaded.
-          </Text>
+          If the resource is downloaded, you’ll see two indicators to help track
+          its versions.
+        </Text>
+        <Text>
+          You can mark versions as downloaded or not downloaded in the{" "}
+          <LinkA href="#settings" smoothScroll>
+            model settings
+          </LinkA>{" "}
+          by clicking the{" "}
+          <TextButton>
+            <Cog6ToothIcon /> Edit
+          </TextButton>{" "}
+          button on the model page.
+        </Text>
+        <Text>
+          <CheckCircleIcon
+            className={`${classes["status"]} ${classes["status--saved"]}`}
+          />{" "}
+          - Indicates that the version used as a resource is{" "}
+          <TextHighlight>marked</TextHighlight> as downloaded.
+        </Text>
+        <Text>
+          <ExclamationCircleIcon className={classes["status"]} /> - Indicates
+          that the version used as a resource is{" "}
+          <TextHighlight>not marked</TextHighlight> as downloaded.
         </Text>
         <TextImageBlock>
           <Image
@@ -396,7 +392,7 @@ const AboutModelPage = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/14-img-examples-resources4.jpg")}
-            alt="about-image"
+            alt="Image examples resources 2"
             srcSet={require("../../assets/about/14-img-examples-resources4.webp")}
             type="image/webp"
           />

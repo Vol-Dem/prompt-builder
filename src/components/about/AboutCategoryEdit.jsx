@@ -1,6 +1,4 @@
-import {
-  PencilSquareIcon,
-} from "@heroicons/react/24/outline";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import Image from "../ui/image/Image";
 import classes from "./AboutCategoryEdit.module.scss";
 import H2 from "../ui/text/H2";
@@ -30,7 +28,7 @@ const AboutCategoryEdit = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/19-category-edit-1.jpg")}
-            alt="about-image"
+            alt="Category edit 1"
             srcSet={require("../../assets/about/19-category-edit-1.webp")}
             type="image/webp"
           />
@@ -41,7 +39,7 @@ const AboutCategoryEdit = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/19-category-edit-2.jpg")}
-            alt="about-image"
+            alt="Category edit 2"
             srcSet={require("../../assets/about/19-category-edit-2.webp")}
             type="image/webp"
           />

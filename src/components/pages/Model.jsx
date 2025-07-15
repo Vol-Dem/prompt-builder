@@ -117,7 +117,10 @@ const Model = ({ title }) => {
   const filterNsfwImages = useCallback((images, nsfwLevel) => {
     return images?.filter((image) => {
       if (image?.nsfwLevel) {
-        return checkIsInCurrentNsfwRange(nsfwLevel, image.nsfwLevel);
+        return (
+          checkIsInCurrentNsfwRange(nsfwLevel, image.nsfwLevel) ||
+          image.nsfwLevel === 1
+        );
       } else {
         return image?.nsfw === "None" || image?.nsfw === false;
       }

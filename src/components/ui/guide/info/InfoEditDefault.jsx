@@ -29,7 +29,7 @@ const InfoEditDefault = () => {
           height={310}
           className={`${classes["image"]}`}
           src={require("../../../../assets/guide/versions.jpg")}
-          alt=""
+          alt="Versions"
         />
       </NotificationMessage>
     </div>

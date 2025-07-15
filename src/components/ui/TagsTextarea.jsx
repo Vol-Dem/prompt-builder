@@ -50,6 +50,7 @@ const TagsTextarea = ({
     curPosPromptArr,
     curNegPromptArr,
     promptType,
+    promptIsOpen,
   ]);
 
   useEffect(() => {

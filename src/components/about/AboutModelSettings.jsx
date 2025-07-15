@@ -33,14 +33,14 @@ const AboutModelSettings = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/9-model-settings.jpg")}
-            alt="about-image"
+            alt="Model settings"
             srcSet={require("../../assets/about/9-model-settings.webp")}
             type="image/webp"
           />
         </TextImageBlock>
         <Text>
           In the <TextHighlight>"General Settings"</TextHighlight> tab, you can
-          change the model's name and description, mark it as NSFW, change its
+          change the model's name and description, flag it as NSFW, change its
           type, category, or subcategories, mark downloaded versions of the
           model.
         </Text>
@@ -52,7 +52,7 @@ const AboutModelSettings = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/10-general-settings.jpg")}
-            alt="about-image"
+            alt="General settings"
             srcSet={require("../../assets/about/10-general-settings.webp")}
             type="image/webp"
           />
@@ -74,7 +74,7 @@ const AboutModelSettings = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/11-versions-settings-1.jpg")}
-            alt="about-image"
+            alt="Versions settings 1"
             srcSet={require("../../assets/about/11-versions-settings-1.webp")}
             type="image/webp"
           />
@@ -85,7 +85,7 @@ const AboutModelSettings = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/11-versions-settings-2.jpg")}
-            alt="about-image"
+            alt="Versions settings 2"
             srcSet={require("../../assets/about/11-versions-settings-2.webp")}
             type="image/webp"
           />
@@ -105,7 +105,7 @@ const AboutModelSettings = () => {
             fullView={true}
             className={classes["img"]}
             src={require("../../assets/about/11-versions-settings-3.jpg")}
-            alt="about-image"
+            alt="Versions settings 3"
             srcSet={require("../../assets/about/11-versions-settings-3.webp")}
             type="image/webp"
           />
