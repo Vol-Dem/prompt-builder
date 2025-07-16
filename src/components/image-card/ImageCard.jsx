@@ -371,6 +371,11 @@ const ImageCard = ({ activeImgNum }) => {
                 return (
                   arr.findIndex((obj2) => obj2?.modelId === obj1?.modelId) === i
                 );
+              } else if (!!obj1?.name) {
+                //filters duplicate models that only have names that match the file name
+                return (
+                  arr.findIndex((obj2) => obj2?.name === obj1?.fileName) === i
+                );
               } else {
                 return true;
               }

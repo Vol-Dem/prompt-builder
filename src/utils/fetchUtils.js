@@ -10,6 +10,7 @@ import {
 } from "firebase/firestore";
 import {
   addDelayPromise,
+  clearFileExtension,
   filterDuplicates,
   transformImageData,
   transformModelData,
@@ -219,6 +220,11 @@ export const addResourcesInfo = async (resourcesData) => {
         ...(modelsData[i]?.name && { versionName: modelsData[i]?.name }),
         ...(modelsData[i]?.id && { versionId: modelsData[i]?.id }),
         ...(modelsData[i]?.model?.type && { type: modelsData[i]?.model?.type }),
+        ...(modelsData[i]?.files && {
+          fileName: clearFileExtension(
+            modelsData[i].files.find((file) => file?.primary)?.name
+          ),
+        }),
       };
     });
 

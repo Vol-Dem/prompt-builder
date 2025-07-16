@@ -17,19 +17,21 @@ const InfoResources = () => {
         <TextButtonSquare>
           <FolderArrowDownIcon />
         </TextButtonSquare>{" "}
-        – Click to save the current resource to your collection. If the resource
-        is already downloaded, the button will be replaced with a{" "}
+        – Click to <TextHighlight>save the current resource</TextHighlight> to
+        your collection. If the resource is already downloaded, the button will
+        be replaced with a{" "}
         <TextButtonSquare>
           <PlusIcon />
         </TextButtonSquare>
-        , which you can use to add the resource to the sidebar.
+        , which you can use to{" "}
+        <TextHighlight>add the resource to the sidebar</TextHighlight>.
       </p>
       <p>
         <TextButtonSquare>
           <PlusIcon />
         </TextButtonSquare>{" "}
-        – Click to add the model to the sidebar for quick access. Clicking again
-        will remove the model from the sidebar.
+        – Click to <TextHighlight>add the model to the sidebar</TextHighlight>{" "}
+        for quick access. Clicking again will remove the model from the sidebar.
       </p>
       <NotificationMessage>
         <p>
@@ -45,9 +47,10 @@ const InfoResources = () => {
           its versions.
         </p>
         <p>
-          You can mark versions as downloaded or not downloaded in the model
-          settings by clicking the <TextButton>Edit</TextButton> button on the
-          model page.
+          You can <TextHighlight>mark model versions</TextHighlight> as
+          downloaded or not downloaded{" "}
+          <TextHighlight>in the model settings</TextHighlight> by clicking the{" "}
+          <TextButton>Edit</TextButton> button on the model page.
         </p>
         <p>
           <CheckCircleIcon

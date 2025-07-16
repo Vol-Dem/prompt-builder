@@ -29,6 +29,10 @@ export const clearObjectKeys = (obj) => {
 };
 
 export const clearFileExtension = (name) => {
+  if (!name) {
+    return name;
+  }
+
   const clearedName = name
     ?.replace(".safetensors", "")
     .replace(".pt", "")

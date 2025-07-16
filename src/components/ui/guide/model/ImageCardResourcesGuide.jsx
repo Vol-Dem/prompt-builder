@@ -4,6 +4,7 @@ import PlusSvg from "../../../../assets/PlusSvg";
 import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_IMAGE_RESOURCES } from "../../../../variables/constants";
 import useGuideIndex from "../../../../hooks/use-guide-index";
+import { FolderArrowDownIcon } from "@heroicons/react/24/outline";
 
 const guideType = "model";
 
@@ -14,6 +15,11 @@ const ImageCardResourcesGuide = () => {
         <PlusSvg />
       </span>
     );
+    const folderImage = (
+      <span className={classes["btn-container"]}>
+        <FolderArrowDownIcon />
+      </span>
+    );
 
     return [
       {
@@ -22,9 +28,13 @@ const ImageCardResourcesGuide = () => {
         next: true,
         text: (
           <>
-            Models added to the collection and their versions are marked, you
+            {/* Models added to the collection and their versions are marked, you
             can also add them to the sidebar directly from here by clicking{" "}
-            {plusImage}
+            {plusImage} */}
+            {folderImage} Click to save the current resource to your collection.
+            If the resource is already downloaded, the button will be replaced
+            with a {plusImage}, which you can use to add the resource to the
+            sidebar.
           </>
         ),
       },
