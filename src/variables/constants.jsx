@@ -198,6 +198,8 @@ export const ANIMATIONS_FM_SLIDEIN = { opacity: 1, y: 0 };
 export const ANIMATIONS_FM_SLIDEOUT_INITIAL = { opacity: 0, y: -30 };
 export const ANIMATIONS_FM_SLIDEOUT = { opacity: 1, y: 0 };
 export const ANIMATIONS_FM_FADEOUT_EXIT = { opacity: 0, scale: 0.8 };
+export const ANIMATIONS_FM_FADEIN = { opacity: 1 };
+export const ANIMATIONS_FM_FADEIN_INITIAL = { opacity: 0 };
 export const ANIMATIONS_FM_ZOOM_IN_INITIAL = { opacity: 0, scale: 0.95 };
 export const ANIMATIONS_FM_ZOOM_IN = { opacity: 1, scale: 1 };
 export const ANIMATIONS_FM_HOVER_SCALE = { scale: 1.02 };
@@ -221,4 +223,84 @@ export const DEFAULT_DATA_TAGSETS_INPUT = [
       isValid: true,
     },
   ],
+];
+
+export const ABOUT_NAV_DATA = [
+  // {
+  //   name: "About",
+  //   subNav: [],
+  // },
+  {
+    id: "start",
+    name: "Start: Adding Models",
+    url: "start-adding-models",
+    subNav: [],
+  },
+  {
+    id: "category",
+    name: "Category edit",
+    url: "category-edit",
+    subNav: [],
+  },
+  {
+    id: "prompt",
+    name: "Working with Prompts",
+    url: "working-with-prompts",
+    subNav: [
+      { name: "Duplicates", id: "dup" },
+      { name: "Quick edit", id: "qedit" },
+      { name: "Drag & Drop", id: "dnd" },
+      { name: "Adding Presets", id: "preset" },
+    ],
+  },
+  {
+    id: "model",
+    name: "Model Page",
+    url: "model-page",
+    subNav: [
+      { name: "Tag Sets", id: "sets" },
+      { name: "Tag Sets Preview", id: "sets-prev" },
+      { name: "Generated Images", id: "images" },
+    ],
+  },
+  {
+    id: "settings",
+    name: "Model Settings",
+    url: "model-settings",
+    subNav: [
+      { name: "General Settings", id: "gsettings" },
+      { name: "Version Settings", id: "vsettings" },
+    ],
+  },
+  {
+    id: "collection",
+    name: "Image collections",
+    url: "image-collections",
+    subNav: [
+      { name: "From a model page", id: "coll-model" },
+      { name: "Through the sidebar", id: "coll-sidebar" },
+      { name: "Add image by post ID", id: "coll-post" },
+      { name: "Collection preview", id: "coll-preview" },
+    ],
+  },
+  {
+    id: "top",
+    name: "Top Panel",
+    url: "top-panel",
+    subNav: [
+      { name: "Search", id: "search" },
+      { name: "Download Queue", id: "queue" },
+      { name: "SFW and NSFW Modes", id: "mode" },
+    ],
+  },
+  {
+    id: "sidebar",
+    name: "Sidebar",
+    url: "sidebar",
+    subNav: [
+      { name: "Adding References", id: "references" },
+      { name: "Adding Models", id: "addmodels" },
+      { name: "Expanded and Compact View", id: "expanded" },
+    ],
+  },
 ];

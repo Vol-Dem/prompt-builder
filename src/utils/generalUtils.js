@@ -699,3 +699,12 @@ export const getPostIdFromInput = (postInput) => {
     return null;
   }
 };
+
+export const smoothScroll = (hashId) => {
+  if (!hashId) return;
+
+  const scrollTarget = document?.querySelector(`${hashId}`);
+  const headerHeight = document.querySelector("#header").offsetHeight;
+  const distToTop = window.scrollY + scrollTarget?.getBoundingClientRect().top;
+  window.scrollTo({ top: distToTop - headerHeight - 10, behavior: "smooth" });
+};

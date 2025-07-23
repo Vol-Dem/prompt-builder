@@ -153,7 +153,8 @@ const Prompt = memo(() => {
   };
 
   return (
-    <div className={classes.wrap}>
+    <div className={`${classes.wrap} wrapper`}>
+      {/* <div className={classes.wrap}> */}
       <div
         className={`${classes.container} ${
           promptIsOpen ? classes["container--open"] : ""

@@ -12,7 +12,7 @@ import OpenCategoryGuide from "../ui/guide/home/OpenCategoryGuide";
 import Modal from "../ui/Modal";
 import IntroGuide from "../ui/guide/IntroGuide";
 import { guideActions } from "../../store/guide";
-import ModelsList from "../lora/ModelsList";
+import ModelsList from "../models-list/ModelsList";
 import CategoryList from "../ui/lists/CategoryList";
 import ButtonCategoryAll from "../ui/buttons/ButtonCategoryAll";
 import CategoryListItem from "../ui/lists/CategoryListItem";

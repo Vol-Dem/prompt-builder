@@ -1,0 +1,9 @@
+@use "./../../../variables/variables.scss" as var;
+
+.item {
+      font-size: 1.6rem;
+      margin-bottom: 0.4rem;
+      &--sub {
+        list-style: none;
+      }
+}

@@ -12,12 +12,13 @@ import Video from "../ui/Video";
 import TextImageMenu from "../ui/text/text-buttons/TextImageMenu";
 import NotificationMessage from "../ui/NotificationMessage";
 import TextButtonSecondary from "../ui/text/text-buttons/TextButtonSecondary";
+import AboutSection from "./layout/AboutSection";
 
 const AboutTagSets = () => {
   return (
     <>
-      <>
-        <H3 id="sets">Tag Sets</H3>
+      <AboutSection id="sets">
+        <H3>Tag Sets</H3>
         <Text>
           The tag sets feature allows you to create a set of trigger words for
           generating specific <TextHighlight>outfits</TextHighlight>,{" "}
@@ -88,6 +89,8 @@ const AboutTagSets = () => {
           from that set in the prompt; the rest of the prompt will remain
           unchanged.
         </Text>
+      </AboutSection>
+      <AboutSection id="sets-prev">
         <H3>Tag Set Preview</H3>
         <Text>
           To easily understand what the tag set represents, you can add a
@@ -145,7 +148,7 @@ const AboutTagSets = () => {
             images using the <TextButton>Add Image by ID</TextButton> button.
           </p>
         </NotificationMessage>
-      </>
+      </AboutSection>
     </>
   );
 };

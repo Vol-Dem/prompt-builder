@@ -73,7 +73,8 @@ button {
 
 .wrapper {
   width: 100%;
-  max-width: 116rem;
+  // max-width: 116rem;
+  max-width: 144rem;
   margin: 0 auto;
   padding: 0 2rem;
 }
@@ -81,6 +82,18 @@ button {
 .scroll-off {
   overflow: hidden;
   padding-right: 8px;
+}
+
+a {
+  // display: inline-block;
+  color: #7278f0;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    color: lighten(#7278f0, 7%);
+  }
 }
 
 @-moz-document url-prefix() {
@@ -92,6 +105,12 @@ button {
       display: flex;
       padding-right: 1.2rem;
     }
+  }
+}
+
+@media (max-width: 1600px) {
+  .wrapper {
+    max-width: 116rem;
   }
 }
 

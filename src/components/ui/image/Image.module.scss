@@ -31,6 +31,7 @@
   object-fit: cover;
   transition: all 0.3s;
   width: auto;
+  pointer-events: none; // disable visual search btn in edge
 }
 
 .preloader {

@@ -10,7 +10,7 @@
 
 .container {
   min-width: 26rem;
-  max-width: 120rem;
+  max-width: 141rem;
   height: 100%;
 
   &--open {
@@ -99,6 +99,13 @@
   }
   100% {
     opacity: 1;
+  }
+}
+
+@media screen and (max-width: 1600px) {
+  .container {
+    max-width: 120rem;
+    // max-width: 112rem;
   }
 }
 

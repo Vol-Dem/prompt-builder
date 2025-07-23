@@ -1,29 +1,41 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 
-export const useIntersection = (ref, once = true, rootMargin = 0) => {
+export const useIntersection = (
+  elentRef,
+  once = true,
+  rootMargin = 0,
+  scrollMargin,
+  threshold,
+  rootRef
+) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const observerRef = useRef(null);
 
   useMemo(() => {
-    if (!ref) return;
+    if (!elentRef) return;
     observerRef.current = new IntersectionObserver(
       ([entry]) => {
         setIsIntersecting(entry.isIntersecting);
         if (entry.isIntersecting && once) observerRef.current.disconnect();
       },
-      { rootMargin: `${rootMargin}px` }
+      {
+        root: rootRef,
+        rootMargin: `${rootMargin}px`,
+        scrollMargin: scrollMargin || "0px",
+        threshold: threshold,
+      }
     );
-  }, [ref, once, rootMargin]);
+  }, [elentRef, once, rootMargin, scrollMargin, threshold, rootRef]);
 
   useEffect(() => {
-    if (!ref?.current) return;
+    if (!elentRef?.current) return;
 
-    observerRef.current.observe(ref.current);
+    observerRef.current.observe(elentRef.current);
 
     return () => {
       observerRef.current.disconnect();
     };
-  }, [ref]);
+  }, [elentRef]);
 
   return isIntersecting;
 };

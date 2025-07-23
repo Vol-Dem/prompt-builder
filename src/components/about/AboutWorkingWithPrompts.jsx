@@ -4,11 +4,9 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import Image from "../ui/image/Image";
-import LinkA from "../ui/LinkA";
 import TextButton from "../ui/text/text-buttons/TextButton";
 import TextHighlight from "../ui/text/TextHighlight";
 import classes from "./AboutWorkingWithPrompts.module.scss";
-import H2 from "../ui/text/H2";
 import Text from "../ui/text/Text";
 import TextImageBlock from "../ui/text/TextImageBlock";
 import TextContentBlock from "../ui/text/TextContentBlock";
@@ -18,11 +16,15 @@ import TextButtonAll from "../ui/text/text-buttons/TextButtonAll";
 import H3 from "../ui/text/H3";
 import Video from "../ui/Video";
 import NotificationMessage from "../ui/NotificationMessage";
+import AboutContentWrap from "./layout/AboutContentWrap";
+import H1 from "../ui/text/H1";
+import { Link } from "react-router-dom";
+import AboutSection from "./layout/AboutSection";
 
 const AboutWorkingWithPrompts = () => {
   return (
-    <>
-      <H2 id="prompt">Working with Prompts</H2>
+    <AboutContentWrap>
+      <H1 id="prompt">Working with Prompts</H1>
       <TextContentBlock>
         <Video
           width={1920}
@@ -140,9 +142,15 @@ const AboutWorkingWithPrompts = () => {
         <Text>
           Trigger words received with the model can be divided into groups:
           trigger words, helper words, negative words, and{" "}
-          <LinkA className={classes.link} href="#sets" smoothScroll>
+          <Link
+            className={classes.link}
+            to={{
+              pathname: `/about/model-page`,
+              hash: "sets",
+            }}
+          >
             tag sets
-          </LinkA>{" "}
+          </Link>{" "}
           (custom presets for outfits, appearances, etc.).
         </Text>
         <Text>
@@ -173,147 +181,155 @@ const AboutWorkingWithPrompts = () => {
           Text mode allows you to enter the prompt manually. When switching from
           text mode to tag mode, the entered text is also converted into tags.
         </Text>
-        <H3>Duplicates</H3>
-        <div>
-          <p>
-            {" "}
-            <TextHighlight>Duplicate tags are marked</TextHighlight> with
-            different highlight colors{" "}
-            <TextHighlight>to help you spot and manage </TextHighlight>them.
-          </p>
-          <TextImageBlock>
-            <Image
-              fullView={true}
-              loading="lazy"
-              width={1670}
-              height={330}
-              className={classes["img"]}
-              src={require("../../assets/guide/duplicates.png")}
-              alt="Duplicates"
-              srcSet={require("../../assets/guide/duplicates.webp")}
-              type="image/webp"
-            />
-          </TextImageBlock>
-        </div>
-        <H3>Quick edit</H3>
-        <div>
-          <Text>
-            Click on any tag to{" "}
-            <TextHighlight>
+        <AboutSection id="dup">
+          <H3>Duplicates</H3>
+          <div>
+            <p>
               {" "}
-              edit its content or adjust its weight
-            </TextHighlight>{" "}
-            using the arrows next to it.
-          </Text>
-          <TextImageBlock>
-            <Image
-              fullView={true}
-              loading="lazy"
-              width={901}
-              height={75}
-              className={classes["img"]}
-              src={require("../../assets/guide/tag-edit.png")}
-              alt="Tag edit"
-              srcSet={require("../../assets/guide/tag-edit.webp")}
-              type="image/webp"
-            />
-          </TextImageBlock>
-        </div>
-        <H3>Drag & Drop</H3>
-        <div>
-          <Text>
-            {" "}
-            Use drag-and-drop to quickly{" "}
-            <TextHighlight>
+              <TextHighlight>Duplicate tags are marked</TextHighlight> with
+              different highlight colors{" "}
+              <TextHighlight>to help you spot and manage </TextHighlight>them.
+            </p>
+            <TextImageBlock>
+              <Image
+                fullView={true}
+                loading="lazy"
+                width={1670}
+                height={330}
+                className={classes["img"]}
+                src={require("../../assets/guide/duplicates.png")}
+                alt="Duplicates"
+                srcSet={require("../../assets/guide/duplicates.webp")}
+                type="image/webp"
+              />
+            </TextImageBlock>
+          </div>
+        </AboutSection>
+        <AboutSection id="qedit">
+          <H3>Quick edit</H3>
+          <div>
+            <Text>
+              Click on any tag to{" "}
+              <TextHighlight>
+                {" "}
+                edit its content or adjust its weight
+              </TextHighlight>{" "}
+              using the arrows next to it.
+            </Text>
+            <TextImageBlock>
+              <Image
+                fullView={true}
+                loading="lazy"
+                width={901}
+                height={75}
+                className={classes["img"]}
+                src={require("../../assets/guide/tag-edit.png")}
+                alt="Tag edit"
+                srcSet={require("../../assets/guide/tag-edit.webp")}
+                type="image/webp"
+              />
+            </TextImageBlock>
+          </div>
+        </AboutSection>
+        <AboutSection id="dnd">
+          <H3>Drag & Drop</H3>
+          <div>
+            <Text>
               {" "}
-              rearrange and structure your prompt
-            </TextHighlight>{" "}
-            for better control and clarity.
-          </Text>
-          <TextImageBlock>
-            <Image
-              fullView={true}
-              loading="lazy"
-              width={851}
-              height={134}
-              className={classes["img"]}
-              src={require("../../assets/guide/dnd.png")}
-              alt="Drag and drop"
-              srcSet={require("../../assets/guide/dnd.webp")}
-              type="image/webp"
-            />
-          </TextImageBlock>
-        </div>
-        <H3 id="preset">Adding Presets</H3>
-        <Text>
-          You can add commonly used trigger words into presets (for example,
-          quality tags or a standard set of negative words). To do this, use the{" "}
-          <TextButtonTertiary>Presets</TextButtonTertiary> button next to the
-          prompt field.
-        </Text>
-        <TextImageBlock>
-          <Image
-            loading="lazy"
-            width={1909}
-            height={918}
-            fullView={true}
-            className={classes["img"]}
-            src={require("../../assets/about/8-presets-1.jpg")}
-            alt="Presets"
-            srcSet={require("../../assets/about/8-presets-1.webp")}
-            type="image/webp"
-          />
-        </TextImageBlock>
-        <div>
+              Use drag-and-drop to quickly{" "}
+              <TextHighlight>
+                {" "}
+                rearrange and structure your prompt
+              </TextHighlight>{" "}
+              for better control and clarity.
+            </Text>
+            <TextImageBlock>
+              <Image
+                fullView={true}
+                loading="lazy"
+                width={851}
+                height={134}
+                className={classes["img"]}
+                src={require("../../assets/guide/dnd.png")}
+                alt="Drag and drop"
+                srcSet={require("../../assets/guide/dnd.webp")}
+                type="image/webp"
+              />
+            </TextImageBlock>
+          </div>
+        </AboutSection>
+        <AboutSection id="preset">
+          <H3>Adding Presets</H3>
           <Text>
-            Click the <TextButton>Add preset</TextButton> button and select the
-            type: <TextHighlight>positive</TextHighlight> or{" "}
-            <TextHighlight>negative</TextHighlight>. Then enter a name and add
-            your trigger words. Click <TextButton>Save</TextButton>
+            You can add commonly used trigger words into presets (for example,
+            quality tags or a standard set of negative words). To do this, use
+            the <TextButtonTertiary>Presets</TextButtonTertiary> button next to
+            the prompt field.
+          </Text>
+          <TextImageBlock>
+            <Image
+              loading="lazy"
+              width={1909}
+              height={918}
+              fullView={true}
+              className={classes["img"]}
+              src={require("../../assets/about/8-presets-1.jpg")}
+              alt="Presets"
+              srcSet={require("../../assets/about/8-presets-1.webp")}
+              type="image/webp"
+            />
+          </TextImageBlock>
+          <div>
+            <Text>
+              Click the <TextButton>Add preset</TextButton> button and select
+              the type: <TextHighlight>positive</TextHighlight> or{" "}
+              <TextHighlight>negative</TextHighlight>. Then enter a name and add
+              your trigger words. Click <TextButton>Save</TextButton>
+            </Text>
+            <TextImageBlock>
+              <Image
+                fullView={true}
+                loading="lazy"
+                width={1248}
+                height={660}
+                className={classes["img"]}
+                src={require("../../assets/guide/preset-add.jpg")}
+                alt="Add preset"
+                srcSet={require("../../assets/guide/preset-add.webp")}
+                type="image/webp"
+              />
+            </TextImageBlock>
+          </div>
+          <Text>
+            To add a preset to your prompt,{" "}
+            <TextHighlight>click its name</TextHighlight> in the list — all
+            missing trigger words will be automatically added to the prompt,
+            without creating duplicates.
           </Text>
           <TextImageBlock>
             <Image
               fullView={true}
               loading="lazy"
-              width={1248}
-              height={660}
+              width={1380}
+              height={423}
               className={classes["img"]}
-              src={require("../../assets/guide/preset-add.jpg")}
-              alt="Add preset"
-              srcSet={require("../../assets/guide/preset-add.webp")}
+              src={require("../../assets/guide/preset.jpg")}
+              alt="Preset 2"
+              srcSet={require("../../assets/guide/preset.webp")}
               type="image/webp"
             />
           </TextImageBlock>
-        </div>
-        <Text>
-          To add a preset to your prompt,{" "}
-          <TextHighlight>click its name</TextHighlight> in the list — all
-          missing trigger words will be automatically added to the prompt,
-          without creating duplicates.
-        </Text>
-        <TextImageBlock>
-          <Image
-            fullView={true}
-            loading="lazy"
-            width={1380}
-            height={423}
-            className={classes["img"]}
-            src={require("../../assets/guide/preset.jpg")}
-            alt="Preset 2"
-            srcSet={require("../../assets/guide/preset.webp")}
-            type="image/webp"
-          />
-        </TextImageBlock>
-        <Text>
-          In the presets list, you can also edit a preset by clicking the{" "}
-          <TextButtonTertiary>Change</TextButtonTertiary> button or delete it by
-          clicking{" "}
-          <TextButtonTertiary className={`${classes["btn-del"]}`}>
-            Delete
-          </TextButtonTertiary>
-        </Text>
+          <Text>
+            In the presets list, you can also edit a preset by clicking the{" "}
+            <TextButtonTertiary>Change</TextButtonTertiary> button or delete it
+            by clicking{" "}
+            <TextButtonTertiary className={`${classes["btn-del"]}`}>
+              Delete
+            </TextButtonTertiary>
+          </Text>
+        </AboutSection>
       </TextContentBlock>
-    </>
+    </AboutContentWrap>
   );
 };
 

@@ -6,11 +6,13 @@ import Text from "../ui/text/Text";
 import TextImageBlock from "../ui/text/TextImageBlock";
 import TextContentBlock from "../ui/text/TextContentBlock";
 import TextButtonTertiary from "../ui/text/text-buttons/TextButtonTertiary";
+import AboutContentWrap from "./layout/AboutContentWrap";
+import H1 from "../ui/text/H1";
 
 const AboutCategoryEdit = () => {
   return (
-    <>
-      <H2 id="category">Category edit</H2>
+    <AboutContentWrap>
+      <H1 id="category">Category edit</H1>
       <TextContentBlock>
         <Text>
           You can edit the name of a category or subcategory or delete it if
@@ -51,7 +53,7 @@ const AboutCategoryEdit = () => {
           before.
         </Text>
       </TextContentBlock>
-    </>
+    </AboutContentWrap>
   );
 };
 

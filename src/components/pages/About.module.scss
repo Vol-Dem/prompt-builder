@@ -1,11 +1,33 @@
 @use "../../variables/variables.scss" as var;
 @include var.animation-show;
 
+.content {
+}
+
 .about {
-  margin: 3rem auto;
-  max-width: 93rem;
+  display: grid;
+  position: relative;
+  grid-template-columns: 30rem 1fr;
+  margin: 0rem auto;
+  // max-width: 93rem;
   font-size: 1.6rem;
   animation: show 0.6s ease-in forwards;
+
+  // &__sidebar {
+  //   position: sticky;
+  //   background-color: rgba(var.$color-background-tertiary, 0.7);
+  //   overflow-y: scroll;
+  //   height: 89vh;
+  //   padding: 2rem;
+  //   border-radius: 10px;
+  //   top: 7.2rem;
+  //   margin-bottom: 2rem;
+  //   @include var.custom-scroll
+  // }
+
+  &__content {
+    margin-left: 4rem;
+  }
 
   &__h1 {
     margin-bottom: 2rem;
@@ -258,11 +280,27 @@
   }
 }
 
+@media (max-width: 1000px) {
+  .about {
+    grid-template-columns: 26rem 1fr;
+  }
+}
+
 @media (max-width: 768px) {
   .img-block--col-3 {
     grid-template-columns: 1fr 1fr;
     width: 100%;
     margin: 4rem auto;
+  }
+}
+
+@media (max-width: 680px) {
+  .about {
+    grid-template-columns: 1fr;
+
+    &__content {
+      margin-left: 0;
+    }
   }
 }
 

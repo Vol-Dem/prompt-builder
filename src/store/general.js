@@ -14,6 +14,7 @@ const generalSlice = createSlice({
     nsfwLevel: "None",
     sfwValue: "None",
     nsfwValue: "X",
+    activeAboutSectionId: "",
   },
   reducers: {
     setIsMobile(state, actions) {
@@ -32,6 +33,9 @@ const generalSlice = createSlice({
     },
     setNsfwLevel(state, actions) {
       state.nsfwLevel = actions.payload;
+    },
+    setActiveAboutSectionId(state, actions) {
+      state.activeAboutSectionId = actions.payload;
     },
     setSfwValue(state, actions) {
       state.sfwValue = actions.payload;

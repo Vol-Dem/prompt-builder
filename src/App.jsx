@@ -11,6 +11,16 @@ import { initAuth } from "./store/auth";
 import ErrorPage from "./components/pages/ErrorPage";
 import { generalActions } from "./store/general";
 import { checkIsMobile } from "./utils/generalUtils";
+import AboutMain from "./components/about/AboutMain";
+import { ABOUT_NAV_DATA } from "./variables/constants";
+import AboutStartAddingModels from "./components/about/AboutStartAddingModels";
+import AboutCategoryEdit from "./components/about/AboutCategoryEdit";
+import AboutWorkingWithPrompts from "./components/about/AboutWorkingWithPrompts";
+import AboutModelPage from "./components/about/AboutModelPage";
+import AboutModelSettings from "./components/about/AboutModelSettings";
+import AboutImageCollections from "./components/about/AboutImageCollections";
+import AboutTopPanel from "./components/about/AboutTopPanel";
+import AboutSidebar from "./components/about/AboutSidebar";
 
 const About = lazy(() => import("./components/pages/About"));
 const ToS = lazy(() => import("./components/pages/ToS"));
@@ -101,7 +111,53 @@ function App() {
           path="about"
           errorElement={<ErrorPage />}
           element={<About title="About" />}
-        ></Route>
+        >
+          <Route
+            path="/about"
+            errorElement={<ErrorPage />}
+            element={<AboutMain title="About" />}
+          ></Route>
+          <Route
+            path="/about/start-adding-models"
+            errorElement={<ErrorPage />}
+            element={<AboutStartAddingModels title="Start: Adding Models" />}
+          ></Route>
+          <Route
+            path="/about/category-edit"
+            errorElement={<ErrorPage />}
+            element={<AboutCategoryEdit title="Category edit" />}
+          ></Route>
+          <Route
+            path="/about/working-with-prompts"
+            errorElement={<ErrorPage />}
+            element={<AboutWorkingWithPrompts title="Working with Prompts" />}
+          ></Route>
+          <Route
+            path="/about/model-page"
+            errorElement={<ErrorPage />}
+            element={<AboutModelPage title="Model Page" />}
+          ></Route>
+          <Route
+            path="/about/model-settings"
+            errorElement={<ErrorPage />}
+            element={<AboutModelSettings title="Model Settings" />}
+          ></Route>
+          <Route
+            path="/about/image-collections"
+            errorElement={<ErrorPage />}
+            element={<AboutImageCollections title="Image collections" />}
+          ></Route>
+          <Route
+            path="/about/top-panel"
+            errorElement={<ErrorPage />}
+            element={<AboutTopPanel title="Top Panel" />}
+          ></Route>
+          <Route
+            path="/about/sidebar"
+            errorElement={<ErrorPage />}
+            element={<AboutSidebar title="Sidebar" />}
+          ></Route>
+        </Route>
         <Route
           path="tos"
           errorElement={<ErrorPage />}

@@ -4,16 +4,18 @@ import LinkA from "../ui/LinkA";
 import TextButton from "../ui/text/text-buttons/TextButton";
 import TextHighlight from "../ui/text/TextHighlight";
 import classes from "./AboutStartAddingModels.module.scss";
-import H2 from "../ui/text/H2";
 import Text from "../ui/text/Text";
 import TextImageBlock from "../ui/text/TextImageBlock";
 import TextContentBlock from "../ui/text/TextContentBlock";
 import TextButtonCreate from "../ui/text/text-buttons/TextButtonCreate";
+import AboutContentWrap from "./layout/AboutContentWrap";
+import H1 from "../ui/text/H1";
+import { Link } from "react-router-dom";
 
 const AboutStartAddingModels = () => {
   return (
-    <>
-      <H2 id="start">Start: Adding Models</H2>
+    <AboutContentWrap>
+      <H1 id="start">Start: Adding Models</H1>
       <TextContentBlock>
         <Text>
           To get started with the platform, add a model using the{" "}
@@ -69,9 +71,15 @@ const AboutStartAddingModels = () => {
         <Text>
           You will gain access to tags (trigger words) and other data related to
           the model, be able{" "}
-          <LinkA href="#gsettings" smoothScroll>
+          <Link
+            className={classes.link}
+            to={{
+              pathname: `/about/model-settings`,
+              hash: "gsettings",
+            }}
+          >
             to edit them
-          </LinkA>{" "}
+          </Link>{" "}
           and add additional information. You also can view all images generated
           by users with this model, and add to your collection those you want to
           use as references in the future.
@@ -90,7 +98,7 @@ const AboutStartAddingModels = () => {
           />
         </TextImageBlock>
       </TextContentBlock>
-    </>
+    </AboutContentWrap>
   );
 };
 
