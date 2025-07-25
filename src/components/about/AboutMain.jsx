@@ -213,25 +213,69 @@ const AboutMain = () => {
           </ListItem>
         </List>
       </TextContentBlock>
+      {/* <a
+        href="https://www.patreon.com/aidetools"
+        target="_blank"
+        rel="noreferrer nofollow"
+      >
+        <img
+          width={520}
+          height={108}
+          loading="lazy"
+          src={require("../../assets/patreon-w.png")}
+          border="0"
+          alt="patreon"
+        />
+      </a>
+      <a
+        href="https://ko-fi.com/J3J31052RE"
+        target="_blank"
+        rel="noreferrer nofollow"
+      >
+        <img
+          width={341}
+          height={129}
+          loading="lazy"
+          src={require("../../assets/kofi_bg_tag_dark.webp")}
+          border="0"
+          alt="ko-fi"
+        />
+      </a> */}
       <NotificationMessage type="notification" className={classes.notification}>
         <p>
           This is a non-profit project that exists thanks to your support. If
           you like AIDE-TOOLS, support the project on{" "}
-          <LinkA
-            external={true}
+          <a
             href="https://www.patreon.com/aidetools"
-            smoothScroll
+            target="_blank"
+            rel="noreferrer nofollow"
           >
-            Patreon
-          </LinkA>{" "}
+            <img
+              width={520}
+              height={108}
+              loading="lazy"
+              src={require("../../assets/patreon-w.png")}
+              border="0"
+              alt="https://www.patreon.com/aidetools"
+              className={classes["img-link"]}
+            />
+          </a>{" "}
           or{" "}
-          <LinkA
-            external={true}
+          <a
             href="https://ko-fi.com/J3J31052RE"
-            smoothScroll
+            target="_blank"
+            rel="noreferrer nofollow"
           >
-            Ko-Fi
-          </LinkA>
+            <img
+              width={341}
+              height={129}
+              loading="lazy"
+              src={require("../../assets/kofi_bg_tag_dark.webp")}
+              border="0"
+              alt="https://ko-fi.com/J3J31052RE"
+              className={classes["img-link"]}
+            />
+          </a>
         </p>
       </NotificationMessage>
     </AboutContentWrap>

@@ -4,6 +4,7 @@ import {
   ANIMATIONS_FM_FADEIN_INITIAL,
 } from "../../../variables/constants";
 import classes from "./AboutContentWrap.module.scss";
+import AboutNavBtnContainer from "./AboutNavBtnContainer";
 
 const AboutContentWrap = ({ children }) => {
   return (
@@ -13,6 +14,7 @@ const AboutContentWrap = ({ children }) => {
       className={classes.wrap}
     >
       {children}
+      <AboutNavBtnContainer />
     </motion.div>
   );
 };

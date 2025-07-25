@@ -14,6 +14,7 @@ import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
 import TagSetsForm from "../../forms/tag-sets-form/TagSetsForm";
 import Buttton from "../../ui/Button";
 import Modal from "../../ui/Modal";
+import TextHighlight from "../../ui/text/TextHighlight";
 
 const SetTagSetPreview = ({ src }) => {
   const [tagSetsFormIsOpen, setTagSetsFormIsOpen] = useState(false);
@@ -159,7 +160,9 @@ const SetTagSetPreview = ({ src }) => {
               />
             </div>
             <div className={classes["tag-sets__info"]}>
-              <h3 className={classes["tag-sets__name"]}>{tagSet.name}</h3>
+              <h3 className={classes["tag-sets__name"]} title={tagSet.name}>
+                {tagSet.name}
+              </h3>
               <div className={classes["tag-sets__btn-container"]}>
                 <ButttonTertiary
                   type="button"
@@ -242,6 +245,16 @@ const SetTagSetPreview = ({ src }) => {
                 </p>
               </div>
             )}
+          {!!tagSetVersionsHtml?.length && !versionTagsetsHtml && (
+            <div className={classes["notification"]}>
+              <ExclamationCircleSvg className={classes["notification__svg"]} />
+              <p className={classes["notification__text"]}>
+                You don't have tag sets for this{" "}
+                <TextHighlight>version</TextHighlight>. <br /> Press "Add tag
+                set" to add new tag set!
+              </p>
+            </div>
+          )}
           {curTagSetVersionId === "tsv-def" && (
             <ul className={classes["tag-sets"]}>{defTagSetsHtml}</ul>
           )}

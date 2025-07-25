@@ -302,34 +302,36 @@ const UsedModelsPanel = memo(() => {
           </div>
           <div className={classes["support"]}>
             <span className={classes["support__title"]}>Support project:</span>{" "}
-            <a
-              href="https://www.patreon.com/aidetools"
-              target="_blank"
-              rel="noreferrer nofollow"
-            >
-              <img
-                width={520}
-                height={108}
-                loading="lazy"
-                src={require("../../assets/patreon-w.png")}
-                border="0"
-                alt="patreon"
-              />
-            </a>
-            <a
-              href="https://ko-fi.com/J3J31052RE"
-              target="_blank"
-              rel="noreferrer nofollow"
-            >
-              <img
-                width={341}
-                height={129}
-                loading="lazy"
-                src={require("../../assets/kofi_bg_tag_dark.webp")}
-                border="0"
-                alt="ko-fi"
-              />
-            </a>
+            <div className={classes["support__links"]}>
+              <a
+                href="https://www.patreon.com/aidetools"
+                target="_blank"
+                rel="noreferrer nofollow"
+              >
+                <img
+                  width={520}
+                  height={108}
+                  loading="lazy"
+                  src={require("../../assets/patreon-w.png")}
+                  border="0"
+                  alt="patreon"
+                />
+              </a>
+              <a
+                href="https://ko-fi.com/J3J31052RE"
+                target="_blank"
+                rel="noreferrer nofollow"
+              >
+                <img
+                  width={341}
+                  height={129}
+                  loading="lazy"
+                  src={require("../../assets/kofi_bg_tag_dark.webp")}
+                  border="0"
+                  alt="ko-fi"
+                />
+              </a>
+            </div>
           </div>
         </motion.div>
       </>

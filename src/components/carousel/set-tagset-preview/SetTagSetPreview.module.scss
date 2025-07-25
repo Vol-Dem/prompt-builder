@@ -179,7 +179,7 @@
 
   &__img {
     width: 9rem;
-    height: 10rem;
+    // height: 10rem;
     flex-shrink: 0;
   }
 
@@ -191,6 +191,7 @@
   &__name {
     font-size: 1.6rem;
     font-weight: 400;
+    @include var.ellipsis(2);
   }
 
   &__btn-container {

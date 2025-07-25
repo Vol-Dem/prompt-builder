@@ -28,7 +28,9 @@ const AboutNav = () => {
     setNavIsOpen((prev) => !prev);
   };
 
-  const closeNav = () => {
+  const closeNav = (url) => {
+    const curPageUrl = location.pathname.split("/").slice(-1)[0];
+    if (curPageUrl !== url) window.scrollTo(0, 0);
     setNavIsOpen(false);
   };
 
@@ -46,7 +48,7 @@ const AboutNav = () => {
               pathname: `/about/${item.url}`,
               hash: subItem.id,
             }}
-            onClick={closeNav}
+            onClick={closeNav.bind(null, item.url)}
           >
             {subItem.name}
           </NavLink>
@@ -64,7 +66,7 @@ const AboutNav = () => {
             pathname: `/about/${item.url}`,
             hash: item.id,
           }}
-          onClick={closeNav}
+          onClick={closeNav.bind(null, item.url)}
         >
           {item.name}
         </NavLink>
@@ -84,7 +86,7 @@ const AboutNav = () => {
         className={`${classes["sidebar"]}`}
       >
         <List>
-          <ListItem>
+          {/* <ListItem>
             <NavLink
               className={(nav) =>
                 location.pathname === "/about"
@@ -98,7 +100,7 @@ const AboutNav = () => {
             >
               About
             </NavLink>
-          </ListItem>
+          </ListItem> */}
           {aboutNavItemsHrml}
         </List>
       </motion.div>

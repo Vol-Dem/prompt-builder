@@ -226,10 +226,12 @@ export const DEFAULT_DATA_TAGSETS_INPUT = [
 ];
 
 export const ABOUT_NAV_DATA = [
-  // {
-  //   name: "About",
-  //   subNav: [],
-  // },
+  {
+    id: "about",
+    name: "About",
+    url: "",
+    subNav: [],
+  },
   {
     id: "start",
     name: "Start: Adding Models",
