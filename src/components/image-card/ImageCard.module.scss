@@ -422,6 +422,10 @@
   transform: rotate(45deg);
 }
 
+.form {
+  max-width: 25rem;
+}
+
 // @media (min-width: 1310px) {
 //   .example__info {
 //     overflow-y: scroll;
@@ -473,5 +477,9 @@
   }
   .example__resources {
     gap: 1rem;
+  }
+
+  .form {
+    max-width: 100%;
   }
 }

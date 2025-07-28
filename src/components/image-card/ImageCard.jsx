@@ -849,6 +849,7 @@ const ImageCard = ({ activeImgNum }) => {
               newModelVersionId={modelToSave?.modelVersionId}
               onSave={updateImageResources}
               newModelType={modelToSave?.modelType || null}
+              className={classes.form}
             />
           </Modal>
         )}

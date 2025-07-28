@@ -12,6 +12,8 @@ import {
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
   ERROR_MESSAGE_INPUT_DEF,
   SUCCESS_MESSAGE_SAVED,
+  ANIMATIONS_FM_FADEIN_INITIAL,
+  ANIMATIONS_FM_FADEIN,
 } from "../../../variables/constants";
 import { AnimatePresence, motion } from "framer-motion";
 import ComboSelect from "../../ui/ComboSelect";
@@ -84,7 +86,7 @@ const SaveToCollectionForm = ({
       category.name
         .trim()
         .toLowerCase()
-        .includes(mainCategoryQuery.toLowerCase())
+        .includes(mainCategoryQuery.trim().toLowerCase())
     );
     return sortArrayBy(categoriesOptions, "name");
   }, [categories, mainCategoryQuery]);
@@ -107,7 +109,7 @@ const SaveToCollectionForm = ({
 
             const isInQuery = collection.name
               .toLowerCase()
-              .includes(collectionNameQuery.toLowerCase());
+              .includes(collectionNameQuery.trim().toLowerCase());
             return inputSubcatIds?.length
               ? isInSubcategories && isInQuery
               : isInQuery;
@@ -318,7 +320,13 @@ const SaveToCollectionForm = ({
   return (
     <>
       {!chooseImageIsOpen && (
-        <form onSubmit={submitHandler}>
+        <form
+          // initial={ANIMATIONS_FM_FADEIN_INITIAL}
+          // animate={ANIMATIONS_FM_FADEIN}
+          // transition={{ duration: 0.3 }}
+          className={classes.form}
+          onSubmit={submitHandler}
+        >
           <div className={classes["fields"]}>
             <ComboSelect
               label="Category"

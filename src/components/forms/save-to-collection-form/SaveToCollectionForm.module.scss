@@ -1,5 +1,9 @@
 @use "./../../../variables/variables.scss" as var;
 
+.form {
+  animation: show 0.3s ease-in forwards;
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -193,3 +197,5 @@
   font-size: 1.4rem;
   flex-shrink: 0;
 }
+
+@include var.animation-show;

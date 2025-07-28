@@ -103,7 +103,7 @@ const UsedModelsPanel = memo(() => {
     setCursorCurX(null);
     setCursorInitialX(null);
 
-    if (!!offcet && offcet > 0 && Math.abs(offcet) > 40) {
+    if (!!offcet && offcet > 0 && Math.abs(offcet) > 10) {
       dispatch(usedModelsActions.panelState(true));
     } else if (!!offcet && offcet < 0 && Math.abs(offcet) > 40) {
       dispatch(usedModelsActions.panelState(false));

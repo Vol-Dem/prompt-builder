@@ -22,12 +22,12 @@
   }
 }
 
-// @media (max-width: 510px) {
-//   .notification {
-//     grid-template-columns: 1fr;
+@media (max-width: 400px) {
+  .notification {
+    flex-direction: column;
 
-//     &__icon {
-//       display: none;
-//     }
-//   }
-// }
+    // &__icon {
+    //   display: none;
+    // }
+  }
+}

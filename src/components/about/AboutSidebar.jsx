@@ -15,6 +15,7 @@ import TextButtonTertiary from "../ui/text/text-buttons/TextButtonTertiary";
 import TextButtonSquare from "../ui/text/text-buttons/TextButtonSquare";
 import AboutContentWrap from "./layout/AboutContentWrap";
 import H1 from "../ui/text/H1";
+import H3 from "../ui/text/H3";
 import AboutSection from "./layout/AboutSection";
 
 const AboutSidebar = () => {
@@ -32,6 +33,7 @@ const AboutSidebar = () => {
           models as you like. */}
         </Text>
         <AboutSection id="references">
+          <H3>Adding References</H3>
           <Text className={classes["about__text"]}>
             To add an image as a reference, go to the model page and click the{" "}
             <TextButtonSquare>
@@ -74,6 +76,7 @@ const AboutSidebar = () => {
           </TextImageBlock>
         </AboutSection>
         <AboutSection id="addmodels">
+          <H3>Adding Models</H3>
           <Text className={classes["about__text"]}>
             To add a model to the sidebar, click the{" "}
             <TextButtonSquare>
@@ -100,6 +103,7 @@ const AboutSidebar = () => {
           </TextImageBlock>
         </AboutSection>
         <AboutSection id="expanded">
+          <H3>Expanded and Compact View</H3>
           <Text className={classes["about__text"]}>
             You can toggle the model info display in the sidebar between compact
             and expanded views using the{" "}

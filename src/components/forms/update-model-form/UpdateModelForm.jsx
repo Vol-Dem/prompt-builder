@@ -86,6 +86,7 @@ const UpdateModelForm = ({
   newModelVersionId,
   newModelType,
   onSave,
+  className,
 }) => {
   const [modelIsSaving, setModelIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -142,7 +143,9 @@ const UpdateModelForm = ({
   const mainCategoryOptions = useMemo(() => {
     return !!modelTypeInput && categories?.hasOwnProperty(modelTypeInput)
       ? categories[modelTypeInput]?.filter((category) =>
-          category.name.toLowerCase().includes(mainCategoryQuery.toLowerCase())
+          category.name
+            .toLowerCase()
+            .includes(mainCategoryQuery.trim().toLowerCase())
         )
       : [];
   }, [categories, modelTypeInput, mainCategoryQuery]);
@@ -153,7 +156,7 @@ const UpdateModelForm = ({
         ?.subcategories?.filter((subcategory) =>
           subcategory.name
             .toLowerCase()
-            .includes(subCategoryQuery.toLowerCase())
+            .includes(subCategoryQuery.trim().toLowerCase())
         )
     : [];
 
@@ -844,7 +847,10 @@ const UpdateModelForm = ({
   });
 
   return (
-    <form onSubmit={saveModelHandler} className={classes["form"]}>
+    <form
+      onSubmit={saveModelHandler}
+      className={`${classes["form"]} ${className || ""}`}
+    >
       {modelData && (
         <FieldCategory>
           <Input

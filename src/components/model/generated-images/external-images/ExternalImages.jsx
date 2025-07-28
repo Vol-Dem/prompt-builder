@@ -55,6 +55,10 @@ const ExternalImages = memo(
       setIsIntersecting(intersecting || intersectingSmall);
     }, [intersecting, intersectingSmall]);
 
+    useEffect(() => {
+      if (curImagesModelVersionId) setIsIntersecting(true);
+    }, [curImagesModelVersionId]);
+
     const resetExamples = () => {
       setCurrCursor(null);
       setNextCursor(null);

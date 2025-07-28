@@ -58,6 +58,7 @@
   height: 2.8rem;
 
   &:hover {
+    color: var.$color-text-white;
     background-color: darken(var.$color-primary, 10%);
   }
 

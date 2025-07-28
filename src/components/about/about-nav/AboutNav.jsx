@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { smoothScroll } from "../../../utils/generalUtils";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import { motion } from "framer-motion";
+import { ListBulletIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const AboutNav = () => {
   const [navIsOpen, setNavIsOpen] = useState(false);
@@ -78,7 +79,8 @@ const AboutNav = () => {
   return (
     <>
       <ButtonTertiary className={classes["nav-btn"]} onClick={navHandler}>
-        Menu
+        {!navIsOpen && <ListBulletIcon />}
+        {navIsOpen && <XMarkIcon />}
       </ButtonTertiary>
       <motion.div
         animate={{ left: navIsOpen ? 0 : "-100%" }}
