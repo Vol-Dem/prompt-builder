@@ -1,9 +1,21 @@
 import classes from "./Checkbox.module.scss";
 
-const Checkbox = ({ id, value, name, label, onChange, checked, className }) => {
+const Checkbox = ({
+  id,
+  value,
+  name,
+  label,
+  onChange,
+  checked,
+  disabled,
+  className,
+}) => {
   return (
     <div>
-      <label htmlFor={id} className={`${classes.label}`}>
+      <label
+        htmlFor={id}
+        className={`${classes.label} ${disabled ? classes.disabled : ""}`}
+      >
         <input
           type="checkbox"
           id={id}
@@ -12,6 +24,7 @@ const Checkbox = ({ id, value, name, label, onChange, checked, className }) => {
           className={`${classes.checkbox} ${className || ""}`}
           onChange={onChange}
           checked={checked}
+          disabled={disabled}
         />
         {label}
       </label>

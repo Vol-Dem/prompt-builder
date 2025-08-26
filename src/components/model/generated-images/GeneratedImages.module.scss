@@ -9,7 +9,6 @@
 
 .img {
   width: 30rem;
-  // height: 100%;
 }
 
 .images-container {
@@ -81,18 +80,12 @@
   padding: 0.4rem 2rem;
   border: none;
   border-radius: 1rem;
-  // position: absolute;
-  // top: 1rem;
-  // left: 1rem;
 }
 
 .btn-edit {
   padding: 0.4rem 2rem;
   border: none;
   border-radius: 1rem;
-  // position: absolute;
-  // top: 1rem;
-  // right: 1rem;
 }
 
 .btn-examples {
@@ -118,13 +111,9 @@
   justify-content: center;
   width: 8rem;
   font-size: 1.8rem;
-  // border: 1px solid rgba(255, 255, 255, 0.3);
   border: 1px solid var.$color-gray-dark;
-  // text-transform: uppercase;
   background-color: transparent;
-  // background-color: #fff;
   padding: 0.4rem 0.6rem;
-  // border: none;
   transition: all 0.3s;
   color: #fff;
   cursor: pointer;
@@ -143,8 +132,6 @@
   }
 
   &:hover {
-    // border: 1px solid rgba(255, 255, 255, 0.5);
-    // border: 1px solid var.$color-text-gray;
     border-color: var.$color-text-gray;
   }
 }
@@ -155,10 +142,6 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: var.$color-text-white;
   background-color: var.$color-background-tertiary;
-
-  // &:hover {
-  //   // background-color: aqua;
-  // }
 }
 
 .sort {
@@ -170,7 +153,6 @@
 
 .button-add {
   height: 3.4rem;
-  // margin-left: auto;
 }
 
 .notification {
@@ -178,7 +160,6 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.4rem;
-  // margin-bottom: 3rem;
   background-color: var.$color-background-tertiary;
   border-radius: 10px;
   padding: 1rem 0.9rem;
@@ -196,7 +177,6 @@
   width: 2rem;
   height: 2rem;
   flex-shrink: 0;
-  // transform: translateY(3px);
   margin-bottom: -5px;
 }
 
@@ -205,25 +185,16 @@
   margin: 0 auto;
   width: 12rem;
   box-shadow: none;
-  // margin-top: 0.6rem;
   margin-bottom: 1rem;
 }
 
-// .form-container {
-//   overflow-y: scroll;
-//   max-height: 80vh;
-// }
-
-@media (max-width: 600px) {
-  .button-add {
-    // margin-left: initial;
-  }
+@media (max-width: 630px) {
   .sort {
     margin-left: initial;
   }
 
-  .notification {
-    // flex-direction: column;
+  .images {
+    justify-content: center;
   }
 }
 @media (max-width: 480px) {

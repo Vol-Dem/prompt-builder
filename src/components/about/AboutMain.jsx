@@ -23,7 +23,8 @@ const AboutMain = () => {
   return (
     <AboutContentWrap>
       <H1 id="#about">About</H1>
-      {/* <TextContentBlock>
+      <TextContentBlock>
+        {/* <TextContentBlock>
         <div className={classes["video-container"]}>
           <Video
             playsInline
@@ -42,35 +43,36 @@ const AboutMain = () => {
         </div>
       </TextContentBlock> */}
 
-      <Text>
-        This platform offers a variety of features, such as using trigger words
-        from models and images as tags for quick and easy modification of
-        prompts, adding current models and image references to the sidebar for
-        quick access, extended configuration options, and other customization
-        features.
-      </Text>
-      <Text>
-        AIDE-TOOLS provides a centralized solution for storing and managing
-        collections. It is versatile and independent of popular web interfaces,
-        so you can use the generated prompt in any web interface or for online
-        generation on Civitai.
-      </Text>
-      <div className={classes["video-container"]}>
-        <Video
-          playsInline
-          disablePictureInPicture
-          controls
-          width={1280}
-          height={720}
-          poster={require("../../assets/home/intro-s.webp")}
-          className={classes["video"]}
-        >
-          <source
-            src={require("../../assets/home/intro.mp4")}
-            type="video/mp4"
-          />
-        </Video>
-      </div>
+        <Text>
+          This platform offers a variety of features, such as using trigger
+          words from models and images as tags for quick and easy modification
+          of prompts, adding current models and image references to the sidebar
+          for quick access, extended configuration options, and other
+          customization features.
+        </Text>
+        <Text>
+          AIDE-TOOLS provides a centralized solution for storing and managing
+          collections. It is versatile and independent of popular web
+          interfaces, so you can use the generated prompt in any web interface
+          or for online generation on Civitai.
+        </Text>
+        <div className={classes["video-container"]}>
+          <Video
+            playsInline
+            disablePictureInPicture
+            controls
+            width={1280}
+            height={720}
+            poster={require("../../assets/home/intro-s.webp")}
+            className={classes["video"]}
+          >
+            <source
+              src={require("../../assets/home/intro.mp4")}
+              type="video/mp4"
+            />
+          </Video>
+        </div>
+      </TextContentBlock>
       {/* <div className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}>
         <Image
           loading="lazy"
@@ -94,11 +96,12 @@ const AboutMain = () => {
           alt="about-image"
         />
       </div> */}
-      <Text>
-        With the help of the AIDE-TOOLS platform you can create your own
-        collection of your favorite models and easily work with them:
-      </Text>
+
       <TextContentBlock>
+        <Text>
+          With the help of the AIDE-TOOLS platform you can create your own
+          collection of your favorite models and easily work with them:
+        </Text>
         <List>
           {/* <ListItem>
             Make your prompt building clear and effortless: the system

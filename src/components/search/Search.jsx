@@ -42,6 +42,7 @@ const Search = ({ className }) => {
   const categories = useSelector((state) => state.tabs.categoriesData);
   const collectionCategories = useSelector((state) => state.images.categories);
   const searchIsLoading = useSelector((state) => state.search.isLoading);
+  const searchFilter = useSelector((state) => state.search.searchFilter);
   const quickSerchResult = useSelector(
     (state) => state.search.quickSerchResult
   );
@@ -126,10 +127,13 @@ const Search = ({ className }) => {
   }, [categoriesSearchData, searchInput]);
 
   useEffect(() => {
+    let curQuery = searchInput.trim();
+    // if (curQuery === searchResultFull.query) return;
+
     if (uid && searchInput.length >= 3 && isOnline) {
       if (
         location.pathname !== "/search" &&
-        searchResult.query === searchInput.trim() &&
+        searchResult.query === curQuery &&
         searchResult.nsfw === nsfwMode
       )
         return;
@@ -147,7 +151,7 @@ const Search = ({ className }) => {
           if (location.pathname !== "/search") {
             dispatch(
               liveSearch(
-                searchInput.trim(),
+                curQuery,
                 nsfwMode,
                 SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE + 1,
                 false,
@@ -157,11 +161,16 @@ const Search = ({ className }) => {
           } else {
             dispatch(searchActions.setIsLastPage(false));
             dispatch(searchActions.setIsLastSubPage(false));
+
             dispatch(
               liveSearch(
-                searchInput.trim(),
+                curQuery,
                 nsfwMode,
-                SETTINGS_SEARCH_RESULT_PER_PAGE
+                SETTINGS_SEARCH_RESULT_PER_PAGE,
+                false,
+                false,
+                searchFilter.hashtag,
+                searchFilter
               )
             );
           }
@@ -195,6 +204,7 @@ const Search = ({ className }) => {
     searchResult?.query,
     searchResult?.nsfw,
     isOnline,
+    searchFilter,
   ]);
 
   const searchResultHtml = searchResult?.result?.map((modelPreveiw, i) => {
@@ -310,11 +320,19 @@ const Search = ({ className }) => {
 
   const submitSearchHandler = (e) => {
     e.preventDefault();
-    dispatch(searchActions.resetSearchData());
-
     if (location.pathname !== "/search") {
       navigate("search");
     }
+
+    if (!searchInput.trim()) return;
+
+    dispatch(searchActions.resetSearchData());
+
+    if (location.pathname !== "/search") {
+      dispatch(searchActions.resetSearchFilter());
+    }
+
+    const isHashtag = searchInput.trim()[0] === "#";
 
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(async () => {
@@ -322,7 +340,11 @@ const Search = ({ className }) => {
         liveSearch(
           searchInput.trim(),
           nsfwMode,
-          SETTINGS_SEARCH_RESULT_PER_PAGE
+          SETTINGS_SEARCH_RESULT_PER_PAGE,
+          false,
+          false,
+          searchFilter.hashtag,
+          searchFilter
         )
       );
     }, searchTimeoutMs);

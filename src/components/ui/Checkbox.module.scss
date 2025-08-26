@@ -20,7 +20,7 @@
 }
 
 .checkbox:disabled {
-  background-color: var.$color-gray;
+  background-color: rgba(var.$color-gray-dark, 0.4);
   cursor: not-allowed;
 }
 
@@ -46,4 +46,8 @@
   font-size: 1.6rem;
   align-items: center;
   cursor: pointer;
+}
+
+.disabled {
+  color: var.$color-text-gray;
 }

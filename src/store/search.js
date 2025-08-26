@@ -24,8 +24,15 @@ const searchSlice = createSlice({
   name: "search",
   initialState: {
     searchQuery: "",
-    searchResult: { query: "", result: [], nsfw: false },
+    searchResult: {
+      query: "",
+      result: [],
+      nsfw: false,
+      hashtag: false,
+      filter: {},
+    },
     quickSerchResult: { query: "", result: [], nsfw: false },
+    searchFilter: { modelType: [], baseModel: [], hashtag: false },
     isLoading: false,
     errorMessage: "",
     isLastPage: false,
@@ -63,6 +70,13 @@ const searchSlice = createSlice({
     setIsLastSubPage(state, actions) {
       state.isLastSubPage = actions.payload;
     },
+    setSearchFilter(state, actions) {
+      if (actions.payload.type)
+        state.searchFilter[actions.payload.type] = actions.payload.value;
+    },
+    resetSearchFilter(state, actions) {
+      state.searchFilter = { modelType: [], baseModel: [], hashtag: false };
+    },
     resetSearchData(state) {
       state.searchResult = { query: "", result: [], nsfw: false };
       state.errorMessage = "";
@@ -80,16 +94,80 @@ const searchSlice = createSlice({
   },
 });
 
+const createNameQuery = (searchString, nsfwFilter, optionalWhere = []) => {
+  const capitalized = searchString
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
+  return or(
+    // query as-is:
+    and(
+      ...optionalWhere,
+      where("name", ">=", searchString),
+      where("name", "<=", searchString + "\uf8ff"),
+      where("nsfw", "in", nsfwFilter)
+    ),
+    //by id
+    and(...optionalWhere, where("id", "==", +searchString)),
+    // capitalize first letter:
+    and(
+      ...optionalWhere,
+      where(
+        "name",
+        ">=",
+        searchString.charAt(0).toUpperCase() + searchString.slice(1)
+      ),
+      where(
+        "name",
+        "<=",
+        searchString.charAt(0).toUpperCase() + searchString.slice(1) + "\uf8ff"
+      ),
+      where("nsfw", "in", nsfwFilter)
+    ),
+    // capitalize all:
+    and(
+      ...optionalWhere,
+      where("name", ">=", capitalized),
+      where("name", "<=", capitalized + "\uf8ff"),
+      where("nsfw", "in", nsfwFilter)
+    ),
+    // caps:
+    and(
+      ...optionalWhere,
+      where("name", ">=", searchString.toUpperCase()),
+      where("name", "<=", searchString.toUpperCase() + "\uf8ff"),
+      where("nsfw", "in", nsfwFilter)
+    ),
+    // lowercase:
+    and(
+      ...optionalWhere,
+      where("name", ">=", searchString.toLowerCase()),
+      where("name", "<=", searchString.toLowerCase() + "\uf8ff"),
+      where("nsfw", "in", nsfwFilter)
+    ),
+    and(
+      ...optionalWhere,
+      where("nameArr", "array-contains-any", [
+        clearFileExtension(searchString).toLowerCase(),
+      ]),
+      where("nsfw", "in", nsfwFilter)
+    )
+  );
+};
+
 export const liveSearch = (
   searchString,
   nsfw,
   limitAmount = 5,
   loadMore = false,
   quickSerch = false,
-  hashtag = false
+  isHashtag = false,
+  filter
 ) => {
   return async (dispatch, getState) => {
     try {
+      const hashtag = isHashtag || !!filter?.hashtag;
       const isLastPage = getState().search.isLastPage;
       const isLastCollectionsPage = getState().search.isLastCollectionsPage;
       const isLastSubPage = getState().search.isLastSubPage;
@@ -105,6 +183,8 @@ export const liveSearch = (
             query: "",
             nsfw: false,
             result: [],
+            hashtag: false,
+            filter: {},
           })
         );
       }
@@ -121,65 +201,32 @@ export const liveSearch = (
 
       const nsfwFilter = !nsfw ? [false] : [true, false];
 
-      const capitalized = searchString
-        .split(" ")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
+      const onlyCollections =
+        filter?.modelType.length === 1 &&
+        filter?.modelType.includes("collection");
 
-      const queryByNameRule = or(
-        // query as-is:
-        and(
-          where("name", ">=", searchString),
-          where("name", "<=", searchString + "\uf8ff"),
-          where("nsfw", "in", nsfwFilter)
-        ),
-        //by id
-        and(where("id", "==", +searchString)),
-        // capitalize first letter:
-        and(
-          where(
-            "name",
-            ">=",
-            searchString.charAt(0).toUpperCase() + searchString.slice(1)
-          ),
-          where(
-            "name",
-            "<=",
-            searchString.charAt(0).toUpperCase() +
-              searchString.slice(1) +
-              "\uf8ff"
-          ),
-          where("nsfw", "in", nsfwFilter)
-        ),
-        // capitalize all:
-        and(
-          where("name", ">=", capitalized),
-          where("name", "<=", capitalized + "\uf8ff"),
-          where("nsfw", "in", nsfwFilter)
-        ),
-        // caps:
-        and(
-          where("name", ">=", searchString.toUpperCase()),
-          where("name", "<=", searchString.toUpperCase() + "\uf8ff"),
-          where("nsfw", "in", nsfwFilter)
-        ),
-        // lowercase:
-        and(
-          where("name", ">=", searchString.toLowerCase()),
-          where("name", "<=", searchString.toLowerCase() + "\uf8ff"),
-          where("nsfw", "in", nsfwFilter)
-        ),
-        and(
-          where("nameArr", "array-contains-any", [
-            clearFileExtension(searchString).toLowerCase(),
-          ]),
-          where("nsfw", "in", nsfwFilter)
-        )
+      const optionalWhere = [];
+
+      if (filter?.modelType?.length && !onlyCollections) {
+        optionalWhere.push(where("modelType", "in", filter.modelType));
+      }
+      if (filter?.baseModel?.length && !onlyCollections) {
+        optionalWhere.push(where("baseModel", "in", filter.baseModel));
+      }
+
+      const modelQueryByNameRule = createNameQuery(
+        searchString,
+        nsfwFilter,
+        optionalWhere
+      );
+      const collectionQueryByNameRule = createNameQuery(
+        searchString,
+        nsfwFilter
       );
 
       const queryModelsByName = query(
         modelPreviewRef,
-        queryByNameRule,
+        modelQueryByNameRule,
         orderBy("name", "asc"),
         startAfter(lastVisible),
         limit(limitAmount)
@@ -187,7 +234,7 @@ export const liveSearch = (
 
       const queryCollectionsByName = query(
         collectionPreviewRef,
-        queryByNameRule,
+        collectionQueryByNameRule,
         orderBy("name", "asc"),
         startAfter(lastVisibleCollection),
         limit(limitAmount)
@@ -195,45 +242,63 @@ export const liveSearch = (
 
       let queryRuleSub;
 
+      const hashlessSearchString =
+        searchString.trim()[0] === "#" ? searchString.slice(1) : searchString;
+
       if (hashtag) {
         queryRuleSub = and(
-          where("authorTags", "array-contains-any", [searchString]),
+          ...optionalWhere,
+          where("authorTags", "array-contains-any", [
+            searchString,
+            searchString.toLowerCase(),
+            hashlessSearchString,
+          ]),
           where("nsfw", "in", nsfwFilter)
         );
       } else {
         queryRuleSub = or(
           and(
+            ...optionalWhere,
             where("fileNames", "array-contains-any", [
               clearFileExtension(searchString).toLowerCase(),
             ]),
             where("nsfw", "in", nsfwFilter)
           ),
           and(
+            ...optionalWhere,
             where("customFileNames", "array-contains-any", [
               clearFileExtension(searchString).toLowerCase(),
             ]),
             where("nsfw", "in", nsfwFilter)
           ),
           and(
+            ...optionalWhere,
             where("mainTags", "array-contains-any", [
               clearFileExtension(searchString).toLowerCase(),
             ]),
             where("nsfw", "in", nsfwFilter)
           ),
           and(
+            ...optionalWhere,
             where("versionIds", "array-contains-any", [+searchString]),
             where("nsfw", "in", nsfwFilter)
           ),
           and(
-            where("authorTags", "array-contains-any", [searchString]),
-            where("nsfw", "in", nsfwFilter)
-          ),
-          and(
+            ...optionalWhere,
             where("authorTags", "array-contains-any", [
+              searchString,
               searchString.toLowerCase(),
+              hashlessSearchString,
             ]),
             where("nsfw", "in", nsfwFilter)
           )
+          // and(
+          //   ...optionalWhere,
+          //   where("authorTags", "array-contains-any", [
+          //     searchString.toLowerCase(),
+          //   ]),
+          //   where("nsfw", "in", nsfwFilter)
+          // )
         );
       }
 
@@ -250,7 +315,7 @@ export const liveSearch = (
       let querySnapshot = {};
       let queryCollectionsSnapshot = {};
 
-      if (!isLastPage && !hashtag) {
+      if (!isLastPage && !hashtag && !onlyCollections) {
         querySnapshot = await getDocs(queryModelsByName);
         modelsDataName = querySnapshot.docs.map((doc) => {
           // doc.data() is never undefined for query doc snapshots
@@ -258,7 +323,12 @@ export const liveSearch = (
         });
       }
 
-      if (!isLastCollectionsPage) {
+      const includeColections =
+        !hashtag &&
+        (!filter?.modelType?.length ||
+          filter?.modelType?.includes("collection"));
+
+      if (!isLastCollectionsPage && includeColections) {
         queryCollectionsSnapshot = await getDocs(queryCollectionsByName);
         collectionsDataNames = queryCollectionsSnapshot.docs.map((doc) => {
           // doc.data() is never undefined for query doc snapshots
@@ -272,10 +342,11 @@ export const liveSearch = (
       const isLast =
         !querySnapshot?.docs?.length || querySnapshot.docs.length < limitAmount;
       const isLastCollection =
-        !queryCollectionsSnapshot?.docs?.length ||
-        queryCollectionsSnapshot.docs.length < limitAmount;
+        (!queryCollectionsSnapshot?.docs?.length && includeColections) ||
+        (queryCollectionsSnapshot?.docs?.length < limitAmount &&
+          includeColections);
 
-      if ((isLast || hashtag) && !isLastSubPage) {
+      if ((isLast || hashtag) && !isLastSubPage && !onlyCollections) {
         querySnapshotSub = await getDocs(querySub);
         modelsDataSub = querySnapshotSub.docs.map((doc) => {
           // doc.data() is never undefined for query doc snapshots
@@ -291,7 +362,7 @@ export const liveSearch = (
       if (!isLast) {
         lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
       }
-      if (!isLastCollection) {
+      if (!isLastCollection && includeColections) {
         lastVisibleCollection =
           queryCollectionsSnapshot.docs[
             queryCollectionsSnapshot.docs.length - 1
@@ -338,6 +409,11 @@ export const liveSearch = (
             nsfw,
             result: finalResult,
             hashtag,
+            filter: filter || {
+              modelType: [],
+              baseModel: [],
+              hashtag: hashtag,
+            },
           })
         );
         dispatch(searchActions.setIsLastPage(isLast));

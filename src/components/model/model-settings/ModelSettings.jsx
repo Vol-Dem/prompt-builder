@@ -33,6 +33,10 @@ import { modelActions } from "../../../store/model";
 import { tabActions } from "../../../store/tabs";
 import EditPageGuide from "../../ui/guide/edit/EditPageGuide";
 import { AnimatePresence, motion } from "framer-motion";
+import LeftSidebar from "../../layout/left-sidebar/LeftSidebar";
+import { ArrowUturnLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
+import H1 from "../../ui/text/H1";
+import H2 from "../../ui/text/H2";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -309,22 +313,26 @@ const ModelSettings = () => {
     });
 
   const openMenuHandler = () => {
-    setMobileMenuIsOpen((prevState) => !prevState);
+    setMobileMenuIsOpen(true);
+  };
+
+  const closeMenuHandler = () => {
+    setMobileMenuIsOpen(false);
+  };
+
+  const backHandler = () => {
+    // navigate(-1);
+    navigate(`/models/${model.id}`);
   };
 
   return (
     <div className={classes.wrap}>
-      <ButtonTertiary className={classes["btn-menu"]} onClick={openMenuHandler}>
-        {!mobileMenuIsOpen ? "Menu" : "Close"}
-      </ButtonTertiary>
-      <div className={`${classes["menu-container"]}`}>
-        <ul
-          // animate={{ x: !mobileMenuIsOpen ? "-100%" : 0 }}
-          // transition={{ bounce: 0 }}
-          className={`${classes["menu"]} ${
-            !mobileMenuIsOpen ? classes["menu--hidden"] : ""
-          }`}
-        >
+      <LeftSidebar
+        isOpen={mobileMenuIsOpen}
+        onClose={closeMenuHandler}
+        onOpen={openMenuHandler}
+      >
+        <ul className={`${classes["menu"]} `}>
           <motion.li
             initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
             animate={ANIMATIONS_FM_SLIDEIN}
@@ -370,46 +378,50 @@ const ModelSettings = () => {
             </AnimatePresence>
           </li>
         </ul>
-      </div>
-      {mobileMenuIsOpen && (
-        <div
-          className={classes["menu-overlay"]}
-          onClick={openMenuHandler}
-        ></div>
-      )}
+      </LeftSidebar>
       <div className={classes.content}>
+        <div
+          className={`${classes["update"]} ${
+            guideIsActive &&
+            guideHomeState?.active &&
+            guideHomeState?.step === GUIDE_STEP_EDIT_UPD_DEL
+              ? classes["update--guide"]
+              : ""
+          }`}
+        >
+          <Buttton
+            type="button"
+            onClick={backHandler}
+            className={classes["btn-back"]}
+          >
+            <ArrowUturnLeftIcon />
+            <span className={classes["btn-back__text"]}>Back</span>
+          </Buttton>
+          <Buttton
+            type="button"
+            onClick={updateModelHandler}
+            className={classes["btn-update"]}
+            disabled={isLoading}
+          >
+            {!isLoading ? "Check for updates" : <Spinner size="small" />}
+          </Buttton>
+
+          <Buttton
+            type="button"
+            onClick={showDeleteReqeustHandler}
+            className={classes["btn-del"]}
+            disabled={isLoading}
+          >
+            <TrashIcon />
+            <span className={classes["btn-del__text"]}>Delete</span>
+          </Buttton>
+        </div>
         {curTab === "general" && (
           <motion.div
             initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
             animate={ANIMATIONS_FM_SLIDEIN}
           >
-            <div
-              className={`${classes["update"]} ${
-                guideIsActive &&
-                guideHomeState?.active &&
-                guideHomeState?.step === GUIDE_STEP_EDIT_UPD_DEL
-                  ? classes["update--guide"]
-                  : ""
-              }`}
-            >
-              <Buttton
-                type="button"
-                onClick={updateModelHandler}
-                className={classes["btn-update"]}
-                disabled={isLoading}
-              >
-                {!isLoading ? "Check for updates" : <Spinner size="small" />}
-              </Buttton>
-
-              <Buttton
-                type="button"
-                onClick={showDeleteReqeustHandler}
-                className={classes["btn-del"]}
-                disabled={isLoading}
-              >
-                Delete
-              </Buttton>
-            </div>
+            <H1 className={classes.title}>General settings</H1>
             {successMessage && (
               <SuccessMessage>{successMessage}</SuccessMessage>
             )}
@@ -423,6 +435,7 @@ const ModelSettings = () => {
             initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
             animate={ANIMATIONS_FM_SLIDEIN}
           >
+            <H1 className={classes.title}>Version settings</H1>
             <VersionStatusForm modelData={model} />
           </motion.div>
         )}
@@ -431,6 +444,11 @@ const ModelSettings = () => {
             initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
             animate={ANIMATIONS_FM_SLIDEIN}
           >
+            <H1 className={classes.title}>
+              {curVersionData?.name &&
+                `Version settings: ${curVersionData.name}`}
+              {!curVersionData?.name && "Default for All"}
+            </H1>
             <VersionForm
               versionData={curVersionData}
               defaultData={curVersionDefData}

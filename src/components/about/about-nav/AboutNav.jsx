@@ -6,9 +6,8 @@ import { ABOUT_NAV_DATA } from "../../../variables/constants";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { smoothScroll } from "../../../utils/generalUtils";
-import ButtonTertiary from "../../ui/ButtonTertiary";
-import { motion } from "framer-motion";
-import { ListBulletIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ListBulletIcon } from "@heroicons/react/24/outline";
+import LeftSidebar from "../../layout/left-sidebar/LeftSidebar";
 
 const AboutNav = () => {
   const [navIsOpen, setNavIsOpen] = useState(false);
@@ -25,11 +24,11 @@ const AboutNav = () => {
     }
   }, [location]);
 
-  const navHandler = () => {
-    setNavIsOpen((prev) => !prev);
+  const openNavHandler = () => {
+    setNavIsOpen(true);
   };
 
-  const closeNav = (url) => {
+  const closeNavHandler = (url) => {
     const curPageUrl = location.pathname.split("/").slice(-1)[0];
     if (curPageUrl !== url) window.scrollTo(0, 0);
     setNavIsOpen(false);
@@ -49,7 +48,7 @@ const AboutNav = () => {
               pathname: `/about/${item.url}`,
               hash: subItem.id,
             }}
-            onClick={closeNav.bind(null, item.url)}
+            onClick={closeNavHandler.bind(null, item.url)}
           >
             {subItem.name}
           </NavLink>
@@ -67,7 +66,7 @@ const AboutNav = () => {
             pathname: `/about/${item.url}`,
             hash: item.id,
           }}
-          onClick={closeNav.bind(null, item.url)}
+          onClick={closeNavHandler.bind(null, item.url)}
         >
           {item.name}
         </NavLink>
@@ -78,34 +77,14 @@ const AboutNav = () => {
 
   return (
     <>
-      <ButtonTertiary className={classes["nav-btn"]} onClick={navHandler}>
-        {!navIsOpen && <ListBulletIcon />}
-        {navIsOpen && <XMarkIcon />}
-      </ButtonTertiary>
-      <motion.div
-        animate={{ left: navIsOpen ? 0 : "-100%" }}
-        // transition={{ type: "spring", bounce: 0.3 }}
-        className={`${classes["sidebar"]}`}
+      <LeftSidebar
+        isOpen={navIsOpen}
+        onClose={closeNavHandler}
+        onOpen={openNavHandler}
+        btnContent={<ListBulletIcon />}
       >
-        <List>
-          {/* <ListItem>
-            <NavLink
-              className={(nav) =>
-                location.pathname === "/about"
-                  ? `${classes.link} ${classes.active}`
-                  : classes.link
-              }
-              to={{
-                pathname: `/about`,
-                hash: "about",
-              }}
-            >
-              About
-            </NavLink>
-          </ListItem> */}
-          {aboutNavItemsHrml}
-        </List>
-      </motion.div>
+        <List>{aboutNavItemsHrml}</List>
+      </LeftSidebar>
     </>
   );
 };

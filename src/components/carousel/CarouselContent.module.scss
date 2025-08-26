@@ -313,6 +313,12 @@
   }
 }
 
+@media (max-width: 630px) {
+  .carousel {
+    margin: auto;
+  }
+}
+
 @keyframes open {
   0% {
     opacity: 0;

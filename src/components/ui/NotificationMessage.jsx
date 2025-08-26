@@ -6,7 +6,11 @@ const NotificationMessage = ({ children, type, className }) => {
   return (
     <div className={`${classes.notification}  ${className || ""}`}>
       {type && (
-        <div className={classes["notification__icon"]}>
+        <div
+          className={`${classes["notification__icon"]} ${
+            classes[`notification__icon--${type}`]
+          }`}
+        >
           {type === "notification" && <ExclamationCircleIcon />}
           {type === "warning" && <TriangleIcon />}
         </div>

@@ -1,6 +1,7 @@
 import classes from "./ModelInfo.module.scss";
 import { useSelector } from "react-redux";
 import LinkA from "../../ui/LinkA";
+import ResourceTypeLabel from "../../general-elements/ResourceTypeLabel";
 
 const ModelInfo = ({ customData }) => {
   const model = useSelector((state) => state.model.model);
@@ -25,7 +26,9 @@ const ModelInfo = ({ customData }) => {
 
   return (
     <div className={classes?.info}>
-      <div className={classes.type}>{model?.data?.type}</div>
+      <ResourceTypeLabel type={model?.data?.type} className={classes.type}>
+        {model?.data?.type}
+      </ResourceTypeLabel>
       <div>
         <span className={classes["info__name"]}>Version ID:</span>{" "}
         {curVersion?.id}

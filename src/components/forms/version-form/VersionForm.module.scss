@@ -64,10 +64,6 @@
   align-items: center;
 }
 
-.versions {
-  // height: 100%;
-}
-
 .submit-container {
   position: sticky;
   display: flex;
@@ -78,23 +74,17 @@
 
 .submit {
   display: flex;
-  // position: sticky;
-
-  // height: 3.2rem;
   justify-content: center;
   align-items: center;
   font-size: 1.6rem;
   min-height: 3.4rem;
   width: 100%;
-  // width: 12rem;
-  // align-self: flex-end;
 }
 
 .weight {
   display: flex;
   gap: 1rem;
-  // align-items: center;
-  // gap: 0.3rem;
+
   &__label {
     display: inline-block;
     font-size: 1.6rem;
@@ -115,6 +105,12 @@
     color: var.$color-gray;
     width: 1.8rem;
     height: 1.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .submit-container {
+    bottom: 1.4rem;
   }
 }
 

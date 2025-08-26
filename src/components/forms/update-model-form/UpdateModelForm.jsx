@@ -295,7 +295,7 @@ const UpdateModelForm = ({
       } else {
         [modelId, modelVersionId] = parseModelIds(idInput.value);
       }
-      console.log(modelId, modelVersionId);
+      // console.log(modelId, modelVersionId);
       if (!modelId) {
         throwCustomError(ERROR_MESSAGE_INVALID_MODEL_ID);
       }

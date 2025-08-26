@@ -75,24 +75,6 @@ const Model = ({ title }) => {
     ? model?.hashtags
     : model?.data?.tags;
 
-  // const allHashtags = useMemo(() => {
-  //   return model?.hashtags || model?.data?.tags;
-  // }, [model]);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const responseCiv = await fetch(`${URL_CIV_MODELS}512412`);
-
-  //       const data = await responseCiv.json();
-  //       console.log(data);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
-
   useEffect(() => {
     if (guideIsActive && guideHomeActive) {
       dispatch(guideActions.setGuideActive({ type: "home", value: false }));
@@ -533,8 +515,15 @@ const Model = ({ title }) => {
   const submitSearchHandler = (e) => {
     e.preventDefault();
     dispatch(searchActions.resetSearchData());
+    dispatch(searchActions.resetSearchFilter());
 
     navigate("/search");
+    dispatch(
+      searchActions.setSearchFilter({
+        type: "hashtag",
+        value: true,
+      })
+    );
     dispatch(
       liveSearch(
         e.target.dataset.value,

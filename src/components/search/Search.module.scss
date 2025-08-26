@@ -303,5 +303,14 @@
   .search__field {
     width: 90%;
     max-width: 90%;
+    margin-left: 1.4rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .search__field {
+    width: 80%;
+    max-width: 90%;
+    margin-left: 1.4rem;
   }
 }

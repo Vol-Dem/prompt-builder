@@ -87,6 +87,7 @@ export const SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV = false;
 
 //URLS
 export const URL_CIV_MODELS = "https://civitai.com/api/v1/models/";
+export const URL_CIV_IMAGES = "https://civitai.com/api/v1/images";
 export const URL_CF_UPLOAD_MODEL =
   "https://uploadmodel-o43alvcema-uc.a.run.app";
 export const URL_CF_UPDATE_MODEL =

@@ -13,11 +13,14 @@
     width: 3rem;
     height: 3rem;
     color: var.$color-text-gray;
+
+    &--warning {
+      color: var.$color-text-yellow;
+    }
   }
 
   &__message {
     color: var.$color-text-gray;
-    // flex-shrink: 0;
     width: 100%;
   }
 }
@@ -25,9 +28,5 @@
 @media (max-width: 400px) {
   .notification {
     flex-direction: column;
-
-    // &__icon {
-    //   display: none;
-    // }
   }
 }

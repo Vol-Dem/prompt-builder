@@ -13,6 +13,7 @@ import Image from "../ui/image/Image";
 import { modelActions } from "../../store/model";
 import { motion } from "framer-motion";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_BIG } from "../../variables/constants";
+import ResourceTypeLabel from "../general-elements/ResourceTypeLabel";
 const taglistItemHeight = 68;
 
 const UsedCard = memo(({ previewData, fullView, layoutId, onClick }) => {
@@ -131,11 +132,9 @@ const UsedCard = memo(({ previewData, fullView, layoutId, onClick }) => {
             </div>
           )}
           <div className={classes["base-info"]}>
-            <span
-              className={`${classes["base-info__item"]} ${classes["base-info__item--type"]}`}
-            >
+            <ResourceTypeLabel type={previewData.type || previewData.modelType}>
               {previewData.type || previewData.modelType}
-            </span>
+            </ResourceTypeLabel>
             {previewData?.baseModel && (
               <span className={classes["base-info__item"]}>
                 {previewData.baseModel}

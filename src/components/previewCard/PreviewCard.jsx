@@ -7,6 +7,7 @@ import ActivationTag from "../activation-tag/ActivationTag";
 import ButtonSquareAdd from "../ui/ButtonSquareAdd";
 import { motion } from "framer-motion";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_BIG } from "../../variables/constants";
+import ResourceTypeLabel from "../general-elements/ResourceTypeLabel";
 
 const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
   const [currVersion, setCurrVersion] = useState({});
@@ -77,13 +78,14 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
           }
           onClick={onClick}
         >
-          <div
+          <ResourceTypeLabel
+            type={previewData.type}
             className={`${classes["type"]} ${classes["type--position"]} ${
               fullView ? classes.hidden : ""
             }`}
           >
             {previewData.type}
-          </div>
+          </ResourceTypeLabel>
           <Image
             ref={imgRef}
             src={

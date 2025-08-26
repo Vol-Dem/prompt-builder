@@ -142,6 +142,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
             maxLength: VALIDATION_NAME_MAX_LENGTH,
           }}
           showError={showErrorMessage}
+          autoFocus
         />
         <Textarea
           id="preset-words"

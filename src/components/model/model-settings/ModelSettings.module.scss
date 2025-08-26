@@ -7,8 +7,11 @@
   font-size: 1.2rem;
   width: 100%;
   height: 100%;
-  //   justify-content: space-between;
-  //   padding: 1rem;
+}
+
+.title {
+  display: none;
+  margin-bottom: 2rem;
 }
 
 .btn-menu {
@@ -16,7 +19,6 @@
   position: fixed;
   top: 7rem;
   left: 0rem;
-  // height: 2rem;
   z-index: 3;
   border-radius: 0 10px 10px 0;
   border-left: transparent;
@@ -29,8 +31,6 @@
 }
 
 .menu {
-  position: sticky;
-  top: 8rem;
   height: fit-content;
   display: flex;
   flex-direction: column;
@@ -39,21 +39,6 @@
   width: 18rem;
   list-style: none;
   font-size: 1.8rem;
-  // border-right: 1px solid rgba(255, 255, 255, 0.4);
-  // transition: all 0.3s ease;
-  // background-color: var.$color-background-tertiary;
-
-  // padding: 1rem;
-
-  // &::after {
-  //   content: "";
-  //   position: absolute;
-  //   background: rgba(255, 255, 255, 0.4);
-  //   width: 1px;
-  //   height: 100%;
-  //   top: 0;
-  //   right: 0;
-  // }
 }
 
 .menu-item {
@@ -67,7 +52,7 @@
     color: blueviolet;
     background-color: #201f2f;
     padding: 0.3rem 1rem;
-    border-radius: 1rem 0 0 1rem;
+    border-radius: 10px;
   }
 }
 
@@ -78,25 +63,20 @@
   // animation: show 0.4s ease-in forwards;
 }
 
-@include var.animation-show;
+// @include var.animation-show;
 
 .versions {
   font-size: 1.6rem;
   list-style: none;
   padding-left: 2rem;
-  // & li {
-  //   margin-bottom: 1rem;
-  //   line-height: 1.2;
-  // }
 }
 
 .update {
-  position: relative;
   display: flex;
   gap: 1rem;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 
   &--guide {
     @include var.pulse;
@@ -109,44 +89,68 @@
   position: relative;
 }
 
+.btn-back {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 1rem;
+  justify-self: left;
+  height: 2.8rem;
+  min-width: 2rem;
+
+  & svg {
+    width: 1.6rem;
+    height: auto;
+  }
+}
+
 .btn-del {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 1rem;
+  justify-self: left;
+  height: 2.8rem;
   background-color: var.$color-background-red;
+  min-width: 2rem;
 
   &:hover {
     background-color: darken(var.$color-red, 10%);
   }
+
+  & svg {
+    width: 1.6rem;
+    height: auto;
+  }
 }
 
-// .del-request {
-//   width: 36rem;
-
-//   &__message {
-//     font-size: 1.6rem;
-//     text-align: center;
-//   }
-
-//   &__btn-container {
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-//     gap: 2rem;
-//     margin-top: 2rem;
-//   }
-// }
 .menu-overlay {
   position: fixed;
   width: 100vw;
   height: 100vh;
   left: 0;
   top: 0;
-  // background-color: #2218a8;
   z-index: 1;
 }
 
+@media (max-width: 768px) {
+  .title {
+    display: block;
+  }
+
+  .wrap {
+    padding-left: 1.2rem;
+  }
+}
 @media (max-width: 580px) {
   .wrap {
     gap: 0;
   }
+
   .btn-menu {
     display: block;
   }
@@ -156,13 +160,8 @@
   }
 
   .menu {
-    position: fixed;
-    top: 0;
-    left: 0;
+    position: relative;
     background-color: rgba(var.$color-background-tertiary, 0.9);
-    height: calc(100vh - 5rem);
-    margin-top: 5rem;
-    padding: 6rem 1.6rem 0;
     width: 30rem;
     max-width: 70%;
     gap: 1rem;
@@ -177,8 +176,25 @@
   }
 
   .content {
-    margin-top: 3rem;
-    // margin-left: 3rem;
-    padding-left: 1rem;
+    margin-top: 2.4rem;
+    padding-left: 1.2rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .btn-back {
+    width: 100%;
+
+    &__text {
+      display: none;
+    }
+  }
+
+  .btn-del {
+    width: 100%;
+
+    &__text {
+      display: none;
+    }
   }
 }

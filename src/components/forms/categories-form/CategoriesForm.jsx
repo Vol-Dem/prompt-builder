@@ -229,6 +229,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
                   maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
                 }}
                 showError={showErrorMessage}
+                autoFocus
               />
               <ButtonTertiary type="submit" className={classes["btn"]}>
                 Submit
