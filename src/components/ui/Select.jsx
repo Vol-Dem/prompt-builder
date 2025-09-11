@@ -15,6 +15,7 @@ const Select = ({
   className,
   label,
   selected,
+  ...props
 }) => {
   const [selectIsOpen, setSelectIsOpen] = useState(false);
   const [selectedFieldName, setSelectedFieldName] = useState(selected);
@@ -89,6 +90,7 @@ const Select = ({
           data-name={item.name}
           onChange={onSelectValueChange}
           checked={item.value === selectedFieldValue}
+          {...props}
         />
         <label
           ref={labeldRef}

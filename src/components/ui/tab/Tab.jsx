@@ -1,14 +1,8 @@
 import { useState } from "react";
 import classes from "./Tab.module.scss";
 
-const Tab = (props) => {
-  const [curTab, setCurTab] = useState([]);
-
-  const openTabHandler = (e) => {
-    setCurTab(e.target.id);
-  };
-
-  const tabsHtml = props.tabsNames.map((tab, i) => (
+const Tab = ({ tabsNames, children }) => {
+  const tabsHtml = tabsNames.map((tab, i) => (
     <li key={i} id={tab} onClick={openTabHandler}>
       {tab}
     </li>
@@ -17,7 +11,7 @@ const Tab = (props) => {
   return (
     <div>
       <ul className={classes.tabs}>{tabsHtml}</ul>
-      <div>{props.children}</div>
+      <div>{children}</div>
     </div>
   );
 };

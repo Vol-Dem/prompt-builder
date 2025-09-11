@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import Image from "../ui/image/Image";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { tabActions } from "../../store/tabs";
-import { ReactComponent as SearchIcon } from "./../../assets/search.svg";
 import { liveSearch, searchActions } from "../../store/search";
 import Spinner from "../ui/Spinner";
 import ButtonSquareAdd from "../ui/ButtonSquareAdd";
@@ -25,6 +24,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { imagesActions } from "../../store/images";
 import { modelActions } from "../../store/model";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 const searchTimeoutMs = 1000;
 
@@ -68,6 +68,12 @@ const Search = ({ className }) => {
     setSearchResultIsOpen(true);
     setShowMore(false);
     dispatch(searchActions.setSearchQuery(searchInputValue));
+  };
+
+  const openMobileSearch = () => {
+    if (location.pathname !== "/search") {
+      navigate("search");
+    }
   };
 
   useEffect(() => {
@@ -332,7 +338,7 @@ const Search = ({ className }) => {
       dispatch(searchActions.resetSearchFilter());
     }
 
-    const isHashtag = searchInput.trim()[0] === "#";
+    // const isHashtag = searchInput.trim()[0] === "#";
 
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(async () => {
@@ -351,93 +357,106 @@ const Search = ({ className }) => {
   };
 
   return (
-    <div className={`${classes["search"]} ${className || ""}`}>
-      <form onSubmit={submitSearchHandler} className={classes["search__field"]}>
-        <input
-          type="search"
-          name="search"
-          onChange={searchInputHandler}
-          value={searchInput}
-          placeholder="Search"
-          className={classes["search__input"]}
-          onFocus={() => {
-            setSearchResultIsOpen(true);
-          }}
-        />
-        <button
-          type="submit"
-          data-testid="search-submit"
-          className={classes["search__btn"]}
-          title="Search"
+    <>
+      <span className={classes["btn-search"]} onClick={openMobileSearch}>
+        <MagnifyingGlassIcon />
+      </span>
+
+      <div
+        className={`${classes["search"]} ${
+          location.pathname === "/search" ? "" : classes["search-hidden"]
+        } ${className || ""}`}
+      >
+        <form
+          onSubmit={submitSearchHandler}
+          className={classes["search__field"]}
         >
-          <SearchIcon />
-        </button>
-      </form>
-      <AnimatePresence>
-        {searchInput.length >= 3 &&
-          searchResultIsOpen &&
-          location.pathname !== "/search" && (
-            <motion.div
-              initial={ANIMATIONS_FM_ZOOM_IN_INITIAL}
-              animate={ANIMATIONS_FM_ZOOM_IN}
-              exit={ANIMATIONS_FM_ZOOM_IN_INITIAL}
-              className={classes["search__dropdown"]}
-            >
-              <div className={classes["search__settings"]}>
-                <button
-                  className={classes["search__btn-close"]}
-                  onClick={() => {
-                    setSearchResult({});
-                    dispatch(searchActions.setSearchQuery(""));
-                    setSearchResultIsOpen(false);
-                  }}
-                >
-                  <span className={classes["search__cross"]}></span>
-                </button>
-              </div>
-              <div className={classes["search__result"]}>
-                {!!subcategoriesSearchResult.length && (
-                  <ul className={classes["search__categories"]}>
-                    {categoriesSearchResultHtml}
-                  </ul>
-                )}
-                {searchIsLoading && (
-                  <div className={classes["spiner-container"]}>
-                    <Spinner size="small" />
-                  </div>
-                )}
-                {!searchIsLoading && errorMessage && (
-                  <ErrorMessage>{errorMessage}</ErrorMessage>
-                )}
-                {!searchIsLoading &&
-                  !errorMessage &&
-                  !searchResult?.result?.length &&
-                  !!searchResult?.query &&
-                  isOnline && (
-                    <div className={classes.error}>No resources found</div>
-                  )}
-                {!isOnline && (
-                  <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>
-                )}
-                {!searchIsLoading && !!searchResult?.result?.length && (
-                  <ul className={classes["search__models"]}>
-                    {searchResultHtml}
-                  </ul>
-                )}
-                {showMore && (
-                  <ButtonTertiary
-                    type="button"
-                    className={classes["btn-more"]}
-                    onClick={submitSearchHandler}
+          <input
+            type="search"
+            name="search"
+            onChange={searchInputHandler}
+            value={searchInput}
+            placeholder="Search"
+            className={classes["search__input"]}
+            onFocus={() => {
+              setSearchResultIsOpen(true);
+            }}
+          />
+          <button
+            type="submit"
+            data-testid="search-submit"
+            className={classes["search__btn"]}
+            title="Search"
+          >
+            <MagnifyingGlassIcon />
+          </button>
+        </form>
+        <AnimatePresence>
+          {searchInput.length >= 3 &&
+            searchResultIsOpen &&
+            location.pathname !== "/search" && (
+              <motion.div
+                initial={ANIMATIONS_FM_ZOOM_IN_INITIAL}
+                animate={ANIMATIONS_FM_ZOOM_IN}
+                exit={ANIMATIONS_FM_ZOOM_IN_INITIAL}
+                className={classes["search__dropdown"]}
+              >
+                <div className={classes["search__settings"]}>
+                  <button
+                    className={classes["search__btn-close"]}
+                    onClick={() => {
+                      setSearchResult({});
+                      dispatch(searchActions.setSearchQuery(""));
+                      setSearchResultIsOpen(false);
+                    }}
                   >
-                    Show more
-                  </ButtonTertiary>
-                )}
-              </div>
-            </motion.div>
-          )}
-      </AnimatePresence>
-    </div>
+                    <span className={classes["search__cross"]}></span>
+                  </button>
+                </div>
+                <div className={classes["search__result"]}>
+                  {!!subcategoriesSearchResult.length && (
+                    <ul className={classes["search__categories"]}>
+                      {categoriesSearchResultHtml}
+                    </ul>
+                  )}
+                  {searchIsLoading && (
+                    <div className={classes["spiner-container"]}>
+                      <Spinner size="small" />
+                    </div>
+                  )}
+                  {!searchIsLoading && errorMessage && (
+                    <ErrorMessage>{errorMessage}</ErrorMessage>
+                  )}
+                  {!searchIsLoading &&
+                    !errorMessage &&
+                    !searchResult?.result?.length &&
+                    !!searchResult?.query &&
+                    isOnline && (
+                      <div className={classes.error}>No resources found</div>
+                    )}
+                  {!isOnline && (
+                    <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>
+                  )}
+                  {!searchIsLoading && !!searchResult?.result?.length && (
+                    <ul className={classes["search__models"]}>
+                      {searchResultHtml}
+                    </ul>
+                  )}
+                  {showMore && (
+                    <ButtonTertiary
+                      type="button"
+                      className={classes["btn-more"]}
+                      onClick={submitSearchHandler}
+                    >
+                      Show more
+                    </ButtonTertiary>
+                  )}
+                </div>
+              </motion.div>
+            )}
+        </AnimatePresence>
+      </div>
+    </>
   );
 };
 

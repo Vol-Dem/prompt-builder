@@ -81,13 +81,6 @@
   }
 }
 
-.btn-search {
-  display: none;
-  & svg {
-    width: 2rem;
-  }
-}
-
 .btn-auth {
   margin-left: auto;
 }
@@ -122,9 +115,7 @@
   .mode-switch {
     // display: none;
   }
-  .btn-search {
-    display: block;
-  }
+
   .search-hidden {
     display: none !important;
   }

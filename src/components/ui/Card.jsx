@@ -1,9 +1,9 @@
 import classes from "./Card.module.scss";
 
-function Card(props) {
+function Card({ children, className, ...props }) {
   return (
-    <div className={`${classes.card} ${props.className || ""}`}>
-      {props.children}
+    <div className={`${classes.card} ${className || ""}`} {...props}>
+      {children}
     </div>
   );
 }

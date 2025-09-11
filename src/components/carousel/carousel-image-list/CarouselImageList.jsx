@@ -37,6 +37,7 @@ const CarouselImageList = ({ images }) => {
           imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL}
           width={image.width}
           height={image.height}
+          imgType={image.type}
         />
         <ButtonAdd
           className={classes["btn-add"]}

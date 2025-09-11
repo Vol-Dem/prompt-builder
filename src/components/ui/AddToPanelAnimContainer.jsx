@@ -4,15 +4,16 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../variables/constants";
 
-const AddToPanelAnimContainer = (props) => {
+const AddToPanelAnimContainer = ({ children, ...props }) => {
   return (
     <motion.div
       initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
       animate={ANIMATIONS_FM_SLIDEIN}
       exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
       style={{ position: "relative" }}
+      {...props}
     >
-      {props.children}
+      {children}
     </motion.div>
   );
 };

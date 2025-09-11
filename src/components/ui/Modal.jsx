@@ -2,14 +2,14 @@ import { useEffect } from "react";
 import Card from "./Card";
 import classes from "./Modal.module.scss";
 import { createPortal } from "react-dom";
-import CrossSvg from "../../assets/CrossSvg";
 import { motion } from "framer-motion";
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../variables/constants";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
-const Modal = (props) => {
+const Modal = ({ disableClass, onClose, className, title, children }) => {
   useEffect(() => {
     const scrollTop = document.documentElement.scrollTop;
     const disableScrollHandler = (e) => {
@@ -28,7 +28,7 @@ const Modal = (props) => {
   return (
     <>
       {createPortal(
-        <div className={`${classes["modal"]} ${props?.disableClass || ""}`}>
+        <div className={`${classes["modal"]} ${disableClass || ""}`}>
           <motion.div
             variants={{
               hidden: { opacity: 0 },
@@ -39,7 +39,7 @@ const Modal = (props) => {
             animate="visible"
             exit="exit"
             className={`${classes["modal__backdrop"]}`}
-            onClick={props.onClose}
+            onClick={onClose}
           ></motion.div>
           <motion.div
             layout
@@ -52,17 +52,14 @@ const Modal = (props) => {
             animate="visible"
             exit="exit"
             className={`${classes["modal__content"]} ${
-              props?.className ? props.className : ""
+              className ? className : ""
             }`}
           >
             <Card>
-              {props.title && <h2 className={classes.title}>{props.title}</h2>}
-              {props.children}
-              <button
-                className={classes["modal__close"]}
-                onClick={props.onClose}
-              >
-                <CrossSvg />
+              {title && <h2 className={classes.title}>{title}</h2>}
+              {children}
+              <button className={classes["modal__close"]} onClick={onClose}>
+                <XMarkIcon />
               </button>
             </Card>
           </motion.div>

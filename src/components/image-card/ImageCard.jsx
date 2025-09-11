@@ -387,6 +387,15 @@ const ImageCard = ({ activeImgNum }) => {
               } else {
                 return true;
               }
+            })
+            .sort((a, b) => {
+              if (!a?.versionId && b?.versionId) {
+                return 1;
+              }
+              if (a?.versionId && !b?.versionId) {
+                return -1;
+              }
+              return 0;
             });
           ////////////////////////////////////////////////////
 

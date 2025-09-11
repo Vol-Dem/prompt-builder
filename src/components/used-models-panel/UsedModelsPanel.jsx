@@ -5,43 +5,45 @@ import {
   switchSidePanelfullView,
   usedModelsActions,
 } from "../../store/usedModels";
-import UpdateModelForm from "../forms/update-model-form/UpdateModelForm";
 import ButtonTertiary from "../ui/ButtonTertiary";
-import Buttton from "../ui/Button";
-import CrossSvg from "../../assets/CrossSvg";
-import { authActions } from "../../store/auth";
 import ArrowLeftSvg from "../../assets/ArrowLeft";
 import ArrowRightSvg from "../../assets/ArrowRight";
 import PlusSvg from "../../assets/PlusSvg";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
-import ErrorMessage from "../ui/ErrorMessage";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SidePanelGuide from "../ui/guide/model/SidePanelGuide";
 import OpenSidePanelGuide from "../ui/guide/model/OpenSidePanelGuide";
 import ReferenceImageList from "./reference-image-list/ReferenceImageList";
 import { AnimatePresence, motion } from "framer-motion";
 import { guideActions } from "../../store/guide";
-import { Bars2Icon, Bars4Icon, TrashIcon } from "@heroicons/react/24/outline";
-import SaveToCollectionForm from "../forms/save-to-collection-form/SaveToCollectionForm";
+import {
+  Bars2Icon,
+  Bars4Icon,
+  BugAntIcon,
+  ChatBubbleBottomCenterTextIcon,
+  ChatBubbleLeftRightIcon,
+  QuestionMarkCircleIcon,
+  TrashIcon,
+  WrenchScrewdriverIcon,
+} from "@heroicons/react/24/outline";
 import { DEV_GUIDE_TEST } from "../../variables/constants";
+import RightSidebarForm from "./right-sidebar-form/RightSidebarForm";
+import discordIcon from "../../assets/discord.svg";
+import discordWhiteIcon from "../../assets/discord-white.svg";
+import LinkA from "../ui/LinkA";
 
 const UsedModelsPanel = memo(() => {
   const [cursorInitialX, setCursorInitialX] = useState(null);
-  const [resourceType, setResourceType] = useState("model");
+  const [showSupport, setShowSupport] = useState(false);
   const [cursorCurX, setCursorCurX] = useState(null);
   const usedModels = useSelector((state) => state.used.models);
   const usedImages = useSelector((state) => state.used.images);
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
-  const formIsOpen = useSelector((state) => state.used.formIsOpen);
+
   const fullCardView = useSelector((state) => state.used.fullCardView);
-  const isAuth = useSelector((state) => state.auth.isLoggedIn);
+
   const sidePanelRef = useRef({ offsetWidth: 0 });
   const openPanelBtnRef = useRef({ offsetWidth: 20 });
-  const userDataIsLoading = useSelector(
-    (state) => state.auth.userDataIsLoading
-  );
-  const userDataLoadError = useSelector(
-    (state) => state.auth.userDataLoadError
-  );
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -56,14 +58,6 @@ const UsedModelsPanel = memo(() => {
 
   const openPanelHandler = () => {
     dispatch(usedModelsActions.panelState(!panelIsOpen));
-  };
-  const openFormHandler = () => {
-    if (!isAuth) {
-      dispatch(authActions.openAuthForm(true));
-    } else {
-      setResourceType("model");
-      dispatch(usedModelsActions.setFormIsOpen(!formIsOpen));
-    }
   };
 
   const usedModelsHtml = useMemo(() => {
@@ -110,6 +104,29 @@ const UsedModelsPanel = memo(() => {
     }
   };
 
+  const openSupportHandler = () => {
+    setShowSupport((prevState) => !prevState);
+  };
+
+  const closeSupportHandler = useCallback((e) => {
+    if (!e.target.closest(`.${classes["support__contact"]}`)) {
+      setShowSupport(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (showSupport) {
+      document.removeEventListener("click", closeSupportHandler);
+      document.addEventListener("click", closeSupportHandler);
+    } else {
+      document.removeEventListener("click", closeSupportHandler);
+    }
+
+    return () => {
+      document.removeEventListener("click", closeSupportHandler);
+    };
+  }, [showSupport, closeSupportHandler]);
+
   //guide test
   const nextStepHandler = () => {
     dispatch(guideActions.guideNextStep({ type: "model" }));
@@ -119,13 +136,6 @@ const UsedModelsPanel = memo(() => {
     dispatch(guideActions.guidePrevStep({ type: "model" }));
   };
   //////////////
-
-  const resourceTypeHandler = (e) => {
-    const type = e.target.dataset.value;
-    if (type) {
-      setResourceType(type);
-    }
-  };
 
   return (
     <motion.aside
@@ -169,84 +179,7 @@ const UsedModelsPanel = memo(() => {
                 <button onClick={nextStepHandler}>next</button>
               </div>
             )}
-            <div className={classes["options__btns"]}>
-              {formIsOpen && (
-                <div className={classes["options__type"]}>
-                  <button
-                    className={`${classes["options__type-btn"]} ${
-                      resourceType === "model"
-                        ? classes["options__type-btn--active"]
-                        : ""
-                    }`}
-                    onClick={resourceTypeHandler}
-                    data-value="model"
-                  >
-                    Model
-                  </button>
-                  <button
-                    className={`${classes["options__type-btn"]} ${
-                      resourceType === "collection"
-                        ? classes["options__type-btn--active"]
-                        : ""
-                    }`}
-                    onClick={resourceTypeHandler}
-                    data-value="collection"
-                  >
-                    Collection
-                  </button>
-                </div>
-              )}
-              <Buttton
-                title="Hide form"
-                className={`${classes["btn-forms"]} ${
-                  formIsOpen ? classes["btn-forms--close"] : ""
-                }`}
-                onClick={openFormHandler}
-                disabled={!!userDataLoadError || userDataIsLoading}
-              >
-                {!formIsOpen ? (
-                  <>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-6 h-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
-                      />
-                    </svg>
-                    New resource
-                  </>
-                ) : (
-                  <>
-                    <CrossSvg />
-                  </>
-                )}
-              </Buttton>
-            </div>
-
-            <div></div>
-            {userDataLoadError && (
-              <ErrorMessage>{userDataLoadError}</ErrorMessage>
-            )}
-            {/* <UpdateDb /> */}
-            <AnimatePresence>
-              {formIsOpen && isAuth && (
-                <div className={classes.forms}>
-                  {resourceType === "model" && (
-                    <UpdateModelForm id="side-form" />
-                  )}
-                  {resourceType === "collection" && (
-                    <SaveToCollectionForm id="side-form" />
-                  )}
-                </div>
-              )}
-            </AnimatePresence>
+            <RightSidebarForm />
             <div className={classes["controls"]}>
               <ButtonTertiary
                 className={classes["controls__clear"]}
@@ -301,7 +234,7 @@ const UsedModelsPanel = memo(() => {
             )}
           </div>
           <div className={classes["support"]}>
-            <span className={classes["support__title"]}>Support project:</span>{" "}
+            {/* <span className={classes["support__title"]}>Support project:</span>{" "} */}
             <div className={classes["support__links"]}>
               <a
                 href="https://www.patreon.com/aidetools"
@@ -314,13 +247,16 @@ const UsedModelsPanel = memo(() => {
                   loading="lazy"
                   src={require("../../assets/patreon-w.png")}
                   border="0"
-                  alt="patreon"
+                  alt="Patreon"
+                  title="Patreon"
+                  className={classes["support__icon"]}
                 />
               </a>
               <a
                 href="https://ko-fi.com/J3J31052RE"
                 target="_blank"
                 rel="noreferrer nofollow"
+                title="Ko-Fi"
               >
                 <img
                   width={341}
@@ -328,9 +264,74 @@ const UsedModelsPanel = memo(() => {
                   loading="lazy"
                   src={require("../../assets/kofi_bg_tag_dark.webp")}
                   border="0"
-                  alt="ko-fi"
+                  alt="Ko-Fi"
+                  className={classes["support__icon"]}
                 />
               </a>
+              <a
+                href="https://discord.gg/ES2JbdMk"
+                target="_blank"
+                rel="noreferrer nofollow"
+                title="Discord"
+              >
+                <img
+                  width={528}
+                  height={400}
+                  loading="lazy"
+                  src={discordIcon}
+                  border="0"
+                  alt="Discord"
+                  className={classes["support__icon"]}
+                />
+              </a>
+              <div className={classes["support__contact"]} title="Support">
+                <div
+                  className={classes["support__btn"]}
+                  onClick={openSupportHandler}
+                >
+                  {/* <BugAntIcon /> */}
+                  {/* <ChatBubbleLeftRightIcon /> */}
+                  <ChatBubbleBottomCenterTextIcon />
+                  {/* <WrenchScrewdriverIcon /> */}
+                  {/* <QuestionMarkCircleIcon /> */}
+                </div>
+                {showSupport && (
+                  <div className={classes["support__message"]}>
+                    <h3>Support</h3>
+                    <p>
+                      If you need support, join us on Discord and write your
+                      request in our{" "}
+                      <a href="https://discord.com/channels/1411682549599830058/1411683748696821910">
+                        #support
+                      </a>{" "}
+                      channel.
+                    </p>
+                    <p>
+                      And if you want to leave feedback, you can also do it in
+                      the{" "}
+                      <a href="https://discord.com/channels/1411682549599830058/1411684242622119977">
+                        #feedback
+                      </a>{" "}
+                      channel.
+                    </p>
+                    <a
+                      href="https://discord.gg/ES2JbdMk"
+                      target="_blank"
+                      rel="noreferrer nofollow"
+                      title="Discord"
+                      className={classes["support__discord-join"]}
+                    >
+                      <img
+                        width={528}
+                        height={400}
+                        src={discordWhiteIcon}
+                        alt="Discord"
+                      />
+                      <span>Join Discord</span>
+                    </a>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </motion.div>

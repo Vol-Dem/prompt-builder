@@ -17,6 +17,7 @@ const ButtonAdd = ({
   modelId,
   versionId,
   onClick,
+  ...props
 }) => {
   const modelsInPanel = useSelector((state) => state.used.models);
   const imagesInPanel = useSelector((state) => state.used.images);
@@ -93,6 +94,7 @@ const ButtonAdd = ({
       }
       onClick={addToSidePanelHandler}
       title="Add to side panel"
+      {...props}
     >
       {!isInPanel && previewData && <PlusIcon className={classes.icon} />}
       {isInPanel && <CheckIcon className={classes.icon} />}

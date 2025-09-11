@@ -1,16 +1,13 @@
 import classes from "./ButtonTertiary.module.scss";
 
-const ButtonTertiary = (props) => {
+const ButtonTertiary = ({ children, className, button, ...props }) => {
   return (
     <button
-      type={props.type}
-      className={`${classes.btn} ${props.className || ""}`}
-      onClick={props.onClick}
-      disabled={props.disabled}
-      title={props.title}
-      {...props.button}
+      className={`${classes.btn} ${className || ""}`}
+      {...button}
+      {...props}
     >
-      {props.children}
+      {children}
     </button>
   );
 };

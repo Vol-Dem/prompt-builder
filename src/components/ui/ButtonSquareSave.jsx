@@ -2,13 +2,13 @@ import classes from "./ButtonSquareSave.module.scss";
 import { FolderArrowDownIcon } from "@heroicons/react/24/outline";
 import ButtonSquare from "./ButtonSquare";
 
-const ButtonSquareSave = ({ className, onClick }) => {
+const ButtonSquareSave = ({ className, ...props }) => {
   return (
     <>
       <ButtonSquare
         className={`${className || ""}`}
-        onClick={onClick}
         title="Add model to collection"
+        {...props}
       >
         <FolderArrowDownIcon className={classes["icon"]} />
       </ButtonSquare>

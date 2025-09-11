@@ -28,6 +28,7 @@ const ActiveCarousel = () => {
   const savedImagesData = useSelector((state) => state.model.savedImages);
   const guideStep = useSelector((state) => state.guide.model.step);
   const guideIsActive = useSelector((state) => state.guide.active);
+  const isFixed = useSelector((state) => state.general.headerIsFixed);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -108,7 +109,7 @@ const ActiveCarousel = () => {
           }}
           initial="hidden"
           animate="visible"
-          exit="exit"
+          exit={isFixed ? "exit" : ""}
           className={`${classes.container} ${
             !!activeCarouselData?.images?.length
               ? classes["container--open"]

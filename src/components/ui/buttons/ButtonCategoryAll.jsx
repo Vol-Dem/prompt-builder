@@ -1,7 +1,12 @@
 import classes from "./ButtonCategoryAll.module.scss";
 import { motion } from "framer-motion";
 
-const ButtonCategoryAll = ({ className, onClick, activeCategory }) => {
+const ButtonCategoryAll = ({
+  className,
+  onClick,
+  activeCategory,
+  ...props
+}) => {
   return (
     <motion.li
       initial={{ opacity: 0, y: -5 }}
@@ -12,6 +17,7 @@ const ButtonCategoryAll = ({ className, onClick, activeCategory }) => {
       className={`${classes[`category__link`]} ${
         classes["category__link--all"]
       } ${activeCategory === "all" ? classes.active : ""} ${className || ""}`}
+      {...props}
     >
       All
     </motion.li>

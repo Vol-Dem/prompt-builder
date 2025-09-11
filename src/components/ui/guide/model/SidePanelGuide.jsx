@@ -7,6 +7,7 @@ import {
   GUIDE_STEP_SIDEPANEL_VIEW_SWITCH,
 } from "../../../../variables/constants";
 import useGuideIndex from "../../../../hooks/use-guide-index";
+import ContentComment from "../ContentComment";
 
 const guideType = "model";
 
@@ -24,7 +25,8 @@ const SidePanelGuide = () => {
         text: (
           <>
             You can use the sidebar for quick access to models and reference
-            images.
+            images. <br />
+            <ContentComment>Click "Next step" to continue</ContentComment>
           </>
         ),
       },

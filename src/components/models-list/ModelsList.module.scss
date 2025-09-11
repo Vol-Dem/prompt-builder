@@ -97,12 +97,18 @@
 @media (max-width: 1600px) {
   .category {
     grid-template-columns: repeat(4, 1fr);
+    &__full {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 }
 
 @media (max-width: 1260px) {
   .category {
     grid-template-columns: repeat(3, 1fr);
+    &__full {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 }
 

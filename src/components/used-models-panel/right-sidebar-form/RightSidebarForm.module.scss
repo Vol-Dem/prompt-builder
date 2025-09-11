@@ -1,0 +1,90 @@
+@use "../../../variables/variables.scss" as var;
+
+.options {
+  position: relative;
+  width: 28rem;
+
+  &__btns {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  &__type {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  &__type-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 600;
+    // color: #211657;
+    white-space: nowrap;
+    padding: 0.6rem;
+    border: 2px solid rgba(var.$color-gray, 0.4);
+    background-color: transparent;
+    color: var.$color-text-white;
+    border-radius: 1rem;
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+
+    &--active {
+      border-color: var.$color-primary;
+    }
+
+    &:hover {
+      border: 2px solid lighten(var.$color-primary, 20%);
+      box-shadow: 0 0 1rem rgba(#211657, 0.3);
+    }
+  }
+}
+
+.btn-forms {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-left: auto;
+  // position: absolute;
+  // top: 1rem;
+  // right: 1rem;
+  // width: 12.5rem;
+  // padding: 0.4rem 0.8rem;
+  // background-color: rgb(101, 38, 160);
+  // color: #fff;
+  // border: none;
+  // border-radius: 1rem;
+  // cursor: pointer;
+
+  & svg {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  &--close {
+    background-color: var.$color-background-red;
+
+    &:hover {
+      background-color: darken(var.$color-red, 15%);
+    }
+  }
+}
+
+.forms {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  max-height: 60vh;
+  width: 28rem;
+
+  @include var.custom-scroll;
+}

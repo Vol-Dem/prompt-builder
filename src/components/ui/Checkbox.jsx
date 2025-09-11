@@ -1,15 +1,6 @@
 import classes from "./Checkbox.module.scss";
 
-const Checkbox = ({
-  id,
-  value,
-  name,
-  label,
-  onChange,
-  checked,
-  disabled,
-  className,
-}) => {
+const Checkbox = ({ id, label, className, disabled, ...props }) => {
   return (
     <div>
       <label
@@ -19,12 +10,9 @@ const Checkbox = ({
         <input
           type="checkbox"
           id={id}
-          value={value}
-          name={name}
           className={`${classes.checkbox} ${className || ""}`}
-          onChange={onChange}
-          checked={checked}
           disabled={disabled}
+          {...props}
         />
         {label}
       </label>

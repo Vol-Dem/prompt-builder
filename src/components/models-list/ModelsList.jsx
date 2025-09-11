@@ -281,7 +281,7 @@ const ModelsList = () => {
       >
         {loraHtml}
       </div>
-      {guideState?.active && !isLoading && loraHtml?.length && (
+      {guideState?.active && !isLoading && !!loraHtml?.length && (
         <OpenModelGuide />
       )}
       {!loraHtml?.length &&

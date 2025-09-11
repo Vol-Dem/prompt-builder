@@ -534,8 +534,8 @@ export const transformSrcPreview = (
     previewSrc = srcArr.toSpliced(widthIndex, 1, imgSrc).join("/");
 
     if (type === "video") {
-      const videoSrc = `transcode=true,width=${width}`;
-      const videoOriginalSrc = `anim=true,transcode=true`;
+      const videoSrc = `transcode=true,width=${width},quality=90`;
+      const videoOriginalSrc = `anim=true,transcode=true,original=true,quality=90`;
 
       previewVideoMp4Src = srcArr.toSpliced(widthIndex, 1, videoSrc).join("/");
       originalVideoMp4Src = srcArr

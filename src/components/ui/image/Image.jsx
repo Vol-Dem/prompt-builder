@@ -2,9 +2,13 @@ import { forwardRef, useEffect, useRef, useState } from "react";
 import classes from "./Image.module.scss";
 import ImageSvg from "../../../assets/ImageSvg";
 import { transformSrcPreview } from "../../../utils/generalUtils";
-import { SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM } from "../../../variables/constants";
+import {
+  SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
+} from "../../../variables/constants";
 import { AnimatePresence } from "framer-motion";
 import ImageFullView from "../ImageFullView";
+import ButtonPlay from "../buttons/ButtonPlay";
 
 const Image = forwardRef(
   (
@@ -17,6 +21,7 @@ const Image = forwardRef(
       onClick,
       className,
       type = "image/webp",
+      imgType = "image",
       preloader = true,
       imageWidth = SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
       width,
@@ -34,7 +39,7 @@ const Image = forwardRef(
 
     useEffect(() => {
       if (src) {
-        const { previewSrc } = transformSrcPreview(src, imageWidth, "image");
+        const { previewSrc } = transformSrcPreview(src, imageWidth, imgType);
 
         setImgError(false);
         setImgIsLoading(true);
@@ -50,8 +55,17 @@ const Image = forwardRef(
     };
 
     const imgErrorHandler = () => {
-      setImgIsLoading(false);
-      setImgError(true);
+      if (imageWidth === SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL) {
+        const { previewSrc } = transformSrcPreview(
+          src,
+          SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
+          imgType
+        );
+        setImgSrc(previewSrc);
+      } else {
+        setImgIsLoading(false);
+        setImgError(true);
+      }
     };
 
     const clickHandler = (e) => {
@@ -89,6 +103,7 @@ const Image = forwardRef(
           ref={imageRef}
           id={id}
         >
+          {imgType === "video" && <ButtonPlay />}
           {preloader && (
             <div
               className={`${classes.preloader} ${

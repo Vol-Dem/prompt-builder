@@ -7,28 +7,28 @@ import {
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
 } from "../../variables/constants";
 
-const Input = (props) => {
-  const {
-    id,
-    type,
-    name,
-    label,
-    input,
-    className,
-    onBlur,
-    onChange,
-    onClick,
-    onFocus,
-    autoComplete,
-    error,
-    autoFocus,
-    value,
-    placeholder,
-    validation,
-    showError,
-    fitContent,
-    readOnly,
-  } = props;
+const Input = ({
+  id,
+  type,
+  name,
+  label,
+  input,
+  className,
+  onBlur,
+  onChange,
+  onClick,
+  onFocus,
+  autoComplete,
+  error,
+  autoFocus,
+  value,
+  placeholder,
+  validation,
+  showError,
+  fitContent,
+  readOnly,
+  ...props
+}) => {
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const inputRef = useRef(null);
@@ -97,6 +97,7 @@ const Input = (props) => {
         autoFocus={autoFocus}
         autoComplete={autoComplete}
         value={value}
+        {...props}
       />
       {showErrorMessage && error && (
         <motion.div

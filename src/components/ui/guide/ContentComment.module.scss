@@ -1,0 +1,5 @@
+@use "./../../../variables/variables.scss" as var;
+.comment {
+  font-size: 1.4rem;
+  color: var.$color-text-gray;
+}

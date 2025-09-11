@@ -5,12 +5,12 @@ import {
 import classes from "./WarningMessage.module.scss";
 import { motion } from "framer-motion";
 
-const WarningMessage = (props) => {
+const WarningMessage = ({ children, className }) => {
   return (
     <motion.div
       initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
       animate={ANIMATIONS_FM_SLIDEIN}
-      className={`${classes.warning} ${props.className || ""}`}
+      className={`${classes.warning} ${className || ""}`}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -26,7 +26,7 @@ const WarningMessage = (props) => {
           d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
         />
       </svg>
-      <div>{props.children}</div>
+      <div>{children}</div>
     </motion.div>
   );
 };

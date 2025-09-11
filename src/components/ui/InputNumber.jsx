@@ -2,26 +2,25 @@ import { useEffect, useState } from "react";
 import classes from "./InputNumber.module.scss";
 import { validateInput } from "../../utils/generalUtils";
 
-const InputNumber = (props) => {
-  const {
-    id,
-    type,
-    name,
-    label,
-    input,
-    className,
-    onBlur,
-    onChange,
-    onClick,
-    onFocus,
-    error,
-    autoFocus,
-    value,
-    placeholder,
-    validation,
-    showError,
-    step = 1,
-  } = props;
+const InputNumber = ({
+  id,
+  type,
+  name,
+  label,
+  input,
+  className,
+  onBlur,
+  onChange,
+  onClick,
+  onFocus,
+  error,
+  autoFocus,
+  value,
+  placeholder,
+  validation,
+  showError,
+  step = 1,
+}) => {
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 

@@ -12,6 +12,7 @@ const ButtonDelete = ({
   message,
   errorMessage,
   className,
+  ...props
 }) => {
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
 
@@ -30,6 +31,7 @@ const ButtonDelete = ({
         onClick={showDeleteReqeustHandler}
         className={`${classes["btn-del"]} ${className || ""}`}
         disabled={isLoading}
+        {...props}
       >
         Delete
       </Buttton>

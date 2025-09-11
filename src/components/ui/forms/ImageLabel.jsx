@@ -15,6 +15,7 @@ const ImageLabel = ({ htmlFor, imageData, type, className }) => {
           type === "del" ? classes["image--del"] : ""
         }`}
         type={imageData.data.type}
+        imgType={imageData.data.type}
         src={imageData.data.url}
         alt={`Image ${imageData.id}`}
         imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL}

@@ -9,19 +9,25 @@ import { motion } from "framer-motion";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_BIG } from "../../variables/constants";
 import { transformSrcPreview } from "../../utils/generalUtils";
 
-const ImageFullView = (props) => {
+const ImageFullView = ({
+  src,
+  type,
+  onClose,
+  title,
+  alt,
+  children,
+  nextSlide,
+  prevSlide,
+  controls,
+}) => {
   const [imgIsLoading, setImgIsLoading] = useState(false);
 
   const { previewSrc, originalVideoWebmSrc, originalVideoMp4Src } =
-    transformSrcPreview(
-      props.src,
-      SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
-      props.type
-    );
+    transformSrcPreview(src, SETTINGS_IMAGE_PREVIEW_WIDTH_BIG, type);
 
   useEffect(() => {
-    if (props.type !== "video") setImgIsLoading(true);
-  }, [props.src, props.type]);
+    if (type !== "video") setImgIsLoading(true);
+  }, [src, type]);
 
   const imgLoadHandler = () => {
     setImgIsLoading(false);
@@ -41,19 +47,19 @@ const ImageFullView = (props) => {
             animate="visible"
             exit="exit"
             className={`${classes.modal} ${classes["modal--backdrop"]}`}
-            onClick={props.onClose}
+            onClick={onClose}
           ></motion.div>
           <div className={`${classes.modal} ${classes["modal--content"]}`}>
-            {props.title && <h2 className={classes.title}>{props.title}</h2>}
+            {title && <h2 className={classes.title}>{title}</h2>}
             {imgIsLoading && (
               <div className={classes["spiner-container"]}>
                 <Spinner size="medium" />
               </div>
             )}
-            {props.type !== "video" && (
+            {type !== "video" && (
               <motion.img
                 layout
-                layoutId={props?.src}
+                layoutId={src}
                 variants={{
                   hidden: { opacity: 0, y: 30 },
                   visible: { opacity: 1, y: 0 },
@@ -62,15 +68,15 @@ const ImageFullView = (props) => {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                src={props?.src}
-                alt={props?.alt || "image-full"}
+                src={src}
+                alt={alt || "image-full"}
                 className={`${classes.img} ${
                   imgIsLoading ? classes["img--hidden"] : ""
                 }`}
                 onLoad={imgLoadHandler}
               />
             )}
-            {props.type === "video" && (
+            {type === "video" && (
               <video
                 playsInline
                 autoPlay
@@ -87,22 +93,22 @@ const ImageFullView = (props) => {
                 <source src={originalVideoMp4Src} type="video/mp4" />
               </video>
             )}
-            {props.children}
+            {children}
           </div>
-          <div className={classes["modal__close"]} onClick={props.onClose}>
+          <div className={classes["modal__close"]} onClick={onClose}>
             <CrossSvg />
           </div>
-          {props.prevSlide && props?.controls && (
+          {prevSlide && controls && (
             <div
               className={`${classes["btn-slide"]} ${classes["btn-slide--next"]}`}
-              onClick={props.prevSlide}
+              onClick={prevSlide}
             >
               <ArrowLeftSvg />
             </div>
           )}
-          {props.nextSlide && props?.controls && (
+          {nextSlide && controls && (
             <div
-              onClick={props.nextSlide}
+              onClick={nextSlide}
               className={`${classes["btn-slide"]} ${classes["btn-slide--prev"]}`}
             >
               <ArrowRightSvg />

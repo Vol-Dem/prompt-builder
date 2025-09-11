@@ -1,11 +1,5 @@
 import classes from "./Layout.module.scss";
-import {
-  Link,
-  NavLink,
-  Outlet,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
 import MainNavigation from "../navigation/MainNavigation";
@@ -21,11 +15,9 @@ import Spinner from "../../ui/Spinner";
 import Notification from "../../ui/Notification";
 import Prompt from "../../prompt/Prompt";
 import UsedModelsPanel from "../../used-models-panel/UsedModelsPanel";
-import { modelActions } from "../../../store/model";
 import Search from "../../search/Search";
 import UploadingPanel from "../../uploading-panel/UploadingPanel";
 import ActiveCarousel from "../../active-carousel/ActiveCarousel";
-import SearchSvg from "../../../assets/SearchSvg";
 import { tabActions } from "../../../store/tabs";
 import VerifyEmailMessage from "../../notification-messages/VerifyEmailMessage";
 import {
@@ -36,7 +28,6 @@ import {
 } from "../../../variables/utils";
 import Maintenance from "../maintenance/Maintenance";
 import { AnimatePresence } from "framer-motion";
-import { usedModelsActions } from "../../../store/usedModels";
 import { useMemo } from "react";
 import NsfwSwitch from "../../ui/nsfw-switch/NsfwSwitch";
 import ScrollToTop from "../../ui/ScrollToTop";
@@ -59,27 +50,12 @@ const Layout = () => {
   );
   const maintenance = useSelector((state) => state.notification.maintenance);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    if (location?.pathname) {
-      dispatch(usedModelsActions.setFormIsOpen(false));
-      dispatch(modelActions.resetModelData());
-    }
-  }, [location?.pathname, dispatch]);
 
   const openAuth = () => {
     dispatch(authActions.openAuthForm());
   };
   const closeAuth = () => {
     dispatch(authActions.closeAuthForm());
-  };
-
-  const openMobileSearch = () => {
-    if (location.pathname !== "/search") {
-      navigate("search");
-    }
   };
 
   useEffect(() => {
@@ -179,19 +155,7 @@ const Layout = () => {
                 {!maintenance && <MainNavigation />}
                 {isAuth && !maintenance && (
                   <>
-                    <Search
-                      className={`${
-                        location.pathname === "/search"
-                          ? ""
-                          : classes["search-hidden"]
-                      }`}
-                    />
-                    <span
-                      className={classes["btn-search"]}
-                      onClick={openMobileSearch}
-                    >
-                      <SearchSvg />
-                    </span>
+                    <Search />
                     <UploadingPanel />
                     <NsfwSwitch />
                   </>

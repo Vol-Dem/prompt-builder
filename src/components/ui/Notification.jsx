@@ -6,9 +6,7 @@ import { createPortal } from "react-dom";
 import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 import { motion } from "framer-motion";
 
-const Notification = (props) => {
-  const { type = "notification", title } = props;
-
+const Notification = ({ type = "notification", title, onClick, children }) => {
   return (
     <>
       {createPortal(
@@ -28,12 +26,9 @@ const Notification = (props) => {
               {title && (
                 <h4 className={classes["notification__title"]}>{title}</h4>
               )}
-              <p className={classes["notification__text"]}>{props.children}</p>
+              <p className={classes["notification__text"]}>{children}</p>
             </div>
-            <Buttton
-              className={classes["notification__btn"]}
-              onClick={props?.onClick}
-            >
+            <Buttton className={classes["notification__btn"]} onClick={onClick}>
               Got it!
             </Buttton>
           </Card>

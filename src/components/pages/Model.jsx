@@ -60,7 +60,7 @@ const Model = ({ title }) => {
   const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
   const versionsListRef = useRef(null);
   const versionsItemRef = useRef(null);
-  let { state } = useLocation();
+  let { state, pathname } = useLocation();
   const isAuth = useSelector((state) => state.auth.user.uid);
   const uid = useSelector((state) => state.auth.user.uid);
   const categories = useSelector((state) => state.tabs.categoriesData);
@@ -74,6 +74,12 @@ const Model = ({ title }) => {
   const allHashtags = model?.hashtags?.length
     ? model?.hashtags
     : model?.data?.tags;
+
+  useEffect(() => {
+    if (pathname) {
+      dispatch(modelActions.resetModelData());
+    }
+  }, [pathname, dispatch]);
 
   useEffect(() => {
     if (guideIsActive && guideHomeActive) {

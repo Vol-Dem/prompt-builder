@@ -1,12 +1,11 @@
 import classes from "./Fieldset.module.scss";
 import { motion } from "framer-motion";
 
-const Fieldset = (props) => {
-  const { legend, className } = props;
+const Fieldset = ({ legend, className, children }) => {
   return (
     <motion.fieldset className={`${classes.fieldset} ${className || ""}`}>
       <legend className={classes.legend}>{legend}</legend>
-      {props.children}
+      {children}
     </motion.fieldset>
   );
 };

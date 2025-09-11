@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import classes from "./VersionForm.module.scss";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
@@ -122,8 +122,7 @@ const VersionForm = ({
     value: "",
     isValid: true,
   });
-  const [tagSetsInputs, setTagSetsInputs] = useState([
-  ]);
+  const [tagSetsInputs, setTagSetsInputs] = useState([]);
   const uid = useSelector((state) => state.auth.user.uid);
   const model = useSelector((state) => state.model.model);
 
@@ -185,7 +184,6 @@ const VersionForm = ({
         DEFAULT_DATA_TAGSETS_INPUT
       )
     );
-
   }, [versionData]);
 
   const saveVersionHandler = async (e) => {
@@ -502,11 +500,11 @@ const VersionForm = ({
             showError={showErrorMessage}
           />
           <Textarea
-            label="Description"
+            label="Version description"
             id="description"
             name="description"
             rows="5"
-            placeholder="Description"
+            placeholder="Version description"
             value={descriptionInput.value}
             onChange={(e, isValid) => {
               setDescriptionInput({ value: e.target.value, isValid });

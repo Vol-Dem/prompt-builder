@@ -19,7 +19,6 @@ import DeleteRequest from "../../ui/DeleteRequest";
 import { clearFileExtension } from "../../../utils/generalUtils";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
-import ButtonTertiary from "../../ui/ButtonTertiary";
 import Spinner from "../../ui/Spinner";
 import {
   ERROR_MESSAGE_DEFAULT,
@@ -36,7 +35,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import LeftSidebar from "../../layout/left-sidebar/LeftSidebar";
 import { ArrowUturnLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import H1 from "../../ui/text/H1";
-import H2 from "../../ui/text/H2";
 
 const firestore = getFirestore(firebaseApp);
 

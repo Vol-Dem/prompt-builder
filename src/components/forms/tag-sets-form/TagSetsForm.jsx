@@ -65,7 +65,6 @@ const TagSetsForm = ({ modelId, onClose }) => {
   );
 
   useEffect(() => {
-    console.log("REND");
     if (guideActive && guideStep === GUIDE_STEP_MODEL_TAGS_EDIT) {
       dispatch(
         guideActions.setGuideStep({

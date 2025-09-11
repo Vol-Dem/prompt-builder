@@ -2,23 +2,23 @@ import { useEffect, useState } from "react";
 import { validateInput } from "../../utils/generalUtils";
 import classes from "./Textarea.module.scss";
 
-const Textarea = (props) => {
-  const {
-    id,
-    name,
-    label,
-    textarea,
-    className,
-    onChange,
-    onBlur,
-    error,
-    cols,
-    rows = 5,
-    value,
-    placeholder,
-    validation,
-    showError,
-  } = props;
+const Textarea = ({
+  id,
+  name,
+  label,
+  textarea,
+  className,
+  onChange,
+  onBlur,
+  error,
+  cols,
+  rows = 5,
+  value,
+  placeholder,
+  validation,
+  showError,
+  ...props
+}) => {
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
@@ -78,6 +78,7 @@ const Textarea = (props) => {
             ? classes["textarea--error"]
             : ""
         }`}
+        {...props}
       ></textarea>
       {showError && error && <div className={classes.error}>{error}</div>}
       {showError && inputErrorMessage && (

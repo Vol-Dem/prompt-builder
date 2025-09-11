@@ -7,23 +7,42 @@ import {
   GUIDE_STEP_HIGHLIGHTING_WORDS,
 } from "../../../../variables/constants";
 import useGuideIndex from "../../../../hooks/use-guide-index";
+import ContentComment from "../ContentComment";
+import { useSelector } from "react-redux";
+import GuideActionMessage from "../GuideActionMessage";
 
 const guideType = "model";
+const expectedTagsAmount = 2;
 
 const ImageCardGuide = () => {
+  const prompt = useSelector((state) => state.prompt.curPromptArr);
+
   const guideSteps = useMemo(() => {
+    let actionText =
+      "Add at least few tags to the prompt by clicking them to continue";
+
+    if (expectedTagsAmount - prompt.length === 1) {
+      actionText =
+        "Add at least one more tag to the prompt by clicking them to continue";
+    }
+    if (prompt.length >= expectedTagsAmount) {
+      actionText = 'Click "Next step" to continue';
+    }
+
     return [
       {
         step: GUIDE_STEP_ADD_TO_PROMPT,
         arrowPosition: 8,
-        next: true,
+        next: prompt.length >= expectedTagsAmount,
         text: (
           <>
             You can click on tags to add trigger words to or remove from prompt.{" "}
             <br />
-            <span className={classes["guide__content__comment"]}>
-              Trigger words that are already in the prompt will be highlighted
-            </span>
+            <ContentComment>
+              Trigger words that are already in the prompt will be highlighted.
+            </ContentComment>
+            <br />
+            <GuideActionMessage>{actionText}</GuideActionMessage>
           </>
         ),
       },
@@ -50,7 +69,7 @@ const ImageCardGuide = () => {
         ),
       },
     ];
-  }, []);
+  }, [prompt]);
 
   const guideStepIndex = useGuideIndex(guideType, guideSteps);
 

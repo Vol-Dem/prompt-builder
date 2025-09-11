@@ -9,25 +9,11 @@ import {
 } from "../../variables/constants";
 
 const Carousel = ({
-  imagesData,
-  visibleImgAmount,
-  postId,
-  onUpdate,
-  modelId,
-  versionId,
-  existedImgsAmount,
-  imgIsOpen = false,
-  activeImgNum,
-  saved,
-  active,
-  onActiveNumChange,
-  side,
   showInView = false,
   imageHeight = SETTINGS_CAROUSEL_IMAGE_HEIGHT,
   imageWidth = SETTINGS_CAROUSEL_IMAGE_WIDTH,
-  location,
-  locationId,
-  curPostData,
+  visibleImgAmount,
+  ...props
 }) => {
   const carouselRef = useRef(null);
   const isInersecting = useIntersection(
@@ -47,25 +33,11 @@ const Carousel = ({
     >
       {(!showInView || isInersecting) && (
         <CarouselContent
-          imagesData={imagesData}
-          visibleImgAmount={visibleImgAmount}
-          postId={postId}
-          onUpdate={onUpdate}
-          modelId={modelId}
-          versionId={versionId}
-          existedImgsAmount={existedImgsAmount}
-          imgIsOpen={imgIsOpen}
-          activeImgNum={activeImgNum}
-          saved={saved}
-          active={active}
-          onActiveNumChange={onActiveNumChange}
-          side={side}
           showInView={showInView}
           imageHeight={imageHeight}
           imageWidth={imageWidth}
-          location={location}
-          locationId={locationId}
-          curPostData={curPostData}
+          visibleImgAmount={visibleImgAmount}
+          {...props}
         />
       )}
     </div>
