@@ -149,11 +149,11 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
               </h4>
             </Link>
           </div>
-          <span className={classes.type}>
+          <ResourceTypeLabel>
             {previewData.type === "TextualInversion"
               ? "Embedding"
               : previewData.type}
-          </span>
+          </ResourceTypeLabel>
           <div className={classes.info}>
             Model:{" "}
             <ul className={classes["models"]}>

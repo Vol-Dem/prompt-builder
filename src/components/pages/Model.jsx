@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import classes from "./Model.module.scss";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import Carousel from "../carousel/Carousel";
 import { useDispatch, useSelector } from "react-redux";
 import { modelActions } from "../../store/model";
@@ -54,13 +60,15 @@ const Model = ({ title }) => {
   const [showAllHashtags, setShowAllHashtags] = useState(false);
   const [hashtags, setHashtags] = useState([]);
   const { modelId } = useParams();
+  const [searchParams] = useSearchParams();
+  const versionIdParam = searchParams.get("versionId");
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
   const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
   const versionsListRef = useRef(null);
   const versionsItemRef = useRef(null);
-  let { state, pathname } = useLocation();
+  let { pathname } = useLocation();
   const isAuth = useSelector((state) => state.auth.user.uid);
   const uid = useSelector((state) => state.auth.user.uid);
   const categories = useSelector((state) => state.tabs.categoriesData);
@@ -368,10 +376,10 @@ const Model = ({ title }) => {
       });
 
     if (
-      state?.versionId &&
-      !!modelVersions?.find((version) => version.id === state?.versionId)
+      versionIdParam &&
+      !!modelVersions?.find((version) => version.id === +versionIdParam)
     ) {
-      curVersionId = state?.versionId;
+      curVersionId = +versionIdParam;
     } else {
       curVersionId = modelVersions?.find(
         (version) =>
@@ -379,6 +387,18 @@ const Model = ({ title }) => {
           model.modelVersionsCustomData[version.id].downloadStatus
       )?.id;
     }
+    // if (
+    //   state?.versionId &&
+    //   !!modelVersions?.find((version) => version.id === state?.versionId)
+    // ) {
+    //   curVersionId = state?.versionId;
+    // } else {
+    //   curVersionId = modelVersions?.find(
+    //     (version) =>
+    //       model?.modelVersionsCustomData.hasOwnProperty(version.id) &&
+    //       model.modelVersionsCustomData[version.id].downloadStatus
+    //   )?.id;
+    // }
 
     const curVersionData = curVersionId
       ? modelVersions?.find((version) => version.id === curVersionId)
@@ -389,7 +409,7 @@ const Model = ({ title }) => {
         modelActions.setCurVersion({ ...curVersionData, modelId: model.id })
       );
     }
-  }, [model, dispatch, curVersion?.modelId, state?.versionId]);
+  }, [model, dispatch, curVersion?.modelId, versionIdParam]);
 
   useEffect(() => {
     if (!curVersion?.baseModel || !model.id) return;
@@ -397,6 +417,7 @@ const Model = ({ title }) => {
     const curVersionCustomData = model.modelVersionsCustomData[curVersion.id];
     const modelPreviewData = {
       id: model?.id,
+      versionId: curVersion.id,
       src: model?.src,
       main: model?.main,
       sub: model?.sub,
@@ -455,7 +476,8 @@ const Model = ({ title }) => {
       ?.sort((a, b) => a?.index - b?.index)
       .map((version, i) => {
         return (
-          <li
+          <Link
+            to={`?versionId=${version.versionId}`}
             key={i}
             ref={versionsItemRef}
             id={version.versionId}
@@ -469,7 +491,7 @@ const Model = ({ title }) => {
         ${version?.downloadStatus ? classes["version--downloaded"] : ""}`}
           >
             {version.name}
-          </li>
+          </Link>
         );
       });
 

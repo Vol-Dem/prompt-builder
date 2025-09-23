@@ -708,3 +708,10 @@ export const smoothScroll = (hashId) => {
   const distToTop = window.scrollY + scrollTarget?.getBoundingClientRect().top;
   window.scrollTo({ top: distToTop - headerHeight - 10, behavior: "smooth" });
 };
+
+export const updateSearchParams = (prevParams, newEntry) => {
+  return new URLSearchParams({
+    ...Object.fromEntries(prevParams.entries()),
+    ...newEntry,
+  });
+};

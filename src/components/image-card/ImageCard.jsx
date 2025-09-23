@@ -484,7 +484,9 @@ const ImageCard = ({ activeImgNum }) => {
         {resource?.preview && (
           <>
             <Link
-              to={`/models/${resource?.preview?.id}`}
+              to={`/models/${resource?.preview?.id}${
+                version ? `?versionId=${version}` : ""
+              }`}
               state={{ versionId: version }}
               className={`${classes["resource__link"]} ${classes["resource__name"]}`}
               onClick={resetModelData}
@@ -496,6 +498,7 @@ const ImageCard = ({ activeImgNum }) => {
               previewData={{
                 ...resource.preview,
                 versionName: resource?.versionName || versionName,
+                versionId: resource?.versionId || null,
               }}
               versionId={version}
               className={classes["resource__add"]}
@@ -611,7 +614,9 @@ const ImageCard = ({ activeImgNum }) => {
           <div className={classes["resource__type"]}>
             {modelType || resource?.type}
           </div>
-          {resource?.weight && <div>weight: {resource?.weight || ""}</div>}
+          {resource?.weight && (
+            <div>weight: {resource?.weight.toFixed(2) || ""}</div>
+          )}
         </div>
       </motion.li>
     );

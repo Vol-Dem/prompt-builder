@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import classes from "./Home.module.scss";
 import { Outlet } from "react-router-dom";
+import Tabs from "../tabs/Tabs";
 
 function Home({ title }) {
   useEffect(() => {
@@ -10,6 +11,7 @@ function Home({ title }) {
   return (
     <div className={classes["wrap"]}>
       <div className={classes["config"]}>
+        <Tabs />
         <Outlet />
       </div>
     </div>

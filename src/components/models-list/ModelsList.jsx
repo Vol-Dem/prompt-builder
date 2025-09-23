@@ -203,7 +203,7 @@ const ModelsList = () => {
 
   return (
     <div className={classes["container"]}>
-      {!!modelsData?.previews?.length && (
+      {activeSubcategory && (
         <div className={classes.panel}>
           <span className={classes["panel__title"]}>Sort by:</span>
           <Select
@@ -290,7 +290,7 @@ const ModelsList = () => {
         isOnline &&
         (getAllModels || getSubcategoryModels) && (
           <NotificationMessage className={classes.empty} type="notification">
-            This category is empty
+            This category is empty. Try changing the filter.
           </NotificationMessage>
         )}
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}

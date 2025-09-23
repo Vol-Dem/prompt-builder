@@ -17,8 +17,14 @@ import Checkbox from "../ui/Checkbox";
 import LeftSidebar from "../layout/left-sidebar/LeftSidebar";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import NotificationMessage from "../ui/NotificationMessage";
-import { checkArraysIsEqual } from "../../utils/generalUtils";
+import {
+  checkArraysIsEqual,
+  updateSearchParams,
+} from "../../utils/generalUtils";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
+import { useSearchParams } from "react-router-dom";
+
+let initialPageLoad = true;
 
 const SearchPage = ({ title }) => {
   const [initial, setInitial] = useState(true);
@@ -52,6 +58,52 @@ const SearchPage = ({ title }) => {
   const isPageEnd = usePageEnd(600);
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const modelTypeParam = searchParams.get("modelType");
+    const baseModelParam = searchParams.get("baseModel");
+    const hashtag = searchParams.get("hashtag");
+    const searchQueryParam = searchParams.get("searchQuery");
+
+    if (
+      searchQueryParam &&
+      !searchQuery &&
+      !searchResult.query &&
+      initialPageLoad
+    ) {
+      initialPageLoad = false;
+
+      dispatch(searchActions.setSearchQuery(searchQueryParam));
+
+      if (modelTypeParam) {
+        dispatch(
+          searchActions.setSearchFilter({
+            type: "modelType",
+            value: modelTypeParam.split(","),
+          })
+        );
+      }
+
+      if (baseModelParam) {
+        dispatch(
+          searchActions.setSearchFilter({
+            type: "baseModel",
+            value: baseModelParam.split(","),
+          })
+        );
+      }
+
+      if (hashtag) {
+        dispatch(
+          searchActions.setSearchFilter({
+            type: "hashtag",
+            value: hashtag === "true",
+          })
+        );
+      }
+    }
+  }, [searchParams, searchQuery, searchResult.query, dispatch]);
 
   useEffect(() => {
     setIsIntersecting(isPageEnd);
@@ -223,7 +275,7 @@ const SearchPage = ({ title }) => {
     return () => {
       if (initial) {
         setInitial(false);
-      } else if (!initial) {
+      } else {
         dispatch(searchActions.setSearchQuery(""));
       }
     };
@@ -246,6 +298,10 @@ const SearchPage = ({ title }) => {
       dispatch(
         searchActions.setSearchFilter({ type: "modelType", value: modelTypes })
       );
+
+      setSearchParams((prevParams) => {
+        return updateSearchParams(prevParams, { modelType: modelTypes });
+      });
 
       return newState;
     });
@@ -272,6 +328,10 @@ const SearchPage = ({ title }) => {
         })
       );
 
+      setSearchParams((prevParams) => {
+        return updateSearchParams(prevParams, { baseModel: baseModelsData });
+      });
+
       return newState;
     });
   };
@@ -289,6 +349,10 @@ const SearchPage = ({ title }) => {
         value: e.target.checked,
       })
     );
+
+    setSearchParams((prevParams) => {
+      return updateSearchParams(prevParams, { hashtag: e.target.checked });
+    });
   };
 
   useEffect(() => {
@@ -378,6 +442,9 @@ const SearchPage = ({ title }) => {
     setModelTypesChecked(0);
     setBaseModelsChecked(0);
     dispatch(searchActions.resetSearchFilter());
+    setSearchParams((prevParams) => {
+      return { searchQuery: prevParams.get("searchQuery") };
+    });
   };
 
   const openSidebarHandler = () => {

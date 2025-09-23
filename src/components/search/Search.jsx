@@ -2,7 +2,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import classes from "./Search.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "../ui/image/Image";
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  NavLink,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { tabActions } from "../../store/tabs";
 import { liveSearch, searchActions } from "../../store/search";
 import Spinner from "../ui/Spinner";
@@ -25,6 +31,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { imagesActions } from "../../store/images";
 import { modelActions } from "../../store/model";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { updateSearchParams } from "../../utils/generalUtils";
 
 const searchTimeoutMs = 1000;
 
@@ -53,6 +60,7 @@ const Search = ({ className }) => {
   const location = useLocation();
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     if (
@@ -68,6 +76,13 @@ const Search = ({ className }) => {
     setSearchResultIsOpen(true);
     setShowMore(false);
     dispatch(searchActions.setSearchQuery(searchInputValue));
+    if (location.pathname === "/search") {
+      setSearchParams((prevParams) => {
+        return updateSearchParams(prevParams, {
+          searchQuery: searchInputValue,
+        });
+      });
+    }
   };
 
   const openMobileSearch = () => {
@@ -327,7 +342,7 @@ const Search = ({ className }) => {
   const submitSearchHandler = (e) => {
     e.preventDefault();
     if (location.pathname !== "/search") {
-      navigate("search");
+      navigate(`search?searchQuery=${searchInput}`);
     }
 
     if (!searchInput.trim()) return;

@@ -87,7 +87,7 @@ const UsedCard = memo(({ previewData, fullView, layoutId, onClick }) => {
           to={
             previewData.type === "collection"
               ? `/images/${previewData.id}`
-              : `/models/${previewData.id}`
+              : `/models/${previewData.id}?versionId=${previewData.versionId}`
           }
           state={{ versionId: previewData?.activeVersionId || null }}
           className={classes.link}

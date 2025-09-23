@@ -34,7 +34,6 @@ const ImageCollection = lazy(() =>
 );
 const CollectionEdit = lazy(() => import("./components/pages/CollectionEdit"));
 const Edit = lazy(() => import("./components/pages/Edit"));
-const Tabs = lazy(() => import("./components/tabs/Tabs"));
 const Home = lazy(() => import("./components/pages/Home"));
 const Landing = lazy(() => import("./components/landing/Landing"));
 
@@ -49,128 +48,266 @@ function App() {
     dispatch(initAuth());
   }, [dispatch]);
 
-  const router = createBrowserRouter(
-    createRoutesFromElements(
-      <Route path="/" errorElement={<ErrorPage />} element={<Layout />}>
-        {!isAuth && initialAuth && (
-          <Route
-            path="/"
-            errorElement={<ErrorPage />}
-            element={<Landing title="AIDE-TOOLS" />}
-          ></Route>
-        )}
-        {isAuth && (
-          <Route
-            path="/"
-            errorElement={<ErrorPage />}
-            element={<Home title="AIDE-TOOLS" />}
-          >
-            <Route
-              path="/"
-              errorElement={<ErrorPage />}
-              element={<Tabs />}
-            ></Route>
-          </Route>
-        )}
-        <Route
-          path="models/:modelId"
-          errorElement={<ErrorPage />}
-          element={<Model title="Model" />}
-        ></Route>
-        <Route
-          path="models/:modelId/edit"
-          errorElement={<ErrorPage />}
-          element={<Edit title="Edit" />}
-        ></Route>
-        <Route
-          path="images"
-          errorElement={<ErrorPage />}
-          element={<Images title="Images" />}
-        ></Route>
-        <Route
-          path="images/:collectionId"
-          errorElement={<ErrorPage />}
-          element={<ImageCollection title="Collection" />}
-        ></Route>
-        <Route
-          path="images/:collectionId/edit"
-          errorElement={<ErrorPage />}
-          element={<CollectionEdit title="Collection" />}
-        ></Route>
-        <Route
-          path="search"
-          errorElement={<ErrorPage />}
-          element={<SearchPage title="Search" />}
-        ></Route>
-        <Route
-          path="profile"
-          errorElement={<ErrorPage />}
-          element={<Profile title="Profile" />}
-        ></Route>
-        <Route
-          path="about"
-          errorElement={<ErrorPage />}
-          element={<About title="About" />}
-        >
-          <Route
-            path="/about"
-            errorElement={<ErrorPage />}
-            element={<AboutMain title="About" />}
-          ></Route>
-          <Route
-            path="/about/start-adding-models"
-            errorElement={<ErrorPage />}
-            element={<AboutStartAddingModels title="Start: Adding Models" />}
-          ></Route>
-          <Route
-            path="/about/category-edit"
-            errorElement={<ErrorPage />}
-            element={<AboutCategoryEdit title="Category edit" />}
-          ></Route>
-          <Route
-            path="/about/working-with-prompts"
-            errorElement={<ErrorPage />}
-            element={<AboutWorkingWithPrompts title="Working with Prompts" />}
-          ></Route>
-          <Route
-            path="/about/model-page"
-            errorElement={<ErrorPage />}
-            element={<AboutModelPage title="Model Page" />}
-          ></Route>
-          <Route
-            path="/about/model-settings"
-            errorElement={<ErrorPage />}
-            element={<AboutModelSettings title="Model Settings" />}
-          ></Route>
-          <Route
-            path="/about/image-collections"
-            errorElement={<ErrorPage />}
-            element={<AboutImageCollections title="Image collections" />}
-          ></Route>
-          <Route
-            path="/about/top-panel"
-            errorElement={<ErrorPage />}
-            element={<AboutTopPanel title="Top Panel" />}
-          ></Route>
-          <Route
-            path="/about/sidebar"
-            errorElement={<ErrorPage />}
-            element={<AboutSidebar title="Sidebar" />}
-          ></Route>
-        </Route>
-        <Route
-          path="tos"
-          errorElement={<ErrorPage />}
-          element={<ToS title="Terms of Service" />}
-        ></Route>
-        <Route
-          path="privacy"
-          errorElement={<ErrorPage />}
-          element={<PrivacyPolicy title="Privacy Policy" />}
-        ></Route>
-      </Route>
-    )
-  );
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Layout />,
+      errorElement: <ErrorPage />,
+      children: [
+        {
+          index: !isAuth && initialAuth,
+          element: <Landing title="AIDE-TOOLS" />,
+          errorElement: <ErrorPage />,
+        },
+        {
+          index: isAuth,
+          element: <Home title="AIDE-TOOLS" />,
+          errorElement: <ErrorPage />,
+        },
+        {
+          path: "/models/:modelId",
+          id: "model-data",
+          // loader: someLoader,
+          children: [
+            {
+              index: true,
+              element: <Model title="Model" />,
+              errorElement: <ErrorPage />,
+            },
+            {
+              path: "edit",
+              element: <Edit title="Edit" />,
+              errorElement: <ErrorPage />,
+            },
+          ],
+        },
+        {
+          path: "images",
+          errorElement: <ErrorPage />,
+          children: [
+            {
+              index: true,
+              element: <Images title="Images" />,
+              errorElement: <ErrorPage />,
+            },
+            {
+              path: ":collectionId",
+              id: "collection-data",
+              // loader: someLoader,
+              children: [
+                {
+                  index: true,
+                  element: <ImageCollection title="Collection" />,
+                  errorElement: <ErrorPage />,
+                },
+                {
+                  path: "edit",
+                  element: <CollectionEdit title="Collection" />,
+                  errorElement: <ErrorPage />,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          path: "/search",
+          element: <SearchPage title="Search" />,
+          errorElement: <ErrorPage />,
+        },
+        {
+          path: "/profile",
+          element: <Profile title="Profile" />,
+          errorElement: <ErrorPage />,
+        },
+        {
+          path: "/about",
+          element: <About title="About" />,
+          errorElement: <ErrorPage />,
+          children: [
+            {
+              index: true,
+              element: <AboutMain title="About" />,
+              errorElement: <ErrorPage />,
+            },
+            {
+              path: "start-adding-models",
+              element: <AboutStartAddingModels title="Start: Adding Models" />,
+              errorElement: <ErrorPage />,
+            },
+            {
+              path: "category-edit",
+              element: <AboutCategoryEdit title="Category edit" />,
+              errorElement: <ErrorPage />,
+            },
+            {
+              path: "working-with-prompts",
+              element: <AboutWorkingWithPrompts title="Working with Prompts" />,
+              errorElement: <ErrorPage />,
+            },
+            {
+              path: "model-page",
+              element: <AboutModelPage title="Model Page" />,
+              errorElement: <ErrorPage />,
+            },
+            {
+              path: "model-settings",
+              element: <AboutModelSettings title="Model Settings" />,
+              errorElement: <ErrorPage />,
+            },
+            {
+              path: "image-collections",
+              element: <AboutImageCollections title="Image collections" />,
+              errorElement: <ErrorPage />,
+            },
+            {
+              path: "top-panel",
+              element: <AboutTopPanel title="Top Panel" />,
+              errorElement: <ErrorPage />,
+            },
+            {
+              path: "sidebar",
+              element: <AboutSidebar title="Sidebar" />,
+              errorElement: <ErrorPage />,
+            },
+          ],
+        },
+        {
+          path: "/tos",
+          element: <ToS title="Terms of Service" />,
+          errorElement: <ErrorPage />,
+        },
+        {
+          path: "/privacy",
+          element: <PrivacyPolicy title="Privacy Policy" />,
+          errorElement: <ErrorPage />,
+        },
+      ],
+    },
+  ]);
+
+  // const router = createBrowserRouter(
+  //   createRoutesFromElements(
+  //     <Route path="/" errorElement={<ErrorPage />} element={<Layout />}>
+  //       {!isAuth && initialAuth && (
+  //         <Route
+  //           path="/"
+  //           errorElement={<ErrorPage />}
+  //           element={<Landing title="AIDE-TOOLS" />}
+  //         ></Route>
+  //       )}
+  //       {isAuth && (
+  //         <Route
+  //           path="/"
+  //           errorElement={<ErrorPage />}
+  //           element={<Home title="AIDE-TOOLS" />}
+  //         >
+  //           <Route
+  //             path="/"
+  //             errorElement={<ErrorPage />}
+  //             element={<Tabs />}
+  //           ></Route>
+  //         </Route>
+  //       )}
+  //       <Route
+  //         path="models/:modelId"
+  //         errorElement={<ErrorPage />}
+  //         element={<Model title="Model" />}
+  //       ></Route>
+  //       <Route
+  //         path="models/:modelId/edit"
+  //         errorElement={<ErrorPage />}
+  //         element={<Edit title="Edit" />}
+  //       ></Route>
+  //       <Route
+  //         path="images"
+  //         errorElement={<ErrorPage />}
+  //         element={<Images title="Images" />}
+  //       ></Route>
+  //       <Route
+  //         path="images/:collectionId"
+  //         errorElement={<ErrorPage />}
+  //         element={<ImageCollection title="Collection" />}
+  //       ></Route>
+  //       <Route
+  //         path="images/:collectionId/edit"
+  //         errorElement={<ErrorPage />}
+  //         element={<CollectionEdit title="Collection" />}
+  //       ></Route>
+  //       <Route
+  //         path="search"
+  //         errorElement={<ErrorPage />}
+  //         element={<SearchPage title="Search" />}
+  //       ></Route>
+  //       <Route
+  //         path="profile"
+  //         errorElement={<ErrorPage />}
+  //         element={<Profile title="Profile" />}
+  //       ></Route>
+  //       <Route
+  //         path="about"
+  //         errorElement={<ErrorPage />}
+  //         element={<About title="About" />}
+  //       >
+  //         <Route
+  //           path="/about"
+  //           errorElement={<ErrorPage />}
+  //           element={<AboutMain title="About" />}
+  //         ></Route>
+  //         <Route
+  //           path="/about/start-adding-models"
+  //           errorElement={<ErrorPage />}
+  //           element={<AboutStartAddingModels title="Start: Adding Models" />}
+  //         ></Route>
+  //         <Route
+  //           path="/about/category-edit"
+  //           errorElement={<ErrorPage />}
+  //           element={<AboutCategoryEdit title="Category edit" />}
+  //         ></Route>
+  //         <Route
+  //           path="/about/working-with-prompts"
+  //           errorElement={<ErrorPage />}
+  //           element={<AboutWorkingWithPrompts title="Working with Prompts" />}
+  //         ></Route>
+  //         <Route
+  //           path="/about/model-page"
+  //           errorElement={<ErrorPage />}
+  //           element={<AboutModelPage title="Model Page" />}
+  //         ></Route>
+  //         <Route
+  //           path="/about/model-settings"
+  //           errorElement={<ErrorPage />}
+  //           element={<AboutModelSettings title="Model Settings" />}
+  //         ></Route>
+  //         <Route
+  //           path="/about/image-collections"
+  //           errorElement={<ErrorPage />}
+  //           element={<AboutImageCollections title="Image collections" />}
+  //         ></Route>
+  //         <Route
+  //           path="/about/top-panel"
+  //           errorElement={<ErrorPage />}
+  //           element={<AboutTopPanel title="Top Panel" />}
+  //         ></Route>
+  //         <Route
+  //           path="/about/sidebar"
+  //           errorElement={<ErrorPage />}
+  //           element={<AboutSidebar title="Sidebar" />}
+  //         ></Route>
+  //       </Route>
+  //       <Route
+  //         path="tos"
+  //         errorElement={<ErrorPage />}
+  //         element={<ToS title="Terms of Service" />}
+  //       ></Route>
+  //       <Route
+  //         path="privacy"
+  //         errorElement={<ErrorPage />}
+  //         element={<PrivacyPolicy title="Privacy Policy" />}
+  //       ></Route>
+  //     </Route>
+  //   )
+  // );
+
   return <RouterProvider router={router} />;
 }
 

@@ -51,12 +51,13 @@ const ButtonAdd = ({
 
       const sidePanelData = {
         id: previewData?.id,
+        versionId: previewData?.versionId,
         activeVersionId: versionId || null,
         src: previewData?.src || null,
         main: previewData?.main || null,
         sub: previewData?.sub || null,
         title: previewData?.name || previewData.title || null,
-        versionName: curVersionData?.name || previewData?.versionName || null,
+        versionName: previewData?.versionName || curVersionData?.name || null,
         imgUrl: previewData?.customPreviewImgUrl || previewData?.imgUrl || null,
         nsfwPreviewImgUrl: previewData?.nsfwPreviewImgUrl || null,
         type: previewData?.type || previewData?.modelType || null,
