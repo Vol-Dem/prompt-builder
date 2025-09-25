@@ -5,8 +5,7 @@ import classes from "./CollectionList.module.scss";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { ERROR_MESSAGE_OFFLINE } from "../../../variables/constants";
 import NotificationMessage from "../../ui/NotificationMessage";
-import PreviewCard from "../../previewCard/PreviewCard";
-import AddToPanelAnimContainer from "../../ui/AddToPanelAnimContainer";
+import CollectionItem from "../collection-item/CollectionItem";
 
 const CollectionList = ({ sortBy }) => {
   const collectionPreviews = useSelector(
@@ -18,16 +17,8 @@ const CollectionList = ({ sortBy }) => {
   );
   const isOnline = useOnlineStatus();
 
-  //Rerender component for sidepanel animation
-  const usedModels = useSelector((state) => state.used.models);
-
   const collectionsHtml = collectionPreviews?.data?.map((collection, i) => {
-    return (
-      <AddToPanelAnimContainer key={i}>
-        <PreviewCard layout={false} previewData={collection} fullView={false} />
-        <PreviewCard layout={true} previewData={collection} fullView={false} />
-      </AddToPanelAnimContainer>
-    );
+    return <CollectionItem key={i} collection={collection} />;
   });
 
   return (

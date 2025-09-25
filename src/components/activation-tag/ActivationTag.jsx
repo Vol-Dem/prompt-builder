@@ -5,20 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { promptActions } from "../../store/prompt";
 
 const ActivationTag = ({ tag, modelData, strength }) => {
-  const [curTagName, setCurTagName] = useState(tag);
   const [curTagStrength, setCurTagStrength] = useState(null);
   const dispatch = useDispatch();
   const curPrompt = useSelector((state) => state.prompt.curPrompt);
-
-  useEffect(() => {
-    const tagName = tag.split(":").slice(0, -1).join(":");
-    const curStr = parseFloat(tag?.split(":")?.slice(-1));
-
-    setCurTagName(tagName);
-    if (curStr) {
-      setCurTagStrength(curStr);
-    }
-  }, [tag]);
+  const curTagName = tag.split(":").slice(0, -1).join(":");
 
   useEffect(() => {
     const curPromptTag = curPrompt

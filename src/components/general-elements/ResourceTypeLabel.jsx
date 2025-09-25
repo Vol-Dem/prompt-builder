@@ -5,7 +5,7 @@ const ResourceTypeLabel = ({ type, children, className }) => {
     <div
       className={`${classes["type"]} ${
         type ? classes[`type--${type?.toLowerCase()}`] : ""
-      } ${className}`}
+      } ${className || ""}`}
     >
       {children}
     </div>

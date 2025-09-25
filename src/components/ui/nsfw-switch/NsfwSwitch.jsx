@@ -2,23 +2,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { setNsfwValues, switchNsfwMode } from "../../../store/general";
 import classes from "./NsfwSwitch.module.scss";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DropDownList from "../DropDownList";
 import { AnimatePresence } from "framer-motion";
 
 const NsfwSwitch = () => {
   const [settingsIsOpen, setSettingsIsOpen] = useState(false);
-  const [sfwInput, setSfwInput] = useState("None");
-  const [nsfwInput, setNsfwInput] = useState("true");
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const sfwValue = useSelector((state) => state.general.sfwValue);
   const nsfwValue = useSelector((state) => state.general.nsfwValue);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    setSfwInput(sfwValue);
-    setNsfwInput(nsfwValue);
-  }, [sfwValue, nsfwValue]);
 
   const nsfwSwitchHandler = () => {
     dispatch(switchNsfwMode(!isNsfwMode));
@@ -29,12 +22,10 @@ const NsfwSwitch = () => {
   };
 
   const sfwInputHandler = (e) => {
-    setSfwInput(e.target.value);
-    dispatch(setNsfwValues(e.target.value, nsfwInput));
+    dispatch(setNsfwValues(e.target.value, nsfwValue));
   };
   const nsfwInputHandler = (e) => {
-    setNsfwInput(e.target.value);
-    dispatch(setNsfwValues(sfwInput, e.target.value));
+    dispatch(setNsfwValues(sfwValue, e.target.value));
   };
 
   return (
@@ -87,7 +78,7 @@ const NsfwSwitch = () => {
                       id="sfw-1"
                       name="sfw"
                       value="None"
-                      defaultChecked={sfwInput === "None"}
+                      defaultChecked={sfwValue === "None"}
                       className={classes["mode__input"]}
                     />
                     <label htmlFor="sfw-1" className={classes["mode__label"]}>
@@ -101,7 +92,7 @@ const NsfwSwitch = () => {
                       id="sfw-2"
                       name="sfw"
                       value="Soft"
-                      defaultChecked={sfwInput === "Soft"}
+                      defaultChecked={sfwValue === "Soft"}
                       className={classes["mode__input"]}
                     />
                     <label htmlFor="sfw-2" className={classes["mode__label"]}>
@@ -123,7 +114,7 @@ const NsfwSwitch = () => {
                       id="nsfw-1"
                       name="nsfw"
                       value="Soft"
-                      defaultChecked={nsfwInput === "Soft"}
+                      defaultChecked={nsfwValue === "Soft"}
                       className={classes["mode__input"]}
                     />
                     <label htmlFor="nsfw-1" className={classes["mode__label"]}>
@@ -137,7 +128,7 @@ const NsfwSwitch = () => {
                       id="nsfw-2"
                       name="nsfw"
                       value="Mature"
-                      defaultChecked={nsfwInput === "Mature"}
+                      defaultChecked={nsfwValue === "Mature"}
                       className={classes["mode__input"]}
                     />
                     <label htmlFor="nsfw-2" className={classes["mode__label"]}>
@@ -150,7 +141,7 @@ const NsfwSwitch = () => {
                       id="nsfw-3"
                       name="nsfw"
                       value="X"
-                      defaultChecked={nsfwInput === "X"}
+                      defaultChecked={nsfwValue === "X"}
                       className={classes["mode__input"]}
                     />
                     <label htmlFor="nsfw-3" className={classes["mode__label"]}>

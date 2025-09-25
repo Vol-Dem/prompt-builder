@@ -15,33 +15,22 @@ import {
   GUIDE_STEP_PROMPT_COPY,
   GUIDE_STEP_PROMPT_VIEW,
 } from "../../variables/constants";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import CarouselImageList from "../carousel/carousel-image-list/CarouselImageList";
+import ActiveCarouselContentWrap from "./ActiveCarouselContentWrap";
 
 const ActiveCarousel = () => {
   const [activeImageNumber, setActiveImageNumber] = useState(null);
-  const [savedImages, setSavedImages] = useState({});
   const activeCarouselData = useSelector(
     (state) => state.model.activeCarouselData
   );
-  const model = useSelector((state) => state.model.model);
   const savedImagesData = useSelector((state) => state.model.savedImages);
   const guideStep = useSelector((state) => state.guide.model.step);
   const guideIsActive = useSelector((state) => state.guide.active);
-  const isFixed = useSelector((state) => state.general.headerIsFixed);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (model?.id && model.id === savedImagesData?.modelId) {
-      setSavedImages(savedImagesData.data);
-    } else {
-      setSavedImages({});
-    }
-  }, [model?.id, savedImagesData]);
-
   const existedExample =
-    savedImages?.hasOwnProperty(activeCarouselData?.versionId) &&
-    savedImages[`${activeCarouselData?.versionId}`]?.find(
+    savedImagesData?.data?.hasOwnProperty(activeCarouselData?.versionId) &&
+    savedImagesData.data[`${activeCarouselData?.versionId}`]?.find(
       (img) => img?.postId === +activeCarouselData?.images[0]?.postId
     );
 
@@ -101,15 +90,7 @@ const ActiveCarousel = () => {
   return (
     <AnimatePresence>
       {!!activeCarouselData?.images?.length && (
-        <motion.div
-          variants={{
-            hidden: { opacity: 0, y: 30 },
-            visible: { opacity: 1, y: 0 },
-            exit: { opacity: 0, y: 30 },
-          }}
-          initial="hidden"
-          animate="visible"
-          exit={isFixed ? "exit" : ""}
+        <ActiveCarouselContentWrap
           className={`${classes.container} ${
             !!activeCarouselData?.images?.length
               ? classes["container--open"]
@@ -167,7 +148,7 @@ const ActiveCarousel = () => {
           {!!activeCarouselData?.images?.length && guideIsActive && (
             <CloseImageGuide />
           )}
-        </motion.div>
+        </ActiveCarouselContentWrap>
       )}
     </AnimatePresence>
   );

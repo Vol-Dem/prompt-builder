@@ -1,15 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import classes from "./Search.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "../ui/image/Image";
 import {
-  Link,
   NavLink,
   useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
-import { tabActions } from "../../store/tabs";
 import { liveSearch, searchActions } from "../../store/search";
 import Spinner from "../ui/Spinner";
 import ButtonSquareAdd from "../ui/ButtonSquareAdd";
@@ -28,26 +26,18 @@ import {
   SETTINGS_SEARCH_RESULT_PER_PAGE,
 } from "../../variables/constants";
 import { AnimatePresence, motion } from "framer-motion";
-import { imagesActions } from "../../store/images";
 import { modelActions } from "../../store/model";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { updateSearchParams } from "../../utils/generalUtils";
+import CategoriesSearch from "./categories-search/CategoriesSearch";
 
 const searchTimeoutMs = 1000;
 
 const Search = ({ className }) => {
   const [searchResultIsOpen, setSearchResultIsOpen] = useState(false);
-  const [showMore, setShowMore] = useState(false);
   const searchInput = useSelector((state) => state.search.searchQuery);
-  const [searchResult, setSearchResult] = useState({});
-  const [categoriesSearchData, setCategoriesSearchData] = useState([]);
-  const [subcategoriesSearchResult, setSubcategoriesSearchResult] = useState(
-    []
-  );
   const uid = useSelector((state) => state.auth.user.uid);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
-  const categories = useSelector((state) => state.tabs.categoriesData);
-  const collectionCategories = useSelector((state) => state.images.categories);
   const searchIsLoading = useSelector((state) => state.search.isLoading);
   const searchFilter = useSelector((state) => state.search.searchFilter);
   const quickSerchResult = useSelector(
@@ -61,6 +51,14 @@ const Search = ({ className }) => {
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  let searchResult = quickSerchResult;
+
+  if (quickSerchResult.result.length > SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE) {
+    searchResult = {
+      ...quickSerchResult,
+      result: quickSerchResult.result.toSpliced(-1),
+    };
+  }
 
   useEffect(() => {
     if (
@@ -74,7 +72,6 @@ const Search = ({ className }) => {
   const searchInputHandler = (e) => {
     const searchInputValue = e.target.value;
     setSearchResultIsOpen(true);
-    setShowMore(false);
     dispatch(searchActions.setSearchQuery(searchInputValue));
     if (location.pathname === "/search") {
       setSearchParams((prevParams) => {
@@ -92,64 +89,7 @@ const Search = ({ className }) => {
   };
 
   useEffect(() => {
-    const categoriesArr = Object.keys(categories)?.flatMap((type) => {
-      return categories[type]?.map((category) => {
-        return {
-          type: type,
-          ...category,
-        };
-      });
-    });
-
-    const catCollArr = collectionCategories.map((category) => {
-      return {
-        type: "collection",
-        ...category,
-      };
-    });
-
-    setCategoriesSearchData([...categoriesArr, ...catCollArr]);
-  }, [categories, collectionCategories]);
-
-  useEffect(() => {
-    if (
-      quickSerchResult.result.length > SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE
-    ) {
-      const newResult = quickSerchResult.result.toSpliced(-1);
-      setSearchResult({ ...quickSerchResult, result: newResult });
-      setShowMore(true);
-    } else {
-      setSearchResult(quickSerchResult);
-    }
-  }, [quickSerchResult]);
-
-  const subcategoriesSearch = useCallback(() => {
-    let subcats = [];
-    categoriesSearchData.forEach((category) => {
-      const subcategories = category?.subcategories?.filter((subcategory) => {
-        return subcategory.name
-          .toLowerCase()
-          .includes(`${searchInput.toLowerCase().trim()}`);
-      });
-
-      const subcategoriesData = subcategories.map((subcategory) => {
-        return {
-          type: category.type,
-          id: category.id,
-          name: category.name,
-          subId: subcategory.id,
-          subName: subcategory.name,
-        };
-      });
-      subcats = [...subcats, ...subcategoriesData];
-    });
-
-    setSubcategoriesSearchResult(subcats);
-  }, [categoriesSearchData, searchInput]);
-
-  useEffect(() => {
     let curQuery = searchInput.trim();
-    // if (curQuery === searchResultFull.query) return;
 
     if (uid && searchInput.length >= 3 && isOnline) {
       if (
@@ -161,10 +101,8 @@ const Search = ({ className }) => {
       dispatch(searchActions.resetQuickSearchData());
       if (location.pathname === "/search") {
         dispatch(searchActions.resetSearchData());
-      } else {
       }
 
-      // setShowMore(false);
       dispatch(searchActions.setErrorMessage(""));
       clearTimeout(timeoutRef.current);
       const getModelsPreview = async () => {
@@ -204,11 +142,8 @@ const Search = ({ className }) => {
       timeoutRef.current = setTimeout(() => {
         getModelsPreview();
       }, searchTimeoutMs);
-
-      subcategoriesSearch();
     } else {
       clearTimeout(timeoutRef.current);
-      setSubcategoriesSearchResult([]);
       dispatch(searchActions.setSearchIsLoading(false));
     }
 
@@ -219,7 +154,6 @@ const Search = ({ className }) => {
     searchInput,
     nsfwMode,
     uid,
-    subcategoriesSearch,
     dispatch,
     location?.pathname,
     searchResult?.query,
@@ -285,59 +219,6 @@ const Search = ({ className }) => {
       </motion.li>
     );
   });
-
-  const categoriesSearchResultHtml = subcategoriesSearchResult.map(
-    (result, i) => {
-      return (
-        <motion.li
-          key={i}
-          initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-          animate={ANIMATIONS_FM_SLIDEIN}
-          exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
-          className={classes["search__categories-item"]}
-        >
-          <span className={classes["search__type"]}>{result.type}</span>{" "}
-          <Link
-            to={result.type === "collection" ? "/images" : "/"}
-            className={classes["search__text-link"]}
-            onClick={() => {
-              if (result.type === "collection") {
-                dispatch(imagesActions.setActiveCategory(result.id));
-                dispatch(imagesActions.setActiveSubcategory(""));
-              } else {
-                dispatch(tabActions.setCurrentTab(result.type));
-                dispatch(tabActions.setCurrentCategory(result.id));
-              }
-              dispatch(searchActions.setSearchQuery(""));
-              dispatch(searchActions.setSearchResult([]));
-            }}
-          >
-            {result.name}
-          </Link>{" "}
-          -{" "}
-          <Link
-            to={result.type === "collection" ? "/images" : "/"}
-            className={classes["search__text-link"]}
-            onClick={() => {
-              if (result.type === "collection") {
-                dispatch(imagesActions.setActiveCategory(result.id));
-                dispatch(imagesActions.setActiveSubcategory(result.subId));
-              } else {
-                dispatch(tabActions.setCurrentTab(result.type));
-                dispatch(tabActions.setCurrentCategory(result.id));
-                dispatch(tabActions.setCurrentSubcategory(result.subId));
-              }
-              dispatch(searchActions.setSearchQuery(""));
-              dispatch(searchActions.setSearchResult([]));
-              dispatch(modelActions.setActiveCarouselData({}));
-            }}
-          >
-            {result.subName}
-          </Link>
-        </motion.li>
-      );
-    }
-  );
 
   const submitSearchHandler = (e) => {
     e.preventDefault();
@@ -420,7 +301,7 @@ const Search = ({ className }) => {
                   <button
                     className={classes["search__btn-close"]}
                     onClick={() => {
-                      setSearchResult({});
+                      // setSearchResult({});
                       dispatch(searchActions.setSearchQuery(""));
                       setSearchResultIsOpen(false);
                     }}
@@ -429,11 +310,7 @@ const Search = ({ className }) => {
                   </button>
                 </div>
                 <div className={classes["search__result"]}>
-                  {!!subcategoriesSearchResult.length && (
-                    <ul className={classes["search__categories"]}>
-                      {categoriesSearchResultHtml}
-                    </ul>
-                  )}
+                  <CategoriesSearch />
                   {searchIsLoading && (
                     <div className={classes["spiner-container"]}>
                       <Spinner size="small" />
@@ -457,7 +334,8 @@ const Search = ({ className }) => {
                       {searchResultHtml}
                     </ul>
                   )}
-                  {showMore && (
+                  {quickSerchResult.result.length >
+                    SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE && (
                     <ButtonTertiary
                       type="button"
                       className={classes["btn-more"]}

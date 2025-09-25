@@ -1,0 +1,4 @@
+@use "../../../variables/variables.scss" as var;
+.link {
+  @include var.linkA;
+}

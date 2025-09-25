@@ -518,8 +518,12 @@ export const transformSrcPreview = (
   let originalVideoWebmSrc;
   const srcArr = src.split("/");
   const widthIndex = srcArr.findIndex((srcSlice) => srcSlice.includes("width"));
+  const originalIndex = srcArr.findIndex((srcSlice) =>
+    srcSlice.includes("original")
+  );
+  const configIndex = widthIndex < 0 ? originalIndex : widthIndex;
 
-  if (widthIndex < 0) {
+  if (configIndex < 0) {
     previewSrc = src;
     previewVideoWebmSrc = src;
     previewVideoMp4Src = src;
@@ -531,22 +535,22 @@ export const transformSrcPreview = (
         ? `anim=false,transcode=true,width=${width}`
         : `width=${width}`;
 
-    previewSrc = srcArr.toSpliced(widthIndex, 1, imgSrc).join("/");
+    previewSrc = srcArr.toSpliced(configIndex, 1, imgSrc).join("/");
 
     if (type === "video") {
       const videoSrc = `transcode=true,width=${width},quality=90`;
       const videoOriginalSrc = `anim=true,transcode=true,original=true,quality=90`;
 
-      previewVideoMp4Src = srcArr.toSpliced(widthIndex, 1, videoSrc).join("/");
+      previewVideoMp4Src = srcArr.toSpliced(configIndex, 1, videoSrc).join("/");
       originalVideoMp4Src = srcArr
-        .toSpliced(widthIndex, 1, videoOriginalSrc)
+        .toSpliced(configIndex, 1, videoOriginalSrc)
         .join("/");
       previewVideoWebmSrc = srcArr
-        .toSpliced(widthIndex, 1, videoSrc)
+        .toSpliced(configIndex, 1, videoSrc)
         .join("/")
         .replace(".mp4", "webm");
       originalVideoWebmSrc = srcArr
-        .toSpliced(widthIndex, 1, videoOriginalSrc)
+        .toSpliced(configIndex, 1, videoOriginalSrc)
         .join("/")
         .replace(".mp4", "webm");
     }
