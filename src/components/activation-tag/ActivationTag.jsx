@@ -3,18 +3,20 @@ import Tag from "../tag/Tag";
 import classes from "./ActivationTag.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { promptActions } from "../../store/prompt";
+import { getTagWeight } from "../../utils/generalUtils";
 
 const ActivationTag = ({ tag, modelData, strength }) => {
-  const [curTagStrength, setCurTagStrength] = useState(null);
   const dispatch = useDispatch();
   const curPrompt = useSelector((state) => state.prompt.curPrompt);
   const curTagName = tag.split(":").slice(0, -1).join(":");
+  const curWieght = getTagWeight(tag);
+  const [curTagStrength, setCurTagStrength] = useState(curWieght || null);
 
   useEffect(() => {
     const curPromptTag = curPrompt
       ?.split(",")
       ?.find((word) => word.includes(curTagName));
-    const curStr = parseFloat(curPromptTag?.split(":")?.slice(-1));
+    const curStr = getTagWeight(curPromptTag);
 
     if (curStr) {
       setCurTagStrength(curStr);
