@@ -1,23 +1,19 @@
-import { NavLink, useLocation } from "react-router-dom";
-import classes from "./AboutNav.module.scss";
+import { useLocation } from "react-router-dom";
 import List from "../../ui/text/List";
-import ListItem from "../../ui/text/ListItem";
 import { ABOUT_NAV_DATA } from "../../../variables/constants";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { smoothScroll } from "../../../utils/generalUtils";
 import { ListBulletIcon } from "@heroicons/react/24/outline";
 import LeftSidebar from "../../layout/left-sidebar/LeftSidebar";
+import AboutNavItem from "./about-nav-item/AboutNavItem";
 
 const AboutNav = () => {
   const [navIsOpen, setNavIsOpen] = useState(false);
   const location = useLocation();
-  const activeAboutSectionId = useSelector(
-    (state) => state.general.activeAboutSectionId
-  );
 
   useEffect(() => {
     const hash = location.hash;
+    console.log(hash);
 
     if (hash) {
       smoothScroll(hash);
@@ -37,41 +33,25 @@ const AboutNav = () => {
   const aboutNavItemsHrml = ABOUT_NAV_DATA.map((item, i) => {
     const subNavHtml = item.subNav.map((subItem, j) => {
       return (
-        <ListItem key={j}>
-          <NavLink
-            className={(nav) =>
-              nav.isActive && activeAboutSectionId === `${subItem.id}`
-                ? `${classes.link} ${classes.active}`
-                : classes.link
-            }
-            to={{
-              pathname: `/about/${item.url}`,
-              hash: subItem.id,
-            }}
-            onClick={closeNavHandler.bind(null, item.url)}
-          >
-            {subItem.name}
-          </NavLink>
-        </ListItem>
+        <AboutNavItem
+          key={subItem.id}
+          item={subItem}
+          url={item.url}
+          onClose={closeNavHandler}
+          sub
+        />
       );
     });
 
     return (
-      <ListItem key={i}>
-        <NavLink
-          className={(nav) =>
-            nav.isActive ? `${classes.link} ${classes.active}` : classes.link
-          }
-          to={{
-            pathname: `/about/${item.url}`,
-            hash: item.id,
-          }}
-          onClick={closeNavHandler.bind(null, item.url)}
-        >
-          {item.name}
-        </NavLink>
+      <AboutNavItem
+        key={item.id}
+        item={item}
+        url={item.url}
+        onClose={closeNavHandler}
+      >
         {!!item?.subNav.length && <List sub>{subNavHtml}</List>}
-      </ListItem>
+      </AboutNavItem>
     );
   });
 
