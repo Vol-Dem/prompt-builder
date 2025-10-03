@@ -9,11 +9,15 @@ const ActiveCarouselContentWrap = ({ className, children }) => {
       variants={{
         hidden: { opacity: 0, y: 30 },
         visible: { opacity: 1, y: 0 },
-        exit: { opacity: 0, y: 30 },
+        exit: {
+          opacity: 0,
+          y: 30,
+          transition: { duration: isFixed ? 0.2 : 0 },
+        },
       }}
       initial="hidden"
       animate="visible"
-      exit={isFixed ? "exit" : ""}
+      exit="exit"
       className={className}
     >
       {children}

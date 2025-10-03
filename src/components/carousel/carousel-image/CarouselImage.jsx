@@ -158,11 +158,13 @@ const CarouselImage = ({
       {imgError && (
         <div
           className={classes.placeholder}
-          onClick={onClick}
+          onClick={() => onClick(dataset)}
           data-position={dataset}
         ></div>
       )}
-      <ImageSvg className={classes["image-svg"]} />
+      <div className={classes["image-svg"]} onClick={() => onClick(dataset)}>
+        <ImageSvg />
+      </div>
       {!imgIsLoading && !side && imgSrc !== "#" && (
         <>
           <div className={classes.menu}>
@@ -253,7 +255,7 @@ const CarouselImage = ({
                 imgIsLoading && !imgIsLoaded ? classes["image--hidden"] : ""
               } ${!nsfwMode && nsfw ? classes["image--nsfw"] : ""}`}
               draggable={false}
-              onClick={onClick}
+              onClick={() => onClick(dataset)}
               onLoad={imgLoadHandler}
               onError={imgErrorHandler}
               data-position={dataset}
@@ -265,7 +267,7 @@ const CarouselImage = ({
           {imageData.type === "video" && (
             <div
               className={classes["play-icon"]}
-              onClick={onClick}
+              onClick={() => onClick(dataset)}
               data-position={dataset}
             >
               <PlayIcon
@@ -284,7 +286,7 @@ const CarouselImage = ({
               preload="none"
               muted
               poster={imgSrc}
-              onClick={onClick}
+              onClick={() => onClick(dataset)}
               className={`${classes.image} ${
                 imageData?.width - imageData?.height < 0
                   ? classes["image--portrait"]

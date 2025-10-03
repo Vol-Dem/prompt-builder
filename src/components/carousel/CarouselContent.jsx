@@ -153,9 +153,9 @@ const CarouselContent = ({
   };
 
   const openCarouselHandler = useCallback(
-    (e) => {
+    (position) => {
       let currImgNum;
-      const imgNum = +e?.target?.dataset?.position - visibleAmount;
+      const imgNum = +position - visibleAmount;
       if (imgNum || imgNum === 0) {
         currImgNum = imgNum >= 0 ? imgNum : images?.length + imgNum;
       } else {
@@ -247,7 +247,7 @@ const CarouselContent = ({
 
       return (
         <CarouselImage
-          key={image?.hash + i}
+          key={image?.id + "c" + i}
           imageData={image}
           postId={images}
           saved={saved}
@@ -287,7 +287,7 @@ const CarouselContent = ({
             : "";
         return (
           <CarouselImage
-            key={image?.hash + "r" + i}
+            key={image?.id + "r" + i}
             imageData={image}
             postId={images}
             saved={saved}
@@ -324,7 +324,7 @@ const CarouselContent = ({
             : "";
         return (
           <CarouselImage
-            key={image?.hash + "l" + i}
+            key={image?.id + "l" + i}
             imageData={image}
             postId={images}
             saved={saved}

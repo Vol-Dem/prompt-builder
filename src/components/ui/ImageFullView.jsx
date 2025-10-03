@@ -21,7 +21,7 @@ const ImageFullView = ({
   controls,
 }) => {
   const [imgIsLoading, setImgIsLoading] = useState(false);
-  console.log(src);
+
   const { previewSrc, originalVideoWebmSrc, originalVideoMp4Src } =
     transformSrcPreview(src, SETTINGS_IMAGE_PREVIEW_WIDTH_BIG, type);
 

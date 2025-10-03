@@ -104,7 +104,10 @@ const Search = ({ className }) => {
       }
 
       dispatch(searchActions.setErrorMessage(""));
-      clearTimeout(timeoutRef.current);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
       const getModelsPreview = async () => {
         try {
           if (location.pathname !== "/search") {
@@ -140,15 +143,20 @@ const Search = ({ className }) => {
       };
 
       timeoutRef.current = setTimeout(() => {
+        timeoutRef.current = null;
         getModelsPreview();
       }, searchTimeoutMs);
     } else {
-      clearTimeout(timeoutRef.current);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
       dispatch(searchActions.setSearchIsLoading(false));
     }
 
     return () => {
-      clearTimeout(timeoutRef.current);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
   }, [
     searchInput,
@@ -236,8 +244,12 @@ const Search = ({ className }) => {
 
     // const isHashtag = searchInput.trim()[0] === "#";
 
-    clearTimeout(timeoutRef.current);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
     timeoutRef.current = setTimeout(async () => {
+      timeoutRef.current = null;
       dispatch(
         liveSearch(
           searchInput.trim(),

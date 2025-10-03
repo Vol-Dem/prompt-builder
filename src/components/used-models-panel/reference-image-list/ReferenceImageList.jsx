@@ -15,6 +15,7 @@ import {
   usedModelsActions,
 } from "../../../store/usedModels";
 import { motion } from "framer-motion";
+import { clearFileExtension } from "../../../utils/generalUtils";
 
 const ReferenceImageList = ({ usedImages }) => {
   const nsfwMode = useSelector((state) => state.general.nsfwMode);
@@ -22,10 +23,10 @@ const ReferenceImageList = ({ usedImages }) => {
   const dispatch = useDispatch();
 
   const openImageHandler = (e) => {
-    const hash = e.target.closest(`.${classes["ref-images__item"]}`).dataset.id;
-    const image = usedImages.find((image) => image.hash === hash);
+    const id = e.target.closest(`.${classes["ref-images__item"]}`).dataset.id;
+    const image = usedImages.find((image) => image.id === +id);
 
-    if (hash) {
+    if (image) {
       dispatch(
         modelActions.setActiveCarouselData({
           images: [image],
@@ -40,12 +41,8 @@ const ReferenceImageList = ({ usedImages }) => {
     }
   };
 
-  const closeImageHandler = (e) => {
-    const hash = e.target.closest(`.${classes["ref-images__item"]}`).dataset.id;
-
-    if (hash) {
-      dispatch(removeImageFromPanel(hash));
-    }
+  const closeImageHandler = (hash, url) => {
+    dispatch(removeImageFromPanel(hash, url));
   };
 
   const numberOfRows = Math.ceil(
@@ -74,18 +71,27 @@ const ReferenceImageList = ({ usedImages }) => {
                     ? false
                     : true;
                 if (!!usedImages[i]?.hash) {
+                  const uniqUrlPart =
+                    clearFileExtension(usedImages[i]?.url?.split("/").pop()) ||
+                    i;
+                  const key =
+                    usedImages[i].type === "video"
+                      ? uniqUrlPart
+                      : usedImages[i]?.hash;
+
                   return (
                     <motion.li
-                      key={usedImages[i]?.hash}
-                      layoutId={`ref-${usedImages[i]?.hash}`}
+                      key={key}
+                      layoutId={`ref-${key}`}
                       initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
                       animate={ANIMATIONS_FM_SLIDEIN}
                       exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
                       className={classes["ref-images__item"]}
-                      data-id={usedImages[i]?.hash}
+                      data-id={usedImages[i]?.id}
                     >
                       <Image
                         src={usedImages[i].url}
+                        imgType={usedImages[i].type}
                         alt={`Reference image ${i}`}
                         onClick={openImageHandler}
                         className={`${classes["ref-images__image"]} ${
@@ -95,7 +101,12 @@ const ReferenceImageList = ({ usedImages }) => {
                       />
                       <span
                         className={classes.close}
-                        onClick={closeImageHandler}
+                        onClick={() =>
+                          closeImageHandler(
+                            usedImages[i]?.hash,
+                            usedImages[i].url
+                          )
+                        }
                       >
                         <CrossSvg />
                       </span>

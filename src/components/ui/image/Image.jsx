@@ -32,6 +32,7 @@ const Image = forwardRef(
     ref
   ) => {
     const [fullViewIsOpen, setFullViewIsOpen] = useState(false);
+    const [curImageWidth, setCurImageWidth] = useState(imageWidth);
     const [imgIsLoading, setImgIsLoading] = useState(true);
     const [imgError, setImgError] = useState(false);
     const [imgSrc, setImgSrc] = useState("#");
@@ -47,7 +48,7 @@ const Image = forwardRef(
       } else {
         setImgSrc("#");
       }
-    }, [src, imageWidth]);
+    }, [src, imageWidth, imgType]);
 
     const imgLoadHandler = () => {
       setImgIsLoading(false);
@@ -55,13 +56,14 @@ const Image = forwardRef(
     };
 
     const imgErrorHandler = () => {
-      if (imageWidth === SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL) {
+      if (curImageWidth === SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL) {
         const { previewSrc } = transformSrcPreview(
           src,
           SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
           imgType
         );
         setImgSrc(previewSrc);
+        setCurImageWidth(SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM);
       } else {
         setImgIsLoading(false);
         setImgError(true);
@@ -107,8 +109,8 @@ const Image = forwardRef(
           {preloader && (
             <div
               className={`${classes.preloader} ${
-                !imgIsLoading && !imgError ? classes.hidden : ""
-              }`}
+                imgIsLoading && !imgError ? classes["preloader--loading"] : ""
+              } ${!imgIsLoading && !imgError ? classes.hidden : ""}`}
             >
               <ImageSvg />
             </div>

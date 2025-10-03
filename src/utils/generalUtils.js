@@ -37,7 +37,10 @@ export const clearFileExtension = (name) => {
     ?.replace(".safetensors", "")
     .replace(".pt", "")
     .replace(".pth", "")
-    .replace(".ckpt", "");
+    .replace(".ckpt", "")
+    .replace(".mp4", "")
+    .replace(".mov", "")
+    .replace(".webm", "");
   return clearedName;
 };
 
@@ -531,7 +534,7 @@ export const transformSrcPreview = (
     originalVideoWebmSrc = src;
   } else {
     const imgSrc =
-      type === "video"
+      type === "video" || checkIsVideo(src)
         ? `anim=false,transcode=true,width=${width}`
         : `width=${width}`;
 
@@ -718,4 +721,18 @@ export const updateSearchParams = (prevParams, newEntry) => {
     ...Object.fromEntries(prevParams.entries()),
     ...newEntry,
   });
+};
+
+export const getUrlId = (url) => {
+  if (typeof url !== "string") return null;
+  return clearFileExtension(url?.split("/").pop());
+};
+
+export const checkIsVideo = (url) => {
+  if (typeof url !== "string") return null;
+  return (
+    url
+      .split(".")
+      .findIndex((element) => element === "mp4" || element === "webm") > -1
+  );
 };

@@ -9,6 +9,7 @@ import {
 import { SETTINGS_REF_IMAGE_AMOUNT } from "../../variables/constants";
 import { CheckIcon, PlusIcon } from "@heroicons/react/24/outline";
 import ButtonSquare from "./ButtonSquare";
+import { getUrlId } from "../../utils/generalUtils";
 
 const ButtonAdd = ({
   previewData,
@@ -21,9 +22,15 @@ const ButtonAdd = ({
 }) => {
   const modelsInPanel = useSelector((state) => state.used.models);
   const imagesInPanel = useSelector((state) => state.used.images);
+  const uniqUrlPart = getUrlId(previewData?.url);
   const isInPanel =
     type === "image"
-      ? imagesInPanel?.find((image) => image?.hash === previewData?.hash)
+      ? imagesInPanel?.find((image) => {
+          if (previewData?.type === "video") {
+            return uniqUrlPart && image.url.includes(uniqUrlPart);
+          }
+          return image?.hash === previewData?.hash;
+        })
       : modelsInPanel?.find((model) => model?.id === previewData?.id);
 
   const dispatch = useDispatch();
@@ -35,10 +42,10 @@ const ButtonAdd = ({
       type === "image" &&
       imagesInPanel?.length < SETTINGS_REF_IMAGE_AMOUNT
     ) {
-      dispatch(addImageToPanel(previewData));
+      dispatch(addImageToPanel(previewData, previewData?.url));
       return;
     } else if (isInPanel && type === "image") {
-      dispatch(removeImageFromPanel(previewData.hash));
+      dispatch(removeImageFromPanel(previewData.hash, previewData?.url));
       return;
     }
 

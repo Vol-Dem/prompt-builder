@@ -4,7 +4,7 @@ import { authActions } from "./auth";
 import { getAuth } from "firebase/auth";
 import firebaseApp from "../firebase-config";
 import { SETTINGS_REF_IMAGE_AMOUNT } from "../variables/constants";
-import { checkIsMobile } from "../utils/generalUtils";
+import { checkIsMobile, checkIsVideo, getUrlId } from "../utils/generalUtils";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 
 const firestore = getFirestore(firebaseApp);
@@ -103,12 +103,16 @@ export const addModelToPanel = (data) => {
   };
 };
 
-export const addImageToPanel = (data) => {
+export const addImageToPanel = (data, url) => {
   return (dispatch, getState) => {
     const curImages = getState().used.images;
-    const imageIsInPanel = getState().used.images.some(
-      (image) => image.hash === data.hash
-    );
+    const imageIsInPanel = getState().used.images.some((image) => {
+      if (image?.type === "video" || (url && checkIsVideo(url))) {
+        const uniqUrlPart = getUrlId(url);
+        return image.url.includes(uniqUrlPart);
+      }
+      return image.hash === data.hash;
+    });
 
     if (!imageIsInPanel && curImages?.length < SETTINGS_REF_IMAGE_AMOUNT) {
       const newImages = [...curImages, data];
@@ -117,10 +121,16 @@ export const addImageToPanel = (data) => {
   };
 };
 
-export const removeImageFromPanel = (hash) => {
+export const removeImageFromPanel = (hash, url) => {
   return (dispatch, getState) => {
     const curImages = getState().used.images;
-    const newImages = curImages.filter((image) => image.hash !== hash);
+    const newImages = curImages.filter((image) => {
+      if (image?.type === "video" || (url && checkIsVideo(url))) {
+        const uniqUrlPart = getUrlId(url);
+        return !image.url.includes(uniqUrlPart);
+      }
+      return image.hash !== hash;
+    });
 
     dispatch(usedModelsActions.addImagesToPanel(newImages));
   };

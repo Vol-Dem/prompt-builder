@@ -33,6 +33,7 @@ const ActiveCarousel = () => {
     savedImagesData.data[`${activeCarouselData?.versionId}`]?.find(
       (img) => img?.postId === +activeCarouselData?.images[0]?.postId
     );
+  const isOpen = !!activeCarouselData?.images?.length;
 
   useEffect(() => {
     const scrollTop = document.documentElement.scrollTop;
@@ -89,12 +90,10 @@ const ActiveCarousel = () => {
 
   return (
     <AnimatePresence>
-      {!!activeCarouselData?.images?.length && (
+      {isOpen && (
         <ActiveCarouselContentWrap
           className={`${classes.container} ${
-            !!activeCarouselData?.images?.length
-              ? classes["container--open"]
-              : ""
+            isOpen ? classes["container--open"] : ""
           }`}
         >
           <div
@@ -105,7 +104,7 @@ const ActiveCarousel = () => {
             {activeCarouselData?.currImgNum !== null && (
               <>
                 <div className={classes["carousel"]}>
-                  {!!activeCarouselData?.images?.length && (
+                  {isOpen && (
                     <>
                       <Carousel
                         imagesData={activeCarouselData?.images}
@@ -142,12 +141,10 @@ const ActiveCarousel = () => {
               className={classes["btn__close"]}
               onClick={closeActiveCarouselHandler}
             >
-              {!!activeCarouselData?.images?.length && <CrossSvg />}
+              {isOpen && <CrossSvg />}
             </div>
           </div>
-          {!!activeCarouselData?.images?.length && guideIsActive && (
-            <CloseImageGuide />
-          )}
+          {isOpen && guideIsActive && <CloseImageGuide />}
         </ActiveCarouselContentWrap>
       )}
     </AnimatePresence>

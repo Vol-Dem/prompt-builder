@@ -94,6 +94,22 @@ const _disableBilling = async () => {
   }
 };
 
+const clearFileExtension = (name) => {
+  if (!name) {
+    return name;
+  }
+
+  const clearedName = name
+    ?.replace(".safetensors", "")
+    .replace(".pt", "")
+    .replace(".pth", "")
+    .replace(".ckpt", "")
+    .replace(".mp4", "")
+    .replace(".mov", "")
+    .replace(".webm", "");
+  return clearedName;
+};
+
 exports.handelBillingAlert = onMessagePublished(
   "projects/aide-tools/topics/billing",
   async (event) => {
@@ -359,9 +375,13 @@ const saveVersionImages = async (modelId, username, versionsData) => {
       const versionImages = await versionImagesRequest.json();
 
       const updatedImages = version?.images?.flatMap((image) => {
-        const fullImgData = versionImages?.items?.find(
-          (verImg) => verImg.hash === image.hash
-        );
+        const fullImgData = versionImages?.items?.find((verImg) => {
+          if (verImg?.type === "video") {
+            const uniqUrlPart = clearFileExtension(verImg.url.split("/").pop());
+            return uniqUrlPart && image.url.includes(uniqUrlPart);
+          }
+          return verImg.hash === image.hash;
+        });
 
         if (!fullImgData) return [];
 
