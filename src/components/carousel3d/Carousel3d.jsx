@@ -12,7 +12,7 @@ const carouselImages = [
 ];
 const slideDelaySec = 4;
 
-const Carousel3d = () => {
+const Carousel3d = ({ className }) => {
   const [curSlideIndex, setCurSlideIndex] = useState(0);
   const [transitionSec, setTransitionSec] = useState(0.9);
   const isMobal = useSelector((state) => state.general.isMobile);
@@ -120,7 +120,7 @@ const Carousel3d = () => {
   );
 
   return (
-    <div className={classes.container}>
+    <div className={`${classes.container} ${className || ""}`}>
       <ul className={classes["list"]}>{[...imagesHtml, ...imagesHtmlLeft]}</ul>
       <div className={classes.shadow}></div>
     </div>

@@ -1,0 +1,12 @@
+.carousel__images {
+  display: flex;
+  gap: 1.4rem;
+  position: absolute;
+  align-items: center;
+  height: 100%;
+  transition: all 0.3s;
+
+  &--hidden {
+    opacity: 0;
+  }
+}

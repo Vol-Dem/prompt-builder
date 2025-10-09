@@ -10,6 +10,9 @@ import { PlayIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import Modal from "../ui/Modal";
 import Video from "../ui/Video";
+import carouselImage1 from "../../assets/3dcarousel/slide-1.webp";
+import { checkIsMobile } from "../../utils/generalUtils";
+import logo from "../../assets/logo-730.webp";
 
 const Landing = () => {
   const [showVideo, setShowVideo] = useState(false);
@@ -17,19 +20,24 @@ const Landing = () => {
   const openAuthFormHandler = () => {
     dispatch(authActions.openAuthForm(true));
   };
+  const isMobile = checkIsMobile();
 
   return (
     <div className={classes["landing"]}>
       <section className={`${classes["section"]} ${classes["section--hero"]}`}>
-        <Carousel3d />
+        {!isMobile && <Carousel3d className={classes.carousel} />}
+        {isMobile && (
+          <img
+            className={classes["section--hero__img"]}
+            width={700}
+            height={336}
+            alt="Application main screen"
+            src={carouselImage1}
+          />
+        )}
         <div className={classes["section--hero__content"]}>
           <div className={classes.logo}>
-            <img
-              width={1088}
-              height={188}
-              src={require("../../assets/logo5.png")}
-              alt="Logo"
-            />
+            <img width={730} height={126} src={logo} alt="Logo" />
           </div>
           <div>
             <p className={classes["section--hero__text"]}>

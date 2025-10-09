@@ -12,7 +12,7 @@ const ActiveCarouselContentWrap = ({ className, children }) => {
         exit: {
           opacity: 0,
           y: 30,
-          transition: { duration: isFixed ? 0.2 : 0 },
+          transition: { duration: isFixed ? 0.2 : 0 }, // disable close animition when header is fixed
         },
       }}
       initial="hidden"

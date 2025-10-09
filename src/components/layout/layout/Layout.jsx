@@ -58,7 +58,7 @@ const Layout = () => {
                     }}
                   >
                     <img
-                      src={require("../../../assets/logo5.png")}
+                      src={require("../../../assets/logo-730.webp")}
                       alt="Logo"
                       width={1088}
                       height={188}

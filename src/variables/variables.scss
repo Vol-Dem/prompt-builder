@@ -2,7 +2,9 @@
 $color-primary: #6526a0;
 $color-secondary: #eacc48;
 $color-tertiary: #c2005e;
-$color-link: #7278f0;
+// $color-link: #7278f0;
+// $color-link: #8185d2;
+$color-link: #878ac7;
 $color-red: #ca0000;
 $color-black: #000;
 $color-white: #fff;
@@ -39,7 +41,8 @@ $color-text-red: #e54d4d;
 $color-text-green: #49ab6b;
 $color-text-white: #e8e8e8;
 $color-text-gray: #acacac;
-$color-text-gray-dark: #808080;
+// $color-text-gray-dark: #808080;
+$color-text-gray-dark: #8c8c8c;
 
 //FONTS
 // $font-family-primary: "Raleway", sans-serif;
@@ -122,13 +125,13 @@ $clip-path-arrow-down: polygon(
 
 @mixin linkA {
   display: inline-block;
-  color: #7278f0;
+  color: $color-link;
   text-decoration: none;
   cursor: pointer;
   transition: all 0.3s;
 
   &:hover {
-    color: lighten(#7278f0, 7%);
+    color: lighten($color-link, 7%);
   }
 }
 

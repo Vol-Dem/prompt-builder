@@ -131,6 +131,12 @@
   font-size: 1.6rem;
   padding: 12rem 7rem;
 
+  &__img {
+    // display: none;
+    width: 100%;
+    height: auto;
+  }
+
   &__content {
     display: flex;
     flex-direction: column;
@@ -250,6 +256,20 @@ video.video {
 
 .link {
   @include var.linkA;
+}
+
+.carousel {
+  display: block;
+}
+
+@media (max-width: 430px) {
+  .carousel {
+    display: none;
+  }
+
+  .section--hero__img {
+    display: block;
+  }
 }
 
 @media (max-width: 1080px) {

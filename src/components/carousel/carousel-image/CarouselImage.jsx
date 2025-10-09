@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import classes from "./CarouselImage.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteImgPost, setPreviewImg } from "../../../store/model";
@@ -123,15 +123,15 @@ const CarouselImage = ({
     setDeleteRequestIsOpen(false);
   };
 
-  const closeMenuHandler = useCallback((e) => {
-    if (!e.target.closest(`.${classes.menu}`)) setMenuIsOpen(false);
-  }, []);
-
   const openFullViewHandler = () => {
     onOpen(true);
   };
 
   useEffect(() => {
+    const closeMenuHandler = (e) => {
+      if (!e.target.closest(`.${classes.menu}`)) setMenuIsOpen(false);
+    };
+
     if (menuIsOpen) {
       document.removeEventListener("click", closeMenuHandler);
       document.addEventListener("click", closeMenuHandler);
@@ -142,7 +142,7 @@ const CarouselImage = ({
     return () => {
       document.removeEventListener("click", closeMenuHandler);
     };
-  }, [menuIsOpen, closeMenuHandler]);
+  }, [menuIsOpen]);
 
   return (
     <motion.div
