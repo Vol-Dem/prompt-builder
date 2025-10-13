@@ -60,16 +60,32 @@ const SavedImages = memo(
       setLastVisible({});
     };
 
+    const deleteImageHandler = (ids, postId) => {
+      setExamplesImgData((prevState) => {
+        const updatedImages = [...prevState];
+        const updatedPostIndex = updatedImages.findIndex(
+          (post) => post[0].postId === postId
+        );
+        const updatedPostData = updatedImages[updatedPostIndex].filter(
+          (image) => !ids?.includes(image.id)
+        );
+
+        if (!updatedPostData.length || ids === null) {
+          updatedImages.splice(updatedPostIndex, 1);
+        } else {
+          updatedImages.splice(updatedPostIndex, 1, updatedPostData);
+        }
+
+        return updatedImages;
+      });
+    };
+
     useEffect(() => {
       resetExamples();
       return () => {
         resetExamples();
       };
-    }, [curImagesModelVersionId]);
-
-    useEffect(() => {
-      resetExamples();
-    }, [nsfwLevel]);
+    }, [curImagesModelVersionId, nsfwLevel]);
 
     const getImagesFromFirestore = useCallback(async () => {
       try {
@@ -168,7 +184,6 @@ const SavedImages = memo(
         !examplesIsLoading
       ) {
         setExamplesIsLoading(true);
-        // clearTimeout(timeoutRef.current);
         getImagesFromFirestore();
       }
     }, [
@@ -179,21 +194,6 @@ const SavedImages = memo(
       examplesIsLoading,
       isOnline,
     ]);
-
-    useEffect(() => {
-      if (!!savedImagesData.data && !!examplesImgData?.length) {
-        const savedPostsIds = savedImagesData.data[
-          curImagesModelVersionId
-        ]?.map((post) => post.postId);
-
-        const newExamples = examplesImgData?.filter((image) =>
-          savedPostsIds?.includes(image[0]?.postId)
-        );
-        if (examplesImgData?.length > newExamples?.length) {
-          setExamplesImgData(newExamples);
-        }
-      }
-    }, [savedImagesData.data, curImagesModelVersionId, examplesImgData]);
 
     const examplesHtml = examplesImgData.flatMap((item, i) => {
       const postData = savedImagesData?.data[curVersion.id]?.find(
@@ -213,6 +213,7 @@ const SavedImages = memo(
           location="models"
           locationId={model.id}
           curPostData={postData}
+          onDelete={deleteImageHandler}
         />
       );
     });

@@ -1,18 +1,20 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import { parseIntersectionMargin } from "../utils/generalUtils";
 
 export const useIntersection = (
   elentRef,
   once = true,
   rootMargin = 0,
-  scrollMargin,
-  threshold,
-  rootRef
+  scrollMargin = 0,
+  threshold = 0,
+  rootRef = null
 ) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const observerRef = useRef(null);
 
   useMemo(() => {
     if (!elentRef) return;
+
     observerRef.current = new IntersectionObserver(
       ([entry]) => {
         setIsIntersecting(entry.isIntersecting);
@@ -20,8 +22,8 @@ export const useIntersection = (
       },
       {
         root: rootRef,
-        rootMargin: `${rootMargin}px`,
-        scrollMargin: scrollMargin || "0px",
+        rootMargin: parseIntersectionMargin(rootMargin),
+        scrollMargin: parseIntersectionMargin(scrollMargin),
         threshold: threshold,
       }
     );

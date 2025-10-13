@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import PreviewCard from "../previewCard/PreviewCard";
+import PreviewCard from "../preview-card/PreviewCard";
 import classes from "./SearchPage.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { liveSearch, searchActions } from "../../store/search";
@@ -12,7 +12,6 @@ import {
   SETTINGS_SEARCH_RESULT_PER_PAGE,
 } from "../../variables/constants";
 import { useOnlineStatus } from "../../hooks/use-online-status";
-import AddToPanelAnimContainer from "../ui/AddToPanelAnimContainer";
 import Checkbox from "../ui/Checkbox";
 import LeftSidebar from "../layout/left-sidebar/LeftSidebar";
 import ButtonTertiary from "../ui/ButtonTertiary";
@@ -50,7 +49,6 @@ const SearchPage = ({ title }) => {
   const isLastSubPage = useSelector((state) => state.search.isLastSubPage);
   const errorMessage = useSelector((state) => state.search.errorMessage);
   const searchFilter = useSelector((state) => state.search.searchFilter);
-  const usedModels = useSelector((state) => state.used.models);
   const baseModels = useSelector((state) => state.tabs.baseModels);
   const categories = useSelector((state) => state.tabs.categoriesData);
   const dispatch = useDispatch();
@@ -164,24 +162,7 @@ const SearchPage = ({ title }) => {
   }, [baseModels, categories, searchFilter.hashtag, searchFilter]);
 
   const searchResultHtml = searchResult.result?.map((item, i) => {
-    return (
-      <AddToPanelAnimContainer key={item.id} usedModels={usedModels}>
-        <PreviewCard
-          layout={true}
-          previewData={item}
-          onClick={() => {
-            dispatch(searchActions.setSearchQuery(""));
-          }}
-        />
-        <PreviewCard
-          layout={false}
-          previewData={item}
-          onClick={() => {
-            dispatch(searchActions.setSearchQuery(""));
-          }}
-        />
-      </AddToPanelAnimContainer>
-    );
+    return <PreviewCard key={item.id} item={item} />;
   });
 
   useEffect(() => {

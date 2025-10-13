@@ -736,3 +736,20 @@ export const checkIsVideo = (url) => {
       .findIndex((element) => element === "mp4" || element === "webm") > -1
   );
 };
+
+export const parseIntersectionMargin = (value) => {
+  let rootMarginValue;
+  const parcedValue = parseInt(value);
+
+  if (Number.isFinite(value)) {
+    rootMarginValue = `${value}px`;
+  } else if (parcedValue ?? value?.includes("%")) {
+    rootMarginValue = `${parcedValue}%`;
+  } else if (parcedValue ?? value?.includes("px")) {
+    rootMarginValue = `${parcedValue}px`;
+  } else {
+    value = "0px";
+  }
+
+  return rootMarginValue;
+};

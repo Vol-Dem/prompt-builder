@@ -85,7 +85,7 @@ const tabsSlice = createSlice({
     setModelsData(state, actions) {
       state.modelsData = actions.payload;
     },
-    resetModelsData(state, actions) {
+    resetModelsData(state) {
       state.modelsData = {
         tab: "",
         category: "",
@@ -93,6 +93,7 @@ const tabsSlice = createSlice({
         nsfw: false,
         previews: [],
       };
+      state.isLastPage = false;
     },
     setSubcategories(state, actions) {
       state.subcategories = actions.payload.sort();

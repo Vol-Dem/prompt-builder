@@ -5,7 +5,7 @@ import classes from "./CollectionList.module.scss";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { ERROR_MESSAGE_OFFLINE } from "../../../variables/constants";
 import NotificationMessage from "../../ui/NotificationMessage";
-import CollectionItem from "../collection-item/CollectionItem";
+import PreviewCard from "../../preview-card/PreviewCard";
 
 const CollectionList = ({ sortBy }) => {
   const collectionPreviews = useSelector(
@@ -18,7 +18,7 @@ const CollectionList = ({ sortBy }) => {
   const isOnline = useOnlineStatus();
 
   const collectionsHtml = collectionPreviews?.data?.map((collection, i) => {
-    return <CollectionItem key={i} collection={collection} />;
+    return <PreviewCard key={i} item={collection} />;
   });
 
   return (

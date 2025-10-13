@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import classes from "./ExternalImages.module.scss";
 import { useSelector } from "react-redux";
 import Carousel from "../../../carousel/Carousel";
@@ -35,9 +35,7 @@ const ExternalImages = memo(
     const [examplesImages, setExamplesImages] = useState([]);
     const [currCursor, setCurrCursor] = useState(null);
     const [nextCursor, setNextCursor] = useState(null);
-    const [examplesImgData, setExamplesImgData] = useState([]);
-    const [savedImages, setSavedImages] = useState({});
-    const savedImagesInfo = useSelector((state) => state.model.savedImages);
+    const savedImages = useSelector((state) => state.model.savedImages);
     const nsfwMode = useSelector((state) => state.general.nsfwMode);
     const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
     const endPageRef = useRef(null);
@@ -46,23 +44,53 @@ const ExternalImages = memo(
     const intersecting = useIntersection(
       endPageRef,
       false,
-      SETTINGS_LOAD_MORE_MARGIN
+      0,
+      `${SETTINGS_LOAD_MORE_MARGIN}px`
     );
     const intersectingSmall = useIntersection(endPageRef, false, 0);
     const isOnline = useOnlineStatus();
+
+    let examplesImgData = [];
+
+    examplesImgData = useMemo(() => {
+      const sortedExamples = {};
+      examplesImages.forEach((image) => {
+        if (sortedExamples.hasOwnProperty(image.postId)) {
+          sortedExamples[image.postId].push(image);
+        } else {
+          sortedExamples[image.postId] = [image];
+        }
+      });
+
+      if (!sortedExamples) return;
+
+      const sortedExamplesArr = Object.keys(sortedExamples).sort((a, b) => {
+        return (
+          Date.parse(sortedExamples[b].slice(-1).pop().createdAt) -
+          Date.parse(sortedExamples[a].slice(-1).pop().createdAt)
+        );
+      });
+
+      const examples = sortedExamplesArr.map((key, i) => {
+        return sortedExamples[key];
+      });
+
+      const sortedExamplesArrWithSortedImgs = examples.map((post) => {
+        return post.sort((a, b) => {
+          return Date.parse(a.createdAt) - Date.parse(b.createdAt);
+        });
+      });
+
+      return sortedExamplesArrWithSortedImgs;
+    }, [examplesImages]);
 
     useEffect(() => {
       setIsIntersecting(intersecting || intersectingSmall);
     }, [intersecting, intersectingSmall]);
 
-    useEffect(() => {
-      if (curImagesModelVersionId) setIsIntersecting(true);
-    }, [curImagesModelVersionId]);
-
     const resetExamples = () => {
       setCurrCursor(null);
       setNextCursor(null);
-      setExamplesImgData([]);
       setExamplesImages([]);
       setIsLastPage(false);
     };
@@ -78,50 +106,11 @@ const ExternalImages = memo(
       };
     }, [curImagesModelVersionId, nsfwMode, nsfwLevel]);
 
-    useEffect(() => {
-      if (modelId && modelId === savedImagesInfo?.modelId) {
-        setSavedImages(savedImagesInfo.data);
-      } else {
-        setSavedImages({});
-      }
-    }, [modelId, savedImagesInfo]);
-
-    const sortExampleImages = useCallback(
-      (newExampleImages, versionId) => {
-        const sortedExamples = {};
-        newExampleImages.forEach((image) => {
-          if (sortedExamples.hasOwnProperty(image.postId)) {
-            sortedExamples[image.postId].push(image);
-          } else {
-            sortedExamples[image.postId] = [image];
-          }
-        });
-
-        if (!sortedExamples) return;
-
-        const sortedExamplesArr = Object.keys(sortedExamples).sort((a, b) => {
-          return (
-            Date.parse(sortedExamples[b].slice(-1).pop().createdAt) -
-            Date.parse(sortedExamples[a].slice(-1).pop().createdAt)
-          );
-        });
-
-        const examples = sortedExamplesArr.map((key, i) => {
-          return sortedExamples[key];
-        });
-
-        const sortedExamplesArrWithSortedImgs = examples.map((post) => {
-          return post.sort((a, b) => {
-            return Date.parse(a.createdAt) - Date.parse(b.createdAt);
-          });
-        });
-
-        if (versionId === curImagesModelVersionId) {
-          setExamplesImgData(sortedExamplesArrWithSortedImgs);
-        }
-      },
-      [curImagesModelVersionId]
-    );
+    const deleteImagesHandler = (ids) => {
+      setExamplesImages((prevState) =>
+        prevState.filter((image) => !ids.includes(image.id))
+      );
+    };
 
     const getallExamples = useCallback(
       async (modelId, versionId, cursor) => {
@@ -159,9 +148,7 @@ const ExternalImages = memo(
 
           setExamplesImages((prevState) => {
             const newExampleImages = [...dataUniq, ...prevState];
-            if (versionId === curImagesModelVersionId) {
-              sortExampleImages(newExampleImages, versionId);
-            }
+
             return newExampleImages;
           });
 
@@ -180,14 +167,7 @@ const ExternalImages = memo(
           setExamplesIsLoading(false);
         }
       },
-      [
-        sortBy,
-        nextCursor,
-        curImagesModelVersionId,
-        sortExampleImages,
-        nsfwLevel,
-        setErrorMessage,
-      ]
+      [sortBy, nextCursor, nsfwLevel, setErrorMessage]
     );
 
     useEffect(() => {
@@ -225,8 +205,8 @@ const ExternalImages = memo(
 
     const examplesHtml = examplesImgData.map((item, i) => {
       const existedExample =
-        savedImages?.hasOwnProperty(curImagesModelVersionId) &&
-        savedImages[`${curImagesModelVersionId}`]?.find(
+        savedImages?.data?.hasOwnProperty(curImagesModelVersionId) &&
+        savedImages.data[`${curImagesModelVersionId}`]?.find(
           (img) => img?.postId === +item[0]?.postId
         );
       const postId = item[0]?.postId;
@@ -244,6 +224,7 @@ const ExternalImages = memo(
           showInView={true}
           location="models"
           locationId={modelId}
+          onDelete={deleteImagesHandler}
         />
       );
     });

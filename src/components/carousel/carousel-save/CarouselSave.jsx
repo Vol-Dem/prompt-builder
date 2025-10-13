@@ -1,14 +1,10 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import classes from "./CarouselSave.module.scss";
 import {
   FolderArrowDownIcon,
   FolderPlusIcon,
 } from "@heroicons/react/24/outline";
 import Spinner from "../../ui/Spinner";
-import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
-import Modal from "../../ui/Modal";
-import { uploadActions } from "../../../store/upload";
 
 const CarouselSave = ({
   images,
@@ -55,7 +51,6 @@ const CarouselSave = ({
         className={`${classes["save__btn"]} ${
           classes["save__btn--collection"]
         } ${!saved && !!postId ? classes["save__btn--collection-hidden"] : ""}`}
-        // data-location="collections"
       >
         <button
           className={`${classes["btn-save"]} ${
@@ -74,64 +69,6 @@ const CarouselSave = ({
           {existedImgsAmount}/{images.length}
         </div>
       )}
-      {/* <AnimatePresence>
-        {imagesListIsOpen && (
-          <Modal
-            onClose={() => {
-              setImagesListIsOpen(false);
-            }}
-          >
-            {(imageFormType?.location === "models" ||
-              imageFormType.type === "del") && (
-              <ChooseImageForm
-                postId={postId}
-                postData={postData}
-                type={imageFormType.type}
-                location={imageFormType.location}
-                modelId={modelId}
-                versionId={versionId}
-                images={images}
-                activeImageIndex={currImgNum}
-                existedImgsAmount={existedImgsAmount}
-                savedImageIds={postData?.imagesId || []}
-                onSave={
-                  imageFormType.type === "save"
-                    ? saveExampleHandler
-                    : deleteExampleHandler
-                }
-                isDeleting={isDeleting}
-                onClose={() => {
-                  setImageFormType("");
-                  setImagesListIsOpen(false);
-                }}
-              />
-            )}
-            {imageFormType?.location === "collections" &&
-              imageFormType.type !== "del" && (
-                <SaveToCollectionForm
-                  postId={postId}
-                  type={imageFormType.type}
-                  location={imageFormType.location}
-                  modelId={modelId}
-                  versionId={versionId}
-                  images={images}
-                  activeImageIndex={currImgNum}
-                  existedImgsAmount={existedImgsAmount}
-                  onSave={
-                    imageFormType.type === "save"
-                      ? saveExampleHandler
-                      : deleteExampleHandler
-                  }
-                  isDeleting={isDeleting}
-                  onClose={() => {
-                    setImageFormType("");
-                    setImagesListIsOpen(false);
-                  }}
-                />
-              )}
-          </Modal>
-        )}
-      </AnimatePresence> */}
     </div>
   );
 };

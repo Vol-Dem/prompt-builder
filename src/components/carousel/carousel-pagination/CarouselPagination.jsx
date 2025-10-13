@@ -1,9 +1,7 @@
-import { SETTINGS_CAROUSEL_TRANSITION_DURATION } from "../../../variables/constants";
 import classes from "./CarouselPagination.module.scss";
 
 const CarouselPagination = ({
   images,
-  currImgIndex,
   onClick,
   visibleAmount,
   visibleImages,

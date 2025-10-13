@@ -35,7 +35,7 @@ const CarouselImages = forwardRef(
             visibleImages.includes(i - images?.length + visibleAmount)) &&
           caruselIsVisible
             ? image.url
-            : "";
+            : "#";
 
         return (
           <CarouselImage

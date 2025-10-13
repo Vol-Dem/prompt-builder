@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import classes from "./ModelsList.module.scss";
-import PreviewCard from "../previewCard/PreviewCard";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getModelsPreview,
@@ -10,18 +9,19 @@ import {
 import Spinner from "../ui/Spinner";
 import Select from "../ui/Select";
 import NotificationMessage from "../ui/NotificationMessage";
-import usePageEnd from "../../hooks/use-page-end";
 import { useOnlineStatus } from "../../hooks/use-online-status";
 import ErrorMessage from "../ui/ErrorMessage";
 import {
   GUIDE_STEP_OPEN_MODEL,
   ERROR_MESSAGE_OFFLINE,
+  SETTINGS_LOAD_MORE_MARGIN,
 } from "../../variables/constants";
 import OpenModelGuide from "../ui/guide/home/OpenModelGuide";
 import { guideActions } from "../../store/guide";
-import AddToPanelAnimContainer from "../ui/AddToPanelAnimContainer";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import { Bars2Icon, Bars4Icon } from "@heroicons/react/24/outline";
+import useIntersection from "../../hooks/use-intersection";
+import PreviewCard from "../preview-card/PreviewCard";
 
 const sortTypes = [
   { name: "Newest", value: "createdAt" },
@@ -45,13 +45,16 @@ const ModelsList = () => {
   const guideState = useSelector((state) => state.guide.home);
   const endPage = useRef(null);
   const [isIntersecting, setIsIntersecting] = useState(false);
-  const isPageEnd = usePageEnd(100);
-  const isOnline = useOnlineStatus();
-  const timeoutRef = useRef(null);
-  const dispatch = useDispatch();
 
-  //Rerender component for sidepanel animation
-  const usedModels = useSelector((state) => state.used.models);
+  const intersecting = useIntersection(
+    endPage,
+    false,
+    0,
+    `${SETTINGS_LOAD_MORE_MARGIN}px`
+  );
+  const intersectingSmall = useIntersection(endPage, false, 0);
+  const isOnline = useOnlineStatus();
+  const dispatch = useDispatch();
 
   const getAllModels = useMemo(
     () =>
@@ -76,8 +79,8 @@ const ModelsList = () => {
       ];
 
   useEffect(() => {
-    setIsIntersecting(isPageEnd);
-  }, [isPageEnd]);
+    setIsIntersecting(intersecting || intersectingSmall);
+  }, [intersecting, intersectingSmall]);
 
   useEffect(() => {
     if (
@@ -94,39 +97,26 @@ const ModelsList = () => {
   }, [guideState, modelsData?.previews, dispatch]);
 
   useEffect(() => {
-    if (
-      activeTab === modelsData.tab &&
-      activeCategory === modelsData.category &&
-      activeSubcategory === modelsData.subcategory &&
-      nsfwMode !== modelsData.nsfw
-    ) {
+    if (modelsData?.previews?.length && nsfwMode !== modelsData.nsfw) {
       dispatch(tabActions.resetModelsData());
-      dispatch(tabActions.setIsLastPage(false));
     }
-  }, [
-    dispatch,
-    modelsData,
-    nsfwMode,
-    activeCategory,
-    activeSubcategory,
-    activeTab,
-    getAllModels,
-    getSubcategoryModels,
-  ]);
+  }, [dispatch, modelsData, nsfwMode]);
 
   useEffect(() => {
+    const loadMore = !!modelsData?.previews?.length;
     if (
-      !modelsData?.previews?.length &&
+      isIntersecting &&
       !isLastPage &&
       isOnline &&
       (getSubcategoryModels || getAllModels)
     ) {
+      setIsIntersecting(false);
       dispatch(
         getModelsPreview(
           activeTab,
           activeCategory,
           activeSubcategory,
-          false,
+          loadMore,
           nsfwMode
         )
       );
@@ -142,56 +132,11 @@ const ModelsList = () => {
     activeSubcategory,
     getAllModels,
     getSubcategoryModels,
-  ]);
-
-  useEffect(() => {
-    if (
-      !isLastPage &&
-      isIntersecting &&
-      !!modelsData?.previews?.length &&
-      isOnline
-    ) {
-      clearTimeout(timeoutRef.current);
-      setIsIntersecting(false);
-      timeoutRef.current = setTimeout(() => {
-        dispatch(
-          getModelsPreview(
-            activeTab,
-            activeCategory,
-            activeSubcategory,
-            true,
-            nsfwMode
-          )
-        );
-      }, 1000);
-    }
-  }, [
     isIntersecting,
-    dispatch,
-    isLastPage,
-    modelsData,
-    nsfwMode,
-    isOnline,
-    activeTab,
-    activeCategory,
-    activeSubcategory,
   ]);
 
   const loraHtml = modelsData?.previews?.map((item, i) => {
-    return (
-      <AddToPanelAnimContainer key={i}>
-        <PreviewCard
-          layout={false}
-          previewData={item}
-          fullView={previewFullView}
-        />
-        <PreviewCard
-          layout={true}
-          previewData={item}
-          fullView={previewFullView}
-        />
-      </AddToPanelAnimContainer>
-    );
+    return <PreviewCard key={i} item={item} fullView={previewFullView} />;
   });
 
   const sortSelectOption = sortTypes.map((version) => {

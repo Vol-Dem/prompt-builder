@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import classes from "./PreviewCard.module.scss";
+import classes from "./PreviewCardContent.module.scss";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Image from "../ui/image/Image";
@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_BIG } from "../../variables/constants";
 import ResourceTypeLabel from "../general-elements/ResourceTypeLabel";
 
-const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
+const PreviewCardContent = ({ previewData, onClick, fullView, animate }) => {
   const [currVersion, setCurrVersion] = useState({});
   const [currSidePanelData, setCurrSidePanelData] = useState({});
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
@@ -55,14 +55,14 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
 
   return (
     <motion.div
-      layoutId={layout && !isMobile ? previewData.id : Math.random()}
+      layoutId={animate && !isMobile ? previewData.id : Math.random()}
       whileHover={{ borderColor: "rgba(255, 255, 255, 0.6)" }}
       transition={{
         layout: { duration: 0 },
       }}
       id={previewData.id}
       className={`${classes.card} ${fullView ? classes["card__full"] : ""} ${
-        layout ? classes["card--motion"] : ""
+        animate ? classes["card--motion"] : ""
       }`}
     >
       <div className={classes["image-container"]}>
@@ -207,4 +207,4 @@ const PreviewCard = ({ previewData, onClick, layout, fullView = false }) => {
   );
 };
 
-export default PreviewCard;
+export default PreviewCardContent;
