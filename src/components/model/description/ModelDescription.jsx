@@ -1,41 +1,56 @@
+import { useEffect, useRef, useState } from "react";
 import classes from "./ModelDescription.module.scss";
+import { useSelector } from "react-redux";
 
-const ModelDescription = ({ mainTag, versionData }) => {
+const minDescriptionHeight = 300;
+
+const ModelDescription = () => {
+  const [descHeight, setDescHeight] = useState(null);
+  const [descriptionIsOpen, setDescriptionIsOpen] = useState(false);
+  const model = useSelector((state) => state.model.model);
+  const descriptionRef = useRef();
+
+  const openDescriptionHandler = () => {
+    setDescriptionIsOpen((prevState) => !prevState);
+  };
+
+  useEffect(() => {
+    setDescHeight(descriptionRef?.current?.offsetHeight);
+  }, [descriptionRef?.current?.offsetHeight]);
+
   return (
-    <div className={classes["info-container"]}>
-      <div className={classes.info}>
-        <div>{model?.data.type}</div>
-        <div>Base model: {versionData.baseModel}</div>
-        <div>Size: {model?.size}</div>
-        <div>Weight: {model?.weight}</div>
-        <div>Version: {versionData.name}</div>
-        {model?.clipSkip && <div>Clip Skip: {model?.clipSkip}</div>}
+    <>
+      <div
+        className={`${classes.description} ${
+          descriptionIsOpen ? classes["description--open"] : ""
+        } ${
+          descHeight > minDescriptionHeight && !descriptionIsOpen && descHeight
+            ? classes["description--hidden"]
+            : ""
+        }`}
+        style={{
+          maxHeight: `${
+            descriptionIsOpen ? descHeight + 100 : minDescriptionHeight
+          }px`,
+        }}
+      >
+        <div
+          ref={descriptionRef}
+          dangerouslySetInnerHTML={{
+            __html:
+              model?.defaultCustomData?.description || model?.data?.description,
+          }}
+        />
       </div>
-      <div className={classes["tags"]}>
-        <div>Main tag:</div>
-        <ul className={classes["main-tag"]}>
-          <Tag tag={mainTag} />
-        </ul>
-        {!!versionData.trainedWords.length && (
-          <>
-            <div>Trigger Words:</div>
-            <TagList subcat={versionData.trainedWords} />
-          </>
-        )}
-        {model?.helperTags && (
-          <>
-            <div>Helper Words:</div>
-            <TagList subcat={model?.helperTags} />
-          </>
-        )}
-        {model?.negativeTags && (
-          <>
-            <div>Negative Words:</div>
-            <TagList subcat={model?.negativeTags} />
-          </>
-        )}
-      </div>
-    </div>
+      {descHeight > minDescriptionHeight && (
+        <span
+          className={classes["description__btn-show"]}
+          onClick={openDescriptionHandler}
+        >
+          {!descriptionIsOpen ? "Read more" : "Hide"}
+        </span>
+      )}
+    </>
   );
 };
 

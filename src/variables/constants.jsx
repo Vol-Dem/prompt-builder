@@ -48,6 +48,14 @@ export const MODEL_TYPES = [
   { name: "Other", value: "other", position: 10, aliases: ["other"] },
 ];
 
+//Example model filer
+export const EXAMPLE_MODEL_ID = 727427;
+export const EXAMPLE_MODEL_FILTER_CIV = true;
+export const EXAMPLE_MODEL_FILTER_LVL = "Mature";
+
+//Temp Civitai duplicates filter (Civ bug)
+export const FILTER_CIV_DUPLICATES = true;
+
 //SETTINGS
 export const SETTINGS_STICKY_SWITCH_HEIGHT = 20;
 export const SETTINGS_TIMEOUT_SEC = 10;
@@ -70,8 +78,9 @@ export const SETTINGS_CAROUSEL_IMAGE_HEIGHT = 390;
 export const SETTINGS_CAROUSEL_IMAGE_WIDTH = 266;
 export const SETTINGS_CAROUSEL_TRANSITION_DURATION = 300;
 export const SETTINGS_CAROUSEL_INTERSECTION_MARGIN = 1000;
-export const SETTINGS_LOAD_MORE_MARGIN = 1000;
-export const SETTINGS_LOAD_MORE_MARGIN_MEDIUM = 600;
+export const SETTINGS_LOAD_MORE_MARGIN = 600;
+export const SETTINGS_LOAD_MORE_MARGIN_MEDIUM = 400;
+export const SETTINGS_LOAD_MORE_MARGIN_SMALL = 200;
 export const SETTINGS_SCROLL_TOP = 600;
 export const SETTINGS_NSFW_VALUES_DATA = [
   { name: "PG", value: "None", nsfwLevelIndex: 0 },
@@ -147,6 +156,7 @@ export const ERROR_MESSAGE_DB_CONNECTION = "Connection error";
 export const ERROR_MESSAGE_UPLOAD_MODEL = "Failed to load model data";
 export const ERROR_MESSAGE_CIV_CONNECTION =
   "Failed to conect to Civitai API. There may be heavy load or maintenance at the moment. Try again later.";
+export const ERROR_MESSAGE_MODEL_LOAD = "Failed to load model.";
 
 //GUIDE STEPS HOME PAGE
 export const GUIDE_STEP_OPEN_CATEGORY = 1;

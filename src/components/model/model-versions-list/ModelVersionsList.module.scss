@@ -1,0 +1,49 @@
+@use "../../../variables/variables.scss" as var;
+
+.versions {
+  overflow: hidden;
+  padding-bottom: 2px;
+  transition: all 0.3s ease;
+
+  &__list {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    flex-wrap: wrap;
+    font-size: 1.6rem;
+  }
+}
+
+// .version {
+//   transition: all 0.3s;
+//   border-radius: 0.5rem;
+//   padding: 0.4rem;
+//   border: 1px solid transparent;
+//   color: var.$color-text-white;
+//   cursor: pointer;
+
+//   &:hover {
+//     color: inherit;
+//     border: 1px solid #8a2be2;
+//     background-color: transparent;
+//   }
+
+//   &--active {
+//     border: 1px solid #8a2be2;
+//     background-color: rgb(34, 34, 34);
+//   }
+//   &--downloaded {
+//     color: #8a2be2;
+//     &:hover {
+//       color: #8a2be2;
+//     }
+//   }
+// }
+
+.btn-all {
+  background-color: transparent;
+  margin: auto;
+  width: 12rem;
+  box-shadow: none;
+  margin-top: 0.6rem;
+}

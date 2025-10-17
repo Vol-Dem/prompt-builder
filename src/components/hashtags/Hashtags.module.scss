@@ -1,0 +1,61 @@
+@use "./../../variables/variables.scss" as var;
+
+.hashtags {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  list-style: none;
+  flex-wrap: wrap;
+
+  &__tag {
+    font-size: 1.4rem;
+    color: var.$color-text-gray;
+    padding: 0.4rem 1rem;
+    border-radius: 10px;
+    background-color: rgb(var.$color-background-tertiary, 0.6);
+    box-shadow: var.$box-shadow-light;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s;
+    cursor: pointer;
+
+    &:hover {
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    &:active {
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background-color: darken(#323148, 5%);
+      box-shadow: var.$box-shadow-inset;
+    }
+  }
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1.4rem;
+    color: #acacac;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: none;
+    transition: border 0.3s;
+    cursor: pointer;
+
+    &:hover {
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    &--show {
+      padding: 0.4rem 0.4rem 0.4rem 1rem;
+    }
+
+    &--hide {
+      padding: 0.4rem 1rem 0.4rem 0.4rem;
+    }
+  }
+
+  &__btn-icon {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+}

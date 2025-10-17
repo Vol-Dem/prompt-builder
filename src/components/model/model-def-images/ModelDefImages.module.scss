@@ -1,0 +1,32 @@
+@use "../../../variables/variables.scss" as var;
+
+.img-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 40rem;
+  width: 100%;
+
+  &--guide {
+    @include var.pulse;
+  }
+
+  &__placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.2);
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+  }
+
+  &__svg {
+    width: 5rem;
+    height: 5rem;
+    color: rgba(255, 255, 255, 0.2);
+  }
+}

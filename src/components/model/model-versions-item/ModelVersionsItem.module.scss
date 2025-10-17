@@ -1,0 +1,31 @@
+@use "../../../variables/variables.scss" as var;
+
+.version {
+  transition: all 0.3s;
+  border-radius: 0.5rem;
+  padding: 0.4rem;
+  border: 1px solid transparent;
+  color: var.$color-text-white;
+  cursor: pointer;
+
+  &:hover {
+    color: inherit;
+    border: 1px solid #8a2be2;
+    background-color: transparent;
+  }
+
+  &--active {
+    border: 1px solid #8a2be2;
+    background-color: rgb(34, 34, 34);
+  }
+  &--downloaded {
+    color: #8a2be2;
+    &:hover {
+      color: #8a2be2;
+    }
+  }
+
+  & a {
+    color: inherit;
+  }
+}

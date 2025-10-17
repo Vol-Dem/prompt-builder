@@ -36,10 +36,10 @@ const firestore = getFirestore(firebaseApp);
 
 const SavedImages = memo(
   ({ modelId, curImagesModelVersionId, errorMessage, setErrorMessage }) => {
-    const [examplesIsLoading, setExamplesIsLoading] = useState(false);
+    const [imagesIsLoading, setImagesIsLoading] = useState(false);
     const [isLastPage, setIsLastPage] = useState(false);
     const [lastVisible, setLastVisible] = useState({});
-    const [examplesImgData, setExamplesImgData] = useState([]);
+    const [imageData, setImageData] = useState([]);
     const model = useSelector((state) => state.model.model);
     const savedImagesData = useSelector((state) => state.model.savedImages);
     const curVersion = useSelector((state) => state.model.curVersion);
@@ -54,14 +54,14 @@ const SavedImages = memo(
     );
     const isOnline = useOnlineStatus();
 
-    const resetExamples = () => {
-      setExamplesImgData([]);
+    const resetImages = () => {
+      setImageData([]);
       setIsLastPage(false);
       setLastVisible({});
     };
 
     const deleteImageHandler = (ids, postId) => {
-      setExamplesImgData((prevState) => {
+      setImageData((prevState) => {
         const updatedImages = [...prevState];
         const updatedPostIndex = updatedImages.findIndex(
           (post) => post[0].postId === postId
@@ -81,16 +81,16 @@ const SavedImages = memo(
     };
 
     useEffect(() => {
-      resetExamples();
+      resetImages();
       return () => {
-        resetExamples();
+        resetImages();
       };
     }, [curImagesModelVersionId, nsfwLevel]);
 
     const getImagesFromFirestore = useCallback(async () => {
       try {
         if (isLastPage) return;
-        setExamplesIsLoading(true);
+        setImagesIsLoading(true);
 
         setErrorMessage("");
 
@@ -125,7 +125,7 @@ const SavedImages = memo(
           return doc.data();
         });
 
-        const examples = data
+        const images = data
           .map((post) => {
             return filterDuplicates(
               post.items.filter((image) => {
@@ -151,7 +151,7 @@ const SavedImages = memo(
           })
           .filter((item) => !!item.length);
 
-        setExamplesImgData((prevState) => [...prevState, ...examples]);
+        setImageData((prevState) => [...prevState, ...images]);
 
         const lastVisiblePost =
           modelImagesSnap.docs[modelImagesSnap.docs.length - 1];
@@ -159,10 +159,10 @@ const SavedImages = memo(
           setLastVisible(lastVisiblePost);
         }
         setIsLastPage(isLast);
-        setExamplesIsLoading(false);
+        setImagesIsLoading(false);
       } catch (err) {
         setErrorMessage(ERROR_MESSAGE_DEFAULT);
-        setExamplesIsLoading(false);
+        setImagesIsLoading(false);
       }
     }, [
       curImagesModelVersionId,
@@ -181,9 +181,9 @@ const SavedImages = memo(
         isIntersecting &&
         !errorMessage &&
         isOnline &&
-        !examplesIsLoading
+        !imagesIsLoading
       ) {
-        setExamplesIsLoading(true);
+        setImagesIsLoading(true);
         getImagesFromFirestore();
       }
     }, [
@@ -191,11 +191,11 @@ const SavedImages = memo(
       isLastPage,
       getImagesFromFirestore,
       errorMessage,
-      examplesIsLoading,
+      imagesIsLoading,
       isOnline,
     ]);
 
-    const examplesHtml = examplesImgData.flatMap((item, i) => {
+    const imagesHtml = imageData.flatMap((item, i) => {
       const postData = savedImagesData?.data[curVersion.id]?.find(
         (post) => post.postId === item[0].postId
       );
@@ -220,12 +220,12 @@ const SavedImages = memo(
 
     return (
       <>
-        {examplesHtml}
-        {examplesIsLoading && <Spinner />}
+        {imagesHtml}
+        {imagesIsLoading && <Spinner />}
         {errorMessage && isOnline && (
           <ErrorMessage>{errorMessage}</ErrorMessage>
         )}
-        {!examplesIsLoading && !examplesHtml.length && !errorMessage && (
+        {!imagesIsLoading && !imagesHtml.length && !errorMessage && (
           <motion.div
             initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
             animate={ANIMATIONS_FM_SLIDEIN}

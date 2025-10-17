@@ -12,6 +12,7 @@ import {
   addDelayPromise,
   clearFileExtension,
   filterDuplicates,
+  throwCustomError,
   transformImageData,
   transformModelData,
 } from "./generalUtils";
@@ -19,6 +20,7 @@ import firebaseApp from "../firebase-config";
 import { getAuth } from "firebase/auth";
 import {
   ERROR_MESSAGE_INVALID_DATA,
+  SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV,
   SETTINGS_SFW_RANGE,
 } from "../variables/constants";
 
@@ -542,4 +544,48 @@ export const getCollectionData = async (collectionId) => {
   } else {
     throw new Error("Failed to load model");
   }
+};
+
+export const fetchDataFromFirestore = async (...docPath) => {
+  const modelDefDataRef = doc(firestore, ...docPath);
+  const docSnap = await getDoc(modelDefDataRef);
+
+  if (docSnap.exists()) {
+    const modelDefData = docSnap.data();
+
+    return modelDefData;
+  } else {
+    throwCustomError("Can't find document");
+  }
+};
+
+export const fetchModelFromCivitai = async (id) => {
+  const responseCiv = await fetch(`https://civitai.com/api/v1/models/${id}`);
+
+  const responseData = await responseCiv.json();
+
+  if (!responseData?.id) {
+    throw new Error("Civitai failed");
+  }
+
+  return responseData;
+};
+
+export const fetchModelData = async (uid, modelId) => {
+  const modelData = await fetchDataFromFirestore(
+    "users",
+    uid,
+    "models",
+    modelId
+  );
+
+  let defModelData = {};
+
+  if (SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV) {
+    defModelData = await fetchModelFromCivitai(modelId);
+  } else {
+    defModelData = await fetchDataFromFirestore("models", modelId);
+  }
+
+  return { ...modelData, data: defModelData };
 };

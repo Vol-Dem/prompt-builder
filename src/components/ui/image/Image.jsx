@@ -56,7 +56,11 @@ const Image = forwardRef(
     };
 
     const imgErrorHandler = () => {
-      if (curImageWidth === SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL) {
+      if (
+        curImageWidth === SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL &&
+        src &&
+        src !== "#"
+      ) {
         const { previewSrc } = transformSrcPreview(
           src,
           SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,

@@ -753,3 +753,119 @@ export const parseIntersectionMargin = (value) => {
 
   return rootMarginValue;
 };
+
+export const filterNsfwImages = (images, nsfwLevel) => {
+  return images?.filter((image) => {
+    if (image?.nsfwLevel) {
+      return (
+        checkIsInCurrentNsfwRange(nsfwLevel, image.nsfwLevel) ||
+        image.nsfwLevel === 1
+      );
+    } else {
+      return image?.nsfw === "None" || image?.nsfw === false;
+    }
+  });
+};
+
+export const sortModelVersions = (model) => {
+  return model?.data?.modelVersions
+    .filter((version) =>
+      Object.keys(model?.modelVersionsCustomData).includes(`${version.id}`)
+    )
+    .sort((a, b) => a?.index - b?.index)
+    .map((version) => {
+      return {
+        ...version,
+        id: version.id,
+        name: version.name,
+      };
+    });
+};
+
+export const getCurrentVersionId = (model, modelVersions, versionIdParam) => {
+  let curVersionId;
+  if (
+    versionIdParam &&
+    !!modelVersions?.find((version) => version.id === +versionIdParam)
+  ) {
+    curVersionId = +versionIdParam;
+  } else {
+    curVersionId = modelVersions?.find(
+      (version) =>
+        model?.modelVersionsCustomData.hasOwnProperty(version.id) &&
+        model.modelVersionsCustomData[version.id].downloadStatus
+    )?.id;
+  }
+
+  return curVersionId;
+};
+
+export const createModelPreviewData = (
+  model,
+  curVersion,
+  curCustomVersionData
+) => {
+  if (!model.id || !curVersion.id) return null;
+  return {
+    id: model.id,
+    versionId: curVersion.id,
+    src: model.src,
+    main: model.main,
+    sub: model.sub,
+    title: model.name || model.title || model.data.name,
+    versionName:
+      curCustomVersionData?.name ||
+      curCustomVersionData?.versionName ||
+      curVersion.name,
+    imgUrl: curVersion?.images[0]?.url,
+    modelType: model?.data?.type,
+    baseModel: curVersion?.baseModel,
+    mainTag:
+      curCustomVersionData?.mainTag ||
+      model?.mainTag ||
+      curCustomVersionData?.defActTag,
+    weight: curCustomVersionData?.weight || model?.defaultCustomData?.weight,
+    minWeight:
+      curCustomVersionData?.minWeight || model?.defaultCustomData?.minWeight,
+    maxWeight:
+      curCustomVersionData?.maxWeight || model?.defaultCustomData?.maxWeight,
+    size: curCustomVersionData?.size || model?.defaultCustomData?.size,
+    tags: curCustomVersionData?.trainedWords || curVersion?.trainedWords,
+    helperTags:
+      curCustomVersionData?.helperTags || model?.defaultCustomData?.helperTags,
+    updatedAt: model?.updatedAt,
+  };
+};
+
+export const groupAndSortByPost = (items, field) => {
+  const sortedItems = {};
+
+  items.forEach((item) => {
+    if (sortedItems.hasOwnProperty(item.postId)) {
+      sortedItems[item[field]].push(item);
+    } else {
+      sortedItems[item[field]] = [item];
+    }
+  });
+
+  if (!sortedItems) return;
+
+  const sortedImageArr = Object.keys(sortedItems).sort((a, b) => {
+    return (
+      Date.parse(sortedItems[b].slice(-1).pop().createdAt) -
+      Date.parse(sortedItems[a].slice(-1).pop().createdAt)
+    );
+  });
+
+  const images = sortedImageArr.map((key, i) => {
+    return sortedItems[key];
+  });
+
+  const sortedImageArrWithSortedImages = images.map((post) => {
+    return post.sort((a, b) => {
+      return Date.parse(a.createdAt) - Date.parse(b.createdAt);
+    });
+  });
+
+  return sortedImageArrWithSortedImages;
+};

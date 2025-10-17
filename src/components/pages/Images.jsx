@@ -2,11 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import classes from "./Images.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { getCollectionPreviews, imagesActions } from "../../store/images";
-import usePageEnd from "../../hooks/use-page-end";
 import { useOnlineStatus } from "../../hooks/use-online-status";
 import ErrorMessage from "../ui/ErrorMessage";
 import Spinner from "../ui/Spinner";
-import { ERROR_MESSAGE_OFFLINE } from "../../variables/constants";
+import {
+  ERROR_MESSAGE_OFFLINE,
+  SETTINGS_LOAD_MORE_MARGIN_SMALL,
+} from "../../variables/constants";
 import CollectionList from "../collection/collection-list/CollectionList";
 import CategoryList from "../ui/lists/CategoryList";
 import ButtonCategoryAll from "../ui/buttons/ButtonCategoryAll";
@@ -17,14 +19,11 @@ import { AnimatePresence } from "framer-motion";
 import CategoriesForm from "../forms/categories-form/CategoriesForm";
 import { sortArrayBy } from "../../utils/generalUtils";
 import NotificationMessage from "../ui/NotificationMessage";
-import AboutImageCollection from "../about/AboutImageCollections";
 import TextButton from "../ui/text/text-buttons/TextButton";
 import TextButtonCollection from "../ui/text/text-buttons/TextButtonCollection";
-import TextHighlight from "../ui/text/TextHighlight";
-import TextImageBlock from "../ui/text/TextImageBlock";
-import Image from "../ui/image/Image";
 import Text from "../ui/text/Text";
 import TextButtonCreate from "../ui/text/text-buttons/TextButtonCreate";
+import useIntersection from "../../hooks/use-intersection";
 
 const Images = () => {
   const [isIntersecting, setIsIntersecting] = useState(false);
@@ -44,18 +43,24 @@ const Images = () => {
     (state) => state.images.activeSubcategory
   );
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
-  const endPage = useRef(null);
-  const isPageEnd = usePageEnd(100);
+  const endPageRef = useRef(null);
   const isOnline = useOnlineStatus();
   const timeoutRef = useRef(null);
   const dispatch = useDispatch();
   const subcategories = categories?.find(
     (category) => category.id === activeCategory
   )?.subcategories;
+  const intersecting = useIntersection(endPageRef, false, 0);
+  const intersectingSmall = useIntersection(
+    endPageRef,
+    false,
+    0,
+    `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`
+  );
 
   useEffect(() => {
-    setIsIntersecting(isPageEnd);
-  }, [isPageEnd]);
+    setIsIntersecting(intersecting || intersectingSmall);
+  }, [intersecting, intersectingSmall]);
 
   const openCategoryHandler = (e) => {
     dispatch(imagesActions.setActiveCategory(e.target.dataset.value));
@@ -244,7 +249,7 @@ const Images = () => {
       )}
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
-      <div ref={endPage}></div>
+      <div ref={endPageRef}></div>
       {isLoading && (
         <div className={classes["spiner-container"]}>
           <Spinner size="medium" />

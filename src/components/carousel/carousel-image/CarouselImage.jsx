@@ -154,7 +154,9 @@ const CarouselImage = ({
       }`}
       style={{ width: imageWidth }}
     >
-      {imgIsLoading && <div className={classes.loading}>Loading...</div>}
+      {imgIsLoading && imgSrc !== "#" && (
+        <div className={classes.loading}></div>
+      )}
       {imgError && (
         <div
           className={classes.placeholder}

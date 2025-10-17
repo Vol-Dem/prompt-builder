@@ -57,16 +57,11 @@ const ButtonAdd = ({
           .toSorted((a, b) => b.versionId - a.versionId)[0];
 
       const sidePanelData = {
-        id: previewData?.id,
-        versionId: previewData?.versionId,
+        ...previewData,
         activeVersionId: versionId || null,
-        src: previewData?.src || null,
-        main: previewData?.main || null,
-        sub: previewData?.sub || null,
         title: previewData?.name || previewData.title || null,
         versionName: previewData?.versionName || curVersionData?.name || null,
         imgUrl: previewData?.customPreviewImgUrl || previewData?.imgUrl || null,
-        nsfwPreviewImgUrl: previewData?.nsfwPreviewImgUrl || null,
         type: previewData?.type || previewData?.modelType || null,
         baseModel: curVersionData?.baseModel || previewData?.baseModel || null,
         mainTag:

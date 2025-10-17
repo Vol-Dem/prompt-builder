@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import classes from "./ExternalImages.module.scss";
 import { useSelector } from "react-redux";
 import Carousel from "../../../carousel/Carousel";
@@ -6,10 +6,11 @@ import { useOnlineStatus } from "../../../../hooks/use-online-status";
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
-  ERROR_MESSAGE_CIV_CONNECTION,
-  ERROR_MESSAGE_INVALID_DATA,
+  EXAMPLE_MODEL_FILTER_CIV,
+  EXAMPLE_MODEL_FILTER_LVL,
+  EXAMPLE_MODEL_ID,
   SETTINGS_IMAGES_NUMBER_PER_REQUEST,
-  SETTINGS_LOAD_MORE_MARGIN,
+  SETTINGS_LOAD_MORE_MARGIN_SMALL,
 } from "../../../../variables/constants";
 import useIntersection from "../../../../hooks/use-intersection";
 import Spinner from "../../../ui/Spinner";
@@ -18,270 +19,164 @@ import ErrorMessage from "../../../ui/ErrorMessage";
 import Buttton from "../../../ui/Button";
 import { motion } from "framer-motion";
 import {
-  filterDuplicates,
-  throwCustomError,
+  filterNsfwImages,
+  groupAndSortByPost,
 } from "../../../../utils/generalUtils";
+import useFetchCivitai from "../../../../hooks/use-fetch-civitai";
 
-const ExternalImages = memo(
-  ({
-    modelId,
-    curImagesModelVersionId,
-    sortBy,
+const ExternalImages = memo(({ modelId, curImagesModelVersionId, sortBy }) => {
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const savedImages = useSelector((state) => state.model.savedImages);
+  const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
+  const endPageRef = useRef(null);
+  const isOnline = useOnlineStatus();
+  const intersecting = useIntersection(endPageRef, false, 0);
+  const intersectingSmall = useIntersection(
+    endPageRef,
+    false,
+    0,
+    `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`
+  );
+
+  const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
+    curImagesModelVersionId !== "all-versions"
+      ? `&modelVersionId=${curImagesModelVersionId}`
+      : ""
+  }${
+    SETTINGS_IMAGES_NUMBER_PER_REQUEST
+      ? `&limit=${SETTINGS_IMAGES_NUMBER_PER_REQUEST}`
+      : ""
+  }${sortBy ? `&sort=${sortBy}` : ""}${`&nsfw=${nsfwLevel}`}`;
+  const {
+    fetchedData: fetchedImages,
+    isFetching: imagesIsLoading,
+    setFetchedData: setFetchedImages,
+    isLastPage,
     errorMessage,
+    fetchCivitai,
     setErrorMessage,
-  }) => {
-    const [examplesIsLoading, setExamplesIsLoading] = useState(false);
-    const [isLastPage, setIsLastPage] = useState(false);
-    const [examplesImages, setExamplesImages] = useState([]);
-    const [currCursor, setCurrCursor] = useState(null);
-    const [nextCursor, setNextCursor] = useState(null);
-    const savedImages = useSelector((state) => state.model.savedImages);
-    const nsfwMode = useSelector((state) => state.general.nsfwMode);
-    const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
-    const endPageRef = useRef(null);
-    const abortControlerRef = useRef(null);
-    const [isIntersecting, setIsIntersecting] = useState(false);
-    const intersecting = useIntersection(
-      endPageRef,
-      false,
-      0,
-      `${SETTINGS_LOAD_MORE_MARGIN}px`
+  } = useFetchCivitai(url);
+
+  const imagesSortedByPost = useMemo(() => {
+    let images = fetchedImages;
+
+    if (EXAMPLE_MODEL_FILTER_CIV && modelId === EXAMPLE_MODEL_ID) {
+      images = filterNsfwImages(fetchedImages, EXAMPLE_MODEL_FILTER_LVL);
+    }
+
+    return groupAndSortByPost(images, "postId");
+  }, [fetchedImages, modelId]);
+
+  useEffect(() => {
+    setIsIntersecting(intersecting || intersectingSmall);
+  }, [intersecting, intersectingSmall]);
+
+  const deleteImagesHandler = (ids) => {
+    setFetchedImages((prevState) =>
+      prevState.filter((image) => !ids.includes(image.id))
     );
-    const intersectingSmall = useIntersection(endPageRef, false, 0);
-    const isOnline = useOnlineStatus();
+  };
 
-    let examplesImgData = [];
+  useEffect(() => {
+    if (
+      modelId &&
+      curImagesModelVersionId &&
+      !isLastPage &&
+      isIntersecting &&
+      !errorMessage &&
+      isOnline &&
+      !imagesIsLoading
+    ) {
+      fetchCivitai(setIsIntersecting);
+    }
+  }, [
+    isIntersecting,
+    isLastPage,
+    curImagesModelVersionId,
+    errorMessage,
+    imagesIsLoading,
+    modelId,
+    isOnline,
+    fetchCivitai,
+  ]);
 
-    examplesImgData = useMemo(() => {
-      const sortedExamples = {};
-      examplesImages.forEach((image) => {
-        if (sortedExamples.hasOwnProperty(image.postId)) {
-          sortedExamples[image.postId].push(image);
-        } else {
-          sortedExamples[image.postId] = [image];
-        }
-      });
+  const retryImageLoadingHandler = () => {
+    setErrorMessage("");
+    fetchCivitai();
+  };
 
-      if (!sortedExamples) return;
-
-      const sortedExamplesArr = Object.keys(sortedExamples).sort((a, b) => {
-        return (
-          Date.parse(sortedExamples[b].slice(-1).pop().createdAt) -
-          Date.parse(sortedExamples[a].slice(-1).pop().createdAt)
-        );
-      });
-
-      const examples = sortedExamplesArr.map((key, i) => {
-        return sortedExamples[key];
-      });
-
-      const sortedExamplesArrWithSortedImgs = examples.map((post) => {
-        return post.sort((a, b) => {
-          return Date.parse(a.createdAt) - Date.parse(b.createdAt);
-        });
-      });
-
-      return sortedExamplesArrWithSortedImgs;
-    }, [examplesImages]);
-
-    useEffect(() => {
-      setIsIntersecting(intersecting || intersectingSmall);
-    }, [intersecting, intersectingSmall]);
-
-    const resetExamples = () => {
-      setCurrCursor(null);
-      setNextCursor(null);
-      setExamplesImages([]);
-      setIsLastPage(false);
-    };
-
-    useEffect(() => {
-      resetExamples();
-
-      return () => {
-        resetExamples();
-        if (abortControlerRef.current) {
-          abortControlerRef.current.abort();
-        }
-      };
-    }, [curImagesModelVersionId, nsfwMode, nsfwLevel]);
-
-    const deleteImagesHandler = (ids) => {
-      setExamplesImages((prevState) =>
-        prevState.filter((image) => !ids.includes(image.id))
+  const imagesHtml = imagesSortedByPost.map((item, i) => {
+    const existedImages =
+      savedImages?.data?.hasOwnProperty(curImagesModelVersionId) &&
+      savedImages.data[`${curImagesModelVersionId}`]?.find(
+        (img) => img?.postId === +item[0]?.postId
       );
-    };
-
-    const getallExamples = useCallback(
-      async (modelId, versionId, cursor) => {
-        try {
-          setExamplesIsLoading(true);
-          if (abortControlerRef.current) {
-            abortControlerRef.current.abort();
-          }
-          const newAbortControler = new AbortController();
-          abortControlerRef.current = newAbortControler;
-
-          setErrorMessage("");
-
-          const url = `https://civitai.com/api/v1/images?modelId=${modelId}${
-            versionId !== "all-versions" ? `&modelVersionId=${versionId}` : ""
-          }${
-            SETTINGS_IMAGES_NUMBER_PER_REQUEST
-              ? `&limit=${SETTINGS_IMAGES_NUMBER_PER_REQUEST}`
-              : ""
-          }${sortBy ? `&sort=${sortBy}` : ""}${
-            cursor ? `&cursor=${cursor}` : ""
-          }${`&nsfw=${nsfwLevel}`}`;
-
-          const imgExampleResponse = await fetch(url, {
-            signal: newAbortControler.signal,
-          });
-          const data = await imgExampleResponse.json();
-
-          if (!data?.items) {
-            throwCustomError(ERROR_MESSAGE_INVALID_DATA);
-          }
-
-          // Remove dublicate images (fix for civitai bug)
-          const dataUniq = filterDuplicates(data?.items, "id");
-
-          setExamplesImages((prevState) => {
-            const newExampleImages = [...dataUniq, ...prevState];
-
-            return newExampleImages;
-          });
-
-          setCurrCursor(nextCursor || true);
-          if (data.metadata?.nextCursor) {
-            setNextCursor(data.metadata.nextCursor);
-          } else {
-            setIsLastPage(true);
-          }
-          setIsIntersecting(false);
-        } catch (err) {
-          if (err.name !== "AbortError") {
-            setErrorMessage(ERROR_MESSAGE_CIV_CONNECTION);
-          }
-        } finally {
-          setExamplesIsLoading(false);
-        }
-      },
-      [sortBy, nextCursor, nsfwLevel, setErrorMessage]
-    );
-
-    useEffect(() => {
-      if (nextCursor && currCursor === nextCursor) return;
-
-      if (
-        modelId &&
-        curImagesModelVersionId &&
-        !isLastPage &&
-        isIntersecting &&
-        !errorMessage &&
-        isOnline &&
-        !examplesIsLoading
-      ) {
-        setExamplesIsLoading(true);
-        getallExamples(modelId, curImagesModelVersionId, nextCursor);
-      }
-    }, [
-      isIntersecting,
-      isLastPage,
-      curImagesModelVersionId,
-      errorMessage,
-      examplesIsLoading,
-      getallExamples,
-      modelId,
-      nextCursor,
-      currCursor,
-      isOnline,
-    ]);
-
-    const retryImageLoadingHandler = () => {
-      setErrorMessage("");
-      getallExamples(modelId, curImagesModelVersionId, nextCursor);
-    };
-
-    const examplesHtml = examplesImgData.map((item, i) => {
-      const existedExample =
-        savedImages?.data?.hasOwnProperty(curImagesModelVersionId) &&
-        savedImages.data[`${curImagesModelVersionId}`]?.find(
-          (img) => img?.postId === +item[0]?.postId
-        );
-      const postId = item[0]?.postId;
-
-      return (
-        <Carousel
-          key={i}
-          imagesData={item}
-          visibleImgAmount={1}
-          existedImgsAmount={existedExample?.imagesId?.length || null}
-          postId={postId}
-          saved={!postId}
-          modelId={modelId}
-          versionId={curImagesModelVersionId}
-          showInView={true}
-          location="models"
-          locationId={modelId}
-          onDelete={deleteImagesHandler}
-        />
-      );
-    });
+    const postId = item[0]?.postId;
 
     return (
-      <>
-        {examplesHtml}
-        <div className={classes["status"]}>
-          {errorMessage && isOnline && (
-            <ErrorMessage>{errorMessage}</ErrorMessage>
-          )}
-          {!examplesIsLoading && (
-            <div>
-              {errorMessage && !!nextCursor && (
-                <Buttton
-                  className={classes["btn-more"]}
-                  onClick={retryImageLoadingHandler}
-                >
-                  Retry
-                </Buttton>
-              )}
-            </div>
-          )}
-          {!examplesIsLoading && !isLastPage && (
-            <div>
-              {!errorMessage && !!nextCursor && (
-                <Buttton
-                  className={classes["btn-more"]}
-                  onClick={() => {
-                    getallExamples(
-                      modelId,
-                      curImagesModelVersionId,
-                      nextCursor
-                    );
-                  }}
-                >
-                  Load more
-                </Buttton>
-              )}
-            </div>
-          )}
-          {!examplesIsLoading && !examplesHtml.length && !errorMessage && (
-            <motion.div
-              initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-              animate={ANIMATIONS_FM_SLIDEIN}
-              className={classes["notification"]}
-            >
-              <ExclamationCircleIcon className={classes["notification__svg"]} />
-              <span>No images found.</span>
-            </motion.div>
-          )}
-          {examplesIsLoading && <Spinner />}
-          <div ref={endPageRef}></div>
-        </div>
-      </>
+      <Carousel
+        key={i}
+        imagesData={item}
+        visibleImgAmount={1}
+        existedImgsAmount={existedImages?.imagesId?.length || null}
+        postId={postId}
+        saved={!postId}
+        modelId={modelId}
+        versionId={curImagesModelVersionId}
+        showInView={true}
+        location="models"
+        locationId={modelId}
+        onDelete={deleteImagesHandler}
+      />
     );
-  }
-);
+  });
+
+  return (
+    <>
+      {imagesHtml}
+      <div className={classes["status"]}>
+        {errorMessage && isOnline && (
+          <ErrorMessage>{errorMessage}</ErrorMessage>
+        )}
+        {!imagesIsLoading && (
+          <div>
+            {errorMessage && (
+              <Buttton
+                className={classes["btn-more"]}
+                onClick={retryImageLoadingHandler}
+              >
+                Retry
+              </Buttton>
+            )}
+          </div>
+        )}
+        {!imagesIsLoading && !isLastPage && !errorMessage && (
+          <div>
+            <Buttton
+              className={classes["btn-more"]}
+              onClick={() => {
+                fetchCivitai();
+              }}
+            >
+              Load more
+            </Buttton>
+          </div>
+        )}
+        {!imagesIsLoading && !imagesHtml.length && !errorMessage && (
+          <motion.div
+            initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            animate={ANIMATIONS_FM_SLIDEIN}
+            className={classes["notification"]}
+          >
+            <ExclamationCircleIcon className={classes["notification__svg"]} />
+            <span>No images found.</span>
+          </motion.div>
+        )}
+        {imagesIsLoading && <Spinner />}
+        <div ref={endPageRef}></div>
+      </div>
+    </>
+  );
+});
 
 export default ExternalImages;

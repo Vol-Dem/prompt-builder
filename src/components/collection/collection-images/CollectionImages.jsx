@@ -4,12 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import Carousel from "../../carousel/Carousel";
 import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
-
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
-  SETTINGS_LOAD_MORE_MARGIN_MEDIUM,
+  SETTINGS_LOAD_MORE_MARGIN_SMALL,
 } from "../../../variables/constants";
 import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
 import FolderSvg from "../../../assets/FolderSvg";
@@ -18,6 +17,7 @@ import useIntersection from "../../../hooks/use-intersection";
 import { getColectionImagesByIds, imagesActions } from "../../../store/images";
 
 const CollectionImages = memo(() => {
+  const [isIntersecting, setIsIntersecting] = useState(false);
   const [examplesIsLoading, setExamplesIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const savedImagesData = useSelector(
@@ -32,13 +32,19 @@ const CollectionImages = memo(() => {
   const examplesImgData = collectionImages?.images || [];
   const isLastPage = !!collectionImages?.isLastPage;
   const endPageRef = useRef(null);
-  const isIntersecting = useIntersection(
+  const intersecting = useIntersection(endPageRef, false, 0);
+  const intersectingSmall = useIntersection(
     endPageRef,
     false,
-    SETTINGS_LOAD_MORE_MARGIN_MEDIUM
+    0,
+    `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`
   );
   const isOnline = useOnlineStatus();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    setIsIntersecting(intersecting || intersectingSmall);
+  }, [intersecting, intersectingSmall]);
 
   useEffect(() => {
     dispatch(imagesActions.setCollectionImages({}));
@@ -59,6 +65,7 @@ const CollectionImages = memo(() => {
       } catch (err) {
         setErrorMessage(err);
       } finally {
+        setIsIntersecting(false);
         setExamplesIsLoading(false);
       }
     },

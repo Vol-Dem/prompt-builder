@@ -14,7 +14,7 @@ import ErrorMessage from "../ui/ErrorMessage";
 import {
   GUIDE_STEP_OPEN_MODEL,
   ERROR_MESSAGE_OFFLINE,
-  SETTINGS_LOAD_MORE_MARGIN,
+  SETTINGS_LOAD_MORE_MARGIN_SMALL,
 } from "../../variables/constants";
 import OpenModelGuide from "../ui/guide/home/OpenModelGuide";
 import { guideActions } from "../../store/guide";
@@ -43,16 +43,15 @@ const ModelsList = () => {
   const previewFullView = useSelector((state) => state.tabs.previewFullView);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const guideState = useSelector((state) => state.guide.home);
-  const endPage = useRef(null);
+  const endPageRef = useRef(null);
   const [isIntersecting, setIsIntersecting] = useState(false);
-
-  const intersecting = useIntersection(
-    endPage,
+  const intersecting = useIntersection(endPageRef, false, 0);
+  const intersectingSmall = useIntersection(
+    endPageRef,
     false,
     0,
-    `${SETTINGS_LOAD_MORE_MARGIN}px`
+    `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`
   );
-  const intersectingSmall = useIntersection(endPage, false, 0);
   const isOnline = useOnlineStatus();
   const dispatch = useDispatch();
 
@@ -240,7 +239,7 @@ const ModelsList = () => {
         )}
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
-      <div ref={endPage}></div>
+      <div ref={endPageRef}></div>
       {isLoading && (
         <div className={classes["spiner-container"]}>
           <Spinner size="medium" />
