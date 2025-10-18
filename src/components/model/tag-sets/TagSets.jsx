@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import classes from "./TagSets.module.scss";
 import TagList from "../../tag-list/TagList";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,14 +17,13 @@ import TagSetsForm from "../../forms/tag-sets-form/TagSetsForm";
 import { AnimatePresence, motion } from "framer-motion";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import InfoTagsets from "../../ui/guide/info/InfoTagSets";
+import NotificationMessage from "../../ui/NotificationMessage";
 
 const defVisibleTags = 2;
 
 const TagSets = ({ customData, defaultData }) => {
   const [tagSetsIsOpen, setTagSetsIsOpen] = useState(false);
   const [tagSetsFormIsOpen, setTagSetsFormIsOpen] = useState(false);
-  const [tagSets, setTagSets] = useState([]);
-  const [allTagSets, setAllTagSets] = useState([]);
   const [tagsetItemHeight, setTagsetItemHeight] = useState(500);
   const [tagsetListHeight, setTagsetListHeight] = useState(500);
   const model = useSelector((state) => state.model.model);
@@ -34,6 +33,26 @@ const TagSets = ({ customData, defaultData }) => {
   const tagSetItemRef = useRef();
   const tagSetListRef = useRef();
   const dispatch = useDispatch();
+
+  const tagSets = useMemo(() => {
+    let tagSetsData = [];
+
+    const defaultDataWithDefMark = defaultData?.map((tagSet) => {
+      return {
+        ...tagSet,
+        default: true,
+      };
+    });
+
+    if (customData?.length) {
+      tagSetsData = [...customData];
+    }
+    if (defaultDataWithDefMark?.length) {
+      tagSetsData = [...tagSetsData, ...defaultDataWithDefMark];
+    }
+
+    return tagSetsData;
+  }, [customData, defaultData]);
 
   useEffect(() => {
     if (guideActive && guideStep === GUIDE_STEP_MODEL_TAGSET) {
@@ -53,46 +72,6 @@ const TagSets = ({ customData, defaultData }) => {
     tagSetListRef?.current?.offsetHeight,
     customData,
     tagSets,
-  ]);
-
-  useEffect(() => {
-    let tagSetsData = [];
-
-    const defaultDataWithDefMark = defaultData?.map((tagSet) => {
-      return {
-        ...tagSet,
-        default: true,
-      };
-    });
-
-    if (customData?.length) {
-      tagSetsData = [...customData];
-    }
-    if (defaultDataWithDefMark?.length) {
-      tagSetsData = [...tagSetsData, ...defaultDataWithDefMark];
-    }
-
-    if (!tagSetsData?.length) return;
-    setAllTagSets(tagSetsData);
-    setTagSets(tagSetsData);
-    const itemHeight = tagSetItemRef?.current?.offsetHeight;
-    const listHeight = tagSetListRef?.current?.offsetHeight;
-    setTagsetItemHeight(itemHeight);
-    setTagsetListHeight(listHeight);
-
-    return () => {
-      setAllTagSets([]);
-      setTagSets([]);
-      setTagsetItemHeight(500);
-      setTagsetListHeight(500);
-    };
-  }, [
-    customData,
-    defaultData,
-    model,
-    tagSetsIsOpen,
-    tagSetItemRef?.current?.offsetHeight,
-    tagSetListRef?.current?.offsetHeight,
   ]);
 
   const splitTags = (arr) => {
@@ -155,11 +134,11 @@ const TagSets = ({ customData, defaultData }) => {
         <Buttton onClick={openTagSetsForm}>Add tag set</Buttton>
       </div>
       {!tagSets?.length && (
-        <div className={classes["notification"]}>
-          <p className={classes["notification__text"]}>
+        <NotificationMessage>
+          <p>
             You don't have any tag sets. Press "Add tag set" to add new tag set.
           </p>
-        </div>
+        </NotificationMessage>
       )}
       <AnimatePresence>
         {!!tagSets?.length && (
@@ -183,11 +162,11 @@ const TagSets = ({ customData, defaultData }) => {
           </div>
         )}
       </AnimatePresence>
-      {allTagSets?.length > 1 && (
+      {tagSets?.length > 1 && (
         <Buttton
           type="button"
           className={`${classes["tag-sets__btn"]} ${
-            allTagSets.length <= defVisibleTags
+            tagSets.length <= defVisibleTags
               ? classes["tag-sets__btn--hidden"]
               : ""
           }`}

@@ -2,21 +2,17 @@ import { useDispatch, useSelector } from "react-redux";
 import UpdateModelForm from "../../forms/update-model-form/UpdateModelForm";
 import VersionForm from "../../forms/version-form/VersionForm";
 import classes from "./ModelSettings.module.scss";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Buttton from "../../ui/Button";
 import VersionStatusForm from "../../forms/version-status-form/VersionStatusForm";
-import { deleteModelDoc } from "../../../utils/fetchUtils";
 import {
-  arrayUnion,
-  doc,
-  getDoc,
-  getFirestore,
-  updateDoc,
-} from "firebase/firestore";
-import firebaseApp from "../../../firebase-config";
+  deleteModelDoc,
+  fetchModelUpdates,
+  updateUserCustomModelData,
+} from "../../../utils/fetchUtils";
 import { useNavigate } from "react-router-dom";
 import DeleteRequest from "../../ui/DeleteRequest";
-import { clearFileExtension } from "../../../utils/generalUtils";
+import { filterNewModelVersions } from "../../../utils/generalUtils";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import Spinner from "../../ui/Spinner";
@@ -24,7 +20,6 @@ import {
   ERROR_MESSAGE_DEFAULT,
   GUIDE_STEP_EDIT_UPD_DEL,
   ERROR_MESSAGE_OFFLINE,
-  URL_CF_UPDATE_MODEL,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   ANIMATIONS_FM_SLIDEIN,
 } from "../../../variables/constants";
@@ -36,12 +31,8 @@ import LeftSidebar from "../../layout/left-sidebar/LeftSidebar";
 import { ArrowUturnLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import H1 from "../../ui/text/H1";
 
-const firestore = getFirestore(firebaseApp);
-
 const ModelSettings = () => {
   const [curTab, setCurTab] = useState("general");
-  const [curVersionData, setCurVersionData] = useState(null);
-  const [curVersionDefData, setCurVersionDefData] = useState(null);
   const [mobileMenuIsOpen, setMobileMenuIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -58,7 +49,10 @@ const ModelSettings = () => {
 
   const DEFAULT_VERSION_ID = "def-ver";
 
-  useEffect(() => {
+  let curVersionData = null;
+  let curVersionDefData = null;
+
+  if (model?.id) {
     const customData =
       curTab === DEFAULT_VERSION_ID
         ? model.defaultCustomData
@@ -70,13 +64,10 @@ const ModelSettings = () => {
         : model.data?.modelVersions?.find((version) => version.id === +curTab);
 
     if (customData) {
-      setCurVersionData(customData);
-      setCurVersionDefData(defData);
-    } else {
-      setCurVersionData(null);
-      setCurVersionDefData(null);
+      curVersionData = customData;
+      curVersionDefData = defData;
     }
-  }, [curTab, model]);
+  }
 
   const switchTabHandler = (e) => {
     setCurTab(e.target.id);
@@ -93,31 +84,8 @@ const ModelSettings = () => {
         throw new Error(ERROR_MESSAGE_OFFLINE);
       }
 
-      const updateModelRes = await fetch(
-        `${URL_CF_UPDATE_MODEL}/updateModel?modelId=${model.id}`
-      );
-      const updateModelResData = await updateModelRes.json();
-
-      if (!updateModelResData?.modelId) {
-        throw new Error("Failed to update");
-      }
-
-      let newModelData;
-
-      const modelDefDataRef = doc(firestore, "models", `${model.id}`);
-
-      const docSnap = await getDoc(modelDefDataRef);
-
-      if (docSnap.exists()) {
-        newModelData = docSnap.data();
-      }
-
-      const newVersions = newModelData?.modelVersions?.filter(
-        (version) =>
-          !Object.values(model?.modelVersionsCustomData)?.some(
-            (oldVersions) => version?.id === oldVersions?.versionId
-          )
-      );
+      const newModelData = await fetchModelUpdates(model.id);
+      const newVersions = filterNewModelVersions(newModelData, model);
 
       if (!newVersions.length) {
         seteSuccessMessage("No new versions found");
@@ -125,127 +93,11 @@ const ModelSettings = () => {
         return;
       }
 
-      const newVersionsCustomData = {};
-
-      newVersions.forEach((version, i) => {
-        version.modelId = model.id;
-
-        let fileName;
-        if (version.hasOwnProperty("files") && version?.files) {
-          fileName = clearFileExtension(
-            version.files.find((file) => file?.primary).name
-          ).toLowerCase();
-        }
-
-        newVersionsCustomData[version.id] = {
-          versionId: version.id,
-          name: version.name,
-          versionName: version.name,
-          baseModel: version.baseModel,
-          index: version.index,
-          defFileName: fileName || "",
-          versionImageUrl:
-            version.images?.filter((img, i) => img.type === "image")[0]?.url ||
-            "",
-          downloadStatus: false,
-        };
-      });
-      const modelVersionsCustomData = { ...newVersionsCustomData };
-
-      Object.values(model?.modelVersionsCustomData).forEach((customVersion) => {
-        modelVersionsCustomData[customVersion.versionId] = {
-          ...customVersion,
-          index: newModelData?.modelVersions?.find(
-            (version) => version.id === customVersion.versionId
-          )?.index,
-        };
-      });
-
-      const fileNames = newModelData.modelVersions?.flatMap((version) => {
-        if (version.hasOwnProperty("files") && version?.files) {
-          return clearFileExtension(
-            version.files.find((file) => file?.primary).name
-          ).toLowerCase();
-        }
-        return [];
-      });
-
-      const hashes = newModelData.modelVersions
-        ?.flatMap((version) => {
-          if (version.hasOwnProperty("files") && version?.files) {
-            const primaryFileHashes = version?.files.find(
-              (file) => file?.primary
-            )?.hashes;
-            if (primaryFileHashes) {
-              return Object.values(primaryFileHashes)?.map((hash) =>
-                hash.toLowerCase()
-              );
-            }
-          }
-          return [];
-        })
-        .filter(Boolean);
-
-      const versionIds =
-        newModelData.modelVersions?.map((version) => version.id) || [];
-
-      const baseModels = new Set(
-        newModelData.modelVersions?.flatMap(
-          (version) => version?.baseModel || []
-        )
-      );
-
-      let newBaseModel = false;
-
-      if (curBaseModels?.length) {
-        baseModels?.forEach((baseModel) => {
-          const exists = curBaseModels?.some(
-            (curBaseModel) => curBaseModel === baseModel
-          );
-          if (!exists) {
-            newBaseModel = true;
-          }
-        });
-      }
-
-      const modelsRef = doc(firestore, "users", uid, "models", model?.id + "");
-      const modelsPrevRef = doc(
-        firestore,
-        "users",
-        uid,
-        "preview",
-        model?.id + ""
-      );
-      const userRef = doc(firestore, "users", uid);
-
-      if (newBaseModel) {
-        await updateDoc(
-          userRef,
-          {
-            baseModels: arrayUnion(...baseModels),
-          },
-          { merge: true }
-        );
-      }
-
-      await updateDoc(
-        modelsRef,
-        {
-          modelVersionsCustomData: modelVersionsCustomData,
-        },
-        { merge: true }
-      );
-      await updateDoc(
-        modelsPrevRef,
-        {
-          modelVersionsCustomData: modelVersionsCustomData,
-          fileNames,
-          hashes,
-          versionIds,
-          tags: newModelData.tags,
-          baseModels: arrayUnion(...baseModels),
-        },
-        { merge: true }
+      await updateUserCustomModelData(
+        newModelData,
+        newVersions,
+        model,
+        curBaseModels
       );
 
       dispatch(
@@ -284,31 +136,33 @@ const ModelSettings = () => {
     }
   };
 
-  const modelVersionsHtml = Object.values(model?.modelVersionsCustomData)
-    ?.sort((a, b) => a?.index - b?.index)
-    .flatMap((version, i) => {
-      if (!version.downloadStatus) {
-        return [];
-      }
-      return (
-        <motion.li
-          key={i}
-          initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-          animate={ANIMATIONS_FM_SLIDEIN}
-          exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
-          id={version.versionId}
-          data-version={i}
-          onClick={switchTabHandler}
-          className={`${classes["menu-item"]} ${
-            curTab === version.versionId + ""
-              ? classes["menu-item--active"]
-              : ""
-          }`}
-        >
-          {version.name}
-        </motion.li>
-      );
-    });
+  const modelVersionsHtml =
+    model.id &&
+    Object.values(model?.modelVersionsCustomData)
+      ?.sort((a, b) => a?.index - b?.index)
+      .flatMap((version, i) => {
+        if (!version.downloadStatus) {
+          return [];
+        }
+        return (
+          <motion.li
+            key={i}
+            initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            animate={ANIMATIONS_FM_SLIDEIN}
+            exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
+            id={version.versionId}
+            data-version={i}
+            onClick={switchTabHandler}
+            className={`${classes["menu-item"]} ${
+              curTab === version.versionId + ""
+                ? classes["menu-item--active"]
+                : ""
+            }`}
+          >
+            {version.name}
+          </motion.li>
+        );
+      });
 
   const openMenuHandler = () => {
     setMobileMenuIsOpen(true);
@@ -424,7 +278,7 @@ const ModelSettings = () => {
               <SuccessMessage>{successMessage}</SuccessMessage>
             )}
             {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-            <UpdateModelForm modelData={model} />
+            {!!model?.id && <UpdateModelForm modelData={model} />}
             {guideIsActive && guideHomeState?.active && <EditPageGuide />}
           </motion.div>
         )}
@@ -439,6 +293,7 @@ const ModelSettings = () => {
         )}
         {curVersionData && (
           <motion.div
+            key={curTab}
             initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
             animate={ANIMATIONS_FM_SLIDEIN}
           >

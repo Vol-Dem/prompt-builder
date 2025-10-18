@@ -1,10 +1,4 @@
-import {
-  AdjustmentsHorizontalIcon,
-  Bars3Icon,
-  FunnelIcon,
-  ListBulletIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import classes from "./LeftSidebar.module.scss";
 import { motion } from "framer-motion";
@@ -27,7 +21,6 @@ const LeftSidebar = ({
     } else {
       onOpen();
     }
-    document.body.addEventListener("tou");
   };
 
   const closesSidebar = (url) => {

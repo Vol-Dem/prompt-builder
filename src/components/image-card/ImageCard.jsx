@@ -23,7 +23,7 @@ const ImageCard = ({ activeImgNum }) => {
   const imageData = useMemo(() => {
     return !!activeCarouselData?.images?.length
       ? activeCarouselData?.images[activeImgNum || 0]
-      : {};
+      : null;
   }, [activeCarouselData, activeImgNum]);
   const positiveWordsArr = splitTags(imageData?.meta?.prompt);
   const negativeWordsArr = splitTags(imageData?.meta?.negativePrompt);

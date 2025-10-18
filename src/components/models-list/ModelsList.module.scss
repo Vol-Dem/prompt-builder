@@ -19,46 +19,6 @@
   margin-top: 2rem;
 }
 
-.panel {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-  // background-color: var.$color-background-secondary;
-  // padding: 0.6rem;
-  // border-radius: 10px;
-  // box-shadow: var.$box-shadow-light;
-
-  &__title {
-    font-size: 1.4rem;
-  }
-
-  &__view {
-    display: flex;
-    gap: 0.4rem;
-  }
-
-  &__btn {
-    display: inline-flex;
-    align-items: center;
-    margin-left: 0.3rem;
-    padding: 0.3rem 0.4rem;
-    border-radius: 0.6rem;
-    width: 2.6rem;
-    height: 2.6rem;
-
-    &--active {
-      background-color: #5f3d62;
-    }
-  }
-
-  &__btn-icon {
-    width: 1.8rem;
-    height: 1.8rem;
-  }
-}
-
 .category__link {
 }
 

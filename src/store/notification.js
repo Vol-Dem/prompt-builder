@@ -8,21 +8,21 @@ const notificationSlice = createSlice({
   name: "notification",
   initialState: { maintenance: false, notifications: [] },
   reducers: {
-    setNotifications(state, actions) {
-      state.notifications = actions.payload.map((message) => {
+    setNotifications(state, action) {
+      state.notifications = action.payload.map((message) => {
         return {
           ...message,
           readed: false,
         };
       });
     },
-    setMaintenance(state, actions) {
-      state.maintenance = actions.payload;
+    setMaintenance(state, action) {
+      state.maintenance = action.payload;
     },
-    showNotification(state, actions) {
+    showNotification(state, action) {
       state.isShown = true;
-      state.title = actions.payload.title;
-      state.message = actions.payload.message;
+      state.title = action.payload.title;
+      state.message = action.payload.message;
     },
     closeNotification(state) {
       state.isShown = false;
@@ -31,7 +31,7 @@ const notificationSlice = createSlice({
 });
 
 export const getAppInfo = () => {
-  return async (dispatch, getState) => {
+  return async (dispatch) => {
     try {
       const appInfoRef = doc(firestore, "application", "info");
 

@@ -6,6 +6,7 @@ import {
   getDoc,
   getFirestore,
   setDoc,
+  updateDoc,
   writeBatch,
 } from "firebase/firestore";
 import {
@@ -22,6 +23,7 @@ import {
   ERROR_MESSAGE_INVALID_DATA,
   SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV,
   SETTINGS_SFW_RANGE,
+  URL_CF_UPDATE_MODEL,
 } from "../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
@@ -525,43 +527,28 @@ export const saveGuideData = async (guideData, uid) => {
   }
 };
 
-export const getCollectionData = async (collectionId) => {
-  const uid = auth.currentUser.uid;
-
-  const modelRef = doc(
-    firestore,
-    "users",
-    uid,
-    "collections",
-    collectionId + ""
-  );
-
-  const docSnap = await getDoc(modelRef);
-
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-    return data;
-  } else {
-    throw new Error("Failed to load model");
-  }
-};
-
 export const fetchDataFromFirestore = async (...docPath) => {
-  const modelDefDataRef = doc(firestore, ...docPath);
-  const docSnap = await getDoc(modelDefDataRef);
+  const dataDoc = doc(firestore, ...docPath);
+  const docSnap = await getDoc(dataDoc);
 
   if (docSnap.exists()) {
-    const modelDefData = docSnap.data();
-
-    return modelDefData;
+    return docSnap.data();
   } else {
     throwCustomError("Can't find document");
   }
 };
 
+export const fetchUserDataFromFirestore = async (...docPath) => {
+  const uid = auth?.currentUser?.uid;
+  return fetchDataFromFirestore("users", uid, ...docPath);
+};
+
+export const getCollectionData = async (collectionId) => {
+  return await fetchUserDataFromFirestore("collections", collectionId + "");
+};
+
 export const fetchModelFromCivitai = async (id) => {
   const responseCiv = await fetch(`https://civitai.com/api/v1/models/${id}`);
-
   const responseData = await responseCiv.json();
 
   if (!responseData?.id) {
@@ -588,4 +575,146 @@ export const fetchModelData = async (uid, modelId) => {
   }
 
   return { ...modelData, data: defModelData };
+};
+
+export const fetchModelUpdates = async (modelId) => {
+  const updateModelRes = await fetch(
+    `${URL_CF_UPDATE_MODEL}/updateModel?modelId=${modelId}`
+  );
+  const updateModelResData = await updateModelRes.json();
+
+  if (!updateModelResData?.modelId) {
+    throw new Error("Failed to update");
+  }
+
+  const modelDefDataRef = doc(firestore, "models", `${modelId}`);
+
+  const docSnap = await getDoc(modelDefDataRef);
+
+  if (docSnap.exists()) {
+    return docSnap.data();
+  } else {
+    throw new Error("Model not found");
+  }
+};
+
+export const updateUserCustomModelData = async (
+  newModelData,
+  newVersions,
+  model,
+  curBaseModels
+) => {
+  const newVersionsCustomData = {};
+
+  newVersions.forEach((version, i) => {
+    version.modelId = model.id;
+
+    let fileName;
+    if (version.hasOwnProperty("files") && version?.files) {
+      fileName = clearFileExtension(
+        version.files.find((file) => file?.primary).name
+      ).toLowerCase();
+    }
+
+    newVersionsCustomData[version.id] = {
+      versionId: version.id,
+      name: version.name,
+      versionName: version.name,
+      baseModel: version.baseModel,
+      index: version.index,
+      defFileName: fileName || "",
+      versionImageUrl:
+        version.images?.filter((img, i) => img.type === "image")[0]?.url || "",
+      downloadStatus: false,
+    };
+  });
+  const modelVersionsCustomData = { ...newVersionsCustomData };
+
+  Object.values(model?.modelVersionsCustomData).forEach((customVersion) => {
+    modelVersionsCustomData[customVersion.versionId] = {
+      ...customVersion,
+      index: newModelData?.modelVersions?.find(
+        (version) => version.id === customVersion.versionId
+      )?.index,
+    };
+  });
+
+  const fileNames = newModelData.modelVersions?.flatMap((version) => {
+    if (version.hasOwnProperty("files") && version?.files) {
+      return clearFileExtension(
+        version.files.find((file) => file?.primary).name
+      ).toLowerCase();
+    }
+    return [];
+  });
+
+  const hashes = newModelData.modelVersions
+    ?.flatMap((version) => {
+      if (version.hasOwnProperty("files") && version?.files) {
+        const primaryFileHashes = version?.files.find(
+          (file) => file?.primary
+        )?.hashes;
+        if (primaryFileHashes) {
+          return Object.values(primaryFileHashes)?.map((hash) =>
+            hash.toLowerCase()
+          );
+        }
+      }
+      return [];
+    })
+    .filter(Boolean);
+
+  const versionIds =
+    newModelData.modelVersions?.map((version) => version.id) || [];
+
+  const baseModels = new Set(
+    newModelData.modelVersions?.flatMap((version) => version?.baseModel || [])
+  );
+
+  let newBaseModel = false;
+
+  if (curBaseModels?.length) {
+    baseModels?.forEach((baseModel) => {
+      const exists = curBaseModels?.some(
+        (curBaseModel) => curBaseModel === baseModel
+      );
+      if (!exists) {
+        newBaseModel = true;
+      }
+    });
+  }
+  const uid = auth?.currentUser?.uid;
+  const modelsRef = doc(firestore, "users", uid, "models", model?.id + "");
+  const modelsPrevRef = doc(firestore, "users", uid, "preview", model?.id + "");
+  const userRef = doc(firestore, "users", uid);
+
+  if (newBaseModel) {
+    await updateDoc(
+      userRef,
+      {
+        baseModels: arrayUnion(...baseModels),
+      },
+      { merge: true }
+    );
+  }
+
+  await updateDoc(
+    modelsRef,
+    {
+      modelVersionsCustomData: modelVersionsCustomData,
+    },
+    { merge: true }
+  );
+  await updateDoc(
+    modelsPrevRef,
+    {
+      modelVersionsCustomData: modelVersionsCustomData,
+      fileNames,
+      hashes,
+      versionIds,
+      tags: newModelData.tags,
+      baseModels: arrayUnion(...baseModels),
+    },
+    { merge: true }
+  );
 };

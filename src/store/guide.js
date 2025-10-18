@@ -27,48 +27,48 @@ const guideSlice = createSlice({
     },
   },
   reducers: {
-    setGuideIsActive(state, actions) {
-      state.active = actions.payload;
+    setGuideIsActive(state, action) {
+      state.active = action.payload;
     },
-    setIntroDisabled(state, actions) {
-      state.introDisabled = actions.payload;
+    setIntroDisabled(state, action) {
+      state.introDisabled = action.payload;
     },
-    setOutroIsActive(state, actions) {
-      state.outroIsActive = actions.payload;
+    setOutroIsActive(state, action) {
+      state.outroIsActive = action.payload;
     },
-    setGuideState(state, actions) {
-      state[actions.type] = actions.payload;
+    setGuideState(state, action) {
+      state[action.type] = action.payload;
     },
-    switchGuideState(state, actions) {
-      state[actions.type].active = actions.payload;
+    switchGuideState(state, action) {
+      state[action.type].active = action.payload;
     },
-    guideNextStep(state, actions) {
-      const type = actions.payload?.type;
+    guideNextStep(state, action) {
+      const type = action.payload?.type;
       if (type) {
         state[type].step = state[type].step + 1;
       }
     },
-    guidePrevStep(state, actions) {
-      const type = actions.payload?.type;
+    guidePrevStep(state, action) {
+      const type = action.payload?.type;
       if (type && state[type]?.step > 0) {
         state[type].step = state[type].step - 1;
       }
     },
-    setGuideActive(state, actions) {
-      state[actions.payload.type].active = actions.payload.value;
+    setGuideActive(state, action) {
+      state[action.payload.type].active = action.payload.value;
     },
-    setGuideStep(state, actions) {
-      state[actions.payload.type].step = actions.payload.value;
+    setGuideStep(state, action) {
+      state[action.payload.type].step = action.payload.value;
     },
-    setGuideInitialState(state, actions) {
-      if (actions.payload) {
-        state.active = actions.payload.active;
-        state.introDisabled = actions.payload.introDisabled;
-        state.outroIsActive = actions.payload.outroIsActive;
-        state.step = actions.payload.step;
-        state.home = actions.payload.home;
-        state.model = actions.payload.model;
-        state.edit = actions.payload.edit;
+    setGuideInitialState(state, action) {
+      if (action.payload) {
+        state.active = action.payload.active;
+        state.introDisabled = action.payload.introDisabled;
+        state.outroIsActive = action.payload.outroIsActive;
+        state.step = action.payload.step;
+        state.home = action.payload.home;
+        state.model = action.payload.model;
+        state.edit = action.payload.edit;
       }
     },
   },
@@ -77,7 +77,7 @@ const guideSlice = createSlice({
       (action) =>
         action.type.startsWith("guide/") &&
         !action.type.startsWith("guide/setGuideInitialState"),
-      (state, action) => {
+      (state) => {
         const uid = auth?.currentUser?.uid;
         if (uid) {
           saveGuideData(state, uid);

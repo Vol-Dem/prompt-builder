@@ -7,7 +7,7 @@ import { ERROR_MESSAGE_OFFLINE } from "../../../variables/constants";
 import NotificationMessage from "../../ui/NotificationMessage";
 import PreviewCard from "../../preview-card/PreviewCard";
 
-const CollectionList = ({ sortBy }) => {
+const CollectionList = () => {
   const collectionPreviews = useSelector(
     (state) => state.images.collectionPreviews
   );

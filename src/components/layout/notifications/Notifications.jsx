@@ -25,13 +25,9 @@ const Notifications = () => {
       if (!cookies?.accepted) {
         setCookificationIsOpen(true);
       }
-    }
-  }, [isAuth]);
-
-  useEffect(() => {
-    if (isAuth) {
+    } else {
       const noticeInfo = uploadLocalStorage(`notifications`);
-      const updatedNitice = notifications.map((message) => {
+      const updatedNotifications = notifications.map((message) => {
         const notice = noticeInfo?.messages?.find(
           (userNotice) => userNotice.id === message.id
         );
@@ -40,17 +36,13 @@ const Notifications = () => {
           readed: notice ? notice.readed : message.readed,
         };
       });
-
-      setAllNotification(updatedNitice);
-    }
-  }, [notifications, isAuth]);
-
-  useEffect(() => {
-    if (isAuth) {
-      const notification = allNotification.find((message) => !message.readed);
+      const notification = updatedNotifications.find(
+        (message) => !message.readed
+      );
+      setAllNotification(updatedNotifications);
       setActiveNotification(notification);
     }
-  }, [notifications, allNotification, isAuth]);
+  }, [notifications, isAuth]);
 
   const closeNotificationHandler = () => {
     const noticeInfo = allNotification.map((message) => {

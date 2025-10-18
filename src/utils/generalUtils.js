@@ -869,3 +869,14 @@ export const groupAndSortByPost = (items, field) => {
 
   return sortedImageArrWithSortedImages;
 };
+
+export const filterNewModelVersions = (newModelData, oldModelData) => {
+  const newVersions = newModelData?.modelVersions?.filter(
+    (version) =>
+      !Object.values(oldModelData?.modelVersionsCustomData)?.some(
+        (oldVersions) => version?.id === oldVersions?.versionId
+      )
+  );
+
+  return newVersions;
+};

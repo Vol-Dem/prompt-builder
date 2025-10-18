@@ -44,23 +44,23 @@ const modelSlice = createSlice({
   name: "model",
   initialState: initialModelState,
   reducers: {
-    setModelData(state, actions) {
-      state.model = { ...state.model, ...actions.payload };
+    setModelData(state, action) {
+      state.model = { ...state.model, ...action.payload };
 
-      if (actions?.payload?.savedImages) {
+      if (action?.payload?.savedImages) {
         state.savedImages = {
-          modelId: actions.payload.id,
-          data: actions?.payload?.savedImages,
+          modelId: action.payload.id,
+          data: action?.payload?.savedImages,
         };
-      } else if (actions?.payload?.id && !actions?.payload?.savedImages) {
+      } else if (action?.payload?.id && !action?.payload?.savedImages) {
         state.savedImages = { modelId: null, data: {} };
       }
     },
-    setSavedImages(state, actions) {
-      state.savedImages = actions.payload;
+    setSavedImages(state, action) {
+      state.savedImages = action.payload;
     },
-    updateSavedImages(state, actions) {
-      const { versionId, postId, modelId } = actions.payload.postInfo;
+    updateSavedImages(state, action) {
+      const { versionId, postId, modelId } = action.payload.postInfo;
 
       if (state.model.id !== modelId) return;
 
@@ -70,18 +70,18 @@ const modelSlice = createSlice({
         );
         if (existedPostIndex !== -1) {
           const updatedSavedImages = [...state.savedImages.data[versionId]];
-          updatedSavedImages[existedPostIndex] = actions.payload.data;
+          updatedSavedImages[existedPostIndex] = action.payload.data;
 
           state.savedImages.data[versionId] = updatedSavedImages;
         } else {
           const updatedSavedImages = [
             ...state.savedImages.data[versionId],
-            actions.payload.data,
+            action.payload.data,
           ];
           state.savedImages.data[versionId] = updatedSavedImages;
         }
       } else {
-        const updatedSavedImages = [actions.payload.data];
+        const updatedSavedImages = [action.payload.data];
         state.savedImages = {
           modelId: modelId,
           data: {
@@ -91,8 +91,8 @@ const modelSlice = createSlice({
         };
       }
     },
-    deleteSavedImages(state, actions) {
-      const { versionId, postId, modelId } = actions.payload.postInfo;
+    deleteSavedImages(state, action) {
+      const { versionId, postId, modelId } = action.payload.postInfo;
 
       if (state.model.id !== modelId) return;
 
@@ -105,39 +105,36 @@ const modelSlice = createSlice({
         }
       }
     },
-    resetModelData(state, actions) {
+    resetModelData(state, action) {
       state.model = {};
       state.modelPreview = [];
       state.errorMessage = "";
       state.curVersion = {};
     },
-    setIsLoading(state, actions) {
-      state.isLoading = actions.payload;
+    setIsLoading(state, action) {
+      state.isLoading = action.payload;
     },
-    setCurVersion(state, actions) {
-      state.curVersion = actions.payload;
+    setCurVersion(state, action) {
+      state.curVersion = action.payload;
     },
-    setModelPreview(state, actions) {
-      state.modelPreview = actions.payload;
+    setModelPreview(state, action) {
+      state.modelPreview = action.payload;
     },
-    setNsfwMode(state, actions) {
-      state.nsfwMode = actions.payload;
+    setNsfwMode(state, action) {
+      state.nsfwMode = action.payload;
       const uid = auth.currentUser?.uid;
-      if (uid) saveToStorage(`${uid}-nsfw`, actions.payload);
+      if (uid) saveToStorage(`${uid}-nsfw`, action.payload);
     },
-    setErrorMessage(state, actions) {
-      state.errorMessage = actions.payload;
+    setErrorMessage(state, action) {
+      state.errorMessage = action.payload;
     },
-    setActiveCarouselData(state, actions) {
-      state.activeCarouselData = actions.payload;
+    setActiveCarouselData(state, action) {
+      state.activeCarouselData = action.payload;
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(authActions.logout, (state, actions) => {
-      state.model = {};
-      state.modelPreview = [];
-      state.errorMessage = "";
-      state.curVersion = {};
+    builder.addCase(authActions.logout, (state, action) => {
+      modelSlice.caseReducers.resetModelData(state, action);
       state.activeCarouselData = {};
     });
   },

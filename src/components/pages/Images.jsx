@@ -45,7 +45,6 @@ const Images = () => {
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const endPageRef = useRef(null);
   const isOnline = useOnlineStatus();
-  const timeoutRef = useRef(null);
   const dispatch = useDispatch();
   const subcategories = categories?.find(
     (category) => category.id === activeCategory
@@ -108,58 +107,29 @@ const Images = () => {
     }
   );
 
-  //Load initial previews
+  //Load previews on scroll
   useEffect(() => {
     const rule =
       activeSubcategory || activeCategory === "all" || !subcategories?.length;
+
     if (
-      !collectionPreviews?.data?.length &&
       !isLastPage &&
-      isOnline &&
+      isIntersecting &&
       rule &&
+      isOnline &&
+      !isLoading &&
       activeCategory
     ) {
+      setIsIntersecting(false);
+
       dispatch(
         getCollectionPreviews(
           activeCategory,
           activeSubcategory,
-          false,
+          !!collectionPreviews?.data?.length,
           nsfwMode
         )
       );
-    }
-  }, [
-    dispatch,
-    collectionPreviews,
-    nsfwMode,
-    isLastPage,
-    isOnline,
-    activeCategory,
-    activeSubcategory,
-    subcategories,
-  ]);
-
-  //Load previews on scroll
-  useEffect(() => {
-    if (
-      !isLastPage &&
-      isIntersecting &&
-      !!collectionPreviews?.data?.length &&
-      isOnline &&
-      !isLoading
-    ) {
-      clearTimeout(timeoutRef.current);
-      setIsIntersecting(false);
-      timeoutRef.current = setTimeout(() => {
-        dispatch(
-          getCollectionPreviews(
-            activeCategory,
-            activeSubcategory,
-            true,
-            nsfwMode
-          )
-        );
-      }, 1000);
     }
   }, [
     isIntersecting,
@@ -171,6 +141,7 @@ const Images = () => {
     activeCategory,
     activeSubcategory,
     isLoading,
+    subcategories,
   ]);
 
   const editCategoriesHandler = (isSub) => {
@@ -194,11 +165,6 @@ const Images = () => {
         {!categories?.length && (
           <>
             <NotificationMessage className={classes.notification}>
-              {/* <p className={classes["tip__content__text"]}>
-                To create a new collection, open the side panel using the button
-                on the right and click "New resource". Fill in the requered
-                fields and click "Save".
-              </p> */}
               <Text>You don't have any collections!</Text>
             </NotificationMessage>
             <NotificationMessage className={classes.notification}>
@@ -213,19 +179,6 @@ const Images = () => {
                 In this case, an empty collection will appear and it will be
                 available in the dropdown list when saving images later.
               </Text>
-              {/* <TextImageBlock>
-                <Image
-                  loading="lazy"
-                  width={1909}
-                  height={918}
-                  fullView={true}
-                  className={classes["img"]}
-                  src={require("../../assets/about/21-collections-sidebar.jpg")}
-                  alt="Collections model 5"
-                  srcSet={require("../../assets/about/21-collections-sidebar.webp")}
-                  type="image/webp"
-                />
-              </TextImageBlock> */}
             </NotificationMessage>
           </>
         )}

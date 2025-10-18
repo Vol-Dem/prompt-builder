@@ -26,7 +26,8 @@
 
   &:active {
     // transform: translateY(1px);
-    transform: scale(98%);
+    // transform: scale(98%);
+    box-shadow: inset var.$box-shadow;
   }
 }
 

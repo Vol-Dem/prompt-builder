@@ -46,44 +46,44 @@ const tabsSlice = createSlice({
     isLastPage: false,
   },
   reducers: {
-    setCurrentTab(state, actions) {
+    setCurrentTab(state, action) {
       state.currSubcategory = "";
       state.currCategory = "";
       state.modelsData = [];
-      state.currTab = actions.payload;
+      state.currTab = action.payload;
     },
-    setCurrentCategory(state, actions) {
+    setCurrentCategory(state, action) {
       state.currSubcategory = "";
       state.modelsData = [];
-      state.currCategory = actions.payload;
+      state.currCategory = action.payload;
     },
-    setCurrentSubcategory(state, actions) {
+    setCurrentSubcategory(state, action) {
       lastVisible = "";
       state.modelsData = [];
       state.isLastPage = false;
-      state.currSubcategory = actions.payload;
+      state.currSubcategory = action.payload;
     },
-    setCategories(state, actions) {
-      if (actions.payload) {
-        state.categoriesData = actions.payload;
+    setCategories(state, action) {
+      if (action.payload) {
+        state.categoriesData = action.payload;
       }
     },
-    setBaseModels(state, actions) {
-      if (actions.payload) {
-        state.baseModels = actions.payload.sort();
+    setBaseModels(state, action) {
+      if (action.payload) {
+        state.baseModels = action.payload.sort();
       }
     },
-    setSortBy(state, actions) {
-      state.sortBy = actions.payload;
+    setSortBy(state, action) {
+      state.sortBy = action.payload;
     },
-    setModelType(state, actions) {
-      state.modelType = actions.payload;
+    setModelType(state, action) {
+      state.modelType = action.payload;
     },
-    setErrorMessage(state, actions) {
-      state.errorMessage = actions.payload;
+    setErrorMessage(state, action) {
+      state.errorMessage = action.payload;
     },
-    setModelsData(state, actions) {
-      state.modelsData = actions.payload;
+    setModelsData(state, action) {
+      state.modelsData = action.payload;
     },
     resetModelsData(state) {
       state.modelsData = {
@@ -95,22 +95,22 @@ const tabsSlice = createSlice({
       };
       state.isLastPage = false;
     },
-    setSubcategories(state, actions) {
-      state.subcategories = actions.payload.sort();
+    setSubcategories(state, action) {
+      state.subcategories = action.payload.sort();
     },
-    setIsLoading(state, actions) {
-      state.isLoading = actions.payload;
+    setIsLoading(state, action) {
+      state.isLoading = action.payload;
     },
-    setIsLastPage(state, actions) {
-      state.isLastPage = actions.payload;
+    setIsLastPage(state, action) {
+      state.isLastPage = action.payload;
     },
-    reset(state, actions) {
+    reset(state) {
       state.currCategory = "";
       state.currSubcategory = "";
       state.categoriesData = [];
       state.subcategories = [];
     },
-    resetActiveTabs(state, actions) {
+    resetActiveTabs(state) {
       state.currTab = "";
       state.currCategory = "";
       state.currSubcategory = "";
@@ -120,20 +120,17 @@ const tabsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(authActions.logout, (state, actions) => {
-      state.currTab = "";
-      state.currCategory = "";
-      state.currSubcategory = "";
-      state.categoriesData = [];
-      state.subcategories = [];
-      state.modelsData = {
-        tab: "",
-        category: "",
-        subcategory: "",
-        nsfw: false,
-        previews: [],
-      };
+    builder.addCase(authActions.logout, (state, action) => {
+      tabsSlice.caseReducers.resetActiveTabs(state, action);
+      tabsSlice.caseReducers.reset(state, action);
+      tabsSlice.caseReducers.resetModelsData(state, action);
     });
+    builder.addMatcher(
+      (action) => action.type.startsWith("general/setNsfw"),
+      (state, action) => {
+        tabsSlice.caseReducers.resetModelsData(state, action);
+      }
+    );
   },
 });
 
@@ -146,11 +143,14 @@ export const getModelsPreview = (
 ) => {
   return async (dispatch, getState) => {
     try {
+      dispatch(tabActions.setIsLoading(true));
       dispatch(tabActions.setErrorMessage(""));
+
       if (!loadMore) {
         lastVisible = "";
         dispatch(tabActions.setIsLastPage(false));
       }
+
       const uid = getState().auth.user.uid;
       const activeTab = getState().tabs.currTab;
       const activeCategory = getState().tabs.currCategory;
@@ -159,10 +159,8 @@ export const getModelsPreview = (
       const sortBy = getState().tabs.sortBy;
       const baseModel = getState().tabs.modelType;
       const curModelsData = getState().tabs.modelsData.previews;
-
       if (isLastPage) return;
 
-      dispatch(tabActions.setIsLoading(true));
       const direction = sortBy === "name" ? "asc" : "desc";
       const order = orderBy(sortBy, direction);
       // let q;
@@ -206,6 +204,7 @@ export const getModelsPreview = (
       if (!isLast) {
         lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
       }
+
       if (modelsData)
         dispatch(
           tabActions.setModelsData({

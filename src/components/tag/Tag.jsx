@@ -53,7 +53,7 @@ const Tag = forwardRef((props, ref) => {
       ref={ref}
       onClick={addTagHandler}
       data-type={props?.promptType}
-      className={`${classes.tag} ${isInPrompt && classes.active}`}
+      className={`${classes.tag} ${isInPrompt ? classes.active : ""}`}
       style={props.style}
     >
       {props.tag}

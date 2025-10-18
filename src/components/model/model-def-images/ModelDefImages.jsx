@@ -62,8 +62,6 @@ const ModelDefImages = () => {
           );
         }
 
-        // console.log(curImages);
-
         setCurVersionImages(curImages);
       } catch (err) {
         ///LOAD DEFAULT IMAGES FROM MODEL

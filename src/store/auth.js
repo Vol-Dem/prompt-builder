@@ -64,14 +64,14 @@ const authSlice = createSlice({
   name: "auth",
   initialState: authInitialState,
   reducers: {
-    login(state, actions) {
+    login(state, action) {
       state.isLoggedIn = true;
       state.user = {
-        idToken: actions.payload.accessToken,
-        uid: actions.payload.uid,
-        email: actions.payload.email,
-        userName: actions.payload.displayName,
-        emailVerified: actions.payload.emailVerified,
+        idToken: action.payload.accessToken,
+        uid: action.payload.uid,
+        email: action.payload.email,
+        userName: action.payload.displayName,
+        emailVerified: action.payload.emailVerified,
       };
 
       initializeAppCheck(firebaseApp, {
@@ -97,35 +97,35 @@ const authSlice = createSlice({
     openAuthForm(state) {
       state.authFormIsOpen = true;
     },
-    setInitialAuth(state, actions) {
-      state.initialAuth = actions.payload;
+    setInitialAuth(state, action) {
+      state.initialAuth = action.payload;
     },
     closeAuthForm(state) {
       state.authFormIsOpen = false;
     },
-    setReauthFormIsOpen(state, actions) {
-      state.reAuthFormIsOpen = actions.payload;
+    setReauthFormIsOpen(state, action) {
+      state.reAuthFormIsOpen = action.payload;
     },
-    setShowResetPassword(state, actions) {
-      state.showResetPassword = actions.payload;
+    setShowResetPassword(state, action) {
+      state.showResetPassword = action.payload;
     },
-    setErrorMessage(state, actions) {
-      state.errorMessage = actions.payload;
+    setErrorMessage(state, action) {
+      state.errorMessage = action.payload;
     },
-    setSuccessMessage(state, actions) {
-      state.successMessage = actions.payload;
+    setSuccessMessage(state, action) {
+      state.successMessage = action.payload;
     },
-    setIsLoading(state, actions) {
-      state.isLoading = actions.payload;
+    setIsLoading(state, action) {
+      state.isLoading = action.payload;
     },
-    setUserDataIsLoading(state, actions) {
-      state.userDataIsLoading = actions.payload;
+    setUserDataIsLoading(state, action) {
+      state.userDataIsLoading = action.payload;
     },
-    setUserDataLoadError(state, actions) {
-      state.userDataLoadError = actions.payload;
+    setUserDataLoadError(state, action) {
+      state.userDataLoadError = action.payload;
     },
-    // setGuide(state, actions) {
-    //   state.guide = actions.payload;
+    // setGuide(state, action) {
+    //   state.guide = action.payload;
     // },
   },
 });

@@ -33,31 +33,31 @@ const promptSlice = createSlice({
     negativePromptHeight: null,
   },
   reducers: {
-    setCurrentPrompt(state, actions) {
-      state.curPrompt = actions.payload;
+    setCurrentPrompt(state, action) {
+      state.curPrompt = action.payload;
     },
-    setCurrentNegPrompt(state, actions) {
-      state.curNegPrompt = actions.payload;
+    setCurrentNegPrompt(state, action) {
+      state.curNegPrompt = action.payload;
     },
-    setCurPromptArr(state, actions) {
-      state.curPromptArr = markDuplicateTags(actions.payload);
+    setCurPromptArr(state, action) {
+      state.curPromptArr = markDuplicateTags(action.payload);
     },
-    setCurNegPromptArr(state, actions) {
-      state.curNegPromptArr = markDuplicateTags(actions.payload);
+    setCurNegPromptArr(state, action) {
+      state.curNegPromptArr = markDuplicateTags(action.payload);
     },
-    clearPrompt(state, actions) {
+    clearPrompt(state) {
       state.curPrompt = "";
       state.curNegPrompt = "";
       state.curPromptArr = [];
       state.curNegPromptArr = [];
     },
-    setPresets(state, actions) {
-      if (actions?.payload) state.presets = actions.payload;
+    setPresets(state, action) {
+      if (action?.payload) state.presets = action.payload;
     },
-    setPromptIsOpen(state, actions) {
-      state.promptIsOpen = actions.payload;
+    setPromptIsOpen(state, action) {
+      state.promptIsOpen = action.payload;
     },
-    setTextMode(state, actions) {
+    setTextMode(state, action) {
       const allIds = [];
 
       const promptArr = convertPromptToArr(state.curPrompt).map((tag, i) => {
@@ -77,12 +77,12 @@ const promptSlice = createSlice({
       const newPosPromptArrDuplicates = markDuplicateTags(promptArr);
       const newNegPromptArrDuplicates = markDuplicateTags(promptArrNeg);
 
-      state.isTextMode = actions.payload;
+      state.isTextMode = action.payload;
       state.curPromptArr = newPosPromptArrDuplicates;
       state.curNegPromptArr = newNegPromptArrDuplicates;
     },
-    addTagToPosition(state, actions) {
-      const { dropTargetType } = actions.payload;
+    addTagToPosition(state, action) {
+      const { dropTargetType } = action.payload;
 
       const curPromptArr =
         dropTargetType === "positive"
@@ -90,7 +90,7 @@ const promptSlice = createSlice({
           : state.curNegPromptArr;
 
       const newPromptArr = addElementToIndex({
-        ...actions.payload,
+        ...action.payload,
         curPromptArr,
       });
 
@@ -102,7 +102,7 @@ const promptSlice = createSlice({
         state.curNegPromptArr = newPromptArrDuplicates;
       }
     },
-    addTagToPrompt(state, actions) {
+    addTagToPrompt(state, action) {
       const allIds = [
         ...state.curPromptArr.map((tag) => tag.id),
         ...state.curNegPromptArr.map((tag) => tag.id),
@@ -114,7 +114,7 @@ const promptSlice = createSlice({
         .map((tag) => tag.position)
         .sort((a, b) => a - b);
 
-      const isPositive = actions.payload.type === "positive";
+      const isPositive = action.payload.type === "positive";
 
       const curPrompt = isPositive ? state.curPromptArr : state.curNegPromptArr;
       const curPromptPositions = isPositive
@@ -123,13 +123,13 @@ const promptSlice = createSlice({
 
       const newId = !allIds.length ? 0 : allIds[allIds.length - 1] + 1;
 
-      const tagweight = getTagWeight(actions.payload.value);
+      const tagweight = getTagWeight(action.payload.value);
 
       const newPromptArr = [
         ...curPrompt,
         {
-          id: actions.payload?.id ?? newId,
-          tag: actions.payload.value,
+          id: action.payload?.id ?? newId,
+          tag: action.payload.value,
           weight: tagweight,
           position: !curPromptPositions.length
             ? 0
@@ -145,8 +145,8 @@ const promptSlice = createSlice({
         state.curNegPromptArr = newPromptArrDuplicates;
       }
     },
-    removeTag(state, actions) {
-      const { id, type, dropTargetType, value } = actions.payload;
+    removeTag(state, action) {
+      const { id, type, dropTargetType, value } = action.payload;
 
       const promptArr =
         type === "positive" ? state.curPromptArr : state.curNegPromptArr;
@@ -185,7 +185,7 @@ const promptSlice = createSlice({
         state.curNegPromptArr = newPromptArrDuplicates;
       }
     },
-    addAllTagsToPrompt(state, actions) {
+    addAllTagsToPrompt(state, action) {
       const allIds = [
         ...state.curPromptArr.map((tag) => tag.id),
         ...state.curNegPromptArr.map((tag) => tag.id),
@@ -197,7 +197,7 @@ const promptSlice = createSlice({
         .map((tag) => tag.position)
         .sort((a, b) => a - b);
 
-      const isPositive = actions.payload.type === "positive";
+      const isPositive = action.payload.type === "positive";
 
       const curPromptArr = isPositive
         ? state.curPromptArr
@@ -207,7 +207,7 @@ const promptSlice = createSlice({
         ? promptPosPositions
         : promptPNegPositions;
 
-      const newTags = actions.payload?.value?.filter((newWord) => {
+      const newTags = action.payload?.value?.filter((newWord) => {
         const isInPrompt = curPromptArr.find(
           (promptWord) => promptWord.tag === newWord
         );
@@ -232,7 +232,7 @@ const promptSlice = createSlice({
               weight: tagweight,
               position: newPosition,
             },
-            type: actions.payload.type,
+            type: action.payload.type,
             curPromptArr: newPromptArr,
           });
         });
@@ -246,57 +246,55 @@ const promptSlice = createSlice({
         }
       }
     },
-    removeAllTags(state, actions) {
+    removeAllTags(state, action) {
       const promptArr =
-        actions.payload.type === "positive"
+        action.payload.type === "positive"
           ? state.curPromptArr
           : state.curNegPromptArr;
 
       const newPromptArr = promptArr.filter((tag) => {
-        return !actions.payload.value.includes(tag.tag);
+        return !action.payload.value.includes(tag.tag);
       });
 
       const newPromptArrDuplicates = markDuplicateTags(newPromptArr);
 
-      if (actions.payload.type === "positive") {
+      if (action.payload.type === "positive") {
         state.curPromptArr = newPromptArrDuplicates;
       } else {
         state.curNegPromptArr = newPromptArrDuplicates;
       }
     },
-    changeActivationTag(state, actions) {
+    changeActivationTag(state, action) {
       const promptArr = state.curPromptArr;
 
       const activationTagIndex = promptArr.findIndex((tag) => {
-        return tag.tag.includes(actions.payload.prevTag);
+        return tag.tag.includes(action.payload.prevTag);
       });
 
       if (activationTagIndex < 0) return;
 
       const updatedPromptArr = promptArr.toSpliced(activationTagIndex, 1, {
         ...promptArr[activationTagIndex],
-        tag: actions.payload.newTag,
-        weight: actions.payload.weight,
+        tag: action.payload.newTag,
+        weight: action.payload.weight,
       });
 
       state.curPromptArr = updatedPromptArr;
     },
-    setHeaderHeight(state, actions) {
-      state.headerHeight = actions.payload;
+    setHeaderHeight(state, action) {
+      state.headerHeight = action.payload;
     },
-    setPromptBtnHeight(state, actions) {
-      state.promptBtnHeight = actions.payload;
+    setPromptBtnHeight(state, action) {
+      state.promptBtnHeight = action.payload;
     },
-    setPromptHeight(state, actions) {
-      state.promptHeight = actions.payload;
+    setPromptHeight(state, action) {
+      state.promptHeight = action.payload;
     },
-    setNegativePromptHeight(state, actions) {},
   },
   extraReducers: (builder) => {
     builder
-      .addCase(authActions.logout, (state, actions) => {
-        state.curPrompt = "";
-        state.curNegPrompt = "";
+      .addCase(authActions.logout, (state, action) => {
+        promptSlice.caseReducers.clearPrompt(state, action);
         state.promptIsOpen = true;
         state.isTextMode = false;
       })
@@ -306,7 +304,7 @@ const promptSlice = createSlice({
           !action.type.startsWith("prompt/setCurrentPrompt") &&
           !action.type.startsWith("prompt/setCurrentNegPrompt") &&
           !action.type.startsWith("prompt/setTextMode"),
-        (state, actions) => {
+        (state, action) => {
           const newPrompt = state.curPromptArr.map((tag) => tag.tag).join(", ");
           const newNegPrompt = state.curNegPromptArr
             .map((tag) => tag.tag)
@@ -320,7 +318,7 @@ const promptSlice = createSlice({
         (action) =>
           action.type.startsWith("prompt/setCurrentPrompt") ||
           action.type.startsWith("prompt/setCurrentNegPrompt"),
-        (state, actions) => {
+        (state) => {
           const allIds = [];
 
           const promptArr = convertPromptToArr(state.curPrompt).map(
@@ -348,7 +346,7 @@ const promptSlice = createSlice({
       )
       .addMatcher(
         (action) => action.type.startsWith("prompt/"),
-        (state, action) => {
+        (state) => {
           const uid = auth?.currentUser?.uid;
           if (uid) {
             saveToStorage(`${uid}-prompt`, state.curPrompt);
@@ -423,7 +421,7 @@ export const updatePresets = (presetType, updatedPresets) => {
 };
 
 export const getUserPresets = (uid) => {
-  return async (dispatch, getState) => {
+  return async (dispatch) => {
     try {
       const userRef = doc(firestore, "users", uid);
       const presetsDoc = await getDoc(userRef);

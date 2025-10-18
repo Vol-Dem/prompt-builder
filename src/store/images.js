@@ -57,44 +57,44 @@ const imagesSlice = createSlice({
     collectionData: {},
   },
   reducers: {
-    setImageCategories(state, actions) {
-      state.categories = actions.payload;
+    setImageCategories(state, action) {
+      state.categories = action.payload;
     },
-    setActiveCategory(state, actions) {
-      state.activeCategory = actions.payload;
+    setActiveCategory(state, action) {
+      state.activeCategory = action.payload;
     },
-    setActiveSubcategory(state, actions) {
-      state.activeSubcategory = actions.payload;
+    setActiveSubcategory(state, action) {
+      state.activeSubcategory = action.payload;
     },
-    setCollectionPreviews(state, actions) {
-      state.collectionPreviews = actions.payload;
+    setCollectionPreviews(state, action) {
+      state.collectionPreviews = action.payload;
     },
-    setCollectionData(state, actions) {
-      state.collectionData = actions.payload;
+    setCollectionData(state, action) {
+      state.collectionData = action.payload;
     },
-    setIsLastPage(state, actions) {
-      state.isLastPage = actions.payload;
+    setIsLastPage(state, action) {
+      state.isLastPage = action.payload;
     },
-    setIsLastPreviewsPage(state, actions) {
-      state.isLastPreviewsPage = actions.payload;
+    setIsLastPreviewsPage(state, action) {
+      state.isLastPreviewsPage = action.payload;
     },
     setImagesIsLoading(state, actions) {
       state.imagesIsLoading = actions.payload;
     },
-    setPreviewsIsLoading(state, actions) {
-      state.previewsIsLoading = actions.payload;
+    setPreviewsIsLoading(state, action) {
+      state.previewsIsLoading = action.payload;
     },
-    setCollectionDataIsSaving(state, actions) {
-      state.collectionDataIsSaving = actions.payload;
+    setCollectionDataIsSaving(state, action) {
+      state.collectionDataIsSaving = action.payload;
     },
-    setErrorMessage(state, actions) {
-      state.errorMessage = actions.payload;
+    setErrorMessage(state, action) {
+      state.errorMessage = action.payload;
     },
-    setPreviewsErrorMessage(state, actions) {
-      state.previewsErrorMessage = actions.payload;
+    setPreviewsErrorMessage(state, action) {
+      state.previewsErrorMessage = action.payload;
     },
-    setCollectionImages(state, actions) {
-      state.collectionImages = actions.payload;
+    setCollectionImages(state, action) {
+      state.collectionImages = action.payload;
     },
     resetCollectionData(state, action) {
       state.collectionData = {};
@@ -119,22 +119,22 @@ const imagesSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(authActions.logout, (state, actions) => {
-      state.collectionPreviews = [];
+    builder.addCase(authActions.logout, (state, action) => {
+      imagesSlice.caseReducers.resetCollectionListState(state, action);
       state.categories = [];
-      state.errorMessage = "";
-      state.isLastPreviewsPage = false;
-      state.previewsIsLoading = false;
-      state.activeCategory = "";
-      state.activeSubcategory = "";
     });
     builder.addMatcher(
       (action) => action.type.startsWith("images/setActive"),
-      (state, actions) => {
-        state.collectionPreviews = [];
+      (state, action) => {
+        imagesSlice.caseReducers.resetCollectionPreviews(state, action);
+      }
+    );
+    builder.addMatcher(
+      (action) => action.type.startsWith("general/setNsfw"),
+      (state) => {
+        state.collectionImages = {};
         state.errorMessage = "";
-        state.isLastPreviewsPage = false;
-        state.previewsIsLoading = false;
+        state.isLastPage = false;
       }
     );
   },
@@ -389,7 +389,7 @@ export const savePostToCollections = ({
 };
 
 export const getCollection = (collectionId) => {
-  return async (dispatch, getState) => {
+  return async (dispatch) => {
     try {
       const collectionData = await getCollectionData(collectionId);
 

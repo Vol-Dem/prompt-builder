@@ -27,6 +27,7 @@ const Input = ({
   showError,
   fitContent,
   readOnly,
+  isValid,
   ...props
 }) => {
   const [inputErrorMessage, setInputErrorMessage] = useState("");

@@ -22,48 +22,48 @@ const usedModelsSlice = createSlice({
     sidePanelWidth: null,
   },
   reducers: {
-    addModelsToPanel(state, actions) {
-      state.models = actions.payload;
+    addModelsToPanel(state, action) {
+      state.models = action.payload;
     },
-    addImagesToPanel(state, actions) {
-      state.images = actions.payload;
+    addImagesToPanel(state, action) {
+      state.images = action.payload;
     },
-    setFormIsOpen(state, actions) {
-      state.formIsOpen = actions.payload;
+    setFormIsOpen(state, action) {
+      state.formIsOpen = action.payload;
     },
-    panelState(state, actions) {
-      state.panelIsOpen = actions.payload;
+    panelState(state, action) {
+      state.panelIsOpen = action.payload;
     },
-    cardViewState(state, actions) {
-      state.fullCardView = actions.payload;
-      // if (actions.payload) {
-      //   state.fullCardView = actions.payload.fullCardView;
+    cardViewState(state, action) {
+      state.fullCardView = action.payload;
+      // if (action.payload) {
+      //   state.fullCardView = action.payload.fullCardView;
       // } else {
       //   state.fullCardView = !state.fullCardView;
       // }
     },
-    clearPanel(state, actions) {
+    clearPanel(state) {
       state.models = [];
       state.images = [];
     },
-    setSidePanelWidth(state, actions) {
-      state.sidePanelWidth = actions.payload;
+    setSidePanelWidth(state, action) {
+      state.sidePanelWidth = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(authActions.logout, (state, actions) => {
+      .addCase(authActions.logout, (state) => {
         state.models = [];
         state.panelIsOpen = true;
         state.fullCardView = true;
       })
-      .addCase(usedModelsActions.panelState, (state, actions) => {
+      .addCase(usedModelsActions.panelState, (state) => {
         const uid = auth.currentUser.uid;
         saveToStorage(`${uid}-side-state`, `${state.panelIsOpen}`);
       })
       .addMatcher(
         (action) => action.type.startsWith("used/"),
-        (state, action) => {
+        (state) => {
           const uid = auth?.currentUser?.uid;
           if (!uid) return;
           saveToStorage(`${uid}-side`, state.models);

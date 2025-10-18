@@ -17,36 +17,36 @@ const generalSlice = createSlice({
     activeAboutSectionId: "",
   },
   reducers: {
-    setIsMobile(state, actions) {
-      state.isMobile = actions.payload;
+    setIsMobile(state, action) {
+      state.isMobile = action.payload;
     },
-    setHeaderIsFixed(state, actions) {
-      state.headerIsFixed = actions.payload;
+    setHeaderIsFixed(state, action) {
+      state.headerIsFixed = action.payload;
     },
-    setNsfwMode(state, actions) {
-      state.nsfwMode = actions.payload;
-      if (actions.payload) {
+    setNsfwMode(state, action) {
+      state.nsfwMode = action.payload;
+      if (action.payload) {
         state.nsfwLevel = state.nsfwValue;
       } else {
         state.nsfwLevel = state.sfwValue;
       }
     },
-    setNsfwLevel(state, actions) {
-      state.nsfwLevel = actions.payload;
+    setNsfwLevel(state, action) {
+      state.nsfwLevel = action.payload;
     },
-    setActiveAboutSectionId(state, actions) {
-      state.activeAboutSectionId = actions.payload;
+    setActiveAboutSectionId(state, action) {
+      state.activeAboutSectionId = action.payload;
     },
-    setSfwValue(state, actions) {
-      state.sfwValue = actions.payload;
+    setSfwValue(state, action) {
+      state.sfwValue = action.payload;
       if (!state.nsfwMode) {
-        state.nsfwLevel = actions.payload;
+        state.nsfwLevel = action.payload;
       }
     },
-    setNsfwValue(state, actions) {
-      state.nsfwValue = actions.payload;
+    setNsfwValue(state, action) {
+      state.nsfwValue = action.payload;
       if (state.nsfwMode) {
-        state.nsfwLevel = actions.payload;
+        state.nsfwLevel = action.payload;
       }
     },
   },

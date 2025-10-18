@@ -40,41 +40,41 @@ const searchSlice = createSlice({
     isLastSubPage: false,
   },
   reducers: {
-    setSearchQuery(state, actions) {
-      state.searchQuery = actions.payload;
+    setSearchQuery(state, action) {
+      state.searchQuery = action.payload;
     },
-    setSearchResult(state, actions) {
-      state.searchResult = actions.payload;
+    setSearchResult(state, action) {
+      state.searchResult = action.payload;
     },
-    setQuickSearchResult(state, actions) {
-      state.quickSerchResult = actions.payload;
+    setQuickSearchResult(state, action) {
+      state.quickSerchResult = action.payload;
     },
-    updateSearchResult(state, actions) {
-      state.searchResult = [...state.searchResult, ...actions.payload];
+    updateSearchResult(state, action) {
+      state.searchResult = [...state.searchResult, ...action.payload];
     },
-    clearSearchResult(state, actions) {
+    clearSearchResult(state) {
       state.searchResult = [];
     },
-    setSearchIsLoading(state, actions) {
-      state.isLoading = actions.payload;
+    setSearchIsLoading(state, action) {
+      state.isLoading = action.payload;
     },
-    setErrorMessage(state, actions) {
-      state.errorMessage = actions.payload;
+    setErrorMessage(state, action) {
+      state.errorMessage = action.payload;
     },
-    setIsLastPage(state, actions) {
-      state.isLastPage = actions.payload;
+    setIsLastPage(state, action) {
+      state.isLastPage = action.payload;
     },
-    setIsLastCollectionsPage(state, actions) {
-      state.isLastCollectionsPage = actions.payload;
+    setIsLastCollectionsPage(state, action) {
+      state.isLastCollectionsPage = action.payload;
     },
-    setIsLastSubPage(state, actions) {
-      state.isLastSubPage = actions.payload;
+    setIsLastSubPage(state, action) {
+      state.isLastSubPage = action.payload;
     },
-    setSearchFilter(state, actions) {
-      if (actions.payload.type)
-        state.searchFilter[actions.payload.type] = actions.payload.value;
+    setSearchFilter(state, action) {
+      if (action.payload.type)
+        state.searchFilter[action.payload.type] = action.payload.value;
     },
-    resetSearchFilter(state, actions) {
+    resetSearchFilter(state) {
       state.searchFilter = { modelType: [], baseModel: [], hashtag: false };
     },
     resetSearchData(state) {

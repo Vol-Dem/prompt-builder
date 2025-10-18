@@ -20,42 +20,42 @@ const uploadSlice = createSlice({
     isUploading: false,
   },
   reducers: {
-    addToQueue(state, actions) {
-      state.queue.push(actions.payload);
+    addToQueue(state, action) {
+      state.queue.push(action.payload);
     },
-    removeFromQueue(state, actions) {
+    removeFromQueue(state, action) {
       const newQueue = state.queue.filter((item) => {
-        return item.postId !== actions.payload.postId;
+        return item.postId !== action.payload.postId;
       });
 
       state.queue = [...newQueue];
     },
-    setCurPostId(state, actions) {
-      state.curPostId = actions.payload;
+    setCurPostId(state, action) {
+      state.curPostId = action.payload;
     },
-    addToRejected(state, actions) {
+    addToRejected(state, action) {
       const itemExists = state.rejected.find(
-        (item) => item.postId === actions.payload.postId
+        (item) => item.postId === action.payload.postId
       );
       if (!itemExists) {
-        state.rejected.push(actions.payload);
+        state.rejected.push(action.payload);
       }
     },
-    addToCompleted(state, actions) {
+    addToCompleted(state, action) {
       state.completedAmount = state.completedAmount + 1;
-      state.completed = [actions.payload, ...state.completed].slice(0, 10);
+      state.completed = [action.payload, ...state.completed].slice(0, 10);
     },
-    setIsUploading(state, actions) {
-      state.isUploading = actions.payload;
+    setIsUploading(state, action) {
+      state.isUploading = action.payload;
     },
-    retryUploadingAll(state, actions) {
+    retryUploadingAll(state, action) {
       state.queue = [...state.queue, ...state.rejected];
       state.rejected = [];
     },
-    clearRejected(state, actions) {
+    clearRejected(state, action) {
       state.rejected = [];
     },
-    clearCompleted(state, actions) {
+    clearCompleted(state, action) {
       state.completed = [];
       state.completedAmount = 0;
     },
