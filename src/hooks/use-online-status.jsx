@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 
+/**
+ * Checks the current online status
+ * @returns True if online, otherwise false
+ */
 export function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(navigator?.onLine);
   useEffect(() => {

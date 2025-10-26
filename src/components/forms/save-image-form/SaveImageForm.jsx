@@ -18,13 +18,10 @@ import {
 import ChooseImageForm from "../choose-image-form/ChooseImageForm";
 import { uploadActions } from "../../../store/upload";
 import BackSvg from "../../../assets/BackSvg";
-import {
-  getPostIdFromInput,
-  handleErrors,
-  throwCustomError,
-} from "../../../utils/generalUtils";
+import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import InfoPostId from "../../ui/guide/info/InfoPostId";
+import { getPostIdFromInput } from "../../../utils/imageUtils";
 
 const SaveImageForm = ({
   modelData,

@@ -9,15 +9,13 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import firebaseApp from "../firebase-config";
-import {
-  deleteImagePostDoc,
-  getModelData,
-  makeBatchRequest,
-} from "../utils/fetchUtils";
 import { getAuth } from "firebase/auth";
 import { saveToStorage } from "../variables/utils";
 import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 import { authActions } from "./auth";
+import { deleteImagePostDocs } from "../utils/fetch/fetchImages";
+import { getModelData } from "../utils/fetch/fetchModel";
+import { makeBatchRequest } from "../utils/fetch/fetchUtils";
 
 const auth = getAuth(firebaseApp);
 
@@ -347,7 +345,7 @@ export const deleteModel = (modelId) => {
         };
       });
 
-      await makeBatchRequest(postsData, deleteImagePostDoc, 5, false);
+      await makeBatchRequest(postsData, deleteImagePostDocs, 5, false);
     });
 
     const modelRef = doc(firestore, "users", uid, "models", model.id + "");

@@ -11,7 +11,7 @@ import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
 import {
   clearFileExtension,
-  createTagSetsInputData,
+  // createTagSetsInputData,
   handleErrors,
   throwCustomError,
 } from "../../../utils/generalUtils";
@@ -32,6 +32,7 @@ import InputNumber from "../../ui/InputNumber";
 import Spinner from "../../ui/Spinner";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
+import { createTagSetsInputData } from "../../../utils/promptUtils";
 
 const firestore = getFirestore(firebaseApp);
 

@@ -19,11 +19,8 @@ import {
 } from "../../../variables/constants";
 import Spinner from "../../ui/Spinner";
 import { modelActions } from "../../../store/model";
-import {
-  createTagSetsInputData,
-  handleErrors,
-  throwCustomError,
-} from "../../../utils/generalUtils";
+import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
+import { createTagSetsInputData } from "../../../utils/promptUtils";
 
 const firestore = getFirestore(firebaseApp);
 

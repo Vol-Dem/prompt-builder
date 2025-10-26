@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 
+/**
+ * Calculates the current guide index for a given guide type
+ * @param {String} guideType - The guide type
+ * @param {Array} guideSteps - The array of guide steps
+ * @returns The current guide index
+ */
 const useGuideIndex = (guideType, guideSteps) => {
   const [guideStepIndex, setGuideStepIndex] = useState(null);
   const guideState = useSelector((state) => state.guide);

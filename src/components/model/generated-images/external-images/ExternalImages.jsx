@@ -18,11 +18,11 @@ import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import ErrorMessage from "../../../ui/ErrorMessage";
 import Buttton from "../../../ui/Button";
 import { motion } from "framer-motion";
+import useFetchCivitai from "../../../../hooks/use-fetch-civitai";
 import {
   filterNsfwImages,
-  groupAndSortByPost,
-} from "../../../../utils/generalUtils";
-import useFetchCivitai from "../../../../hooks/use-fetch-civitai";
+  groupAndSortByField,
+} from "../../../../utils/imageUtils";
 
 const ExternalImages = memo(({ modelId, curImagesModelVersionId, sortBy }) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
@@ -64,7 +64,7 @@ const ExternalImages = memo(({ modelId, curImagesModelVersionId, sortBy }) => {
       images = filterNsfwImages(fetchedImages, EXAMPLE_MODEL_FILTER_LVL);
     }
 
-    return groupAndSortByPost(images, "postId");
+    return groupAndSortByField(images, "postId", "createdAt");
   }, [fetchedImages, modelId]);
 
   useEffect(() => {

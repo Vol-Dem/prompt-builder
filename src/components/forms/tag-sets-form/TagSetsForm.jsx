@@ -17,12 +17,9 @@ import Spinner from "../../ui/Spinner";
 import { modelActions } from "../../../store/model";
 import ModelTagsFormGuide from "../../ui/guide/model/ModelTagsEditGuide";
 import { guideActions } from "../../../store/guide";
-import {
-  createTagSetsInputData,
-  handleErrors,
-  throwCustomError,
-} from "../../../utils/generalUtils";
+import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 import TagSetsInputFieldset from "../../ui/TagSetsInputFieldset";
+import { createTagSetsInputData } from "../../../utils/promptUtils";
 
 const firestore = getFirestore(firebaseApp);
 

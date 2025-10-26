@@ -5,14 +5,12 @@ import firebaseApp from "../firebase-config";
 import { saveToStorage, uploadStorage } from "../variables/utils";
 import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
 import {
-  addElementToIndex,
-  convertPromptToArr,
+  moveElementToPosition,
   createPromptItem,
   getTagWeight,
   markDuplicateTags,
-  splitTags,
-} from "../utils/generalUtils";
-
+} from "../utils/promptUtils";
+import { splitTags } from "../utils/promptUtils";
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
 
@@ -60,19 +58,17 @@ const promptSlice = createSlice({
     setTextMode(state, action) {
       const allIds = [];
 
-      const promptArr = convertPromptToArr(state.curPrompt).map((tag, i) => {
+      const promptArr = splitTags(state.curPrompt).map((tag, i) => {
         const newId = allIds[allIds.length - 1] + 1 || 0;
         allIds.push(newId);
         return createPromptItem(tag, newId, i);
       });
 
-      const promptArrNeg = convertPromptToArr(state.curNegPrompt).map(
-        (tag, i) => {
-          const newId = allIds[allIds.length - 1] + 1 || 0;
-          allIds.push(newId);
-          return createPromptItem(tag, newId, i);
-        }
-      );
+      const promptArrNeg = splitTags(state.curNegPrompt).map((tag, i) => {
+        const newId = allIds[allIds.length - 1] + 1 || 0;
+        allIds.push(newId);
+        return createPromptItem(tag, newId, i);
+      });
 
       const newPosPromptArrDuplicates = markDuplicateTags(promptArr);
       const newNegPromptArrDuplicates = markDuplicateTags(promptArrNeg);
@@ -89,7 +85,7 @@ const promptSlice = createSlice({
           ? state.curPromptArr
           : state.curNegPromptArr;
 
-      const newPromptArr = addElementToIndex({
+      const newPromptArr = moveElementToPosition({
         ...action.payload,
         curPromptArr,
       });
@@ -225,7 +221,7 @@ const promptSlice = createSlice({
           curPromptPositions.push(newPosition);
           const tagweight = getTagWeight(newTag);
 
-          newPromptArr = addElementToIndex({
+          newPromptArr = moveElementToPosition({
             item: {
               id: newId,
               tag: newTag,
@@ -321,21 +317,17 @@ const promptSlice = createSlice({
         (state) => {
           const allIds = [];
 
-          const promptArr = convertPromptToArr(state.curPrompt).map(
-            (tag, i) => {
-              const newId = allIds[allIds.length - 1] + 1 || 0;
-              allIds.push(newId);
-              return createPromptItem(tag, newId, i);
-            }
-          );
+          const promptArr = splitTags(state.curPrompt).map((tag, i) => {
+            const newId = allIds[allIds.length - 1] + 1 || 0;
+            allIds.push(newId);
+            return createPromptItem(tag, newId, i);
+          });
 
-          const promptArrNeg = convertPromptToArr(state.curNegPrompt).map(
-            (tag, i) => {
-              const newId = allIds[allIds.length - 1] + 1 || 0;
-              allIds.push(newId);
-              return createPromptItem(tag, newId, i);
-            }
-          );
+          const promptArrNeg = splitTags(state.curNegPrompt).map((tag, i) => {
+            const newId = allIds[allIds.length - 1] + 1 || 0;
+            allIds.push(newId);
+            return createPromptItem(tag, newId, i);
+          });
 
           const newPosPromptArrDuplicates = markDuplicateTags(promptArr);
           const newNegPromptArrDuplicates = markDuplicateTags(promptArrNeg);

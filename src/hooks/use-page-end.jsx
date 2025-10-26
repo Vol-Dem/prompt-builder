@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 
-const usePageEnd = (distance = 300) => {
+/**
+ * Checks if the current scroll has reached the end of the page
+ * @returns True if the end of the page is reached, otherwise false
+ */
+const usePageEnd = () => {
   const [isPageEnd, setIsPageEnd] = useState(false);
 
   const handleScroll = useCallback(() => {

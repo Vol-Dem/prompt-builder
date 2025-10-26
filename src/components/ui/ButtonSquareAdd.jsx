@@ -9,7 +9,7 @@ import {
 import { SETTINGS_REF_IMAGE_AMOUNT } from "../../variables/constants";
 import { CheckIcon, PlusIcon } from "@heroicons/react/24/outline";
 import ButtonSquare from "./ButtonSquare";
-import { getUrlId } from "../../utils/generalUtils";
+import { getUrlId } from "../../utils/imageUtils";
 
 const ButtonAdd = ({
   previewData,

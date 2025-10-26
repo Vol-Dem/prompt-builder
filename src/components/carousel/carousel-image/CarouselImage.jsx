@@ -15,8 +15,8 @@ import {
   SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
 } from "../../../variables/constants";
 import SetTagSetPreview from "../set-tagset-preview/SetTagSetPreview";
-import { transformSrcPreview } from "../../../utils/generalUtils";
 import { MagnifyingGlassPlusIcon, PlayIcon } from "@heroicons/react/24/outline";
+import { transformSrcPreview } from "../../../utils/imageUtils";
 
 const CarouselImage = ({
   id,

@@ -93,6 +93,15 @@ export const SETTINGS_NSFW_RANGE = ["Soft", "Mature", "X"];
 export const SETTINGS_PROMPT_DUPLICATE_EXCEPTIONS = ["BREAK", "<BREAK>"];
 export const SETTINGS_PROMPT_BREAK_ALIASES = ["BREAK", "<BREAK>"];
 export const SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV = false;
+export const SETTINGS_SUPPORTED_FILE_EXTENSIONS = [
+  "safetensors",
+  "pt",
+  "pth",
+  "ckpt",
+  "mp4",
+  "mov",
+  "webm",
+];
 
 //URLS
 export const URL_CIV_MODELS = "https://civitai.com/api/v1/models/";
@@ -104,6 +113,7 @@ export const URL_CF_UPDATE_MODEL =
 
 //REGEX
 export const REGEX_SPLIT_TAGS = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
+export const REGEX_MOBAL = /iPhone|iPad|iPod|Android/i;
 
 //VALIDATION
 export const VALIDATION_CATEGORY_NAME_MAX_LENGTH = 70;
@@ -117,6 +127,11 @@ export const VALIDATION_POST_URL_MAX_LENGTH = 45;
 export const VALIDATION_NUMBER_MAX_LENGTH = 5;
 export const VALIDATION_EMAIL_MAX_LENGTH = 50;
 export const VALIDATION_PASSWORD_MAX_LENGTH = 100;
+export const VALIDATION_PASSWORD_MIN_LENGTH = 6;
+export const VALIDATION_PASSWORD_SPECIAL_CHARACTERS = /!|@|#|\$|%/;
+export const VALIDATION_VALIDATE_PASSWORD_SPECIAL_CHARACTERS = false;
+export const VALIDATION_VALIDATE_PASSWORD_LETTER_COMBINATION = true;
+export const VALIDATION_VALIDATE_PASSWORD_NUMBER_INCLUSION = false;
 
 //MESSAGES
 export const MESSAGE_AGREEMENT =

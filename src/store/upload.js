@@ -2,12 +2,14 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   filterDuplicates,
   throwCustomError,
-  transformImageData,
+  // transformImageData,
 } from "../utils/generalUtils";
-import { updateImagePostData } from "../utils/fetchUtils";
+// import { updateImagePostData } from "../utils/fetchUtils";
 import { modelActions } from "./model";
 import { savePostToCollections } from "./images";
 import { ERROR_MESSAGE_INVALID_POST_ID } from "../variables/constants";
+import { updateImagePostData } from "../utils/fetch/fetchImages";
+import { transformImageData } from "../utils/transformUtils";
 
 const uploadSlice = createSlice({
   name: "upload",

@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import firebaseApp from "../firebase-config";
 import { getAuth } from "firebase/auth";
-import { saveGuideData } from "../utils/fetchUtils";
+import { saveGuideData } from "../utils/fetch/fetchUtils";
 
 const auth = getAuth(firebaseApp);
 

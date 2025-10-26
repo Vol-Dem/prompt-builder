@@ -3,7 +3,6 @@ import Buttton from "../ui/Button";
 import classes from "./Presets.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { promptActions, updatePresets } from "../../store/prompt";
-import { splitTags } from "../../utils/generalUtils";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import PresetForm from "../forms/preset-form/PresetForm";
 import DeleteRequest from "../ui/DeleteRequest";
@@ -16,6 +15,7 @@ import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../variables/constants";
+import { splitTags } from "../../utils/promptUtils";
 
 const Presets = ({ onClose }) => {
   const [formIsOpen, setFormIsOpen] = useState(false);

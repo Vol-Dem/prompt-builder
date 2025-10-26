@@ -1,7 +1,6 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import classes from "./Image.module.scss";
 import ImageSvg from "../../../assets/ImageSvg";
-import { transformSrcPreview } from "../../../utils/generalUtils";
 import {
   SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
   SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
@@ -9,6 +8,7 @@ import {
 import { AnimatePresence } from "framer-motion";
 import ImageFullView from "../ImageFullView";
 import ButtonPlay from "../buttons/ButtonPlay";
+import { transformSrcPreview } from "../../../utils/imageUtils";
 
 const Image = forwardRef(
   (

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import classes from "./Input.module.scss";
-import { validateInput } from "../../utils/generalUtils";
+import { validateInput } from "../../utils/validationUtils";
 import { motion } from "framer-motion";
 import {
   ANIMATIONS_FM_SLIDEOUT,

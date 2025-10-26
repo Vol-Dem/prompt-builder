@@ -17,17 +17,17 @@ import {
 import AddModelToSidePanelGuide from "../ui/guide/model/AddModelToSidePanelGuide";
 import { guideActions } from "../../store/guide";
 import ModelDefImages from "../model/model-def-images/ModelDefImages";
-import { fetchModelData } from "../../utils/fetchUtils";
 import ModelVersionDescription from "../model/model-version-description/ModelVersionDescription";
 import ModelNavigationPanel from "../model/model-navigation-panel/ModelNavigationPanel";
 import Hashtags from "../hashtags/Hashtags";
 import ModelDescription from "../model/description/ModelDescription";
 import ModelVersionsList from "../model/model-versions-list/ModelVersionsList";
+import { fetchModelData } from "../../utils/fetch/fetchModel";
 import {
+  createModelPreviewData,
   getCurrentVersionId,
   sortModelVersions,
-  createModelPreviewData,
-} from "../../utils/generalUtils";
+} from "../../utils/modelUtils";
 
 const Model = ({ title }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -38,7 +38,6 @@ const Model = ({ title }) => {
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
   const isAuth = useSelector((state) => state.auth.user.uid);
-  const uid = useSelector((state) => state.auth.user.uid);
   const guideHomeActive = useSelector((state) => state.guide.home.active);
   const guideIsActive = useSelector((state) => state.guide.active);
   const dispatch = useDispatch();
@@ -65,7 +64,7 @@ const Model = ({ title }) => {
         setIsLoading(true);
         dispatch(modelActions.resetModelData());
 
-        const modelData = await fetchModelData(uid, modelId);
+        const modelData = await fetchModelData(modelId);
 
         dispatch(modelActions.setModelData(modelData));
 
@@ -85,7 +84,7 @@ const Model = ({ title }) => {
       dispatch(modelActions.resetModelData());
       document.title = "Prompt builder";
     };
-  }, [modelId, isAuth, dispatch, uid, title]);
+  }, [modelId, isAuth, dispatch, title]);
 
   useEffect(() => {
     if (!model?.modelVersionsCustomData || !model?.data) return;

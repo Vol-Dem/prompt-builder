@@ -3,58 +3,55 @@ import Tag from "../tag/Tag";
 import classes from "./ActivationTag.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { promptActions } from "../../store/prompt";
-import { getTagWeight } from "../../utils/generalUtils";
+import { getTagWeight, splitTags } from "../../utils/promptUtils";
 
-const ActivationTag = ({ tag, modelData, strength }) => {
+const ActivationTag = ({ tag, modelData }) => {
   const dispatch = useDispatch();
   const curPrompt = useSelector((state) => state.prompt.curPrompt);
   const curTagName = tag.split(":").slice(0, -1).join(":");
-  const curWieght = getTagWeight(tag);
-  const [curTagStrength, setCurTagStrength] = useState(curWieght || null);
+  const [curTagWeight, setCurTagWeight] = useState(null);
 
   useEffect(() => {
-    const curPromptTag = curPrompt
-      ?.split(",")
-      ?.find((word) => word.includes(curTagName));
-    const curStr = getTagWeight(curPromptTag);
+    const activationTagFromPrompt = splitTags(curPrompt)?.find((word) =>
+      word.includes(curTagName)
+    );
+    const curWeight = getTagWeight(activationTagFromPrompt);
 
-    if (curStr) {
-      setCurTagStrength(curStr);
+    if (curWeight) {
+      setCurTagWeight(curWeight);
     }
   }, [curPrompt, curTagName]);
 
-  const strengthHandler = (e) => {
-    setCurTagStrength((prevState) => {
-      const strenghth =
+  const weightHandler = (e) => {
+    setCurTagWeight((prevState) => {
+      const weight =
         e.target.dataset.type === "inc" ? prevState + 0.1 : prevState - 0.1;
 
       dispatch(
         promptActions.changeActivationTag({
           prevTag: curTagName,
-          newTag: `${curTagName}:${strenghth.toFixed(1)}>`,
-          weight: +strenghth.toFixed(1),
+          newTag: `${curTagName}:${weight.toFixed(1)}>`,
+          weight: +weight.toFixed(1),
         })
       );
-      return +strenghth.toFixed(1);
+      return +weight.toFixed(1);
     });
   };
 
   return (
     <div className={classes["activation-tag"]}>
       <Tag
-        tag={
-          curTagStrength ? `${curTagName}:${curTagStrength.toFixed(1)}>` : tag
-        }
+        tag={curTagWeight ? `${curTagName}:${curTagWeight.toFixed(1)}>` : tag}
         promptType="positive"
         modelData={modelData}
       />
-      {curTagStrength !== null && (
+      {curTagWeight !== null && (
         <div className={classes["activation-tag__btn-container"]}>
           <button
             type="button"
             title="up"
             className={classes["activation-tag__btn"]}
-            onClick={strengthHandler}
+            onClick={weightHandler}
             data-type="inc"
           >
             <span
@@ -66,7 +63,7 @@ const ActivationTag = ({ tag, modelData, strength }) => {
             type="button"
             title="down"
             className={classes["activation-tag__btn"]}
-            onClick={strengthHandler}
+            onClick={weightHandler}
             data-type="dec"
           >
             <span

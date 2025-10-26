@@ -26,12 +26,12 @@ import {
   handleErrors,
   throwCustomError,
 } from "../utils/generalUtils";
-import { getCollectionData } from "../utils/fetchUtils";
 import {
   ERROR_MESSAGE_DB_CONNECTION,
   SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE,
 } from "../variables/constants";
 import { authActions } from "./auth";
+import { getCollectionData } from "../utils/fetch/fetchCollection";
 
 const firestore = getFirestore(firebaseApp);
 

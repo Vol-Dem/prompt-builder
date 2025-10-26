@@ -20,12 +20,8 @@ import FieldCategory from "../../ui/FieldCategory";
 import {
   clearFileExtension,
   createCategoryId,
-  createTagSetsInputData,
   handleErrors,
-  parseModelIds,
-  splitTags,
   throwCustomError,
-  transformSrcPreview,
 } from "../../../utils/generalUtils";
 import { Link } from "react-router-dom";
 import Spinner from "../../ui/Spinner";
@@ -61,6 +57,9 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { modelActions } from "../../../store/model";
 import EditDefaultGuide from "../../ui/guide/edit/EditDefaultGuide";
 import { AnimatePresence, motion } from "framer-motion";
+import { transformSrcPreview } from "../../../utils/imageUtils";
+import { createTagSetsInputData, splitTags } from "../../../utils/promptUtils";
+import { parseModelIds } from "../../../utils/modelUtils";
 
 const firestore = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp);

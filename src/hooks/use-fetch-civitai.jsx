@@ -6,6 +6,12 @@ import {
   FILTER_CIV_DUPLICATES,
 } from "../variables/constants";
 
+/**
+ * Fetches data from a given Civitai URL and manages the Civitai cursor-based pagination system
+ * @param {String} url - The URL to fetch
+ * @returns The state object containing the fetch function, fetched data, fetching state, last page state, error message,
+ * and functions to update fetched data and the error message
+ */
 const useFetchCivitai = (url) => {
   const [isFetching, setIsFetching] = useState(false);
   const [isLastPage, setIsLastPage] = useState(false);

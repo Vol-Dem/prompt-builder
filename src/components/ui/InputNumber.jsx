@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import classes from "./InputNumber.module.scss";
-import { validateInput } from "../../utils/generalUtils";
+import { validateInput } from "../../utils/validationUtils";
 
 const InputNumber = ({
   id,

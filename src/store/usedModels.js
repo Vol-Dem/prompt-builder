@@ -4,8 +4,9 @@ import { authActions } from "./auth";
 import { getAuth } from "firebase/auth";
 import firebaseApp from "../firebase-config";
 import { SETTINGS_REF_IMAGE_AMOUNT } from "../variables/constants";
-import { checkIsMobile, checkIsVideo, getUrlId } from "../utils/generalUtils";
+import { checkIsMobile } from "../utils/generalUtils";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
+import { checkIsVideo, getUrlId } from "../utils/imageUtils";
 
 const firestore = getFirestore(firebaseApp);
 

@@ -15,7 +15,7 @@ import { guideActions } from "../../store/guide";
 import Modal from "../ui/Modal";
 import OutroGuide from "../ui/guide/OutroGuide";
 import { AnimatePresence } from "framer-motion";
-import { fetchDataFromFirestore } from "../../utils/fetchUtils";
+import { fetchDataFromFirestore } from "../../utils/fetch/fetchUtils";
 
 const firestore = getFirestore(firebaseApp);
 

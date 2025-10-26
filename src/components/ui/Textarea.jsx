@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { validateInput } from "../../utils/generalUtils";
+import { validateInput } from "../../utils/validationUtils";
 import classes from "./Textarea.module.scss";
 
 const Textarea = ({
@@ -17,6 +17,7 @@ const Textarea = ({
   placeholder,
   validation,
   showError,
+  isValid,
   ...props
 }) => {
   const [inputErrorMessage, setInputErrorMessage] = useState("");

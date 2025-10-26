@@ -2,13 +2,16 @@ import { MotionGlobalConfig } from "framer-motion";
 import {
   ERROR_MESSAGE_CIV_CONNECTION,
   ERROR_MESSAGE_DEFAULT,
-  ERROR_MESSAGE_INVALID_MODEL_ID,
-  REGEX_SPLIT_TAGS,
-  SETTINGS_IMAGE_PREVIEW_WIDTH_DEF,
+  REGEX_MOBAL,
   SETTINGS_NSFW_VALUES_DATA,
-  SETTINGS_PROMPT_DUPLICATE_EXCEPTIONS,
+  SETTINGS_SUPPORTED_FILE_EXTENSIONS,
 } from "../variables/constants";
 
+/**
+ * Removes unsupported Firestore symbols from object keys
+ * @param {Object} obj - The object
+ * @returns The cleaned object
+ */
 export const clearObjectKeys = (obj) => {
   const convertedMetaArr = Object.entries(obj).map((entry, i) => {
     let newKey;
@@ -28,427 +31,75 @@ export const clearObjectKeys = (obj) => {
   return Object.fromEntries(convertedMetaArr);
 };
 
+/**
+ * Removes supported file extensions from file name.
+ * Supported file extensions: safetensors, pt, pth, ckpt, mp4, mov, webm
+ * @param {String} name - The file name
+ * @returns The file name without the file extension
+ */
 export const clearFileExtension = (name) => {
-  if (!name) {
+  if (!name) return;
+
+  const extension = SETTINGS_SUPPORTED_FILE_EXTENSIONS.find((extension) =>
+    name.endsWith(`.${extension}`)
+  );
+
+  if (extension) {
+    return name.replace(`.${extension}`, "");
+  } else {
     return name;
   }
-
-  const clearedName = name
-    ?.replace(".safetensors", "")
-    .replace(".pt", "")
-    .replace(".pth", "")
-    .replace(".ckpt", "")
-    .replace(".mp4", "")
-    .replace(".mov", "")
-    .replace(".webm", "");
-  return clearedName;
 };
 
+/**
+ * Adds a promise that resolves after the specified delay
+ * @param {Number} delay - The delay in ms
+ * @returns {Promise} The promise that resolves after the specified delay
+ */
 export const addDelayPromise = (delay) => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve("foo");
+      resolve("resolve");
     }, delay);
   });
 };
 
-export const splitTags = (arr) => {
-  const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
-
-  const arrFixBreak = fixBreakInPrompt(arr);
-  return arrFixBreak?.split(splitRegEx)?.flatMap((tag) => tag?.trim() || []);
-};
-
 /**
- * Validate input data
- * @param {string} rules - Type of validation (email, password, required, minLength, maxLength, number, string)
- * @param {Object} value - value
- * @returns {Array} - Returns state object {inputValue, isValid, errorMessage}
+ * Converts value to a string
+ * @param {*} value - The value to convert
+ * @returns The stringified value
  */
-export const validateInput = (rules, value) => {
-  const validTypes = rules;
-  if (!validTypes) {
-    return;
-  }
-
-  const errorMessages = [];
-  Object.keys(validTypes).forEach((type) => {
-    if (!!validTypes[type] && type === "email") {
-      const isValid = value.split("").includes("@");
-      const errorMessage = isValid ? "" : "Please enter a valid email address";
-      if (!!errorMessage) {
-        errorMessages.push(errorMessage);
-      }
-    }
-    if (!!validTypes[type] && type === "password") {
-      const isValid = value.length >= 6;
-      const errorMessage = isValid
-        ? ""
-        : "Password must be 6 or more characters";
-
-      if (!!errorMessage) {
-        errorMessages.push(errorMessage);
-      }
-    }
-    if (!!validTypes[type] && type === "required") {
-      const isValid = !!value;
-
-      const errorMessage = isValid ? "" : "This field is required";
-      if (!!errorMessage) {
-        errorMessages.push(errorMessage);
-      }
-    }
-    if (!!validTypes[type] && type === "number") {
-      const isValid = Number.isFinite(+value);
-      const errorMessage = isValid ? "" : `Value must be a number`;
-      if (!!errorMessage) {
-        errorMessages.push(errorMessage);
-      }
-    }
-    if (!!validTypes[type] && type === "maxLength") {
-      const isValid = !(value.length > validTypes[type]);
-      const errorMessage = isValid
-        ? ""
-        : `Value cannot be more than ${validTypes[type]} characters`;
-      if (!!errorMessage) {
-        errorMessages.push(errorMessage);
-      }
-    }
-    if (!!validTypes[type] && type === "minLength") {
-      const isValid = value.length >= validTypes[type];
-      const errorMessage = isValid
-        ? ""
-        : `Value cannot be less than ${validTypes[type]} characters`;
-      if (!!errorMessage) {
-        errorMessages.push(errorMessage);
-      }
-    }
-    if (!!validTypes[type] && type === "modelId") {
-      const [modelId] = parseModelIds(value.toString());
-      const isValid = !!modelId;
-      const errorMessage = isValid ? "" : ERROR_MESSAGE_INVALID_MODEL_ID;
-      if (!!errorMessage) {
-        errorMessages.push(errorMessage);
-      }
-    }
-  });
-  const isValid = !errorMessages.length;
-  const errorMessage = !isValid ? errorMessages[0] : "";
-
-  return { inputValue: value, isValid, errorMessage };
-};
-
-export const transformModelData = (modelData) => {
-  const newModelData = {
-    ...modelData,
-    modelVersions: transformModelVersionData(modelData?.modelVersions),
-    stats: "",
-  };
-
-  return newModelData;
-};
-
-export const transformModelVersionData = (versionData) => {
-  const newVersionData = versionData.map((version) => {
-    const files =
-      version?.files?.map((fileData) => {
-        return transformFilesData(fileData);
-      }) || [];
-
-    const newImageData = version?.images?.map((imageData) => {
-      return transformImageData(imageData);
-    });
-
-    return {
-      baseModel: version?.baseModel || "",
-      createdAt: version?.createdAt || "",
-      downloadUrl: version?.downloadUrl || "",
-      files: files,
-      id: version?.id || null,
-      images: newImageData || [],
-      index: version?.index ?? null,
-      name: version?.name || "",
-      nsfwLevel: version?.nsfwLevel || null,
-      trainedWords: version?.trainedWords || [],
-    };
-  });
-
-  return newVersionData;
-};
-
-export const transformFilesData = (fileData) => {
-  const newFileData = {
-    downloadUrl: fileData?.downloadUrl || "",
-    hashes: fileData?.hashes || [],
-    id: fileData?.id || null,
-    metadata: { format: fileData?.metadata?.format || "" },
-    name: fileData?.name || "",
-    primary: fileData?.primary || false,
-    sizeKB: fileData?.sizeKB || null,
-    type: fileData?.type || "",
-  };
-  return newFileData;
-};
-
-export const transformImageData = (imageData) => {
-  const newImageData = {
-    ...(imageData?.id && { id: imageData?.id }),
-    ...(imageData?.postId && { postId: imageData?.postId }),
-    url: imageData?.url || "",
-    ...(imageData?.createdAt && { createdAt: imageData?.createdAt }),
-    nsfw: imageData?.nsfw || false,
-    ...(imageData?.hash && { hash: imageData?.hash }),
-    ...(imageData?.browsingLevel && {
-      browsingLevel: imageData?.browsingLevel,
-    }),
-    ...(imageData?.nsfwLevel && { nsfwLevel: imageData?.nsfwLevel }),
-    ...(imageData?.type && { type: imageData?.type }),
-    ...(imageData?.username && { username: imageData?.username }),
-    ...(imageData?.meta && {
-      meta: {
-        ...(imageData?.meta?.ADetailerconfidence && {
-          ADetailerconfidence: imageData?.meta?.ADetailerconfidence,
-        }),
-        ...(imageData?.meta?.ADetailerdenoisingstrength && {
-          ADetailerdenoisingstrength:
-            imageData?.meta?.ADetailerdenoisingstrength,
-        }),
-        ...(imageData?.meta?.ADetailerdilateerode && {
-          ADetailerdilateerode: imageData?.meta?.ADetailerdilateerode,
-        }),
-        ...(imageData?.meta?.ADetailerinpaintonlymasked && {
-          ADetailerinpaintonlymasked:
-            imageData?.meta?.ADetailerinpaintonlymasked,
-        }),
-        ...(imageData?.meta?.ADetailerinpaintpadding && {
-          ADetailerinpaintpadding: imageData?.meta?.ADetailerinpaintpadding,
-        }),
-        ...(imageData?.meta?.ADetailermaskblur && {
-          ADetailermaskblur: imageData?.meta?.ADetailermaskblur,
-        }),
-        ...(imageData?.meta?.ADetailermaskmaxratio && {
-          ADetailermaskmaxratio: imageData?.meta?.ADetailermaskmaxratio,
-        }),
-        ...(imageData?.meta?.ADetailermaskminratio && {
-          ADetailermaskminratio: imageData?.meta?.ADetailermaskminratio,
-        }),
-        ...(imageData?.meta?.ADetailermodel && {
-          ADetailermodel: imageData?.meta?.ADetailermodel,
-        }),
-        ...(imageData?.meta?.ADetailerversion && {
-          ADetailerversion: imageData?.meta?.ADetailerversion,
-        }),
-        ...(imageData?.meta?.cfgScale && {
-          cfgScale: imageData?.meta?.cfgScale,
-        }),
-        ...(imageData?.meta?.Hiresupscaler && {
-          Hiresupscaler: imageData?.meta?.Hiresupscaler,
-        }),
-        ...(imageData?.meta?.clipSkip && {
-          clipSkip: imageData?.meta?.clipSkip,
-        }),
-        ...(imageData?.meta?.Modelhash && {
-          Modelhash: imageData?.meta?.Modelhash,
-        }),
-        ...(imageData?.meta?.hasOwnProperty("Model hash") && {
-          "Model hash": imageData?.meta["Model hash"],
-        }),
-        ...(imageData?.meta?.Version && { Version: imageData?.meta?.Version }),
-        ...(imageData?.meta?.Model && { Model: imageData?.meta?.Model }),
-        ...(imageData?.meta?.Denoisingstrength && {
-          Denoisingstrength: imageData?.meta?.Denoisingstrength,
-        }),
-        ...(imageData?.meta?.prompt && { prompt: imageData?.meta?.prompt }),
-        ...(imageData?.meta?.hashes && {
-          hashes: clearObjectKeys(imageData?.meta?.hashes),
-        }),
-        ...(imageData?.meta?.steps && { steps: imageData?.meta?.steps }),
-        ...(imageData?.meta?.seed && { seed: imageData?.meta?.seed }),
-        ...(imageData?.meta?.TIhashes && {
-          TIhashes: imageData?.meta?.TIhashes,
-        }),
-        ...(imageData?.meta?.sampler && { sampler: imageData?.meta?.sampler }),
-        ...(imageData?.meta?.Hiresupscale && {
-          Hiresupscale: imageData?.meta?.Hiresupscale,
-        }),
-        ...(imageData?.meta?.VAE && { VAE: imageData?.meta?.VAE }),
-        ...(imageData?.meta?.negativePrompt && {
-          negativePrompt: imageData?.meta?.negativePrompt,
-        }),
-        ...(imageData?.meta?.Scheduletype && {
-          Scheduletype: imageData?.meta?.Scheduletype,
-        }),
-        ...(imageData?.meta?.Size && { Size: imageData?.meta?.Size }),
-        ...(imageData?.meta?.resources && {
-          resources: imageData?.meta?.resources,
-        }),
-        ...(imageData?.meta?.civitaiResources && {
-          civitaiResources: imageData?.meta?.civitaiResources,
-        }),
-        ...(imageData?.meta?.additionalResources && {
-          additionalResources: imageData?.meta?.additionalResources,
-        }),
-        //To large file size for firestore
-        // ...(imageData?.meta?.comfy && {
-        //   comfy: convertToString(imageData.meta.comfy),
-        // }),
-        ...(imageData?.meta?.controlNets && {
-          controlNets: convertToString(imageData.meta.controlNets),
-        }),
-        ...(imageData?.meta?.denoise && {
-          denoise: imageData.meta.denoise,
-        }),
-        ...(imageData?.meta?.modelIds && {
-          modelIds: imageData.meta.modelIds,
-        }),
-        ...(imageData?.meta?.models && {
-          models: imageData.meta.models,
-        }),
-        ...(imageData?.meta?.scheduler && {
-          scheduler: imageData.meta.scheduler,
-        }),
-        ...(imageData?.meta?.upscalers && {
-          upscalers: imageData.meta.upscalers,
-        }),
-        ...(imageData?.meta?.vaes && {
-          vaes: imageData.meta.vaes,
-        }),
-        ...(imageData?.meta?.versionIds && {
-          versionIds: imageData?.meta?.versionIds,
-        }),
-      },
-    }),
-    height: imageData?.height || "",
-    width: imageData?.width || "",
-  };
-
-  return newImageData;
-};
-
 export const convertToString = (value) => {
   if (typeof value === "string") {
     return value;
-  }
-  if (typeof value === "object") {
+  } else {
     return JSON.stringify(value);
   }
-  return "";
 };
 
-export const disableScrollHandler = (scrollTop, e) => {
+/**
+ * Freezes scroll
+ * @param {Number} scrollTop - The distance to the top
+ */
+export const disableScrollHandler = (scrollTop) => {
   window.scrollTo(0, scrollTop);
 };
 
-export const convertPromptToArr = (prompt) => {
-  return prompt?.split(REGEX_SPLIT_TAGS)?.flatMap((tag) => tag.trim() || []);
-};
-
-export const addElementToIndex = ({
-  item,
-  type,
-  dropTargetType,
-  prevPosition,
-  curPromptArr,
-}) => {
-  const curPromptArrUpdatedPosition = curPromptArr.toSpliced(
-    item.position,
-    0,
-    item
-  );
-  return curPromptArrUpdatedPosition.map((tag) => {
-    if (dropTargetType === type && Number.isFinite(prevPosition)) {
-      if (
-        item.position < prevPosition &&
-        tag.position >= item.position &&
-        tag.id !== item.id
-      ) {
-        return { ...tag, position: tag.position + 1 };
-      }
-      if (
-        item.position > prevPosition &&
-        tag.position >= item.position &&
-        tag.id !== item.id
-      ) {
-        return { ...tag, position: tag.position + 1 };
-      }
-    }
-    if (dropTargetType !== type) {
-      if (tag.position >= item.position && tag.id !== item.id) {
-        return {
-          ...tag,
-          position: tag.position + 1,
-        };
-      }
-    }
-    return tag;
-  });
-};
-
-export const markDuplicateTags = (tagsArr) => {
-  const duplicates = [];
-
-  return tagsArr.map((tag, i, tags) => {
-    const duplicateIndex = duplicates.findIndex(
-      (duplicate) => duplicate.tag === tag.tag
-    );
-
-    if (duplicateIndex < 0) {
-      const duplicate = tags
-        .slice(i + 1)
-        .find((nextTag) => nextTag.tag === tag.tag);
-
-      const isException = SETTINGS_PROMPT_DUPLICATE_EXCEPTIONS.includes(
-        duplicate?.tag
-      );
-
-      if (duplicate && !isException) {
-        duplicates.push(tag);
-        return { ...tag, duplicateId: duplicates.length };
-      } else {
-        return { ...tag, duplicateId: null };
-      }
-    } else {
-      return { ...tag, duplicateId: duplicateIndex + 1 };
-    }
-  });
-};
-
-export const getTagWeight = (tag) => {
-  let regex = /\(|<[^)|>]*\)|>/i;
-  const hasWeight = regex.test(tag);
-
-  let tagweight = 1;
-
-  if (hasWeight) {
-    const tagArr = tag.split(":");
-    const curWeight = parseFloat(tagArr[tagArr.length - 1]);
-    if (curWeight) {
-      tagweight = curWeight;
-    } else {
-      const allParentheses = tag
-        .split("")
-        .filter((char) => char === "(" || char === ")");
-      tagweight = tagweight + Math.floor(allParentheses.length / 2) / 10;
-    }
-  }
-  return tagweight;
-};
-
-export const createPromptItem = (tag, id, index) => {
-  return {
-    id,
-    tag,
-    position: index,
-    weight: getTagWeight(tag),
-  };
-};
-
+/**
+ * Throws a new error with isCustom set to true
+ * @param {String} message - The error message
+ */
 export const throwCustomError = (message) => {
   const error = new Error(message);
   error.isCustom = true; // Add a custom flag
   throw error;
 };
 
+/**
+ * Handles caught errors and returns a custom or default error message
+ * @param {Object} err - The error object
+ * @returns {String} - The custom or default error message
+ */
 export const handleErrors = (err) => {
   let errorMessage = ERROR_MESSAGE_DEFAULT;
 
@@ -458,6 +109,7 @@ export const handleErrors = (err) => {
     console.error(err);
   }
 
+  //Error message for Civitai connection bug
   if (err.message.includes("prisma")) {
     errorMessage = ERROR_MESSAGE_CIV_CONNECTION;
   }
@@ -465,41 +117,17 @@ export const handleErrors = (err) => {
   return errorMessage;
 };
 
-export const createTagSetsInputData = (tagSetsData, defTagSetData) => {
-  let tagSets;
-
-  if (!tagSetsData?.length) {
-    tagSets = structuredClone(defTagSetData);
-  } else {
-    tagSets = tagSetsData.map((tagSet, i) => {
-      return [
-        {
-          type: "text",
-          id: "set-name" + i,
-          name: "set-name",
-          placeholder: "Set name",
-          value: tagSet.name,
-          isValid: true,
-          errorMessage: "",
-        },
-        {
-          id: "set-value" + i,
-          name: "set-value",
-          placeholder: "Triger words",
-          value: tagSet.value,
-          isValid: true,
-          errorMessage: "",
-        },
-      ];
-    });
-  }
-  return tagSets;
-};
-
+/**
+ * Checks if the current user's device is mobile
+ * @returns {Boolean} True if the device is mobile, otherwise false
+ */
 export const checkIsMobile = () => {
-  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  return REGEX_MOBAL.test(navigator.userAgent);
 };
 
+/**
+ * Disables Framer Motion animations on mobile devices
+ */
 export const disableAnimationsOnMobile = () => {
   const isMobile = checkIsMobile();
   if (isMobile) {
@@ -507,100 +135,12 @@ export const disableAnimationsOnMobile = () => {
   }
 };
 
-export const transformSrcPreview = (
-  src,
-  width = SETTINGS_IMAGE_PREVIEW_WIDTH_DEF,
-  type
-) => {
-  if (!src) return;
-
-  let previewSrc;
-  let previewVideoWebmSrc;
-  let previewVideoMp4Src;
-  let originalVideoMp4Src;
-  let originalVideoWebmSrc;
-  const srcArr = src.split("/");
-  const widthIndex = srcArr.findIndex((srcSlice) => srcSlice.includes("width"));
-  const originalIndex = srcArr.findIndex((srcSlice) =>
-    srcSlice.includes("original")
-  );
-  const configIndex = widthIndex < 0 ? originalIndex : widthIndex;
-
-  if (configIndex < 0) {
-    previewSrc = src;
-    previewVideoWebmSrc = src;
-    previewVideoMp4Src = src;
-    originalVideoMp4Src = src;
-    originalVideoWebmSrc = src;
-  } else {
-    const imgSrc =
-      type === "video" || checkIsVideo(src)
-        ? `anim=false,transcode=true,width=${width}`
-        : `width=${width}`;
-
-    previewSrc = srcArr.toSpliced(configIndex, 1, imgSrc).join("/");
-
-    if (type === "video") {
-      const videoSrc = `transcode=true,width=${width},quality=90`;
-      const videoOriginalSrc = `anim=true,transcode=true,original=true,quality=90`;
-
-      previewVideoMp4Src = srcArr.toSpliced(configIndex, 1, videoSrc).join("/");
-      originalVideoMp4Src = srcArr
-        .toSpliced(configIndex, 1, videoOriginalSrc)
-        .join("/");
-      previewVideoWebmSrc = srcArr
-        .toSpliced(configIndex, 1, videoSrc)
-        .join("/")
-        .replace(".mp4", "webm");
-      originalVideoWebmSrc = srcArr
-        .toSpliced(configIndex, 1, videoOriginalSrc)
-        .join("/")
-        .replace(".mp4", "webm");
-    }
-  }
-
-  return {
-    previewSrc,
-    previewVideoWebmSrc,
-    originalVideoWebmSrc,
-    previewVideoMp4Src,
-    originalVideoMp4Src,
-  };
-};
-
-export const parseModelIds = (value) => {
-  if (value.includes("urn:air")) {
-    const airArr = value.split(":");
-    const ids = airArr[airArr.length - 1]
-      .split("@")
-      .map((id) => parseFloat(id));
-
-    return ids;
-  } else {
-    const urlArr = value.split("/");
-    const modelIdIndex =
-      urlArr.findIndex((urlPart) => urlPart === "models") + 1;
-    const modelVersionIdUrlArr = urlArr
-      .find((urlPart) => urlPart.includes("modelVersionId"))
-      ?.split("=");
-
-    if (modelIdIndex < 0) {
-      throwCustomError("Invalid ID");
-    } else {
-      const modelId = parseInt(urlArr[modelIdIndex]) || null;
-      let modelVersionId = null;
-
-      if (modelVersionIdUrlArr?.length) {
-        modelVersionId =
-          parseInt(modelVersionIdUrlArr[modelVersionIdUrlArr.length - 1]) ||
-          null;
-      }
-
-      return [modelId, modelVersionId];
-    }
-  }
-};
-
+/**
+ * Checks if the provided value is within the current allowed NSFW range
+ * @param {String} curNsfwLevel - The current active NSFW level
+ * @param {String} curNsfwvalue - The current NSFW value to check
+ * @returns {Boolean} True if the value is within range, otherwise false
+ */
 export const checkIsInCurrentNsfwRange = (curNsfwLevel, curNsfwvalue) => {
   const nsfwValues = SETTINGS_NSFW_VALUES_DATA.map(
     (nsfwValueData) => nsfwValueData.value
@@ -613,14 +153,12 @@ export const checkIsInCurrentNsfwRange = (curNsfwLevel, curNsfwvalue) => {
   return displayedValues.includes(curNsfwvalue);
 };
 
-export const fixBreakInPrompt = (prompt) => {
-  const fixedPromt = prompt
-    ?.replaceAll("BREAK ", "BREAK, ")
-    ?.replaceAll("BREAK\n", "BREAK, ");
-
-  return fixedPromt;
-};
-
+/**
+ * Filters duplicate values from an array of objects by an object field
+ * @param {Array} arr - The array of objects
+ * @param {String} field - The object field
+ * @returns {Array} The filtered array
+ */
 export const filterDuplicates = (arr, field) => {
   if (!Array.isArray(arr) || !arr?.length) return arr;
 
@@ -635,32 +173,50 @@ export const filterDuplicates = (arr, field) => {
   }
 };
 
+/**
+ * Creates a category ID from the category name
+ * @param {String} id - The category name
+ * @param {Object} categoriesData - The existing categories data
+ * @returns {String} The created ID
+ */
 export const createCategoryId = (id, categoriesData) => {
   if (!id) {
     return null;
   }
   let curId = id?.toString()?.toLowerCase();
-  let idExists;
 
-  //Check if category id is exists
-  idExists = categoriesData?.find(
-    (category) => category.id?.toString()?.toLowerCase() === curId
-  );
+  //Checks if a category ID exists
+  const existedIds = categoriesData?.filter((category) => {
+    const normalizedId = category.id?.toString()?.toLowerCase();
+    const normalizedIdWithoutIndex = normalizedId
+      .split("-")
+      .toSpliced(-1, 1)
+      .join("-");
 
-  while (idExists) {
-    const idArr = curId.split("-");
-    const lastNubmer = parseInt(idArr.slice(-1));
+    return normalizedId === curId || normalizedIdWithoutIndex === curId;
+  });
 
-    curId = lastNubmer
-      ? `${idArr.slice(0, -1).join("-")}-${lastNubmer + 1}`
-      : `${curId}-2`;
+  if (existedIds?.length === 1) {
+    curId = `${curId}-1`;
+  } else if (existedIds?.length > 1) {
+    const idIndexes = existedIds
+      .map((existedId) => +existedId.id.split("-").pop())
+      .filter(Boolean)
+      .sort();
 
-    idExists = categoriesData.find((category) => category.id === curId);
+    if (!!idIndexes?.length) {
+      curId = `${curId}-${idIndexes[idIndexes.length - 1] + 1}`;
+    }
   }
 
   return curId;
 };
 
+/**
+ * Generates a collection ID
+ * @param {Array} collectionCategories - The existing collection data
+ * @returns The collection ID
+ */
 export const createCollectionId = (collectionCategories) => {
   const collectionIds = collectionCategories.flatMap(
     (category) =>
@@ -672,7 +228,16 @@ export const createCollectionId = (collectionCategories) => {
   return collectionIds.toSorted((a, b) => a - b)[collectionIds.length - 1] + 1;
 };
 
-export const sortArrayBy = (arr, field = null, direction) => {
+/**
+ * Universal sort function.
+ * Sorts an array by object field when the field is specified.
+ * Sorts by value when the field is not specified.
+ * @param {Array} arr - The array to sort
+ * @param {String} field - The object field to sort by
+ * @param {('asc'|'desc')} direction - The sort direction ("asc" or "desc")
+ * @returns {Array} The new sorted array of objects
+ */
+export const sortArrayBy = (arr, field = null, direction = "asc") => {
   if (!arr) return;
 
   if (!direction) {
@@ -689,33 +254,37 @@ export const sortArrayBy = (arr, field = null, direction) => {
   );
 };
 
+/**
+ * Checks arrays for equality
+ * @param {Array} arr1 - The first array
+ * @param {Array} arr2 - The second array
+ * @returns {Boolean} True if the arrays are equal, otherwise false
+ */
 export const checkArraysIsEqual = (arr1, arr2) => {
   return arr1?.toSorted().toString() === arr2?.toSorted().toString();
 };
 
-export const getPostIdFromInput = (postInput) => {
-  if (Number.isFinite(+postInput)) {
-    return +postInput;
-  }
-  const postInputArr = postInput.split("/");
-  const postId = postInputArr[postInputArr.length - 1];
-
-  if (Number.isFinite(+postId)) {
-    return +postId;
-  } else {
-    return null;
-  }
-};
-
+/**
+ * Enables smooth scroling
+ * @param {String} hashId - The element ID
+ * @returns
+ */
 export const smoothScroll = (hashId) => {
-  if (!hashId) return;
-
-  const scrollTarget = document?.querySelector(`${hashId}`);
-  const headerHeight = document.querySelector("#header").offsetHeight;
-  const distToTop = window.scrollY + scrollTarget?.getBoundingClientRect().top;
-  window.scrollTo({ top: distToTop - headerHeight - 10, behavior: "smooth" });
+  if (hashId) {
+    const scrollTarget = document?.querySelector(`${hashId}`);
+    const headerHeight = document.querySelector("#header").offsetHeight;
+    const distToTop =
+      window.scrollY + scrollTarget?.getBoundingClientRect().top;
+    window.scrollTo({ top: distToTop - headerHeight - 10, behavior: "smooth" });
+  }
 };
 
+/**
+ *  Adds a new entry to the URL search params
+ * @param {String} prevParams - The previous params
+ * @param {String} newEntry  - The new search params entry
+ * @returns {String} The updated URL search params
+ */
 export const updateSearchParams = (prevParams, newEntry) => {
   return new URLSearchParams({
     ...Object.fromEntries(prevParams.entries()),
@@ -723,20 +292,11 @@ export const updateSearchParams = (prevParams, newEntry) => {
   });
 };
 
-export const getUrlId = (url) => {
-  if (typeof url !== "string") return null;
-  return clearFileExtension(url?.split("/").pop());
-};
-
-export const checkIsVideo = (url) => {
-  if (typeof url !== "string") return null;
-  return (
-    url
-      .split(".")
-      .findIndex((element) => element === "mp4" || element === "webm") > -1
-  );
-};
-
+/**
+ * Parses the intersection field value and converts it to a suitable form
+ * @param {Number | String} value - The margin value
+ * @returns {String} The intersection margin value in a suitable form
+ */
 export const parseIntersectionMargin = (value) => {
   let rootMarginValue;
   const parcedValue = parseInt(value);
@@ -752,131 +312,4 @@ export const parseIntersectionMargin = (value) => {
   }
 
   return rootMarginValue;
-};
-
-export const filterNsfwImages = (images, nsfwLevel) => {
-  return images?.filter((image) => {
-    if (image?.nsfwLevel) {
-      return (
-        checkIsInCurrentNsfwRange(nsfwLevel, image.nsfwLevel) ||
-        image.nsfwLevel === 1
-      );
-    } else {
-      return image?.nsfw === "None" || image?.nsfw === false;
-    }
-  });
-};
-
-export const sortModelVersions = (model) => {
-  return model?.data?.modelVersions
-    .filter((version) =>
-      Object.keys(model?.modelVersionsCustomData).includes(`${version.id}`)
-    )
-    .sort((a, b) => a?.index - b?.index)
-    .map((version) => {
-      return {
-        ...version,
-        id: version.id,
-        name: version.name,
-      };
-    });
-};
-
-export const getCurrentVersionId = (model, modelVersions, versionIdParam) => {
-  let curVersionId;
-  if (
-    versionIdParam &&
-    !!modelVersions?.find((version) => version.id === +versionIdParam)
-  ) {
-    curVersionId = +versionIdParam;
-  } else {
-    curVersionId = modelVersions?.find(
-      (version) =>
-        model?.modelVersionsCustomData.hasOwnProperty(version.id) &&
-        model.modelVersionsCustomData[version.id].downloadStatus
-    )?.id;
-  }
-
-  return curVersionId;
-};
-
-export const createModelPreviewData = (
-  model,
-  curVersion,
-  curCustomVersionData
-) => {
-  if (!model.id || !curVersion.id) return null;
-  return {
-    id: model.id,
-    versionId: curVersion.id,
-    src: model.src,
-    main: model.main,
-    sub: model.sub,
-    title: model.name || model.title || model.data.name,
-    versionName:
-      curCustomVersionData?.name ||
-      curCustomVersionData?.versionName ||
-      curVersion.name,
-    imgUrl: curVersion?.images[0]?.url,
-    modelType: model?.data?.type,
-    baseModel: curVersion?.baseModel,
-    mainTag:
-      curCustomVersionData?.mainTag ||
-      model?.mainTag ||
-      curCustomVersionData?.defActTag,
-    weight: curCustomVersionData?.weight || model?.defaultCustomData?.weight,
-    minWeight:
-      curCustomVersionData?.minWeight || model?.defaultCustomData?.minWeight,
-    maxWeight:
-      curCustomVersionData?.maxWeight || model?.defaultCustomData?.maxWeight,
-    size: curCustomVersionData?.size || model?.defaultCustomData?.size,
-    tags: curCustomVersionData?.trainedWords || curVersion?.trainedWords,
-    helperTags:
-      curCustomVersionData?.helperTags || model?.defaultCustomData?.helperTags,
-    updatedAt: model?.updatedAt,
-  };
-};
-
-export const groupAndSortByPost = (items, field) => {
-  const sortedItems = {};
-
-  items.forEach((item) => {
-    if (sortedItems.hasOwnProperty(item.postId)) {
-      sortedItems[item[field]].push(item);
-    } else {
-      sortedItems[item[field]] = [item];
-    }
-  });
-
-  if (!sortedItems) return;
-
-  const sortedImageArr = Object.keys(sortedItems).sort((a, b) => {
-    return (
-      Date.parse(sortedItems[b].slice(-1).pop().createdAt) -
-      Date.parse(sortedItems[a].slice(-1).pop().createdAt)
-    );
-  });
-
-  const images = sortedImageArr.map((key, i) => {
-    return sortedItems[key];
-  });
-
-  const sortedImageArrWithSortedImages = images.map((post) => {
-    return post.sort((a, b) => {
-      return Date.parse(a.createdAt) - Date.parse(b.createdAt);
-    });
-  });
-
-  return sortedImageArrWithSortedImages;
-};
-
-export const filterNewModelVersions = (newModelData, oldModelData) => {
-  const newVersions = newModelData?.modelVersions?.filter(
-    (version) =>
-      !Object.values(oldModelData?.modelVersionsCustomData)?.some(
-        (oldVersions) => version?.id === oldVersions?.versionId
-      )
-  );
-
-  return newVersions;
 };

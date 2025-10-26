@@ -6,11 +6,11 @@ import { useSelector } from "react-redux";
 import Spinner from "../../ui/Spinner";
 import CarouselGuide from "../../ui/guide/model/CarouselGuide";
 import { PhotoIcon } from "@heroicons/react/24/outline";
-import { filterNsfwImages } from "../../../utils/generalUtils";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
-import { getVersionImagesFromCiv } from "../../../utils/fetchUtils";
 import { GUIDE_STEP_OPEN_IMAGE } from "../../../variables/constants";
+import { filterNsfwImages } from "../../../utils/imageUtils";
+import { getVersionImagesFromCiv } from "../../../utils/fetch/fetchImages";
 
 const firestore = getFirestore(firebaseApp);
 

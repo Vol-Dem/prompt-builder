@@ -5,14 +5,9 @@ import classes from "./ModelSettings.module.scss";
 import { useState } from "react";
 import Buttton from "../../ui/Button";
 import VersionStatusForm from "../../forms/version-status-form/VersionStatusForm";
-import {
-  deleteModelDoc,
-  fetchModelUpdates,
-  updateUserCustomModelData,
-} from "../../../utils/fetchUtils";
 import { useNavigate } from "react-router-dom";
 import DeleteRequest from "../../ui/DeleteRequest";
-import { filterNewModelVersions } from "../../../utils/generalUtils";
+// import { filterNewModelVersions } from "../../../utils/generalUtils";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import Spinner from "../../ui/Spinner";
@@ -30,6 +25,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import LeftSidebar from "../../layout/left-sidebar/LeftSidebar";
 import { ArrowUturnLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import H1 from "../../ui/text/H1";
+import { filterNewModelVersions } from "../../../utils/modelUtils";
+import {
+  deleteModelDoc,
+  fetchModelUpdates,
+  updateUserCustomModelData,
+} from "../../../utils/fetch/fetchModel";
 
 const ModelSettings = () => {
   const [curTab, setCurTab] = useState("general");

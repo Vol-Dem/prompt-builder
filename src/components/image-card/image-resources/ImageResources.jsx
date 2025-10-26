@@ -1,16 +1,13 @@
 import classes from "./ImageResources.module.scss";
 import ErrorMessage from "../../ui/ErrorMessage";
-import ImageCardCarouselGuide from "../../ui/guide/model/ImageCardCarouselGuide";
 import ImageCardResourcesGuide from "../../ui/guide/model/ImageCardResourcesGuide";
 import { GUIDE_STEP_IMAGE_RESOURCES } from "../../../variables/constants";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import ImageResourcesItem from "../image-resources-item/ImageResourcesItem";
 import { useEffect, useRef, useState } from "react";
 import {
   clearFileExtension,
   filterDuplicates,
-  parseModelIds,
 } from "../../../utils/generalUtils";
 import Spinner from "../../ui/Spinner";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
@@ -18,14 +15,14 @@ import InfoResources from "../../ui/guide/info/InfoResources";
 import { useSelector } from "react-redux";
 import {
   collection,
-  getDoc,
   getDocs,
   getFirestore,
   query,
   where,
 } from "firebase/firestore";
 import firebaseApp from "../../../firebase-config";
-import { getImageInfo } from "../../../utils/fetchUtils";
+import { parseModelIds } from "../../../utils/modelUtils";
+import { getImageInfo } from "../../../utils/fetch/fetchImages";
 
 const firestore = getFirestore(firebaseApp);
 const timeoutDelay = 1000;

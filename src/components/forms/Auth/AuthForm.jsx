@@ -18,7 +18,6 @@ import {
   ERROR_MESSAGE_INPUT_DEF,
   VALIDATION_EMAIL_MAX_LENGTH,
   ERROR_MESSAGE_OFFLINE,
-  VALIDATION_PASSWORD_MAX_LENGTH,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   ANIMATIONS_FM_SLIDEIN,
 } from "../../../variables/constants";
@@ -203,8 +202,7 @@ const AuthForm = () => {
             }}
             validation={{
               required: true,
-              password: true,
-              maxLength: VALIDATION_PASSWORD_MAX_LENGTH,
+              password: !isLogin,
               disableErrorOnBlur: !isLogin ? false : true,
             }}
             showError={showErrorMessage}

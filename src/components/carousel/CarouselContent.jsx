@@ -2,7 +2,6 @@ import { useCallback, useLayoutEffect, useState } from "react";
 import classes from "./CarouselContent.module.scss";
 import { useRef } from "react";
 import { useEffect } from "react";
-import { updateImagePostData } from "../../utils/fetchUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { uploadActions } from "../../store/upload";
 import { deleteImgPost, modelActions } from "../../store/model";
@@ -21,6 +20,7 @@ import { updateCollectionPostsData } from "../../store/images";
 import CarouselPagination from "./carousel-pagination/CarouselPagination";
 import CarouselSave from "./carousel-save/CarouselSave";
 import CarouselImages from "./carousel-images/CarouselImages";
+import { updateImagePostData } from "../../utils/fetch/fetchImages";
 
 const CarouselContent = ({
   imagesData,

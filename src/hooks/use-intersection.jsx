@@ -1,8 +1,18 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { parseIntersectionMargin } from "../utils/generalUtils";
 
+/**
+ * Intersection observer hook
+ * @param {React.MutableRefObject} elementRef - The reference to the element to observe
+ * @param {Boolean} once - Whether to disable intersection after the first activation
+ * @param {Number | String} rootMargin - The margin around the root
+ * @param {Number | String} scrollMargin - The margin around nested scroll containers
+ * @param {Number | Array<Number>} threshold - The visibility threshold(s) for triggering the callback
+ * @param {React.MutableRefObject} rootRef -  The reference to the element used as the viewport for visibility checks
+ * @returns The intersection state
+ */
 export const useIntersection = (
-  elentRef,
+  elementRef,
   once = true,
   rootMargin = 0,
   scrollMargin = 0,
@@ -13,7 +23,7 @@ export const useIntersection = (
   const observerRef = useRef(null);
 
   useMemo(() => {
-    if (!elentRef) return;
+    if (!elementRef) return;
 
     observerRef.current = new IntersectionObserver(
       ([entry]) => {
@@ -27,17 +37,17 @@ export const useIntersection = (
         threshold: threshold,
       }
     );
-  }, [elentRef, once, rootMargin, scrollMargin, threshold, rootRef]);
+  }, [elementRef, once, rootMargin, scrollMargin, threshold, rootRef]);
 
   useEffect(() => {
-    if (!elentRef?.current) return;
+    if (!elementRef?.current) return;
 
-    observerRef.current.observe(elentRef.current);
+    observerRef.current.observe(elementRef.current);
 
     return () => {
       observerRef.current.disconnect();
     };
-  }, [elentRef]);
+  }, [elementRef]);
 
   return isIntersecting;
 };

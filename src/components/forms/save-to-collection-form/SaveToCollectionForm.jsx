@@ -12,8 +12,6 @@ import {
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
   ERROR_MESSAGE_INPUT_DEF,
   SUCCESS_MESSAGE_SAVED,
-  ANIMATIONS_FM_FADEIN_INITIAL,
-  ANIMATIONS_FM_FADEIN,
 } from "../../../variables/constants";
 import { AnimatePresence, motion } from "framer-motion";
 import ComboSelect from "../../ui/ComboSelect";
@@ -27,9 +25,9 @@ import {
   throwCustomError,
 } from "../../../utils/generalUtils";
 import { addNewCollectionCategories } from "../../../store/images";
-import { getCollectionData } from "../../../utils/fetchUtils";
 import SuccessMessage from "../../ui/SuccessMessage";
 import { Link } from "react-router-dom";
+import { getCollectionData } from "../../../utils/fetch/fetchCollection";
 
 const SUBCATEGORIES_MAX_AMOUNT = 8;
 const subCatsDefData = {

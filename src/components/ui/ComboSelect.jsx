@@ -8,7 +8,7 @@ import {
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import classes from "./ComboSelect.module.scss";
 import { motion, AnimatePresence } from "framer-motion";
-import { validateInput } from "../../utils/generalUtils";
+import { validateInput } from "../../utils/validationUtils";
 import { useEffect, useState } from "react";
 import {
   ANIMATIONS_FM_SLIDEOUT,
