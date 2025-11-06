@@ -124,14 +124,16 @@ const authSlice = createSlice({
     setUserDataLoadError(state, action) {
       state.userDataLoadError = action.payload;
     },
-    // setGuide(state, action) {
-    //   state.guide = action.payload;
-    // },
   },
 });
 
 /**
- *Automatically authorizes the user and load related favlist if user object is exists.
+ * Initializes initial user authentication state by listening to the authentication status.
+ * When a user is authenticated, it dispatches actions to:
+ * - Log the user in and store authentication details (access token, user ID, email, etc.)
+ * - Retrieve and store application settings and state from session storage
+ * - Fetch user data from the database
+ * Finally, it sets the initial authentication state.
  * @returns
  */
 export const initAuth = () => {
@@ -158,7 +160,7 @@ export const initAuth = () => {
 };
 
 /**
- *Makes a firebase authentication request and authorizes the user.
+ * Makes a firebase authentication request and authorizes the user.
  * @param {boolean} isLogin - Type of request. If false, create new user. If true, authorizes the user.
  * @param {string} email - User email
  * @param {string} password - User password
@@ -236,6 +238,10 @@ export const authRequest = (isLogin, email, password) => {
   };
 };
 
+/**
+ * Initializes user authentication via Google sign-in and dispatches the login action with user information (access token, user ID, email, etc.)
+ * @returns
+ */
 export const authWithGoogle = () => {
   return (dispatch, getState) => {
     // signInWithRedirect(auth, provider);
@@ -319,9 +325,10 @@ export const authWithGoogle = () => {
 // };
 
 /**
- * Change user email
- * @param {string} email - User email
- * @returns
+ * Changes the user's email and dispatches appropriate actions based on the result.
+ * If the email change is successful, the function updates the user state and displays a success message.
+ * In case of errors, the function handles different scenarios such as requiring reauthentication or verifying the new email before change.
+ * @param {String} email - The new email address to update
  */
 export const changeUserEmail = (email) => {
   return async (dispatch) => {

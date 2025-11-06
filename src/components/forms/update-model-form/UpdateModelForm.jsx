@@ -111,7 +111,7 @@ const UpdateModelForm = ({
     isValid: true,
   });
   const [idInput, setIdInput] = useState({
-    value: modelData?.id || newModelId || "",
+    value: (modelData?.id || newModelId || "") + "",
     isValid: modelData?.id || newModelId ? true : false,
   });
   const [versionsDownloadStatus, setVersionsDownloadStatus] = useState([]);
@@ -713,7 +713,7 @@ const UpdateModelForm = ({
         if (onSave) onSave(loraPrevData);
         if (!modelData) {
           setIdInput({
-            value: newModelId || "",
+            value: newModelId ? newModelId + "" : "",
             isValid: false,
           });
           setSubCatInputs([

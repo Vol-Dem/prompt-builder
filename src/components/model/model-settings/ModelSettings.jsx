@@ -233,7 +233,9 @@ const ModelSettings = () => {
         </ul>
       </LeftSidebar>
       <div className={classes.content}>
-        <div
+        <motion.div
+          initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+          animate={ANIMATIONS_FM_SLIDEIN}
           className={`${classes["update"]} ${
             guideIsActive &&
             guideHomeState?.active &&
@@ -268,7 +270,7 @@ const ModelSettings = () => {
             <TrashIcon />
             <span className={classes["btn-del__text"]}>Delete</span>
           </Buttton>
-        </div>
+        </motion.div>
         {curTab === "general" && (
           <motion.div
             initial={ANIMATIONS_FM_SLIDEIN_INITIAL}

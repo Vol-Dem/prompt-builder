@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { clearFileExtension } from "../utils/generalUtils";
 import firebaseApp from "../firebase-config";
+import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -87,6 +88,8 @@ const searchSlice = createSlice({
     resetQuickSearchData(state) {
       state.quickSerchResult = { query: "", result: [], nsfw: false };
       state.errorMessage = "";
+    },
+    resetAllLastPageStatus(state) {
       state.isLastPage = false;
       state.isLastCollectionsPage = false;
       state.isLastSubPage = false;
@@ -167,26 +170,29 @@ export const liveSearch = (
 ) => {
   return async (dispatch, getState) => {
     try {
+      dispatch(searchActions.setSearchIsLoading(true));
       const hashtag = isHashtag || !!filter?.hashtag;
       const isLastPage = getState().search.isLastPage;
       const isLastCollectionsPage = getState().search.isLastCollectionsPage;
       const isLastSubPage = getState().search.isLastSubPage;
       const searchResult = getState().search.searchResult;
+
       if (isLastPage && isLastSubPage && isLastCollectionsPage) return;
 
       if (!loadMore) {
         lastVisible = "";
         lastVisibleCollection = "";
         lastVisibleSub = "";
-        dispatch(
-          searchActions.setSearchResult({
-            query: "",
-            nsfw: false,
-            result: [],
-            hashtag: false,
-            filter: {},
-          })
-        );
+        dispatch(searchActions.clearSearchResult());
+        // dispatch(
+        //   searchActions.setSearchResult({
+        //     query: "",
+        //     nsfw: false,
+        //     result: [],
+        //     hashtag: false,
+        //     filter: {},
+        //   })
+        // );
       }
 
       dispatch(searchActions.setSearchIsLoading(true));
@@ -325,9 +331,9 @@ export const liveSearch = (
 
       const includeColections =
         !hashtag &&
+        !filter?.baseModel?.length &&
         (!filter?.modelType?.length ||
           filter?.modelType?.includes("collection"));
-
       if (!isLastCollectionsPage && includeColections) {
         queryCollectionsSnapshot = await getDocs(queryCollectionsByName);
         collectionsDataNames = queryCollectionsSnapshot.docs.map((doc) => {
@@ -342,7 +348,7 @@ export const liveSearch = (
       const isLast =
         !querySnapshot?.docs?.length || querySnapshot.docs.length < limitAmount;
       const isLastCollection =
-        (!queryCollectionsSnapshot?.docs?.length && includeColections) ||
+        !queryCollectionsSnapshot?.docs?.length ||
         (queryCollectionsSnapshot?.docs?.length < limitAmount &&
           includeColections);
 
@@ -423,6 +429,7 @@ export const liveSearch = (
     } catch (err) {
       console.error(err);
       console.error(err.message);
+      dispatch(searchActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
     } finally {
       dispatch(searchActions.setSearchIsLoading(false));
     }

@@ -16,7 +16,7 @@ import { SETTINGS_IMAGE_PREVIEW_WIDTH_BIG } from "../../variables/constants";
 import ResourceTypeLabel from "../general-elements/ResourceTypeLabel";
 const taglistItemHeight = 68;
 
-const UsedCard = memo(({ previewData, fullView, layoutId, onClick }) => {
+const UsedCard = memo(({ previewData, fullView, layoutId }) => {
   const [tagsIsOpen, setTagsIsOpen] = useState(false);
   const [tagsHeight, setTagsHeight] = useState(null);
   const [taglistHeight, setTaglistHeight] = useState(null);

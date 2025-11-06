@@ -37,7 +37,7 @@ export const transformSrcPreview = (
     const imgSrc =
       type === "video" || checkIsVideo(src)
         ? `anim=false,transcode=true,width=${width}`
-        : `width=${width}`;
+        : `anim=false,width=${width},optimized=true`;
 
     previewSrc = srcArr.toSpliced(configIndex, 1, imgSrc).join("/");
 

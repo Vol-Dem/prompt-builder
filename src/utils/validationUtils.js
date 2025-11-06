@@ -109,7 +109,6 @@ export const validateInput = (validTypes, value) => {
 
   const isValid = !errorMessages.length;
   const errorMessage = !isValid ? errorMessages[0] : "";
-
   return { inputValue: value, isValid, errorMessage };
 };
 
@@ -167,7 +166,7 @@ const isNotEmpty = (value) => {
  * @param {String} value - Provided value
  * @returns {Boolean} True if the value is a number, otherwise false
  */
-const isNumber = (value) => {
+export const isNumber = (value) => {
   return Number.isFinite(+value);
 };
 

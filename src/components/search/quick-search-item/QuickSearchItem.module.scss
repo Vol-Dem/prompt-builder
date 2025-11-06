@@ -1,0 +1,77 @@
+@use "./../../../variables/variables.scss" as var;
+
+.search {
+  &__item {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    background-color: var.$color-background-tertiary;
+    border-radius: 1rem;
+    margin-bottom: 0.6rem;
+    margin-right: 1rem;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: lighten(var.$color-background-tertiary, 5%);
+    }
+  }
+
+  &__add {
+    position: absolute;
+    right: 0;
+    transform: translateX(20%);
+  }
+
+  &__link {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: 1rem;
+    width: 100%;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  &__name {
+    display: -webkit-box;
+    font-size: 1.6rem;
+    margin-right: 10%;
+    color: var.$color-text-white;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    margin-top: 0.6rem;
+    word-break: break-all;
+    @include var.ellipsis;
+  }
+}
+
+.img-container {
+  min-height: 10rem;
+  border-radius: 1rem 0 0 1rem;
+}
+
+.type {
+  font-size: 1rem;
+  color: var.$color-text-white;
+  background-color: rgba(var.$color-primary, 0.8);
+  padding: 0.4rem 0.8rem;
+  border-radius: 1rem;
+  text-transform: uppercase;
+  align-self: self-start;
+}
+
+.models {
+  font-size: 1rem;
+  color: #acacac;
+  background-color: #323148;
+  padding: 0.4rem 0.8rem;
+  border-radius: 10px;
+  margin-left: 0.6rem;
+}
+
+.card__content {
+  padding: 0.4rem 0.6rem;
+}

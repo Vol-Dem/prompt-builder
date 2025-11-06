@@ -6,6 +6,7 @@ import {
   SETTINGS_NSFW_VALUES_DATA,
   SETTINGS_SUPPORTED_FILE_EXTENSIONS,
 } from "../variables/constants";
+import { isNumber } from "./validationUtils";
 
 /**
  * Removes unsupported Firestore symbols from object keys
@@ -240,18 +241,35 @@ export const createCollectionId = (collectionCategories) => {
 export const sortArrayBy = (arr, field = null, direction = "asc") => {
   if (!arr) return;
 
-  if (!direction) {
-    if (!field) return arr.toSorted((a, b) => a.localeCompare(b));
+  return arr.toSorted((a, b) => {
+    if (!field) {
+      if (isNumber(a) && isNumber(b)) {
+        return direction === "asc" ? a - b : b - a;
+      }
 
-    return arr.toSorted((a, b) => a[field]?.localeCompare(b[field]));
-  }
+      return a.localeCompare(b);
+    } else {
+      if (isNumber(a[field]) && isNumber(b[field])) {
+        return direction === "asc" ? a[field] - b[field] : b[field] - a[field];
+      }
 
-  if (!field)
-    return arr.toSorted((a, b) => (direction === "asc" ? a - b : b - a));
+      return a[field]?.localeCompare(b[field]);
+    }
+  });
+};
 
-  return arr.toSorted((a, b) =>
-    direction === "asc" ? a[field] - b[field] : b[field] - a[field]
-  );
+/**
+ * Sorts an object by keys
+ * @param {Object} obj - The object to sort
+ * @returns {Boolean} The new sorted object
+ */
+export const sortObjectByKeys = (obj) => {
+  return Object.keys(obj)
+    .toSorted()
+    .reduce((newObj, key) => {
+      newObj[key] = obj[key];
+      return newObj;
+    }, {});
 };
 
 /**
@@ -262,6 +280,19 @@ export const sortArrayBy = (arr, field = null, direction = "asc") => {
  */
 export const checkArraysIsEqual = (arr1, arr2) => {
   return arr1?.toSorted().toString() === arr2?.toSorted().toString();
+};
+
+/**
+ * Checks objects for equality
+ * @param {Object} obj1 - The first object
+ * @param {Object} obj2 - The second object
+ * @returns {Boolean} True if the objects are equal, otherwise false
+ */
+export const checkObjectsIsEqual = (obj1, obj2) => {
+  return (
+    JSON.stringify(sortObjectByKeys(obj1)) ===
+    JSON.stringify(sortObjectByKeys(obj2))
+  );
 };
 
 /**

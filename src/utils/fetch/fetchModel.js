@@ -142,7 +142,7 @@ export const fetchModelUpdates = async (modelId) => {
   const updateModelResData = await fetchData(
     `${URL_CF_UPDATE_MODEL}/updateModel?modelId=${modelId}`
   );
-  console.log(updateModelResData);
+
   if (!updateModelResData?.modelId) {
     throwCustomError("Failed to update");
   }

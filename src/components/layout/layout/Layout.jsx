@@ -14,7 +14,7 @@ import { Suspense, useRef } from "react";
 import Spinner from "../../ui/Spinner";
 import Prompt from "../../prompt/Prompt";
 import UsedModelsPanel from "../../used-models-panel/UsedModelsPanel";
-import Search from "../../search/Search";
+import SearchField from "../../search/SearchField";
 import UploadingPanel from "../../uploading-panel/UploadingPanel";
 import ActiveCarousel from "../../active-carousel/ActiveCarousel";
 import { tabActions } from "../../../store/tabs";
@@ -68,7 +68,7 @@ const Layout = () => {
                 {!maintenance && <MainNavigation />}
                 {isAuth && !maintenance && (
                   <>
-                    <Search />
+                    <SearchField />
                     <UploadingPanel />
                     <NsfwSwitch />
                   </>

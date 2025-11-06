@@ -1,0 +1,33 @@
+@use "./../../../variables/variables.scss" as var;
+
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  &__field {
+    list-style: none;
+  }
+
+  &__name {
+    display: inline-block;
+    font-size: 1.6rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var.$color-primary;
+    margin-bottom: 1rem;
+  }
+
+  &__checked {
+    font-size: 1.4rem;
+    color: var.$color-text-gray;
+  }
+
+  &__limit {
+    color: var.$color-text-yellow;
+  }
+
+  &__reset {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}

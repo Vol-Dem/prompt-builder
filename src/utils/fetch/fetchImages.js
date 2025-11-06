@@ -84,7 +84,7 @@ export const getImageInfo = async (imageResources, image) => {
  */
 export const fetchResourceInfo = async (resourcesData) => {
   try {
-    const modelsData = await Promise.all(
+    const modelsData = await Promise.allSettled(
       resourcesData.map(async (resource) => {
         let url;
         if (resource.modelVersionId) {
@@ -102,16 +102,30 @@ export const fetchResourceInfo = async (resourcesData) => {
     );
 
     const updatedResources = resourcesData.map((resource, i) => {
+      if (modelsData.status === "rejected") {
+        return resource;
+      }
+
       return {
         ...resource,
-        ...(modelsData[i].model?.name && { name: modelsData[i].model?.name }),
-        ...(modelsData[i]?.modelId && { modelId: modelsData[i]?.modelId }),
-        ...(modelsData[i]?.name && { versionName: modelsData[i]?.name }),
-        ...(modelsData[i]?.id && { versionId: modelsData[i]?.id }),
-        ...(modelsData[i]?.model?.type && { type: modelsData[i]?.model?.type }),
-        ...(modelsData[i]?.files && {
+        ...(modelsData[i]?.value?.model?.name && {
+          name: modelsData[i]?.value.model?.name,
+        }),
+        ...(modelsData[i]?.value?.modelId && {
+          modelId: modelsData[i]?.value?.modelId,
+        }),
+        ...(modelsData[i]?.value?.name && {
+          versionName: modelsData[i]?.value?.name,
+        }),
+        ...(modelsData[i]?.value?.id && {
+          versionId: modelsData[i]?.value?.id,
+        }),
+        ...(modelsData[i]?.value?.model?.type && {
+          type: modelsData[i]?.value?.model?.type,
+        }),
+        ...(modelsData[i]?.value?.files && {
           fileName: clearFileExtension(
-            modelsData[i].files.find((file) => file?.primary)?.name
+            modelsData[i]?.value.files.find((file) => file?.primary)?.name
           ),
         }),
       };
