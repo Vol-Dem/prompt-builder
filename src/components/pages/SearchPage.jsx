@@ -50,7 +50,7 @@ const SearchPage = ({ title }) => {
   const searchFilter = useMemo(() => {
     const modelType = searchParams.get("modelType");
     const baseModel = searchParams.get("baseModel");
-    const hashtag = !!searchParams.get("hashtag");
+    const hashtag = searchParams.get("hashtag") === "true";
     return {
       modelType: modelType?.split(",").filter(Boolean) || [],
       baseModel: baseModel?.split(",").filter(Boolean) || [],

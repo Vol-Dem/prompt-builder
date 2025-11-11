@@ -68,7 +68,7 @@ const ComboSelect = ({
           if (validation) {
             const { isValid, errorMessage } = validateInput(
               validation,
-              value.name || ""
+              value?.name || ""
             );
             setSelected(value, isValid, errorMessage, id);
             setInputErrorMessage(errorMessage);

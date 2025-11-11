@@ -1,5 +1,10 @@
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_DEF } from "../variables/constants";
-import { checkIsInCurrentNsfwRange, clearFileExtension } from "./generalUtils";
+import {
+  checkIsInCurrentNsfwRange,
+  clearFileExtension,
+  filterDuplicates,
+} from "./generalUtils";
+import { parseModelIds } from "./modelUtils";
 
 /**
  * Creates a new src link to request image/video with desired width and separate links for video in different formats
@@ -194,4 +199,35 @@ export const cleanImageMeta = (image) => {
   } else {
     return image;
   }
+};
+
+/**
+ * Creates array of uniq image resources
+ * @param {Object} imageData - image data
+ * @returns {Array} aray of unique image resources
+ */
+export const getUniqImageResources = (imageData) => {
+  let imageResources = [];
+
+  if (imageData?.meta?.resources) {
+    imageResources = [...imageResources, ...imageData.meta?.resources];
+  }
+  if (imageData?.meta?.additionalResources) {
+    imageResources = [
+      ...imageResources,
+      ...imageData?.meta?.additionalResources.map((res) => {
+        const [modelId, modelVersionId] = parseModelIds(res.name);
+        return {
+          ...res,
+          modelId,
+          modelVersionId,
+        };
+      }),
+    ];
+  }
+  if (imageData.meta?.civitaiResources) {
+    imageResources = [...imageResources, ...imageData.meta?.civitaiResources];
+  }
+
+  return filterDuplicates(imageResources, "modelVersionId");
 };

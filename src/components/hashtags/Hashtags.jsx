@@ -7,13 +7,15 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import classes from "./Hashtags.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { liveSearch, searchActions } from "../../store/search";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { updateSearchParams } from "../../utils/generalUtils";
 
 const Hashtags = ({ hashtags }) => {
   const [showAllHashtags, setShowAllHashtags] = useState(false);
   const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const setSearchParams = useSearchParams()[1];
 
   const curHashtags = showAllHashtags
     ? hashtags
@@ -31,6 +33,13 @@ const Hashtags = ({ hashtags }) => {
         value: true,
       })
     );
+    dispatch(searchActions.setSearchQuery(e.target.dataset.value));
+    setSearchParams((prevParams) => {
+      return updateSearchParams(prevParams, {
+        searchQuery: e.target.dataset.value,
+        hashtag: "true",
+      });
+    });
     dispatch(
       liveSearch(
         e.target.dataset.value,

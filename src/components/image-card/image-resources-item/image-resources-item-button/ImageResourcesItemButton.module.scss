@@ -1,0 +1,32 @@
+@use "./../../../../variables/variables.scss" as var;
+
+.btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(20%, -50%);
+  z-index: 5;
+}
+
+.unavailable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  & svg {
+    width: 2.4rem;
+    color: var.$color-text-gray;
+  }
+}
+
+.tooltip {
+  text-align: left;
+
+  &--align-left {
+    margin-right: auto;
+  }
+  &--centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

@@ -9,6 +9,7 @@ import { MODEL_TYPES } from "../../../variables/constants";
 import { updateSearchParams } from "../../../utils/generalUtils";
 
 const SearchFilter = () => {
+  const [initial, setInitial] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const [maxModelTypesAllowed, setMaxModelTypesAllowed] = useState(3);
   const [maxBaseModelsAllowed, setMaxBaseModelsAllowed] = useState(3);
@@ -38,7 +39,7 @@ const SearchFilter = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    if (!MODEL_TYPES) return;
+    if (!MODEL_TYPES || !initial) return;
     const modelTypes = Object.keys(categories)
       .map((categoryId) => {
         const modelTypeInfo = MODEL_TYPES.find(
@@ -88,7 +89,8 @@ const SearchFilter = () => {
     setHashtagCheckboxStatus((prevState) => {
       return { ...prevState, value: !!searchFilter.hashtag };
     });
-  }, [baseModels, categories, searchFilter.hashtag, searchFilter]);
+    setInitial(false);
+  }, [baseModels, categories, searchFilter.hashtag, searchFilter, initial]);
 
   useEffect(() => {
     setMaxBaseModelsAllowed(modelTypesChecked > 1 ? 1 : 3);

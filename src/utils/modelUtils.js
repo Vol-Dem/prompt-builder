@@ -143,3 +143,16 @@ export const createModelPreviewData = (
     updatedAt: model?.updatedAt,
   };
 };
+
+/**
+ * Parse model type from string
+ * @param {String} value - string value
+ * @returns {String} model type
+ */
+export const parseMoelType = (value) => {
+  return value
+    .replace(/[{}]/g, "")
+    .split(",")
+    .find((field) => field.includes("Type"))
+    .split("=")[1];
+};

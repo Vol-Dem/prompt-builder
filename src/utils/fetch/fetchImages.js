@@ -1,9 +1,13 @@
 import {
   arrayRemove,
   arrayUnion,
+  collection,
   doc,
   getDoc,
+  getDocs,
   getFirestore,
+  query,
+  where,
   writeBatch,
 } from "firebase/firestore";
 import firebaseApp from "../../firebase-config";
@@ -19,18 +23,21 @@ import {
   throwCustomError,
 } from "../generalUtils";
 import { transformImageData } from "../transformUtils";
+import { parseModelIds } from "../modelUtils";
+import { getUniqImageResources } from "../imageUtils";
 
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
 
 /**
- * Fetches data for all image resources and hashes, and merges it with existing resource data
- * @param {Array} imageResources - The array of image resources
+ * Fetches data for all image resources and hashes from Civitai API and DB
  * @param {Object} image - The image data
  * @returns {Array} The updated image resources
  */
-export const getImageInfo = async (imageResources, image) => {
+export const getImageInfo = async (image) => {
   try {
+    const imageResources = getUniqImageResources(image);
+
     let updatedImgResources = [];
 
     if (imageResources?.length) {
@@ -70,7 +77,10 @@ export const getImageInfo = async (imageResources, image) => {
 
       updatedImgResources = [...updatedImgResources, ...updatedHashRes];
     }
-    return filterDuplicates(updatedImgResources, "modelVersionId");
+    return await fetchResourcesInfoFromDB(
+      image,
+      filterDuplicates(updatedImgResources, "modelVersionId")
+    );
   } catch (err) {
     // console.log(err);
     throw new Error(err);
@@ -315,5 +325,218 @@ export const getImageModelInfo = async (resourcesData) => {
   } catch (err) {
     // console.log(err.message);
     throw new Error(err);
+  }
+};
+
+/**
+ * Fetches data for all image resources and hashes from DB, and merges it with existing resource data
+ * @param {Object} image - The image data
+ * @param {Array} resourcesInfoCiv - The array of image resources from Civitai
+ * @returns {Array} The updated image resources
+ */
+export const fetchResourcesInfoFromDB = async (
+  curImageData,
+  resourcesInfoCiv
+) => {
+  try {
+    const imageResources =
+      resourcesInfoCiv || getUniqImageResources(curImageData);
+    const uid = auth?.currentUser?.uid;
+    let modelHash = "";
+
+    if (curImageData?.meta?.hasOwnProperty("Model hash")) {
+      modelHash = curImageData?.meta["Model hash"];
+    } else if (curImageData?.meta?.hasOwnProperty("Modelhash")) {
+      modelHash = curImageData?.meta["Modelhash"];
+    }
+
+    let modelQ;
+
+    if (!!modelHash) {
+      modelQ = query(
+        collection(firestore, "users", uid, `preview`),
+        where("hashes", "array-contains", modelHash)
+      );
+    } else if (curImageData?.meta?.Model?.includes("urn:air")) {
+      const [modelId] = parseModelIds(curImageData.meta.Model);
+      modelQ = query(
+        collection(firestore, "users", uid, `preview`),
+        where("id", "==", modelId)
+      );
+    } else {
+      const modelName = curImageData?.meta?.Model || "";
+      modelQ = query(
+        collection(firestore, "users", uid, `preview`),
+        where("fileNames", "array-contains", modelName?.toLowerCase())
+      );
+    }
+
+    const modelQuerySnapshot = await getDocs(modelQ);
+
+    const modelInfoData = modelQuerySnapshot.docs.map((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      return doc.data();
+    });
+
+    let modelsIds = [];
+    let modelsVersionIds = [];
+    let modelsHashes = [];
+    let modelsNames = [];
+    let allModelsPreviews = [];
+
+    imageResources?.forEach((resource) => {
+      if (resource?.modelId) {
+        modelsIds.push(resource?.modelId);
+      } else if (resource?.versionId || resource?.modelVersionId) {
+        modelsVersionIds.push(resource?.versionId || resource?.modelVersionId);
+      } else if (resource?.hash) {
+        modelsHashes.push(resource?.hash);
+      } else if (resource?.name) {
+        modelsNames.push(clearFileExtension(resource?.name).toLowerCase());
+      }
+    });
+
+    if (!!modelsIds.length) {
+      const q = query(
+        collection(firestore, "users", uid, `preview`),
+        //firestore query limit 30
+        where("id", "in", modelsIds.slice(0, 29))
+      );
+      const querySnapshot = await getDocs(q);
+
+      const modelsPrewiewById = querySnapshot.docs.map((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        return doc.data();
+      });
+
+      allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewById];
+    }
+
+    if (!!modelsVersionIds.length) {
+      const q = query(
+        collection(firestore, "users", uid, `preview`),
+        where("versionIds", "array-contains-any", modelsVersionIds)
+      );
+      const querySnapshot = await getDocs(q);
+
+      const modelsPrewiewByVersionId = querySnapshot.docs.map((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        return doc.data();
+      });
+      allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewByVersionId];
+    }
+
+    if (!!modelsHashes.length) {
+      const q = query(
+        collection(firestore, "users", uid, `preview`),
+        where("hashes", "array-contains-any", modelsHashes)
+      );
+      const querySnapshot = await getDocs(q);
+
+      const modelsPrewiewByHash = querySnapshot.docs.map((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        return doc.data();
+      });
+      allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewByHash];
+    }
+
+    if (!!modelsNames.length) {
+      const uniqModelsNames = modelsNames.filter(
+        (name) =>
+          !allModelsPreviews.find((model) => {
+            const nameArr = name.split("-");
+            if (Number.isFinite(+nameArr[nameArr?.length - 1])) {
+              return model?.fileNames?.includes(
+                name
+                  .replace(`-${nameArr[nameArr?.length - 1]}`, "")
+                  .toLowerCase()
+              );
+            } else {
+              return model?.fileNames?.includes(name.toLowerCase());
+            }
+          })
+      );
+
+      if (!!uniqModelsNames.length) {
+        const q = query(
+          collection(firestore, "users", uid, `preview`),
+          where("fileNames", "array-contains-any", uniqModelsNames)
+        );
+        const querySnapshot = await getDocs(q);
+
+        const modelsPrewiewByName = querySnapshot.docs.map((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          return doc.data();
+        });
+        allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewByName];
+      }
+    }
+
+    const resources = imageResources?.map((resource) => {
+      const versionId = resource?.modelVersionId || resource?.versionId;
+      const preview = allModelsPreviews.find(
+        (preview) =>
+          preview?.id === resource.modelId ||
+          preview?.versionIds?.includes(versionId) ||
+          preview?.hashes?.includes(resource.hash) ||
+          preview?.fileNames?.includes(
+            clearFileExtension(resource.name)?.toLowerCase()
+          )
+      );
+
+      if (preview) {
+        return {
+          ...resource,
+          preview,
+        };
+      }
+      return resource;
+    });
+
+    //Remove not uniq items from the end of array//////
+    const filteredNewResult = resources
+      .filter((obj1, i, arr) => {
+        if (!!obj1?.preview?.id) {
+          return (
+            arr.findIndex((obj2) => obj2?.preview?.id === obj1?.preview?.id) ===
+            i
+          );
+        } else if (!!obj1?.modelId) {
+          return arr.findIndex((obj2) => obj2?.modelId === obj1?.modelId) === i;
+        } else if (!!obj1?.name) {
+          //filters duplicate models that only have names that match the file name
+          const arrIndex = arr.findIndex(
+            (obj2) => obj1?.name === obj2?.fileName
+          );
+          return arrIndex === i || arrIndex < 0;
+        } else {
+          return true;
+        }
+      })
+      ?.filter((resource) => {
+        if (resource?.name && resource.name?.includes("urn:air:")) {
+          return false;
+        } else {
+          return true;
+        }
+      })
+      .sort((a, b) => {
+        if (!a?.versionId && b?.versionId) {
+          return 1;
+        }
+        if (a?.versionId && !b?.versionId) {
+          return -1;
+        }
+        return 0;
+      });
+    ////////////////////////////////////////////////////
+
+    // const checkpointInfo = filteredNewResult.find(
+    //   (resource) => resource.type === "Checkpoint"
+    // );
+
+    return filteredNewResult;
+  } catch (err) {
+    throw new Error(err.message);
   }
 };

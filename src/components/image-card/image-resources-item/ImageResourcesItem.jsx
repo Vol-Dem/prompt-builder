@@ -1,19 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 import classes from "./ImageResourcesItem.module.scss";
-import { Link } from "react-router-dom";
-import ButtonAdd from "../../ui/ButtonSquareAdd";
-import ButtonSquareSave from "../../ui/ButtonSquareSave";
 import Tooltip from "../../ui/Tooltip";
 import LinkA from "../../ui/LinkA";
-import {
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-  ExclamationTriangleIcon,
-} from "@heroicons/react/24/outline";
-import ButtonSquare from "../../ui/ButtonSquare";
 import Modal from "../../ui/Modal";
 import UpdateModelForm from "../../forms/update-model-form/UpdateModelForm";
 import { useState } from "react";
+import ImageResourcesItemName from "./image-resources-item-name/ImageResourcesItemName";
+import ImageResourcesItemButton from "./image-resources-item-button/ImageResourcesItemButton";
+import ImageResourcesItemVersion from "./image-resources-item-version/ImageResourcesItemVersion";
 
 const ImageResourcesItem = ({
   resource,
@@ -35,6 +29,13 @@ const ImageResourcesItem = ({
     setFormIsOpen(false);
   };
 
+  const civitaiConnectionErrorHtml = (
+    <div className={classes["resource__version-tooltip"]}>
+      <p>Failed to conect to Civitai API.</p>
+      <p>There may be heavy load or maintenance at the moment.</p>
+    </div>
+  );
+
   return (
     <>
       <motion.li
@@ -44,102 +45,24 @@ const ImageResourcesItem = ({
         }}
         className={classes["resource"]}
       >
-        {resource?.preview && (
-          <>
-            <Link
-              to={`/models/${resource?.preview?.id}${
-                version ? `?versionId=${version}` : ""
-              }`}
-              state={{ versionId: version }}
-              className={`${classes["resource__link"]} ${classes["resource__name"]}`}
-              onClick={onReset}
-              data-id={resource?.preview?.id}
-            >
-              {resource.preview.name}
-            </Link>
-            <ButtonAdd
-              previewData={{
-                ...resource.preview,
-                versionName: resource?.versionName || versionName,
-                versionId: resource?.versionId || null,
-              }}
-              versionId={version}
-              className={classes["resource__add"]}
-            />
-          </>
-        )}
-        {!resource?.preview && !versionName && (
-          <div
-            className={classes["resource__name"]}
-            title={resource?.name || resource.modelVersionId}
-          >
-            {resource?.name ||
-              resource?.modelVersionName ||
-              resource?.modelVersionId ||
-              resource?.hash}
-            {resource?.modelId &&
-              (resource?.modelVersionId || resource?.versionId) && (
-                <ButtonSquareSave
-                  // modelId={resource?.modelId}
-                  // versionId={resource?.modelVersionId}
-                  className={classes["resource__add"]}
-                  onClick={openFormHandler.bind(
-                    null,
-                    resource?.modelId,
-                    resource?.modelVersionId || resource?.versionId,
-                    resource?.type
-                  )}
-                />
-              )}
-            {civConnectionError && (
-              <ButtonSquare
-                className={`${classes["resource__add"]} ${classes["resource__unavailable"]}`}
-              >
-                <Tooltip
-                  className={`${classes["tooltip"]} ${classes["tooltip--centered"]}`}
-                  defSide="left"
-                  content={
-                    <div className={classes["resource__version-tooltip"]}>
-                      <p>Failed to conect to Civitai API.</p>
-                      <p>
-                        There may be heavy load or maintenance at the moment.
-                      </p>
-                    </div>
-                  }
-                >
-                  <ExclamationTriangleIcon />{" "}
-                </Tooltip>
-              </ButtonSquare>
-            )}
-          </div>
-        )}
-        <Tooltip
-          className={classes["tooltip--align-left"]}
-          defSide="left"
-          content={
-            <div className={classes["resource__version-tooltip"]}>
-              {`${
-                versionIsSaved ? "Version downloaded" : "Version not downloaded"
-              }`}
-            </div>
-          }
-        >
-          <div className={classes["resource__version"]}>
-            {!versionIsSaved && !!resource?.preview && (
-              <ExclamationCircleIcon
-                className={classes["resource__version-svg"]}
-              />
-            )}
-            {versionIsSaved && (
-              <CheckCircleIcon
-                className={`${classes["resource__version-svg"]} ${classes["resource__version-svg--saved"]}`}
-              />
-            )}{" "}
-            <span className={classes["resource__version-name"]}>
-              {versionName || resource?.versionName}
-            </span>
-          </div>
-        </Tooltip>
+        <ImageResourcesItemName
+          resource={resource}
+          version={version}
+          versionName={versionName}
+          onReset={onReset}
+        />
+        <ImageResourcesItemButton
+          resource={resource}
+          version={version}
+          versionName={versionName}
+          onOpen={openFormHandler}
+          errorMessage={civConnectionError ? civitaiConnectionErrorHtml : ""}
+        />
+        <ImageResourcesItemVersion
+          resource={resource}
+          versionName={versionName}
+          versionIsSaved={versionIsSaved}
+        />
         {(resource?.modelId || civConnectionError) && (
           <div className={classes["resource__field"]}>
             Source:{" "}
@@ -159,12 +82,7 @@ const ImageResourcesItem = ({
               <Tooltip
                 className={classes["tooltip--align-left"]}
                 defSide="left"
-                content={
-                  <div className={classes["resource__version-tooltip"]}>
-                    <p>Failed to conect to Civitai API.</p>
-                    <p>There may be heavy load or maintenance at the moment.</p>
-                  </div>
-                }
+                content={civitaiConnectionErrorHtml}
               >
                 <span className={classes["resource__connection-error"]}>
                   Unavailable

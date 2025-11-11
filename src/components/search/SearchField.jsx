@@ -96,7 +96,7 @@ const SearchField = ({ className }) => {
           </button>
         </form>
         <AnimatePresence>
-          {searchInput.length >= 3 &&
+          {searchInput?.length >= 3 &&
             searchResultIsOpen &&
             location.pathname !== "/search" && (
               <QuickSearch

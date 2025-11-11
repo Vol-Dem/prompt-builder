@@ -79,24 +79,6 @@
     @include var.ellipsis(1);
   }
 
-  &__add {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translate(20%, -50%);
-    z-index: 5;
-  }
-
-  &__unavailable {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    & svg {
-      width: 2.4rem;
-      color: var.$color-text-gray;
-    }
-  }
-
   &__field {
     display: flex;
     align-items: center;
