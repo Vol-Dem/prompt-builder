@@ -22,11 +22,11 @@ import ImageTabs from "./image-tabs/ImageTabs";
 const imageSortValue = "Newest";
 
 const GeneratedImages = memo(() => {
-  const [errorMessage, setErrorMessage] = useState("");
   const [curTab, setCurTab] = useState("all");
+  const [curVersionId, setCurVersionId] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
   const curVersion = useSelector((state) => state.model.curVersion);
-  const [curVersionId, setCurVersionId] = useState(curVersion.id);
   const model = useSelector((state) => state.model.model);
   const savedImagesData = useSelector((state) => state.model.savedImages);
   const savedImages =
@@ -121,13 +121,7 @@ const GeneratedImages = memo(() => {
             />
           )}
           {curTab === "saved" && (
-            <SavedImages
-              modelId={model.id}
-              curImagesModelVersionId={curVersionId}
-              sortBy={imageSortValue}
-              errorMessage={errorMessage}
-              setErrorMessage={setErrorMessage}
-            />
+            <SavedImages curImagesModelVersionId={curVersionId} />
           )}
         </div>
       </div>
