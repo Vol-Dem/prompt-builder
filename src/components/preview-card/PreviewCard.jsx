@@ -2,16 +2,9 @@ import { useSelector } from "react-redux";
 import PreviewCardContent from "./PreviewCardContent";
 import AddToPanelAnimContainer from "../ui/AddToPanelAnimContainer";
 
-const PreviewCard = ({
-  children,
-  usedModels,
-  item,
-  fullView,
-  animate = true,
-  ...props
-}) => {
+const PreviewCard = ({ item, fullView, animate = true }) => {
   const usedModelss = useSelector((state) => state.used.models);
-  //For the animation of adding to the sidebar to work correctly
+  //For the animation of adding a model to the sidebar to work correctly
   const isInPanel = !!usedModelss.find((card) => card.id === item.id);
 
   return (
