@@ -11,6 +11,7 @@ import firebaseApp from "../../../firebase-config";
 import { GUIDE_STEP_OPEN_IMAGE } from "../../../variables/constants";
 import { filterNsfwImages } from "../../../utils/imageUtils";
 import { getVersionImagesFromCiv } from "../../../utils/fetch/fetchImages";
+import { handleErrors } from "../../../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -64,8 +65,7 @@ const ModelDefImages = () => {
 
         setCurVersionImages(curImages);
       } catch (err) {
-        ///LOAD DEFAULT IMAGES FROM MODEL
-        console.error(err.message);
+        handleErrors(err);
       } finally {
         setCurVersionImagesIsLoading(false);
       }

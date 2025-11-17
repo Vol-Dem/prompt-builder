@@ -132,7 +132,10 @@ const UsedCard = memo(({ previewData, fullView, layoutId }) => {
             </div>
           )}
           <div className={classes["base-info"]}>
-            <ResourceTypeLabel type={previewData.type || previewData.modelType}>
+            <ResourceTypeLabel
+              type={previewData.type || previewData.modelType}
+              className={classes["type"]}
+            >
               {previewData.type || previewData.modelType}
             </ResourceTypeLabel>
             {previewData?.baseModel && (

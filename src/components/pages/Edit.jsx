@@ -22,7 +22,6 @@ const firestore = getFirestore(firebaseApp);
 const Edit = ({ title }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  // const model = useSelector((state) => state.model.model);
   const isAuth = useSelector((state) => state.auth.user.uid);
   const uid = useSelector((state) => state.auth.user.uid);
   const modelGuideState = useSelector((state) => state.guide.model);
@@ -39,46 +38,6 @@ const Edit = ({ title }) => {
       dispatch(guideActions.setGuideActive({ type: "edit", value: true }));
     }
   }, [modelGuideState, dispatch]);
-
-  // useEffect(() => {
-  //   document.title = `Edit - ${model?.name}` || title;
-  //   return () => {
-  //     document.title = "Prompt builder";
-  //   };
-  // }, [title, model?.name]);
-
-  // const getDefModelData = useCallback(async () => {
-  //   try {
-  //     const modelDefDataRef = doc(firestore, "models", `${modelId}`);
-
-  //     const docSnap = await getDoc(modelDefDataRef);
-
-  //     if (docSnap.exists()) {
-  //       const modelDefData = docSnap.data();
-
-  //       dispatch(
-  //         modelActions.setModelData({
-  //           data: modelDefData,
-  //         })
-  //       );
-  //     } else {
-  //       const updateModel = httpsCallable(functions, "updateModelCalldev");
-  //       const response = await updateModel({ id: modelId });
-
-  //       if (response?.modelData) {
-  //         dispatch(
-  //           modelActions.setModelData({
-  //             data: response.modelData,
-  //           })
-  //         );
-  //       } else {
-  //         throw new Error(ERROR_MESSAGE_UPLOAD_MODEL);
-  //       }
-  //     }
-  //   } catch (err) {
-  //     handleErrors(err);
-  //   }
-  // }, [modelId, dispatch]);
 
   useEffect(() => {
     if (!isAuth) return;
@@ -116,7 +75,6 @@ const Edit = ({ title }) => {
           })
         );
         document.title = `Edit - ${defModelData?.name}` || title;
-        // await getDefModelData();
       } catch (err) {
         setErrorMessage("Failed to load model");
         dispatch(modelActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));

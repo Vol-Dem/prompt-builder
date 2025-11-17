@@ -6,11 +6,11 @@
   gap: 0.8rem;
   //   grid-template-columns: 2fr 3fr;
   // border: 1px solid rgba(255, 255, 255, 0.3);
-  border: 1px solid var.$color-text-gray-dark;
+  border: 1px solid rgba(var.$color-text-gray-dark, 0.6);
   border-radius: 1rem;
   overflow: hidden;
   // transition: all 0.3s;
-  background-color: var.$color-background-tertiary;
+  background-color: darken(var.$color-background-tertiary, 1%);
   // margin: 1rem 0 1rem 0.6rem;
   // margin-left: 1rem;
   box-shadow: var.$box-shadow;
@@ -51,7 +51,7 @@
     right: 0;
     background: linear-gradient(
       to left,
-      var.$color-background-tertiary 30%,
+      darken(var.$color-background-tertiary, 1%) 30%,
       transparent 110%
     );
     // z-index: 2;
@@ -152,6 +152,10 @@
     color: var.$color-text-white;
     text-transform: uppercase;
   }
+}
+
+.base-info .type {
+  font-size: 1.2rem;
 }
 
 .title-container {

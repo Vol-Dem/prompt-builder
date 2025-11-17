@@ -78,12 +78,6 @@ const SearchPage = ({ title }) => {
   }, [intersecting, intersectingSmall]);
 
   useEffect(() => {
-    document.title = searchQueryParam
-      ? `${title} - ${searchQueryParam}`
-      : title;
-  }, [title, searchQueryParam]);
-
-  useEffect(() => {
     return () => {
       dispatch(searchActions.setSearchQuery(""));
     };
@@ -124,6 +118,10 @@ const SearchPage = ({ title }) => {
         );
       }, 1000);
     }
+
+    document.title = searchQueryParam
+      ? `${title} - ${searchQueryParam}`
+      : title;
   }, [
     dispatch,
     isOnline,
@@ -135,6 +133,7 @@ const SearchPage = ({ title }) => {
     searchQueryParam,
     searchParamsIsChanged,
     searchIsLoading,
+    title,
   ]);
 
   const openSidebarHandler = () => {

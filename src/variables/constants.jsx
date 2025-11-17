@@ -48,6 +48,8 @@ export const MODEL_TYPES = [
   { name: "Other", value: "other", position: 10, aliases: ["other"] },
 ];
 
+export const DEFAULT_PAGE_TITLE = "AIDE-TOOLS — prompt building platform";
+
 //Example model filer
 export const EXAMPLE_MODEL_ID = 727427;
 export const EXAMPLE_MODEL_FILTER_CIV = true;

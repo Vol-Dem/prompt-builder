@@ -11,6 +11,7 @@ import Spinner from "../ui/Spinner";
 import ButtonSquareAdd from "../ui/ButtonSquareAdd";
 import ErrorMessage from "../ui/ErrorMessage";
 import {
+  DEFAULT_PAGE_TITLE,
   ERROR_MESSAGE_AUTH,
   ERROR_MESSAGE_MODEL_LOAD,
 } from "../../variables/constants";
@@ -25,8 +26,7 @@ import ModelVersionsList from "../model/model-versions-list/ModelVersionsList";
 import { fetchModelData } from "../../utils/fetch/fetchModel";
 import {
   createModelPreviewData,
-  getCurrentVersionId,
-  sortModelVersions,
+  getInitialVersionData,
 } from "../../utils/modelUtils";
 
 const Model = ({ title }) => {
@@ -49,6 +49,10 @@ const Model = ({ title }) => {
   if (model?.id && curVersion?.id) {
     curCustomVersionData = model?.modelVersionsCustomData[curVersion.id];
   }
+
+  const modelPreview = useMemo(() => {
+    return createModelPreviewData(model, curVersion, curCustomVersionData);
+  }, [model, curVersion, curCustomVersionData]);
 
   useEffect(() => {
     if (guideIsActive && guideHomeActive) {
@@ -82,34 +86,19 @@ const Model = ({ title }) => {
       setErrorMessage("");
       dispatch(modelActions.setActiveCarouselData({}));
       dispatch(modelActions.resetModelData());
-      document.title = "Prompt builder";
+      document.title = DEFAULT_PAGE_TITLE;
     };
   }, [modelId, isAuth, dispatch, title]);
 
   useEffect(() => {
-    if (!model?.modelVersionsCustomData || !model?.data) return;
+    if (!!model?.modelVersionsCustomData && model.id !== curVersion?.modelId) {
+      const curVersionData = getInitialVersionData(model, versionIdParam);
 
-    const modelVersions = sortModelVersions(model);
-    const curVersionId = getCurrentVersionId(
-      model,
-      modelVersions,
-      versionIdParam
-    );
-
-    const curVersionData = curVersionId
-      ? modelVersions?.find((version) => version.id === curVersionId)
-      : modelVersions[0];
-
-    if (model.id !== curVersion?.modelId) {
       dispatch(
         modelActions.setCurVersion({ ...curVersionData, modelId: model.id })
       );
     }
   }, [model, dispatch, curVersion?.modelId, versionIdParam]);
-
-  const modelPreview = useMemo(() => {
-    return createModelPreviewData(model, curVersion, curCustomVersionData);
-  }, [model, curVersion, curCustomVersionData]);
 
   const openVersionHandler = (e) => {
     const id = +e.target.id;

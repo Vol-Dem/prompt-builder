@@ -156,3 +156,26 @@ export const parseMoelType = (value) => {
     .find((field) => field.includes("Type"))
     .split("=")[1];
 };
+
+/**
+ * Selects the initial version data:
+ * - Selects by version ID search parameter if corresponding version data is present
+ * - Selects the latest saved version if the version ID search parameter is missing.
+ * @param {Object} model - model data
+ * @param {String} versionIdParam - version ID search parameter
+ * @returns version data
+ */
+export const getInitialVersionData = (model, versionIdParam) => {
+  const modelVersions = sortModelVersions(model);
+  const curVersionId = getCurrentVersionId(
+    model,
+    modelVersions,
+    versionIdParam
+  );
+
+  const curVersionData = curVersionId
+    ? modelVersions?.find((version) => version.id === curVersionId)
+    : modelVersions[0];
+
+  return curVersionData;
+};

@@ -13,7 +13,6 @@ const AboutNav = () => {
 
   useEffect(() => {
     const hash = location.hash;
-    console.log(hash);
 
     if (hash) {
       smoothScroll(hash);

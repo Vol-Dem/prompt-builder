@@ -25,7 +25,7 @@ import Text from "../ui/text/Text";
 import TextButtonCreate from "../ui/text/text-buttons/TextButtonCreate";
 import useIntersection from "../../hooks/use-intersection";
 
-const Images = () => {
+const Images = ({ title }) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [isSubcategory, setIsSubcategory] = useState(false);
@@ -56,6 +56,7 @@ const Images = () => {
     0,
     `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`
   );
+  document.title = title;
 
   useEffect(() => {
     setIsIntersecting(intersecting || intersectingSmall);

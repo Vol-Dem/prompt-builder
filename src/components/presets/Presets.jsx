@@ -2,20 +2,14 @@ import { useState } from "react";
 import Buttton from "../ui/Button";
 import classes from "./Presets.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { promptActions, updatePresets } from "../../store/prompt";
-import ButtonTertiary from "../ui/ButtonTertiary";
+import { updatePresets } from "../../store/prompt";
 import PresetForm from "../forms/preset-form/PresetForm";
 import DeleteRequest from "../ui/DeleteRequest";
 import { AnimatePresence } from "framer-motion";
 import BackSvg from "../../assets/BackSvg";
-import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
-import { motion } from "framer-motion";
-import {
-  ANIMATIONS_FM_FADEOUT_EXIT,
-  ANIMATIONS_FM_SLIDEIN,
-  ANIMATIONS_FM_SLIDEIN_INITIAL,
-} from "../../variables/constants";
-import { splitTags } from "../../utils/promptUtils";
+import PresetsList from "./presets-list/PresetsList";
+import PresetsBlock from "./presets-block/PresetsBlock";
+import NotificationMessage from "../ui/NotificationMessage";
 
 const Presets = ({ onClose }) => {
   const [formIsOpen, setFormIsOpen] = useState(false);
@@ -34,22 +28,7 @@ const Presets = ({ onClose }) => {
     setDeleteRequestIsOpen(false);
   };
 
-  const aplyPreset = (e) => {
-    const type = e.target.closest(`.${classes.preset}`).dataset.type;
-    const id = e.target.closest(`.${classes.preset}`).dataset.id;
-    const words = presets[type].find((preset) => preset.id === id).words;
-    dispatch(
-      promptActions.addAllTagsToPrompt({
-        type: type,
-        value: splitTags(words),
-      })
-    );
-    onClose();
-  };
-
-  const chagePresetHandler = (e) => {
-    const type = e.target.closest(`.${classes.preset}`).dataset.type;
-    const id = e.target.closest(`.${classes.preset}`).dataset.id;
+  const chagePresetHandler = ({ type, id }) => {
     const curPreset = presets[type].find((preset) => preset.id === id);
     setPresetData({
       type,
@@ -60,88 +39,20 @@ const Presets = ({ onClose }) => {
     setFormIsOpen(true);
   };
 
-  const openDeleteReqeustHandler = (e) => {
-    e.preventDefault();
-    const type = e.target.closest(`.${classes.preset}`).dataset.type;
-    const id = e.target.closest(`.${classes.preset}`).dataset.id;
+  const openDeleteReqeustHandler = ({ type, id }) => {
     const presetName = presets[type].find((preset) => preset.id === id).name;
 
     setPresetToDel({ id, type, name: presetName });
     setDeleteRequestIsOpen(true);
   };
+
   const closeDeleteReqeustHandler = () => {
     setPresetToDel({});
     setDeleteRequestIsOpen(false);
   };
 
-  const positivePresetsHtml = presets?.positive?.map((preset, i) => {
-    return (
-      <motion.li
-        key={preset.id}
-        layout
-        initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-        animate={ANIMATIONS_FM_SLIDEIN}
-        exit={ANIMATIONS_FM_FADEOUT_EXIT}
-        className={classes.preset}
-        data-id={preset.id}
-        data-type="positive"
-      >
-        <span className={classes["preset__name"]} onClick={aplyPreset}>
-          {preset.name}
-        </span>
-        <div className={classes["preset__btns-container"]}>
-          <ButtonTertiary onClick={chagePresetHandler}>Change</ButtonTertiary>
-          <ButtonTertiary
-            className={classes["btn-del"]}
-            onClick={openDeleteReqeustHandler}
-          >
-            Delete
-          </ButtonTertiary>
-        </div>
-      </motion.li>
-    );
-  });
-
-  const negativePresetsHtml = presets?.negative?.map((preset, i) => {
-    return (
-      <motion.li
-        key={preset.id}
-        layout
-        initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-        animate={ANIMATIONS_FM_SLIDEIN}
-        exit={ANIMATIONS_FM_FADEOUT_EXIT}
-        className={classes.preset}
-        data-id={preset.id}
-        data-type="negative"
-      >
-        <span className={classes["preset__name"]} onClick={aplyPreset}>
-          {preset.name}
-        </span>
-        <div className={classes["preset__btns-container"]}>
-          <ButtonTertiary onClick={chagePresetHandler}>Change</ButtonTertiary>
-          <ButtonTertiary
-            className={classes["btn-del"]}
-            onClick={openDeleteReqeustHandler}
-          >
-            Delete
-          </ButtonTertiary>
-        </div>
-      </motion.li>
-    );
-  });
-
   return (
     <>
-      {formIsOpen && (
-        <button
-          className={classes["btn-back"]}
-          onClick={() => {
-            setFormIsOpen(false);
-          }}
-        >
-          <BackSvg />
-        </button>
-      )}
       {!formIsOpen && (
         <>
           <Buttton
@@ -153,67 +64,61 @@ const Presets = ({ onClose }) => {
           >
             Add preset
           </Buttton>
-
           <div className={classes["presets-container"]}>
             {!presets?.positive?.length && !presets?.negative?.length && (
-              <div className={classes[`presets__bg`]}>
-                <div className={classes["notification"]}>
-                  <ExclamationCircleSvg
-                    className={classes["notification__svg"]}
-                  />
-                  <p className={classes["notification__text"]}>
-                    You don't have any presets. <br /> Press "Add preset" to add
-                    new preset!
-                  </p>
-                </div>
-              </div>
+              <NotificationMessage type="notification">
+                <p>
+                  You don't have any presets. <br /> Press "Add preset" to add
+                  new preset!
+                </p>
+              </NotificationMessage>
             )}
             {!!presets?.positive?.length && (
-              <div>
-                <div className={classes[`presets__name`]}>Positive:</div>
-                <div className={classes[`presets__bg`]}>
-                  <motion.ul
-                    // layout
-                    initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-                    animate={ANIMATIONS_FM_SLIDEIN}
-                    exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
-                    className={classes.presets}
-                  >
-                    <AnimatePresence>{positivePresetsHtml}</AnimatePresence>
-                  </motion.ul>
-                </div>
-              </div>
+              <PresetsBlock title="Positive">
+                <PresetsList
+                  type="positive"
+                  presets={presets?.positive}
+                  onEdit={chagePresetHandler}
+                  onClose={onClose}
+                  onDelete={openDeleteReqeustHandler}
+                />
+              </PresetsBlock>
             )}
             {!!presets?.negative?.length && (
-              <div>
-                <div className={classes[`presets__name`]}>Negative:</div>
-                <div className={classes[`presets__bg`]}>
-                  <motion.ul
-                    // layout
-                    initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
-                    animate={ANIMATIONS_FM_SLIDEIN}
-                    exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
-                    className={classes.presets}
-                  >
-                    <AnimatePresence>{negativePresetsHtml}</AnimatePresence>
-                  </motion.ul>
-                </div>
-              </div>
+              <PresetsBlock title="Negative">
+                <PresetsList
+                  type="negative"
+                  presets={presets?.negative}
+                  onEdit={chagePresetHandler}
+                  onClose={onClose}
+                  onDelete={openDeleteReqeustHandler}
+                />
+              </PresetsBlock>
             )}
           </div>
         </>
       )}
       {formIsOpen && (
-        <PresetForm
-          type={presetData?.type}
-          id={presetData?.id}
-          name={presetData?.name}
-          words={presetData?.words}
-          onClose={() => {
-            setFormIsOpen(false);
-            setPresetData({});
-          }}
-        />
+        <>
+          <button
+            className={classes["btn-back"]}
+            onClick={() => {
+              setFormIsOpen(false);
+            }}
+          >
+            <BackSvg />
+          </button>
+          <PresetForm
+            type={presetData?.type}
+            id={presetData?.id}
+            name={presetData?.name}
+            words={presetData?.words}
+            onClose={() => {
+              setFormIsOpen(false);
+              setPresetData({});
+            }}
+          />
+        </>
       )}
       <AnimatePresence>
         {deleteRequestIsOpen && (

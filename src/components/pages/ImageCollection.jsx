@@ -17,7 +17,6 @@ const ImageCollection = ({ title }) => {
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [collectionPreview, setCollectionPreview] = useState(null);
   const isAuth = useSelector((state) => state.auth.user.uid);
   const { collectionId } = useParams();
   const dispatch = useDispatch();
@@ -26,25 +25,10 @@ const ImageCollection = ({ title }) => {
     (state) => state.images.collectionPreviews
   );
   const categoriesData = useSelector((state) => state.images.categories);
-
-  useEffect(() => {
-    const collPrev = collectionPreviews?.data?.find(
-      (preview) => preview.id === collectionData.id
-    );
-    if (collPrev) setCollectionPreview(collPrev);
-
-    return () => {
-      setCollectionPreview(null);
-    };
-  }, [collectionData, collectionPreviews]);
-
-  useEffect(() => {
-    document.title = collectionData?.name || title;
-
-    return () => {
-      document.title = "Prompt builder";
-    };
-  }, [title, collectionData?.name]);
+  const collectionPreview = collectionPreviews?.data?.find(
+    (preview) => preview.id === collectionData.id
+  );
+  document.title = collectionData?.name || title;
 
   useEffect(() => {
     if (!isAuth || !collectionId) return;
