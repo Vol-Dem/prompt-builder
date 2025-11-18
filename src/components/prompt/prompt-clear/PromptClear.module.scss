@@ -1,0 +1,27 @@
+.clear {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+
+  &__title {
+    display: inline-block;
+  }
+
+  &--fields {
+    display: flex;
+  }
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0 0.8rem;
+    height: 100%;
+  }
+
+  &__btn-svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}

@@ -189,9 +189,11 @@ const TagsTextarea = ({
 
       //Abort when droped on the same position
       if (
-        position === containerData.position ||
-        (position - 1 === containerData.position && !containerData.dropLeft) ||
-        (position === containerData.position - 1 && containerData.dropLeft)
+        type === dropTargetType &&
+        (position === containerData.position ||
+          (position - 1 === containerData.position &&
+            !containerData.dropLeft) ||
+          (position === containerData.position - 1 && containerData.dropLeft))
       )
         return;
 

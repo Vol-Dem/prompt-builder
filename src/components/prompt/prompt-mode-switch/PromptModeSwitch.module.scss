@@ -1,0 +1,31 @@
+@use "./../../../variables/variables.scss" as var;
+
+.mode-switch {
+  display: flex;
+  // font-size: 1.4rem;
+  border-radius: var.$border-radius;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  // width: 10rem;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+.btn-mode {
+  width: 5rem;
+  font-size: 1.2rem;
+  // text-transform: uppercase;
+  background-color: transparent;
+  // background-color: #fff;
+  padding: 0.4rem 0.6rem;
+  border: none;
+  transition: all 0.3s;
+  color: #fff;
+  cursor: pointer;
+
+  &:not(.btn-mode--active):hover {
+    background-color: var.$color-background-secondary;
+  }
+
+  &--active {
+    background-color: var.$color-primary;
+  }
+}

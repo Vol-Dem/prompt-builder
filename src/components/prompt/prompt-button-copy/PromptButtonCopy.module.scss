@@ -1,0 +1,33 @@
+@use "./../../../variables/variables.scss" as var;
+
+.btn-copy {
+  border: 1px solid #fff;
+  border-radius: 0 1rem 1rem 0;
+  cursor: pointer;
+  border: 1px solid rgb(255 255 255 / 30%);
+  background-color: #323148;
+  border-radius: 0 1rem 1rem 0;
+  color: #cdcbcb;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: lighten(#323148, 5%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  &:active {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background-color: darken(#323148, 5%);
+    box-shadow: var.$box-shadow-inset;
+  }
+
+  & svg {
+    width: 2rem;
+  }
+}
+
+.copied {
+  // color: #27bb2c;
+  color: var.$color-text-green;
+}

@@ -1,0 +1,91 @@
+@use "./../../../variables/variables.scss" as var;
+
+.settings {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+
+.label {
+  display: inline-block;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.btn-type-container {
+  margin-left: 1rem;
+  display: inline-block;
+}
+
+.plus-icon {
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-right: 0.2rem;
+}
+
+.info {
+  width: 2.4rem;
+  height: 2.4rem;
+  & svg {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+}
+
+.btn-info {
+  width: 2.4rem;
+  height: 2.4rem;
+
+  & svg {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .clear__title {
+    display: none;
+  }
+
+  .clear--fields {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .prompt {
+    position: relative;
+    max-height: calc(100vh - 300px);
+    height: 10rem;
+    min-height: 17rem;
+
+    &--neg {
+      min-height: 9rem;
+    }
+  }
+  .field {
+    min-height: 17rem;
+    &--neg {
+      min-height: 9rem;
+    }
+  }
+
+  .label {
+    display: none;
+  }
+
+  .clear__title {
+    display: none;
+  }
+
+  .settings {
+    gap: 0.6rem;
+    margin-left: 0;
+  }
+
+  .info {
+    display: none;
+  }
+}
