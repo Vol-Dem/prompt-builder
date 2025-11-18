@@ -1,0 +1,29 @@
+@use "../../../variables/variables.scss" as var;
+
+.rejected-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  &__title {
+    padding: 0.3rem 0.6rem;
+    width: 100%;
+    text-align: center;
+    background-color: darken(var.$color-background-primary, 4%);
+    box-shadow: var.$box-shadow;
+
+    &--completed {
+      color: var.$color-text-green;
+    }
+    &--rejected {
+      color: var.$color-text-red;
+    }
+  }
+}
+
+.btns-container {
+  display: flex;
+  gap: 1rem;
+}

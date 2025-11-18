@@ -80,6 +80,7 @@ export const savePost = (postInfo) => {
       if (!postId) {
         throwCustomError(ERROR_MESSAGE_INVALID_POST_ID);
       }
+      // throwCustomError(ERROR_MESSAGE_INVALID_POST_ID);
 
       dispatch(uploadActions.setIsUploading(true));
       dispatch(uploadActions.setCurPostId(postId));
