@@ -13,7 +13,6 @@ import AuthForm from "../../forms/Auth/AuthForm";
 import { Suspense, useRef } from "react";
 import Spinner from "../../ui/Spinner";
 import Prompt from "../../prompt/Prompt";
-import UsedModelsPanel from "../../used-models-panel/UsedModelsPanel";
 import SearchField from "../../search/SearchField";
 import UploadingPanel from "../../uploading-panel/UploadingPanel";
 import ActiveCarousel from "../../active-carousel/ActiveCarousel";
@@ -25,6 +24,7 @@ import NsfwSwitch from "../../ui/nsfw-switch/NsfwSwitch";
 import ScrollToTop from "../../ui/ScrollToTop";
 import LayoutContentWrap from "./LayoutContentWrap";
 import Notifications from "../notifications/Notifications";
+import RightSidebar from "../right-sidebar/RightSidebar";
 
 const Layout = () => {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
@@ -108,7 +108,7 @@ const Layout = () => {
         <Notifications />
         <Footer />
       </div>
-      {!maintenance && <UsedModelsPanel />}
+      {!maintenance && <RightSidebar />}
       <ScrollToTop />
     </div>
   );

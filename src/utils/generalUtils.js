@@ -344,3 +344,15 @@ export const parseIntersectionMargin = (value) => {
 
   return rootMarginValue;
 };
+
+/**
+ *
+ * @param {Event} e - event
+ * @returns {{clientX: Number, clientY: Number}}
+ */
+export const getClientCoord = (e) => {
+  const clientX = Math.round(e.clientX || e.touches[0].clientX);
+  const clientY = Math.round(e.clientY || e.touches[0].clientY);
+
+  return { clientX, clientY };
+};

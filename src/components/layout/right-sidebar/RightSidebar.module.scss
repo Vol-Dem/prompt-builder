@@ -1,0 +1,156 @@
+@use "../../../variables/variables.scss" as var;
+
+.container {
+  display: flex;
+  position: sticky;
+  // position: relative;
+  // border-radius: 1rem;
+  height: 100vh;
+  top: 0;
+  background-color: rgba(darken(var.$color-background-secondary, 5%), 0.7);
+  // background-color: rgb(23 26 32 / 72%);
+  z-index: 25;
+  width: 20px;
+
+  // &--open {
+  //   width: auto;
+  // }
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var.$color-background-secondary;
+  //   border-left: 1px solid #fff;
+  // width: 0px;
+  // width: 30px;
+  padding: 0rem;
+  // overflow: hidden;
+  flex-shrink: 0;
+  padding: 1rem 1.5rem 0 1rem;
+  transition: all 0.4s;
+
+  // &--open {
+  //   // width: 30rem;
+  //   // padding: 1rem 1.5rem 0 1rem;
+  // }
+}
+
+.model-cards {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: lighten(var.$color-background-secondary, 4%);
+  border-radius: 1rem;
+  flex-direction: column;
+  gap: 1.2rem;
+  height: 100%;
+  overflow-y: scroll;
+  // padding: 1rem;
+  padding: 1rem 0.2rem 1rem 1rem;
+  // margin-top: 1rem;
+  width: 28rem;
+
+  &__tip {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.6rem;
+    color: var.$color-text-gray-dark;
+    margin: auto;
+    // margin-top: 70%;
+    width: 15rem;
+    text-align: center;
+    margin-left: 1.5rem;
+  }
+
+  @include var.custom-scroll;
+}
+
+.plus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+
+  & svg {
+    width: 1.5rem;
+  }
+}
+
+// .btn__open {
+//   display: flex;
+//   flex-shrink: 0;
+//   justify-content: center;
+//   align-items: center;
+//   padding: 0.1rem;
+//   // position: absolute;
+//   width: 2rem;
+//   height: 10rem;
+//   margin-top: 45vh;
+//   border: none;
+//   border-radius: 1rem 0 0 1rem;
+//   background-color: #756b76;
+//   background-color: var.$color-primary;
+//   color: var.$color-text-white;
+//   cursor: pointer;
+//   transition: all 0.3s;
+
+//   &:hover {
+//     background-color: darken(#756b76, 5%);
+//     background-color: darken(var.$color-primary, 5%);
+//   }
+
+//   &:active {
+//     box-shadow: inset 0.2rem 0.3rem 0.5rem rgba(var.$color-black, 0.4);
+//   }
+
+//   & svg {
+//     width: 1.4rem;
+//     height: 1.4rem;
+//   }
+// }
+
+.forms {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  max-height: 60vh;
+
+  @include var.custom-scroll;
+}
+
+@media (max-width: 1160px) {
+  // @media (max-width: 1024px) {
+  .container {
+    position: fixed;
+    right: 0;
+    // padding-top: 5rem;
+  }
+
+  .panel {
+    // padding-top: 2rem;
+  }
+}
+
+@media (max-width: 425px) {
+  .container {
+    height: calc(100vh - 5rem);
+    margin-top: 5rem;
+  }
+}
+
+@-moz-document url-prefix() {
+  @media (min-width: 768px) {
+    .container {
+      padding-right: 1.2rem;
+    }
+  }
+}

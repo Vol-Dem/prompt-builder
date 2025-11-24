@@ -4,18 +4,18 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
   SETTINGS_REF_IMAGE_ROW_LENGTH,
-} from "../../../variables/constants";
-import Image from "../../ui/image/Image";
-import CrossSvg from "../../../assets/CrossSvg";
-import ImageSvg from "../../../assets/ImageSvg";
+} from "../../../../variables/constants";
+import Image from "../../../ui/image/Image";
+import CrossSvg from "../../../../assets/CrossSvg";
+import ImageSvg from "../../../../assets/ImageSvg";
 import { useDispatch, useSelector } from "react-redux";
-import { modelActions } from "../../../store/model";
+import { modelActions } from "../../../../store/model";
 import {
   removeImageFromPanel,
   usedModelsActions,
-} from "../../../store/usedModels";
+} from "../../../../store/usedModels";
 import { motion } from "framer-motion";
-import { clearFileExtension } from "../../../utils/generalUtils";
+import { clearFileExtension } from "../../../../utils/generalUtils";
 
 const ReferenceImageList = ({ usedImages }) => {
   const nsfwMode = useSelector((state) => state.general.nsfwMode);

@@ -1,0 +1,47 @@
+@use "../../../../variables/variables.scss" as var;
+
+.options {
+  position: relative;
+  width: 28rem;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1rem;
+
+  & *:first-child {
+    margin-right: auto;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.3rem;
+    border-radius: 0.6rem;
+    padding: 0.3rem 0.4rem;
+
+    & svg {
+      width: 1.4rem;
+      height: 1.4rem;
+    }
+
+    &--active {
+      background-color: #5f3d62;
+    }
+  }
+
+  &__clear {
+    // display: flex;
+    // align-items: center;
+    gap: 0.4rem;
+  }
+
+  &__svg {
+    width: 1.4rem;
+    height: 1.4rem;
+    // margin-right: 0.4rem;
+  }
+}
