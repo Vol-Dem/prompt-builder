@@ -115,6 +115,7 @@ export const URL_CF_UPDATE_MODEL =
 
 //REGEX
 export const REGEX_SPLIT_TAGS = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
+export const REGEX_ACTIVATION_TAG = /<[^>]*>/i;
 export const REGEX_MOBAL = /iPhone|iPad|iPod|Android/i;
 
 //VALIDATION

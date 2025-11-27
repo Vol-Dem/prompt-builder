@@ -11,6 +11,7 @@ import {
   markDuplicateTags,
 } from "../utils/promptUtils";
 import { splitTags } from "../utils/promptUtils";
+
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
 

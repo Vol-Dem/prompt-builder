@@ -23,6 +23,7 @@ import {
   filterNsfwImages,
   groupAndSortByField,
 } from "../../../../utils/imageUtils";
+import { fixCivImagesMeta } from "../../../../utils/tempUtils";
 
 const ExternalImages = memo(({ modelId, curImagesModelVersionId, sortBy }) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
@@ -58,7 +59,7 @@ const ExternalImages = memo(({ modelId, curImagesModelVersionId, sortBy }) => {
   } = useFetchCivitai(url);
 
   const imagesSortedByPost = useMemo(() => {
-    let images = fetchedImages;
+    let images = fixCivImagesMeta(fetchedImages);
     if (EXAMPLE_MODEL_FILTER_CIV && modelId === EXAMPLE_MODEL_ID) {
       images = filterNsfwImages(fetchedImages, EXAMPLE_MODEL_FILTER_LVL);
     }

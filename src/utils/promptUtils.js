@@ -1,4 +1,5 @@
 import {
+  REGEX_ACTIVATION_TAG,
   REGEX_SPLIT_TAGS,
   SETTINGS_PROMPT_DUPLICATE_EXCEPTIONS,
 } from "../variables/constants";
@@ -186,4 +187,67 @@ export const moveElementToPosition = ({
     }
     return tag;
   });
+};
+
+/**
+ * Updates the tag weight
+ * @param {String} newTag - Current tag
+ * @param {String} newWeight - New tag weight
+ * @returns {String} Tag with updated weight
+ */
+export const changeTagWeight = (newTag, newWeight) => {
+  const isActivationTag = REGEX_ACTIVATION_TAG.test(newTag);
+  let tagName;
+
+  if (newTag.includes(":")) {
+    tagName = newTag
+      .replace(/^\(+|<+|\)+|>$/g, "")
+      .split(":")
+      .slice(0, -1)
+      .join(":");
+  } else {
+    tagName = newTag.replace(/^\(+|\)+$/g, "");
+  }
+
+  if (isActivationTag) {
+    return `<${tagName}:${newWeight}>`;
+  }
+
+  if (!isActivationTag && +newWeight === 1) {
+    return tagName;
+  }
+
+  return `(${tagName}:${newWeight})`;
+};
+
+/**
+ * Calculates the new position of the tag
+ * @param {Number} position - Current tag position
+ * @param {Number} dropTargetPosition - Drop target position
+ * @param {Boolean} dropTargetLeft - Whether to drop element on the left side
+ * @returns {Number} New tag position
+ */
+export const getNewTagPosition = (
+  position,
+  dropTargetPosition,
+  dropTargetLeft
+) => {
+  let newPosition;
+
+  if (
+    (dropTargetLeft && position >= dropTargetPosition) ||
+    (!dropTargetLeft && position < dropTargetPosition)
+  ) {
+    newPosition = dropTargetPosition;
+  } else if (
+    dropTargetLeft &&
+    position <= dropTargetPosition &&
+    dropTargetPosition > 0
+  ) {
+    newPosition = dropTargetPosition - 1;
+  } else if (!dropTargetLeft && position >= dropTargetPosition) {
+    newPosition = dropTargetPosition + 1;
+  }
+
+  return newPosition;
 };

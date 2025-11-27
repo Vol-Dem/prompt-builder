@@ -1,56 +1,26 @@
-@use "../../variables/variables.scss" as var;
+@use "../../../../variables/variables.scss" as var;
 
 .field {
-  // display: flex;
-  // flex-wrap: wrap;
-  // gap: 0.7rem;
   list-style: none;
   padding: 0.6rem 0.8rem;
   border: 1px solid var.$color-violet-grey;
   border-radius: 1rem 0rem 0rem 1rem;
-  //   margin: 1rem 0 1rem;
   align-items: flex-start;
   overflow-y: scroll;
-  // background-color: var.$color-background-tertiary;
   word-spacing: 0.4rem;
   letter-spacing: 0.1px;
   width: 100%;
   height: 100%;
   font-size: 0;
-  // resize: vertical;
-  // &::-webkit-resizer {
-  //   border: 2px solid yellow;
-  //   background: blue;
-  //   box-shadow: 0 0 2px 5px red;
-  //   outline: 2px dashed green;
-  //   /*size does not work*/
-  //   display: block;
-  //   width: 150px !important;
-  //   height: 150px !important;
-  // }
   @include var.custom-scroll;
-
-  // &--positive {
-  //   max-height: calc(100vh - 300px);
-  //   height: 10rem;
-  //   min-height: 10rem;
-  // }
-  // &--negative {
-  //   max-height: 180px;
-  //   height: 6rem;
-  //   min-height: 6rem;
-  // }
 }
 
 .tag {
   display: inline-block;
-  // margin: 0 1rem 1rem 0;
   font-size: 1.4rem;
-  // padding: 0.4rem 0.6rem;
   background-color: #323148;
   border-radius: 1rem;
   overflow: hidden;
-  // transition: all 0.3s;
   cursor: grab;
 
   &--duplicate-1 {
@@ -96,23 +66,12 @@
 
   &__content {
     display: flex;
-    // align-items: center;
     gap: 0.2rem;
-    // display: grid;
-    // // grid-template-columns: 1fr auto;
-    // grid-template-columns: 1fr auto auto;
-    // gap: 0.6rem;
   }
   &__text {
-    // margin-right: 0.6rem;
     padding: 0.4rem 0.6rem;
     word-break: break-word;
-    // cursor: default;
-
     &--edit {
-      // padding: 0.4rem 1rem;
-      // background-color: var.$color-background-primary;
-      // border-radius: 8px;
       border-radius: 10px;
       padding: 0.4rem 1rem;
       width: 100%;
@@ -133,23 +92,8 @@
     display: inline-block;
     width: 1.4rem;
     height: 1.6rem;
-    // background-color: var.$color-violet-grey;
     color: var.$color-violet-grey;
     transition: all 0.3s ease;
-    // clip-path: polygon(
-    //   10% 0,
-    //   0 10%,
-    //   40% 50%,
-    //   0 90%,
-    //   10% 100%,
-    //   50% 60%,
-    //   90% 100%,
-    //   100% 90%,
-    //   60% 50%,
-    //   100% 10%,
-    //   90% 0,
-    //   50% 40%
-    // );
 
     & svg {
       width: 1.6rem;
@@ -167,20 +111,16 @@
 
   &__dragged {
     opacity: 0.3;
-    // background-color: #52515f;
-    // border: 1px solid #52515f;
   }
 }
 
 .btn {
   display: flex;
   align-items: center;
-  // height: 100%;
   padding: 0.4rem 0.6rem;
   color: var.$color-violet-grey;
   background: none;
   border: none;
-  // border-left: 1px solid var.$color-violet-grey;
   padding-left: 0.3rem;
   transition: all 0.3s;
   cursor: pointer;
@@ -201,7 +141,7 @@
 
   &--submit {
     background-color: var.$color-primary;
-    // color: var.$color-green;
+
     &:hover {
       background-color: darken(var.$color-primary, 5%);
     }
@@ -222,10 +162,9 @@
   font-size: 1.4rem;
   color: var.$color-text-gray-dark;
   color: #777777;
+  -webkit-user-select: none;
   user-select: none;
   cursor: default;
-  //   word-spacing: 0.3rem;
-  //   letter-spacing: 0.4px;
 
   &--aditional {
     display: flex;
@@ -242,30 +181,15 @@
 
 .tag-container {
   display: inline-block;
-  // margin: 0 1rem 1rem 0;
-  // padding: 0 1rem 1rem 0;
   padding: 0.5rem;
   border: 2px solid transparent;
-
-  // transition: all 0.3s;
-  // background-color: blueviolet;
 }
 
 .drop-left {
-  // background-color: aqua;
-  // padding-left: 8rem;
-  // padding: 0.5rem 0 0.5rem 1rem;
   border-left-color: #e7008b;
-  // border-left: 1px solid #fff;
-  // margin-left: 3rem;
 }
 .drop-right {
-  // background-color: blueviolet;
-  // padding-right: 8rem;
-  // padding: 0.5rem 1 0.5rem 0rem;
   border-right-color: #e7008b;
-  // border-right: 1px solid #fff;
-  // margin-right: 3rem;
 }
 
 .activation-tag {

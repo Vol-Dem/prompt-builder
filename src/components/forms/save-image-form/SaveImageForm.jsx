@@ -22,6 +22,7 @@ import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import InfoPostId from "../../ui/guide/info/InfoPostId";
 import { getPostIdFromInput } from "../../../utils/imageUtils";
+import { fixCivImagesMeta } from "../../../utils/tempUtils";
 
 const SaveImageForm = ({
   modelData,
@@ -79,7 +80,7 @@ const SaveImageForm = ({
         }&nsfw=${nsfwLevel}`
       );
       const data = await imgExampleResponse.json();
-      setImages(data.items);
+      setImages(fixCivImagesMeta(data.items));
 
       let curPostData;
       let curImageIds;
