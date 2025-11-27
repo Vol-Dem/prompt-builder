@@ -1,0 +1,48 @@
+@use "./../../../../variables/variables.scss" as var;
+
+.mode {
+  &__form {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-items: flex-end;
+    gap: 1rem;
+  }
+
+  &__field {
+    display: flex;
+    border: 1px solid #5c5c5c;
+    border-radius: 10px;
+    overflow: hidden;
+    justify-self: flex-start;
+  }
+
+  &__dropdown {
+    width: 28rem;
+    top: calc(100% + 1rem);
+    left: 100%;
+    z-index: 30;
+    transform: translateX(-90%);
+  }
+
+  &__input {
+    display: none;
+  }
+
+  &__label {
+    display: inline-flex;
+    padding: 0.15rem 0.8rem;
+    justify-content: center;
+    width: 6rem;
+    transition: all 0.3s;
+    border-left: 1px solid #98989836;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var.$color-background-secondary;
+    }
+  }
+
+  &__input:checked + label {
+    background-color: var.$color-primary;
+  }
+}

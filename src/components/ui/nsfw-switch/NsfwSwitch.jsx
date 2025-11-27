@@ -1,16 +1,15 @@
 import { useDispatch, useSelector } from "react-redux";
-import { setNsfwValues, switchNsfwMode } from "../../../store/general";
+import { switchNsfwMode } from "../../../store/general";
 import classes from "./NsfwSwitch.module.scss";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import DropDownList from "../DropDownList";
 import { AnimatePresence } from "framer-motion";
+import NsfwSwitchSettings from "./nsfw-switch-settings/NsfwSwitchSettings";
 
 const NsfwSwitch = () => {
   const [settingsIsOpen, setSettingsIsOpen] = useState(false);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
-  const sfwValue = useSelector((state) => state.general.sfwValue);
-  const nsfwValue = useSelector((state) => state.general.nsfwValue);
   const dispatch = useDispatch();
 
   const nsfwSwitchHandler = () => {
@@ -19,13 +18,6 @@ const NsfwSwitch = () => {
 
   const openSettingsHandler = () => {
     setSettingsIsOpen((prevState) => !prevState);
-  };
-
-  const sfwInputHandler = (e) => {
-    dispatch(setNsfwValues(e.target.value, nsfwValue));
-  };
-  const nsfwInputHandler = (e) => {
-    dispatch(setNsfwValues(sfwValue, e.target.value));
   };
 
   return (
@@ -60,97 +52,10 @@ const NsfwSwitch = () => {
       <AnimatePresence>
         {settingsIsOpen && (
           <DropDownList
-            onClose={() => {
-              setSettingsIsOpen(false);
-            }}
+            onClose={() => setSettingsIsOpen(false)}
             className={classes["mode__dropdown"]}
           >
-            <form className={classes["mode__form"]}>
-              <>
-                <div>SFW:</div>
-                <fieldset
-                  onChange={sfwInputHandler}
-                  className={classes["mode__field"]}
-                >
-                  <div>
-                    <input
-                      type="radio"
-                      id="sfw-1"
-                      name="sfw"
-                      value="None"
-                      defaultChecked={sfwValue === "None"}
-                      className={classes["mode__input"]}
-                    />
-                    <label htmlFor="sfw-1" className={classes["mode__label"]}>
-                      PG
-                    </label>
-                  </div>
-
-                  <div>
-                    <input
-                      type="radio"
-                      id="sfw-2"
-                      name="sfw"
-                      value="Soft"
-                      defaultChecked={sfwValue === "Soft"}
-                      className={classes["mode__input"]}
-                    />
-                    <label htmlFor="sfw-2" className={classes["mode__label"]}>
-                      PG-13
-                    </label>
-                  </div>
-                </fieldset>
-              </>
-
-              <>
-                <div>NSFW:</div>
-                <fieldset
-                  onChange={nsfwInputHandler}
-                  className={classes["mode__field"]}
-                >
-                  <div>
-                    <input
-                      type="radio"
-                      id="nsfw-1"
-                      name="nsfw"
-                      value="Soft"
-                      defaultChecked={nsfwValue === "Soft"}
-                      className={classes["mode__input"]}
-                    />
-                    <label htmlFor="nsfw-1" className={classes["mode__label"]}>
-                      PG-13
-                    </label>
-                  </div>
-
-                  <div>
-                    <input
-                      type="radio"
-                      id="nsfw-2"
-                      name="nsfw"
-                      value="Mature"
-                      defaultChecked={nsfwValue === "Mature"}
-                      className={classes["mode__input"]}
-                    />
-                    <label htmlFor="nsfw-2" className={classes["mode__label"]}>
-                      R
-                    </label>
-                  </div>
-                  <div>
-                    <input
-                      type="radio"
-                      id="nsfw-3"
-                      name="nsfw"
-                      value="X"
-                      defaultChecked={nsfwValue === "X"}
-                      className={classes["mode__input"]}
-                    />
-                    <label htmlFor="nsfw-3" className={classes["mode__label"]}>
-                      XXX
-                    </label>
-                  </div>
-                </fieldset>
-              </>
-            </form>
+            <NsfwSwitchSettings />
           </DropDownList>
         )}
       </AnimatePresence>

@@ -1,0 +1,30 @@
+import classes from "./NsfwSwitchInput.module.scss";
+
+const NsfwSwitchInput = ({
+  id,
+  value,
+  name,
+  defaultChecked,
+  className,
+  children,
+  ...props
+}) => {
+  return (
+    <div>
+      <input
+        type="radio"
+        id={id}
+        name={name}
+        value={value}
+        defaultChecked={defaultChecked}
+        className={`${classes["mode__input"]} ${className || ""}`}
+        {...props}
+      />
+      <label htmlFor={id} className={classes["mode__label"]}>
+        {children}
+      </label>
+    </div>
+  );
+};
+
+export default NsfwSwitchInput;

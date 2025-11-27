@@ -24,7 +24,6 @@ const imageSortValue = "Newest";
 const GeneratedImages = memo(() => {
   const [curTab, setCurTab] = useState("all");
   const [curVersionId, setCurVersionId] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
   const curVersion = useSelector((state) => state.model.curVersion);
   const model = useSelector((state) => state.model.model);
@@ -58,13 +57,11 @@ const GeneratedImages = memo(() => {
 
   const openVersionHandler = (e) => {
     if (+e.target.id === curVersionId) return;
-    setErrorMessage("");
     setCurVersionId(+e.target.id);
   };
 
   const switchCurTab = (e) => {
     if (curTab === e.target.dataset.tab) return;
-    setErrorMessage("");
     setCurTab(e.target.dataset.tab);
     if (
       e.target.dataset.tab !== "all" &&
@@ -116,8 +113,6 @@ const GeneratedImages = memo(() => {
               modelId={model.id}
               curImagesModelVersionId={curVersionId}
               sortBy={imageSortValue}
-              errorMessage={errorMessage}
-              setErrorMessage={setErrorMessage}
             />
           )}
           {curTab === "saved" && (

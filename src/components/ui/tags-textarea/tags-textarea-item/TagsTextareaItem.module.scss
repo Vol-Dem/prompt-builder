@@ -1,20 +1,5 @@
 @use "../../../../variables/variables.scss" as var;
 
-.field {
-  list-style: none;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid var.$color-violet-grey;
-  border-radius: 1rem 0rem 0rem 1rem;
-  align-items: flex-start;
-  overflow-y: scroll;
-  word-spacing: 0.4rem;
-  letter-spacing: 0.1px;
-  width: 100%;
-  height: 100%;
-  font-size: 0;
-  @include var.custom-scroll;
-}
-
 .tag {
   display: inline-block;
   font-size: 1.4rem;
@@ -82,10 +67,6 @@
       color: var.$color-text-white;
       color: var.$color-text-gray;
     }
-  }
-
-  &__weight {
-    width: 4rem;
   }
 
   &__cross {
@@ -158,23 +139,6 @@
   }
 }
 
-.placeholder {
-  font-size: 1.4rem;
-  color: var.$color-text-gray-dark;
-  color: #777777;
-  -webkit-user-select: none;
-  user-select: none;
-  cursor: default;
-
-  &--aditional {
-    display: flex;
-    justify-content: center;
-    margin: 0.5rem auto;
-    max-width: 40rem;
-    text-align: center;
-  }
-}
-
 .tag-wrap {
   display: inline;
 }
@@ -192,71 +156,9 @@
   border-right-color: #e7008b;
 }
 
-.activation-tag {
-  display: flex;
-  gap: 0.3rem;
-  align-items: center;
-
-  &__btn-container {
-    display: flex;
-    gap: 0.1rem;
-    flex-direction: column;
-    width: 2rem;
-    flex-shrink: 0;
-  }
-
-  &__btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.4rem;
-    background-color: #323148;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    cursor: pointer;
-    transition: all 0.2s;
-
-    &:hover {
-      background-color: lighten(#323148, 5%);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-    }
-    &:active {
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      background-color: darken(#323148, 5%);
-      box-shadow: var.$box-shadow-inset;
-    }
-    &-arrow {
-      display: inline-block;
-      background-color: #636363;
-      height: 1.2rem;
-      width: 1.2rem;
-
-      &--up {
-        clip-path: var.$clip-path-arrow-up;
-      }
-      &--down {
-        clip-path: var.$clip-path-arrow-down;
-      }
-    }
-  }
-}
-
-.edit {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
 .divider {
   opacity: 0.2;
   margin-bottom: 0.8rem;
   border: 0;
   border-top: 1px solid var.$color-gray;
-}
-
-@media (max-width: 480px) {
-  .placeholder {
-    &--aditional {
-      margin: 2.5rem auto;
-    }
-  }
 }

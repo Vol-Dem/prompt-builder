@@ -1,0 +1,25 @@
+@use "./../../../../variables/variables.scss" as var;
+
+.mode {
+  &__input {
+    display: none;
+  }
+
+  &__label {
+    display: inline-flex;
+    padding: 0.15rem 0.8rem;
+    justify-content: center;
+    width: 6rem;
+    transition: all 0.3s;
+    border-left: 1px solid #98989836;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var.$color-background-secondary;
+    }
+  }
+
+  &__input:checked + label {
+    background-color: var.$color-primary;
+  }
+}

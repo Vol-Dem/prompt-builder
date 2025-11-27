@@ -69,7 +69,7 @@ const ExternalImages = memo(({ modelId, curImagesModelVersionId, sortBy }) => {
 
   useEffect(() => {
     setIsIntersecting(intersecting || intersectingSmall);
-  }, [intersecting, intersectingSmall, curImagesModelVersionId]);
+  }, [intersecting, intersectingSmall, curImagesModelVersionId, nsfwLevel]);
 
   const deleteImagesHandler = (ids) => {
     setFetchedImages((prevState) =>

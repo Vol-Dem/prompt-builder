@@ -1,87 +1,9 @@
 @use "../../../../variables/variables.scss" as var;
 
-.field {
-  list-style: none;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid var.$color-violet-grey;
-  border-radius: 1rem 0rem 0rem 1rem;
-  align-items: flex-start;
-  overflow-y: scroll;
-  word-spacing: 0.4rem;
-  letter-spacing: 0.1px;
-  width: 100%;
-  height: 100%;
-  font-size: 0;
-  @include var.custom-scroll;
-}
-
 .tag {
-  display: inline-block;
-  font-size: 1.4rem;
-  background-color: #323148;
-  border-radius: 1rem;
-  overflow: hidden;
-  cursor: grab;
-
-  &--duplicate-1 {
-    outline: solid 1px rgb(225, 229, 3);
-  }
-  &--duplicate-2 {
-    outline: solid 1px rgb(229, 93, 3);
-  }
-  &--duplicate-3 {
-    outline: solid 1px rgb(229, 3, 206);
-  }
-  &--duplicate-4 {
-    outline: solid 1px rgb(37, 229, 3);
-  }
-  &--duplicate-5 {
-    outline: solid 1px rgb(3, 214, 229);
-  }
-  &--duplicate-6 {
-    outline: solid 1px rgb(35, 108, 216);
-  }
-  &--duplicate-7 {
-    outline: solid 1px rgb(175, 0, 111);
-  }
-  &--duplicate-8 {
-    outline: solid 1px rgb(0, 179, 131);
-  }
-  &--duplicate-9 {
-    outline: solid 1px rgb(44, 3, 229);
-  }
-  &--duplicate-10 {
-    outline: solid 1px rgb(154, 229, 3);
-  }
-  &--duplicate-11 {
-    outline: solid 1px rgb(169, 3, 229);
-  }
-  &--duplicate-12 {
-    outline: solid 1px rgb(229, 3, 97);
-  }
-
-  &--break {
-    background-color: var.$color-background-dark;
-  }
-
   &__content {
     display: flex;
     gap: 0.2rem;
-  }
-  &__text {
-    padding: 0.4rem 0.6rem;
-    word-break: break-word;
-    &--edit {
-      border-radius: 10px;
-      padding: 0.4rem 1rem;
-      width: 100%;
-      padding-left: 1rem;
-      background-color: var.$color-input-bg;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: var.$box-shadow-inset;
-      color: var.$color-text-white;
-      color: var.$color-text-gray;
-    }
   }
 
   &__weight {
@@ -107,10 +29,6 @@
     &:hover {
       color: var.$color-white;
     }
-  }
-
-  &__dragged {
-    opacity: 0.3;
   }
 }
 
@@ -158,40 +76,6 @@
   }
 }
 
-.placeholder {
-  font-size: 1.4rem;
-  color: var.$color-text-gray-dark;
-  color: #777777;
-  -webkit-user-select: none;
-  user-select: none;
-  cursor: default;
-
-  &--aditional {
-    display: flex;
-    justify-content: center;
-    margin: 0.5rem auto;
-    max-width: 40rem;
-    text-align: center;
-  }
-}
-
-.tag-wrap {
-  display: inline;
-}
-
-.tag-container {
-  display: inline-block;
-  padding: 0.5rem;
-  border: 2px solid transparent;
-}
-
-.drop-left {
-  border-left-color: #e7008b;
-}
-.drop-right {
-  border-right-color: #e7008b;
-}
-
 .activation-tag {
   display: flex;
   gap: 0.3rem;
@@ -236,27 +120,6 @@
       &--down {
         clip-path: var.$clip-path-arrow-down;
       }
-    }
-  }
-}
-
-.edit {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.divider {
-  opacity: 0.2;
-  margin-bottom: 0.8rem;
-  border: 0;
-  border-top: 1px solid var.$color-gray;
-}
-
-@media (max-width: 480px) {
-  .placeholder {
-    &--aditional {
-      margin: 2.5rem auto;
     }
   }
 }
