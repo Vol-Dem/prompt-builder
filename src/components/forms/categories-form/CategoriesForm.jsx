@@ -1,7 +1,7 @@
 import classes from "./CategoriesForm.module.scss";
 import Input from "../../../components/ui/Input";
 import { useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { updateCategories } from "../../../store/model";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import DeleteRequest from "../../ui/DeleteRequest";
@@ -15,22 +15,21 @@ import { updateCollectionCategories } from "../../../store/images";
 
 const CategoriesForm = ({ modelType, activeCategory, categories }) => {
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
-  const [categoriesToUpdate, setCategoriesToUpdate] = useState([]);
   const [deleteCategoryData, setDeleteCategoryData] = useState("");
   const [categoriesInputs, setCategoriesInputs] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const categoriesData = !activeCategory
+  const categoriesToUpdate = useMemo(() => {
+    return !activeCategory
       ? categories
       : categories.find((category) => category.id === activeCategory)
           ?.subcategories;
+  }, [activeCategory, categories]);
 
-    setCategoriesToUpdate(categoriesData);
-
-    const categoriesInputData = categoriesData
+  useEffect(() => {
+    const categoriesInputData = categoriesToUpdate
       .toSorted((a, b) => {
         const nameA = a.name.toUpperCase(); // ignore upper and lowercase
         const nameB = b.name.toUpperCase(); // ignore upper and lowercase
@@ -56,9 +55,9 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
         };
       });
     setCategoriesInputs(categoriesInputData);
-  }, [categories, activeCategory]);
+  }, [categoriesToUpdate]);
 
-  const subCatHandler = (e, isValid) => {
+  const subcatChangeHandler = (e, isValid) => {
     setErrorMessage("");
     setCategoriesInputs((prevState) => {
       const newState = prevState.map((item) => {
@@ -105,19 +104,20 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
       const formData = new FormData(e.target);
       const [id, categoryName] = [...formData][0];
 
-      const existedName = categoriesToUpdate.find(
-        (category) => category.name === categoryName
-      );
-
       const inputData = categoriesInputs.find((input) => input.id === id);
 
       if (!inputData.isValid) {
         return;
       }
 
+      const existedName = categoriesToUpdate.find(
+        (category) => category.name === categoryName
+      );
+
       if (existedName) {
-        throwCustomError(`The "${categoryName}" category already exists`);
+        throwCustomError(`The category "${categoryName}" already exists`);
       }
+
       if (!navigator?.onLine) {
         throwCustomError(ERROR_MESSAGE_OFFLINE);
       }
@@ -155,39 +155,34 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
   };
 
   const deleteCategoryHandler = () => {
+    let updatedCategoriesData;
+
     const updatedCategories = categoriesToUpdate.filter(
       (category) => category.id !== deleteCategoryData.id
     );
 
-    if (activeCategory) {
-      const mainCategory = categories.find(
-        (category) => category.id === activeCategory
-      );
+    if (!activeCategory) {
+      updatedCategoriesData = updatedCategories;
+    } else {
       const mainCategoryIndex = categories.findIndex(
         (category) => category.id === activeCategory
       );
       const updatedMainCategory = {
-        ...mainCategory,
+        ...categories[mainCategoryIndex],
         subcategories: updatedCategories,
       };
 
-      const updatedAllCategories = [
+      updatedCategoriesData = [
         ...categories.slice(0, mainCategoryIndex),
         updatedMainCategory,
         ...categories.slice(mainCategoryIndex + 1),
       ];
+    }
 
-      if (modelType === "collections") {
-        dispatch(updateCollectionCategories(updatedAllCategories));
-      } else {
-        dispatch(updateCategories(modelType, updatedAllCategories));
-      }
+    if (modelType === "collections") {
+      dispatch(updateCollectionCategories(updatedCategoriesData));
     } else {
-      if (modelType === "collections") {
-        dispatch(updateCollectionCategories(updatedCategories));
-      } else {
-        dispatch(updateCategories(modelType, updatedCategories));
-      }
+      dispatch(updateCategories(modelType, updatedCategoriesData));
     }
 
     setDeleteRequestIsOpen(false);
@@ -222,7 +217,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
                 name={category.id}
                 type={category.type}
                 placeholder={category.placeholder}
-                onChange={subCatHandler}
+                onChange={subcatChangeHandler}
                 value={category.value}
                 validation={{
                   required: true,

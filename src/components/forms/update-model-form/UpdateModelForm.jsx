@@ -1,13 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import classes from "./UpdateModelForm.module.scss";
-import {
-  arrayUnion,
-  doc,
-  getDoc,
-  getFirestore,
-  writeBatch,
-} from "firebase/firestore";
-import firebaseApp from "../../../firebase-config";
 import { useDispatch, useSelector } from "react-redux";
 import Input from "../../ui/Input";
 import Buttton from "../../ui/Button";
@@ -17,12 +9,7 @@ import Checkbox from "../../ui/Checkbox";
 import Select from "../../ui/Select";
 import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
-import {
-  clearFileExtension,
-  createCategoryId,
-  handleErrors,
-  throwCustomError,
-} from "../../../utils/generalUtils";
+import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 import { Link } from "react-router-dom";
 import Spinner from "../../ui/Spinner";
 import ComboSelect from "../../ui/ComboSelect";
@@ -37,15 +24,12 @@ import {
   VALIDATION_TITLE_MAX_LENGTH,
   VALIDATION_TRIGER_WORDS_MAX_LENGTH,
   MODEL_TYPES,
-  URL_CIV_MODELS,
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
   ANIMATIONS_FM_SLIDEOUT,
   ANIMATIONS_FM_FADEOUT_EXIT,
   DEFAULT_DATA_TAGSETS_INPUT,
-  ERROR_MESSAGE_INVALID_DATA,
   SETTINGS_MODEL_TYPE_UNKNOWN,
   SETTINGS_MODEL_TYPE_DEF,
-  SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
   ERROR_MESSAGE_INVALID_MODEL_ID,
 } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
@@ -53,16 +37,12 @@ import ErrorMessage from "../../ui/ErrorMessage";
 import { tabActions } from "../../../store/tabs";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
-import { getFunctions, httpsCallable } from "firebase/functions";
 import { modelActions } from "../../../store/model";
 import EditDefaultGuide from "../../ui/guide/edit/EditDefaultGuide";
 import { AnimatePresence, motion } from "framer-motion";
-import { transformSrcPreview } from "../../../utils/imageUtils";
-import { createTagSetsInputData, splitTags } from "../../../utils/promptUtils";
+import { createTagSetsInputData } from "../../../utils/promptUtils";
 import { parseModelIds } from "../../../utils/modelUtils";
-
-const firestore = getFirestore(firebaseApp);
-const functions = getFunctions(firebaseApp);
+import { saveModelData } from "../../../utils/fetch/fetchModel";
 
 const SUBCATEGORIES_MAX_AMOUNT = 8;
 const TAGSETS_MAX_AMOUNT = 20;
@@ -80,7 +60,6 @@ const subCatsDefData = {
 
 const UpdateModelForm = ({
   modelData,
-  id,
   newModelId,
   newModelVersionId,
   newModelType,
@@ -131,7 +110,6 @@ const UpdateModelForm = ({
     isValid: !!modelData?.main,
   });
   const [subCategoryQuery, setSubCategoryQuery] = useState("");
-  const uid = useSelector((state) => state.auth.user.uid);
   const categories = useSelector((state) => state.tabs.categoriesData);
   const curBaseModels = useSelector((state) => state.tabs.baseModels);
   const guideStep = useSelector((state) => state.guide.edit.step);
@@ -245,25 +223,25 @@ const UpdateModelForm = ({
     }
   }, [modelData, categories, newModelType]);
 
-  const saveModelHandler = async (e, update) => {
+  const submitFormHandler = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+    setSuccessMessage("");
+    setShowErrorMessage(true);
+    setModelIsSaving(true);
+
     let modelId;
     let modelVersionId;
-    try {
-      e.preventDefault();
-      setErrorMessage("");
-      setSuccessMessage("");
-      setShowErrorMessage(true);
 
+    try {
       const tagsetsIsNotValid = !!tagSetsInputs.find(
         (input) => input[0].isValid === false || input[1].isValid === false
       );
       const subcatsIsValid = !!subCatInputs.find(
         (input) => input.isValid === true
       );
-
       const mainInputsIsNotValid =
         !idInput.isValid || !mainCategorySelected.isValid || !subcatsIsValid;
-
       const baseInputsIsNotValid =
         !srcInput.isValid ||
         !titleInput.isValid ||
@@ -283,29 +261,20 @@ const UpdateModelForm = ({
         throwCustomError(ERROR_MESSAGE_OFFLINE);
       }
 
-      setModelIsSaving(true);
-
       const formdata = new FormData(e.target);
-
       const modelType = modelTypeInput;
 
-      if (Number.isFinite(+idInput.value)) {
-        modelId = +idInput.value;
-      } else {
-        [modelId, modelVersionId] = parseModelIds(idInput.value);
-      }
-      // console.log(modelId, modelVersionId);
-      if (!modelId) {
-        throwCustomError(ERROR_MESSAGE_INVALID_MODEL_ID);
-      }
+      [modelId, modelVersionId] = parseModelIds(idInput.value);
 
       if (newModelVersionId) {
         modelVersionId = newModelVersionId;
       }
 
-      const modelName = titleInput.value.trim();
-      // const description = descriptionInput.value.trim();
+      if (!modelId) {
+        throwCustomError(ERROR_MESSAGE_INVALID_MODEL_ID);
+      }
 
+      const modelName = titleInput.value.trim();
       const main = mainCategorySelected.name;
       const hashtags = hashtagsInput.value
         .split(",")
@@ -318,412 +287,51 @@ const UpdateModelForm = ({
       const size = formdata.get("size")?.trim() || "";
       const fileName = formdata.get("file-name")?.trim() || "";
 
-      let data = {};
+      const newModelData = {
+        modelId,
+        modelVersionId,
+        modelType,
+        modelName,
+        categories,
+        main,
+        sub,
+        hashtags,
+        mainTag,
+        fileName,
+        size,
+        versionsDownloadStatus,
+        nsfw: nsfwInput,
+      };
 
-      let modelVersions = [];
-
-      const modelsRef = doc(firestore, "users", uid, "models", modelId + "");
-      const userRef = doc(firestore, "users", uid);
-      const modelsPrevRef = doc(
-        firestore,
-        "users",
-        uid,
-        "preview",
-        modelId + ""
+      const { preview, baseModels } = await saveModelData(
+        newModelData,
+        categories,
+        curBaseModels,
+        modelData
       );
 
-      const modelsPrevRefSnap = await getDoc(modelsPrevRef);
-
-      // Throw error if user try to add existing model using new model form
-      if (modelsPrevRefSnap.exists() && !modelData) {
-        throwCustomError(ERROR_MESSAGE_EXISTS);
-      } else {
-        if (!modelData) {
-          //Upload model to database
-          const updateModel = httpsCallable(functions, "updateModelCall");
-
-          const uploadResponse = await updateModel({
-            id: modelData?.id || modelId,
-          });
-
-          if (uploadResponse?.error) {
-            throw new Error(uploadResponse.error);
-            // throwCustomError(ERROR_MESSAGE_UPLOAD_MODEL);
-          }
-
-          const responseCiv = await fetch(`${URL_CIV_MODELS}${modelId}`);
-
-          data = await responseCiv.json();
-          modelVersions = data?.modelVersions;
-        } else {
-          data = modelData.data;
-          modelVersions = data?.modelVersions.filter((version) =>
-            Object.keys(modelData?.modelVersionsCustomData).includes(
-              `${version.id}`
-            )
-          );
-        }
-
-        if (data?.error) {
-          throwCustomError(data.error);
-        }
-        if (!data?.id) {
-          throwCustomError(ERROR_MESSAGE_INVALID_DATA);
-        }
-
-        let modelVersionsCustomData = modelData?.modelVersionsCustomData || {};
-
-        modelVersions.forEach((version, i) => {
-          const isSingle =
-            !modelVersionId && !Object.keys(modelVersionsCustomData).length;
-          let curVersionDlStatus;
-          if (modelVersionId && modelVersionId === version.id) {
-            curVersionDlStatus = true;
-          } else {
-            curVersionDlStatus = versionsDownloadStatus.find(
-              (dlData) => Number.parseInt(dlData.id) === version.id
-            )?.value;
-          }
-
-          const dlStatus =
-            versionsDownloadStatus.length || modelVersionId === version.id
-              ? !!curVersionDlStatus
-              : false;
-          const currVersionData = modelVersionsCustomData.hasOwnProperty(
-            version.id
-          )
-            ? modelVersionsCustomData[version.id]
-            : {};
-
-          let fileName;
-          if (version.hasOwnProperty("files") && version?.files) {
-            fileName = clearFileExtension(
-              version.files.find((file) => file?.primary).name
-            ).toLowerCase();
-          }
-
-          const defActTag =
-            fileName && data?.type === "LORA" ? `<lora:${fileName}:1>` : "";
-
-          modelVersionsCustomData = {
-            ...modelVersionsCustomData,
-            [version.id]: {
-              versionId: version.id,
-              index: version.index,
-              name: version.name,
-              versionName: version.name,
-              baseModel: version.baseModel,
-              defActTag,
-              trainedWords:
-                version?.trainedWords?.flatMap((word) => {
-                  return splitTags(word);
-                }) || [],
-              defFileName: fileName || "",
-              versionImageUrl: version?.images ? version?.images[0]?.url : "",
-              ...currVersionData,
-              downloadStatus: isSingle && !i ? true : dlStatus,
-            },
-          };
-        });
-
-        const activePreviewId = modelVersions.find(
-          (version) =>
-            modelVersionsCustomData[version.id].downloadStatus === true
-        )?.id;
-
-        const activePreviewImg =
-          (activePreviewId &&
-            modelVersions
-              ?.find((version) => version.id === activePreviewId)
-              .images?.filter((img, i) => img.type === "image")[0]) ||
-          "";
-
-        const previewImgDefault = modelVersions[0]?.images[0] || "";
-
-        const previewImgData = activePreviewImg || previewImgDefault;
-        const { previewSrc } = transformSrcPreview(
-          previewImgData?.url,
-          SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
-          previewImgData?.type
-        );
-        const previewImg = previewSrc;
-
-        const fileNames = modelVersions?.flatMap((version) => {
-          if (version.hasOwnProperty("files") && version?.files) {
-            return [
-              ...new Set(
-                version.files
-                  .filter((file) => file?.type === "Model")
-                  .map((file) => clearFileExtension(file?.name).toLowerCase())
-              ),
-            ];
-          }
-          return [];
-        });
-
-        const hashes = modelVersions
-          ?.flatMap((version) => {
-            if (version.hasOwnProperty("files") && version?.files) {
-              return version?.files
-                .filter((file) => file?.type === "Model")
-                .flatMap((file) => Object.values(file?.hashes).filter(Boolean))
-                .map((hash) => hash.toLowerCase());
-            }
-            return [];
-          })
-          .filter(Boolean);
-
-        const customFileNames = Object.values(modelVersionsCustomData)
-          ?.map((version) => {
-            return clearFileExtension(version?.fileName)?.toLowerCase();
-          })
-          .filter(Boolean);
-
-        const nameArr =
-          (modelName || data.name)
-            .replace(/[&/\\#,+()$~%.'":*?<>{}]/g, "")
-            .toLowerCase()
-            .split(" ") || [];
-
-        const versionIds = modelVersions?.map((version) => version.id) || [];
-
-        const baseModels = [
-          ...new Set(
-            modelVersions?.flatMap((version) => version?.baseModel || [])
-          ),
-        ];
-
-        // Get a new write batch
-        const batch = writeBatch(firestore);
-
-        let newCategory = false;
-        let newSubcategory = false;
-        let newBaseModel = false;
-
-        const curUserBaseModels = curBaseModels;
-
-        if (!curUserBaseModels?.length) {
-          newBaseModel = true;
-        } else {
-          baseModels.forEach((baseModel) => {
-            const exists = curUserBaseModels.some(
-              (curBaseModel) => curBaseModel === baseModel
-            );
-            if (!exists) {
-              newBaseModel = true;
-            }
-          });
-        }
-
-        let updatedCategories;
-        let mainId;
-        let subIds;
-        const mainCategoryData = categories[modelType]?.find(
-          (category) => category.name?.toLowerCase() === main?.toLowerCase()
-        );
-
-        if (!mainCategoryData) {
-          newCategory = true;
-          const currCategories = categories[modelType] || [];
-          mainId = createCategoryId(main, categories[modelType]);
-          subIds = sub;
-          updatedCategories = [
-            ...currCategories,
-            {
-              id: mainId,
-              name: main,
-              subcategories: sub.map((subcategory) => {
-                return { id: subcategory, name: subcategory };
-              }),
-            },
-          ];
-        } else {
-          mainId = mainCategoryData.id;
-          subIds = [];
-          const newSubcategoriesData = sub.flatMap((subcategory) => {
-            const subExists = mainCategoryData.subcategories.find(
-              (oldSucategories) =>
-                oldSucategories.name?.toLowerCase() ===
-                subcategory?.toLowerCase()
-            );
-
-            if (!subExists) {
-              newSubcategory = true;
-              const categoryId = createCategoryId(
-                subcategory,
-                mainCategoryData.subcategories
-              );
-
-              subIds = [...subIds, categoryId];
-              return {
-                id: categoryId,
-                name: subcategory,
-              };
-            } else {
-              subIds = [...subIds, subExists.id];
-              return [];
-            }
-          });
-          const mainCategoryIndex = categories[modelType].findIndex(
-            (category) => category.name === main
-          );
-
-          const curUpdatedCategory = {
-            id: mainId,
-            name: mainCategoryData.name,
-            subcategories: [
-              ...mainCategoryData.subcategories,
-              ...newSubcategoriesData,
-            ],
-          };
-          updatedCategories = [
-            ...categories[modelType].slice(0, mainCategoryIndex),
-            curUpdatedCategory,
-            ...categories[modelType].slice(mainCategoryIndex + 1),
-          ];
-        }
-
-        const categoryField = `categoriesById.${modelType}`;
-
-        if (newBaseModel || newCategory || newSubcategory) {
-          if (!categories) {
-            batch.set(
-              userRef,
-              {
-                categoriesById: { [modelType]: updatedCategories },
-                baseModels: baseModels,
-              },
-              { merge: true }
-            );
-          } else {
-            batch.update(
-              userRef,
-              {
-                [categoryField]: updatedCategories,
-                baseModels: arrayUnion(...baseModels),
-              },
-              { merge: true }
-            );
-          }
-        }
-
-        let createdAt;
-        if (modelData?.createdAt) {
-          createdAt = Number.isFinite(modelData?.createdAt)
-            ? modelData?.createdAt
-            : Date.parse(modelData?.createdAt);
-        } else {
-          createdAt = Date.parse(modelData?.downloadedAt) || Date.now();
-        }
-
-        const modelInfo = {
-          defaultCustomData: {},
-          ...modelData,
-          id: modelData?.id || +modelId,
-          versionIds,
-          modelType,
-          main: mainId,
-          sub: subIds,
-          name: modelName || data.name,
-          hashtags,
-          mainTag,
-          nsfw: nsfwInput || false,
-          src: "civitai.com",
-          modelVersionsCustomData,
-          savedImages: modelData?.savedImages || {},
-          updatedAt: new Date().toISOString(),
-          createdAt,
-        };
-
-        let previewModelVersionsCustomData = {};
-
-        Object.values(modelVersionsCustomData).forEach((version) => {
-          if (version?.versionId) {
-            previewModelVersionsCustomData[version.versionId] = {
-              size: version?.size || "",
-              weight: version?.weight || null,
-              minWeight: version?.minWeight || null,
-              maxWeight: version?.maxWeight || null,
-              fileName: version?.fileName || "",
-              name: version?.name || "",
-              mainTag: version?.mainTag || "",
-              index: version?.index || null,
-              downloadStatus: version?.downloadStatus || false,
-              trainedWords: version?.trainedWords || [],
-              defActTag: version?.defActTag || "",
-              versionId: version?.versionId || null,
-              defFileName: version?.defFileName || "",
-              versionImageUrl: version?.versionImageUrl || "",
-              baseModel: version?.baseModel || "",
-              versionName: version?.versionName || "",
-            };
-          }
-        });
-
-        const loraPrevData = {
-          id: modelData?.id || modelId,
-          versionIds,
-          modelType,
-          src: "civitai.com",
-          main: mainId,
-          sub: subIds,
-          name: modelName || data.name || "",
-          nameArr,
-          imgUrl: previewImg || "",
-          imgType: previewImgData?.type || "",
-          type: data.type,
-          creator: data?.creator || "",
-          nsfw: nsfwInput || false,
-          nsfwLevel: data?.nsfwLevel || "",
-          baseModel: modelVersions[0].baseModel,
-          baseModels: [...baseModels],
-          mainTag,
-          fileName,
-          latestFileName: !!fileNames?.length ? fileNames[0] : "",
-          hashes,
-          fileNames,
-          customFileNames,
-          size,
-          authorTags: hashtags?.length ? hashtags : data.tags,
-          modelVersionsCustomData: previewModelVersionsCustomData,
-          updatedAt: new Date().toISOString(),
-          createdAt,
-        };
-
-        const curPrevData = modelsPrevRefSnap.data() || {};
-
-        batch.set(modelsRef, modelInfo);
-
-        batch.set(modelsPrevRef, { ...curPrevData, ...loraPrevData });
-
-        // Commit the batch
-        await batch.commit();
-
-        if (newBaseModel) {
-          const updatedBaseModels = [
-            ...new Set([...baseModels, ...curBaseModels]),
-          ];
-          dispatch(tabActions.setBaseModels(updatedBaseModels));
-        }
-
-        setModelIsSaving(false);
-        setShowErrorMessage(false);
-        setSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
-        setSavedModel(modelId);
-        if (onSave) onSave(loraPrevData);
-        if (!modelData) {
-          setIdInput({
-            value: newModelId ? newModelId + "" : "",
-            isValid: false,
-          });
-          setSubCatInputs([
-            { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
-          ]);
-          setMainCategorySelected({});
-        }
+      if (baseModels) {
+        dispatch(tabActions.setBaseModels(baseModels));
       }
+
+      if (onSave) onSave(preview);
+
+      if (!modelData) {
+        setIdInput({
+          value: newModelId ? newModelId + "" : "",
+          isValid: false,
+        });
+        setSubCatInputs([
+          { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
+        ]);
+        setMainCategorySelected({});
+      }
+
+      setSavedModel(modelId);
+      setSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
+      setShowErrorMessage(false);
+      setModelIsSaving(false);
     } catch (err) {
-      // console.log(err);
       if (err.message === ERROR_MESSAGE_EXISTS) {
         setSavedModel(modelId);
       }
@@ -847,7 +455,7 @@ const UpdateModelForm = ({
 
   return (
     <form
-      onSubmit={saveModelHandler}
+      onSubmit={submitFormHandler}
       className={`${classes["form"]} ${className || ""}`}
     >
       {modelData && (

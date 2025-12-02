@@ -63,18 +63,23 @@ const ModelDefImages = () => {
           );
         }
 
-        setCurVersionImages(curImages);
+        if (curImages?.length) setCurVersionImages(curImages);
       } catch (err) {
         handleErrors(err);
       } finally {
         setCurVersionImagesIsLoading(false);
       }
     };
-
-    if (!!model?.id && !!curVersion?.id && !!model?.data) {
+    console.log(curVersionImages?.length);
+    if (
+      !!model?.id &&
+      !!curVersion?.id &&
+      !!model?.data &&
+      !curVersionImages?.length
+    ) {
       getCurVersionImages();
     }
-  }, [model, curVersion, uid]);
+  }, [model, curVersion, uid, curVersionImages]);
 
   return (
     <div

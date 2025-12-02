@@ -6,6 +6,10 @@ import { throwCustomError } from "./generalUtils";
  * @returns {Array} an array with the model ID as the first element and the version ID as the second one
  */
 export const parseModelIds = (value) => {
+  if (Number.isFinite(+value)) {
+    return [+value, null];
+  }
+
   if (value.includes("urn:air")) {
     const airArr = value.split(":");
     const ids = airArr[airArr.length - 1]
@@ -13,28 +17,26 @@ export const parseModelIds = (value) => {
       .map((id) => parseFloat(id));
 
     return ids;
+  }
+
+  const urlArr = value.split("/");
+  const modelIdIndex = urlArr.findIndex((urlPart) => urlPart === "models") + 1;
+  const modelVersionIdUrlArr = urlArr
+    .find((urlPart) => urlPart.includes("modelVersionId"))
+    ?.split("=");
+
+  if (modelIdIndex < 0) {
+    throwCustomError("Invalid ID");
   } else {
-    const urlArr = value.split("/");
-    const modelIdIndex =
-      urlArr.findIndex((urlPart) => urlPart === "models") + 1;
-    const modelVersionIdUrlArr = urlArr
-      .find((urlPart) => urlPart.includes("modelVersionId"))
-      ?.split("=");
+    const modelId = parseInt(urlArr[modelIdIndex]) || null;
+    let modelVersionId = null;
 
-    if (modelIdIndex < 0) {
-      throwCustomError("Invalid ID");
-    } else {
-      const modelId = parseInt(urlArr[modelIdIndex]) || null;
-      let modelVersionId = null;
-
-      if (modelVersionIdUrlArr?.length) {
-        modelVersionId =
-          parseInt(modelVersionIdUrlArr[modelVersionIdUrlArr.length - 1]) ||
-          null;
-      }
-
-      return [modelId, modelVersionId];
+    if (modelVersionIdUrlArr?.length) {
+      modelVersionId =
+        parseInt(modelVersionIdUrlArr[modelVersionIdUrlArr.length - 1]) || null;
     }
+
+    return [modelId, modelVersionId];
   }
 };
 
