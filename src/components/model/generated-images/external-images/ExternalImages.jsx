@@ -60,8 +60,9 @@ const ExternalImages = memo(({ modelId, curImagesModelVersionId, sortBy }) => {
 
   const imagesSortedByPost = useMemo(() => {
     let images = fixCivImagesMeta(fetchedImages);
+
     if (EXAMPLE_MODEL_FILTER_CIV && modelId === EXAMPLE_MODEL_ID) {
-      images = filterNsfwImages(fetchedImages, EXAMPLE_MODEL_FILTER_LVL);
+      images = filterNsfwImages(images, EXAMPLE_MODEL_FILTER_LVL);
     }
 
     return groupAndSortByField(images, "postId", "createdAt");

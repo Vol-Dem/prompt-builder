@@ -14,19 +14,19 @@
   width: 5rem;
   overflow: hidden;
 
-  &:hover {
-    overflow: visible;
-  }
+  // &:hover {
+  //   overflow: visible;
+  // }
 
-  &:hover &__btn--collection {
-    top: 0;
-    opacity: 1;
-    z-index: 1;
-  }
+  // &:hover &__btn--collection {
+  //   top: 0;
+  //   opacity: 1;
+  //   z-index: 1;
+  // }
 
-  &:hover .btn-save__amount {
-    top: 7.8rem;
-  }
+  // &:hover .btn-save__amount {
+  //   top: 7.8rem;
+  // }
 
   &__btn {
     position: relative;
@@ -67,6 +67,10 @@
 
   &:hover &__btn-text {
     opacity: 1;
+  }
+
+  &__btn--mobile {
+    display: none;
   }
 }
 
@@ -121,17 +125,35 @@
   }
 }
 
-@media (max-width: 768px) {
+.btn-choose {
+  width: 100%;
+  margin-top: 2rem;
+}
+
+@media (min-width: 768px) {
   .save {
-    overflow: visible;
+    &:hover {
+      overflow: visible;
+    }
+
+    &:hover &__btn--collection {
+      top: 0;
+      opacity: 1;
+      z-index: 1;
+    }
+
+    &:hover .btn-save__amount {
+      top: 7.8rem;
+    }
   }
-  .save__btn--collection {
-    top: 0;
-    opacity: 1;
-    z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .save__btn--mobile {
+    display: inherit;
   }
 
-  .btn-save__amount {
-    top: 7.8rem;
+  .save__btn:not(.save__btn--mobile, .save__btn--collection) {
+    display: none;
   }
 }

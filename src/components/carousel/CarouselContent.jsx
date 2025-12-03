@@ -468,6 +468,11 @@ const CarouselContent = ({
         )}
         {imageFormState?.isOpen && (
           <Modal
+            title={
+              imageFormState?.location === "collections"
+                ? "Save to collection"
+                : null
+            }
             onClose={() => {
               setImageFormState((prevState) => ({
                 ...prevState,

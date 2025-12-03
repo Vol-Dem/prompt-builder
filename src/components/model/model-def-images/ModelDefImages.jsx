@@ -70,7 +70,7 @@ const ModelDefImages = () => {
         setCurVersionImagesIsLoading(false);
       }
     };
-    console.log(curVersionImages?.length);
+
     if (
       !!model?.id &&
       !!curVersion?.id &&
