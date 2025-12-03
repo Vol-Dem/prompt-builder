@@ -53,12 +53,16 @@ const useTouchOpenState = (
 
       if (!!offcet && forwardOpen && Math.abs(offcet) > thresholdOpen) {
         setIsOpen(true);
+        if (stateChangeCallback && typeof stateChangeCallback === "function")
+          stateChangeCallback(true);
       } else if (
         !!offcet &&
         forwardClose &&
         Math.abs(offcet) > thresholdClose
       ) {
         setIsOpen(false);
+        if (stateChangeCallback && typeof stateChangeCallback === "function")
+          stateChangeCallback(false);
       }
     };
 
@@ -83,12 +87,8 @@ const useTouchOpenState = (
     cursorInitialPoint,
     thresholdOpen,
     thresholdClose,
+    stateChangeCallback,
   ]);
-
-  useEffect(() => {
-    if (stateChangeCallback && typeof stateChangeCallback === "function")
-      stateChangeCallback(isOpen);
-  }, [isOpen, stateChangeCallback]);
 
   return isOpen;
 };

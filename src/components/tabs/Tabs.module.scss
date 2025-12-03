@@ -189,6 +189,12 @@
   margin-top: 1rem;
 }
 
+@media (max-width: 1024px) {
+  .tag-menu {
+    margin-top: 1rem;
+  }
+}
+
 @media (max-width: 600px) {
   .guide {
     display: none;
