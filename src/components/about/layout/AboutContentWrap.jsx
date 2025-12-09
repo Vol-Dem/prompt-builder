@@ -6,6 +6,17 @@ import {
 import classes from "./AboutContentWrap.module.scss";
 import AboutNavBtnContainer from "./AboutNavBtnContainer";
 
+/**
+ * Content wrapper for the About section.
+ *
+ * Renders the content of the About section and buttons for navigating between sections
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {React.ReactNode} props.children - Nested About section content.
+ * @returns {JSX.Element} The About section content with navigation buttons.
+ */
 const AboutContentWrap = ({ children }) => {
   return (
     <motion.div

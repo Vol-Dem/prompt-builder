@@ -20,6 +20,12 @@ import H1 from "../ui/text/H1";
 import AboutContentWrap from "./layout/AboutContentWrap";
 import AboutSection from "./layout/AboutSection";
 
+/**
+ * Content for the About page "Image collections" section.
+ *
+ * @component
+ * @returns {JSX.Element} The "Image collections" section content.
+ */
 const AboutImageCollections = () => {
   return (
     <AboutContentWrap>

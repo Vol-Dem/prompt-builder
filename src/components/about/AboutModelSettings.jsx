@@ -11,6 +11,12 @@ import AboutContentWrap from "./layout/AboutContentWrap";
 import H1 from "../ui/text/H1";
 import AboutSection from "./layout/AboutSection";
 
+/**
+ * Content for the About page "Model Settings" section.
+ *
+ * @component
+ * @returns {JSX.Element} The "Model Settings" section content.
+ */
 const AboutModelSettings = () => {
   return (
     <AboutContentWrap>

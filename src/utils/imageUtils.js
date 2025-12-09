@@ -8,10 +8,10 @@ import { parseModelIds } from "./modelUtils";
 
 /**
  * Creates a new src link to request image/video with desired width and separate links for video in different formats
- * @param {String} src - image/video src
- * @param {Number} width - desired image/video width
- * @param {String} type - file type: "video" or "image"
- * @returns {Object} object with previews {previewSrc, previewVideoWebmSrc, previewVideoMp4Src, originalVideoMp4Src, originalVideoWebmSrc}
+ * @param {string} src - image/video src
+ * @param {number} width - desired image/video width
+ * @param {string} type - file type: "video" or "image"
+ * @returns {object} object with previews {previewSrc, previewVideoWebmSrc, previewVideoMp4Src, originalVideoMp4Src, originalVideoWebmSrc}
  */
 export const transformSrcPreview = (
   src,
@@ -76,8 +76,8 @@ export const transformSrcPreview = (
 
 /**
  * Parce post ID from post url (can be post url or post ID)
- * @param {String} postInput - input string
- * @returns {Number} post ID
+ * @param {string} postInput - input string
+ * @returns {number} post ID
  */
 export const getPostIdFromInput = (postInput) => {
   if (Number.isFinite(+postInput)) {
@@ -96,8 +96,8 @@ export const getPostIdFromInput = (postInput) => {
 /**
  * Parce uniq ID from video url
  * (to have a unique value due to another Civitai bug with the same hash for all videos in a post)
- * @param {String} url - image url
- * @returns {String} uniq ID
+ * @param {string} url - image url
+ * @returns {string} uniq ID
  */
 export const getUrlId = (url) => {
   if (typeof url !== "string") return null;
@@ -106,8 +106,8 @@ export const getUrlId = (url) => {
 
 /**
  * Check if current url is video
- * @param {String} url - url
- * @returns {Boolean}
+ * @param {string} url - url
+ * @returns {boolean}
  */
 export const checkIsVideo = (url) => {
   if (typeof url !== "string") return;
@@ -120,9 +120,9 @@ export const checkIsVideo = (url) => {
 
 /**
  * Removes images that are not in the current NSFW range.
- * @param {Array} images - images data
- * @param {String} nsfwLevel - current NSFW Level
- * @returns {Array} filtered images
+ * @param {array} images - images data
+ * @param {string} nsfwLevel - current NSFW Level
+ * @returns {array} filtered images
  */
 export const filterNsfwImages = (images, nsfwLevel) => {
   return images?.filter((image) => {
@@ -139,10 +139,10 @@ export const filterNsfwImages = (images, nsfwLevel) => {
 
 /**
  * Creates an array of arrays in which all elements are grouped and sorted by a specified fields
- * @param {Array} items - array of objects
- * @param {String} groupBy - field to group by
- * @param {String} sortBy - field to sort by
- * @returns {Array} an array of arrays in which all elements are grouped and sorted by a specified fields
+ * @param {array} items - array of objects
+ * @param {string} groupBy - field to group by
+ * @param {string} sortBy - field to sort by
+ * @returns {array} an array of arrays in which all elements are grouped and sorted by a specified fields
  */
 export const groupAndSortByField = (items, groupBy, sortBy) => {
   const sortedItems = {};
@@ -179,8 +179,8 @@ export const groupAndSortByField = (items, groupBy, sortBy) => {
 
 /**
  * Removes empty keys and comfy data from image meta
- * @param {Object} image - image data
- * @returns {Object} cleaned image data
+ * @param {object} image - image data
+ * @returns {object} cleaned image data
  */
 export const cleanImageMeta = (image) => {
   if (image?.meta) {
@@ -203,8 +203,8 @@ export const cleanImageMeta = (image) => {
 
 /**
  * Creates array of uniq image resources
- * @param {Object} imageData - image data
- * @returns {Array} aray of unique image resources
+ * @param {object} imageData - image data
+ * @returns {array} aray of unique image resources
  */
 export const getUniqImageResources = (imageData) => {
   let imageResources = [];

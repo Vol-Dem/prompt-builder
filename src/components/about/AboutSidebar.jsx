@@ -18,10 +18,15 @@ import H1 from "../ui/text/H1";
 import H3 from "../ui/text/H3";
 import AboutSection from "./layout/AboutSection";
 
+/**
+ * Content for the About page "Sidebar" section.
+ *
+ * @component
+ * @returns {JSX.Element} The "Sidebar" section content.
+ */
 const AboutSidebar = () => {
   return (
     <AboutContentWrap>
-      {" "}
       <H1 id="sidebar" className={classes["about__h2"]}>
         Sidebar
       </H1>
@@ -29,8 +34,6 @@ const AboutSidebar = () => {
         <Text>
           The sidebar gives you quick access to the models and images you want
           to use right now.
-          {/* You can add up to three reference images and as many
-          models as you like. */}
         </Text>
         <AboutSection id="references">
           <H3>Adding References</H3>

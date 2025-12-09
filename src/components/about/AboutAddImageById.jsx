@@ -5,6 +5,12 @@ import Image from "../ui/image/Image";
 import TextHighlight from "../ui/text/TextHighlight";
 import TextImageBlock from "../ui/text/TextImageBlock";
 
+/**
+ * Content for the About page "Add image by post ID" section.
+ *
+ * @component
+ * @returns {JSX.Element} The "Add image by post ID" section content.
+ */
 const AboutAddImageById = () => {
   return (
     <NotificationMessage className={classes.notification}>

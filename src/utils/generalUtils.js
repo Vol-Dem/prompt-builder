@@ -10,7 +10,7 @@ import { isNumber } from "./validationUtils";
 
 /**
  * Removes unsupported Firestore symbols from object keys
- * @param {Object} obj - The object
+ * @param {object} obj - The object
  * @returns The cleaned object
  */
 export const clearObjectKeys = (obj) => {
@@ -35,7 +35,7 @@ export const clearObjectKeys = (obj) => {
 /**
  * Removes supported file extensions from file name.
  * Supported file extensions: safetensors, pt, pth, ckpt, mp4, mov, webm
- * @param {String} name - The file name
+ * @param {string} name - The file name
  * @returns The file name without the file extension
  */
 export const clearFileExtension = (name) => {
@@ -54,7 +54,7 @@ export const clearFileExtension = (name) => {
 
 /**
  * Adds a promise that resolves after the specified delay
- * @param {Number} delay - The delay in ms
+ * @param {number} delay - The delay in ms
  * @returns {Promise} The promise that resolves after the specified delay
  */
 export const addDelayPromise = (delay) => {
@@ -80,7 +80,7 @@ export const convertToString = (value) => {
 
 /**
  * Freezes scroll
- * @param {Number} scrollTop - The distance to the top
+ * @param {number} scrollTop - The distance to the top
  */
 export const disableScrollHandler = (scrollTop) => {
   window.scrollTo(0, scrollTop);
@@ -88,7 +88,7 @@ export const disableScrollHandler = (scrollTop) => {
 
 /**
  * Throws a new error with isCustom set to true
- * @param {String} message - The error message
+ * @param {string} message - The error message
  */
 export const throwCustomError = (message) => {
   const error = new Error(message);
@@ -98,8 +98,8 @@ export const throwCustomError = (message) => {
 
 /**
  * Handles caught errors and returns a custom or default error message
- * @param {Object} err - The error object
- * @returns {String} - The custom or default error message
+ * @param {object} err - The error object
+ * @returns {string} - The custom or default error message
  */
 export const handleErrors = (err) => {
   let errorMessage = ERROR_MESSAGE_DEFAULT;
@@ -120,7 +120,7 @@ export const handleErrors = (err) => {
 
 /**
  * Checks if the current user's device is mobile
- * @returns {Boolean} True if the device is mobile, otherwise false
+ * @returns {boolean} True if the device is mobile, otherwise false
  */
 export const checkIsMobile = () => {
   return REGEX_MOBAL.test(navigator.userAgent);
@@ -138,9 +138,9 @@ export const disableAnimationsOnMobile = () => {
 
 /**
  * Checks if the provided value is within the current allowed NSFW range
- * @param {String} curNsfwLevel - The current active NSFW level
- * @param {String} curNsfwvalue - The current NSFW value to check
- * @returns {Boolean} True if the value is within range, otherwise false
+ * @param {string} curNsfwLevel - The current active NSFW level
+ * @param {string} curNsfwvalue - The current NSFW value to check
+ * @returns {boolean} True if the value is within range, otherwise false
  */
 export const checkIsInCurrentNsfwRange = (curNsfwLevel, curNsfwvalue) => {
   const nsfwValues = SETTINGS_NSFW_VALUES_DATA.map(
@@ -156,9 +156,9 @@ export const checkIsInCurrentNsfwRange = (curNsfwLevel, curNsfwvalue) => {
 
 /**
  * Filters duplicate values from an array of objects by an object field
- * @param {Array} arr - The array of objects
- * @param {String} field - The object field
- * @returns {Array} The filtered array
+ * @param {array} arr - The array of objects
+ * @param {string} field - The object field
+ * @returns {array} The filtered array
  */
 export const filterDuplicates = (arr, field) => {
   if (!Array.isArray(arr) || !arr?.length) return arr;
@@ -176,9 +176,9 @@ export const filterDuplicates = (arr, field) => {
 
 /**
  * Creates a category ID from the category name
- * @param {String} id - The category name
- * @param {Object} categoriesData - The existing categories data
- * @returns {String} The created ID
+ * @param {string} id - The category name
+ * @param {object} categoriesData - The existing categories data
+ * @returns {string} The created ID
  */
 export const createCategoryId = (id, categoriesData) => {
   if (!id) {
@@ -215,7 +215,7 @@ export const createCategoryId = (id, categoriesData) => {
 
 /**
  * Generates a collection ID
- * @param {Array} collectionCategories - The existing collection data
+ * @param {array} collectionCategories - The existing collection data
  * @returns The collection ID
  */
 export const createCollectionId = (collectionCategories) => {
@@ -233,10 +233,10 @@ export const createCollectionId = (collectionCategories) => {
  * Universal sort function.
  * Sorts an array by object field when the field is specified.
  * Sorts by value when the field is not specified.
- * @param {Array} arr - The array to sort
- * @param {String} field - The object field to sort by
+ * @param {array} arr - The array to sort
+ * @param {string} field - The object field to sort by
  * @param {('asc'|'desc')} direction - The sort direction ("asc" or "desc")
- * @returns {Array} The new sorted array of objects
+ * @returns {array} The new sorted array of objects
  */
 export const sortArrayBy = (arr, field = null, direction = "asc") => {
   if (!arr) return;
@@ -260,8 +260,8 @@ export const sortArrayBy = (arr, field = null, direction = "asc") => {
 
 /**
  * Sorts an object by keys
- * @param {Object} obj - The object to sort
- * @returns {Boolean} The new sorted object
+ * @param {object} obj - The object to sort
+ * @returns {boolean} The new sorted object
  */
 export const sortObjectByKeys = (obj) => {
   return Object.keys(obj)
@@ -274,9 +274,9 @@ export const sortObjectByKeys = (obj) => {
 
 /**
  * Checks arrays for equality
- * @param {Array} arr1 - The first array
- * @param {Array} arr2 - The second array
- * @returns {Boolean} True if the arrays are equal, otherwise false
+ * @param {array} arr1 - The first array
+ * @param {array} arr2 - The second array
+ * @returns {boolean} True if the arrays are equal, otherwise false
  */
 export const checkArraysIsEqual = (arr1, arr2) => {
   return arr1?.toSorted().toString() === arr2?.toSorted().toString();
@@ -284,9 +284,9 @@ export const checkArraysIsEqual = (arr1, arr2) => {
 
 /**
  * Checks objects for equality
- * @param {Object} obj1 - The first object
- * @param {Object} obj2 - The second object
- * @returns {Boolean} True if the objects are equal, otherwise false
+ * @param {object} obj1 - The first object
+ * @param {object} obj2 - The second object
+ * @returns {boolean} True if the objects are equal, otherwise false
  */
 export const checkObjectsIsEqual = (obj1, obj2) => {
   return (
@@ -297,7 +297,7 @@ export const checkObjectsIsEqual = (obj1, obj2) => {
 
 /**
  * Enables smooth scroling
- * @param {String} hashId - The element ID
+ * @param {string} hashId - The element ID
  * @returns
  */
 export const smoothScroll = (hashId) => {
@@ -312,9 +312,9 @@ export const smoothScroll = (hashId) => {
 
 /**
  *  Adds a new entry to the URL search params
- * @param {String} prevParams - The previous params
- * @param {String} newEntry  - The new search params entry
- * @returns {String} The updated URL search params
+ * @param {string} prevParams - The previous params
+ * @param {string} newEntry  - The new search params entry
+ * @returns {string} The updated URL search params
  */
 export const updateSearchParams = (prevParams, newEntry) => {
   return new URLSearchParams({
@@ -325,8 +325,8 @@ export const updateSearchParams = (prevParams, newEntry) => {
 
 /**
  * Parses the intersection field value and converts it to a suitable form
- * @param {Number | String} value - The margin value
- * @returns {String} The intersection margin value in a suitable form
+ * @param {number | string} value - The margin value
+ * @returns {string} The intersection margin value in a suitable form
  */
 export const parseIntersectionMargin = (value) => {
   let rootMarginValue;
@@ -348,7 +348,7 @@ export const parseIntersectionMargin = (value) => {
 /**
  *
  * @param {Event} e - event
- * @returns {{clientX: Number, clientY: Number}}
+ * @returns {{clientX: number, clientY: number}}
  */
 export const getClientCoord = (e) => {
   const clientX = Math.round(e.clientX || e.touches[0].clientX);

@@ -16,7 +16,6 @@ const About = ({ title }) => {
     <div className={classes.about}>
       <AboutNav />
       <div className={classes["about__content"]}>
-        <div className="terminal-header__date-time"></div>
         <Outlet />
       </div>
     </div>

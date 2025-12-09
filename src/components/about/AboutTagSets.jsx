@@ -14,6 +14,12 @@ import NotificationMessage from "../ui/NotificationMessage";
 import TextButtonSecondary from "../ui/text/text-buttons/TextButtonSecondary";
 import AboutSection from "./layout/AboutSection";
 
+/**
+ * Content for the About page "Tag Sets" section.
+ *
+ * @component
+ * @returns {JSX.Element} The "Tag Sets" section content.
+ */
 const AboutTagSets = () => {
   return (
     <>

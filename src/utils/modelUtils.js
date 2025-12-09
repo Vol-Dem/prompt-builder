@@ -2,8 +2,8 @@ import { throwCustomError } from "./generalUtils";
 
 /**
  * Parse model an version IDs from string (ID, URL, AIR)
- * @param {String} value - string value
- * @returns {Array} an array with the model ID as the first element and the version ID as the second one
+ * @param {string} value - string value
+ * @returns {array} an array with the model ID as the first element and the version ID as the second one
  */
 export const parseModelIds = (value) => {
   if (Number.isFinite(+value)) {
@@ -42,8 +42,8 @@ export const parseModelIds = (value) => {
 
 /**
  * Sort model versions by index and removes one that was not updated by current user.
- * @param {*} model - model data
- * @returns {Array} - sorted and filtered model versions
+ * @param {object} model - model data
+ * @returns {array} - sorted and filtered model versions
  */
 export const sortModelVersions = (model) => {
   return model?.data?.modelVersions
@@ -62,10 +62,10 @@ export const sortModelVersions = (model) => {
 
 /**
  * Get initial current version ID
- * @param {Object} model - model data
- * @param {Array} modelVersions - model versions
- * @param {String} versionIdParam - search param ID
- * @returns  {Number} version ID
+ * @param {object} model - model data
+ * @param {array} modelVersions - model versions
+ * @param {string} versionIdParam - search param ID
+ * @returns {number} version ID
  */
 export const getCurrentVersionId = (model, modelVersions, versionIdParam) => {
   let curVersionId;
@@ -87,9 +87,9 @@ export const getCurrentVersionId = (model, modelVersions, versionIdParam) => {
 
 /**
  * Compare old and new model data and returns new model versions
- * @param {Object} newModelData - new model data
- * @param {Object} oldModelData - old model data
- * @returns {Array} new model versions
+ * @param {object} newModelData - new model data
+ * @param {object} oldModelData - old model data
+ * @returns {array} new model versions
  */
 export const filterNewModelVersions = (newModelData, oldModelData) => {
   const newVersions = newModelData?.modelVersions?.filter(
@@ -104,10 +104,10 @@ export const filterNewModelVersions = (newModelData, oldModelData) => {
 
 /**
  * Creates object with preview data
- * @param {Object} model - model data
- * @param {Object} curVersion - current version data
- * @param {Object} curCustomVersionData - current custom version data
- * @returns {Object} preview data
+ * @param {object} model - model data
+ * @param {object} curVersion - current version data
+ * @param {object} curCustomVersionData - current custom version data
+ * @returns {object} preview data
  */
 export const createModelPreviewData = (
   model,
@@ -148,8 +148,8 @@ export const createModelPreviewData = (
 
 /**
  * Parse model type from string
- * @param {String} value - string value
- * @returns {String} model type
+ * @param {string} value - string value
+ * @returns {string} model type
  */
 export const parseMoelType = (value) => {
   return value
@@ -163,8 +163,8 @@ export const parseMoelType = (value) => {
  * Selects the initial version data:
  * - Selects by version ID search parameter if corresponding version data is present
  * - Selects the latest saved version if the version ID search parameter is missing.
- * @param {Object} model - model data
- * @param {String} versionIdParam - version ID search parameter
+ * @param {object} model - model data
+ * @param {string} versionIdParam - version ID search parameter
  * @returns version data
  */
 export const getInitialVersionData = (model, versionIdParam) => {

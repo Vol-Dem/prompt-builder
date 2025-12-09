@@ -7,6 +7,17 @@ import { ListBulletIcon } from "@heroicons/react/24/outline";
 import LeftSidebar from "../../layout/left-sidebar/LeftSidebar";
 import AboutNavItem from "./about-nav-item/AboutNavItem";
 
+/**
+ * Navigation component for the About section.
+ *
+ * Handles opening and closing the sidebar navigation, smooth scrolling to
+ * hash-based sections, and rendering nested navigation items from the
+ * ABOUT_NAV_DATA structure.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} The About navigation sidebar with section links.
+ */
 const AboutNav = () => {
   const [navIsOpen, setNavIsOpen] = useState(false);
   const location = useLocation();
@@ -14,6 +25,7 @@ const AboutNav = () => {
   useEffect(() => {
     const hash = location.hash;
 
+    //Smooth-scrolls to target sections when URL hash changes
     if (hash) {
       smoothScroll(hash);
     }
@@ -25,11 +37,14 @@ const AboutNav = () => {
 
   const closeNavHandler = (url) => {
     const curPageUrl = location.pathname.split("/").slice(-1)[0];
+
+    //If navigating to a different page, resets the scroll position to the top.
     if (curPageUrl !== url) window.scrollTo(0, 0);
+
     setNavIsOpen(false);
   };
 
-  const aboutNavItemsHrml = ABOUT_NAV_DATA.map((item, i) => {
+  const aboutNavItemsHtml = ABOUT_NAV_DATA.map((item, i) => {
     const subNavHtml = item.subNav.map((subItem, j) => {
       return (
         <AboutNavItem
@@ -62,7 +77,7 @@ const AboutNav = () => {
         onOpen={openNavHandler}
         btnContent={<ListBulletIcon />}
       >
-        <List>{aboutNavItemsHrml}</List>
+        <List>{aboutNavItemsHtml}</List>
       </LeftSidebar>
     </>
   );

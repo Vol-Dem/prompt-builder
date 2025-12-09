@@ -8,12 +8,12 @@ const auth = getAuth(firebaseApp);
 
 /**
  * Makes a batch request using the provided fetch function
- * @param {Array} data - The data to fetch
- * @param {Function} fetchFunc - The fetch function
- * @param {Number} concurrencyLimit - The number of simultaneous requests
- * @param {Boolean} returnResult - Whether to return the fetched result
- * @param {Number} delay - The delay between each request in milliseconds
- * @returns {Promise<Array | Void>} A promise that resolves with fetched data if returnResult is true
+ * @param {array} data - The data to fetch
+ * @param {function} fetchFunc - The fetch function
+ * @param {number} concurrencyLimit - The number of simultaneous requests
+ * @param {boolean} returnResult - Whether to return the fetched result
+ * @param {number} delay - The delay between each request in milliseconds
+ * @returns {Promise<array | void>} A promise that resolves with fetched data if returnResult is true
  */
 export const makeBatchRequest = async (
   data,
@@ -51,8 +51,8 @@ export const makeBatchRequest = async (
 
 /**
  * Fetches data from a given URL
- * @param {String} url - The URL to fetch
- * @param {Object} config - The fetch configuration
+ * @param {string} url - The URL to fetch
+ * @param {object} config - The fetch configuration
  * @returns A promise that resolves with the fetched data
  */
 export const fetchData = async (url, config) => {
@@ -68,7 +68,7 @@ export const fetchData = async (url, config) => {
 
 /**
  * Fetches a document from Firestore
- * @param  {...any} docPath - The path to the document
+ * @param  {...string} docPath - The path to the document
  * @returns {Promise} A promise resolved with the document content
  * @throws If the final path has an odd number of segments and does not point to a document.
  */
@@ -89,7 +89,7 @@ export const fetchDataFromFirestore = async (...docPath) => {
 
 /**
  * Fetches a user document from Firestore
- * @param  {...any} docPath - The path to the user document
+ * @param  {...string} docPath - The path to the user document
  * @returns {Promise}  A promise resolved with the document content
  * @throws If the final path has an odd number of segments and does not point to a document.
  */
@@ -100,8 +100,8 @@ export const fetchUserDataFromFirestore = async (...docPath) => {
 
 /**
  * Saves the current guide state to the database
- * @param {Object} guideData - The guide data
- * @param {String} uid - The user ID
+ * @param {object} guideData - The guide data
+ * @param {string} uid - The user ID
  * @returns {Promise<void>} A promise that resolves when the guide state is saved
  */
 export const saveGuideData = async (guideData, uid) => {

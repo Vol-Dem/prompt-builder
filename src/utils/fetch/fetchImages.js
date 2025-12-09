@@ -31,8 +31,8 @@ const auth = getAuth(firebaseApp);
 
 /**
  * Fetches data for all image resources and hashes from Civitai API and DB
- * @param {Object} image - The image data
- * @returns {Array} The updated image resources
+ * @param {object} image - The image data
+ * @returns {array} The updated image resources
  */
 export const getImageInfo = async (image) => {
   try {
@@ -89,8 +89,8 @@ export const getImageInfo = async (image) => {
 
 /**
  * Fetches full resource data and merges it with existing data
- * @param {Array} resourcesData - The existing resource data
- * @returns {Array} The updated resources data
+ * @param {array} resourcesData - The existing resource data
+ * @returns {array} The updated resources data
  */
 export const fetchResourceInfo = async (resourcesData) => {
   try {
@@ -150,7 +150,7 @@ export const fetchResourceInfo = async (resourcesData) => {
 
 /**
  * Deletes image posts from the database
- * @param {Array} posts - The array of posts to delete
+ * @param {array} posts - The array of posts to delete
  */
 export const deleteImagePostDocs = async (posts) => {
   const batch = writeBatch(firestore);
@@ -175,9 +175,9 @@ export const deleteImagePostDocs = async (posts) => {
 
 /**
  * Adds new images to post data in the database or creates new post data if it doesn't exist
- * @param {Object} postInfo - The post data
- * @param {Array} imagesData - The array of image data
- * @returns {Object} An object containing the post ID and the updated array of saved image IDs
+ * @param {object} postInfo - The post data
+ * @param {array} imagesData - The array of image data
+ * @returns {object} An object containing the post ID and the updated array of saved image IDs
  */
 export const updateImagePostData = async (postInfo, imagesData) => {
   try {
@@ -265,10 +265,10 @@ export const updateImagePostData = async (postInfo, imagesData) => {
 
 /**
  * Fetches default model images with generation data from Civitai for the current version
- * @param {Number | String} modelId - The model ID
- * @param {String} username - The username
- * @param {Object} version - The current version data
- * @returns {Array} The images with generation data included
+ * @param {number | string} modelId - The model ID
+ * @param {string} username - The username
+ * @param {object} version - The current version data
+ * @returns {array} The images with generation data included
  */
 export const getVersionImagesFromCiv = async (modelId, username, version) => {
   try {
@@ -296,7 +296,7 @@ export const getVersionImagesFromCiv = async (modelId, username, version) => {
 
 /**
  * Fetches image model data from resources
- * @param {Object} resourcesData - The resource data
+ * @param {object} resourcesData - The resource data
  * @returns The updated resource data
  */
 export const getImageModelInfo = async (resourcesData) => {
@@ -330,9 +330,9 @@ export const getImageModelInfo = async (resourcesData) => {
 
 /**
  * Fetches data for all image resources and hashes from DB, and merges it with existing resource data
- * @param {Object} image - The image data
- * @param {Array} resourcesInfoCiv - The array of image resources from Civitai
- * @returns {Array} The updated image resources
+ * @param {object} image - The image data
+ * @param {array} resourcesInfoCiv - The array of image resources from Civitai
+ * @returns {array} The updated image resources
  */
 export const fetchResourcesInfoFromDB = async (
   curImageData,

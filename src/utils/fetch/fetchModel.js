@@ -41,8 +41,8 @@ const auth = getAuth(firebaseApp);
 
 /**
  * Fetch model data from Civitai
- * @param {Number | String} modelId - The model ID
- * @returns {Object} The model data
+ * @param {number | string} modelId - The model ID
+ * @returns {object} The model data
  */
 export const getModelData = async (modelId) => {
   try {
@@ -75,8 +75,8 @@ export const getModelData = async (modelId) => {
 
 /**
  * Deletes custom user model data, preview, and saved model images
- * @param {String} uid - The user ID
- * @param {Object} model - The model data
+ * @param {string} uid - The user ID
+ * @param {object} model - The model data
  */
 export const deleteModelDoc = async (uid, model) => {
   if (!!model?.savedImages) {
@@ -110,8 +110,8 @@ export const deleteModelDoc = async (uid, model) => {
 
 /**
  * Fetches model data from Civitai
- * @param {Number | String} id - The model ID
- * @returns {Object} The model data
+ * @param {number | string} id - The model ID
+ * @returns {object} The model data
  */
 export const fetchModelFromCivitai = async (id) => {
   const responseCiv = await fetch(`https://civitai.com/api/v1/models/${id}`);
@@ -126,8 +126,8 @@ export const fetchModelFromCivitai = async (id) => {
 
 /**
  * Fetches user custom model data and default model data
- * @param {Number | String} modelId - The model ID
- * @returns {Object} User custom model data with default model data
+ * @param {number | string} modelId - The model ID
+ * @returns {object} User custom model data with default model data
  */
 export const fetchModelData = async (modelId) => {
   const customModelData = await fetchUserDataFromFirestore(
@@ -148,8 +148,8 @@ export const fetchModelData = async (modelId) => {
 
 /**
  * Checks for updates and fetches new model data with updated model versions
- * @param {Number | String} modelId - The model ID
- * @returns {Object} The updated model data
+ * @param {number | string} modelId - The model ID
+ * @returns {object} The updated model data
  */
 export const fetchModelUpdates = async (modelId) => {
   const updateModelResData = await fetchData(
@@ -167,10 +167,10 @@ export const fetchModelUpdates = async (modelId) => {
 
 /**
  * Updates existing custom data, creates custom data for new model versions, and updates the list of existing base models if a new one is found
- * @param {Object} newModelData - The updated model data
- * @param {Array} newVersions - The new model versions
- * @param {Object} model - The old model data
- * @param {Array} curBaseModels - The list of currently existing base models
+ * @param {object} newModelData - The updated model data
+ * @param {array} newVersions - The new model versions
+ * @param {object} model - The old model data
+ * @param {array} curBaseModels - The list of currently existing base models
  */
 export const updateUserCustomModelData = async (
   newModelData,
@@ -295,11 +295,11 @@ export const updateUserCustomModelData = async (
 
 /**
  * Saves model data to database
- * @param {Object} newModelData - The new model data
- * @param {Object} categories - Existed user categories
- * @param {Array} curBaseModels - Existed user base models
- * @param {Object} modelData - Existed model data
- * @returns {{preview: Object, baseModels: Array}} The model's preview data and updated user's base models
+ * @param {object} newModelData - The new model data
+ * @param {object} categories - Existed user categories
+ * @param {array} curBaseModels - Existed user base models
+ * @param {object} modelData - Existed model data
+ * @returns {{preview: object, baseModels: array}} The model's preview data and updated user's base models
  */
 export const saveModelData = async (
   newModelData,

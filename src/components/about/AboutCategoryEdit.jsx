@@ -1,7 +1,6 @@
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import Image from "../ui/image/Image";
 import classes from "./AboutCategoryEdit.module.scss";
-import H2 from "../ui/text/H2";
 import Text from "../ui/text/Text";
 import TextImageBlock from "../ui/text/TextImageBlock";
 import TextContentBlock from "../ui/text/TextContentBlock";
@@ -9,6 +8,12 @@ import TextButtonTertiary from "../ui/text/text-buttons/TextButtonTertiary";
 import AboutContentWrap from "./layout/AboutContentWrap";
 import H1 from "../ui/text/H1";
 
+/**
+ * Content for the About page "Category edit" section.
+ *
+ * @component
+ * @returns {JSX.Element} The "Category edit" section content.
+ */
 const AboutCategoryEdit = () => {
   return (
     <AboutContentWrap>

@@ -2,8 +2,16 @@ import { NavLink, useLocation } from "react-router-dom";
 import classes from "./AboutNavBtnContainer.module.scss";
 import { ABOUT_NAV_DATA } from "../../../variables/constants";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import ButtonTertiary from "../../ui/ButtonTertiary";
 
+/**
+ * Navigation buttons for the About section.
+ *
+ * Handles navigation between nested About section pages
+ *
+ * @component
+ *
+ * @returns {JSX.Element} The About navigation buttons.
+ */
 const AboutNavBtnContainer = () => {
   const location = useLocation();
   const curPageUrl = location.pathname.split("/").slice(-1)[0];
@@ -14,6 +22,9 @@ const AboutNavBtnContainer = () => {
   const btnLeftData = ABOUT_NAV_DATA[curLocationDataIndex - 1];
   const btnRightData = ABOUT_NAV_DATA[curLocationDataIndex + 1];
 
+  /**
+   * Resets the scroll position to the top.
+   */
   const resetScrollHandler = () => {
     window.scrollTo(0, 0);
   };

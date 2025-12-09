@@ -12,6 +12,12 @@ import AboutContentWrap from "./layout/AboutContentWrap";
 import H1 from "../ui/text/H1";
 import { Link } from "react-router-dom";
 
+/**
+ * Content for the About page "Start: Adding Models" section.
+ *
+ * @component
+ * @returns {JSX.Element} The "Start: Adding Models" section content.
+ */
 const AboutStartAddingModels = () => {
   return (
     <AboutContentWrap>

@@ -27,6 +27,12 @@ import H1 from "../ui/text/H1";
 import { Link } from "react-router-dom";
 import AboutSection from "./layout/AboutSection";
 
+/**
+ * Content for the About page "Model Page" section.
+ *
+ * @component
+ * @returns {JSX.Element} The "Model Page" section content.
+ */
 const AboutModelPage = () => {
   return (
     <AboutContentWrap>

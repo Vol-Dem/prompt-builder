@@ -1,6 +1,6 @@
 /**
  * Fix for Civitai bug with meta data in meta.meta
- * @param {Array} images - Images data
+ * @param {array} images - Images data
  * @returns Updated images with fixed data
  */
 export const fixCivImagesMeta = (images) => {

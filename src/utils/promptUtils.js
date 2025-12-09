@@ -222,10 +222,10 @@ export const changeTagWeight = (newTag, newWeight) => {
 
 /**
  * Calculates the new position of the tag
- * @param {Number} position - Current tag position
- * @param {Number} dropTargetPosition - Drop target position
- * @param {Boolean} dropTargetLeft - Whether to drop element on the left side
- * @returns {Number} New tag position
+ * @param {number} position - Current tag position
+ * @param {number} dropTargetPosition - Drop target position
+ * @param {boolean} dropTargetLeft - Whether to drop element on the left side
+ * @returns {number} New tag position
  */
 export const getNewTagPosition = (
   position,

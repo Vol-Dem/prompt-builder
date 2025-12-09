@@ -1,8 +1,8 @@
 /**
  * Searches for subcategories
- * @param {String} query - Search query
- * @param {Array} categories - Categories data
- * @returns {Array} Search result
+ * @param {string} query - Search query
+ * @param {array} categories - Categories data
+ * @returns {array} Search result
  */
 export const subcategoriesSearch = (query, categories) => {
   let searchResult = [];

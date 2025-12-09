@@ -2,8 +2,8 @@ import { clearObjectKeys, convertToString } from "./generalUtils";
 
 /**
  * Creates a model object
- * @param {Object} modelData - model data
- * @returns {Object} model object
+ * @param {object} modelData - model data
+ * @returns {object} model object
  */
 export const transformModelData = (modelData) => {
   const newModelData = {
@@ -17,8 +17,8 @@ export const transformModelData = (modelData) => {
 
 /**
  * Creates a model version object
- * @param {Object} versionData - version data
- * @returns {Object} model version object
+ * @param {object} versionData - version data
+ * @returns {object} model version object
  */
 export const transformModelVersionData = (versionData) => {
   const newVersionData = versionData.map((version) => {
@@ -50,8 +50,8 @@ export const transformModelVersionData = (versionData) => {
 
 /**
  * Creates a files object
- * @param {Object} fileData - files data
- * @returns {Object} files object
+ * @param {object} fileData - files data
+ * @returns {object} files object
  */
 export const transformFilesData = (fileData) => {
   const newFileData = {
@@ -69,8 +69,8 @@ export const transformFilesData = (fileData) => {
 
 /**
  * Creates an image object
- * @param {Object} imageData - image data
- * @returns {Object} image object
+ * @param {object} imageData - image data
+ * @returns {object} image object
  */
 export const transformImageData = (imageData) => {
   const newImageData = {

@@ -21,6 +21,12 @@ import H1 from "../ui/text/H1";
 import { Link } from "react-router-dom";
 import AboutSection from "./layout/AboutSection";
 
+/**
+ * Content for the About page "Working with Prompts" section.
+ *
+ * @component
+ * @returns {JSX.Element} The "Working with Prompts" section content.
+ */
 const AboutWorkingWithPrompts = () => {
   return (
     <AboutContentWrap>

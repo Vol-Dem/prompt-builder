@@ -1,14 +1,6 @@
-import {
-  ANIMATIONS_FM_FADEIN,
-  ANIMATIONS_FM_FADEIN_INITIAL,
-  ANIMATIONS_FM_SLIDEIN,
-  ANIMATIONS_FM_SLIDEIN_INITIAL,
-} from "../../variables/constants";
 import ImageComparisonSlider from "../ImageComparisonSlider/ImageComparisonSlider";
-import LinkA from "../ui/LinkA";
 import NotificationMessage from "../ui/NotificationMessage";
 import H1 from "../ui/text/H1";
-import H2 from "../ui/text/H2";
 import List from "../ui/text/List";
 import ListItem from "../ui/text/ListItem";
 import Text from "../ui/text/Text";
@@ -16,33 +8,19 @@ import TextContentBlock from "../ui/text/TextContentBlock";
 import TextHighlight from "../ui/text/TextHighlight";
 import Video from "../ui/Video";
 import classes from "./AboutMain.module.scss";
-import { motion } from "framer-motion";
 import AboutContentWrap from "./layout/AboutContentWrap";
 
+/**
+ * Content for the About page "About" section.
+ *
+ * @component
+ * @returns {JSX.Element} The "About" section content.
+ */
 const AboutMain = () => {
   return (
     <AboutContentWrap>
       <H1 id="#about">About</H1>
       <TextContentBlock>
-        {/* <TextContentBlock>
-        <div className={classes["video-container"]}>
-          <Video
-            playsInline
-            disablePictureInPicture
-            controls
-            width={1280}
-            height={720}
-            poster={require("../../assets/home/intro.jpg")}
-            className={classes["video"]}
-          >
-            <source
-              src={require("../../assets/home/intro.mp4")}
-              type="video/mp4"
-            />
-          </Video>
-        </div>
-      </TextContentBlock> */}
-
         <Text>
           This platform offers a variety of features, such as using trigger
           words from models and images as tags for quick and easy modification
@@ -73,42 +51,12 @@ const AboutMain = () => {
           </Video>
         </div>
       </TextContentBlock>
-      {/* <div className={`${classes["img-block"]} ${classes["img-block--col-2"]}`}>
-        <Image
-          loading="lazy"
-          width={1909}
-          height={918}
-          fullView={true}
-          className={classes["img"]}
-          src={require("../../assets/about/1-start-1.webp")}
-          srcSet={require("../../assets/about/1-start-1.webp")}
-          alt="about-image"
-        />
-
-        <Image
-          loading="lazy"
-          width={1909}
-          height={918}
-          fullView={true}
-          className={classes["img"]}
-          src={require("../../assets/about/1-start-2.webp")}
-          srcSet={require("../../assets/about/1-start-2.webp")}
-          alt="about-image"
-        />
-      </div> */}
-
       <TextContentBlock>
         <Text>
           With the help of the AIDE-TOOLS platform you can create your own
           collection of your favorite models and easily work with them:
         </Text>
         <List>
-          {/* <ListItem>
-            Make your prompt building clear and effortless: the system
-            automatically{" "}
-            <TextHighlight>splits your prompt into tags</TextHighlight> with the
-            option to switch between modes at any moment.
-          </ListItem> */}
           <ListItem>
             <TextHighlight>Split your prompt into tags</TextHighlight>{" "}
             automatically with the option to switch between modes at any moment
@@ -216,34 +164,6 @@ const AboutMain = () => {
           </ListItem>
         </List>
       </TextContentBlock>
-      {/* <a
-        href="https://www.patreon.com/aidetools"
-        target="_blank"
-        rel="noreferrer nofollow"
-      >
-        <img
-          width={520}
-          height={108}
-          loading="lazy"
-          src={require("../../assets/patreon-w.png")}
-          border="0"
-          alt="patreon"
-        />
-      </a>
-      <a
-        href="https://ko-fi.com/J3J31052RE"
-        target="_blank"
-        rel="noreferrer nofollow"
-      >
-        <img
-          width={341}
-          height={129}
-          loading="lazy"
-          src={require("../../assets/kofi_bg_tag_dark.webp")}
-          border="0"
-          alt="ko-fi"
-        />
-      </a> */}
       <NotificationMessage type="notification" className={classes.notification}>
         <p>
           This is a non-profit project that exists thanks to your support. If
