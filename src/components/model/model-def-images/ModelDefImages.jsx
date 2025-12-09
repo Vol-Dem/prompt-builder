@@ -28,6 +28,11 @@ const ModelDefImages = () => {
   const guideStep = useSelector((state) => state.guide.model.step);
   const filteredModelImages = filterNsfwImages(curVersionImages, nsfwLevel);
 
+  //Resets curVersionImages when the current version changes
+  useEffect(() => {
+    setCurVersionImages([]);
+  }, [curVersion]);
+
   useEffect(() => {
     const getCurVersionImages = async () => {
       try {
@@ -77,6 +82,7 @@ const ModelDefImages = () => {
       !!model?.data &&
       !curVersionImages?.length
     ) {
+      console.log("GET");
       getCurVersionImages();
     }
   }, [model, curVersion, uid, curVersionImages]);
