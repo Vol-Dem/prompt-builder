@@ -97,20 +97,20 @@ const imagesSlice = createSlice({
     setCollectionImages(state, action) {
       state.collectionImages = action.payload;
     },
-    resetCollectionData(state, action) {
+    resetCollectionData(state) {
       state.collectionData = {};
       state.collectionImages = {};
       state.errorMessage = "";
       state.isLastPage = false;
       state.imagesIsLoading = false;
     },
-    resetCollectionPreviews(state, action) {
+    resetCollectionPreviews(state) {
       state.collectionPreviews = [];
       state.errorMessage = "";
       state.isLastPreviewsPage = false;
       state.previewsIsLoading = false;
     },
-    resetCollectionListState(state, action) {
+    resetCollectionListState(state) {
       state.collectionPreviews = [];
       state.errorMessage = "";
       state.isLastPreviewsPage = false;
@@ -528,7 +528,7 @@ export const getColectionImagesByIds = (posts, collectionId) => {
 
       const isLast = ids.length <= SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE;
 
-      const data = modelImagesSnap.docs.flatMap((doc, i) => {
+      const data = modelImagesSnap.docs.flatMap((doc) => {
         return doc.data();
       });
 

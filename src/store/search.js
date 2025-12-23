@@ -392,7 +392,7 @@ export const liveSearch = (
 
       let finalResult = [];
       if (loadMore) {
-        finalResult = [...searchResult?.result, ...filteredResult];
+        finalResult = [...searchResult.result, ...filteredResult];
       } else {
         finalResult = filteredNewResult;
       }

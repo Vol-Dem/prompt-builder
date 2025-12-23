@@ -32,6 +32,7 @@ import { guideActions } from "./guide";
 import { generalActions } from "./general";
 import { imagesActions } from "./images";
 import { getAppInfo } from "./notification";
+import { handleErrors } from "../utils/generalUtils";
 
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
@@ -243,7 +244,7 @@ export const authRequest = (isLogin, email, password) => {
  * @returns
  */
 export const authWithGoogle = () => {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     // signInWithRedirect(auth, provider);
     signInWithPopup(auth, provider)
       .then((result) => {
@@ -454,7 +455,7 @@ export const changeUserPassword = (password, oldPassword) => {
       // } else {
       //   dispatch(authActions.setErrorMessage(error.message));
       // }
-      dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
+      dispatch(authActions.setErrorMessage(handleErrors(error)));
     }
   };
 };
@@ -505,13 +506,13 @@ export const changeUserName = (name) => {
       );
       dispatch(authActions.setSuccessMessage("Name changed successfully"));
     } catch (error) {
-      dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
+      dispatch(authActions.setErrorMessage(handleErrors(error)));
     }
   };
 };
 
 export const getUserData = (uid) => {
-  return async (dispatch, getState) => {
+  return async (dispatch) => {
     try {
       dispatch(authActions.setUserDataLoadError(""));
       dispatch(authActions.setUserDataIsLoading(true));

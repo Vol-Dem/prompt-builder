@@ -215,7 +215,7 @@ const promptSlice = createSlice({
       if (newTags.length) {
         let newPromptArr = [...curPromptArr];
 
-        newTags.forEach((newTag, i) => {
+        newTags.forEach((newTag) => {
           const newId = allIds[allIds.length - 1] + 1 || 0;
           const newPosition =
             curPromptPositions[curPromptPositions.length - 1] + 1 || 0;
@@ -302,7 +302,7 @@ const promptSlice = createSlice({
           !action.type.startsWith("prompt/setCurrentPrompt") &&
           !action.type.startsWith("prompt/setCurrentNegPrompt") &&
           !action.type.startsWith("prompt/setTextMode"),
-        (state, action) => {
+        (state) => {
           const newPrompt = state.curPromptArr.map((tag) => tag.tag).join(", ");
           const newNegPrompt = state.curNegPromptArr
             .map((tag) => tag.tag)

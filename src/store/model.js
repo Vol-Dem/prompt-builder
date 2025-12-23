@@ -63,7 +63,7 @@ const modelSlice = createSlice({
 
       if (state.model.id !== modelId) return;
 
-      if (state.savedImages.data.hasOwnProperty(`${versionId}`)) {
+      if (Object.hasOwn(state.savedImages.data, `${versionId}`)) {
         const existedPostIndex = state.savedImages.data[versionId].findIndex(
           (post) => post.postId === postId
         );
@@ -95,7 +95,7 @@ const modelSlice = createSlice({
 
       if (state.model.id !== modelId) return;
 
-      if (state.savedImages.data.hasOwnProperty(`${versionId}`)) {
+      if (Object.hasOwn(state.savedImages.data, `${versionId}`)) {
         const existedPostIndex = state.savedImages.data[versionId].findIndex(
           (post) => post.postId === postId
         );
@@ -104,7 +104,7 @@ const modelSlice = createSlice({
         }
       }
     },
-    resetModelData(state, action) {
+    resetModelData(state) {
       state.model = {};
       state.modelPreview = [];
       state.errorMessage = "";
@@ -160,13 +160,12 @@ export const updateModel = (modelId) => {
 
     const newVersionsCustomData = {};
 
-    newVerison.forEach((version, i) => {
+    newVerison.forEach((version) => {
       newVersionsCustomData[version.id] = {
         versionId: version.id,
         versionName: version.name,
         versionImageUrl:
-          version.images?.filter((img, i) => img.type === "image")[0]?.url ||
-          "",
+          version.images?.filter((img) => img.type === "image")[0]?.url || "",
         downloadStatus: false,
       };
     });
@@ -332,7 +331,7 @@ export const deleteImgPost = (postInfo, postData) => {
   };
 };
 
-export const deleteModel = (modelId) => {
+export const deleteModel = () => {
   return async (dispatch, getState) => {
     const uid = getState().auth.user.uid;
     const model = getState().model.model;

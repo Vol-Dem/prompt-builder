@@ -1,11 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import {
-  filterDuplicates,
-  throwCustomError,
-  // transformImageData,
-} from "../utils/generalUtils";
-// import { updateImagePostData } from "../utils/fetchUtils";
+import { filterDuplicates, throwCustomError } from "../utils/generalUtils";
 import { modelActions } from "./model";
 import { savePostToCollections } from "./images";
 import { ERROR_MESSAGE_INVALID_POST_ID } from "../variables/constants";
@@ -51,14 +46,14 @@ const uploadSlice = createSlice({
     setIsUploading(state, action) {
       state.isUploading = action.payload;
     },
-    retryUploadingAll(state, action) {
+    retryUploadingAll(state) {
       state.queue = [...state.queue, ...state.rejected];
       state.rejected = [];
     },
-    clearRejected(state, action) {
+    clearRejected(state) {
       state.rejected = [];
     },
-    clearCompleted(state, action) {
+    clearCompleted(state) {
       state.completed = [];
       state.completedAmount = 0;
     },
@@ -66,7 +61,7 @@ const uploadSlice = createSlice({
 });
 
 export const savePost = (postInfo) => {
-  return async (dispatch, getState) => {
+  return async (dispatch) => {
     try {
       const {
         modelId,
@@ -81,7 +76,6 @@ export const savePost = (postInfo) => {
       if (!postId) {
         throwCustomError(ERROR_MESSAGE_INVALID_POST_ID);
       }
-      // throwCustomError(ERROR_MESSAGE_INVALID_POST_ID);
 
       dispatch(uploadActions.setIsUploading(true));
       dispatch(uploadActions.setCurPostId(postId));
