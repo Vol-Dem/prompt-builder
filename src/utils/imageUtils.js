@@ -148,7 +148,7 @@ export const groupAndSortByField = (items, groupBy, sortBy) => {
   const sortedItems = {};
 
   items.forEach((item) => {
-    if (sortedItems.hasOwnProperty(item.postId)) {
+    if (Object.hasOwn(sortedItems, item.postId)) {
       sortedItems[item[groupBy]].push(item);
     } else {
       sortedItems[item[groupBy]] = [item];
@@ -164,7 +164,7 @@ export const groupAndSortByField = (items, groupBy, sortBy) => {
     );
   });
 
-  const images = sortedImageArr.map((key, i) => {
+  const images = sortedImageArr.map((key) => {
     return sortedItems[key];
   });
 
@@ -207,27 +207,22 @@ export const cleanImageMeta = (image) => {
  * @returns {array} aray of unique image resources
  */
 export const getUniqImageResources = (imageData) => {
-  let imageResources = [];
+  const resources = imageData?.meta?.resources || [];
+  const additionalResources =
+    imageData?.meta?.additionalResources?.map((res) => {
+      const [modelId, modelVersionId] = parseModelIds(res.name);
+      return {
+        ...res,
+        modelId,
+        modelVersionId,
+      };
+    }) || [];
+  const civitaiResources = imageData?.meta?.civitaiResources || [];
+  const allImageResources = [
+    ...resources,
+    ...additionalResources,
+    ...civitaiResources,
+  ];
 
-  if (imageData?.meta?.resources) {
-    imageResources = [...imageResources, ...imageData.meta?.resources];
-  }
-  if (imageData?.meta?.additionalResources) {
-    imageResources = [
-      ...imageResources,
-      ...imageData?.meta?.additionalResources.map((res) => {
-        const [modelId, modelVersionId] = parseModelIds(res.name);
-        return {
-          ...res,
-          modelId,
-          modelVersionId,
-        };
-      }),
-    ];
-  }
-  if (imageData.meta?.civitaiResources) {
-    imageResources = [...imageResources, ...imageData.meta?.civitaiResources];
-  }
-
-  return filterDuplicates(imageResources, "modelVersionId");
+  return filterDuplicates(allImageResources, "modelVersionId");
 };

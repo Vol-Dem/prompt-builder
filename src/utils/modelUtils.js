@@ -77,7 +77,7 @@ export const getCurrentVersionId = (model, modelVersions, versionIdParam) => {
   } else {
     curVersionId = modelVersions?.find(
       (version) =>
-        model?.modelVersionsCustomData.hasOwnProperty(version.id) &&
+        Object.hasOwn(model?.modelVersionsCustomData, version.id) &&
         model.modelVersionsCustomData[version.id].downloadStatus
     )?.id;
   }

@@ -59,7 +59,7 @@ export const clearFileExtension = (name) => {
  * @returns {Promise} The promise that resolves after the specified delay
  */
 export const addDelayPromise = (delay) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       resolve("resolve");
     }, delay);

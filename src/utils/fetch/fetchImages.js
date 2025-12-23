@@ -303,9 +303,9 @@ export const getVersionImagesFromCiv = async (modelId, username, version) => {
 export const getImageModelInfo = async (resourcesData) => {
   try {
     let modelHash;
-    if (resourcesData?.hasOwnProperty("Model hash")) {
+    if (Object.hasOwn(resourcesData, "Model hash")) {
       modelHash = resourcesData["Model hash"];
-    } else if (resourcesData?.hasOwnProperty("Modelhash")) {
+    } else if (Object.hasOwn(resourcesData, "Modelhash")) {
       modelHash = resourcesData["Modelhash"];
     } else {
       return resourcesData;
@@ -345,45 +345,52 @@ export const fetchResourcesInfoFromDB = async (
     const uid = auth?.currentUser?.uid;
     let modelHash = "";
 
-    if (curImageData?.meta?.hasOwnProperty("Model hash")) {
-      modelHash = curImageData?.meta["Model hash"];
-    } else if (curImageData?.meta?.hasOwnProperty("Modelhash")) {
-      modelHash = curImageData?.meta["Modelhash"];
+    if (Object.hasOwn(curImageData?.meta, "Model hash")) {
+      modelHash = curImageData.meta["Model hash"];
+    } else if (Object.hasOwn(curImageData?.meta, "Modelhash")) {
+      modelHash = curImageData.meta["Modelhash"];
     }
 
-    let modelQ;
+    let checkpointQ;
 
     if (modelHash) {
-      modelQ = query(
+      checkpointQ = query(
         collection(firestore, "users", uid, `preview`),
         where("hashes", "array-contains", modelHash)
       );
     } else if (curImageData?.meta?.Model?.includes("urn:air")) {
       const [modelId] = parseModelIds(curImageData.meta.Model);
-      modelQ = query(
+      checkpointQ = query(
         collection(firestore, "users", uid, `preview`),
         where("id", "==", modelId)
       );
     } else {
-      const modelName = curImageData?.meta?.Model || "";
-      modelQ = query(
+      const checkpointName = curImageData?.meta?.Model || "";
+      checkpointQ = query(
         collection(firestore, "users", uid, `preview`),
-        where("fileNames", "array-contains", modelName?.toLowerCase())
+        where("fileNames", "array-contains", checkpointName?.toLowerCase())
       );
     }
 
-    const modelQuerySnapshot = await getDocs(modelQ);
+    const checkpointQuerySnapshot = await getDocs(checkpointQ);
 
-    const modelInfoData = modelQuerySnapshot.docs.map((doc) => {
+    const checkpointSearchResult = checkpointQuerySnapshot.docs.map((doc) => {
       // doc.data() is never undefined for query doc snapshots
       return doc.data();
     });
+    const checkpointData = checkpointSearchResult?.length
+      ? checkpointSearchResult[0]
+      : null;
 
     let modelsIds = [];
     let modelsVersionIds = [];
     let modelsHashes = [];
     let modelsNames = [];
     let allModelsPreviews = [];
+
+    if (checkpointData) {
+      allModelsPreviews = [checkpointData];
+    }
 
     imageResources?.forEach((resource) => {
       if (resource?.modelId) {

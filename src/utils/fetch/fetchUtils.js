@@ -57,7 +57,7 @@ export const makeBatchRequest = async (
  * @returns A promise that resolves with the fetched data
  */
 export const fetchData = async (url, config) => {
-  const response = await fetch(url);
+  const response = await fetch(url, config);
   const data = await response.json();
 
   if (!response.ok) {

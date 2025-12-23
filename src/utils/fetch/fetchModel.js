@@ -181,11 +181,12 @@ export const updateUserCustomModelData = async (
 ) => {
   const newVersionsCustomData = {};
 
-  newVersions.forEach((version, i) => {
+  newVersions.forEach((version) => {
     version.modelId = model.id;
 
     let fileName;
-    if (version.hasOwnProperty("files") && version?.files) {
+
+    if (Object.hasOwn(version, "files") && version?.files) {
       fileName = clearFileExtension(
         version.files.find((file) => file?.primary).name
       ).toLowerCase();
@@ -199,7 +200,7 @@ export const updateUserCustomModelData = async (
       index: version.index,
       defFileName: fileName || "",
       versionImageUrl:
-        version.images?.filter((img, i) => img.type === "image")[0]?.url || "",
+        version.images?.filter((img) => img.type === "image")[0]?.url || "",
       downloadStatus: false,
     };
   });
@@ -215,7 +216,7 @@ export const updateUserCustomModelData = async (
   });
 
   const fileNames = newModelData.modelVersions?.flatMap((version) => {
-    if (version.hasOwnProperty("files") && version?.files) {
+    if (Object.hasOwn(version, "files") && version?.files) {
       return clearFileExtension(
         version.files.find((file) => file?.primary).name
       ).toLowerCase();
@@ -225,7 +226,7 @@ export const updateUserCustomModelData = async (
 
   const hashes = newModelData.modelVersions
     ?.flatMap((version) => {
-      if (version.hasOwnProperty("files") && version?.files) {
+      if (Object.hasOwn(version, "files") && version?.files) {
         const primaryFileHashes = version?.files.find(
           (file) => file?.primary
         )?.hashes;
@@ -393,14 +394,15 @@ export const saveModelData = async (
           newModelData.modelVersionId === version.id
             ? !!curVersionDlStatus
             : false;
-        const currVersionData = modelVersionsCustomData.hasOwnProperty(
+        const currVersionData = Object.hasOwn(
+          modelVersionsCustomData,
           version.id
         )
           ? modelVersionsCustomData[version.id]
           : {};
 
         let fileName;
-        if (version.hasOwnProperty("files") && version?.files) {
+        if (Object.hasOwn(version, "files") && version?.files) {
           fileName = clearFileExtension(
             version.files.find((file) => file?.primary).name
           ).toLowerCase();
@@ -438,7 +440,7 @@ export const saveModelData = async (
         (activePreviewId &&
           modelVersions
             ?.find((version) => version.id === activePreviewId)
-            .images?.filter((img, i) => img.type === "image")[0]) ||
+            .images?.filter((img) => img.type === "image")[0]) ||
         "";
 
       const previewImgDefault = modelVersions[0]?.images[0] || "";
@@ -452,7 +454,7 @@ export const saveModelData = async (
       const previewImg = previewSrc;
 
       const fileNames = modelVersions?.flatMap((version) => {
-        if (version.hasOwnProperty("files") && version?.files) {
+        if (Object.hasOwn(version, "files") && version?.files) {
           return [
             ...new Set(
               version.files
@@ -466,7 +468,7 @@ export const saveModelData = async (
 
       const hashes = modelVersions
         ?.flatMap((version) => {
-          if (version.hasOwnProperty("files") && version?.files) {
+          if (Object.hasOwn(version, "files") && version?.files) {
             return version?.files
               .filter((file) => file?.type === "Model")
               .flatMap((file) => Object.values(file?.hashes).filter(Boolean))

@@ -32,7 +32,7 @@ export const validateInput = (validTypes, value) => {
         }
         break;
 
-      case "password":
+      case "password": {
         const hasNotMinLength = !hasMinLength(
           value,
           VALIDATION_PASSWORD_MIN_LENGTH
@@ -69,7 +69,7 @@ export const validateInput = (validTypes, value) => {
           );
         }
         break;
-
+      }
       case "required":
         if (!isNotEmpty(value)) {
           errorMessages.push("This field is required");
