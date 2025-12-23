@@ -26,7 +26,8 @@ import LinkA from "../../ui/LinkA";
 import SuccessMessage from "../../ui/SuccessMessage";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ReactComponent as GoogleLogo } from "../../../assets/google.svg";
+// import { ReactComponent as GoogleLogo } from "../../../assets/google.svg";
+import GoogleLogo from "../../../assets/google.svg";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -162,7 +163,12 @@ const AuthForm = () => {
                 dispatch(authWithGoogle());
               }}
             >
-              <GoogleLogo className={classes["icon"]} />
+              <img
+                src={GoogleLogo}
+                alt="Google Logo"
+                className={classes["icon"]}
+              />
+              {/* <GoogleLogo className={classes["icon"]} /> */}
               Sign in with Google
             </Buttton>
           )}

@@ -1,4 +1,5 @@
 @use "./../../variables/variables.scss" as var;
+@use "sass:color";
 
 .presets-container {
   display: flex;
@@ -52,7 +53,7 @@
     }
 
     &:hover {
-      color: lighten(#a8a8a8, 20%);
+      color: color.adjust(#a8a8a8, $lightness: 20%);
     }
   }
 
@@ -93,7 +94,7 @@
   cursor: pointer;
 
   &:hover {
-    color: lighten(var.$color-text-gray, 20%);
+    color: color.adjust(var.$color-text-gray, $lightness: 20%);
   }
 
   & svg {

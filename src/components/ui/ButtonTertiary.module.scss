@@ -1,4 +1,5 @@
 @use "./../../variables/variables.scss" as var;
+@use "sass:color";
 
 .btn {
   display: flex;
@@ -10,21 +11,18 @@
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 1rem;
   padding: 0.2rem 0.6rem;
-  //   font-size: 1.4rem;
   box-shadow: 0 0.2rem 0.5rem rgba(var.$color-black, 0.2);
   white-space: nowrap;
   transition: all 0.3s ease;
   cursor: pointer;
 
   &:hover {
-    // background-color: lighten(#323148, 5%);
-    // background-color: #5f3d62;
     border: 1px solid rgba(255, 255, 255, 0.5);
   }
 
   &:active {
     border: 1px solid rgba(255, 255, 255, 0.3);
-    background-color: darken(#323148, 5%);
+    background-color: color.adjust(#323148, $lightness: -5%);
     box-shadow: var.$box-shadow-inset;
   }
 

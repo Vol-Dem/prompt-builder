@@ -19,6 +19,18 @@ import AboutAddImageById from "./AboutAddImageById";
 import H1 from "../ui/text/H1";
 import AboutContentWrap from "./layout/AboutContentWrap";
 import AboutSection from "./layout/AboutSection";
+import collectionsModel from "../../assets/about/20-collections-model-1.jpg";
+import collectionsModelWebm from "../../assets/about/20-collections-model-1.webp";
+import collectionsModel2 from "../../assets/about/20-collections-model-2.jpg";
+import collectionsModel2Webm from "../../assets/about/20-collections-model-2.webp";
+import collectionsModel3 from "../../assets/about/20-collections-model-3.jpg";
+import collectionsModel3Webm from "../../assets/about/20-collections-model-3.webp";
+import collectionsModel4 from "../../assets/about/20-collections-model-4.jpg";
+import collectionsModel4Webm from "../../assets/about/20-collections-model-4.webp";
+import collectionsSidebar from "../../assets/about/21-collections-sidebar.jpg";
+import collectionsSidebarWebm from "../../assets/about/21-collections-sidebar.webp";
+import collectionsPrev from "../../assets/about/20-collections-prev.jpg";
+import collectionsPrevWebm from "../../assets/about/20-collections-prev.webp";
 
 /**
  * Content for the About page "Image collections" section.
@@ -73,9 +85,9 @@ const AboutImageCollections = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/20-collections-model-1.jpg")}
+              src={collectionsModel}
               alt="Collections model 1"
-              srcSet={require("../../assets/about/20-collections-model-1.webp")}
+              srcSet={collectionsModelWebm}
               type="image/webp"
             />
             <Image
@@ -84,9 +96,9 @@ const AboutImageCollections = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/20-collections-model-2.jpg")}
+              src={collectionsModel2}
               alt="Collections model 2"
-              srcSet={require("../../assets/about/20-collections-model-2.webp")}
+              srcSet={collectionsModel2Webm}
               type="image/webp"
             />
             <Image
@@ -95,9 +107,9 @@ const AboutImageCollections = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/20-collections-model-3.jpg")}
+              src={collectionsModel3}
               alt="Collections model 3"
-              srcSet={require("../../assets/about/20-collections-model-3.webp")}
+              srcSet={collectionsModel3Webm}
               type="image/webp"
             />
           </TextImageBlock>
@@ -115,9 +127,9 @@ const AboutImageCollections = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/20-collections-model-4.jpg")}
+              src={collectionsModel4}
               alt="Collections model 4"
-              srcSet={require("../../assets/about/20-collections-model-4.webp")}
+              srcSet={collectionsModel4Webm}
               type="image/webp"
             />
           </TextImageBlock>
@@ -139,9 +151,9 @@ const AboutImageCollections = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/21-collections-sidebar.jpg")}
+              src={collectionsSidebar}
               alt="Collections model 5"
-              srcSet={require("../../assets/about/21-collections-sidebar.webp")}
+              srcSet={collectionsSidebarWebm}
               type="image/webp"
             />
           </TextImageBlock>
@@ -181,9 +193,9 @@ const AboutImageCollections = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/20-collections-prev.jpg")}
+              src={collectionsPrev}
               alt="Collections model 6"
-              srcSet={require("../../assets/about/20-collections-prev.webp")}
+              srcSet={collectionsPrevWebm}
               type="image/webp"
             />
           </TextImageBlock>

@@ -25,6 +25,7 @@ import ScrollToTop from "../../ui/ScrollToTop";
 import LayoutContentWrap from "./LayoutContentWrap";
 import Notifications from "../notifications/Notifications";
 import RightSidebar from "../right-sidebar/RightSidebar";
+import logo from "../../../assets/logo-730.webp";
 
 const Layout = () => {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
@@ -57,12 +58,7 @@ const Layout = () => {
                       dispatch(tabActions.resetActiveTabs());
                     }}
                   >
-                    <img
-                      src={require("../../../assets/logo-730.webp")}
-                      alt="Logo"
-                      width={1088}
-                      height={188}
-                    />
+                    <img src={logo} alt="Logo" width={1088} height={188} />
                   </NavLink>
                 </div>
                 {!maintenance && <MainNavigation />}

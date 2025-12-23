@@ -1,9 +1,10 @@
 @use "./../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .btn-del {
   background-color: var.$color-background-red;
 
   &:hover {
-    background-color: darken(var.$color-red, 10%);
+    background-color: color.adjust(var.$color-red, $lightness: -10%);
   }
 }

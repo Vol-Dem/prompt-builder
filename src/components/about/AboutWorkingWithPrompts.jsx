@@ -20,6 +20,26 @@ import AboutContentWrap from "./layout/AboutContentWrap";
 import H1 from "../ui/text/H1";
 import { Link } from "react-router-dom";
 import AboutSection from "./layout/AboutSection";
+import faqPromptPoster from "../../assets/guide/3-faq-prompt.jpg";
+import faqPromptMp4 from "../../assets/guide/3-faq-prompt.mp4";
+import compSliderImgLeft from "../../assets/guide/prompt-text.webp";
+import compSliderImgRight from "../../assets/guide/prompt-tags.webp";
+import prompt from "../../assets/about/6-prompt.jpg";
+import promptWebp from "../../assets/about/6-prompt.webp";
+import tags from "../../assets/about/7-tags.jpg";
+import tagsWebp from "../../assets/about/7-tags.webp";
+import duplicates from "../../assets/guide/duplicates.png";
+import duplicatesWebp from "../../assets/guide/duplicates.webp";
+import tagEdit from "../../assets/guide/tag-edit.png";
+import tagEditWebp from "../../assets/guide/tag-edit.webp";
+import dnd from "../../assets/guide/dnd.png";
+import dndWebp from "../../assets/guide/dnd.webp";
+import presets from "../../assets/about/8-presets-1.jpg";
+import presetsWebp from "../../assets/about/8-presets-1.webp";
+import presetAdd from "../../assets/guide/preset-add.jpg";
+import presetAddWebp from "../../assets/guide/preset-add.webp";
+import preset from "../../assets/guide/preset.jpg";
+import presetWebp from "../../assets/guide/preset.webp";
 
 /**
  * Content for the About page "Working with Prompts" section.
@@ -41,17 +61,14 @@ const AboutWorkingWithPrompts = () => {
           preload="none"
           muted
           controls
-          poster={require("../../assets/guide/3-faq-prompt.jpg")}
+          poster={faqPromptPoster}
           mainSrc={{
-            src: require("../../assets/guide/3-faq-prompt.mp4"),
+            src: faqPromptMp4,
             type: "video/mp4",
           }}
           className={classes.video}
         >
-          <source
-            src={require("../../assets/guide/3-faq-prompt.mp4")}
-            type="video/mp4"
-          />
+          <source src={faqPromptMp4} type="video/mp4" />
         </Video>
         <Text>
           Prompt input is available in two modes:{" "}
@@ -63,8 +80,8 @@ const AboutWorkingWithPrompts = () => {
           className={classes.comparison}
           imgWidth="1714"
           imgHeight="626"
-          srcLeft={require("../../assets/guide/prompt-text.webp")}
-          srcRight={require("../../assets/guide/prompt-tags.webp")}
+          srcLeft={compSliderImgLeft}
+          srcRight={compSliderImgRight}
         />
         <NotificationMessage>
           <ul className={classes.list}>
@@ -139,9 +156,9 @@ const AboutWorkingWithPrompts = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/6-prompt.jpg")}
+            src={prompt}
             alt="Prompt"
-            srcSet={require("../../assets/about/6-prompt.webp")}
+            srcSet={promptWebp}
             type="image/webp"
           />
         </TextImageBlock>
@@ -173,9 +190,9 @@ const AboutWorkingWithPrompts = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/7-tags.jpg")}
+            src={tags}
             alt="Tags"
-            srcSet={require("../../assets/about/7-tags.webp")}
+            srcSet={tagsWebp}
             type="image/webp"
           />
         </TextImageBlock>
@@ -203,9 +220,9 @@ const AboutWorkingWithPrompts = () => {
                 width={1670}
                 height={330}
                 className={classes["img"]}
-                src={require("../../assets/guide/duplicates.png")}
+                src={duplicates}
                 alt="Duplicates"
-                srcSet={require("../../assets/guide/duplicates.webp")}
+                srcSet={duplicatesWebp}
                 type="image/webp"
               />
             </TextImageBlock>
@@ -229,9 +246,9 @@ const AboutWorkingWithPrompts = () => {
                 width={901}
                 height={75}
                 className={classes["img"]}
-                src={require("../../assets/guide/tag-edit.png")}
+                src={tagEdit}
                 alt="Tag edit"
-                srcSet={require("../../assets/guide/tag-edit.webp")}
+                srcSet={tagEditWebp}
                 type="image/webp"
               />
             </TextImageBlock>
@@ -256,9 +273,9 @@ const AboutWorkingWithPrompts = () => {
                 width={851}
                 height={134}
                 className={classes["img"]}
-                src={require("../../assets/guide/dnd.png")}
+                src={dnd}
                 alt="Drag and drop"
-                srcSet={require("../../assets/guide/dnd.webp")}
+                srcSet={dndWebp}
                 type="image/webp"
               />
             </TextImageBlock>
@@ -279,9 +296,9 @@ const AboutWorkingWithPrompts = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/8-presets-1.jpg")}
+              src={presets}
               alt="Presets"
-              srcSet={require("../../assets/about/8-presets-1.webp")}
+              srcSet={presetsWebp}
               type="image/webp"
             />
           </TextImageBlock>
@@ -299,9 +316,9 @@ const AboutWorkingWithPrompts = () => {
                 width={1248}
                 height={660}
                 className={classes["img"]}
-                src={require("../../assets/guide/preset-add.jpg")}
+                src={presetAdd}
                 alt="Add preset"
-                srcSet={require("../../assets/guide/preset-add.webp")}
+                srcSet={presetAddWebp}
                 type="image/webp"
               />
             </TextImageBlock>
@@ -319,9 +336,9 @@ const AboutWorkingWithPrompts = () => {
               width={1380}
               height={423}
               className={classes["img"]}
-              src={require("../../assets/guide/preset.jpg")}
+              src={preset}
               alt="Preset 2"
-              srcSet={require("../../assets/guide/preset.webp")}
+              srcSet={presetWebp}
               type="image/webp"
             />
           </TextImageBlock>

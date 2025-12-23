@@ -1,10 +1,14 @@
 import Buttton from "./Button";
 import Card from "./Card";
 import classes from "./Notification.module.scss";
-import { ReactComponent as TriangleIcon } from "./../../assets/triangle.svg";
+// import { ReactComponent as TriangleIcon } from "./../../assets/triangle.svg";
 import { createPortal } from "react-dom";
-import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
+// import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 import { motion } from "framer-motion";
+import {
+  ExclamationCircleIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
 
 const Notification = ({ type = "notification", title, onClick, children }) => {
   return (
@@ -18,8 +22,8 @@ const Notification = ({ type = "notification", title, onClick, children }) => {
         >
           <Card className={classes.notification}>
             <div className={classes["notification__icon"]}>
-              {type === "notification" && <ExclamationCircleSvg />}
-              {type === "warning" && <TriangleIcon />}
+              {type === "notification" && <ExclamationCircleIcon />}
+              {type === "warning" && <ExclamationTriangleIcon />}
             </div>
 
             <div className={classes["notification__message"]}>

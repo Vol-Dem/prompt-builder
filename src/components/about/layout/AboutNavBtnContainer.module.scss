@@ -1,4 +1,5 @@
 @use "../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .container {
   display: flex;
@@ -35,7 +36,7 @@
 
   &:active {
     border: 1px solid rgba(255, 255, 255, 0.3);
-    background-color: darken(#323148, 5%);
+    background-color: color.adjust(#323148, $lightness: -5%);
     box-shadow: var.$box-shadow-inset;
   }
 
@@ -43,9 +44,6 @@
     background-color: var.$color-gray;
     box-shadow: none;
     cursor: not-allowed;
-  }
-
-  &--left {
   }
 
   &--right {

@@ -4,6 +4,10 @@ import Text from "../ui/text/Text";
 import Image from "../ui/image/Image";
 import TextHighlight from "../ui/text/TextHighlight";
 import TextImageBlock from "../ui/text/TextImageBlock";
+import urlImg from "../../assets/guide/url.png";
+import urlImgWebm from "../../assets/guide/url.webp";
+import civShare from "../../assets/guide/civ-share.jpg";
+import civShareWebm from "../../assets/guide/civ-share.webp";
 
 /**
  * Content for the About page "Add image by post ID" section.
@@ -45,8 +49,8 @@ const AboutAddImageById = () => {
         width={471}
         height={69}
         className={classes["img-short"]}
-        src={require("../../assets/guide/url.png")}
-        srcSet={require("../../assets/guide/url.webp")}
+        src={urlImg}
+        srcSet={urlImgWebm}
         alt="Url"
       />
       <p>
@@ -77,9 +81,9 @@ const AboutAddImageById = () => {
           height={695}
           fullView={true}
           className={classes["img"]}
-          src={require("../../assets/guide/civ-share.jpg")}
+          src={civShare}
           alt="Civ share"
-          srcSet={require("../../assets/guide/civ-share.webp")}
+          srcSet={civShareWebm}
           type="image/webp"
         />
       </TextImageBlock>

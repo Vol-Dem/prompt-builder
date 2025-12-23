@@ -1,11 +1,12 @@
+@use "sass:color";
+
 //COLORS
 $color-primary: #6526a0;
 $color-secondary: #eacc48;
 $color-tertiary: #c2005e;
-// $color-link: #7278f0;
-// $color-link: #8185d2;
-$color-link: #878ac7;
+$color-link: #7278f0;
 $color-red: #ca0000;
+$color-red-dark: #822929;
 $color-black: #000;
 $color-white: #fff;
 $color-yellow: #eacc48;
@@ -14,6 +15,7 @@ $color-violet-dark: #8a2be2;
 $color-violet-light: #e9d8f6;
 $color-aqua: #00ffff;
 $color-green: #009405;
+$color-green-soft: #49ab6c;
 $color-green-light: #149f78;
 $color-gray: #bdbdbd;
 $color-gray-light: #dedede;
@@ -41,16 +43,9 @@ $color-text-red: #e54d4d;
 $color-text-green: #49ab6b;
 $color-text-white: #e8e8e8;
 $color-text-gray: #acacac;
-// $color-text-gray-dark: #808080;
 $color-text-gray-dark: #8c8c8c;
 
 //FONTS
-// $font-family-primary: "Raleway", sans-serif;
-// $font-family-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-//   "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-//   sans-serif;
-// $font-family-primary: "Segoe UI", "Open Sans", "Roboto", "Inter", "Noto Sans",
-//   "Nunito", "Titillium Web", "Oxygen", "Anek Devanagari", sans-serif;
 $font-family-primary: "Nunito", sans-serif;
 $font-family-secondary: "Nunito", sans-serif;
 
@@ -131,7 +126,7 @@ $clip-path-arrow-down: polygon(
   transition: all 0.3s;
 
   &:hover {
-    color: lighten($color-link, 7%);
+    color: color.adjust($color-link, $lightness: 7%);
   }
 }
 
@@ -171,7 +166,6 @@ $clip-path-arrow-down: polygon(
     width: 100%;
     height: 100%;
     border-radius: 10px;
-    // transform: translate(-50%, -50%) scale(1);
     transform: translate(-50%, -50%);
     box-shadow: 0 0 15px #dfaf07;
     box-sizing: initial;
@@ -180,35 +174,9 @@ $clip-path-arrow-down: polygon(
     opacity: 0.8;
   }
   &::before {
-    // border: 5px solid #dfaf07;
-
     box-shadow: 0 0 25px #dfaf07;
     animation: pulse2 2s ease-in-out infinite;
   }
-  // &::after {
-
-  //   // transform: translate(-50%, -50%) scale(1);
-  //   // transform: translate(-50%, -50%);
-  //   // opacity: 0.8;
-  //   // animation: pulse2 3s 1s ease-in-out infinite;
-  // }
-  // &::after,
-  // &::before {
-  //   content: "";
-  //   position: absolute;
-  //   border: 2px solid #dfaf07;
-  //   left: -20px;
-  //   opacity: 0;
-  //   right: -20px;
-  //   top: -20px;
-  //   bottom: -20px;
-  //   border-radius: 10px;
-  //   animation: pulse 2.5s linear infinite;
-  // }
-
-  // &::after {
-  //   animation-delay: 1.25s;
-  // }
 }
 
 @keyframes pulse {
@@ -228,11 +196,9 @@ $clip-path-arrow-down: polygon(
 @keyframes pulse2 {
   0%,
   100% {
-    // transform: translate(-50%, -50%) scale(1);
     opacity: 1;
   }
   50% {
-    // transform: translate(-50%, -50%) scale(1.01, 1.03);
     opacity: 0.2;
   }
 }

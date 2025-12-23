@@ -10,7 +10,6 @@ import {
 } from "../../store/auth";
 import ErrorMessage from "../../components/ui/ErrorMessage";
 import { useEffect, useState } from "react";
-import { ReactComponent as UserIcon } from "./../../assets/user.svg";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import {
   ERROR_MESSAGE_AUTH,
@@ -24,6 +23,7 @@ import SuccessMessage from "../ui/SuccessMessage";
 import ReAuthForm from "../forms/ReAuth/ReAuthForm";
 import Modal from "../ui/Modal";
 import VerifyEmailMessage from "../notification-messages/VerifyEmailMessage";
+import { UserCircleIcon } from "@heroicons/react/24/outline";
 
 const Profile = ({ title }) => {
   const [userName, setUserName] = useState({
@@ -326,7 +326,8 @@ const Profile = ({ title }) => {
     <Card>
       <div className={classes["profile__container"]}>
         <div className={classes["profile__img"]}>
-          <UserIcon />
+          {/* <UserIcon /> */}
+          <UserCircleIcon />
         </div>
         <div>
           <h1 className={classes["profile__title"]}>Profile</h1>

@@ -10,14 +10,14 @@
     "logs": "firebase functions:log"
   },
   "engines": {
-    "node": "18"
+    "node": "20"
   },
   "main": "index.js",
   "dependencies": {
     "@google-cloud/billing": "^4.5.0",
     "discord-api-types": "^0.37.98",
     "firebase-admin": "^12.1.0",
-    "firebase-functions": "^5.0.0",
+    "firebase-functions": "^7.0.1",
     "google-auth-library": "^9.14.0",
     "googleapis": "^143.0.0"
   },

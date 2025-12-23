@@ -17,6 +17,10 @@ import AboutContentWrap from "./layout/AboutContentWrap";
 import H1 from "../ui/text/H1";
 import H3 from "../ui/text/H3";
 import AboutSection from "./layout/AboutSection";
+import sidebar1 from "../../assets/about/18-sidebar-1.jpg";
+import sidebar1Webp from "../../assets/about/18-sidebar-1.webp";
+import sidebar2 from "../../assets/about/18-sidebar-2.jpg";
+import sidebar2Webp from "../../assets/about/18-sidebar-2.webp";
 
 /**
  * Content for the About page "Sidebar" section.
@@ -71,9 +75,9 @@ const AboutSidebar = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/18-sidebar-1.jpg")}
+              src={sidebar1}
               alt="Sidebar"
-              srcSet={require("../../assets/about/18-sidebar-1.webp")}
+              srcSet={sidebar1Webp}
               type="image/webp"
             />
           </TextImageBlock>
@@ -98,9 +102,9 @@ const AboutSidebar = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/18-sidebar-2.jpg")}
+              src={sidebar2}
               alt="Sidebar 2"
-              srcSet={require("../../assets/about/18-sidebar-2.webp")}
+              srcSet={sidebar2Webp}
               type="image/webp"
             />
           </TextImageBlock>

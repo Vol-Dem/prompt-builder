@@ -13,6 +13,16 @@ import TextImageMenu from "../ui/text/text-buttons/TextImageMenu";
 import NotificationMessage from "../ui/NotificationMessage";
 import TextButtonSecondary from "../ui/text/text-buttons/TextButtonSecondary";
 import AboutSection from "./layout/AboutSection";
+import faqTagsetsPoster from "../../assets/guide/1-faq-tagsets-4k.jpg";
+import faqTagsetsMp4 from "../../assets/guide/1-faq-tagsets.mp4";
+import tagSets12 from "../../assets/about/12-tag-sets-12.jpg";
+import tagSets12Webp from "../../assets/about/12-tag-sets-12.webp";
+import tagSets22 from "../../assets/about/12-tag-sets-22.jpg";
+import tagSets22Webp from "../../assets/about/12-tag-sets-22.webp";
+import tagSets3 from "../../assets/about/12-tag-sets-3.jpg";
+import tagSets3Webp from "../../assets/about/12-tag-sets-3.webp";
+import tagSets4 from "../../assets/about/12-tag-sets-4.jpg";
+import tagSets4Webp from "../../assets/about/12-tag-sets-4.webp";
 
 /**
  * Content for the About page "Tag Sets" section.
@@ -40,17 +50,14 @@ const AboutTagSets = () => {
           preload="none"
           muted
           controls
-          poster={require("../../assets/guide/1-faq-tagsets-4k.jpg")}
+          poster={faqTagsetsPoster}
           mainSrc={{
-            src: require("../../assets/guide/1-faq-tagsets.mp4"),
+            src: faqTagsetsMp4,
             type: "video/mp4",
           }}
           className={classes.video}
         >
-          <source
-            src={require("../../assets/guide/1-faq-tagsets.mp4")}
-            type="video/mp4"
-          />
+          <source src={faqTagsetsMp4} type="video/mp4" />
         </Video>
 
         <Text>
@@ -69,9 +76,9 @@ const AboutTagSets = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-12.jpg")}
+            src={tagSets12}
             alt="Tag sets"
-            srcSet={require("../../assets/about/12-tag-sets-12.webp")}
+            srcSet={tagSets12Webp}
             type="image/webp"
           />
           <Image
@@ -80,9 +87,9 @@ const AboutTagSets = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-22.jpg")}
+            src={tagSets22}
             alt="Tag sets 2"
-            srcSet={require("../../assets/about/12-tag-sets-22.webp")}
+            srcSet={tagSets22Webp}
             type="image/webp"
           />
         </TextImageBlock>
@@ -117,9 +124,9 @@ const AboutTagSets = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-3.jpg")}
+            src={tagSets3}
             alt="Tag sets 3"
-            srcSet={require("../../assets/about/12-tag-sets-3.webp")}
+            srcSet={tagSets3Webp}
             type="image/webp"
           />
           <Image
@@ -128,9 +135,9 @@ const AboutTagSets = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/12-tag-sets-4.jpg")}
+            src={tagSets4}
             alt="Tag sets 4"
-            srcSet={require("../../assets/about/12-tag-sets-4.webp")}
+            srcSet={tagSets4Webp}
             type="image/webp"
           />
         </TextImageBlock>

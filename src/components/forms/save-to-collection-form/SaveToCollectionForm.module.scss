@@ -1,4 +1,5 @@
 @use "./../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .form {
   animation: show 0.3s ease-in forwards;
@@ -121,8 +122,8 @@
   background-color: var.$color-background-red;
 
   &:hover:enabled {
-    background-color: lighten(var.$color-background-red, 5%);
-    background-color: darken(var.$color-background-red, 5%);
+    background-color: color.adjust(var.$color-background-red, $lightness: 5%);
+    background-color: color.adjust(var.$color-background-red, $lightness: -5%);
   }
 }
 

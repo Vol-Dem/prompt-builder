@@ -143,15 +143,19 @@ const CarouselContent = ({
 
     setVisibleAmount(visibleImagesAmount);
     setCurVisibleAmount(visibleImagesAmount);
-    // setTranslate(0);
 
-    if (initial && activeImgNum && !!visibleImgAmount) {
+    if (
+      initial &&
+      activeImgNum &&
+      !!visibleImgAmount &&
+      dimensions?.imgWidthWithGap
+    ) {
       setCurrImgNum(activeImgNum);
       setVisibleImages(
         initialVisibleImages.map((_, j) => activeImgNum + j + visibleImgAmount)
       );
       setTranslate(-dimensions.imgWidthWithGap * (activeImgNum + 1) || 0);
-    } else if (initial && !activeImgNum) {
+    } else if (initial && !activeImgNum && dimensions?.imgWidthWithGap) {
       setInitial(false);
       setVisibleImages(initialVisibleImages);
       setTranslate(-dimensions.imgWidthWithGap * initialVisibleImages[0] || 0);

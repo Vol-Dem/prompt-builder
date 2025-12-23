@@ -6,6 +6,9 @@ import TextHighlight from "../../text/TextHighlight";
 import TextButton from "../../text/text-buttons/TextButton";
 import TextImageMenu from "../../text/text-buttons/TextImageMenu";
 import TextButtonTertiary from "../../text/text-buttons/TextButtonTertiary";
+import faqTagsetsPoster from "../../../../assets/guide/1-faq-tagsets-4k.jpg";
+import faqTagsetsMp4 from "../../../../assets/guide/1-faq-tagsets.mp4";
+import tsprev from "../../../../assets/guide/tsprev.jpg";
 
 const InfoTagsets = () => {
   return (
@@ -19,17 +22,14 @@ const InfoTagsets = () => {
         preload="none"
         muted
         controls
-        poster={require("../../../../assets/guide/1-faq-tagsets-4k.jpg")}
+        poster={faqTagsetsPoster}
         mainSrc={{
-          src: require("../../../../assets/guide/1-faq-tagsets.mp4"),
+          src: faqTagsetsMp4,
           type: "video/mp4",
         }}
         className={classes.video}
       >
-        <source
-          src={require("../../../../assets/guide/1-faq-tagsets.mp4")}
-          type="video/mp4"
-        />
+        <source src={faqTagsetsMp4} type="video/mp4" />
       </Video>
       <p className={classes.text}>
         The tag sets feature allows you to create a set of trigger words for
@@ -64,7 +64,7 @@ const InfoTagsets = () => {
           width={1250}
           height={463}
           className={classes["image"]}
-          src={require("../../../../assets/guide/tsprev.jpg")}
+          src={tsprev}
           alt="Tag sets preview"
         />
         <p className={classes.text}>

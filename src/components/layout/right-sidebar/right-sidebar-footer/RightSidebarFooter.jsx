@@ -1,6 +1,8 @@
 import classes from "./RightSidebarFooter.module.scss";
 import discordIcon from "../../../../assets/discord.svg";
 import discordWhiteIcon from "../../../../assets/discord-white.svg";
+import patreonWhiteLogo from "../../../../assets/patreon-w.png";
+import kofiDarkLogo from "../../../../assets/kofi_bg_tag_dark.webp";
 import { useCallback, useEffect, useState } from "react";
 import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
 
@@ -43,7 +45,7 @@ const RightSidebarFooter = () => {
             width={520}
             height={108}
             loading="lazy"
-            src={require("../../../../assets/patreon-w.png")}
+            src={patreonWhiteLogo}
             border="0"
             alt="Patreon"
             title="Patreon"
@@ -60,7 +62,7 @@ const RightSidebarFooter = () => {
             width={341}
             height={129}
             loading="lazy"
-            src={require("../../../../assets/kofi_bg_tag_dark.webp")}
+            src={kofiDarkLogo}
             border="0"
             alt="Ko-Fi"
             className={classes["support__icon"]}

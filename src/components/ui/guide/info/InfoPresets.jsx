@@ -4,6 +4,8 @@ import TextButton from "../../text/text-buttons/TextButton";
 import TextButtonTertiary from "../../text/text-buttons/TextButtonTertiary";
 import TextHighlight from "../../text/TextHighlight";
 import classes from "./InfoPresets.module.scss";
+import presetAdd from "../../../../assets/guide/preset-add.jpg";
+import preset from "../../../../assets/guide/preset.jpg";
 
 const InfoPresets = () => {
   return (
@@ -22,7 +24,7 @@ const InfoPresets = () => {
           width={1248}
           height={660}
           className={`${classes["image"]}`}
-          src={require("../../../../assets/guide/preset-add.jpg")}
+          src={presetAdd}
           alt="Add preset"
         />
       </NotificationMessage>
@@ -36,7 +38,7 @@ const InfoPresets = () => {
           width={1380}
           height={423}
           className={`${classes["image"]}`}
-          src={require("../../../../assets/guide/preset.jpg")}
+          src={preset}
           alt="Preset"
         />
       </NotificationMessage>

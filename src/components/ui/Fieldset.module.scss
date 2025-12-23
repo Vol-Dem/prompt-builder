@@ -1,4 +1,5 @@
 @use "./../../variables/variables.scss" as var;
+@use "sass:color";
 
 .fieldset {
   display: flex;
@@ -8,7 +9,10 @@
   padding: 1rem;
   border: none;
   // background-color: var.$color-background-violet;
-  background-color: lighten(var.$color-background-tertiary, 2%);
+  background-color: color.adjust(
+    var.$color-background-tertiary,
+    $lightness: 2%
+  );
   // box-shadow: inset 0rem 0rem 0.5rem rgba(0, 0, 0, 0.3);
   box-shadow: var.$box-shadow-inset;
   margin: 0.4rem 0;

@@ -1,4 +1,5 @@
 @use "../../variables/variables.scss" as var;
+@use "sass:color";
 
 .error-page {
   height: 100vh;
@@ -19,7 +20,7 @@
   &__link {
     text-decoration: none;
     font-size: 2.8rem;
-    color: lighten(var.$color-primary, 15%);
+    color: color.adjust(var.$color-primary, $lightness: 15%);
     font-weight: 600;
     font-family: inherit;
     padding: 1rem;
@@ -27,7 +28,7 @@
     transition: all 0.3s;
 
     &:hover {
-      color: lighten(var.$color-primary, 25%);
+      color: color.adjust(var.$color-primary, $lightness: 25%);
     }
 
     &:disabled {

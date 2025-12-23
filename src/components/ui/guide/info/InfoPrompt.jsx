@@ -10,6 +10,14 @@ import NotificationMessage from "../../NotificationMessage";
 import ImageComparisonSlider from "../../../ImageComparisonSlider/ImageComparisonSlider";
 import Image from "../../image/Image";
 import TextButtonTertiary from "../../text/text-buttons/TextButtonTertiary";
+import faqPromptPoster from "../../../../assets/guide/3-faq-prompt.jpg";
+import faqPromptMp4 from "../../../../assets/guide/3-faq-prompt.mp4";
+import compSliderImgLeft from "../../../../assets/guide/prompt-text.jpg";
+import compSliderImgRight from "../../../../assets/guide/prompt-tags.jpg";
+import tracking from "../../../../assets/guide/tracking.jpg";
+import duplicates from "../../../../assets/guide/duplicates.png";
+import tagEdit from "../../../../assets/guide/tag-edit.png";
+import dnd from "../../../../assets/guide/dnd.png";
 
 const InfoPrompt = () => {
   return (
@@ -23,17 +31,14 @@ const InfoPrompt = () => {
         preload="none"
         muted
         controls
-        poster={require("../../../../assets/guide/3-faq-prompt.jpg")}
+        poster={faqPromptPoster}
         mainSrc={{
-          src: require("../../../../assets/guide/3-faq-prompt.mp4"),
+          src: faqPromptMp4,
           type: "video/mp4",
         }}
         className={classes.video}
       >
-        <source
-          src={require("../../../../assets/guide/3-faq-prompt.mp4")}
-          type="video/mp4"
-        />
+        <source src={faqPromptMp4} type="video/mp4" />
       </Video>
       <p className={classes.text}>
         <span className={classes["btn-type"]}>
@@ -106,8 +111,8 @@ const InfoPrompt = () => {
         </p>
         <ImageComparisonSlider
           className={classes.comparison}
-          srcLeft={require("../../../../assets/guide/prompt-text.jpg")}
-          srcRight={require("../../../../assets/guide/prompt-tags.jpg")}
+          srcLeft={compSliderImgLeft}
+          srcRight={compSliderImgRight}
         />
       </NotificationMessage>
       <NotificationMessage>
@@ -123,7 +128,7 @@ const InfoPrompt = () => {
           width={1565}
           height={574}
           className={classes["image"]}
-          src={require("../../../../assets/guide/tracking.jpg")}
+          src={tracking}
           alt="Tracking"
         />
       </NotificationMessage>
@@ -139,7 +144,7 @@ const InfoPrompt = () => {
           width={1670}
           height={330}
           className={classes["image"]}
-          src={require("../../../../assets/guide/duplicates.png")}
+          src={duplicates}
           alt="Duplicates"
         />
       </NotificationMessage>
@@ -154,7 +159,7 @@ const InfoPrompt = () => {
           width={901}
           height={75}
           className={classes["image"]}
-          src={require("../../../../assets/guide/tag-edit.png")}
+          src={tagEdit}
           alt="Tag edit"
         />
       </NotificationMessage>
@@ -173,7 +178,7 @@ const InfoPrompt = () => {
           width={851}
           height={134}
           className={classes["image"]}
-          src={require("../../../../assets/guide/dnd.png")}
+          src={dnd}
           alt=">Drag and drop"
         />
       </NotificationMessage>

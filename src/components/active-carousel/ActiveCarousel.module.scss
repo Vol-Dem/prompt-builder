@@ -1,11 +1,10 @@
 @use "../../variables/variables.scss" as var;
+@use "sass:color";
 
 .active-corousel {
   position: sticky;
   top: 10rem;
   z-index: 14;
-  // left: 50%;
-  // transform: translateX(50%);
 }
 
 .container {
@@ -14,55 +13,34 @@
   height: 100%;
 
   &--open {
-    // background-color: rgb(43 41 50);
     margin-top: 1rem;
     margin-bottom: 0.5rem;
-    background-color: rgb(lighten(var.$color-background-secondary, 3%), 0.97);
-    // box-shadow: 0rem 0rem 0.9rem 0.4rem rgba(0, 0, 0, 0.2);
+    background-color: rgb(
+      color.adjust(var.$color-background-secondary, $lightness: 3%),
+      0.97
+    );
     box-shadow: var.$box-shadow-light;
     position: sticky;
     padding: 2.8rem 0.2rem 1.8rem 1.2rem;
     gap: 1.6rem;
     left: 0;
-    // top: 10rem;
     width: 100%;
-    // animation: open 0.4s ease-in forwards;
     border-radius: 1rem;
     overflow-y: hidden;
-    // overflow: hidden;
     z-index: 5;
     position: relative;
   }
 }
 
 .wrap {
-  // position: relative;
   display: flex;
-  // display: grid;
   grid-template-columns: 26rem 1fr;
   gap: 2rem;
-  // grid-template-columns: auto 1fr;
-  // gap: 1.6rem;
-  // position: static;
   z-index: 10;
   justify-content: space-between;
   width: 100%;
   height: 100%;
   transition: all 0.3s;
-  // height: calc(100vh - 200px);
-
-  // &--open {
-  //   // background-color: rgb(43 41 50);
-  //   background-color: rgb(lighten(var.$color-background-secondary, 3%), 0.97);
-  //   box-shadow: 0rem 0rem 0.9rem 0.4rem rgba(0, 0, 0, 0.2);
-  //   position: absolute;
-  //   gap: 1.6rem;
-  //   left: 0;
-  //   animation: open 0.4s ease-in forwards;
-  //   border-radius: 1rem;
-  //   overflow: hidden;
-  //   z-index: 5;
-  // }
 }
 
 .carousel {
@@ -84,7 +62,7 @@
   }
 
   &:hover {
-    color: lighten(#a8a8a8, 20%);
+    color: color.adjust(#a8a8a8, $lightness: 20%);
   }
 }
 
@@ -105,7 +83,6 @@
 @media screen and (max-width: 1600px) {
   .container {
     max-width: 120rem;
-    // max-width: 112rem;
   }
 }
 

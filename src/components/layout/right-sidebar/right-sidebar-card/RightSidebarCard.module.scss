@@ -1,4 +1,5 @@
 @use "../../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .card {
   display: flex;
@@ -10,7 +11,10 @@
   border-radius: 1rem;
   overflow: hidden;
   // transition: all 0.3s;
-  background-color: darken(var.$color-background-tertiary, 1%);
+  background-color: color.adjust(
+    var.$color-background-tertiary,
+    $lightness: -1%
+  );
   // margin: 1rem 0 1rem 0.6rem;
   // margin-left: 1rem;
   box-shadow: var.$box-shadow;
@@ -51,7 +55,7 @@
     right: 0;
     background: linear-gradient(
       to left,
-      darken(var.$color-background-tertiary, 1%) 30%,
+      color.adjust(var.$color-background-tertiary, $lightness: -1%) 30%,
       transparent 110%
     );
     // z-index: 2;
@@ -179,7 +183,7 @@
   transition: all 0.3s;
 
   &:hover {
-    color: lighten(var.$color-primary, 20%);
+    color: color.adjust(var.$color-primary, $lightness: 20%);
   }
 }
 

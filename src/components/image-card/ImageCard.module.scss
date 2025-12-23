@@ -88,16 +88,6 @@
   box-shadow: var.$box-shadow-inset;
 }
 
-.link {
-  display: inline-block;
-  color: #7278f0;
-  transition: all 0.3s;
-
-  &:hover {
-    color: darken(#7278f0, 1);
-  }
-}
-
 @media (max-width: 1310px) {
   .example__info {
     overflow: visible;

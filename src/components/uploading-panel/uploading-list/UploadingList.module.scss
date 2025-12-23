@@ -1,4 +1,5 @@
 @use "../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .rejected-panel {
   display: flex;
@@ -11,7 +12,10 @@
     padding: 0.3rem 0.6rem;
     width: 100%;
     text-align: center;
-    background-color: darken(var.$color-background-primary, 4%);
+    background-color: color.adjust(
+      var.$color-background-primary,
+      $lightness: -4%
+    );
     box-shadow: var.$box-shadow;
 
     &--completed {

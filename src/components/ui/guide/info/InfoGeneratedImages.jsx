@@ -14,6 +14,10 @@ import TextButtonSquare from "../../text/text-buttons/TextButtonSquare";
 import TextImageMenu from "../../text/text-buttons/TextImageMenu";
 import Image from "../../image/Image";
 import TextButtonSaved from "../../text/text-buttons/TextButtonSaved";
+import faqImagesPoster from "../../../../assets/guide/2-faq-images-2.jpg";
+import faqImagesMp4 from "../../../../assets/guide/2-faq-images-lite.mp4";
+import imageSelect from "../../../../assets/guide/image-select.png";
+import menu from "../../../../assets/guide/menu.png";
 
 const InfoGeneratedImages = () => {
   return (
@@ -28,13 +32,10 @@ const InfoGeneratedImages = () => {
           preload="none"
           muted
           controls
-          poster={require("../../../../assets/guide/2-faq-images-2.jpg")}
+          poster={faqImagesPoster}
           className={classes.video}
         >
-          <source
-            src={require("../../../../assets/guide/2-faq-images-lite.mp4")}
-            type="video/mp4"
-          />
+          <source src={faqImagesMp4} type="video/mp4" />
         </Video>
         <p>
           <TextImageMenu /> – Click the button to open the image menu. Here you
@@ -91,7 +92,7 @@ const InfoGeneratedImages = () => {
             width={897}
             height={375}
             className={`${classes["image"]}`}
-            src={require("../../../../assets/guide/image-select.png")}
+            src={imageSelect}
             alt="Image select"
           />
         </NotificationMessage>
@@ -120,7 +121,7 @@ const InfoGeneratedImages = () => {
             width={644}
             height={78}
             className={`${classes["image"]}`}
-            src={require("../../../../assets/guide/menu.png")}
+            src={menu}
             alt="Menu"
           />
         </NotificationMessage>

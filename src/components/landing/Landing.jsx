@@ -13,6 +13,22 @@ import Video from "../ui/Video";
 import carouselImage1 from "../../assets/3dcarousel/slide-1.webp";
 import { checkIsMobile } from "../../utils/generalUtils";
 import logo from "../../assets/logo-730.webp";
+import mainPromptWebm from "../../assets/home/1-main-prompt.webp";
+import mainPromptMp4 from "../../assets/home/1-main-prompt.mp4";
+import mainStoreWebm from "../../assets/home/2-main-store.webp";
+import mainStoreMp4 from "../../assets/home/2-main-store.mp4";
+import mainTagsystemWebm from "../../assets/home/3-main-tagsystem.webp";
+import mainTagsystemMp4 from "../../assets/home/3-main-tagsystem.mp4";
+import mainImagesWebm from "../../assets/home/4-main-images.webp";
+import mainImagesMp4 from "../../assets/home/4-main-images.mp4";
+import mainOraganizeWebm from "../../assets/home/5-main-oraganize.webp";
+import mainOraganizeMp4 from "../../assets/home/5-main-oraganize.mp4";
+import mainQuickWebm from "../../assets/home/6-main-quick.webp";
+import mainQuickMp4 from "../../assets/home/6-main-quick.mp4";
+import mainSearchWebm from "../../assets/home/7-main-search.webp";
+import mainSearchMp4 from "../../assets/home/7-main-search.mp4";
+import mainIntroWebm from "../../assets/home/intro-s.webp";
+import mainIntroMp4 from "../../assets/home/intro.mp4";
 
 const Landing = () => {
   const [showVideo, setShowVideo] = useState(false);
@@ -118,13 +134,10 @@ const Landing = () => {
               preload="none"
               muted
               // loading="lazy"
-              poster={require("../../assets/home/1-main-prompt.webp")}
+              poster={mainPromptWebm}
               className={classes["section__video"]}
             >
-              <source
-                src={require("../../assets/home/1-main-prompt.mp4")}
-                type="video/mp4"
-              />
+              <source src={mainPromptMp4} type="video/mp4" />
             </Video>
           </div>
         </div>
@@ -167,14 +180,11 @@ const Landing = () => {
               preload="none"
               muted
               // loading="lazy"
-              poster={require("../../assets/home/2-main-store.webp")}
+              poster={mainStoreWebm}
               className={classes["section__video"]}
             >
               {/* <source src={videoSrc?.webm} type="video/webm" /> */}
-              <source
-                src={require("../../assets/home/2-main-store.mp4")}
-                type="video/mp4"
-              />
+              <source src={mainStoreMp4} type="video/mp4" />
             </Video>
           </div>
         </div>
@@ -219,13 +229,10 @@ const Landing = () => {
               preload="none"
               muted
               loading="lazy"
-              poster={require("../../assets/home/3-main-tagsystem.webp")}
+              poster={mainTagsystemWebm}
               className={classes["section__video"]}
             >
-              <source
-                src={require("../../assets/home/3-main-tagsystem.mp4")}
-                type="video/mp4"
-              />
+              <source src={mainTagsystemMp4} type="video/mp4" />
             </Video>
           </div>
         </div>
@@ -267,13 +274,10 @@ const Landing = () => {
               preload="none"
               muted
               loading="lazy"
-              poster={require("../../assets/home/4-main-images.webp")}
+              poster={mainImagesWebm}
               className={classes["section__video"]}
             >
-              <source
-                src={require("../../assets/home/4-main-images.mp4")}
-                type="video/mp4"
-              />
+              <source src={mainImagesMp4} type="video/mp4" />
             </Video>
           </div>
         </div>
@@ -314,13 +318,10 @@ const Landing = () => {
               preload="none"
               muted
               loading="lazy"
-              poster={require("../../assets/home/5-main-oraganize.webp")}
+              poster={mainOraganizeWebm}
               className={classes["section__video"]}
             >
-              <source
-                src={require("../../assets/home/5-main-oraganize.mp4")}
-                type="video/mp4"
-              />
+              <source src={mainOraganizeMp4} type="video/mp4" />
             </Video>
           </div>
         </div>
@@ -360,13 +361,10 @@ const Landing = () => {
               preload="none"
               muted
               loading="lazy"
-              poster={require("../../assets/home/6-main-quick.webp")}
+              poster={mainQuickWebm}
               className={classes["section__video"]}
             >
-              <source
-                src={require("../../assets/home/6-main-quick.mp4")}
-                type="video/mp4"
-              />
+              <source src={mainQuickMp4} type="video/mp4" />
             </Video>
           </div>
         </div>
@@ -399,13 +397,10 @@ const Landing = () => {
               preload="none"
               muted
               loading="lazy"
-              poster={require("../../assets/home/7-main-search.webp")}
+              poster={mainSearchWebm}
               className={classes["section__video"]}
             >
-              <source
-                src={require("../../assets/home/7-main-search.mp4")}
-                type="video/mp4"
-              />
+              <source src={mainSearchMp4} type="video/mp4" />
             </Video>
           </div>
         </div>
@@ -448,13 +443,10 @@ const Landing = () => {
             controls
             width={1280}
             height={720}
-            poster={require("../../assets/home/intro-s.webp")}
+            poster={mainIntroWebm}
             className={classes["video"]}
           >
-            <source
-              src={require("../../assets/home/intro.mp4")}
-              type="video/mp4"
-            />
+            <source src={mainIntroMp4} type="video/mp4" />
           </Video>
         </Modal>
       )}

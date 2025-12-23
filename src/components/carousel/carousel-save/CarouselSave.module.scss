@@ -1,4 +1,5 @@
 @use "../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .save {
   position: absolute;
@@ -120,7 +121,10 @@
   }
 
   &:disabled {
-    background-color: rgb(lighten(var.$color-background-tertiary, 20%), 0.8);
+    background-color: rgb(
+      color.adjust(var.$color-background-tertiary, $lightness: 20%),
+      0.8
+    );
     cursor: default;
   }
 }

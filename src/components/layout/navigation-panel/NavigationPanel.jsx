@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import BackSvg from "../../../assets/BackSvg";
 import Buttton from "../../ui/Button";
 import classes from "./NavigationPanel.module.scss";
 import SettingsSvg from "../../../assets/SettingsSvg";

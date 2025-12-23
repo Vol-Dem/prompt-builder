@@ -7,6 +7,10 @@ import TextContentBlock from "../ui/text/TextContentBlock";
 import TextButtonTertiary from "../ui/text/text-buttons/TextButtonTertiary";
 import AboutContentWrap from "./layout/AboutContentWrap";
 import H1 from "../ui/text/H1";
+import categoryEdit from "../../assets/about/19-category-edit-1.jpg";
+import categoryEditWebm from "../../assets/about/19-category-edit-1.webp";
+import categoryEdit2 from "../../assets/about/19-category-edit-2.jpg";
+import categoryEdit2Webm from "../../assets/about/19-category-edit-2.webp";
 
 /**
  * Content for the About page "Category edit" section.
@@ -34,9 +38,9 @@ const AboutCategoryEdit = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/19-category-edit-1.jpg")}
+            src={categoryEdit}
             alt="Category edit 1"
-            srcSet={require("../../assets/about/19-category-edit-1.webp")}
+            srcSet={categoryEditWebm}
             type="image/webp"
           />
           <Image
@@ -45,9 +49,9 @@ const AboutCategoryEdit = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/19-category-edit-2.jpg")}
+            src={categoryEdit2}
             alt="Category edit 2"
-            srcSet={require("../../assets/about/19-category-edit-2.webp")}
+            srcSet={categoryEdit2Webm}
             type="image/webp"
           />
         </TextImageBlock>

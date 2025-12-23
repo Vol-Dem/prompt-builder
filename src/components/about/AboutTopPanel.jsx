@@ -11,6 +11,16 @@ import NotificationMessage from "../ui/NotificationMessage";
 import AboutContentWrap from "./layout/AboutContentWrap";
 import H1 from "../ui/text/H1";
 import AboutSection from "./layout/AboutSection";
+import search from "../../assets/about/17-search.jpg";
+import searchWebp from "../../assets/about/17-search.webp";
+import search2 from "../../assets/about/17-search-2.jpg";
+import search2Webp from "../../assets/about/17-search-2.webp";
+import queueComplete from "../../assets/about/15-queue-complete.jpg";
+import queueCompleteWebp from "../../assets/about/15-queue-complete.webp";
+import queue from "../../assets/about/15-queue.jpg";
+import queueWebp from "../../assets/about/15-queue.webp";
+import nsfw from "../../assets/about/16-nsfw.jpg";
+import nsfwWebp from "../../assets/about/16-nsfw.webp";
 
 /**
  * Content for the About page "Top Panel" section.
@@ -39,9 +49,9 @@ const AboutTopPanel = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/17-search.jpg")}
+              src={search}
               alt="Search"
-              srcSet={require("../../assets/about/17-search.webp")}
+              srcSet={searchWebp}
               type="image/webp"
             />
             <Image
@@ -50,9 +60,9 @@ const AboutTopPanel = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/17-search-2.jpg")}
+              src={search2}
               alt="Search 2"
-              srcSet={require("../../assets/about/17-search-2.webp")}
+              srcSet={search2Webp}
               type="image/webp"
             />
           </TextImageBlock>
@@ -79,9 +89,9 @@ const AboutTopPanel = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/15-queue-complete.jpg")}
+              src={queueComplete}
               alt="Queue"
-              srcSet={require("../../assets/about/15-queue-complete.webp")}
+              srcSet={queueCompleteWebp}
               type="image/webp"
             />
           </TextImageBlock>
@@ -102,9 +112,9 @@ const AboutTopPanel = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/15-queue.jpg")}
+              src={queue}
               alt="Queue 2"
-              srcSet={require("../../assets/about/15-queue.webp")}
+              srcSet={queueWebp}
               type="image/webp"
             />
           </TextImageBlock>
@@ -132,9 +142,9 @@ const AboutTopPanel = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/16-nsfw.jpg")}
+              src={nsfw}
               alt="Switch"
-              srcSet={require("../../assets/about/16-nsfw.webp")}
+              srcSet={nsfwWebp}
               type="image/webp"
             />
           </TextImageBlock>

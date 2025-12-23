@@ -10,6 +10,16 @@ import H3 from "../ui/text/H3";
 import AboutContentWrap from "./layout/AboutContentWrap";
 import H1 from "../ui/text/H1";
 import AboutSection from "./layout/AboutSection";
+import modelSettings from "../../assets/about/9-model-settings.jpg";
+import modelSettingsWebp from "../../assets/about/9-model-settings.webp";
+import generalSettings from "../../assets/about/10-general-settings.jpg";
+import generalSettingsWebp from "../../assets/about/10-general-settings.webp";
+import generalSettings1 from "../../assets/about/11-versions-settings-1.jpg";
+import generalSettings1Webp from "../../assets/about/11-versions-settings-1.webp";
+import generalSettings2 from "../../assets/about/11-versions-settings-2.jpg";
+import generalSettings2Webp from "../../assets/about/11-versions-settings-2.webp";
+import generalSettings3 from "../../assets/about/11-versions-settings-3.jpg";
+import generalSettings3Webp from "../../assets/about/11-versions-settings-3.webp";
 
 /**
  * Content for the About page "Model Settings" section.
@@ -41,9 +51,9 @@ const AboutModelSettings = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/9-model-settings.jpg")}
+              src={modelSettings}
               alt="Model settings"
-              srcSet={require("../../assets/about/9-model-settings.webp")}
+              srcSet={modelSettingsWebp}
               type="image/webp"
             />
           </TextImageBlock>
@@ -60,9 +70,9 @@ const AboutModelSettings = () => {
               height={864}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/10-general-settings.jpg")}
+              src={generalSettings}
               alt="General settings"
-              srcSet={require("../../assets/about/10-general-settings.webp")}
+              srcSet={generalSettingsWebp}
               type="image/webp"
             />
           </TextImageBlock>
@@ -84,9 +94,9 @@ const AboutModelSettings = () => {
               height={796}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/11-versions-settings-1.jpg")}
+              src={generalSettings1}
               alt="Versions settings 1"
-              srcSet={require("../../assets/about/11-versions-settings-1.webp")}
+              srcSet={generalSettings1Webp}
               type="image/webp"
             />
             <Image
@@ -95,9 +105,9 @@ const AboutModelSettings = () => {
               height={796}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/11-versions-settings-2.jpg")}
+              src={generalSettings2}
               alt="Versions settings 2"
-              srcSet={require("../../assets/about/11-versions-settings-2.webp")}
+              srcSet={generalSettings2Webp}
               type="image/webp"
             />
           </TextImageBlock>
@@ -115,9 +125,9 @@ const AboutModelSettings = () => {
               height={796}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/11-versions-settings-3.jpg")}
+              src={generalSettings3}
               alt="Versions settings 3"
-              srcSet={require("../../assets/about/11-versions-settings-3.webp")}
+              srcSet={generalSettings3Webp}
               type="image/webp"
             />
           </TextImageBlock>

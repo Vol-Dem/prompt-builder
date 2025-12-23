@@ -82,7 +82,6 @@ const ModelDefImages = () => {
       !!model?.data &&
       !curVersionImages?.length
     ) {
-      console.log("GET");
       getCurVersionImages();
     }
   }, [model, curVersion, uid, curVersionImages]);

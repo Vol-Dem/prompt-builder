@@ -1,4 +1,5 @@
 @use "../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .title {
   display: flex;
@@ -10,17 +11,10 @@
 .tag-sets__list {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  // flex-direction: column;
   overflow: hidden;
   gap: 2rem;
   list-style: none;
-  //   max-height: 32rem;
   transition: all 0.4s;
-  // @include var.pulse;
-
-  //   &--open {
-  //     max-height: 200rem;
-  //   }
 }
 
 .tag-sets__wrap {
@@ -30,7 +24,6 @@
 .tag-sets__header {
   display: flex;
   align-items: center;
-  // justify-content: space-between;
   gap: 2rem;
   margin-bottom: 1.5rem;
 }
@@ -39,7 +32,6 @@
   max-height: 20rem;
   overflow: hidden;
   transition: all 0.6s;
-  // display: flex;
 }
 
 .tag-sets {
@@ -54,14 +46,20 @@
   &__img {
     width: 14rem;
     height: 20rem;
-    background-color: lighten(var.$color-background-tertiary, 2%);
+    background-color: color.adjust(
+      var.$color-background-tertiary,
+      $lightness: 2%
+    );
   }
 
   & ul {
     padding: 1rem;
     border-radius: 1rem;
     background-color: var.$color-background-tertiary;
-    background-color: lighten(var.$color-background-tertiary, 2%);
+    background-color: color.adjust(
+      var.$color-background-tertiary,
+      $lightness: 2%
+    );
   }
 
   &__tags {

@@ -75,7 +75,7 @@ const authSlice = createSlice({
       };
 
       initializeAppCheck(firebaseApp, {
-        provider: new ReCaptchaV3Provider(process.env.REACT_APP_FIREBASE_REC),
+        provider: new ReCaptchaV3Provider(import.meta.env.VITE_FIREBASE_REC),
 
         // Optional argument. If true, the SDK automatically refreshes App Check
         // tokens as needed.

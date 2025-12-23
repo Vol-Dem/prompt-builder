@@ -1,4 +1,5 @@
 @use "./../../../variables/variables.scss" as var;
+@use "sass:color";
 @include var.animation-show;
 
 .guide-container {
@@ -27,7 +28,7 @@
     }
 
     &:hover {
-      color: lighten(var.$color-text-gray, 20%);
+      color: color.adjust(var.$color-text-gray, $lightness: 20%);
     }
   }
 
@@ -43,24 +44,9 @@
     left: 2.1rem;
   }
 
-  // &__arrow-bg {
-  //   position: absolute;
-  //   bottom: -1rem;
-  //   left: 2.1rem;
-  //   transform: rotate(45deg);
-  //   // border: 1px solid var.$color-text-white;
-  //   // box-shadow: var.$box-shadow;
-  //   box-shadow: 0rem 0rem 0.5rem rgb(255 255 255 / 30%);
-  //   width: 2rem;
-  //   height: 2rem;
-  //   background-color: #21202f;
-  //   z-index: -1;
-  // }
-
   &__arrow-bg {
     position: absolute;
     transform: rotate(45deg);
-    // border: 1px solid var.$color-text-white;
     box-shadow: var.$box-shadow;
     box-shadow: 0rem 0rem 0.5rem rgb(255 255 255 / 30%);
     box-shadow: 0 0 10px #dfaf07;
@@ -127,7 +113,6 @@
     box-shadow: inset var.$box-shadow;
     background-color: #28273a;
     border-radius: 0 0 10px 10px;
-    // box-shadow: var.$box-shadow-inset;
 
     & svg {
       width: 1.4rem;
@@ -143,8 +128,6 @@
   &__controls-btn {
     position: relative;
     padding: 0.1rem 0.4rem 0.1rem 0.8rem;
-    // box-shadow: 0 0 2px #dfaf07;
-    // width: 5rem;
     height: 2rem;
     border-radius: 0.6rem;
 
@@ -171,10 +154,8 @@
         transform: translate(-50%, -50%);
         box-shadow: 0 0 6px #dfaf07;
         box-sizing: initial;
-        //   z-index: -1;
       }
       &::before {
-        // border: 5px solid #dfaf07;
         box-shadow: 0 0 6px #dfaf07;
         animation: pulse2 2s ease-in-out infinite;
       }
@@ -182,7 +163,6 @@
         border: 1px solid #dfaf07;
         transform: translate(-50%, -50%);
         opacity: 0.8;
-        // animation: pulse2 3s 1s ease-in-out infinite;
       }
     }
   }
@@ -190,56 +170,28 @@
   &__controls-btn-close {
     color: var.$color-text-gray;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    // background-color: #dfaf07;
   }
 
   &__content {
-    // height: auto;
     height: auto;
-    // transform: translate(-50%, -50%);
     z-index: 40;
     width: 24rem;
     width: 25.7rem;
     max-width: 26rem;
-    // min-width: 40rem;
-    // max-height: 95vh;
     background-color: #28273a;
     border-radius: 10px;
-    // padding: 0 0 0.6rem 0;
-    // overflow-y: scroll;
-    // @include var.custom-scroll;
-    // box-shadow: var.$box-shadow;
     box-shadow: 0rem 0rem 0.8rem rgb(255 255 255 / 90%);
     box-shadow: 0 0 10px #dfaf07;
     border: 1px solid rgba(223, 176, 7, 0.8);
     transition: all 0.3s ease-in;
 
-    // &--1 {
-    //   // top: -10.2rem;
-    //   top: 5.8rem;
-    //   left: 0;
-    //   max-width: 25rem;
-    // }
-
-    // &--2 {
-    //   top: 8.6rem;
-    //   left: 20rem;
-    //   max-width: 25rem;
-    // }
-
     &__text {
-      //   margin-bottom: 1.6rem;
       font-size: 1.6rem;
       color: var.$color-text-white;
-      //   background-color: var.$color-background-primary;
       background-color: #28273a;
       border-radius: 10px 10px 0 0;
-      //   padding: 0.6rem 1.2rem;
       padding: 0.6rem 2.9rem 0.6rem 1.2rem;
       width: 100%;
-      //   color: var.$color-text-gray;
-      //   border-radius: 10px;
-      //   box-shadow: var.$box-shadow;
     }
 
     &__comment {
@@ -260,38 +212,14 @@
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      //   text-align: right;
       gap: 1rem;
       font-size: 1.6rem;
 
-      // margin-bottom: 3.4rem;
-
       & svg {
         flex-shrink: 0;
-        // width: 1.8rem;
-        // height: 1.8rem;
       }
     }
   }
-
-  //   &__close {
-  //     position: fixed;
-  //     cursor: pointer;
-  //     display: flex;
-  //     align-items: center;
-  //     top: 0.6rem;
-  //     right: 32rem;
-  //     color: #a8a8a8;
-  //     transition: all 0.3s;
-
-  //     & svg {
-  //       width: 2.4rem;
-  //     }
-
-  //     &:hover {
-  //       color: lighten(#a8a8a8, 20%);
-  //     }
-  //   }
 
   &__cross {
     display: inline-block;
@@ -349,15 +277,6 @@
     height: 2rem;
   }
 }
-
-// @keyframes show {
-//   0% {
-//     opacity: 0;
-//   }
-//   100% {
-//     opacity: 1;
-//   }
-// }
 
 @media (max-width: 1160px) {
   .guide__content--2 {

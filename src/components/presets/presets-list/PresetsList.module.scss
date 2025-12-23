@@ -1,4 +1,5 @@
 @use "./../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .presets {
   display: flex;
@@ -39,11 +40,15 @@
     transition: background-color 0.3s;
     cursor: pointer;
     @include var.ellipsis(2);
-    border: 1px solid lighten(var.$color-background-tertiary, 20%);
+    border: 1px solid
+      color.adjust(var.$color-background-tertiary, $lightness: 20%);
     text-align: center;
 
     &:hover {
-      background-color: lighten(var.$color-background-tertiary, 20%);
+      background-color: color.adjust(
+        var.$color-background-tertiary,
+        $lightness: 20%
+      );
     }
   }
 
@@ -57,6 +62,6 @@
   background-color: var.$color-background-red;
 
   &:hover {
-    background-color: lighten(var.$color-background-red, 10%);
+    background-color: color.adjust(var.$color-background-red, $lightness: 10%);
   }
 }

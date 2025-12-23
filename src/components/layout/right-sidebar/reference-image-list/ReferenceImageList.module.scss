@@ -1,11 +1,15 @@
 @use "../../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .ref-images {
   padding: 0.4rem;
   display: flex;
   gap: 1rem;
   // justify-content: space-between;
-  background-color: rgba(darken(var.$color-background-secondary, 5%), 0.7);
+  background-color: rgba(
+    color.adjust(var.$color-background-secondary, $lightness: -5%),
+    0.7
+  );
   background-color: var.$color-background-secondary;
   border-radius: 10px;
   width: 100%;

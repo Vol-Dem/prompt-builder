@@ -7,21 +7,30 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 // import * as functions from "firebase-functions";
-const { onRequest, HttpsError } = require("firebase-functions/v2/https");
-const { onCall } = require("firebase-functions/v2/https");
+// const { onRequest, HttpsError } = require("firebase-functions/v2/https");
+import { onRequest, HttpsError } from "firebase-functions/v2/https";
+// const { onCall } = require("firebase-functions/v2/https");
+import { onCall } from "firebase-functions/v2/https";
 // const { pubsub } = require("firebase-functions");
 // const { google } = require("googleapis");
 // const { GoogleAuth } = require("google-auth-library");
-const logger = require("firebase-functions/logger");
+// const logger = require("firebase-functions/logger");
+import { logger } from "firebase-functions/logger";
 
 // The Firebase Admin SDK to access Firestore.
-const { initializeApp } = require("firebase-admin/app");
-const { getFirestore } = require("firebase-admin/firestore");
-const { getDatabase } = require("firebase-admin/database");
-const { Timestamp } = require("firebase-admin/firestore");
-const { onMessagePublished } = require("firebase-functions/v2/pubsub");
+// const { initializeApp } = require("firebase-admin/app");
+import { initializeApp } from "firebase-admin/app";
+// const { getFirestore } = require("firebase-admin/firestore");
+import { getFirestore } from "firebase-admin/firestore";
+// const { getDatabase } = require("firebase-admin/database");
+import { getDatabase } from "firebase-admin/database";
+// const { Timestamp } = require("firebase-admin/firestore");
+import { Timestamp } from "firebase-admin/firestore";
+// const { onMessagePublished } = require("firebase-functions/v2/pubsub");
+import { onMessagePublished } from "firebase-functions/v2/pubsub";
 // const { request } = require("http");
-const { CloudBillingClient } = require("@google-cloud/billing");
+// const { CloudBillingClient } = require("@google-cloud/billing");
+import { CloudBillingClient } from "@google-cloud/billing";
 // const { sendDiscordBillingMessage } = require("./discord");
 
 initializeApp();
@@ -110,7 +119,7 @@ const clearFileExtension = (name) => {
   return clearedName;
 };
 
-exports.handelBillingAlert = onMessagePublished(
+export const handelBillingAlert = onMessagePublished(
   "projects/aide-tools/topics/billing",
   async (event) => {
     // logger.debug("BilllingA Allert");
@@ -365,6 +374,16 @@ const transformImageData = (imageData) => {
   return newImageData;
 };
 
+// Fix for Civitai bug with meta data in meta.meta
+export const fixCivImagesMeta = (images) => {
+  return images.map((image) => {
+    if (image?.meta && image?.meta?.meta) {
+      return { ...image, meta: { ...image.meta, ...image.meta.meta } };
+    }
+    return image;
+  });
+};
+
 const saveVersionImages = async (modelId, username, versionsData) => {
   // console.log(versionsData);
   const updatedModelversions = await Promise.all(
@@ -374,8 +393,11 @@ const saveVersionImages = async (modelId, username, versionsData) => {
       );
       const versionImages = await versionImagesRequest.json();
 
+      // Fix for Civitai bug with meta data in meta.meta
+      const fixedVersionImages = fixCivImagesMeta(versionImages?.items);
+
       const updatedImages = version?.images?.flatMap((image) => {
-        const fullImgData = versionImages?.items?.find((verImg) => {
+        const fullImgData = fixedVersionImages?.find((verImg) => {
           if (verImg?.type === "video") {
             const uniqUrlPart = clearFileExtension(verImg.url.split("/").pop());
             return uniqUrlPart && image.url.includes(uniqUrlPart);
@@ -500,7 +522,7 @@ const saveVersionImages = async (modelId, username, versionsData) => {
 //   }
 // );
 
-exports.updateModel = onRequest(
+export const updateModel = onRequest(
   {
     timeoutSeconds: 60,
     cors: true,
@@ -656,7 +678,7 @@ exports.updateModel = onRequest(
   }
 );
 
-exports.updateModelCall = onCall(
+export const updateModelCall = onCall(
   {
     enforceAppCheck: true, // Reject requests with missing or invalid App Check tokens.
   },
@@ -827,7 +849,7 @@ exports.updateModelCall = onCall(
   }
 );
 
-exports.updateModelCallDev = onCall(async (request) => {
+export const updateModelCallDev = onCall(async (request) => {
   try {
     // const modelId = request.query?.modelId || request.params[0];
     const modelId = request?.data?.id;
@@ -988,7 +1010,7 @@ exports.updateModelCallDev = onCall(async (request) => {
   }
 });
 
-exports.getGeonamesCountries = onRequest(
+export const getGeonamesCountries = onRequest(
   {
     timeoutSeconds: 20,
     cors: true,
@@ -1009,7 +1031,7 @@ exports.getGeonamesCountries = onRequest(
     }
   }
 );
-exports.getGeonamesCities = onRequest(
+export const getGeonamesCities = onRequest(
   {
     timeoutSeconds: 20,
     cors: true,

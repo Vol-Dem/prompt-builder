@@ -11,13 +11,8 @@
   width: 4rem;
   height: 4rem;
   background-color: var.$color-primary;
-  //   transition: all 0.3s;
   z-index: 20;
   cursor: pointer;
-
-  //   &:hover {
-  //     background-color: lighten(var.$color-primary, 7%);
-  //   }
 
   & svg {
     width: 2rem;

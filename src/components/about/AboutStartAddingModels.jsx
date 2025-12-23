@@ -11,6 +11,12 @@ import TextButtonCreate from "../ui/text/text-buttons/TextButtonCreate";
 import AboutContentWrap from "./layout/AboutContentWrap";
 import H1 from "../ui/text/H1";
 import { Link } from "react-router-dom";
+import newResource from "../../assets/about/3-new-resource.jpg";
+import newResourceWebp from "../../assets/about/3-new-resource.webp";
+import addModel from "../../assets/about/4-add-model.jpg";
+import addModelWebp from "../../assets/about/4-add-model.webp";
+import addedModels from "../../assets/about/5-added-models.jpg";
+import addedModelsWebp from "../../assets/about/5-added-models.webp";
 
 /**
  * Content for the About page "Start: Adding Models" section.
@@ -37,9 +43,9 @@ const AboutStartAddingModels = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/3-new-resource.jpg")}
+            src={newResource}
             alt="New resource"
-            srcSet={require("../../assets/about/3-new-resource.webp")}
+            srcSet={newResourceWebp}
             type="image/webp"
           />
         </TextImageBlock>
@@ -62,8 +68,8 @@ const AboutStartAddingModels = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/4-add-model.jpg")}
-            srcSet={require("../../assets/about/4-add-model.webp")}
+            src={addModel}
+            srcSet={addModelWebp}
             type="image/webp"
             alt="Add model"
           />
@@ -97,9 +103,9 @@ const AboutStartAddingModels = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/5-added-models.jpg")}
+            src={addedModels}
             alt="Added models"
-            srcSet={require("../../assets/about/5-added-models.webp")}
+            srcSet={addedModelsWebp}
             type="image/webp"
           />
         </TextImageBlock>

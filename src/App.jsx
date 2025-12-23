@@ -43,6 +43,11 @@ function App() {
     dispatch(initAuth());
   }, [dispatch]);
 
+  //Removes delay on first navigation in dev mode
+  useEffect(() => {
+    import("./components/pages/Model");
+  }, []);
+
   const router = createBrowserRouter([
     {
       path: "/",

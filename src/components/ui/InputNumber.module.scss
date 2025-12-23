@@ -1,4 +1,5 @@
 @use "./../../variables/variables.scss" as var;
+@use "sass:color";
 
 .input-number {
   display: flex;
@@ -31,6 +32,7 @@
     /* Firefox */
     &[type="number"] {
       -moz-appearance: textfield;
+      appearance: textfield;
     }
   }
 
@@ -52,12 +54,12 @@
     transition: all 0.2s;
 
     &:hover {
-      background-color: lighten(#323148, 5%);
+      background-color: color.adjust(#323148, $lightness: 5%);
       border: 1px solid rgba(255, 255, 255, 0.5);
     }
     &:active {
       border: 1px solid rgba(255, 255, 255, 0.3);
-      background-color: darken(#323148, 5%);
+      background-color: color.adjust(#323148, $lightness: -5%);
       box-shadow: var.$box-shadow-inset;
     }
     &-arrow {

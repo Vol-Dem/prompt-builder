@@ -1,4 +1,5 @@
 @use "../../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .options {
   position: relative;
@@ -41,7 +42,7 @@
     }
 
     &:hover {
-      border: 2px solid lighten(var.$color-primary, 20%);
+      border: 2px solid color.adjust(var.$color-primary, $lightness: 20%);
       box-shadow: 0 0 1rem rgba(#211657, 0.3);
     }
   }
@@ -72,7 +73,7 @@
     background-color: var.$color-background-red;
 
     &:hover {
-      background-color: darken(var.$color-red, 15%);
+      background-color: color.adjust(var.$color-red, $lightness: -15%);
     }
   }
 }

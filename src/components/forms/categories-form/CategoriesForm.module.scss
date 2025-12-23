@@ -1,4 +1,5 @@
 @use "./../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .category {
   &__container {
@@ -77,7 +78,10 @@
     background-color: var.$color-background-red;
 
     &:hover {
-      background-color: lighten(var.$color-background-red, 10%);
+      background-color: color.adjust(
+        var.$color-background-red,
+        $lightness: 10%
+      );
     }
   }
 }

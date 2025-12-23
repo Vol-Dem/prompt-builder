@@ -1,4 +1,5 @@
 @use "./../../variables/variables.scss" as var;
+@use "sass:color";
 
 .container {
   width: auto;
@@ -26,7 +27,7 @@
   }
 
   &--read-only {
-    background-color: lighten(var.$color-input-bg, 10%);
+    background-color: color.adjust(var.$color-input-bg, $lightness: 10%);
     cursor: default;
 
     &:focus-visible {

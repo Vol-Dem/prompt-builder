@@ -1,4 +1,5 @@
 @use "../../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .btn__open {
   display: flex;
@@ -19,8 +20,8 @@
   transition: all 0.3s;
 
   &:hover {
-    background-color: darken(#756b76, 5%);
-    background-color: darken(var.$color-primary, 5%);
+    background-color: color.adjust(#756b76, $lightness: -5%);
+    background-color: color.adjust(var.$color-primary, $lightness: -5%);
   }
 
   &:active {

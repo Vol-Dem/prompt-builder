@@ -26,6 +26,38 @@ import AboutContentWrap from "./layout/AboutContentWrap";
 import H1 from "../ui/text/H1";
 import { Link } from "react-router-dom";
 import AboutSection from "./layout/AboutSection";
+import modelPage1 from "../../assets/about/13-model-page-1.jpg";
+import modelPage1Webp from "../../assets/about/13-model-page-1.webp";
+import modelPage2 from "../../assets/about/13-model-page-2.jpg";
+import modelPage2Webp from "../../assets/about/13-model-page-2.webp";
+import editBtnModel1 from "../../assets/about/22-edit-btn-model-1.jpg";
+import editBtnModel1Webm from "../../assets/about/22-edit-btn-model-1.webp";
+import editBtnModel from "../../assets/about/22-edit-btn-model.jpg";
+import editBtnModelWebm from "../../assets/about/22-edit-btn-model.webp";
+import imgExamples1 from "../../assets/about/14-img-examples-1.jpg";
+import imgExamples1Webp from "../../assets/about/14-img-examples-1.webp";
+import imgExamples2 from "../../assets/about/14-img-examples-2.jpg";
+import imgExamples2Webp from "../../assets/about/14-img-examples-2.webp";
+import imgExamples5 from "../../assets/about/14-img-examples-5.jpg";
+import imgExamples5Webp from "../../assets/about/14-img-examples-5.webp";
+import imgExamples52 from "../../assets/about/14-img-examples-52.jpg";
+import imgExamples52Webp from "../../assets/about/14-img-examples-52.webp";
+import imgExamples3 from "../../assets/about/14-img-examples-3.jpg";
+import imgExamples3Webp from "../../assets/about/14-img-examples-3.webp";
+import imgExamples4 from "../../assets/about/14-img-examples-4.jpg";
+import imgExamples4Webp from "../../assets/about/14-img-examples-4.webp";
+import imgExamples6 from "../../assets/about/14-img-examples-6.jpg";
+import imgExamples6Webp from "../../assets/about/14-img-examples-6.webp";
+import imgExamples7 from "../../assets/about/14-img-examples-7.jpg";
+import imgExamples7Webp from "../../assets/about/14-img-examples-7.webp";
+import imgExamples8 from "../../assets/about/14-img-examples-8.jpg";
+import imgExamples8Webp from "../../assets/about/14-img-examples-8.webp";
+import imgExamples9 from "../../assets/about/14-img-examples-9.jpg";
+import imgExamples9Webp from "../../assets/about/14-img-examples-9.webp";
+import imgExamplesResources3 from "../../assets/about/14-img-examples-resources3.jpg";
+import imgExamplesResources3Webp from "../../assets/about/14-img-examples-resources3.webp";
+import imgExamplesResources4 from "../../assets/about/14-img-examples-resources4.jpg";
+import imgExamplesResources4Webp from "../../assets/about/14-img-examples-resources4.webp";
 
 /**
  * Content for the About page "Model Page" section.
@@ -51,9 +83,9 @@ const AboutModelPage = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/13-model-page-1.jpg")}
+            src={modelPage1}
             alt="Model page 1"
-            srcSet={require("../../assets/about/13-model-page-1.webp")}
+            srcSet={modelPage1Webp}
             type="image/webp"
           />
         </TextImageBlock>
@@ -69,9 +101,9 @@ const AboutModelPage = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/13-model-page-2.jpg")}
+            src={modelPage2}
             alt="Model page 2"
-            srcSet={require("../../assets/about/13-model-page-2.webp")}
+            srcSet={modelPage2Webp}
             type="image/webp"
           />
         </TextImageBlock>
@@ -102,9 +134,9 @@ const AboutModelPage = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/22-edit-btn-model-1.jpg")}
+            src={editBtnModel1}
             alt="Edit button model 1"
-            srcSet={require("../../assets/about/22-edit-btn-model-1.webp")}
+            srcSet={editBtnModel1Webm}
             type="image/webp"
           />
           <Image
@@ -113,9 +145,9 @@ const AboutModelPage = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/22-edit-btn-model.jpg")}
+            src={editBtnModel}
             alt="Edit button model 2"
-            srcSet={require("../../assets/about/22-edit-btn-model.webp")}
+            srcSet={editBtnModelWebm}
             type="image/webp"
           />
         </TextImageBlock>
@@ -157,9 +189,9 @@ const AboutModelPage = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/14-img-examples-1.jpg")}
+              src={imgExamples1}
               alt="Image examples 1"
-              srcSet={require("../../assets/about/14-img-examples-1.webp")}
+              srcSet={imgExamples1Webp}
               type="image/webp"
             />
             <Image
@@ -168,9 +200,9 @@ const AboutModelPage = () => {
               height={918}
               fullView={true}
               className={classes["img"]}
-              src={require("../../assets/about/14-img-examples-2.jpg")}
+              src={imgExamples2}
               alt="Image examples 2"
-              srcSet={require("../../assets/about/14-img-examples-2.webp")}
+              srcSet={imgExamples2Webp}
               type="image/webp"
             />
           </TextImageBlock>
@@ -195,9 +227,9 @@ const AboutModelPage = () => {
             height={797}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-5.jpg")}
+            src={imgExamples5}
             alt="Image examples 3"
-            srcSet={require("../../assets/about/14-img-examples-5.webp")}
+            srcSet={imgExamples5Webp}
             type="image/webp"
           />
           <Image
@@ -206,9 +238,9 @@ const AboutModelPage = () => {
             height={797}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-52.jpg")}
+            src={imgExamples52}
             alt="Image examples 4"
-            srcSet={require("../../assets/about/14-img-examples-52.webp")}
+            srcSet={imgExamples52Webp}
             type="image/webp"
           />
         </TextImageBlock>
@@ -235,9 +267,9 @@ const AboutModelPage = () => {
             height={754}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-3.jpg")}
+            src={imgExamples3}
             alt="Image examples 3"
-            srcSet={require("../../assets/about/14-img-examples-3.webp")}
+            srcSet={imgExamples3Webp}
             type="image/webp"
           />
           <Image
@@ -246,9 +278,9 @@ const AboutModelPage = () => {
             height={754}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-4.jpg")}
+            src={imgExamples4}
             alt="Image examples 4"
-            srcSet={require("../../assets/about/14-img-examples-4.webp")}
+            srcSet={imgExamples4Webp}
             type="image/webp"
           />
         </TextImageBlock>
@@ -267,9 +299,9 @@ const AboutModelPage = () => {
             height={754}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-6.jpg")}
+            src={imgExamples6}
             alt="Image examples 5"
-            srcSet={require("../../assets/about/14-img-examples-6.webp")}
+            srcSet={imgExamples6Webp}
             type="image/webp"
           />
         </TextImageBlock>
@@ -288,9 +320,9 @@ const AboutModelPage = () => {
             height={754}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-7.jpg")}
+            src={imgExamples7}
             alt="Image examples 6"
-            srcSet={require("../../assets/about/14-img-examples-7.webp")}
+            srcSet={imgExamples7Webp}
             type="image/webp"
           />
           <Image
@@ -299,9 +331,9 @@ const AboutModelPage = () => {
             height={754}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-8.jpg")}
+            src={imgExamples8}
             alt="Image examples 7"
-            srcSet={require("../../assets/about/14-img-examples-8.webp")}
+            srcSet={imgExamples8Webp}
             type="image/webp"
           />
         </TextImageBlock>
@@ -326,9 +358,9 @@ const AboutModelPage = () => {
             height={754}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-9.jpg")}
+            src={imgExamples9}
             alt="Image examples 8"
-            srcSet={require("../../assets/about/14-img-examples-9.webp")}
+            srcSet={imgExamples9Webp}
             type="image/webp"
           />
         </TextImageBlock>
@@ -343,9 +375,9 @@ const AboutModelPage = () => {
             height={918}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-resources3.jpg")}
+            src={imgExamplesResources3}
             alt="Image examples resources"
-            srcSet={require("../../assets/about/14-img-examples-resources3.webp")}
+            srcSet={imgExamplesResources3Webp}
             type="image/webp"
           />
         </TextImageBlock>
@@ -413,9 +445,9 @@ const AboutModelPage = () => {
             height={754}
             fullView={true}
             className={classes["img"]}
-            src={require("../../assets/about/14-img-examples-resources4.jpg")}
+            src={imgExamplesResources4}
             alt="Image examples resources 2"
-            srcSet={require("../../assets/about/14-img-examples-resources4.webp")}
+            srcSet={imgExamplesResources4Webp}
             type="image/webp"
           />
         </TextImageBlock>

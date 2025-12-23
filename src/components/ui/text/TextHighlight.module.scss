@@ -1,6 +1,6 @@
 @use "./../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .highlight {
-  color: lighten(var.$color-violet-dark, 15%);
-  //   color: aqua;
+  color: color.adjust(var.$color-violet-dark, $lightness: 15%);
 }

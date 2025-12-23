@@ -1,4 +1,5 @@
 @use "./../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .category__link {
   position: relative;
@@ -16,7 +17,7 @@
   &:not(.active):hover {
     // border-bottom: 1px solid var.$color-primary;
     // color: #b261f5;
-    color: lighten(var.$color-primary, 20%);
+    color: color.adjust(var.$color-primary, $lightness: 20%);
   }
 
   &--all {
@@ -29,7 +30,7 @@
     transition: all 0.3s ease;
 
     &:not(.active):hover {
-      border: 1px solid lighten(var.$color-primary, 20%);
+      border: 1px solid color.adjust(var.$color-primary, $lightness: 20%);
     }
 
     &.active {

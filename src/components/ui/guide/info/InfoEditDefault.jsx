@@ -2,6 +2,7 @@ import Image from "../../image/Image";
 import NotificationMessage from "../../NotificationMessage";
 import TextHighlight from "../../text/TextHighlight";
 import classes from "./InfoEditDefault.module.scss";
+import versions from "../../../../assets/guide/versions.jpg"
 
 const InfoEditDefault = () => {
   return (
@@ -28,7 +29,7 @@ const InfoEditDefault = () => {
           width={959}
           height={310}
           className={`${classes["image"]}`}
-          src={require("../../../../assets/guide/versions.jpg")}
+          src={versions}
           alt="Versions"
         />
       </NotificationMessage>

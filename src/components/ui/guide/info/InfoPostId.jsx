@@ -2,6 +2,10 @@ import Image from "../../image/Image";
 import NotificationMessage from "../../NotificationMessage";
 import TextHighlight from "../../text/TextHighlight";
 import classes from "./InfoPostId.module.scss";
+import url from "../../../../assets/guide/url.png";
+import urlWebp from "../../../../assets/guide/url.webp";
+import civShare from "../../../../assets/guide/civ-share.png";
+import civShareWebp from "../../../../assets/guide/civ-share.webp";
 
 const InfoPostId = ({ className }) => {
   return (
@@ -41,8 +45,8 @@ const InfoPostId = ({ className }) => {
           width={256}
           height={35}
           className={`${classes["image"]} ${classes["image--short"]}`}
-          src={require("../../../../assets/guide/url.png")}
-          srcSet={require("../../../../assets/guide/url.webp")}
+          src={url}
+          srcSet={urlWebp}
           alt="Url"
         />
       </NotificationMessage>
@@ -73,8 +77,8 @@ const InfoPostId = ({ className }) => {
           width={1424}
           height={695}
           className={classes["image"]}
-          src={require("../../../../assets/guide/civ-share.png")}
-          srcSet={require("../../../../assets/guide/civ-share.webp")}
+          src={civShare}
+          srcSet={civShareWebp}
           alt="Civ share"
         />
       </NotificationMessage>

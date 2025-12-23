@@ -9,6 +9,12 @@ import TextHighlight from "../ui/text/TextHighlight";
 import Video from "../ui/Video";
 import classes from "./AboutMain.module.scss";
 import AboutContentWrap from "./layout/AboutContentWrap";
+import introWebm from "../../assets/home/intro-s.webp";
+import introMp4 from "../../assets/home/intro.mp4";
+import compSliderLeftImg from "../../assets/guide/prompt-text.webp";
+import compSliderRightImg from "../../assets/guide/prompt-tags.webp";
+import patreonLogoWhite from "../../assets/patreon-w.png";
+import kofiLogoDark from "../../assets/kofi_bg_tag_dark.webp";
 
 /**
  * Content for the About page "About" section.
@@ -41,13 +47,10 @@ const AboutMain = () => {
             controls
             width={1280}
             height={720}
-            poster={require("../../assets/home/intro-s.webp")}
+            poster={introWebm}
             className={classes["video"]}
           >
-            <source
-              src={require("../../assets/home/intro.mp4")}
-              type="video/mp4"
-            />
+            <source src={introMp4} type="video/mp4" />
           </Video>
         </div>
       </TextContentBlock>
@@ -85,8 +88,8 @@ const AboutMain = () => {
               imgWidth="1714"
               imgHeight="626"
               className={classes.comparison}
-              srcLeft={require("../../assets/guide/prompt-text.webp")}
-              srcRight={require("../../assets/guide/prompt-tags.webp")}
+              srcLeft={compSliderLeftImg}
+              srcRight={compSliderRightImg}
             />
           </ListItem>
           <ListItem>
@@ -177,7 +180,7 @@ const AboutMain = () => {
               width={520}
               height={108}
               loading="lazy"
-              src={require("../../assets/patreon-w.png")}
+              src={patreonLogoWhite}
               border="0"
               alt="https://www.patreon.com/aidetools"
               className={classes["img-link"]}
@@ -193,7 +196,7 @@ const AboutMain = () => {
               width={341}
               height={129}
               loading="lazy"
-              src={require("../../assets/kofi_bg_tag_dark.webp")}
+              src={kofiLogoDark}
               border="0"
               alt="https://ko-fi.com/J3J31052RE"
               className={classes["img-link"]}

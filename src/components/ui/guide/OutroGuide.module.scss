@@ -1,4 +1,5 @@
 @use "./../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .container {
   max-width: 50rem;
@@ -18,7 +19,10 @@
     background-color: var.$color-background-red;
 
     &:hover {
-      background-color: darken(var.$color-background-red, 10%);
+      background-color: color.adjust(
+        var.$color-background-red,
+        $lightness: -10%
+      );
     }
   }
 }

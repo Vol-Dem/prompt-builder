@@ -1,4 +1,5 @@
 @use "../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .wrap {
   position: relative;
@@ -119,7 +120,7 @@
   min-width: 2rem;
 
   &:hover {
-    background-color: darken(var.$color-red, 10%);
+    background-color: color.adjust(var.$color-red, $lightness: -10%);
   }
 
   & svg {

@@ -1,4 +1,5 @@
 @use "./../../../variables/variables.scss" as var;
+@use "sass:color";
 
 .form {
   display: flex;
@@ -74,8 +75,8 @@
   align-self: flex-end;
 
   &:hover {
-    color: lighten(var.$color-text-gray, 20%);
-    border-color: lighten(var.$color-primary, 20%);
+    color: color.adjust(var.$color-text-gray, $lightness: 20%);
+    border-color: color.adjust(var.$color-primary, $lightness: 20%);
   }
 
   &:active {
@@ -121,11 +122,11 @@
   width: 2.6rem;
   padding: 0.2rem;
   flex-shrink: 0;
-  background-color: #822929;
+  background-color: var.$color-red-dark;
   //   border: 1px solid var.$color-background-red;
 
   &:hover {
-    background-color: lighten(#822929, 10%);
+    background-color: color.adjust(var.$color-red-dark, $lightness: 10%);
   }
 
   & svg {

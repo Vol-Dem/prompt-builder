@@ -1,4 +1,5 @@
 @use "./../../variables/variables.scss" as var;
+@use "sass:color";
 
 .wrap {
   // @include var.wrapper;
@@ -172,7 +173,7 @@
   z-index: 19;
 
   &:hover {
-    background-color: darken(var.$color-primary, 5%);
+    background-color: color.adjust(var.$color-primary, $lightness: -5%);
   }
 
   &:active {
