@@ -1,11 +1,12 @@
 import { useState } from "react";
-import classes from "./SearchField.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { liveSearch, searchActions } from "../../store/search";
-import { SETTINGS_SEARCH_RESULT_PER_PAGE } from "../../variables/constants";
 import { AnimatePresence } from "framer-motion";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+
+import { liveSearch, searchActions } from "../../store/search";
+import { SETTINGS_SEARCH_RESULT_PER_PAGE } from "../../variables/constants";
+import classes from "./SearchField.module.scss";
 import { updateSearchParams } from "../../utils/generalUtils";
 import QuickSearch from "./quick-search/QuickSearch";
 

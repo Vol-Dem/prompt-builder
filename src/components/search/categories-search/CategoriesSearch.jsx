@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import classes from "./CategoriesSearch.module.scss";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
+
+import classes from "./CategoriesSearch.module.scss";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import { subcategoriesSearch } from "../../../utils/searchUtils";
 import CategoriesSearchItem from "../categories-search-item/CategoriesSearchItem";

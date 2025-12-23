@@ -16,6 +16,7 @@ import {
   where,
   writeBatch,
 } from "firebase/firestore";
+
 import firebaseApp from "../firebase-config";
 import {
   checkArraysIsEqual,

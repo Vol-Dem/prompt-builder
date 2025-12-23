@@ -1,6 +1,7 @@
 import { useMemo } from "react";
-import classes from "./PreviewCardExpanded.module.scss";
 import { Link } from "react-router-dom";
+
+import classes from "./PreviewCardExpanded.module.scss";
 import ResourceTypeLabel from "../../general-elements/ResourceTypeLabel";
 import ActivationTag from "../../activation-tag/ActivationTag";
 

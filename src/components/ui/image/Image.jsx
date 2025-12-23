@@ -1,11 +1,12 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
+import { AnimatePresence } from "framer-motion";
+
 import classes from "./Image.module.scss";
 import ImageSvg from "../../../assets/ImageSvg";
 import {
   SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
   SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
 } from "../../../variables/constants";
-import { AnimatePresence } from "framer-motion";
 import ImageFullView from "../ImageFullView";
 import ButtonPlay from "../buttons/ButtonPlay";
 import { transformSrcPreview } from "../../../utils/imageUtils";

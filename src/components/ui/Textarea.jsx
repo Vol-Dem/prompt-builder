@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { validateInput } from "../../utils/validationUtils";
 import classes from "./Textarea.module.scss";
 
@@ -28,7 +29,7 @@ const Textarea = ({
   }, [showError]);
 
   useEffect(() => {
-    if (!!validation) {
+    if (validation) {
       const { errorMessage } = validateInput(validation, value);
 
       setInputErrorMessage(errorMessage);

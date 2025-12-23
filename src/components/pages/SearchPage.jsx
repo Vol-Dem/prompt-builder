@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
+import { useSearchParams } from "react-router-dom";
+
 import PreviewCard from "../preview-card/PreviewCard";
 import classes from "./SearchPage.module.scss";
-import { useDispatch, useSelector } from "react-redux";
 import { liveSearch, searchActions } from "../../store/search";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
@@ -14,8 +17,6 @@ import { useOnlineStatus } from "../../hooks/use-online-status";
 import LeftSidebar from "../layout/left-sidebar/LeftSidebar";
 import NotificationMessage from "../ui/NotificationMessage";
 import { checkObjectsIsEqual } from "../../utils/generalUtils";
-import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
-import { useSearchParams } from "react-router-dom";
 import useIntersection from "../../hooks/use-intersection";
 import SearchFilter from "../search/search-filter/SearchFilter";
 

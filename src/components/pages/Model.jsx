@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import classes from "./Model.module.scss";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+
+import classes from "./Model.module.scss";
 import { modelActions } from "../../store/model";
 import ModelInfo from "../model/info/ModelInfo";
 import ModelTags from "../model/tags/ModelTags";

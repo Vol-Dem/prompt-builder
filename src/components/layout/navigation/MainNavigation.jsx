@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
-import classes from "./MainNavigation.module.scss";
 import { useDispatch, useSelector } from "react-redux";
+
+import classes from "./MainNavigation.module.scss";
 import { tabActions } from "../../../store/tabs";
 import { imagesActions } from "../../../store/images";
 import { modelActions } from "../../../store/model";

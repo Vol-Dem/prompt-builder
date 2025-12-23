@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
-import classes from "./Header.module.scss";
 import { useDispatch, useSelector } from "react-redux";
+
+import classes from "./Header.module.scss";
 import { SETTINGS_STICKY_SWITCH_HEIGHT } from "../../../variables/constants";
 import { generalActions } from "../../../store/general";
 

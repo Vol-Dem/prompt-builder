@@ -1,7 +1,10 @@
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { UserCircleIcon } from "@heroicons/react/24/outline";
+
 import Card from "../../components/ui/Card";
 import Input from "../../components/ui/Input";
 import classes from "./Profile.module.scss";
-import { useDispatch, useSelector } from "react-redux";
 import {
   authActions,
   changeUserEmail,
@@ -9,7 +12,6 @@ import {
   changeUserPassword,
 } from "../../store/auth";
 import ErrorMessage from "../../components/ui/ErrorMessage";
-import { useEffect, useState } from "react";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import {
   ERROR_MESSAGE_AUTH,
@@ -23,7 +25,7 @@ import SuccessMessage from "../ui/SuccessMessage";
 import ReAuthForm from "../forms/ReAuth/ReAuthForm";
 import Modal from "../ui/Modal";
 import VerifyEmailMessage from "../notification-messages/VerifyEmailMessage";
-import { UserCircleIcon } from "@heroicons/react/24/outline";
+
 
 const Profile = ({ title }) => {
   const [userName, setUserName] = useState({

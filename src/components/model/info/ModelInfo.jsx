@@ -1,5 +1,6 @@
-import classes from "./ModelInfo.module.scss";
 import { useSelector } from "react-redux";
+
+import classes from "./ModelInfo.module.scss";
 import LinkA from "../../ui/LinkA";
 import ResourceTypeLabel from "../../general-elements/ResourceTypeLabel";
 

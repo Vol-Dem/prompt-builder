@@ -1,7 +1,8 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Layout from "./components/layout/layout/Layout";
 import { useDispatch, useSelector } from "react-redux";
 import { lazy, useEffect } from "react";
+
+import Layout from "./components/layout/layout/Layout";
 import { initAuth } from "./store/auth";
 import ErrorPage from "./components/pages/ErrorPage";
 import { generalActions } from "./store/general";

@@ -4,6 +4,7 @@ import {
   PlusIcon,
   Squares2X2Icon,
 } from "@heroicons/react/24/outline";
+
 import Video from "../../Video";
 import classes from "./InfoGeneratedImages.module.scss";
 import NotificationMessage from "../../NotificationMessage";

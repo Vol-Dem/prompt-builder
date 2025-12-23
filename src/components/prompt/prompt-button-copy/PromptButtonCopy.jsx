@@ -1,9 +1,10 @@
 import { useRef, useState } from "react";
-import classes from "./PromptButtonCopy.module.scss";
 import {
   DocumentArrowDownIcon,
   DocumentDuplicateIcon,
 } from "@heroicons/react/24/outline";
+
+import classes from "./PromptButtonCopy.module.scss";
 
 const PromptButtonCopy = ({ promptData }) => {
   const [copied, setCopied] = useState(false);

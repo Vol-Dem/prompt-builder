@@ -1,12 +1,13 @@
-import classes from "./RightSidebar.module.scss";
 import { useDispatch, useSelector } from "react-redux";
+import { memo, useCallback, useEffect, useMemo, useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+
+import classes from "./RightSidebar.module.scss";
 import RightSidebarCard from "./right-sidebar-card/RightSidebarCard";
 import { usedModelsActions } from "../../../store/usedModels";
 import PlusSvg from "../../../assets/PlusSvg";
-import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import OpenSidePanelGuide from "../../ui/guide/model/OpenSidePanelGuide";
 import ReferenceImageList from "./reference-image-list/ReferenceImageList";
-import { AnimatePresence, motion } from "framer-motion";
 import RightSidebarFooter from "./right-sidebar-footer/RightSidebarFooter";
 import RightSidebarHeader from "./right-sidebar-header/RightSidebarHeader";
 import RightSidebarBtnOpen from "./right-sidebar-btn-open/RightSidebarBtnOpen";

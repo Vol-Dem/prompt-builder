@@ -1,11 +1,14 @@
 import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUturnLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
+
 import UpdateModelForm from "../../forms/update-model-form/UpdateModelForm";
 import VersionForm from "../../forms/version-form/VersionForm";
 import classes from "./ModelSettings.module.scss";
-import { useState } from "react";
 import Buttton from "../../ui/Button";
 import VersionStatusForm from "../../forms/version-status-form/VersionStatusForm";
-import { useNavigate } from "react-router-dom";
 import DeleteRequest from "../../ui/DeleteRequest";
 // import { filterNewModelVersions } from "../../../utils/generalUtils";
 import SuccessMessage from "../../ui/SuccessMessage";
@@ -21,9 +24,7 @@ import {
 import { modelActions } from "../../../store/model";
 import { tabActions } from "../../../store/tabs";
 import EditPageGuide from "../../ui/guide/edit/EditPageGuide";
-import { AnimatePresence, motion } from "framer-motion";
 import LeftSidebar from "../../layout/left-sidebar/LeftSidebar";
-import { ArrowUturnLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import H1 from "../../ui/text/H1";
 import { filterNewModelVersions } from "../../../utils/modelUtils";
 import {

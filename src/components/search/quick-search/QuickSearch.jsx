@@ -1,4 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
+import { useLocation } from "react-router-dom";
+import { useEffect, useRef } from "react";
+
 import {
   ANIMATIONS_FM_ZOOM_IN,
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
@@ -6,15 +10,12 @@ import {
   SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE,
 } from "../../../variables/constants";
 import classes from "./QuickSearch.module.scss";
-import { motion } from "framer-motion";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import { liveSearch, searchActions } from "../../../store/search";
-import { useLocation } from "react-router-dom";
 import Spinner from "../../ui/Spinner";
 import CategoriesSearch from "../categories-search/CategoriesSearch";
 import ErrorMessage from "../../ui/ErrorMessage";
 import ButtonTertiary from "../../ui/ButtonTertiary";
-import { useEffect, useRef } from "react";
 import QuickSearchResultList from "../quick-search-list/QuickSearchResultList";
 
 const searchTimeoutMs = 1000;

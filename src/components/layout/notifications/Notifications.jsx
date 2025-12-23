@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import classes from "./Notifications.module.scss";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+import classes from "./Notifications.module.scss";
 import Notification from "../../ui/Notification";
 import {
   saveToLocalStorage,
@@ -8,7 +10,7 @@ import {
   uploadLocalStorage,
   uploadStorage,
 } from "../../../variables/utils";
-import { useSelector } from "react-redux";
+
 
 const Notifications = () => {
   const [cookificationIsOpen, setCookificationIsOpen] = useState(false);

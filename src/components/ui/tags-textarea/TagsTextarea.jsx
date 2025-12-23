@@ -1,8 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
-import classes from "./TagsTextarea.module.scss";
-import { promptActions } from "../../../store/prompt";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
+
+import classes from "./TagsTextarea.module.scss";
+import { promptActions } from "../../../store/prompt";
 import TagsTextareaItem from "./tags-textarea-item/TagsTextareaItem";
 import { getNewTagPosition } from "../../../utils/promptUtils";
 import TagsTextareaPlaceholder from "./tags-textarea-placeholder/TagsTextareaPlaceholder";

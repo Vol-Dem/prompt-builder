@@ -1,14 +1,15 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { AnimatePresence } from "framer-motion";
+
 import classes from "./ModelTags.module.scss";
 import TagList from "../../tag-list/TagList";
-import { useSelector } from "react-redux";
 import ActivationTag from "../../activation-tag/ActivationTag";
 import Modal from "../../ui/Modal";
 import TagsForm from "../../forms/tags-form/TagsForm";
 import EditSvg from "../../../assets/EditSvg";
 import Tooltip from "../../ui/Tooltip";
 import ModelTagsGuide from "../../ui/guide/model/ModelTagsGuide";
-import { AnimatePresence } from "framer-motion";
 import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import InfoQuickEdit from "../../ui/guide/info/InfoQuickEdit";
@@ -110,7 +111,7 @@ const ModelTags = ({ customData, modelPreview }) => {
                   "Default"
                 }
                 tags={
-                  !!customData?.helperTags?.length
+                  customData?.helperTags?.length
                     ? customData?.helperTags
                     : model?.defaultCustomData?.helperTags
                 }

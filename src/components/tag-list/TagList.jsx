@@ -1,12 +1,14 @@
 import { forwardRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import { motion } from "framer-motion";
+
 import Tag from "../tag/Tag";
 import classes from "./TagList.module.scss";
-import { useDispatch } from "react-redux";
 import { promptActions } from "../../store/prompt";
 import ButtonTertiary from "../ui/ButtonTertiary";
 import CopiedSvg from "../../assets/CopiedSvg";
 import CopySvg from "../../assets/CopySvg";
-import { motion } from "framer-motion";
+
 
 const TagList = forwardRef(function TagList(props, ref) {
   const [copied, setCopied] = useState(false);

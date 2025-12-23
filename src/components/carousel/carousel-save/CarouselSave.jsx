@@ -1,12 +1,13 @@
 import { useSelector } from "react-redux";
-import classes from "./CarouselSave.module.scss";
 import {
   FolderArrowDownIcon,
   FolderPlusIcon,
 } from "@heroicons/react/24/outline";
+import { useState } from "react";
+
+import classes from "./CarouselSave.module.scss";
 import Spinner from "../../ui/Spinner";
 import Modal from "../../ui/Modal";
-import { useState } from "react";
 import Buttton from "../../ui/Button";
 
 const CarouselSave = ({

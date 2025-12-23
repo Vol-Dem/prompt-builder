@@ -6,10 +6,11 @@ import {
   ComboboxOptions,
 } from "@headlessui/react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
-import classes from "./ComboSelect.module.scss";
 import { motion, AnimatePresence } from "framer-motion";
-import { validateInput } from "../../utils/validationUtils";
 import { useEffect, useState } from "react";
+
+import classes from "./ComboSelect.module.scss";
+import { validateInput } from "../../utils/validationUtils";
 import {
   ANIMATIONS_FM_SLIDEOUT,
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
@@ -43,7 +44,7 @@ const ComboSelect = ({
   }, [showError]);
 
   useEffect(() => {
-    if (!!validation) {
+    if (validation) {
       const { errorMessage } = validateInput(validation, selected?.name || "");
 
       setInputErrorMessage(errorMessage);
@@ -139,7 +140,7 @@ const ComboSelect = ({
                   anchor="bottom"
                   transition
                   className={`${classes.options} ${
-                    !!optionsData?.length ? classes["options__border"] : ""
+                    optionsData?.length ? classes["options__border"] : ""
                   }`}
                   data-id={id}
                   modal={false}

@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import classes from "./RightSidebarForm.module.scss";
 import { useDispatch, useSelector } from "react-redux";
+import { AnimatePresence } from "framer-motion";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useLocation } from "react-router-dom";
+
+import classes from "./RightSidebarForm.module.scss";
 import { authActions } from "../../../../store/auth";
 import { usedModelsActions } from "../../../../store/usedModels";
 import Buttton from "../../../ui/Button";
-import { AnimatePresence } from "framer-motion";
 import UpdateModelForm from "../../../forms/update-model-form/UpdateModelForm";
 import SaveToCollectionForm from "../../../forms/save-to-collection-form/SaveToCollectionForm";
 import ErrorMessage from "../../../ui/ErrorMessage";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useLocation } from "react-router-dom";
+
 
 const RightSidebarForm = () => {
   const [resourceType, setResourceType] = useState("model");

@@ -10,8 +10,9 @@ import {
   where,
   writeBatch,
 } from "firebase/firestore";
-import firebaseApp from "../../firebase-config";
 import { getAuth } from "firebase/auth";
+
+import firebaseApp from "../../firebase-config";
 import {
   ERROR_MESSAGE_INVALID_DATA,
   SETTINGS_SFW_RANGE,
@@ -352,7 +353,7 @@ export const fetchResourcesInfoFromDB = async (
 
     let modelQ;
 
-    if (!!modelHash) {
+    if (modelHash) {
       modelQ = query(
         collection(firestore, "users", uid, `preview`),
         where("hashes", "array-contains", modelHash)
@@ -396,7 +397,7 @@ export const fetchResourcesInfoFromDB = async (
       }
     });
 
-    if (!!modelsIds.length) {
+    if (modelsIds.length) {
       const q = query(
         collection(firestore, "users", uid, `preview`),
         //firestore query limit 30
@@ -412,7 +413,7 @@ export const fetchResourcesInfoFromDB = async (
       allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewById];
     }
 
-    if (!!modelsVersionIds.length) {
+    if (modelsVersionIds.length) {
       const q = query(
         collection(firestore, "users", uid, `preview`),
         where("versionIds", "array-contains-any", modelsVersionIds)
@@ -426,7 +427,7 @@ export const fetchResourcesInfoFromDB = async (
       allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewByVersionId];
     }
 
-    if (!!modelsHashes.length) {
+    if (modelsHashes.length) {
       const q = query(
         collection(firestore, "users", uid, `preview`),
         where("hashes", "array-contains-any", modelsHashes)
@@ -440,7 +441,7 @@ export const fetchResourcesInfoFromDB = async (
       allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewByHash];
     }
 
-    if (!!modelsNames.length) {
+    if (modelsNames.length) {
       const uniqModelsNames = modelsNames.filter(
         (name) =>
           !allModelsPreviews.find((model) => {
@@ -457,7 +458,7 @@ export const fetchResourcesInfoFromDB = async (
           })
       );
 
-      if (!!uniqModelsNames.length) {
+      if (uniqModelsNames.length) {
         const q = query(
           collection(firestore, "users", uid, `preview`),
           where("fileNames", "array-contains-any", uniqModelsNames)
@@ -496,14 +497,14 @@ export const fetchResourcesInfoFromDB = async (
     //Remove not uniq items from the end of array//////
     const filteredNewResult = resources
       .filter((obj1, i, arr) => {
-        if (!!obj1?.preview?.id) {
+        if (obj1?.preview?.id) {
           return (
             arr.findIndex((obj2) => obj2?.preview?.id === obj1?.preview?.id) ===
             i
           );
-        } else if (!!obj1?.modelId) {
+        } else if (obj1?.modelId) {
           return arr.findIndex((obj2) => obj2?.modelId === obj1?.modelId) === i;
-        } else if (!!obj1?.name) {
+        } else if (obj1?.name) {
           //filters duplicate models that only have names that match the file name
           const arrIndex = arr.findIndex(
             (obj2) => obj1?.name === obj2?.fileName

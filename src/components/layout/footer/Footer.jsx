@@ -1,5 +1,6 @@
-import classes from "./Footer.module.scss";
 import { Link } from "react-router-dom";
+
+import classes from "./Footer.module.scss";
 import LinkA from "../../ui/LinkA";
 
 const Footer = () => {

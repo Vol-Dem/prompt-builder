@@ -1,3 +1,6 @@
+import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
+
 import classes from "./ReferenceImageList.module.scss";
 import {
   ANIMATIONS_FM_SLIDEIN,
@@ -8,13 +11,11 @@ import {
 import Image from "../../../ui/image/Image";
 import CrossSvg from "../../../../assets/CrossSvg";
 import ImageSvg from "../../../../assets/ImageSvg";
-import { useDispatch, useSelector } from "react-redux";
 import { modelActions } from "../../../../store/model";
 import {
   removeImageFromPanel,
   usedModelsActions,
 } from "../../../../store/usedModels";
-import { motion } from "framer-motion";
 import { clearFileExtension } from "../../../../utils/generalUtils";
 
 const ReferenceImageList = ({ usedImages }) => {
@@ -70,7 +71,7 @@ const ReferenceImageList = ({ usedImages }) => {
                   usedImages[i]?.nsfwLevel === 1
                     ? false
                     : true;
-                if (!!usedImages[i]?.hash) {
+                if (usedImages[i]?.hash) {
                   const uniqUrlPart =
                     clearFileExtension(usedImages[i]?.url?.split("/").pop()) ||
                     i;

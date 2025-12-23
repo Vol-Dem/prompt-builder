@@ -1,8 +1,9 @@
 import { useNavigate, useParams } from "react-router-dom";
-import CollectionEditForm from "../forms/collection-edit-from/CollectionEditForm";
-import classes from "./CollectionEdit.module.scss";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
+import CollectionEditForm from "../forms/collection-edit-from/CollectionEditForm";
+import classes from "./CollectionEdit.module.scss";
 import {
   deleteCollection,
   getCollection,

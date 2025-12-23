@@ -1,6 +1,7 @@
+import { useDispatch, useSelector } from "react-redux";
+
 import classes from "./IntroGuide.module.scss";
 import Buttton from "../Button";
-import { useDispatch, useSelector } from "react-redux";
 import { guideActions } from "../../../store/guide";
 import GuideActionMessage from "./GuideActionMessage";
 

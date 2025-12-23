@@ -1,17 +1,6 @@
 import React, { useCallback, useState } from "react";
-import classes from "./Carousel.module.scss";
-import ImageCard from "../image-card/ImageCard";
 import { useRef } from "react";
 import { useEffect } from "react";
-import CarouselImage from "./carousel-image/CarouselImage";
-import useIntersection from "../../hooks/use-intersection";
-import { clearObjectKeys } from "../../utils/generalUtils";
-import {
-  getImagesInfo,
-  makeBatchRequest,
-  updateImagePostData,
-} from "../../utils/fetchUtils";
-import firebaseApp from "../../firebase-config";
 import {
   arrayRemove,
   arrayUnion,
@@ -22,6 +11,18 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux";
+
+import classes from "./Carousel.module.scss";
+import ImageCard from "../image-card/ImageCard";
+import CarouselImage from "./carousel-image/CarouselImage";
+import useIntersection from "../../hooks/use-intersection";
+import { clearObjectKeys } from "../../utils/generalUtils";
+import {
+  getImagesInfo,
+  makeBatchRequest,
+  updateImagePostData,
+} from "../../utils/fetchUtils";
+import firebaseApp from "../../firebase-config";
 import Spinner from "../ui/Spinner";
 import { uploadActions } from "../../store/upload";
 import { deleteImgPost, modelActions } from "../../store/model";
@@ -552,7 +553,7 @@ const Carousel = ({
         onClick={() => {
           setCurTransitionDur(`${transitionDuration}ms`);
           setCurrImgNum(i);
-          if (!!onActiveNumChange) {
+          if (onActiveNumChange) {
             onActiveNumChange(i);
           }
           setVisibleImages((prevState) => {

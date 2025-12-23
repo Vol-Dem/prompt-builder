@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AnimatePresence, motion } from "framer-motion";
+import { Link } from "react-router-dom";
+
 import Buttton from "../../ui/Button";
 import ChooseImageForm from "../choose-image-form/ChooseImageForm";
 import classes from "./SaveToCollectionForm.module.scss";
-import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
 import {
@@ -13,7 +16,6 @@ import {
   ERROR_MESSAGE_INPUT_DEF,
   SUCCESS_MESSAGE_SAVED,
 } from "../../../variables/constants";
-import { AnimatePresence, motion } from "framer-motion";
 import ComboSelect from "../../ui/ComboSelect";
 import Fieldset from "../../ui/Fieldset";
 import ButttonSecondary from "../../ui/ButtonSecondary";
@@ -26,7 +28,6 @@ import {
 } from "../../../utils/generalUtils";
 import { addNewCollectionCategories } from "../../../store/images";
 import SuccessMessage from "../../ui/SuccessMessage";
-import { Link } from "react-router-dom";
 import { getCollectionData } from "../../../utils/fetch/fetchCollection";
 
 const SUBCATEGORIES_MAX_AMOUNT = 8;

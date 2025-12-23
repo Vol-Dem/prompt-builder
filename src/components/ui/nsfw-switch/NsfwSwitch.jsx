@@ -1,10 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
-import { switchNsfwMode } from "../../../store/general";
-import classes from "./NsfwSwitch.module.scss";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import DropDownList from "../DropDownList";
 import { AnimatePresence } from "framer-motion";
+
+import { switchNsfwMode } from "../../../store/general";
+import classes from "./NsfwSwitch.module.scss";
+import DropDownList from "../DropDownList";
 import NsfwSwitchSettings from "./nsfw-switch-settings/NsfwSwitchSettings";
 
 const NsfwSwitch = () => {

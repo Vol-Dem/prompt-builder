@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
-import useIntersection from "../../../hooks/use-intersection";
 import { useDispatch } from "react-redux";
+
+import useIntersection from "../../../hooks/use-intersection";
 import { generalActions } from "../../../store/general";
 
 /**

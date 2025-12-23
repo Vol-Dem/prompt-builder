@@ -1,5 +1,6 @@
-import classes from "./EditPageGuide.module.scss";
 import { useMemo } from "react";
+
+import classes from "./EditPageGuide.module.scss";
 import GuideMessage from "../GuideMessage";
 import {
   GUIDE_STEP_EDIT_MENU,

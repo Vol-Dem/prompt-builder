@@ -1,5 +1,6 @@
-import classes from "./CategoryListItem.module.scss";
 import { motion } from "framer-motion";
+
+import classes from "./CategoryListItem.module.scss";
 
 const CategoryListItem = ({
   children,

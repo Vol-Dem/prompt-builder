@@ -1,5 +1,6 @@
-import classes from "./EditDefaultGuide.module.scss";
 import { useMemo } from "react";
+
+import classes from "./EditDefaultGuide.module.scss";
 import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_EDIT_DEFAULT } from "../../../../variables/constants";
 import useGuideIndex from "../../../../hooks/use-guide-index";

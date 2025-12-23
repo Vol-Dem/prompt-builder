@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import classes from "./Images.module.scss";
 import { useDispatch, useSelector } from "react-redux";
+import { AnimatePresence } from "framer-motion";
+
+import classes from "./Images.module.scss";
 import { getCollectionPreviews, imagesActions } from "../../store/images";
 import { useOnlineStatus } from "../../hooks/use-online-status";
 import ErrorMessage from "../ui/ErrorMessage";
@@ -15,7 +17,6 @@ import ButtonCategoryAll from "../ui/buttons/ButtonCategoryAll";
 import SubcategoryList from "../ui/lists/SubcategoryList";
 import CategoryListItem from "../ui/lists/CategoryListItem";
 import Modal from "../ui/Modal";
-import { AnimatePresence } from "framer-motion";
 import CategoriesForm from "../forms/categories-form/CategoriesForm";
 import { sortArrayBy } from "../../utils/generalUtils";
 import NotificationMessage from "../ui/NotificationMessage";

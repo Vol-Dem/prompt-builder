@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import classes from "./InputNumber.module.scss";
 import { validateInput } from "../../utils/validationUtils";
 
@@ -29,7 +30,7 @@ const InputNumber = ({
   }, [showError]);
 
   useEffect(() => {
-    if (!!validation) {
+    if (validation) {
       const { errorMessage } = validateInput(validation, value);
 
       setInputErrorMessage(errorMessage);

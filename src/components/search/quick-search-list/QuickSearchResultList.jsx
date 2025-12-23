@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+
 import QuickSearchItem from "../quick-search-item/QuickSearchItem";
 import classes from "./QuickSearchResultList.module.scss";
 

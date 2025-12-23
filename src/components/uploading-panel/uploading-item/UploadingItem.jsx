@@ -1,6 +1,7 @@
+import { Link } from "react-router-dom";
+
 import Image from "../../ui/image/Image";
 import classes from "./UploadingItem.module.scss";
-import { Link } from "react-router-dom";
 
 const UploadingItem = ({ data, curPostId, rejected, completed }) => {
   return (

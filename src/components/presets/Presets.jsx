@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AnimatePresence } from "framer-motion";
+
 import Buttton from "../ui/Button";
 import classes from "./Presets.module.scss";
-import { useDispatch, useSelector } from "react-redux";
 import { updatePresets } from "../../store/prompt";
 import PresetForm from "../forms/preset-form/PresetForm";
 import DeleteRequest from "../ui/DeleteRequest";
-import { AnimatePresence } from "framer-motion";
 import BackSvg from "../../assets/BackSvg";
 import PresetsList from "./presets-list/PresetsList";
 import PresetsBlock from "./presets-block/PresetsBlock";

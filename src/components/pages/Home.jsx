@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import classes from "./Home.module.scss";
 import { Outlet } from "react-router-dom";
+
+import classes from "./Home.module.scss";
 import Tabs from "../tabs/Tabs";
 
 function Home({ title }) {

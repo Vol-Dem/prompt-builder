@@ -1,7 +1,8 @@
 import { NavLink, useLocation } from "react-router-dom";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+
 import classes from "./AboutNavBtnContainer.module.scss";
 import { ABOUT_NAV_DATA } from "../../../variables/constants";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 /**
  * Navigation buttons for the About section.

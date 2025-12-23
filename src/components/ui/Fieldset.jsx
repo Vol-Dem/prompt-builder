@@ -1,5 +1,6 @@
-import classes from "./Fieldset.module.scss";
 import { motion } from "framer-motion";
+
+import classes from "./Fieldset.module.scss";
 
 const Fieldset = ({ legend, className, children }) => {
   return (

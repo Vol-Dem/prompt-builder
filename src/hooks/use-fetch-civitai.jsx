@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+
 import { filterDuplicates, throwCustomError } from "../utils/generalUtils";
 import {
   ERROR_MESSAGE_CIV_CONNECTION,

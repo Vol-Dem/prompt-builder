@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
+
 import firebaseApp from "../firebase-config";
 
 const firestore = getFirestore(firebaseApp);

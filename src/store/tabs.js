@@ -11,6 +11,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+
 import firebaseApp from "../firebase-config";
 import { authActions } from "./auth";
 import { handleErrors } from "../utils/generalUtils";

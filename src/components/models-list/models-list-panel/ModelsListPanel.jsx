@@ -1,4 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
+import { Bars2Icon, Bars4Icon } from "@heroicons/react/24/outline";
+
 import classes from "./ModelsListPanel.module.scss";
 import Select from "../../ui/Select";
 import {
@@ -6,7 +8,6 @@ import {
   switchPreviewFullView,
   tabActions,
 } from "../../../store/tabs";
-import { Bars2Icon, Bars4Icon } from "@heroicons/react/24/outline";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 
 const sortTypes = [

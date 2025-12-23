@@ -1,10 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
+
 import classes from "./ImageResourcesItem.module.scss";
 import Tooltip from "../../ui/Tooltip";
 import LinkA from "../../ui/LinkA";
 import Modal from "../../ui/Modal";
 import UpdateModelForm from "../../forms/update-model-form/UpdateModelForm";
-import { useState } from "react";
 import ImageResourcesItemName from "./image-resources-item-name/ImageResourcesItemName";
 import ImageResourcesItemButton from "./image-resources-item-button/ImageResourcesItemButton";
 import ImageResourcesItemVersion from "./image-resources-item-version/ImageResourcesItemVersion";

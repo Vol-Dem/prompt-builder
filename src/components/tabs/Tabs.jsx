@@ -1,13 +1,14 @@
+import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+
 import classes from "./Tabs.module.scss";
 import Categories from "../categories/Categories";
-import { useDispatch, useSelector } from "react-redux";
 import { getModelsPreview, tabActions } from "../../store/tabs";
 import { MODEL_TYPES } from "../../variables/constants";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import LinkA from "../ui/LinkA";
 import Guide from "../ui/guide/Guide";
-import { useState } from "react";
 import OpenCategoryGuide from "../ui/guide/home/OpenCategoryGuide";
 import Modal from "../ui/Modal";
 import IntroGuide from "../ui/guide/IntroGuide";

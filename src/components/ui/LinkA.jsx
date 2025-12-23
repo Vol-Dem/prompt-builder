@@ -1,4 +1,5 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+
 import classes from "./LinkA.module.scss";
 
 const LinkA = ({

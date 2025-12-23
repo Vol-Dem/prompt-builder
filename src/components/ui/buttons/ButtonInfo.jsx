@@ -1,8 +1,9 @@
-import classes from "./ButtonInfo.module.scss";
 import { useState } from "react";
-import Modal from "../Modal";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence } from "framer-motion";
+
+import Modal from "../Modal";
+import classes from "./ButtonInfo.module.scss";
 
 const ButtonInfo = ({ children, className }) => {
   const [showInfo, setShowInfo] = useState(false);

@@ -7,8 +7,10 @@ import {
   updateDoc,
   writeBatch,
 } from "firebase/firestore";
-import firebaseApp from "../../firebase-config";
 import { getAuth } from "firebase/auth";
+import { getFunctions, httpsCallable } from "firebase/functions";
+
+import firebaseApp from "../../firebase-config";
 import {
   ERROR_MESSAGE_CIV_CONNECTION,
   ERROR_MESSAGE_EXISTS,
@@ -32,7 +34,6 @@ import {
 } from "../generalUtils";
 import { transformModelData } from "../transformUtils";
 import { cleanImageMeta, transformSrcPreview } from "../imageUtils";
-import { getFunctions, httpsCallable } from "firebase/functions";
 import { splitTags } from "../promptUtils";
 
 const firestore = getFirestore(firebaseApp);
@@ -79,7 +80,7 @@ export const getModelData = async (modelId) => {
  * @param {object} model - The model data
  */
 export const deleteModelDoc = async (uid, model) => {
-  if (!!model?.savedImages) {
+  if (model?.savedImages) {
     Object.values(model.savedImages).forEach(async (versionData) => {
       const postsData = versionData.map((post) => {
         return {
@@ -684,7 +685,7 @@ export const saveModelData = async (
         baseModels: [...baseModels],
         mainTag: newModelData.mainTag,
         fileName: newModelData.fileName,
-        latestFileName: !!fileNames?.length ? fileNames[0] : "",
+        latestFileName: fileNames?.length ? fileNames[0] : "",
         hashes,
         fileNames,
         customFileNames,

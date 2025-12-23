@@ -1,6 +1,7 @@
-import classes from "./PromptGuide.module.scss";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
+
+import classes from "./PromptGuide.module.scss";
 import GuideMessage from "../GuideMessage";
 import {
   GUIDE_STEP_PROMPT_BREAK,

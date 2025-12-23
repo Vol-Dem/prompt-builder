@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import classes from "./VersionForm.module.scss";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
-import firebaseApp from "../../../firebase-config";
 import { useSelector } from "react-redux";
+
+import classes from "./VersionForm.module.scss";
+import firebaseApp from "../../../firebase-config";
 import Textarea from "../../ui/Textarea";
 import Buttton from "../../ui/Button";
 import Input from "../../ui/Input";

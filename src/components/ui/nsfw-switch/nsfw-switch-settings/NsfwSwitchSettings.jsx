@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+
 import classes from "./NsfwSwitchSettings.module.scss";
 import { setNsfwValues } from "../../../../store/general";
 import NsfwSwitchInput from "../nsfw-switch-input/NsfwSwitchInput";

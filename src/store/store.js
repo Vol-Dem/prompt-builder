@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+
 import promptSlice from "./prompt";
 import tabsSlice from "./tabs";
 import usedModelsSlice from "./usedModels";

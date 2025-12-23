@@ -1,5 +1,6 @@
-import classes from "./ImageCardCarouselGuide.module.scss";
 import { useMemo } from "react";
+
+import classes from "./ImageCardCarouselGuide.module.scss";
 import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_SWITCH_IMAGE } from "../../../../variables/constants";
 import useGuideIndex from "../../../../hooks/use-guide-index";

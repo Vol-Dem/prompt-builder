@@ -4,6 +4,7 @@ import {
   FolderArrowDownIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
+
 import classes from "./InfoResources.module.scss";
 import TextHighlight from "../../text/TextHighlight";
 import TextButtonSquare from "../../text/text-buttons/TextButtonSquare";

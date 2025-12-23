@@ -1,6 +1,7 @@
 import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
-import firebaseApp from "../../firebase-config";
 import { getAuth } from "firebase/auth";
+
+import firebaseApp from "../../firebase-config";
 import { addDelayPromise, throwCustomError } from "../generalUtils";
 
 const firestore = getFirestore(firebaseApp);

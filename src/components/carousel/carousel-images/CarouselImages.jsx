@@ -1,7 +1,8 @@
 import { forwardRef } from "react";
+import { useSelector } from "react-redux";
+
 import CarouselImage from "../carousel-image/CarouselImage";
 import classes from "./CarouselImages.module.scss";
-import { useSelector } from "react-redux";
 
 const CarouselImages = forwardRef(
   (

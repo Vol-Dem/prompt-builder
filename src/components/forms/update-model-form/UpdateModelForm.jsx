@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import classes from "./UpdateModelForm.module.scss";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+
+import classes from "./UpdateModelForm.module.scss";
 import Input from "../../ui/Input";
 import Buttton from "../../ui/Button";
 import Textarea from "../../ui/Textarea";
@@ -10,7 +13,6 @@ import Select from "../../ui/Select";
 import Fieldset from "../../ui/Fieldset";
 import FieldCategory from "../../ui/FieldCategory";
 import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
-import { Link } from "react-router-dom";
 import Spinner from "../../ui/Spinner";
 import ComboSelect from "../../ui/ComboSelect";
 import {
@@ -39,7 +41,6 @@ import ButtonTertiary from "../../ui/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
 import { modelActions } from "../../../store/model";
 import EditDefaultGuide from "../../ui/guide/edit/EditDefaultGuide";
-import { AnimatePresence, motion } from "framer-motion";
 import { createTagSetsInputData } from "../../../utils/promptUtils";
 import { parseModelIds } from "../../../utils/modelUtils";
 import { saveModelData } from "../../../utils/fetch/fetchModel";

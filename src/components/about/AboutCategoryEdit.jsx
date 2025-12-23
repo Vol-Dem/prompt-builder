@@ -1,4 +1,5 @@
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
+
 import Image from "../ui/image/Image";
 import classes from "./AboutCategoryEdit.module.scss";
 import Text from "../ui/text/Text";

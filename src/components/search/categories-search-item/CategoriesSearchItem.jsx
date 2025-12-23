@@ -1,9 +1,10 @@
 import { useDispatch } from "react-redux";
-import classes from "./CategoriesSearchItem.module.scss";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+
+import classes from "./CategoriesSearchItem.module.scss";
 import { imagesActions } from "../../../store/images";
 import { tabActions } from "../../../store/tabs";
-import { Link } from "react-router-dom";
 import { searchActions } from "../../../store/search";
 import { modelActions } from "../../../store/model";
 import {

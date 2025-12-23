@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import classes from "./PrivacyPolicy.module.scss";
 import { useEffect } from "react";
+
+import classes from "./PrivacyPolicy.module.scss";
 import LinkA from "../ui/LinkA";
 
 const PrivacyPolicy = ({ title }) => {

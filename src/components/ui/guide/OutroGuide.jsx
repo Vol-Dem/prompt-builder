@@ -1,8 +1,9 @@
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+
 import classes from "./OutroGuide.module.scss";
 import Buttton from "../Button";
-import { useDispatch, useSelector } from "react-redux";
 import { guideActions } from "../../../store/guide";
-import { Link } from "react-router-dom";
 import GuideActionMessage from "./GuideActionMessage";
 
 const OutroGuide = () => {

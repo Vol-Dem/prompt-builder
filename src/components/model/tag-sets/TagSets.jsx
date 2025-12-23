@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AnimatePresence, motion } from "framer-motion";
+
 import classes from "./TagSets.module.scss";
 import TagList from "../../tag-list/TagList";
-import { useDispatch, useSelector } from "react-redux";
 import Image from "../../ui/image/Image";
 import Buttton from "../../ui/Button";
 import TagSetGuide from "../../ui/guide/model/TagSetGuide";
@@ -14,7 +16,6 @@ import {
 import { guideActions } from "../../../store/guide";
 import Modal from "../../ui/Modal";
 import TagSetsForm from "../../forms/tag-sets-form/TagSetsForm";
-import { AnimatePresence, motion } from "framer-motion";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import InfoTagsets from "../../ui/guide/info/InfoTagSets";
 import NotificationMessage from "../../ui/NotificationMessage";

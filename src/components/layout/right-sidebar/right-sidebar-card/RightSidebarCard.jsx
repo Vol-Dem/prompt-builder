@@ -1,18 +1,20 @@
 import { memo, useEffect, useState } from "react";
-import classes from "./RightSidebarCard.module.scss";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+
+import classes from "./RightSidebarCard.module.scss";
 import {
   removeModelFromPanel,
   usedModelsActions,
 } from "../../../../store/usedModels";
 import Image from "../../../ui/image/Image";
 import { modelActions } from "../../../../store/model";
-import { motion } from "framer-motion";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_BIG } from "../../../../variables/constants";
 import ResourceTypeLabel from "../../../general-elements/ResourceTypeLabel";
 import RightSidebarCardExpanded from "../right-sidebar-card-expanded/RightSidebarCardExpanded";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+
 
 const RightSidebarCard = memo(({ previewData, fullView, layoutId }) => {
   const [cardIsHidden, setCardIsHidden] = useState(false);

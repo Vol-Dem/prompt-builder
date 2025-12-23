@@ -1,8 +1,10 @@
-import classes from "./GuideMessage.module.scss";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
+
+import classes from "./GuideMessage.module.scss";
 import ArrowRightSvg from "../../../assets/ArrowRight";
 import ButtonTertiary from "../ButtonTertiary";
-import { useDispatch, useSelector } from "react-redux";
 import { guideActions } from "../../../store/guide";
 import ExitGuideRequest from "./ExitGuideRequest";
 import {
@@ -10,7 +12,7 @@ import {
   GUIDE_LAST_STEP_TYPE,
 } from "../../../variables/constants";
 import CrossSvg from "../../../assets/CrossSvg";
-import { motion } from "framer-motion";
+
 
 const GuideMessage = (props) => {
   const {

@@ -1,10 +1,11 @@
 import { useMemo, useRef } from "react";
-import classes from "./PreviewCardContent.module.scss";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { motion } from "framer-motion";
+
+import classes from "./PreviewCardContent.module.scss";
 import Image from "../ui/image/Image";
 import ButtonSquareAdd from "../ui/ButtonSquareAdd";
-import { motion } from "framer-motion";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_BIG } from "../../variables/constants";
 import ResourceTypeLabel from "../general-elements/ResourceTypeLabel";
 import PreviewCardExpanded from "./preview-card-expanded/PreviewCardExpanded";

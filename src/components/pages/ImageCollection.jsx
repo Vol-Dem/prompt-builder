@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import classes from "./ImageCollection.module.scss";
 import { useDispatch, useSelector } from "react-redux";
+import { AnimatePresence } from "framer-motion";
+
+import classes from "./ImageCollection.module.scss";
 import { getCollection, imagesActions } from "../../store/images";
 import CollectionImages from "../collection/collection-images/CollectionImages";
 import NavigationPanel from "../layout/navigation-panel/NavigationPanel";
 import Buttton from "../ui/Button";
-import { AnimatePresence } from "framer-motion";
 import Modal from "../ui/Modal";
 import SaveImageForm from "../forms/save-image-form/SaveImageForm";
 import Spinner from "../ui/Spinner";

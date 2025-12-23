@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import classes from "./CarouselImage.module.scss";
 import { useDispatch, useSelector } from "react-redux";
+import { AnimatePresence, motion } from "framer-motion";
+import { MagnifyingGlassPlusIcon, PlayIcon } from "@heroicons/react/24/outline";
+
+import classes from "./CarouselImage.module.scss";
 import { deleteImgPost, setPreviewImg } from "../../../store/model";
 import ButttonTertiary from "../../ui/ButtonTertiary";
 import Modal from "../../ui/Modal";
@@ -8,14 +11,12 @@ import DeleteRequest from "../../ui/DeleteRequest";
 import ButtonAdd from "../../ui/ButtonSquareAdd";
 import ImageSvg from "../../../assets/ImageSvg";
 import DotsSvg from "../../../assets/DotsSvg";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   ANIMATIONS_FM_ZOOM_IN,
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
   SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
 } from "../../../variables/constants";
 import SetTagSetPreview from "../set-tagset-preview/SetTagSetPreview";
-import { MagnifyingGlassPlusIcon, PlayIcon } from "@heroicons/react/24/outline";
 import { transformSrcPreview } from "../../../utils/imageUtils";
 
 const CarouselImage = ({

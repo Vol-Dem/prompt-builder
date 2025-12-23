@@ -1,6 +1,7 @@
-import classes from "./AddModelToSidePanelGuide.module.scss";
 import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
+import classes from "./AddModelToSidePanelGuide.module.scss";
 import PlusSvg from "../../../../assets/PlusSvg";
 import GuideMessage from "../GuideMessage";
 import { guideActions } from "../../../../store/guide";

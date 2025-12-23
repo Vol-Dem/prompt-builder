@@ -1,9 +1,10 @@
 import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { ListBulletIcon } from "@heroicons/react/24/outline";
+
 import List from "../../ui/text/List";
 import { ABOUT_NAV_DATA } from "../../../variables/constants";
-import { useEffect, useState } from "react";
 import { smoothScroll } from "../../../utils/generalUtils";
-import { ListBulletIcon } from "@heroicons/react/24/outline";
 import LeftSidebar from "../../layout/left-sidebar/LeftSidebar";
 import AboutNavItem from "./about-nav-item/AboutNavItem";
 

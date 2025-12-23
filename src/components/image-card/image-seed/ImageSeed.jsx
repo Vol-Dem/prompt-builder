@@ -1,9 +1,10 @@
 import { useState } from "react";
-import classes from "./ImageSeed.module.scss";
 import {
   ClipboardDocumentCheckIcon,
   ClipboardDocumentIcon,
 } from "@heroicons/react/24/outline";
+
+import classes from "./ImageSeed.module.scss";
 
 const ImageSeed = ({ value }) => {
   const [copied, setCopied] = useState(false);

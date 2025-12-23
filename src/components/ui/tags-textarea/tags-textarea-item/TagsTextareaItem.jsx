@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import classes from "./TagsTextareaItem.module.scss";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { SETTINGS_PROMPT_BREAK_ALIASES } from "../../../../variables/constants";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+
+import { SETTINGS_PROMPT_BREAK_ALIASES } from "../../../../variables/constants";
+import classes from "./TagsTextareaItem.module.scss";
 import { promptActions } from "../../../../store/prompt";
 import TagsTextareaItemEdit from "../tags-textarea-item-edit/TagsTextareaItemEdit";
 

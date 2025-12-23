@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import { promptActions } from "../../store/prompt";
 import classes from "./Tag.module.scss";
 import { addModelToPanel } from "../../store/usedModels";

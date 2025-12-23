@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+
 import classes from "./PreviewCardShort.module.scss";
 
 const PreviewCardShort = ({ previewData, currVersion }) => {

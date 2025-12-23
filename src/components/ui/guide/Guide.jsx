@@ -1,5 +1,7 @@
-import classes from "./Guide.module.scss";
 import { createPortal } from "react-dom";
+import { useState } from "react";
+
+import classes from "./Guide.module.scss";
 import LinkA from "../LinkA";
 import TextButtonCreate from "../text/text-buttons/TextButtonCreate";
 import ArrowRightSvg from "../../../assets/ArrowRight";
@@ -7,7 +9,7 @@ import ArrowUp from "../../../assets/ArrowUp";
 import ButtonTertiary from "../ButtonTertiary";
 import CopiedSvg from "../../../assets/CopiedSvg";
 import CopySvg from "../../../assets/CopySvg";
-import { useState } from "react";
+
 
 const Guide = (props) => {
   const [copied, setCopied] = useState(false);

@@ -1,5 +1,6 @@
-import classes from "./ModelTagsGuide.module.scss";
 import { useMemo } from "react";
+
+import classes from "./ModelTagsGuide.module.scss";
 import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_MODEL_TAGS_EDIT } from "../../../../variables/constants";
 import useGuideIndex from "../../../../hooks/use-guide-index";

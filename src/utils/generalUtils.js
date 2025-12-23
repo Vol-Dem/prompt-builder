@@ -1,4 +1,5 @@
 import { MotionGlobalConfig } from "framer-motion";
+
 import {
   ERROR_MESSAGE_CIV_CONNECTION,
   ERROR_MESSAGE_DEFAULT,
@@ -205,7 +206,7 @@ export const createCategoryId = (id, categoriesData) => {
       .filter(Boolean)
       .sort();
 
-    if (!!idIndexes?.length) {
+    if (idIndexes?.length) {
       curId = `${curId}-${idIndexes[idIndexes.length - 1] + 1}`;
     }
   }

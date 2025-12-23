@@ -3,6 +3,8 @@ import {
   DocumentDuplicateIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
+
 import Image from "../ui/image/Image";
 import TextButton from "../ui/text/text-buttons/TextButton";
 import TextHighlight from "../ui/text/TextHighlight";
@@ -18,7 +20,6 @@ import Video from "../ui/Video";
 import NotificationMessage from "../ui/NotificationMessage";
 import AboutContentWrap from "./layout/AboutContentWrap";
 import H1 from "../ui/text/H1";
-import { Link } from "react-router-dom";
 import AboutSection from "./layout/AboutSection";
 import faqPromptPoster from "../../assets/guide/3-faq-prompt.jpg";
 import faqPromptMp4 from "../../assets/guide/3-faq-prompt.mp4";

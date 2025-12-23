@@ -1,6 +1,7 @@
+import { useEffect, useRef } from "react";
+
 import classes from "./Video.module.scss";
 import useIntersection from "../../hooks/use-intersection";
-import { useEffect, useRef } from "react";
 
 const Video = ({
   playsInline,

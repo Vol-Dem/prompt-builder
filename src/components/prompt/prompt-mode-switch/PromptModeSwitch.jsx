@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+
 import classes from "./PromptModeSwitch.module.scss";
 import { promptActions } from "../../../store/prompt";
 

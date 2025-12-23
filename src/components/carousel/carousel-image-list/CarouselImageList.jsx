@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+
 import Image from "../../ui/image/Image";
 import classes from "./CarouselImageList.module.scss";
 import { modelActions } from "../../../store/model";

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import classes from "./ModelsList.module.scss";
 import { useDispatch, useSelector } from "react-redux";
+
+import classes from "./ModelsList.module.scss";
 import { getModelsPreview } from "../../store/tabs";
 import Spinner from "../ui/Spinner";
 import NotificationMessage from "../ui/NotificationMessage";

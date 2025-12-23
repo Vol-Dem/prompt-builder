@@ -1,9 +1,13 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+
 import Input from "../../ui/Input";
 import classes from "./AuthForm.module.scss";
 import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
-import { useDispatch, useSelector } from "react-redux";
 import {
   authActions,
   authRequest,
@@ -11,7 +15,6 @@ import {
   resetUserPassword,
 } from "../../../store/auth";
 import Buttton from "../../ui/Button";
-import { useEffect } from "react";
 import ButttonSecondary from "../../ui/ButtonSecondary";
 import {
   MESSAGE_AGREEMENT,
@@ -24,8 +27,8 @@ import {
 import Checkbox from "../../ui/Checkbox";
 import LinkA from "../../ui/LinkA";
 import SuccessMessage from "../../ui/SuccessMessage";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+
+
 // import { ReactComponent as GoogleLogo } from "../../../assets/google.svg";
 import GoogleLogo from "../../../assets/google.svg";
 

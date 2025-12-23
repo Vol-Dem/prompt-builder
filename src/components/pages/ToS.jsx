@@ -1,7 +1,8 @@
 import { useEffect } from "react";
+import { NavLink } from "react-router-dom";
+
 import LinkA from "../ui/LinkA";
 import classes from "./ToS.module.scss";
-import { NavLink } from "react-router-dom";
 
 const ToS = ({ title }) => {
   useEffect(() => {

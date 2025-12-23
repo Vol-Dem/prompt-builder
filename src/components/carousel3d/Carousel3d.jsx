@@ -1,9 +1,10 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+
 import classes from "./Carousel3d.module.scss";
 import carouselImage1 from "../../assets/3dcarousel/slide-1.webp";
 import carouselImage2 from "../../assets/3dcarousel/slide-2.webp";
 import carouselImage3 from "../../assets/3dcarousel/slide-3.webp";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 
 const carouselImages = [
   { url: carouselImage1, width: 700, height: 336 },

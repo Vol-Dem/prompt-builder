@@ -1,4 +1,6 @@
 import { useDispatch } from "react-redux";
+import { AnimatePresence, motion } from "framer-motion";
+
 import {
   ANIMATIONS_FM_FADEOUT_EXIT,
   ANIMATIONS_FM_SLIDEIN,
@@ -6,7 +8,6 @@ import {
 } from "../../../variables/constants";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import classes from "./PresetsList.module.scss";
-import { AnimatePresence, motion } from "framer-motion";
 import { promptActions } from "../../../store/prompt";
 import { splitTags } from "../../../utils/promptUtils";
 

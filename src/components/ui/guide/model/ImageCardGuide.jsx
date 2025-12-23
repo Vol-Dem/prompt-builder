@@ -1,5 +1,7 @@
-import classes from "./ImageCardGuide.module.scss";
 import { useMemo } from "react";
+import { useSelector } from "react-redux";
+
+import classes from "./ImageCardGuide.module.scss";
 import GuideMessage from "../GuideMessage";
 import {
   GUIDE_STEP_ADD_ALL_TO_PROMPT,
@@ -8,7 +10,6 @@ import {
 } from "../../../../variables/constants";
 import useGuideIndex from "../../../../hooks/use-guide-index";
 import ContentComment from "../ContentComment";
-import { useSelector } from "react-redux";
 import GuideActionMessage from "../GuideActionMessage";
 
 const guideType = "model";

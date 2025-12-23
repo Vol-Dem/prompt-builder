@@ -1,7 +1,8 @@
-import classes from "./ImageCard.module.scss";
-import TagList from "../tag-list/TagList";
 import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
+import classes from "./ImageCard.module.scss";
+import TagList from "../tag-list/TagList";
 import { modelActions } from "../../store/model";
 import ImageCardGuide from "../ui/guide/model/ImageCardGuide";
 import { GUIDE_STEP_ADD_TO_PROMPT } from "../../variables/constants";
@@ -21,7 +22,7 @@ const ImageCard = ({ activeImgNum }) => {
   );
   const dispatch = useDispatch();
   const imageData = useMemo(() => {
-    return !!activeCarouselData?.images?.length
+    return activeCarouselData?.images?.length
       ? activeCarouselData?.images[activeImgNum || 0]
       : null;
   }, [activeCarouselData, activeImgNum]);

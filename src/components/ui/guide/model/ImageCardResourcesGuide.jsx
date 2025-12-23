@@ -1,10 +1,12 @@
-import classes from "./ImageCardResourcesGuide.module.scss";
 import { useMemo } from "react";
+import { FolderArrowDownIcon } from "@heroicons/react/24/outline";
+
+import classes from "./ImageCardResourcesGuide.module.scss";
 import PlusSvg from "../../../../assets/PlusSvg";
 import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_IMAGE_RESOURCES } from "../../../../variables/constants";
 import useGuideIndex from "../../../../hooks/use-guide-index";
-import { FolderArrowDownIcon } from "@heroicons/react/24/outline";
+
 
 const guideType = "model";
 

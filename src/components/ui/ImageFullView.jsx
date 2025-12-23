@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import classes from "./ImageFullView.module.scss";
 import { createPortal } from "react-dom";
+import { motion } from "framer-motion";
+
+import classes from "./ImageFullView.module.scss";
 import ArrowLeftSvg from "../../assets/ArrowLeft";
 import ArrowRightSvg from "../../assets/ArrowRight";
 import CrossSvg from "../../assets/CrossSvg";
 import Spinner from "./Spinner";
-import { motion } from "framer-motion";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_BIG } from "../../variables/constants";
 import { transformSrcPreview } from "../../utils/imageUtils";
 

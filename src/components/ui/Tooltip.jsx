@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+
 import classes from "./Tooltip.module.scss";
 
 const Tooltip = ({ children, content, className, defSide = "right" }) => {

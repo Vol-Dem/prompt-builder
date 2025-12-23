@@ -1,20 +1,21 @@
 import { useCallback, useLayoutEffect, useState } from "react";
-import classes from "./CarouselContent.module.scss";
 import { useRef } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { uploadActions } from "../../store/upload";
-import { deleteImgPost, modelActions } from "../../store/model";
-import Modal from "../ui/Modal";
-import ChooseImageForm from "../forms/choose-image-form/ChooseImageForm";
-import ImageFullView from "../ui/ImageFullView";
 import { AnimatePresence } from "framer-motion";
-import { SETTINGS_CAROUSEL_TRANSITION_DURATION } from "../../variables/constants";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   Squares2X2Icon,
 } from "@heroicons/react/24/outline";
+
+import classes from "./CarouselContent.module.scss";
+import { uploadActions } from "../../store/upload";
+import { deleteImgPost, modelActions } from "../../store/model";
+import Modal from "../ui/Modal";
+import ChooseImageForm from "../forms/choose-image-form/ChooseImageForm";
+import ImageFullView from "../ui/ImageFullView";
+import { SETTINGS_CAROUSEL_TRANSITION_DURATION } from "../../variables/constants";
 import SaveToCollectionForm from "../forms/save-to-collection-form/SaveToCollectionForm";
 import { updateCollectionPostsData } from "../../store/images";
 import CarouselPagination from "./carousel-pagination/CarouselPagination";
@@ -253,7 +254,7 @@ const CarouselContent = ({
     setCurTransitionDur(SETTINGS_CAROUSEL_TRANSITION_DURATION);
     setCurrImgNum(curImgIndex);
 
-    if (!!onActiveNumChange) {
+    if (onActiveNumChange) {
       onActiveNumChange(curImgIndex);
     }
     setVisibleImages((prevState) => {

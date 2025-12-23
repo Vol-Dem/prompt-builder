@@ -1,9 +1,10 @@
-import classes from "./NotificationMessage.module.scss";
-// import { ReactComponent as TriangleIcon } from "./../../assets/triangle.svg";
 import {
   ExclamationCircleIcon,
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
+
+import classes from "./NotificationMessage.module.scss";
+// import { ReactComponent as TriangleIcon } from "./../../assets/triangle.svg";
 
 const NotificationMessage = ({ children, type, className }) => {
   return (

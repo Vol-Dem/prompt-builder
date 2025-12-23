@@ -1,5 +1,6 @@
-import classes from "./ModelTagsFormGuide.module.scss";
 import { useMemo } from "react";
+
+import classes from "./ModelTagsFormGuide.module.scss";
 import GuideMessage from "../GuideMessage";
 import {
   GUIDE_STEP_MODEL_TAGS_CLOSE,

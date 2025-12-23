@@ -1,6 +1,7 @@
 import { useState } from "react";
-import classes from "./SaveImageForm.module.scss";
 import { useDispatch, useSelector } from "react-redux";
+
+import classes from "./SaveImageForm.module.scss";
 import Input from "../../ui/Input";
 import Select from "../../ui/Select";
 import Checkbox from "../../ui/Checkbox";

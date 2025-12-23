@@ -1,14 +1,15 @@
-import Buttton from "./Button";
-import Card from "./Card";
-import classes from "./Notification.module.scss";
-// import { ReactComponent as TriangleIcon } from "./../../assets/triangle.svg";
 import { createPortal } from "react-dom";
-// import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 import { motion } from "framer-motion";
 import {
   ExclamationCircleIcon,
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
+
+import Buttton from "./Button";
+import Card from "./Card";
+import classes from "./Notification.module.scss";
+// import { ReactComponent as TriangleIcon } from "./../../assets/triangle.svg";
+// import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 
 const Notification = ({ type = "notification", title, onClick, children }) => {
   return (

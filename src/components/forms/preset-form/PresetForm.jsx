@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
+
 import classes from "./PresetForm.module.scss";
 import { updatePresets } from "../../../store/prompt";
-import { useDispatch, useSelector } from "react-redux";
 import Textarea from "../../ui/Textarea";
 import Buttton from "../../ui/Button";
 import Input from "../../ui/Input";
@@ -15,7 +17,6 @@ import {
   ERROR_MESSAGE_OFFLINE,
   VALIDATION_TRIGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
-import { motion } from "framer-motion";
 import {
   createCategoryId,
   handleErrors,

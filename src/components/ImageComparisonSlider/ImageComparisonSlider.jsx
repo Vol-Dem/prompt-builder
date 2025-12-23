@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
-import classes from "./ImageComparisonSlider.module.scss";
 import { ChevronUpDownIcon } from "@heroicons/react/24/outline";
+
+import classes from "./ImageComparisonSlider.module.scss";
 
 const ImageComparisonSlider = ({
   srcLeft,

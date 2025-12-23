@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import classes from "./ActiveCarousel.module.scss";
 import { useDispatch, useSelector } from "react-redux";
+import { AnimatePresence } from "framer-motion";
+
+import classes from "./ActiveCarousel.module.scss";
 import Carousel from "../carousel/Carousel";
 import ImageCard from "../image-card/ImageCard";
 import { modelActions } from "../../store/model";
@@ -15,7 +17,6 @@ import {
   GUIDE_STEP_PROMPT_COPY,
   GUIDE_STEP_PROMPT_VIEW,
 } from "../../variables/constants";
-import { AnimatePresence } from "framer-motion";
 import CarouselImageList from "../carousel/carousel-image-list/CarouselImageList";
 import ActiveCarouselContentWrap from "./ActiveCarouselContentWrap";
 
@@ -41,7 +42,7 @@ const ActiveCarousel = () => {
       window.scrollTo(0, scrollTop);
     };
 
-    if (!!activeCarouselData?.images?.length) {
+    if (activeCarouselData?.images?.length) {
       setActiveImageNumber(activeCarouselData.currImgNum);
 
       window.addEventListener("scroll", disableScrollHandler);

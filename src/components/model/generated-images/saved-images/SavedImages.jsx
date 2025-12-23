@@ -1,6 +1,8 @@
 import { memo, useEffect, useRef } from "react";
-import classes from "./SavedImages.module.scss";
 import { useSelector } from "react-redux";
+import { motion } from "framer-motion";
+
+import classes from "./SavedImages.module.scss";
 import Carousel from "../../../carousel/Carousel";
 import Spinner from "../../../ui/Spinner";
 import ErrorMessage from "../../../ui/ErrorMessage";
@@ -12,7 +14,6 @@ import {
 } from "../../../../variables/constants";
 import ExclamationCircleSvg from "../../../../assets/ExclamationCircleSvg";
 import FolderSvg from "../../../../assets/FolderSvg";
-import { motion } from "framer-motion";
 import useIntersection from "../../../../hooks/use-intersection";
 import useFetchFirestoreImages from "../../../../hooks/use-fetch-firestore-images";
 

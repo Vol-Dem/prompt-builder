@@ -1,10 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
-  ERROR_MESSAGE_DEFAULT,
-  SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE,
-} from "../variables/constants";
-import {
   collection,
   getDocs,
   getFirestore,
@@ -14,6 +10,11 @@ import {
   startAfter,
   where,
 } from "firebase/firestore";
+
+import {
+  ERROR_MESSAGE_DEFAULT,
+  SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE,
+} from "../variables/constants";
 import {
   checkIsInCurrentNsfwRange,
   filterDuplicates,

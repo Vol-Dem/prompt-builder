@@ -1,7 +1,8 @@
 import { NavLink, useRouteError } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
 import Card from "../ui/Card";
 import classes from "./ErrorPage.module.scss";
-import { useDispatch, useSelector } from "react-redux";
 import Buttton from "../ui/Button";
 import { authActions } from "../../store/auth";
 import Modal from "../ui/Modal";

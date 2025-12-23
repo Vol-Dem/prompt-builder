@@ -1,10 +1,11 @@
 import { Bars2Icon, Bars4Icon, TrashIcon } from "@heroicons/react/24/outline";
+import { useDispatch, useSelector } from "react-redux";
+
 import classes from "./RightSidebarHeader.module.scss";
 import SidePanelGuide from "../../../ui/guide/model/SidePanelGuide";
 import ButtonTertiary from "../../../ui/ButtonTertiary";
 import RightSidebarForm from "../right-sidebar-form/RightSidebarForm";
 import { DEV_GUIDE_TEST } from "../../../../variables/constants";
-import { useDispatch, useSelector } from "react-redux";
 import { guideActions } from "../../../../store/guide";
 import {
   switchSidePanelfullView,

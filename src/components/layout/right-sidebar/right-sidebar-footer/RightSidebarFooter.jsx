@@ -1,10 +1,11 @@
+import { useCallback, useEffect, useState } from "react";
+import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
+
 import classes from "./RightSidebarFooter.module.scss";
 import discordIcon from "../../../../assets/discord.svg";
 import discordWhiteIcon from "../../../../assets/discord-white.svg";
 import patreonWhiteLogo from "../../../../assets/patreon-w.png";
 import kofiDarkLogo from "../../../../assets/kofi_bg_tag_dark.webp";
-import { useCallback, useEffect, useState } from "react";
-import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
 
 const RightSidebarFooter = () => {
   const [showSupport, setShowSupport] = useState(false);

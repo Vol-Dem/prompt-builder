@@ -1,8 +1,9 @@
 import { useSelector } from "react-redux";
+import { useState } from "react";
+
 import TagsTextarea from "../../ui/tags-textarea/TagsTextarea";
 import PromptButtonCopy from "../prompt-button-copy/PromptButtonCopy";
 import classes from "./PromptField.module.scss";
-import { useState } from "react";
 
 const PromptField = ({
   promptType,

@@ -1,6 +1,7 @@
-import NavigationPanel from "../../layout/navigation-panel/NavigationPanel";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+
+import NavigationPanel from "../../layout/navigation-panel/NavigationPanel";
 import { tabActions } from "../../../store/tabs";
 import classes from "./ModelNavigationPanel.module.scss";
 

@@ -1,6 +1,7 @@
-import classes from "./OpenSidePanelGuide.module.scss";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
+
+import classes from "./OpenSidePanelGuide.module.scss";
 import PlusSvg from "../../../../assets/PlusSvg";
 import GuideMessage from "../GuideMessage";
 import {

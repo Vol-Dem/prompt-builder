@@ -1,7 +1,8 @@
 import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 import ListItem from "../../../ui/text/ListItem";
 import classes from "./AboutNavItem.module.scss";
-import { useSelector } from "react-redux";
 
 /**
  * Renders a navigation link inside the About section menu.

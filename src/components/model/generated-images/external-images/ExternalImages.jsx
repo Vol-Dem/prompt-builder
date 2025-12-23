@@ -1,6 +1,9 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
-import classes from "./ExternalImages.module.scss";
 import { useSelector } from "react-redux";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import { motion } from "framer-motion";
+
+import classes from "./ExternalImages.module.scss";
 import Carousel from "../../../carousel/Carousel";
 import { useOnlineStatus } from "../../../../hooks/use-online-status";
 import {
@@ -14,10 +17,8 @@ import {
 } from "../../../../variables/constants";
 import useIntersection from "../../../../hooks/use-intersection";
 import Spinner from "../../../ui/Spinner";
-import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import ErrorMessage from "../../../ui/ErrorMessage";
 import Buttton from "../../../ui/Button";
-import { motion } from "framer-motion";
 import useFetchCivitai from "../../../../hooks/use-fetch-civitai";
 import {
   filterNsfwImages,

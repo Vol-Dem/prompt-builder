@@ -8,8 +8,9 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
-import firebaseApp from "../firebase-config";
 import { getAuth } from "firebase/auth";
+
+import firebaseApp from "../firebase-config";
 import { saveToStorage } from "../variables/utils";
 import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 import { authActions } from "./auth";

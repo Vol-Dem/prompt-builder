@@ -10,9 +10,10 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import React, { useState } from "react";
-import firebaseApp, { db } from "../../firebase-config";
 import { useSelector } from "react-redux";
 import { get, ref } from "firebase/database";
+
+import firebaseApp, { db } from "../../firebase-config";
 import { clearObjectKeys } from "../../utils/generalUtils";
 import { makeBatchRequest } from "../../utils/fetchUtils";
 

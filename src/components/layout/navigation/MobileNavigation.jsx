@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import classes from "./MobileNavigation.module.scss";
 import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { tabActions } from "../../../store/tabs";
 import { createPortal } from "react-dom";
+
+import { tabActions } from "../../../store/tabs";
+import classes from "./MobileNavigation.module.scss";
 import { imagesActions } from "../../../store/images";
 import { modelActions } from "../../../store/model";
 

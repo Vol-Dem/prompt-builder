@@ -1,7 +1,8 @@
-import classes from "./Prompt.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { promptActions } from "../../store/prompt";
 import { memo, useEffect, useRef } from "react";
+
+import classes from "./Prompt.module.scss";
+import { promptActions } from "../../store/prompt";
 import ArrowDownSvg from "../../assets/ArrowDownSvg";
 import ArrowUp from "../../assets/ArrowUp";
 import PromptGuide from "../ui/guide/model/PromptGuide";

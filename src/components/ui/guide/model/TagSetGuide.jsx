@@ -1,5 +1,6 @@
-import classes from "./TagSetGuide.module.scss";
 import { useMemo } from "react";
+
+import classes from "./TagSetGuide.module.scss";
 import GuideMessage from "../GuideMessage";
 import {
   GUIDE_STEP_MODEL_ADD_TAGSET,

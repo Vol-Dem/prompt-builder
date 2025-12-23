@@ -1,7 +1,9 @@
-import classes from "./CategoriesForm.module.scss";
-import Input from "../../../components/ui/Input";
 import { useDispatch } from "react-redux";
 import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence } from "framer-motion";
+
+import classes from "./CategoriesForm.module.scss";
+import Input from "../../../components/ui/Input";
 import { updateCategories } from "../../../store/model";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import DeleteRequest from "../../ui/DeleteRequest";
@@ -9,7 +11,6 @@ import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
   ERROR_MESSAGE_OFFLINE,
 } from "../../../variables/constants";
-import { AnimatePresence } from "framer-motion";
 import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 import { updateCollectionCategories } from "../../../store/images";
 

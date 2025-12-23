@@ -1,3 +1,5 @@
+import { AnimatePresence, motion } from "framer-motion";
+
 import classes from "./TagSetsInputFieldset.module.scss";
 import Textarea from "./Textarea";
 import Input from "./Input";
@@ -6,7 +8,6 @@ import Fieldset from "./Fieldset";
 import FieldCategory from "./FieldCategory";
 import ButtonTertiary from "./ButtonTertiary";
 import CrossSvg from "../../assets/CrossSvg";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   VALIDATION_NAME_MAX_LENGTH,
   VALIDATION_TRIGER_WORDS_MAX_LENGTH,

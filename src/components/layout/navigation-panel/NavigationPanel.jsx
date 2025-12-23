@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
+import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
+
 import Buttton from "../../ui/Button";
 import classes from "./NavigationPanel.module.scss";
 import SettingsSvg from "../../../assets/SettingsSvg";
-import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 
 const NavigationPanel = ({ onBack, children }) => {
   return (

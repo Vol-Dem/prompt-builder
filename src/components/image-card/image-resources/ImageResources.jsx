@@ -1,15 +1,16 @@
+import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+
 import classes from "./ImageResources.module.scss";
 import ErrorMessage from "../../ui/ErrorMessage";
 import ImageCardResourcesGuide from "../../ui/guide/model/ImageCardResourcesGuide";
 import { GUIDE_STEP_IMAGE_RESOURCES } from "../../../variables/constants";
-import { motion } from "framer-motion";
 import ImageResourcesItem from "../image-resources-item/ImageResourcesItem";
-import { useEffect, useRef, useState } from "react";
 import { clearFileExtension, handleErrors } from "../../../utils/generalUtils";
 import Spinner from "../../ui/Spinner";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import InfoResources from "../../ui/guide/info/InfoResources";
-import { useSelector } from "react-redux";
 import { parseMoelType } from "../../../utils/modelUtils";
 import { getImageInfo } from "../../../utils/fetch/fetchImages";
 import { fetchResourcesInfoFromDB } from "../../../utils/fetch/fetchImages";

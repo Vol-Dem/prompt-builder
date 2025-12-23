@@ -1,10 +1,11 @@
-import classes from "./SetTagSetPreview.module.scss";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
+
+import classes from "./SetTagSetPreview.module.scss";
 import { setTagSetPreviewImg } from "../../../store/model";
 import ButttonTertiary from "../../ui/ButtonTertiary";
 import Image from "../../ui/image/Image";
-import { motion } from "framer-motion";
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
@@ -30,7 +31,7 @@ const SetTagSetPreview = ({ src }) => {
   }, [nsfwMode]);
 
   useEffect(() => {
-    if (!!model?.modelVersionsCustomData[curVersion.id]?.tagSetsData?.length) {
+    if (model?.modelVersionsCustomData[curVersion.id]?.tagSetsData?.length) {
       setCurTagSetVersionId(`${curVersion.id}`);
     }
   }, [model, curVersion]);

@@ -1,13 +1,14 @@
 import { useState } from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
 import {
   SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT,
   SETTINGS_SEARCH_RESULT_PER_PAGE,
 } from "../../variables/constants";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import classes from "./Hashtags.module.scss";
-import { useDispatch, useSelector } from "react-redux";
 import { liveSearch, searchActions } from "../../store/search";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { updateSearchParams } from "../../utils/generalUtils";
 
 const Hashtags = ({ hashtags }) => {

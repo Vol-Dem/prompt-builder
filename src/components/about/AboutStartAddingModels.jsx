@@ -1,4 +1,6 @@
 import { DocumentArrowDownIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
+
 import Image from "../ui/image/Image";
 import LinkA from "../ui/LinkA";
 import TextButton from "../ui/text/text-buttons/TextButton";
@@ -10,7 +12,6 @@ import TextContentBlock from "../ui/text/TextContentBlock";
 import TextButtonCreate from "../ui/text/text-buttons/TextButtonCreate";
 import AboutContentWrap from "./layout/AboutContentWrap";
 import H1 from "../ui/text/H1";
-import { Link } from "react-router-dom";
 import newResource from "../../assets/about/3-new-resource.jpg";
 import newResourceWebp from "../../assets/about/3-new-resource.webp";
 import addModel from "../../assets/about/4-add-model.jpg";

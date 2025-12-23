@@ -1,8 +1,9 @@
 import { CheckIcon } from "@heroicons/react/24/outline";
-import Input from "../../Input";
-import classes from "./TagsTextareaItemEdit.module.scss";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
+import Input from "../../Input";
+import classes from "./TagsTextareaItemEdit.module.scss";
 import { promptActions } from "../../../../store/prompt";
 import { changeTagWeight } from "../../../../utils/promptUtils";
 

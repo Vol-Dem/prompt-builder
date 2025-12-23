@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
 import Tag from "../tag/Tag";
 import classes from "./ActivationTag.module.scss";
-import { useDispatch, useSelector } from "react-redux";
 import { promptActions } from "../../store/prompt";
 import { getTagWeight, splitTags } from "../../utils/promptUtils";
 

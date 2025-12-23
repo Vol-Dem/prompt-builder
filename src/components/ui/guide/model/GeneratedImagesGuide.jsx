@@ -1,5 +1,6 @@
-import classes from "./GeneratedImagesGuide.module.scss";
 import { useMemo } from "react";
+
+import classes from "./GeneratedImagesGuide.module.scss";
 import FolderSvg from "../../../../assets/FolderSvg";
 import GuideMessage from "../GuideMessage";
 import {

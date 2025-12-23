@@ -1,6 +1,7 @@
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
-import classes from "./UploadingButton.module.scss";
 import { useSelector } from "react-redux";
+
+import classes from "./UploadingButton.module.scss";
 
 const UploadingButton = ({ isOpen, onClick }) => {
   const queue = useSelector((state) => state.upload.queue);

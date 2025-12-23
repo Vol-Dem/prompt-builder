@@ -1,8 +1,9 @@
-import classes from "./Select.module.scss";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+
+import classes from "./Select.module.scss";
 import Input from "./Input";
 import ArrowDownSvg from "../../assets/ArrowDownSvg";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   ANIMATIONS_FM_ZOOM_IN,
   ANIMATIONS_FM_ZOOM_IN_INITIAL,

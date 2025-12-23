@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import classes from "./ModelDescription.module.scss";
 import { useSelector } from "react-redux";
+
+import classes from "./ModelDescription.module.scss";
 
 const minDescriptionHeight = 300;
 

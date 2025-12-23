@@ -1,12 +1,13 @@
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import Carousel from "../../carousel/Carousel";
-import classes from "./ModelDefImages.module.scss";
 import { useSelector } from "react-redux";
-import Spinner from "../../ui/Spinner";
-import CarouselGuide from "../../ui/guide/model/CarouselGuide";
 import { PhotoIcon } from "@heroicons/react/24/outline";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
+
+import Carousel from "../../carousel/Carousel";
+import classes from "./ModelDefImages.module.scss";
+import Spinner from "../../ui/Spinner";
+import CarouselGuide from "../../ui/guide/model/CarouselGuide";
 import firebaseApp from "../../../firebase-config";
 import { GUIDE_STEP_OPEN_IMAGE } from "../../../variables/constants";
 import { filterNsfwImages } from "../../../utils/imageUtils";

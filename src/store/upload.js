@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+
 import {
   filterDuplicates,
   throwCustomError,
@@ -105,7 +106,7 @@ export const savePost = (postInfo) => {
 
       const examplesDataWithRes = data.items
         .filter((image) =>
-          !!postInfo?.ids?.length ? postInfo.ids.includes(image?.id) : true
+          postInfo?.ids?.length ? postInfo.ids.includes(image?.id) : true
         )
         .sort((a, b) => {
           return b.createdAt - a.createdAt;

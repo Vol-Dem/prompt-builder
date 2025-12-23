@@ -1,5 +1,6 @@
-import classes from "./ImageResourcesItemName.module.scss";
 import { Link } from "react-router-dom";
+
+import classes from "./ImageResourcesItemName.module.scss";
 
 const ImageResourcesItemName = ({
   resource,

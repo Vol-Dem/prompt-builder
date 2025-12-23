@@ -1,10 +1,12 @@
 import { AnimatePresence } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
+
 import ComboSelect from "../../ui/ComboSelect";
 import Fieldset from "../../ui/Fieldset";
 import classes from "./CollectionEditForm.module.scss";
 import ButttonSecondary from "../../ui/ButtonSecondary";
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
   ANIMATIONS_FM_SLIDEOUT,
@@ -14,7 +16,6 @@ import {
   VALIDATION_DESCRIPTION_MAX_LENGTH,
   SUCCESS_MESSAGE_SAVED,
 } from "../../../variables/constants";
-import { motion } from "framer-motion";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
 import {

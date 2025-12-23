@@ -1,11 +1,12 @@
-import classes from "./Subcategories.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { tabActions } from "../../store/tabs";
 import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
+
+import classes from "./Subcategories.module.scss";
+import { tabActions } from "../../store/tabs";
 import Modal from "../ui/Modal";
 import CategoriesForm from "../forms/categories-form/CategoriesForm";
 import OpenCategoryGuide from "../ui/guide/home/OpenCategoryGuide";
-import { AnimatePresence } from "framer-motion";
 import SubcategoryList from "../ui/lists/SubcategoryList";
 import ButtonCategoryAll from "../ui/buttons/ButtonCategoryAll";
 import CategoryListItem from "../ui/lists/CategoryListItem";

@@ -1,9 +1,10 @@
+import { motion } from "framer-motion";
+
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../variables/constants";
 import classes from "./SuccessMessage.module.scss";
-import { motion } from "framer-motion";
 
 const SuccessMessage = ({ className, children }) => {
   return (

@@ -1,4 +1,6 @@
 import { ArrowUpIcon } from "@heroicons/react/24/outline";
+import { AnimatePresence, motion } from "framer-motion";
+
 import classes from "./ScrollToTop.module.scss";
 import useScrollTop from "../../hooks/use-scroll-top";
 import {
@@ -6,7 +8,6 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   SETTINGS_SCROLL_TOP,
 } from "../../variables/constants";
-import { AnimatePresence, motion } from "framer-motion";
 
 const ScrollToTop = () => {
   const scrollToTop = useScrollTop();

@@ -1,13 +1,15 @@
 import { useEffect } from "react";
-import Card from "./Card";
-import classes from "./Modal.module.scss";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+
+import Card from "./Card";
+import classes from "./Modal.module.scss";
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../variables/constants";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+
 
 const Modal = ({ disableClass, onClose, className, title, children }) => {
   useEffect(() => {

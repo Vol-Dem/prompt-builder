@@ -1,8 +1,10 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import classes from "./RightSidebarBtnOpen.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { usedModelsActions } from "../../../../store/usedModels";
 import { forwardRef } from "react";
+
+import classes from "./RightSidebarBtnOpen.module.scss";
+import { usedModelsActions } from "../../../../store/usedModels";
+
 
 const RightSidebarBtnOpen = forwardRef((props, ref) => {
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);

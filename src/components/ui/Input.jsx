@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+
 import classes from "./Input.module.scss";
 import { validateInput } from "../../utils/validationUtils";
-import { motion } from "framer-motion";
 import {
   ANIMATIONS_FM_SLIDEOUT,
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
@@ -39,7 +40,7 @@ const Input = ({
   }, [showError]);
 
   useEffect(() => {
-    if (!!validation) {
+    if (validation) {
       const { errorMessage } = validateInput(validation, value);
 
       setInputErrorMessage(errorMessage);

@@ -1,6 +1,8 @@
 import { memo, useEffect, useState } from "react";
-import classes from "./GeneratedImages.module.scss";
 import { useSelector } from "react-redux";
+import { AnimatePresence } from "framer-motion";
+
+import classes from "./GeneratedImages.module.scss";
 import Modal from "../../ui/Modal";
 import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
 import Buttton from "../../ui/Button";
@@ -11,7 +13,6 @@ import {
   ERROR_MESSAGE_OFFLINE,
 } from "../../../variables/constants";
 import GeneratedImagesGuide from "../../ui/guide/model/GeneratedImagesGuide";
-import { AnimatePresence } from "framer-motion";
 import SavedImages from "./saved-images/SavedImages";
 import ExternalImages from "./external-images/ExternalImages";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";

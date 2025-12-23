@@ -1,13 +1,14 @@
+import { useDispatch } from "react-redux";
+import { PlayIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+
 import Carousel3d from "../carousel3d/Carousel3d";
 import Buttton from "../ui/Button";
 import classes from "./Landing.module.scss";
-import { useDispatch } from "react-redux";
 import { authActions } from "../../store/auth";
 import LinkA from "../ui/LinkA";
 import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 import TextHighlight from "../ui/text/TextHighlight";
-import { PlayIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
 import Modal from "../ui/Modal";
 import Video from "../ui/Video";
 import carouselImage1 from "../../assets/3dcarousel/slide-1.webp";

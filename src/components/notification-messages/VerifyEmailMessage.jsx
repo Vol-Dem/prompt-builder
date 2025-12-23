@@ -1,8 +1,9 @@
-import firebaseApp from "../../firebase-config";
 import { getAuth, sendEmailVerification } from "firebase/auth";
+import { useState } from "react";
+
+import firebaseApp from "../../firebase-config";
 import WarningMessage from "../ui/WarningMessage";
 import classes from "./VerifyEmailMessage.module.scss";
-import { useState } from "react";
 import SuccessMessage from "../ui/SuccessMessage";
 import ErrorMessage from "../ui/ErrorMessage";
 import Spinner from "../ui/Spinner";

@@ -1,9 +1,11 @@
 import { useParams } from "react-router-dom";
-import ModelSettings from "../model/model-settings/ModelSettings";
 import { useDispatch, useSelector } from "react-redux";
-import { modelActions } from "../../store/model";
 import { useEffect, useState } from "react";
 import { doc, getFirestore, onSnapshot } from "firebase/firestore";
+import { AnimatePresence } from "framer-motion";
+
+import ModelSettings from "../model/model-settings/ModelSettings";
+import { modelActions } from "../../store/model";
 import firebaseApp from "../../firebase-config";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
@@ -14,7 +16,6 @@ import {
 import { guideActions } from "../../store/guide";
 import Modal from "../ui/Modal";
 import OutroGuide from "../ui/guide/OutroGuide";
-import { AnimatePresence } from "framer-motion";
 import { fetchDataFromFirestore } from "../../utils/fetch/fetchUtils";
 
 const firestore = getFirestore(firebaseApp);

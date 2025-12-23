@@ -1,5 +1,6 @@
-import classes from "./Carousel.module.scss";
 import { useRef } from "react";
+
+import classes from "./Carousel.module.scss";
 import useIntersection from "../../hooks/use-intersection";
 import CarouselContent from "./CarouselContent";
 import {

@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import classes from "./Tab.module.scss";
 
 const Tab = ({ tabsNames, children }) => {

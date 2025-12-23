@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
+
 import firebaseApp from "../firebase-config";
 import { modelActions } from "./model";
 

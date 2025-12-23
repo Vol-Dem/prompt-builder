@@ -1,13 +1,14 @@
 import { PlusIcon } from "@heroicons/react/24/outline";
+import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
+
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import ButtonTertiary from "../../ui/ButtonTertiary";
 import InfoPrompt from "../../ui/guide/info/InfoPrompt";
 import classes from "./PromptSettings.module.scss";
-import { useDispatch, useSelector } from "react-redux";
 import { promptActions } from "../../../store/prompt";
-import { useState } from "react";
 import { authActions } from "../../../store/auth";
-import { AnimatePresence } from "framer-motion";
 import Modal from "../../ui/Modal";
 import InfoPresets from "../../ui/guide/info/InfoPresets";
 import Presets from "../../presets/Presets";

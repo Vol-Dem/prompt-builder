@@ -1,9 +1,10 @@
+import { motion } from "framer-motion";
+
 import {
   ANIMATIONS_FM_ZOOM_IN,
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
 } from "../../variables/constants";
 import classes from "./DropDownList.module.scss";
-import { motion } from "framer-motion";
 
 const DropDownList = ({ children, className, onClose, title }) => {
   return (

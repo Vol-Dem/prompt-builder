@@ -1,5 +1,6 @@
-import classes from "./ButtonCategoryAll.module.scss";
 import { motion } from "framer-motion";
+
+import classes from "./ButtonCategoryAll.module.scss";
 
 const ButtonCategoryAll = ({
   className,

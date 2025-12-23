@@ -6,6 +6,7 @@ import {
   TrashIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+
 import Image from "../ui/image/Image";
 import classes from "./AboutSidebar.module.scss";
 import Text from "../ui/text/Text";

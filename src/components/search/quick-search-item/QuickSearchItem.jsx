@@ -1,16 +1,18 @@
+import { motion } from "framer-motion";
+import { NavLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
 import classes from "./QuickSearchItem.module.scss";
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
 } from "../../../variables/constants";
-import { motion } from "framer-motion";
 import { searchActions } from "../../../store/search";
-import { NavLink } from "react-router-dom";
 import { modelActions } from "../../../store/model";
 import Image from "../../ui/image/Image";
 import ButtonSquareAdd from "../../ui/ButtonSquareAdd";
-import { useDispatch, useSelector } from "react-redux";
+
 
 const QuickSearchItem = ({ modelPreveiw }) => {
   const nsfwMode = useSelector((state) => state.model.nsfwMode);

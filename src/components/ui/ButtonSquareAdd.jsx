@@ -1,4 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
+import { CheckIcon, PlusIcon } from "@heroicons/react/24/outline";
+
 import classes from "./ButtonSquareAdd.module.scss";
 import {
   addImageToPanel,
@@ -7,7 +9,6 @@ import {
   removeModelFromPanel,
 } from "../../store/usedModels";
 import { SETTINGS_REF_IMAGE_AMOUNT } from "../../variables/constants";
-import { CheckIcon, PlusIcon } from "@heroicons/react/24/outline";
 import ButtonSquare from "./ButtonSquare";
 import { getUrlId } from "../../utils/imageUtils";
 

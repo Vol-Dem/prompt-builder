@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import classes from "./UploadingPanel.module.scss";
 import { useDispatch, useSelector } from "react-redux";
+import { AnimatePresence } from "framer-motion";
+
+import classes from "./UploadingPanel.module.scss";
 import { savePost } from "../../store/upload";
 import DropDownList from "../ui/DropDownList";
 import UploadingItem from "./uploading-item/UploadingItem";
-import { AnimatePresence } from "framer-motion";
 import UploadingRejected from "./uploading-rejected/UploadingRejected";
 import UploadingCompleted from "./uploading-completed/UploadingCompleted";
 import UploadingButton from "./uploading-button/UploadingButton";
@@ -51,7 +52,7 @@ const UploadingPanel = () => {
   };
 
   useEffect(() => {
-    if (!!queue.length) {
+    if (queue.length) {
       window.removeEventListener("beforeunload", beforeUnloadHandler);
       window.addEventListener("beforeunload", beforeUnloadHandler);
     } else {

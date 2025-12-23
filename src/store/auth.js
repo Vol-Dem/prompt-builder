@@ -16,11 +16,13 @@ import {
   reauthenticateWithPopup,
   EmailAuthProvider,
 } from "firebase/auth";
+import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+
 import firebaseApp from "../firebase-config";
 import { uploadPanelStateFromStorage, usedModelsActions } from "./usedModels";
 import { promptActions, uploadPromptFromStorage } from "./prompt";
 import { tabActions } from "./tabs";
-import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
 import { modelActions } from "./model";
 import {
   ERROR_MESSAGE_DEFAULT,
@@ -29,8 +31,6 @@ import {
 import { guideActions } from "./guide";
 import { generalActions } from "./general";
 import { imagesActions } from "./images";
-
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { getAppInfo } from "./notification";
 
 const auth = getAuth(firebaseApp);

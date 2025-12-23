@@ -3,6 +3,7 @@ import {
   DocumentDuplicateIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
+
 import Video from "../../Video";
 import classes from "./InfoPrompt.module.scss";
 import TextHighlight from "../../text/TextHighlight";

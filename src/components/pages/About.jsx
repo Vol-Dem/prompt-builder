@@ -1,7 +1,8 @@
 import { useEffect } from "react";
+import { Outlet } from "react-router-dom";
+
 import classes from "./About.module.scss";
 import AboutNav from "../about/about-nav/AboutNav";
-import { Outlet } from "react-router-dom";
 
 const About = ({ title }) => {
   useEffect(() => {
