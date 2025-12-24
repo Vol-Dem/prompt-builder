@@ -28,7 +28,7 @@ const Tag = forwardRef((props, ref) => {
     setIsInPrompt(isActive);
   }, [props.promptType, curPromt, curNegPromt, props.tag]);
 
-  const addTagHandler = (e) => {
+  const addTagHandler = () => {
     if (!isInPrompt) {
       dispatch(
         promptActions.addTagToPrompt({

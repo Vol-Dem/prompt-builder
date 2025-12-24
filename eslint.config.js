@@ -39,6 +39,7 @@ export default [
     rules: {
       // React 17+
       "react/react-in-jsx-scope": "off",
+      "react/jsx-uses-vars": "error",
 
       // Hooks
       "react-hooks/rules-of-hooks": "error",

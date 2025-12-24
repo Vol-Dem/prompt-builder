@@ -10,11 +10,10 @@ import ButtonTertiary from "../ButtonTertiary";
 import CopiedSvg from "../../../assets/CopiedSvg";
 import CopySvg from "../../../assets/CopySvg";
 
-
 const Guide = (props) => {
   const [copied, setCopied] = useState(false);
 
-  const copyHandler = (e) => {
+  const copyHandler = () => {
     navigator.clipboard.writeText("727427");
     setCopied(true);
     setTimeout(() => {

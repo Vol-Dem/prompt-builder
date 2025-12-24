@@ -7,7 +7,7 @@ import classes from "./VerifyEmailMessage.module.scss";
 import SuccessMessage from "../ui/SuccessMessage";
 import ErrorMessage from "../ui/ErrorMessage";
 import Spinner from "../ui/Spinner";
-import { ERROR_MESSAGE_DEFAULT } from "../../variables/constants";
+import { handleErrors } from "../../utils/generalUtils";
 
 const auth = getAuth(firebaseApp);
 
@@ -28,7 +28,7 @@ const VerifyEmailMessage = () => {
       setSuccessMessage("Request sent, check your email");
     } catch (err) {
       setIsLoading(false);
-      setErrorMessage(ERROR_MESSAGE_DEFAULT);
+      setErrorMessage(handleErrors(err));
     }
   };
 

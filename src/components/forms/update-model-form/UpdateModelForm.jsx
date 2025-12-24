@@ -169,7 +169,7 @@ const UpdateModelForm = ({
         modelData?.modelVersionsCustomData
       )
         ?.sort((a, b) => a?.index - b?.index)
-        .map((version, i) => {
+        .map((version) => {
           return {
             type: "checkbox",
             id: version.versionId + "in",
@@ -377,7 +377,7 @@ const UpdateModelForm = ({
     });
   };
 
-  const deleteSubcategoryInputHandler = (index, e) => {
+  const deleteSubcategoryInputHandler = (index) => {
     setSubCatInputs((prevState) => {
       return prevState.toSpliced(index, 1);
     });

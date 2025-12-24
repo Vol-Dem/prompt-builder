@@ -10,11 +10,8 @@ const UploadingRejected = () => {
   const rejected = useSelector((state) => state.upload.rejected);
   const curPostId = useSelector((state) => state.upload.curPostId);
   const dispatch = useDispatch();
-  //   console.log(rejected);
+
   const rejectedItems = rejected.map((item, i) => {
-    // const isRejected = !!rejected.find(
-    //   (rejectedItem) => item.curPostId === rejectedItem.curPostId
-    // );
     return (
       <UploadingItem
         key={i}

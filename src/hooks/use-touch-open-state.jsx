@@ -42,7 +42,7 @@ const useTouchOpenState = (
       setCursorInitialPoint(axis === "X" ? clientX : clientY);
     };
 
-    const mouseUp = (e) => {
+    const mouseUp = () => {
       if (!cursorInitialPoint || !cursorCurPoint) return;
       const offcet =
         Math.round(cursorInitialPoint) - Math.round(cursorCurPoint);

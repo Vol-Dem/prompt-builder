@@ -78,7 +78,7 @@ const TagSetsInputFieldset = ({
     });
   };
 
-  const deleteTagsetInputHandler = (index, e) => {
+  const deleteTagsetInputHandler = (index) => {
     setTagSetsInputs((prevState) => {
       return prevState.toSpliced(index, 1);
     });

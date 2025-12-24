@@ -189,7 +189,7 @@ const SaveToCollectionForm = ({
     setSubCatInputs(newFields);
   };
 
-  const deleteSubcategoryInputHandler = (index, e) => {
+  const deleteSubcategoryInputHandler = (index) => {
     setSubCatInputs((prevState) => {
       return prevState.toSpliced(index, 1);
     });

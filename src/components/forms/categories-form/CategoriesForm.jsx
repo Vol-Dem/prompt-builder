@@ -44,7 +44,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
         // names must be equal
         return 0;
       })
-      .map((category, i) => {
+      .map((category) => {
         return {
           type: "text",
           id: category.id,

@@ -10,7 +10,6 @@ import classes from "./ModelSettings.module.scss";
 import Buttton from "../../ui/Button";
 import VersionStatusForm from "../../forms/version-status-form/VersionStatusForm";
 import DeleteRequest from "../../ui/DeleteRequest";
-// import { filterNewModelVersions } from "../../../utils/generalUtils";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import Spinner from "../../ui/Spinner";
@@ -32,6 +31,7 @@ import {
   fetchModelUpdates,
   updateUserCustomModelData,
 } from "../../../utils/fetch/fetchModel";
+import { handleErrors } from "../../../utils/generalUtils";
 
 const ModelSettings = () => {
   const [curTab, setCurTab] = useState("general");
@@ -110,7 +110,7 @@ const ModelSettings = () => {
       seteSuccessMessage("Updated");
       setIsLoading(false);
     } catch (err) {
-      setErrorMessage(ERROR_MESSAGE_DEFAULT);
+      setErrorMessage(handleErrors(err));
       setIsLoading(false);
     }
   };

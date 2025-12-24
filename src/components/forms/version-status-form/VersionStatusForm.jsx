@@ -16,6 +16,7 @@ import {
   SUCCESS_MESSAGE_UPLOADED,
 } from "../../../variables/constants";
 import Spinner from "../../ui/Spinner";
+import { handleErrors } from "../../../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -33,7 +34,7 @@ const VersionStatusForm = ({ modelData }) => {
       modelData?.modelVersionsCustomData
     )
       ?.sort((a, b) => a?.index - b?.index)
-      .map((version, i) => {
+      .map((version) => {
         return {
           type: "checkbox",
           id: version.versionId + "in",
@@ -73,12 +74,12 @@ const VersionStatusForm = ({ modelData }) => {
         (activePreviewId &&
           modelData.data.modelVersions
             ?.find((version) => version.id === activePreviewId)
-            .images?.filter((img, i) => img.type === "image")[0]?.url) ||
+            .images?.filter((img) => img.type === "image")[0]?.url) ||
         "";
 
       const previewImgDefault =
         modelData.data.modelVersions[0].images?.filter(
-          (img, i) => img.type === "image"
+          (img) => img.type === "image"
         )[0]?.url || "";
 
       const previewImg = activePreviewImg || previewImgDefault;
@@ -117,7 +118,7 @@ const VersionStatusForm = ({ modelData }) => {
       seteSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
       setIsSaving(false);
     } catch (err) {
-      seteErrorMessage(ERROR_MESSAGE_DEFAULT);
+      seteErrorMessage(handleErrors(err));
       setIsSaving(false);
     }
   };

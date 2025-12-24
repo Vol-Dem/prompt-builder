@@ -27,9 +27,6 @@ import {
 import Checkbox from "../../ui/Checkbox";
 import LinkA from "../../ui/LinkA";
 import SuccessMessage from "../../ui/SuccessMessage";
-
-
-// import { ReactComponent as GoogleLogo } from "../../../assets/google.svg";
 import GoogleLogo from "../../../assets/google.svg";
 
 const AuthForm = () => {

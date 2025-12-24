@@ -1,8 +1,6 @@
-import { useState } from "react";
-
 import classes from "./Tab.module.scss";
 
-const Tab = ({ tabsNames, children }) => {
+const Tab = ({ tabsNames, openTabHandler, children }) => {
   const tabsHtml = tabsNames.map((tab, i) => (
     <li key={i} id={tab} onClick={openTabHandler}>
       {tab}

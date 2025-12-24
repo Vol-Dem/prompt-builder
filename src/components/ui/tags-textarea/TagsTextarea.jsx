@@ -147,7 +147,7 @@ const TagsTextarea = ({
     });
   };
 
-  const tagItemsHtml = curPrompt.map((item, i) => {
+  const tagItemsHtml = curPrompt.map((item) => {
     return (
       <TagsTextareaItem
         key={item.id}

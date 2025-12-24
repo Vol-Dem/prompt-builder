@@ -80,13 +80,13 @@ const CarouselImage = ({
     setImgIsLoading(false);
   };
 
-  const setPreviwImgHandler = (e) => {
+  const setPreviwImgHandler = () => {
     dispatch(
       setPreviewImg(imgSrc, false, location, locationId, imageData.type)
     );
     setMenuIsOpen(false);
   };
-  const setNsfwPreviwImgHandler = (e) => {
+  const setNsfwPreviwImgHandler = () => {
     dispatch(setPreviewImg(imgSrc, true, location, locationId, imageData.type));
     setMenuIsOpen(false);
   };

@@ -45,8 +45,8 @@ const AboutNav = () => {
     setNavIsOpen(false);
   };
 
-  const aboutNavItemsHtml = ABOUT_NAV_DATA.map((item, i) => {
-    const subNavHtml = item.subNav.map((subItem, j) => {
+  const aboutNavItemsHtml = ABOUT_NAV_DATA.map((item) => {
+    const subNavHtml = item.subNav.map((subItem) => {
       return (
         <AboutNavItem
           key={subItem.id}

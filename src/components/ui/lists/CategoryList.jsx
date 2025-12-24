@@ -2,13 +2,7 @@ import EditSvg from "../../../assets/EditSvg";
 import ButtonTertiary from "../ButtonTertiary";
 import classes from "./CategoryList.module.scss";
 
-const CategoryList = ({
-  onClick,
-  onEdit,
-  activeCategory,
-  children,
-  className,
-}) => {
+const CategoryList = ({ onEdit, children, className }) => {
   return (
     <div className={classes.category}>
       <ul className={`${classes["category__list"]} ${className || ""}`}>

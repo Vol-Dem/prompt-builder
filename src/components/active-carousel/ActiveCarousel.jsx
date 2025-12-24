@@ -38,7 +38,7 @@ const ActiveCarousel = () => {
 
   useEffect(() => {
     const scrollTop = document.documentElement.scrollTop;
-    const disableScrollHandler = (e) => {
+    const disableScrollHandler = () => {
       window.scrollTo(0, scrollTop);
     };
 

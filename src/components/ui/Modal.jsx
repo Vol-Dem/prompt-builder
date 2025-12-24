@@ -10,11 +10,10 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../variables/constants";
 
-
 const Modal = ({ disableClass, onClose, className, title, children }) => {
   useEffect(() => {
     const scrollTop = document.documentElement.scrollTop;
-    const disableScrollHandler = (e) => {
+    const disableScrollHandler = () => {
       window.scrollTo(0, scrollTop);
     };
     window.addEventListener("scroll", disableScrollHandler);

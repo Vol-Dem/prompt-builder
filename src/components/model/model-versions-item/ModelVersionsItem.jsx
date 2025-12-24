@@ -11,7 +11,7 @@ const ModelVersionsItem = forwardRef(
         className={`${classes.version} ${
           active ? classes["version--active"] : ""
         }
-          ${saved ? classes["version--downloaded"] : ""}`}
+          ${saved ? classes["version--downloaded"] : ""} ${className || ""}`}
       >
         <ComponentTag {...props}>{children}</ComponentTag>
       </li>

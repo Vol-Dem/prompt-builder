@@ -27,7 +27,6 @@ const Image = forwardRef(
       imageWidth = SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
       width,
       height,
-      children,
       ...props
     },
     ref

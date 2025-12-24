@@ -52,7 +52,7 @@ const RightSidebar = memo(() => {
   }, [panelIsOpen, dispatch]);
 
   const modelCardsHtml = useMemo(() => {
-    return usedModels.map((model, i) => {
+    return usedModels.map((model) => {
       return (
         <div key={`side-card-${model.id}`} style={{ position: "relative" }}>
           <RightSidebarCard

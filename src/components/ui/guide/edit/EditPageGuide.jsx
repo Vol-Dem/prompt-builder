@@ -11,7 +11,7 @@ import useGuideIndex from "../../../../hooks/use-guide-index";
 
 const guideType = "edit";
 
-const EditPageGuide = (props) => {
+const EditPageGuide = () => {
   const guideSteps = useMemo(() => {
     return [
       {

@@ -4,13 +4,13 @@ const YoutubeVideo = ({
   src,
   title,
   className,
-  controls = 1,
-  autoplay = 0,
-  loop = 0,
-  disablekb = 0,
+  // controls = 1,
+  // autoplay = 0,
+  // loop = 0,
+  // disablekb = 0,
 }) => {
-  const at = autoplay ? 1 : 0;
-  const url = `${src}&controls=0&autoPlay=1`;
+  // const at = autoplay ? 1 : 0;
+  // const url = `${src}&controls=0&autoPlay=1`;
   // const url = `${src}&amp;controls=${
   //   controls ? 1 : 0
   // }&amp;autoplay=${at}&amp;loop=${loop ? 1 : 0}&amp;disablekb=${

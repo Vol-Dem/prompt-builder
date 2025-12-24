@@ -18,7 +18,6 @@ const Textarea = ({
   placeholder,
   validation,
   showError,
-  isValid,
   ...props
 }) => {
   const [inputErrorMessage, setInputErrorMessage] = useState("");

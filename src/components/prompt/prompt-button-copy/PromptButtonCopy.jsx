@@ -10,7 +10,7 @@ const PromptButtonCopy = ({ promptData }) => {
   const [copied, setCopied] = useState(false);
   const timeoutCopiedRef = useRef(null);
 
-  const copyToClipboardHandler = (e) => {
+  const copyToClipboardHandler = () => {
     if (timeoutCopiedRef.current) {
       clearTimeout(timeoutCopiedRef.current);
     }

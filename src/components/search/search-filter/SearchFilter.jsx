@@ -50,7 +50,7 @@ const SearchFilter = () => {
         return modelTypeInfo;
       })
       .sort((a, b) => a.position - b.position)
-      .map((type, i) => {
+      .map((type) => {
         return {
           type: "checkbox",
           id: type.value,
@@ -75,7 +75,7 @@ const SearchFilter = () => {
 
     if (!baseModels.length) return;
 
-    const baseModelsData = baseModels.map((baseModel, i) => {
+    const baseModelsData = baseModels.map((baseModel) => {
       return {
         type: "checkbox",
         id: baseModel,

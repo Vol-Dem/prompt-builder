@@ -36,7 +36,7 @@ const ButtonAdd = ({
 
   const dispatch = useDispatch();
 
-  const addToSidePanelHandler = (e) => {
+  const addToSidePanelHandler = () => {
     if (onClick) onClick(modelId);
     if (
       !isInPanel &&

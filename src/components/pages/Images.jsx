@@ -90,7 +90,7 @@ const Images = ({ title }) => {
   });
 
   const subcategoriesHtml = sortArrayBy(subcategories, "name")?.map(
-    (subcategory, i) => {
+    (subcategory) => {
       return (
         <CategoryListItem
           key={subcategory.id}

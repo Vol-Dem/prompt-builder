@@ -427,7 +427,7 @@ const VersionForm = ({
     });
   };
 
-  const deleteTagsetInputHandler = (index, e) => {
+  const deleteTagsetInputHandler = (index) => {
     setTagSetsInputs((prevState) => {
       return prevState.toSpliced(index, 1);
     });
@@ -455,7 +455,6 @@ const VersionForm = ({
           placeholder={tagSet[0].placeholder}
           onChange={tagSetsHandler}
           value={tagSet[0].value}
-          isValid={tagSet[0].isValid}
           showError={showErrorMessage}
           validation={{
             maxLength: VALIDATION_NAME_MAX_LENGTH,
@@ -468,7 +467,6 @@ const VersionForm = ({
           placeholder={tagSet[1].placeholder}
           onChange={tagSetsHandler}
           value={tagSet[1].value}
-          isValid={tagSet[1].isValid}
           showError={showErrorMessage}
           validation={{
             maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,

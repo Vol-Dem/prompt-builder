@@ -24,7 +24,7 @@ const LeftSidebar = ({
     }
   };
 
-  const closesSidebar = (url) => {
+  const closesSidebar = () => {
     onClose();
   };
 
@@ -38,7 +38,7 @@ const LeftSidebar = ({
     setCursorInitialX(clientX);
   };
 
-  const mouseUp = (e) => {
+  const mouseUp = () => {
     if (!cursorInitialX || !cursorCurX) return;
     const offcet = Math.round(cursorInitialX) - Math.round(cursorCurX);
     setCursorCurX(null);

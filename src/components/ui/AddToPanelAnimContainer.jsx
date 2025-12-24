@@ -5,7 +5,7 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../variables/constants";
 
-const AddToPanelAnimContainer = ({ children, usedModels, ...props }) => {
+const AddToPanelAnimContainer = ({ children, ...props }) => {
   return (
     <motion.div
       initial={ANIMATIONS_FM_SLIDEIN_INITIAL}

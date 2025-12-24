@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 
 import classes from "./Video.module.scss";
 import useIntersection from "../../hooks/use-intersection";
+import { handleErrors } from "../../utils/generalUtils";
 
 const Video = ({
   playsInline,
@@ -11,8 +12,8 @@ const Video = ({
   preload = "none",
   muted,
   poster,
-  mainSrc,
-  secondarySrc,
+  // mainSrc,
+  // secondarySrc,
   className,
   controls,
   width,
@@ -45,7 +46,7 @@ const Video = ({
           await videoRef.current.pause();
         }
       } catch (err) {
-        // console.log(err);
+        handleErrors(err);
       }
     };
 

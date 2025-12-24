@@ -9,28 +9,27 @@
 // import * as functions from "firebase-functions";
 // const { onRequest, HttpsError } = require("firebase-functions/v2/https");
 import { onRequest, HttpsError } from "firebase-functions/v2/https";
-// const { onCall } = require("firebase-functions/v2/https");
 import { onCall } from "firebase-functions/v2/https";
+import { logger } from "firebase-functions/logger";
+import { initializeApp } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
+import { getDatabase } from "firebase-admin/database";
+import { Timestamp } from "firebase-admin/firestore";
+import { onMessagePublished } from "firebase-functions/v2/pubsub";
+import { CloudBillingClient } from "@google-cloud/billing";
+// const { onCall } = require("firebase-functions/v2/https");
 // const { pubsub } = require("firebase-functions");
 // const { google } = require("googleapis");
 // const { GoogleAuth } = require("google-auth-library");
 // const logger = require("firebase-functions/logger");
-import { logger } from "firebase-functions/logger";
-
 // The Firebase Admin SDK to access Firestore.
 // const { initializeApp } = require("firebase-admin/app");
-import { initializeApp } from "firebase-admin/app";
 // const { getFirestore } = require("firebase-admin/firestore");
-import { getFirestore } from "firebase-admin/firestore";
 // const { getDatabase } = require("firebase-admin/database");
-import { getDatabase } from "firebase-admin/database";
 // const { Timestamp } = require("firebase-admin/firestore");
-import { Timestamp } from "firebase-admin/firestore";
 // const { onMessagePublished } = require("firebase-functions/v2/pubsub");
-import { onMessagePublished } from "firebase-functions/v2/pubsub";
 // const { request } = require("http");
 // const { CloudBillingClient } = require("@google-cloud/billing");
-import { CloudBillingClient } from "@google-cloud/billing";
 // const { sendDiscordBillingMessage } = require("./discord");
 
 initializeApp();

@@ -81,7 +81,7 @@ const useFetchFirestoreImages = (curImagesModelVersionId) => {
         !modelImagesSnap.docs.length ||
         modelImagesSnap.docs.length < SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE;
 
-      const data = modelImagesSnap.docs.flatMap((doc, i) => {
+      const data = modelImagesSnap.docs.flatMap((doc) => {
         return doc.data();
       });
 

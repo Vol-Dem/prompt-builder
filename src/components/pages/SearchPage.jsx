@@ -145,7 +145,7 @@ const SearchPage = ({ title }) => {
     setSidebarIsOpen(false);
   };
 
-  const searchResultHtml = searchResult.result?.map((item, i) => {
+  const searchResultHtml = searchResult.result?.map((item) => {
     return <PreviewCard key={item.id} item={item} />;
   });
 

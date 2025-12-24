@@ -88,7 +88,7 @@ const CarouselContent = ({
     });
   }, [imagesRef, carouselRef]);
 
-  const openDeleteListHandler = (e) => {
+  const openDeleteListHandler = () => {
     setImageFormState({
       type: "del",
       location: location || null,
@@ -190,7 +190,7 @@ const CarouselContent = ({
     if (visibleImages[0] > imagesData?.length + curVisibleAmount) {
       setCurTransitionDur(0);
       setVisibleImages((prevState) =>
-        prevState.map((el, i) => visibleImages[0] - imagesData?.length)
+        prevState.map(() => visibleImages[0] - imagesData?.length)
       );
     }
   }, [
@@ -295,12 +295,7 @@ const CarouselContent = ({
     setImageFormState((prevState) => ({ ...prevState, isOpen: false }));
   };
 
-  const deleteExampleHandler = async (
-    location,
-    ids,
-    collectionData,
-    postData
-  ) => {
+  const deleteExampleHandler = async (location, ids, collectionData) => {
     try {
       const curPostId = imagesData[0].postId;
 
@@ -363,7 +358,7 @@ const CarouselContent = ({
     setCursorInitialX(clientX);
   };
 
-  const mouseUp = (e) => {
+  const mouseUp = () => {
     if (!cursorInitialX || !cursorCurX) return;
     const offcet = Math.round(cursorInitialX) - Math.round(cursorCurX);
     setCursorCurX(null);

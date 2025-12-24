@@ -112,7 +112,7 @@ const TagsTextareaItem = ({
           }`}
           draggable={!item.edit ? "true" : "false"}
           onDragStart={dragStartHandler}
-          onDragEnd={(e) => {
+          onDragEnd={() => {
             setIsDragged(false);
             onDragEnd();
           }}

@@ -8,7 +8,7 @@ import GuideActionMessage from "../GuideActionMessage";
 
 const guideType = "home";
 
-const OpenModelGuide = (props) => {
+const OpenModelGuide = () => {
   const guideSteps = useMemo(() => {
     return [
       {

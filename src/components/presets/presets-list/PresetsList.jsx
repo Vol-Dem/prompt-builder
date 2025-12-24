@@ -25,7 +25,7 @@ const PresetsList = ({ presets, type, onClose, onEdit, onDelete }) => {
     onClose();
   };
 
-  const positivePresetsHtml = presets?.map((preset, i) => {
+  const positivePresetsHtml = presets?.map((preset) => {
     return (
       <motion.li
         key={preset.id}
