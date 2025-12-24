@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import classes from "./Model.module.scss";
 import { modelActions } from "../../store/model";
-import ModelInfo from "../model/info/ModelInfo";
+import ModelInfo from "../model/model-info/ModelInfo";
 import ModelTags from "../model/tags/ModelTags";
 import GeneratedImages from "../model/generated-images/GeneratedImages";
 import TagSets from "../model/tag-sets/TagSets";
@@ -22,7 +22,7 @@ import ModelDefImages from "../model/model-def-images/ModelDefImages";
 import ModelVersionDescription from "../model/model-version-description/ModelVersionDescription";
 import ModelNavigationPanel from "../model/model-navigation-panel/ModelNavigationPanel";
 import Hashtags from "../hashtags/Hashtags";
-import ModelDescription from "../model/description/ModelDescription";
+import ModelDescription from "../model/model-description/ModelDescription";
 import ModelVersionsList from "../model/model-versions-list/ModelVersionsList";
 import { fetchModelData } from "../../utils/fetch/fetchModel";
 import {

@@ -41,7 +41,7 @@ const Categories = () => {
     }
   };
 
-  const catHtml = categories?.hasOwnProperty(activeTab)
+  const catHtml = Object.hasOwn(categories, activeTab)
     ? categories[activeTab]
         ?.toSorted((a, b) => {
           const nameA = a.name.toUpperCase(); // ignore upper and lowercase

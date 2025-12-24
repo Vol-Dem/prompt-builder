@@ -66,12 +66,12 @@ const GeneratedImages = memo(() => {
     setCurTab(e.target.dataset.tab);
     if (
       e.target.dataset.tab !== "all" &&
-      !savedImages.hasOwnProperty(curVersionId)
+      !Object.hasOwn(savedImages, curVersionId)
     ) {
       const latesVersionId = Object.values(model.modelVersionsCustomData)
         .sort((a, b) => a?.index - b?.index)
         .find((version) =>
-          savedImages.hasOwnProperty(version.versionId)
+          Object.hasOwn(savedImages, version.versionId)
         )?.versionId;
       if (latesVersionId) {
         setCurVersionId(latesVersionId);

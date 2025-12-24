@@ -13,7 +13,6 @@ import {
 } from "../../../variables/constants";
 import CrossSvg from "../../../assets/CrossSvg";
 
-
 const GuideMessage = (props) => {
   const {
     type,
@@ -30,7 +29,7 @@ const GuideMessage = (props) => {
   const guideState = useSelector((state) => state.guide);
   const lastStep = type === GUIDE_LAST_STEP_TYPE && step === GUIDE_LAST_STEP;
   const curGuideIsActive = useMemo(() => {
-    if (type && guideState && guideState.hasOwnProperty(type)) {
+    if (type && guideState && Object.hasOwn(guideState, type)) {
       return guideState[type].active;
     }
     return null;

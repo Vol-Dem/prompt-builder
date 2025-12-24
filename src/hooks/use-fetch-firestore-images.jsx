@@ -90,7 +90,7 @@ const useFetchFirestoreImages = (curImagesModelVersionId) => {
           return filterDuplicates(
             post.items.filter((image) => {
               const saved =
-                savedImagesData.data.hasOwnProperty(curImagesModelVersionId) &&
+                Object.hasOwn(savedImagesData.data, curImagesModelVersionId) &&
                 savedImagesData.data[curImagesModelVersionId]
                   ?.find((postData) => postData.postId === image.postId)
                   ?.imagesId?.includes(image.id);

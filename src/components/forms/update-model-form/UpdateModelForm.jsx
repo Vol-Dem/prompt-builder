@@ -117,18 +117,19 @@ const UpdateModelForm = ({
   const guideIsActive = useSelector((state) => state.guide.active);
   const curModel = useSelector((state) => state.model.model);
   const dispatch = useDispatch();
+  const hasModelTypeInputField = Object.hasOwn(categories, modelTypeInput);
 
   const mainCategoryOptions = useMemo(() => {
-    return !!modelTypeInput && categories?.hasOwnProperty(modelTypeInput)
+    return !!modelTypeInput && hasModelTypeInputField
       ? categories[modelTypeInput]?.filter((category) =>
           category.name
             .toLowerCase()
             .includes(mainCategoryQuery.trim().toLowerCase())
         )
       : [];
-  }, [categories, modelTypeInput, mainCategoryQuery]);
+  }, [categories, modelTypeInput, mainCategoryQuery, hasModelTypeInputField]);
 
-  const subCategoryOptions = categories?.hasOwnProperty(modelTypeInput)
+  const subCategoryOptions = hasModelTypeInputField
     ? categories[modelTypeInput]
         .find((category) => category.name === mainCategorySelected.name)
         ?.subcategories?.filter((subcategory) =>

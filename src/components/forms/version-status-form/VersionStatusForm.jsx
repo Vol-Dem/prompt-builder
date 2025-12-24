@@ -11,7 +11,6 @@ import firebaseApp from "../../../firebase-config";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import {
-  ERROR_MESSAGE_DEFAULT,
   ERROR_MESSAGE_OFFLINE,
   SUCCESS_MESSAGE_UPLOADED,
 } from "../../../variables/constants";
