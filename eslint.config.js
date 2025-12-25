@@ -5,10 +5,11 @@ import reactHooks from "eslint-plugin-react-hooks";
 import importPlugin from "eslint-plugin-import";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import prettier from "eslint-config-prettier";
+import { globalIgnores } from "eslint/config";
 
 export default [
   js.configs.recommended,
-
+  globalIgnores(["node_modules", "dist"]),
   {
     files: ["**/*.{js,jsx}"],
     languageOptions: {
@@ -58,5 +59,14 @@ export default [
       ...prettier.rules,
     },
     ignores: ["dist", "node_modules"],
+  },
+
+  {
+    files: ["**/*.{test,spec}.{js,jsx}"],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+      },
+    },
   },
 ];

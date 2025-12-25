@@ -26,6 +26,7 @@ import ReAuthForm from "../forms/ReAuth/ReAuthForm";
 import Modal from "../ui/Modal";
 import VerifyEmailMessage from "../notification-messages/VerifyEmailMessage";
 
+const changeEmailActive = false;
 
 const Profile = ({ title }) => {
   const [userName, setUserName] = useState({
@@ -254,7 +255,7 @@ const Profile = ({ title }) => {
             <ButtonTertiary className={classes["btn"]}>Submit</ButtonTertiary>
           </>
         )}
-        {false && (
+        {changeEmailActive && (
           <ButtonTertiary
             className={classes["btn"]}
             type="button"

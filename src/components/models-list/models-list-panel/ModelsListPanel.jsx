@@ -31,7 +31,7 @@ const ModelsListPanel = () => {
     ? baseModelsDef
     : [
         ...baseModelsDef,
-        ...baseModels?.map((model) => {
+        ...baseModels.map((model) => {
           return { name: model, value: model };
         }),
       ];

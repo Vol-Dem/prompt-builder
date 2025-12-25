@@ -41,40 +41,41 @@ const Categories = () => {
     }
   };
 
-  const catHtml = Object.hasOwn(categories, activeTab)
-    ? categories[activeTab]
-        ?.toSorted((a, b) => {
-          const nameA = a.name.toUpperCase(); // ignore upper and lowercase
-          const nameB = b.name.toUpperCase(); // ignore upper and lowercase
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
-          }
+  const catHtml =
+    categories && Object.hasOwn(categories, activeTab)
+      ? categories[activeTab]
+          ?.toSorted((a, b) => {
+            const nameA = a.name.toUpperCase(); // ignore upper and lowercase
+            const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+            if (nameA < nameB) {
+              return -1;
+            }
+            if (nameA > nameB) {
+              return 1;
+            }
 
-          // names must be equal
-          return 0;
-        })
-        .map((category, i) => {
-          return (
-            <CategoryListItem
-              key={`${activeTab}-${category.id}`}
-              onClick={categorySwitchHandler}
-              dataValue={category.id}
-              active={activeCategory === category.id}
-              className={`${
-                activeCategory === category.id ? classes.active : ""
-              }`}
-            >
-              {category.name}
-              {guideHomeState?.active && !activeCategory && i === 0 && (
-                <OpenCategoryGuide />
-              )}
-            </CategoryListItem>
-          );
-        })
-    : [];
+            // names must be equal
+            return 0;
+          })
+          .map((category, i) => {
+            return (
+              <CategoryListItem
+                key={`${activeTab}-${category.id}`}
+                onClick={categorySwitchHandler}
+                dataValue={category.id}
+                active={activeCategory === category.id}
+                className={`${
+                  activeCategory === category.id ? classes.active : ""
+                }`}
+              >
+                {category.name}
+                {guideHomeState?.active && !activeCategory && i === 0 && (
+                  <OpenCategoryGuide />
+                )}
+              </CategoryListItem>
+            );
+          })
+      : [];
 
   const editCategoriesHandler = () => {
     setEditIsOpen(true);

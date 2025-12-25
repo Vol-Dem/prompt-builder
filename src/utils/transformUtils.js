@@ -132,9 +132,10 @@ export const transformImageData = (imageData) => {
         ...(imageData?.meta?.Modelhash && {
           Modelhash: imageData?.meta?.Modelhash,
         }),
-        ...(Object.hasOwn(imageData?.meta, "Model hash") && {
-          "Model hash": imageData?.meta["Model hash"],
-        }),
+        ...(imageData?.meta &&
+          Object.hasOwn(imageData.meta, "Model hash") && {
+            "Model hash": imageData?.meta["Model hash"],
+          }),
         ...(imageData?.meta?.Version && { Version: imageData?.meta?.Version }),
         ...(imageData?.meta?.Model && { Model: imageData?.meta?.Model }),
         ...(imageData?.meta?.Denoisingstrength && {

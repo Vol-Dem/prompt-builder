@@ -75,7 +75,9 @@ const Edit = ({ title }) => {
             data: defModelData,
           })
         );
-        document.title = `Edit - ${defModelData?.name}` || title;
+        document.title = defModelData?.name
+          ? `Edit - ${defModelData?.name}`
+          : title;
       } catch (err) {
         setErrorMessage("Failed to load model");
         dispatch(modelActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));

@@ -59,7 +59,8 @@ const ImageResources = ({ imageData, onReset }) => {
 
     if (
       versiondId &&
-      Object.hasOwn(resource?.preview?.modelVersionsCustomData, `${versiondId}`)
+      resource?.preview?.modelVersionsCustomData &&
+      Object.hasOwn(resource.preview.modelVersionsCustomData, `${versiondId}`)
     ) {
       versionIsSaved =
         resource.preview.modelVersionsCustomData[versiondId].downloadStatus;

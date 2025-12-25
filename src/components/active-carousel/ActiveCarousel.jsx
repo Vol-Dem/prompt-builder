@@ -30,7 +30,8 @@ const ActiveCarousel = () => {
   const guideIsActive = useSelector((state) => state.guide.active);
   const dispatch = useDispatch();
   const existedExample =
-    Object.hasOwn(savedImagesData?.data, activeCarouselData?.versionId) &&
+    savedImagesData?.data &&
+    Object.hasOwn(savedImagesData.data, activeCarouselData?.versionId) &&
     savedImagesData.data[`${activeCarouselData?.versionId}`]?.find(
       (img) => img?.postId === +activeCarouselData?.images[0]?.postId
     );

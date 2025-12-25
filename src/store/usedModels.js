@@ -149,7 +149,7 @@ export const uploadPanelStateFromStorage = () => {
     if (storageData) dispatch(usedModelsActions.addModelsToPanel(storageData));
     if (storageImgData)
       dispatch(usedModelsActions.addImagesToPanel(storageImgData));
-    if (Object.hasOwn(storagePanelState, "panelIsOpen")) {
+    if (storagePanelState && Object.hasOwn(storagePanelState, "panelIsOpen")) {
       dispatch(
         usedModelsActions.panelState(
           !checkIsMobile() ? storagePanelState?.panelIsOpen : false

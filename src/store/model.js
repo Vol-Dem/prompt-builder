@@ -63,7 +63,10 @@ const modelSlice = createSlice({
 
       if (state.model.id !== modelId) return;
 
-      if (Object.hasOwn(state.savedImages.data, `${versionId}`)) {
+      if (
+        state?.savedImages?.data &&
+        Object.hasOwn(state.savedImages.data, `${versionId}`)
+      ) {
         const existedPostIndex = state.savedImages.data[versionId].findIndex(
           (post) => post.postId === postId
         );
@@ -95,7 +98,10 @@ const modelSlice = createSlice({
 
       if (state.model.id !== modelId) return;
 
-      if (Object.hasOwn(state.savedImages.data, `${versionId}`)) {
+      if (
+        state?.savedImages?.data &&
+        Object.hasOwn(state.savedImages.data, `${versionId}`)
+      ) {
         const existedPostIndex = state.savedImages.data[versionId].findIndex(
           (post) => post.postId === postId
         );

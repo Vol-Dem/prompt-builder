@@ -79,7 +79,7 @@ const GuideMessage = (props) => {
             </div>
             <div className={classes["guide__controls"]}>
               <div className={classes["guide__controls-steps"]}>
-                {true && !lastStep && (
+                {!lastStep && (
                   <ButtonTertiary
                     type="button"
                     className={`${classes["guide__controls-btn"]} ${

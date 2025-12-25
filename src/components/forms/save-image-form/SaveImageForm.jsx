@@ -124,6 +124,7 @@ const SaveImageForm = ({
   const saveExampleHandler = async (location, ids, collectionData) => {
     const postId = getPostIdFromInput(postIdInput.value);
     const postData =
+      modelData &&
       Object.hasOwn(modelData, "savedImages") &&
       modelData?.savedImages[versionIdInput?.value]?.find(
         (post) => post.postId === +postId

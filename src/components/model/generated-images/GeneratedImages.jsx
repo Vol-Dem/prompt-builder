@@ -66,6 +66,7 @@ const GeneratedImages = memo(() => {
     setCurTab(e.target.dataset.tab);
     if (
       e.target.dataset.tab !== "all" &&
+      savedImages &&
       !Object.hasOwn(savedImages, curVersionId)
     ) {
       const latesVersionId = Object.values(model.modelVersionsCustomData)

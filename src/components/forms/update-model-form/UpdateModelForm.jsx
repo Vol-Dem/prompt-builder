@@ -117,7 +117,7 @@ const UpdateModelForm = ({
   const guideIsActive = useSelector((state) => state.guide.active);
   const curModel = useSelector((state) => state.model.model);
   const dispatch = useDispatch();
-  const hasModelTypeInputField = Object.hasOwn(categories, modelTypeInput);
+  const hasModelTypeInputField = categories && Object.hasOwn(categories, modelTypeInput);
 
   const mainCategoryOptions = useMemo(() => {
     return !!modelTypeInput && hasModelTypeInputField

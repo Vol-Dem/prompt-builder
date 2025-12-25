@@ -72,7 +72,7 @@ const PreviewCardContent = ({ previewData, onClick, fullView, animate }) => {
             type={imageType}
             alt="Preview"
             imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_BIG}
-            className={true ? classes["card__image"] : ""}
+            className={classes["card__image"]}
           />
           {!fullView && <PreviewCardShort previewData={previewData} />}
         </Link>

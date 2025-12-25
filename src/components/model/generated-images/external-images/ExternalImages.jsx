@@ -109,7 +109,8 @@ const ExternalImages = memo(({ modelId, curImagesModelVersionId, sortBy }) => {
 
   const imagesHtml = imagesSortedByPost.map((item, i) => {
     const existedImages =
-      Object.hasOwn(savedImages?.data, curImagesModelVersionId) &&
+      savedImages?.data &&
+      Object.hasOwn(savedImages.data, curImagesModelVersionId) &&
       savedImages.data[`${curImagesModelVersionId}`]?.find(
         (img) => img?.postId === +item[0]?.postId
       );
