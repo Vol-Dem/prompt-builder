@@ -9,6 +9,10 @@ import UpdateModelForm from "../../forms/update-model-form/UpdateModelForm";
 import ImageResourcesItemName from "./image-resources-item-name/ImageResourcesItemName";
 import ImageResourcesItemButton from "./image-resources-item-button/ImageResourcesItemButton";
 import ImageResourcesItemVersion from "./image-resources-item-version/ImageResourcesItemVersion";
+import {
+  ANIMATIONS_FM_SLIDEIN,
+  ANIMATIONS_FM_SLIDEIN_INITIAL,
+} from "../../../variables/constants";
 
 const ImageResourcesItem = ({
   resource,
@@ -40,10 +44,13 @@ const ImageResourcesItem = ({
   return (
     <>
       <motion.li
-        variants={{
-          hidden: { opacity: 0, y: 30 },
-          visible: { opacity: 1, y: 0 },
-        }}
+        // Temporarily disabled due to framer-motion animation bug
+        // variants={{
+        //   hidden: { opacity: 0, y: 30 },
+        //   visible: { opacity: 1, y: 0 },
+        // }}
+        initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
+        animate={ANIMATIONS_FM_SLIDEIN}
         className={classes["resource"]}
       >
         <ImageResourcesItemName
