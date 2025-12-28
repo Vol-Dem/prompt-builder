@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 
 import classes from "./Home.module.scss";
-import Tabs from "../tabs/Tabs";
+import Models from "../models/Models";
 
 function Home({ title }) {
   useEffect(() => {
@@ -12,7 +12,7 @@ function Home({ title }) {
   return (
     <div className={classes["wrap"]}>
       <div className={classes["config"]}>
-        <Tabs />
+        <Models />
         <Outlet />
       </div>
     </div>

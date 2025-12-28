@@ -5,7 +5,7 @@ import classes from "./Prompt.module.scss";
 import { promptActions } from "../../store/prompt";
 import ArrowDownSvg from "../../assets/ArrowDownSvg";
 import ArrowUp from "../../assets/ArrowUp";
-import PromptGuide from "../ui/guide/model/PromptGuide";
+import PromptGuide from "../general-elements/guide/model/PromptGuide";
 import PromptSettings from "./prompt-settings/PromptSettings";
 import PromptField from "./prompt-field/PromptField";
 

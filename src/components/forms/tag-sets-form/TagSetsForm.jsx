@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import firebaseApp from "../../../firebase-config";
 import classes from "./TagSetsForm.module.scss";
-import Buttton from "../../ui/Button";
+import Buttton from "../../ui/buttons/Button";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
 import {
@@ -16,10 +16,10 @@ import {
 } from "../../../variables/constants";
 import Spinner from "../../ui/Spinner";
 import { modelActions } from "../../../store/model";
-import ModelTagsFormGuide from "../../ui/guide/model/ModelTagsEditGuide";
+import ModelTagsFormGuide from "../../general-elements/guide/model/ModelTagsEditGuide";
 import { guideActions } from "../../../store/guide";
 import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
-import TagSetsInputFieldset from "../../ui/TagSetsInputFieldset";
+import TagSetsInputFieldset from "../../ui/forms/TagSetsInputFieldset";
 import { createTagSetsInputData } from "../../../utils/promptUtils";
 
 const firestore = getFirestore(firebaseApp);

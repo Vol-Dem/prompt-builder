@@ -1,0 +1,17 @@
+@use "./../../../../../variables/variables.scss" as var;
+
+.info-item {
+  width: 21.6rem;
+  word-break: break-all;
+}
+
+.info-name {
+  color: var.$color-text-gray;
+  margin-right: 0.6rem;
+}
+
+@media (max-width: 510px) {
+  .nfo-item {
+    width: 100%;
+  }
+}

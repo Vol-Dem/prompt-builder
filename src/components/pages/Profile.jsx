@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 
 import Card from "../../components/ui/Card";
-import Input from "../../components/ui/Input";
+import Input from "../ui/forms/Input";
 import classes from "./Profile.module.scss";
 import {
   authActions,
@@ -12,7 +12,7 @@ import {
   changeUserPassword,
 } from "../../store/auth";
 import ErrorMessage from "../../components/ui/ErrorMessage";
-import ButtonTertiary from "../ui/ButtonTertiary";
+import ButtonTertiary from "../ui/buttons/ButtonTertiary";
 import {
   ERROR_MESSAGE_AUTH,
   ERROR_MESSAGE_INPUT_DEF,
@@ -24,7 +24,7 @@ import {
 import SuccessMessage from "../ui/SuccessMessage";
 import ReAuthForm from "../forms/ReAuth/ReAuthForm";
 import Modal from "../ui/Modal";
-import VerifyEmailMessage from "../notification-messages/VerifyEmailMessage";
+import VerifyEmailMessage from "../general-elements/verify-email-message/VerifyEmailMessage";
 
 const changeEmailActive = false;
 

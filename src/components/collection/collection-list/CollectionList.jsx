@@ -6,7 +6,7 @@ import classes from "./CollectionList.module.scss";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { ERROR_MESSAGE_OFFLINE } from "../../../variables/constants";
 import NotificationMessage from "../../ui/NotificationMessage";
-import PreviewCard from "../../preview-card/PreviewCard";
+import PreviewCard from "../../general-elements/preview-card/PreviewCard";
 
 const CollectionList = () => {
   const collectionPreviews = useSelector(

@@ -1,0 +1,107 @@
+@use "../../../../variables/variables.scss" as var;
+
+.uploading-list {
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  &__model {
+    font-size: 1.2rem;
+    color: var.$color-text-gray;
+    display: -webkit-box;
+    overflow: hidden;
+    @include var.ellipsis(2);
+  }
+
+  &__collection {
+    text-decoration: none;
+    font-size: 1.4rem;
+    color: var.$color-text-gray;
+    display: -webkit-box;
+    overflow: hidden;
+    @include var.linkA;
+    @include var.ellipsis(2);
+  }
+
+  &__link {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: 1rem;
+    width: 100%;
+    align-items: center;
+    text-decoration: none;
+    // background-color: var.$color-background-tertiary;
+    background-color: #3f394c;
+    border-radius: 10px;
+    box-shadow: var.$box-shadow-light;
+  }
+
+  &__item {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    padding: 1px;
+    border-radius: 1rem;
+    // overflow: hidden;
+    margin-bottom: 0.6rem;
+    margin-right: 1rem;
+    overflow: hidden;
+
+    &--rejected {
+      border: 1px solid rgb(var.$color-background-red, 0.5);
+    }
+
+    &--active {
+      & .uploading-list__link {
+        background-color: var.$color-background-tertiary;
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        z-index: -2;
+        left: -50%;
+        top: -160%;
+        width: 200%;
+        height: 0;
+        padding-bottom: 200%;
+        background-repeat: no-repeat;
+        background: conic-gradient(
+          from 45deg,
+          var.$color-primary,
+          transparent,
+          transparent,
+          transparent,
+          transparent,
+          transparent,
+          var.$color-primary,
+          transparent,
+          transparent,
+          transparent,
+          transparent,
+          transparent,
+          var.$color-primary
+        );
+        animation: loading 4s linear infinite;
+      }
+    }
+  }
+}
+
+.img-container {
+  //   width: 8rem;
+  min-height: 10rem;
+  border-radius: 1rem 0 0 1rem;
+  //   overflow: hidden;
+  //   flex-shrink: 0;
+}
+
+@keyframes loading {
+  100% {
+    transform: rotate(1turn);
+  }
+}

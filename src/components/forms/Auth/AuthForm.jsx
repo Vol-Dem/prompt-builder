@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-import Input from "../../ui/Input";
+import Input from "../../ui/forms/Input";
 import classes from "./AuthForm.module.scss";
 import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
@@ -14,8 +14,8 @@ import {
   authWithGoogle,
   resetUserPassword,
 } from "../../../store/auth";
-import Buttton from "../../ui/Button";
-import ButttonSecondary from "../../ui/ButtonSecondary";
+import Buttton from "../../ui/buttons/Button";
+import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
 import {
   MESSAGE_AGREEMENT,
   ERROR_MESSAGE_INPUT_DEF,
@@ -24,7 +24,7 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   ANIMATIONS_FM_SLIDEIN,
 } from "../../../variables/constants";
-import Checkbox from "../../ui/Checkbox";
+import Checkbox from "../../ui/forms/Checkbox";
 import LinkA from "../../ui/LinkA";
 import SuccessMessage from "../../ui/SuccessMessage";
 import GoogleLogo from "../../../assets/google.svg";

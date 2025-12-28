@@ -51,10 +51,6 @@ const AboutTagSets = () => {
           muted
           controls
           poster={faqTagsetsPoster}
-          mainSrc={{
-            src: faqTagsetsMp4,
-            type: "video/mp4",
-          }}
           className={classes.video}
         >
           <source src={faqTagsetsMp4} type="video/mp4" />

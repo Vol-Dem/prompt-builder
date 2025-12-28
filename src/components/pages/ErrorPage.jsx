@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import Card from "../ui/Card";
 import classes from "./ErrorPage.module.scss";
-import Buttton from "../ui/Button";
+import Buttton from "../ui/buttons/Button";
 import { authActions } from "../../store/auth";
 import Modal from "../ui/Modal";
 import AuthForm from "../forms/Auth/AuthForm";

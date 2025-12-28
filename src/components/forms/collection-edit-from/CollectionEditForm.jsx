@@ -3,10 +3,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 
-import ComboSelect from "../../ui/ComboSelect";
-import Fieldset from "../../ui/Fieldset";
+import ComboSelect from "../../ui/forms/ComboSelect";
+import Fieldset from "../../ui/forms/Fieldset";
 import classes from "./CollectionEditForm.module.scss";
-import ButttonSecondary from "../../ui/ButtonSecondary";
+import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
   ANIMATIONS_FM_SLIDEOUT,
@@ -16,19 +16,19 @@ import {
   VALIDATION_DESCRIPTION_MAX_LENGTH,
   SUCCESS_MESSAGE_SAVED,
 } from "../../../variables/constants";
-import ButtonTertiary from "../../ui/ButtonTertiary";
+import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
 import {
   filterDuplicates,
   sortArrayBy,
   throwCustomError,
 } from "../../../utils/generalUtils";
-import Buttton from "../../ui/Button";
-import Textarea from "../../ui/Textarea";
-import Checkbox from "../../ui/Checkbox";
+import Buttton from "../../ui/buttons/Button";
+import Textarea from "../../ui/forms/Textarea";
+import Checkbox from "../../ui/forms/Checkbox";
 import { editCollectionData } from "../../../store/images";
 import Spinner from "../../ui/Spinner";
-import Input from "../../ui/Input";
+import Input from "../../ui/forms/Input";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
 

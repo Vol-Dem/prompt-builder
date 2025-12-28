@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { getAuth } from "firebase/auth";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 
-import { saveToStorage, uploadStorage } from "../variables/utils";
+import { saveToStorage, uploadStorage } from "../utils/generalUtils";
 import { authActions } from "./auth";
 import firebaseApp from "../firebase-config";
 import { SETTINGS_REF_IMAGE_AMOUNT } from "../variables/constants";

@@ -1,4 +1,4 @@
-import ImageComparisonSlider from "../ImageComparisonSlider/ImageComparisonSlider";
+import ImageComparisonSlider from "../ui/image-comparison-slider/ImageComparisonSlider";
 import NotificationMessage from "../ui/NotificationMessage";
 import H1 from "../ui/text/H1";
 import List from "../ui/text/List";

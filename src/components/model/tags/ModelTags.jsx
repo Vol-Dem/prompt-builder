@@ -3,16 +3,16 @@ import { useSelector } from "react-redux";
 import { AnimatePresence } from "framer-motion";
 
 import classes from "./ModelTags.module.scss";
-import TagList from "../../tag-list/TagList";
-import ActivationTag from "../../activation-tag/ActivationTag";
+import TagList from "../../general-elements/tag-list/TagList";
+import ActivationTag from "../../general-elements/activation-tag/ActivationTag";
 import Modal from "../../ui/Modal";
 import TagsForm from "../../forms/tags-form/TagsForm";
 import EditSvg from "../../../assets/EditSvg";
 import Tooltip from "../../ui/Tooltip";
-import ModelTagsGuide from "../../ui/guide/model/ModelTagsGuide";
+import ModelTagsGuide from "../../general-elements/guide/model/ModelTagsGuide";
 import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
-import InfoQuickEdit from "../../ui/guide/info/InfoQuickEdit";
+import InfoQuickEdit from "../../general-elements/guide/info/InfoQuickEdit";
 
 const ModelTags = ({ customData, modelPreview }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);

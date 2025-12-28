@@ -12,9 +12,8 @@ import {
 import Image from "../../../ui/image/Image";
 import { modelActions } from "../../../../store/model";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_BIG } from "../../../../variables/constants";
-import ResourceTypeLabel from "../../../general-elements/ResourceTypeLabel";
+import ResourceTypeLabel from "../../../ui/text/ResourceTypeLabel";
 import RightSidebarCardExpanded from "../right-sidebar-card-expanded/RightSidebarCardExpanded";
-
 
 const RightSidebarCard = memo(({ previewData, fullView, layoutId }) => {
   const [cardIsHidden, setCardIsHidden] = useState(false);

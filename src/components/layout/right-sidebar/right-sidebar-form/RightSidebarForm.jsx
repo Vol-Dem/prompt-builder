@@ -7,11 +7,10 @@ import { useLocation } from "react-router-dom";
 import classes from "./RightSidebarForm.module.scss";
 import { authActions } from "../../../../store/auth";
 import { usedModelsActions } from "../../../../store/usedModels";
-import Buttton from "../../../ui/Button";
+import Buttton from "../../../ui/buttons/Button";
 import UpdateModelForm from "../../../forms/update-model-form/UpdateModelForm";
 import SaveToCollectionForm from "../../../forms/save-to-collection-form/SaveToCollectionForm";
 import ErrorMessage from "../../../ui/ErrorMessage";
-
 
 const RightSidebarForm = () => {
   const [resourceType, setResourceType] = useState("model");

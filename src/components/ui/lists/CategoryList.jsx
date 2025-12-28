@@ -1,5 +1,5 @@
 import EditSvg from "../../../assets/EditSvg";
-import ButtonTertiary from "../ButtonTertiary";
+import ButtonTertiary from "../buttons/ButtonTertiary";
 import classes from "./CategoryList.module.scss";
 
 const CategoryList = ({ onEdit, children, className }) => {

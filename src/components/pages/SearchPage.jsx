@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 import { useSearchParams } from "react-router-dom";
 
-import PreviewCard from "../preview-card/PreviewCard";
+import PreviewCard from "../general-elements/preview-card/PreviewCard";
 import classes from "./SearchPage.module.scss";
 import { liveSearch, searchActions } from "../../store/search";
 import Spinner from "../ui/Spinner";

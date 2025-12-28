@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import classes from "./SaveImageForm.module.scss";
-import Input from "../../ui/Input";
-import Select from "../../ui/Select";
-import Checkbox from "../../ui/Checkbox";
-import Buttton from "../../ui/Button";
+import Input from "../../ui/forms/Input";
+import Select from "../../ui/forms/Select";
+import Checkbox from "../../ui/forms/Checkbox";
+import Buttton from "../../ui/buttons/Button";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
 import Spinner from "../../ui/Spinner";
@@ -21,7 +21,7 @@ import { uploadActions } from "../../../store/upload";
 import BackSvg from "../../../assets/BackSvg";
 import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
-import InfoPostId from "../../ui/guide/info/InfoPostId";
+import InfoPostId from "../../general-elements/guide/info/InfoPostId";
 import { getPostIdFromInput } from "../../../utils/imageUtils";
 import { fixCivImagesMeta } from "../../../utils/tempUtils";
 

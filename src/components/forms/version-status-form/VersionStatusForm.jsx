@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
 
-import Buttton from "../../ui/Button";
-import FieldCategory from "../../ui/FieldCategory";
-import Fieldset from "../../ui/Fieldset";
+import Buttton from "../../ui/buttons/Button";
+import FieldCategory from "../../ui/forms/FieldCategory";
+import Fieldset from "../../ui/forms/Fieldset";
 import classes from "./VersionStatusForm.module.scss";
-import Checkbox from "../../ui/Checkbox";
+import Checkbox from "../../ui/forms/Checkbox";
 import firebaseApp from "../../../firebase-config";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";

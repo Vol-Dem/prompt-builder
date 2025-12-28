@@ -1,0 +1,35 @@
+@use "../../../variables/variables.scss" as var;
+
+.uploading {
+  position: relative;
+  display: flex;
+  z-index: 45;
+
+  &__empty {
+    padding: 1rem;
+    text-align: center;
+  }
+}
+
+.uploading .uploading-dropdown {
+  width: 25rem;
+  max-height: 50rem;
+  top: 100%;
+  left: 100%;
+  z-index: 30;
+  transform: translateX(-100%);
+}
+
+.uploading-list {
+  width: 100%;
+}
+
+.img-container {
+  border-radius: 1rem 0 0 1rem;
+}
+
+@media (max-width: 600px) {
+  .uploading .uploading-dropdown {
+    transform: translateX(-30%);
+  }
+}

@@ -1,0 +1,90 @@
+@use "./../../../variables/variables.scss" as var;
+@use "sass:color";
+
+.input-number {
+  display: flex;
+}
+
+.input {
+  border-radius: 10px;
+  padding: 0.5rem;
+  width: 100%;
+  padding-left: 1rem;
+  background-color: var.$color-input-bg;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var.$box-shadow-inset;
+  color: var.$color-text-white;
+  color: var.$color-text-gray;
+
+  &--error {
+    border: 1px solid rgba(var.$color-red, 0.6);
+    // border: 1px solid var.$color-text-red;
+  }
+
+  &--number {
+    /* WebKit and Blink */
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    &[type="number"] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+  }
+
+  &__btn-container {
+    display: flex;
+    gap: 0.1rem;
+    flex-direction: column;
+    width: 2rem;
+  }
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.4rem;
+    background-color: #323148;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: color.adjust(#323148, $lightness: 5%);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    &:active {
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background-color: color.adjust(#323148, $lightness: -5%);
+      box-shadow: var.$box-shadow-inset;
+    }
+    &-arrow {
+      display: inline-block;
+      background-color: #636363;
+      height: 1.2rem;
+      width: 1.2rem;
+
+      &--up {
+        clip-path: var.$clip-path-arrow-up;
+      }
+      &--down {
+        clip-path: var.$clip-path-arrow-down;
+      }
+    }
+  }
+}
+.label {
+  display: inline-block;
+  font-size: 1.6rem;
+  margin: 0 0.6rem 0.4rem;
+}
+
+.error {
+  font-size: 1.4rem;
+  color: var.$color-text-red;
+  margin: 0.2rem 1.8rem 0rem;
+}

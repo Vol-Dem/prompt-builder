@@ -2,8 +2,8 @@ import { useDispatch } from "react-redux";
 import { PlayIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
-import Carousel3d from "../carousel3d/Carousel3d";
-import Buttton from "../ui/Button";
+import Carousel3d from "../ui/carousel3d/Carousel3d";
+import Buttton from "../ui/buttons/Button";
 import classes from "./Landing.module.scss";
 import { authActions } from "../../store/auth";
 import LinkA from "../ui/LinkA";
@@ -11,7 +11,6 @@ import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 import TextHighlight from "../ui/text/TextHighlight";
 import Modal from "../ui/Modal";
 import Video from "../ui/Video";
-import carouselImage1 from "../../assets/3dcarousel/slide-1.webp";
 import { checkIsMobile } from "../../utils/generalUtils";
 import logo from "../../assets/logo-730.webp";
 import mainPromptWebm from "../../assets/home/1-main-prompt.webp";
@@ -30,6 +29,15 @@ import mainSearchWebm from "../../assets/home/7-main-search.webp";
 import mainSearchMp4 from "../../assets/home/7-main-search.mp4";
 import mainIntroWebm from "../../assets/home/intro-s.webp";
 import mainIntroMp4 from "../../assets/home/intro.mp4";
+import carouselImage1 from "../../assets/3dcarousel/slide-1.webp";
+import carouselImage2 from "../../assets/3dcarousel/slide-2.webp";
+import carouselImage3 from "../../assets/3dcarousel/slide-3.webp";
+
+const carouselImages = [
+  { url: carouselImage1, width: 700, height: 336 },
+  { url: carouselImage2, width: 700, height: 336 },
+  { url: carouselImage3, width: 700, height: 336 },
+];
 
 const Landing = () => {
   const [showVideo, setShowVideo] = useState(false);
@@ -42,7 +50,9 @@ const Landing = () => {
   return (
     <div className={classes["landing"]}>
       <section className={`${classes["section"]} ${classes["section--hero"]}`}>
-        {!isMobile && <Carousel3d className={classes.carousel} />}
+        {!isMobile && (
+          <Carousel3d images={carouselImages} className={classes.carousel} />
+        )}
         {isMobile && (
           <img
             className={classes["section--hero__img"]}

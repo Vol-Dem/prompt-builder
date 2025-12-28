@@ -15,7 +15,7 @@ import {
 } from "../../variables/constants";
 import { guideActions } from "../../store/guide";
 import Modal from "../ui/Modal";
-import OutroGuide from "../ui/guide/OutroGuide";
+import OutroGuide from "../general-elements/guide/OutroGuide";
 import { fetchDataFromFirestore } from "../../utils/fetch/fetchUtils";
 
 const firestore = getFirestore(firebaseApp);

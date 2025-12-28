@@ -4,7 +4,7 @@ import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
 
 import { authActions } from "./auth";
 import firebaseApp from "../firebase-config";
-import { saveToStorage, uploadStorage } from "../variables/utils";
+import { saveToStorage, uploadStorage } from "../utils/generalUtils";
 import {
   moveElementToPosition,
   createPromptItem,

@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 
 import classes from "./ModelInfo.module.scss";
 import LinkA from "../../ui/LinkA";
-import ResourceTypeLabel from "../../general-elements/ResourceTypeLabel";
+import ResourceTypeLabel from "../../ui/text/ResourceTypeLabel";
 
 const ModelInfo = ({ customData }) => {
   const model = useSelector((state) => state.model.model);

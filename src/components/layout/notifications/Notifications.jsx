@@ -9,8 +9,7 @@ import {
   saveToStorage,
   uploadLocalStorage,
   uploadStorage,
-} from "../../../variables/utils";
-
+} from "../../../utils/generalUtils";
 
 const Notifications = () => {
   const [cookificationIsOpen, setCookificationIsOpen] = useState(false);

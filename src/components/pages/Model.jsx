@@ -9,19 +9,19 @@ import ModelTags from "../model/tags/ModelTags";
 import GeneratedImages from "../model/generated-images/GeneratedImages";
 import TagSets from "../model/tag-sets/TagSets";
 import Spinner from "../ui/Spinner";
-import ButtonSquareAdd from "../ui/ButtonSquareAdd";
+import ButtonSquareAdd from "../general-elements/button-square-add/ButtonSquareAdd";
 import ErrorMessage from "../ui/ErrorMessage";
 import {
   DEFAULT_PAGE_TITLE,
   ERROR_MESSAGE_AUTH,
   ERROR_MESSAGE_MODEL_LOAD,
 } from "../../variables/constants";
-import AddModelToSidePanelGuide from "../ui/guide/model/AddModelToSidePanelGuide";
+import AddModelToSidePanelGuide from "../general-elements/guide/model/AddModelToSidePanelGuide";
 import { guideActions } from "../../store/guide";
 import ModelDefImages from "../model/model-def-images/ModelDefImages";
 import ModelVersionDescription from "../model/model-version-description/ModelVersionDescription";
 import ModelNavigationPanel from "../model/model-navigation-panel/ModelNavigationPanel";
-import Hashtags from "../hashtags/Hashtags";
+import Hashtags from "../general-elements/hashtags/Hashtags";
 import ModelDescription from "../model/model-description/ModelDescription";
 import ModelVersionsList from "../model/model-versions-list/ModelVersionsList";
 import { fetchModelData } from "../../utils/fetch/fetchModel";

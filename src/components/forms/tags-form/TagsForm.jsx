@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 import firebaseApp from "../../../firebase-config";
 import classes from "./TagsForm.module.scss";
-import Textarea from "../../ui/Textarea";
-import Buttton from "../../ui/Button";
-import Input from "../../ui/Input";
-import FieldCategory from "../../ui/FieldCategory";
+import Textarea from "../../ui/forms/Textarea";
+import Buttton from "../../ui/buttons/Button";
+import Input from "../../ui/forms/Input";
+import FieldCategory from "../../ui/forms/FieldCategory";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
 import {

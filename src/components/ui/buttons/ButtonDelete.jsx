@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
-import Buttton from "../Button";
+import Buttton from "./Button";
 import classes from "./ButtonDelete.module.scss";
 import DeleteRequest from "../DeleteRequest";
 

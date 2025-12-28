@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 
 import EditSvg from "../../../assets/EditSvg";
-import ButtonTertiary from "../ButtonTertiary";
+import ButtonTertiary from "../buttons/ButtonTertiary";
 import classes from "./SubcategoryList.module.scss";
 
 const SubcategoryList = ({ children, className, onEdit }) => {

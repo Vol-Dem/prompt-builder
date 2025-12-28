@@ -4,17 +4,17 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
 import classes from "./UpdateModelForm.module.scss";
-import Input from "../../ui/Input";
-import Buttton from "../../ui/Button";
-import Textarea from "../../ui/Textarea";
-import ButttonSecondary from "../../ui/ButtonSecondary";
-import Checkbox from "../../ui/Checkbox";
-import Select from "../../ui/Select";
-import Fieldset from "../../ui/Fieldset";
-import FieldCategory from "../../ui/FieldCategory";
+import Input from "../../ui/forms/Input";
+import Buttton from "../../ui/buttons/Button";
+import Textarea from "../../ui/forms/Textarea";
+import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
+import Checkbox from "../../ui/forms/Checkbox";
+import Select from "../../ui/forms/Select";
+import Fieldset from "../../ui/forms/Fieldset";
+import FieldCategory from "../../ui/forms/FieldCategory";
 import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 import Spinner from "../../ui/Spinner";
-import ComboSelect from "../../ui/ComboSelect";
+import ComboSelect from "../../ui/forms/ComboSelect";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
   ERROR_MESSAGE_INPUT_DEF,
@@ -37,10 +37,10 @@ import {
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { tabActions } from "../../../store/tabs";
-import ButtonTertiary from "../../ui/ButtonTertiary";
+import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
 import { modelActions } from "../../../store/model";
-import EditDefaultGuide from "../../ui/guide/edit/EditDefaultGuide";
+import EditDefaultGuide from "../../general-elements/guide/edit/EditDefaultGuide";
 import { createTagSetsInputData } from "../../../utils/promptUtils";
 import { parseModelIds } from "../../../utils/modelUtils";
 import { saveModelData } from "../../../utils/fetch/fetchModel";
@@ -117,7 +117,8 @@ const UpdateModelForm = ({
   const guideIsActive = useSelector((state) => state.guide.active);
   const curModel = useSelector((state) => state.model.model);
   const dispatch = useDispatch();
-  const hasModelTypeInputField = categories && Object.hasOwn(categories, modelTypeInput);
+  const hasModelTypeInputField =
+    categories && Object.hasOwn(categories, modelTypeInput);
 
   const mainCategoryOptions = useMemo(() => {
     return !!modelTypeInput && hasModelTypeInputField

@@ -1,0 +1,113 @@
+@use "../../../variables/variables.scss" as var;
+
+.card {
+  display: grid;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1rem;
+  min-height: 38rem;
+  overflow: hidden;
+  box-shadow: var.$box-shadow-dark;
+  box-shadow: var.$box-shadow;
+  background-color: var.$color-background-tertiary;
+  word-break: break-word;
+  height: 100%;
+
+  &--motion {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 2;
+  }
+
+  &__image {
+    transition: all 0.3s;
+    &:hover img {
+      transform: scale(1.04);
+    }
+  }
+
+  &__full {
+    min-height: 24rem;
+    grid-template-columns: 2fr 3fr;
+  }
+}
+
+.btn-add {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1;
+}
+
+.image-container {
+  position: relative;
+}
+
+.img {
+  display: flex;
+  min-height: 14rem;
+  min-width: 16rem;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  background-color: #383838;
+  cursor: pointer;
+  overflow: hidden;
+
+  & img {
+    position: absolute;
+    min-height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+  }
+
+  &--hidden {
+    opacity: 0;
+  }
+}
+
+.preloader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(69, 64, 86);
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  & svg {
+    width: 5rem;
+    height: 5rem;
+    animation: rotate 1s linear infinite;
+  }
+}
+
+.type-position {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-add {
+    top: 0.4rem;
+    left: 0.4rem;
+  }
+}

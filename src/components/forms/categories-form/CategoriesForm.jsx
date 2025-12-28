@@ -3,9 +3,9 @@ import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
 import classes from "./CategoriesForm.module.scss";
-import Input from "../../../components/ui/Input";
+import Input from "../../ui/forms/Input";
 import { updateCategories } from "../../../store/model";
-import ButtonTertiary from "../../ui/ButtonTertiary";
+import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import DeleteRequest from "../../ui/DeleteRequest";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,

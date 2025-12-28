@@ -4,10 +4,10 @@ import { motion } from "framer-motion";
 
 import classes from "./PresetForm.module.scss";
 import { updatePresets } from "../../../store/prompt";
-import Textarea from "../../ui/Textarea";
-import Buttton from "../../ui/Button";
-import Input from "../../ui/Input";
-import Fieldset from "../../ui/Fieldset";
+import Textarea from "../../ui/forms/Textarea";
+import Buttton from "../../ui/buttons/Button";
+import Input from "../../ui/forms/Input";
+import Fieldset from "../../ui/forms/Fieldset";
 import ErrorMessage from "../../ui/ErrorMessage";
 import {
   ERROR_MESSAGE_INPUT_DEF,

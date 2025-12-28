@@ -22,12 +22,10 @@ const About = lazy(() => import("./components/pages/About"));
 const ToS = lazy(() => import("./components/pages/ToS"));
 const PrivacyPolicy = lazy(() => import("./components/pages/PrivacyPolicy"));
 const Model = lazy(() => import("./components/pages/Model"));
-const Images = lazy(() => import("./components/pages/Images"));
+const Collections = lazy(() => import("./components/pages/Collections"));
 const SearchPage = lazy(() => import("./components/pages/SearchPage"));
 const Profile = lazy(() => import("./components/pages/Profile"));
-const ImageCollection = lazy(() =>
-  import("./components/pages/ImageCollection")
-);
+const Collection = lazy(() => import("./components/pages/Collection"));
 const CollectionEdit = lazy(() => import("./components/pages/CollectionEdit"));
 const Edit = lazy(() => import("./components/pages/Edit"));
 const Home = lazy(() => import("./components/pages/Home"));
@@ -88,7 +86,7 @@ function App() {
           children: [
             {
               index: true,
-              element: <Images title="Images" />,
+              element: <Collections title="Collections" />,
               errorElement: <ErrorPage />,
             },
             {
@@ -98,7 +96,7 @@ function App() {
               children: [
                 {
                   index: true,
-                  element: <ImageCollection title="Collection" />,
+                  element: <Collection title="Collection" />,
                   errorElement: <ErrorPage />,
                 },
                 {

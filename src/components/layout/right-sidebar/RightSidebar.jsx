@@ -6,7 +6,7 @@ import classes from "./RightSidebar.module.scss";
 import RightSidebarCard from "./right-sidebar-card/RightSidebarCard";
 import { usedModelsActions } from "../../../store/usedModels";
 import PlusSvg from "../../../assets/PlusSvg";
-import OpenSidePanelGuide from "../../ui/guide/model/OpenSidePanelGuide";
+import OpenSidePanelGuide from "../../general-elements/guide/model/OpenSidePanelGuide";
 import ReferenceImageList from "./reference-image-list/ReferenceImageList";
 import RightSidebarFooter from "./right-sidebar-footer/RightSidebarFooter";
 import RightSidebarHeader from "./right-sidebar-header/RightSidebarHeader";

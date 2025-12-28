@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import Buttton from "../../ui/Button";
+import Buttton from "../../ui/buttons/Button";
 import classes from "./ChooseImageForm.module.scss";
 import Spinner from "../../ui/Spinner";
 import CheckSvg from "../../../assets/CheckSvg";

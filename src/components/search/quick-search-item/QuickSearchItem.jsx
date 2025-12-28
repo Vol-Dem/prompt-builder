@@ -11,8 +11,7 @@ import {
 import { searchActions } from "../../../store/search";
 import { modelActions } from "../../../store/model";
 import Image from "../../ui/image/Image";
-import ButtonSquareAdd from "../../ui/ButtonSquareAdd";
-
+import ButtonSquareAdd from "../../general-elements/button-square-add/ButtonSquareAdd";
 
 const QuickSearchItem = ({ modelPreveiw }) => {
   const nsfwMode = useSelector((state) => state.model.nsfwMode);

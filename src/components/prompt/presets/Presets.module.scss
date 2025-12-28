@@ -1,0 +1,119 @@
+@use "./../../../variables/variables.scss" as var;
+@use "sass:color";
+
+.presets-container {
+  display: flex;
+  gap: 2rem;
+  min-width: 30rem;
+}
+
+.btn-from {
+  position: absolute;
+  top: 2.4rem;
+  right: 4rem;
+}
+
+.modal {
+  position: fixed;
+  animation: show 0.3s ease;
+  box-shadow: var.$box-shadow;
+
+  &--backdrop {
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 20;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  &--content {
+    top: 50%;
+    left: 50%;
+    height: auto;
+    transform: translate(-50%, -50%);
+    z-index: 30;
+    max-width: 90vw;
+    min-width: 40rem;
+    max-height: 95vh;
+  }
+
+  &__close {
+    position: absolute;
+    cursor: pointer;
+    top: 0.8rem;
+    right: 0.8rem;
+    color: #a8a8a8;
+    transition: all 0.3s;
+
+    & svg {
+      width: 2.4rem;
+    }
+
+    &:hover {
+      color: color.adjust(#a8a8a8, $lightness: 20%);
+    }
+  }
+
+  &__cross {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: rgb(168, 168, 168);
+    clip-path: polygon(
+      10% 0,
+      0 10%,
+      40% 50%,
+      0 90%,
+      10% 100%,
+      50% 60%,
+      90% 100%,
+      100% 90%,
+      60% 50%,
+      100% 10%,
+      90% 0,
+      50% 40%
+    );
+  }
+}
+
+.title {
+  margin-bottom: 1rem;
+}
+
+.btn-back {
+  position: absolute;
+  top: 0.6rem;
+  left: 1.4rem;
+  background: none;
+  border: none;
+  color: var.$color-text-gray;
+  transition: all 0.3s;
+  cursor: pointer;
+
+  &:hover {
+    color: color.adjust(var.$color-text-gray, $lightness: 20%);
+  }
+
+  & svg {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+@keyframes show {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 840px) {
+  .presets-container {
+    flex-wrap: wrap;
+  }
+}

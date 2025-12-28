@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
-import Buttton from "../../ui/Button";
+import Buttton from "../../ui/buttons/Button";
 import ChooseImageForm from "../choose-image-form/ChooseImageForm";
 import classes from "./SaveToCollectionForm.module.scss";
 import Spinner from "../../ui/Spinner";
@@ -16,10 +16,10 @@ import {
   ERROR_MESSAGE_INPUT_DEF,
   SUCCESS_MESSAGE_SAVED,
 } from "../../../variables/constants";
-import ComboSelect from "../../ui/ComboSelect";
-import Fieldset from "../../ui/Fieldset";
-import ButttonSecondary from "../../ui/ButtonSecondary";
-import ButtonTertiary from "../../ui/ButtonTertiary";
+import ComboSelect from "../../ui/forms/ComboSelect";
+import Fieldset from "../../ui/forms/Fieldset";
+import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
+import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
 import {
   filterDuplicates,

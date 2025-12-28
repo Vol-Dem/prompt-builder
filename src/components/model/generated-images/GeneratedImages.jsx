@@ -5,18 +5,18 @@ import { AnimatePresence } from "framer-motion";
 import classes from "./GeneratedImages.module.scss";
 import Modal from "../../ui/Modal";
 import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
-import Buttton from "../../ui/Button";
+import Buttton from "../../ui/buttons/Button";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import {
   GUIDE_STEP_GENERATED_IMAGES,
   ERROR_MESSAGE_OFFLINE,
 } from "../../../variables/constants";
-import GeneratedImagesGuide from "../../ui/guide/model/GeneratedImagesGuide";
+import GeneratedImagesGuide from "../../general-elements/guide/model/GeneratedImagesGuide";
 import SavedImages from "./saved-images/SavedImages";
 import ExternalImages from "./external-images/ExternalImages";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
-import InfoGeneratedImages from "../../ui/guide/info/InfoGeneratedImages";
+import InfoGeneratedImages from "../../general-elements/guide/info/InfoGeneratedImages";
 import ModelVersionsList from "../model-versions-list/ModelVersionsList";
 import ImageTabs from "./image-tabs/ImageTabs";
 

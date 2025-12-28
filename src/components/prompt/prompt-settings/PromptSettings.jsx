@@ -4,14 +4,14 @@ import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
-import ButtonTertiary from "../../ui/ButtonTertiary";
-import InfoPrompt from "../../ui/guide/info/InfoPrompt";
+import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
+import InfoPrompt from "../../general-elements/guide/info/InfoPrompt";
 import classes from "./PromptSettings.module.scss";
 import { promptActions } from "../../../store/prompt";
 import { authActions } from "../../../store/auth";
 import Modal from "../../ui/Modal";
-import InfoPresets from "../../ui/guide/info/InfoPresets";
-import Presets from "../../presets/Presets";
+import InfoPresets from "../../general-elements/guide/info/InfoPresets";
+import Presets from "../presets/Presets";
 import PromptModeSwitch from "../prompt-mode-switch/PromptModeSwitch";
 import PromptClear from "../prompt-clear/PromptClear";
 

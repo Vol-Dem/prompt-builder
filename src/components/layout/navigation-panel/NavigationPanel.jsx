@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 
-import Buttton from "../../ui/Button";
+import Buttton from "../../ui/buttons/Button";
 import classes from "./NavigationPanel.module.scss";
 import SettingsSvg from "../../../assets/SettingsSvg";
 

@@ -1,0 +1,41 @@
+@use "./../../../../../../variables/variables.scss" as var;
+
+.version {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var.$color-text-gray;
+
+  &-name {
+    word-break: break-word;
+    @include var.ellipsis(1);
+  }
+
+  &-tooltip {
+    width: max-content;
+    max-width: 16rem;
+  }
+
+  &-svg {
+    width: 1.6rem;
+    color: var.$color-text-yellow;
+    flex-shrink: 0;
+
+    &--saved {
+      color: var.$color-text-green;
+    }
+  }
+}
+
+.tooltip {
+  text-align: left;
+
+  &--align-left {
+    margin-right: auto;
+  }
+  &--centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

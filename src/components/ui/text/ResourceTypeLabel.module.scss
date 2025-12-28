@@ -1,0 +1,17 @@
+@use "./../../../variables/variables.scss" as var;
+
+.type {
+  color: var.$color-text-white;
+  background-color: rgba(var.$color-primary, 0.8);
+  padding: 0.4rem 0.8rem;
+  border-radius: 1rem;
+  text-transform: uppercase;
+  font-size: 1.4rem;
+  word-break: normal;
+  font-weight: 500;
+  z-index: 1;
+
+  &--collection {
+    background-color: rgba(var.$color-green-light, 0.8);
+  }
+}

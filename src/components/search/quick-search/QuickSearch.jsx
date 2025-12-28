@@ -15,7 +15,7 @@ import { liveSearch, searchActions } from "../../../store/search";
 import Spinner from "../../ui/Spinner";
 import CategoriesSearch from "../categories-search/CategoriesSearch";
 import ErrorMessage from "../../ui/ErrorMessage";
-import ButtonTertiary from "../../ui/ButtonTertiary";
+import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import QuickSearchResultList from "../quick-search-list/QuickSearchResultList";
 
 const searchTimeoutMs = 1000;

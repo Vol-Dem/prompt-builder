@@ -1,4 +1,4 @@
-import Buttton from "./Button";
+import Buttton from "./buttons/Button";
 import classes from "./DeleteRequest.module.scss";
 import ErrorMessage from "./ErrorMessage";
 import Modal from "./Modal";

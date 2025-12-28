@@ -2,8 +2,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import ButtonTertiary from "../../ui/ButtonTertiary";
-import Checkbox from "../../ui/Checkbox";
+import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
+import Checkbox from "../../ui/forms/Checkbox";
 import classes from "./SearchFilter.module.scss";
 import { searchActions } from "../../../store/search";
 import { MODEL_TYPES } from "../../../variables/constants";

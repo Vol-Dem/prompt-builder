@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
 
 import classes from "./TagSets.module.scss";
-import TagList from "../../tag-list/TagList";
+import TagList from "../../general-elements/tag-list/TagList";
 import Image from "../../ui/image/Image";
-import Buttton from "../../ui/Button";
-import TagSetGuide from "../../ui/guide/model/TagSetGuide";
+import Buttton from "../../ui/buttons/Button";
+import TagSetGuide from "../../general-elements/guide/model/TagSetGuide";
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
@@ -17,7 +17,7 @@ import { guideActions } from "../../../store/guide";
 import Modal from "../../ui/Modal";
 import TagSetsForm from "../../forms/tag-sets-form/TagSetsForm";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
-import InfoTagsets from "../../ui/guide/info/InfoTagSets";
+import InfoTagsets from "../../general-elements/guide/info/InfoTagSets";
 import NotificationMessage from "../../ui/NotificationMessage";
 
 const defVisibleTags = 2;

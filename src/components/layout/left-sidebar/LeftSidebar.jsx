@@ -2,7 +2,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-import ButtonTertiary from "../../ui/ButtonTertiary";
+import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import classes from "./LeftSidebar.module.scss";
 
 const LeftSidebar = ({

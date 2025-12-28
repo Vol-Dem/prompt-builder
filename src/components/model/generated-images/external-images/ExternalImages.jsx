@@ -4,7 +4,7 @@ import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
 
 import classes from "./ExternalImages.module.scss";
-import Carousel from "../../../carousel/Carousel";
+import Carousel from "../../../general-elements/carousel/Carousel";
 import { useOnlineStatus } from "../../../../hooks/use-online-status";
 import {
   ANIMATIONS_FM_SLIDEIN,
@@ -18,7 +18,7 @@ import {
 import useIntersection from "../../../../hooks/use-intersection";
 import Spinner from "../../../ui/Spinner";
 import ErrorMessage from "../../../ui/ErrorMessage";
-import Buttton from "../../../ui/Button";
+import Buttton from "../../../ui/buttons/Button";
 import useFetchCivitai from "../../../../hooks/use-fetch-civitai";
 import {
   filterNsfwImages,

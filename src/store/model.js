@@ -11,7 +11,7 @@ import {
 import { getAuth } from "firebase/auth";
 
 import firebaseApp from "../firebase-config";
-import { saveToStorage } from "../variables/utils";
+import { saveToStorage } from "../utils/generalUtils";
 import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 import { authActions } from "./auth";
 import { deleteImagePostDocs } from "../utils/fetch/fetchImages";

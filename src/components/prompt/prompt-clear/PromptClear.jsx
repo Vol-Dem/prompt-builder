@@ -2,7 +2,7 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import { useDispatch } from "react-redux";
 
 import classes from "./PromptClear.module.scss";
-import ButtonTertiary from "../../ui/ButtonTertiary";
+import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import { promptActions } from "../../../store/prompt";
 
 const PromptClear = () => {

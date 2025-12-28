@@ -2,12 +2,12 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 
-import Input from "../../ui/Input";
+import Input from "../../ui/forms/Input";
 import classes from "./ReAuthForm.module.scss";
 import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { authActions, reAuthUser } from "../../../store/auth";
-import Buttton from "../../ui/Button";
+import Buttton from "../../ui/buttons/Button";
 import {
   ERROR_MESSAGE_INPUT_DEF,
   ERROR_MESSAGE_OFFLINE,

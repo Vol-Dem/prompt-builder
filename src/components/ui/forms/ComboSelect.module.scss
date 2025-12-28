@@ -1,0 +1,148 @@
+@use "../../../variables/variables.scss" as var;
+
+.container {
+  width: 100%;
+}
+
+.select {
+  border-radius: 10px;
+  padding: 0.5rem;
+  width: 100%;
+  padding-left: 1rem;
+  background-color: var.$color-input-bg;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var.$box-shadow-inset;
+  color: var.$color-text-white;
+  color: var.$color-text-gray;
+
+  &--error {
+    border: 1px solid rgba(var.$color-red, 0.6);
+    // border: 1px solid var.$color-text-red;
+  }
+
+  &--select {
+    cursor: pointer;
+  }
+  &:focus {
+    outline: 1px solid var.$color-primary;
+  }
+  &-img {
+    position: absolute;
+    top: 50%;
+    left: 0.5rem;
+    transform: translateY(-50%);
+    width: 2.5rem;
+    stroke: blueviolet;
+    &--box {
+      fill: rgba(137, 43, 226, 0.5);
+      stroke-width: 0.1px;
+    }
+  }
+}
+
+.relative {
+  position: relative;
+}
+
+.label {
+  display: inline-block;
+  font-size: 1.6rem;
+  margin: 0 0.6rem 0.4rem;
+}
+
+.button {
+  position: absolute;
+  right: 0.2rem;
+  top: 0.3rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.arrow {
+  color: var.$color-text-gray;
+  width: 2rem;
+  height: 2rem;
+}
+
+.check {
+  width: 2rem;
+  height: 2rem;
+}
+
+.options {
+  width: var(--input-width);
+  background-color: var.$color-input-bg;
+  border-radius: 10px;
+  margin-top: 0.4rem;
+  z-index: 999;
+  box-shadow: var.$box-shadow;
+
+  @include var.custom-scroll;
+
+  &__border {
+    border: 1px solid rgba(var.$color-gray, 0.3);
+  }
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.4rem 0.8rem;
+  margin: 0.2rem 1rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  word-break: break-word;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var.$color-primary;
+  }
+
+  &:hover .create-btn {
+    border: 1px solid var.$color-white;
+    color: var.$color-white;
+  }
+
+  &:focus {
+    background-color: var.$color-primary;
+  }
+
+  &[data-focus]:not(.option--create) {
+    background-color: var.$color-primary;
+  }
+
+  // &--create {
+  //   // border: 1px solid var.$color-green;
+  //   // border: 1px solid #49ab6b;
+  // }
+}
+
+.create-btn {
+  display: inline-block;
+  flex-shrink: 0;
+  color: var.$color-green;
+  color: #18bd51;
+  // color: var.$color-yellow;
+  // background-color: #2e8b4f;
+  border: 1px solid var.$color-green;
+  border: 1px solid #18bd51;
+  border-radius: 10px;
+  padding: 0.2rem 0.6rem;
+  height: 100%;
+  transition: all 0.3s;
+  // &:hover {
+  //   border: 1px solid var.$color-green;
+  // }
+}
+
+.selected {
+  background-color: rgb(var.$color-primary, 0.4);
+}
+
+.error {
+  font-size: 1.4rem;
+  color: var.$color-text-red;
+  margin: 0.2rem 1.8rem 0rem;
+}

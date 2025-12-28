@@ -1,0 +1,178 @@
+@use "../../../variables/variables.scss" as var;
+
+.container {
+  position: relative;
+  background-color: var.$color-input-bg;
+  border-radius: 10px;
+}
+
+.select {
+  position: relative;
+  &__arrow {
+    display: block;
+    position: absolute;
+    right: 0.6rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.4rem;
+    color: var.$color-text-gray;
+    height: 1.4rem;
+    margin-top: 0.1rem;
+    // background-color: var.$color-text-gray;
+    // clip-path: polygon(0 25%, 50% 60%, 100% 25%, 100% 40%, 50% 80%, 0 40%);
+    transition: all 0.3s;
+    cursor: pointer;
+
+    &--open {
+      transform-origin: 50% 25%;
+      transform: rotate(180deg);
+    }
+  }
+
+  &__input {
+    position: relative;
+  }
+
+  &__input-field {
+    padding-left: 1.2rem;
+    background-color: transparent;
+    cursor: pointer;
+  }
+
+  &__icon {
+    position: absolute;
+    top: 50%;
+    left: 0.5rem;
+    transform: translateY(-50%);
+    width: 2.5rem;
+    stroke: var.$color-violet-dark;
+    &--box {
+      fill: rgba(var.$color-violet-dark, 0.5);
+      stroke-width: 0.1px;
+    }
+  }
+
+  &__radio {
+    display: none;
+  }
+
+  &__radio:checked ~ &__label {
+    background-color: rgb(var.$color-primary, 0.4);
+  }
+
+  &__label {
+    display: grid;
+    cursor: pointer;
+    color: var.$color-text-white;
+    align-items: center;
+    gap: 0.7rem;
+    border-radius: 0.4rem;
+    padding: 0.6rem;
+    margin: 0.1rem 0 0.1rem 0;
+    font-size: 1.4rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    display: flex;
+    gap: 1rem;
+    padding: 0.4rem 0.8rem;
+    margin: 0.2rem 1rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var.$color-primary !important;
+    }
+  }
+
+  &__field {
+    position: absolute;
+    // background-color: var.$color-white;
+    background-color: var.$color-input-bg;
+    width: 94%;
+    width: 100%;
+    height: 14rem;
+    // margin-left: 3%;
+    // padding: 0 1rem 1rem;
+    // padding-left: 0.5rem;
+    // overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0 0 1rem 1rem;
+    // transition: all 0.3s;
+    z-index: 6;
+
+    // width: var(--input-width);
+    background-color: var.$color-input-bg;
+    border-radius: 10px;
+    margin-top: 0.4rem;
+    z-index: 30;
+    box-shadow: var.$box-shadow;
+    border: 1px solid rgba(var.$color-gray, 0.3);
+    @include var.custom-scroll;
+
+    &--hide {
+      background-color: transparent;
+      border-color: transparent;
+      padding: 0;
+      height: 0;
+    }
+
+    &-container {
+      // display: flex;
+      // flex-direction: column;
+      // gap: 0.4rem;
+      height: 100%;
+      overflow-y: scroll;
+      @include var.custom-scroll // &::-webkit-scrollbar {
+        //   width: 8px; /* width of the entire scrollbar */
+        //   border-radius: 1rem;
+        //   opacity: 0;
+        // }
+        // &::-webkit-scrollbar-track {
+        //   background: #443d62; /* color of the tracking area */
+        //   border-radius: 1rem;
+        //   opacity: 0;
+        // }
+        // &::-webkit-scrollbar-thumb {
+        //   background-color: #ababab; /* color of the scroll thumb */
+        //   border-radius: 20px; /* roundness of the scroll thumb */
+        //   opacity: 0;
+        //   //   border: 3px solid #ababab; /* creates padding around scroll thumb */
+        //   &:hover {
+        //     background-color: #818181; /* color of the scroll thumb */
+        //     opacity: 0;
+        //   }
+        // }
+;
+    }
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+    font-weight: 400;
+    // color: #000;
+  }
+
+  &__img {
+    width: 4rem;
+  }
+
+  &__desc {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 1.2rem;
+  }
+  &__size {
+    font-size: 1.4rem;
+    font-weight: 500;
+  }
+}
+
+.label {
+  display: inline-block;
+  font-size: 1.6rem;
+  margin: 0 0.6rem 0.4rem;
+}

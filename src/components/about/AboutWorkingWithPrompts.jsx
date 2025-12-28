@@ -13,7 +13,7 @@ import Text from "../ui/text/Text";
 import TextImageBlock from "../ui/text/TextImageBlock";
 import TextContentBlock from "../ui/text/TextContentBlock";
 import TextButtonTertiary from "../ui/text/text-buttons/TextButtonTertiary";
-import ImageComparisonSlider from "../ImageComparisonSlider/ImageComparisonSlider";
+import ImageComparisonSlider from "../ui/image-comparison-slider/ImageComparisonSlider";
 import TextButtonAll from "../ui/text/text-buttons/TextButtonAll";
 import H3 from "../ui/text/H3";
 import Video from "../ui/Video";
@@ -63,10 +63,6 @@ const AboutWorkingWithPrompts = () => {
           muted
           controls
           poster={faqPromptPoster}
-          mainSrc={{
-            src: faqPromptMp4,
-            type: "video/mp4",
-          }}
           className={classes.video}
         >
           <source src={faqPromptMp4} type="video/mp4" />

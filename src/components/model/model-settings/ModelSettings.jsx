@@ -7,7 +7,7 @@ import { ArrowUturnLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import UpdateModelForm from "../../forms/update-model-form/UpdateModelForm";
 import VersionForm from "../../forms/version-form/VersionForm";
 import classes from "./ModelSettings.module.scss";
-import Buttton from "../../ui/Button";
+import Buttton from "../../ui/buttons/Button";
 import VersionStatusForm from "../../forms/version-status-form/VersionStatusForm";
 import DeleteRequest from "../../ui/DeleteRequest";
 import SuccessMessage from "../../ui/SuccessMessage";
@@ -22,7 +22,7 @@ import {
 } from "../../../variables/constants";
 import { modelActions } from "../../../store/model";
 import { tabActions } from "../../../store/tabs";
-import EditPageGuide from "../../ui/guide/edit/EditPageGuide";
+import EditPageGuide from "../../general-elements/guide/edit/EditPageGuide";
 import LeftSidebar from "../../layout/left-sidebar/LeftSidebar";
 import H1 from "../../ui/text/H1";
 import { filterNewModelVersions } from "../../../utils/modelUtils";

@@ -4,10 +4,10 @@ import { useSelector } from "react-redux";
 import { PhotoIcon } from "@heroicons/react/24/outline";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 
-import Carousel from "../../carousel/Carousel";
+import Carousel from "../../general-elements/carousel/Carousel";
 import classes from "./ModelDefImages.module.scss";
 import Spinner from "../../ui/Spinner";
-import CarouselGuide from "../../ui/guide/model/CarouselGuide";
+import CarouselGuide from "../../general-elements/guide/model/CarouselGuide";
 import firebaseApp from "../../../firebase-config";
 import { GUIDE_STEP_OPEN_IMAGE } from "../../../variables/constants";
 import { filterNsfwImages } from "../../../utils/imageUtils";

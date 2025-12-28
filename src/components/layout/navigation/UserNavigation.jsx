@@ -3,12 +3,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 
 import classes from "./UserNavigation.module.scss";
-import ButttonSecondary from "../../ui/ButtonSecondary";
+import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
 import { authActions } from "../../../store/auth";
 import { tabActions } from "../../../store/tabs";
 import { imagesActions } from "../../../store/images";
 import { modelActions } from "../../../store/model";
-
 
 const UserNavigation = () => {
   const email = useSelector((state) => state.auth.user.email);

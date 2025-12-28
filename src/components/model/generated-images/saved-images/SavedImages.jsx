@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 
 import classes from "./SavedImages.module.scss";
-import Carousel from "../../../carousel/Carousel";
+import Carousel from "../../../general-elements/carousel/Carousel";
 import Spinner from "../../../ui/Spinner";
 import ErrorMessage from "../../../ui/ErrorMessage";
 import { useOnlineStatus } from "../../../../hooks/use-online-status";

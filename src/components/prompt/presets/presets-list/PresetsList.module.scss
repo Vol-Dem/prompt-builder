@@ -1,0 +1,67 @@
+@use "./../../../../variables/variables.scss" as var;
+@use "sass:color";
+
+.presets {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  overflow-y: scroll;
+  max-height: 34vh;
+  @include var.custom-scroll;
+
+  &__name {
+    font-size: 1.8rem;
+  }
+
+  &__bg {
+    display: flex;
+    background-color: var.$color-background-tertiary;
+    padding: 0.2rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+    width: 100%;
+    overflow: hidden;
+  }
+}
+
+.preset {
+  display: flex;
+  gap: 1rem;
+  min-width: 25rem;
+  justify-content: space-between;
+  align-items: center;
+
+  &__name {
+    display: inline-block;
+    padding: 0.2rem 0.8rem;
+    border-radius: 10px;
+    width: 100%;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    @include var.ellipsis(2);
+    border: 1px solid
+      color.adjust(var.$color-background-tertiary, $lightness: 20%);
+    text-align: center;
+
+    &:hover {
+      background-color: color.adjust(
+        var.$color-background-tertiary,
+        $lightness: 20%
+      );
+    }
+  }
+
+  &__btns-container {
+    display: flex;
+    gap: 0.6rem;
+  }
+}
+
+.btn-del {
+  background-color: var.$color-background-red;
+
+  &:hover {
+    background-color: color.adjust(var.$color-background-red, $lightness: 10%);
+  }
+}

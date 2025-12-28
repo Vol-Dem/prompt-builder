@@ -4,12 +4,12 @@ import { useSelector } from "react-redux";
 
 import classes from "./VersionForm.module.scss";
 import firebaseApp from "../../../firebase-config";
-import Textarea from "../../ui/Textarea";
-import Buttton from "../../ui/Button";
-import Input from "../../ui/Input";
-import ButttonSecondary from "../../ui/ButtonSecondary";
-import Fieldset from "../../ui/Fieldset";
-import FieldCategory from "../../ui/FieldCategory";
+import Textarea from "../../ui/forms/Textarea";
+import Buttton from "../../ui/buttons/Button";
+import Input from "../../ui/forms/Input";
+import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
+import Fieldset from "../../ui/forms/Fieldset";
+import FieldCategory from "../../ui/forms/FieldCategory";
 import {
   clearFileExtension,
   // createTagSetsInputData,
@@ -29,9 +29,9 @@ import {
   VALIDATION_TRIGER_WORDS_MAX_LENGTH,
   DEFAULT_DATA_TAGSETS_INPUT,
 } from "../../../variables/constants";
-import InputNumber from "../../ui/InputNumber";
+import InputNumber from "../../ui/forms/InputNumber";
 import Spinner from "../../ui/Spinner";
-import ButtonTertiary from "../../ui/ButtonTertiary";
+import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
 import { createTagSetsInputData } from "../../../utils/promptUtils";
 

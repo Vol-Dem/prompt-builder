@@ -1,0 +1,9 @@
+@use "../../../variables/variables.scss" as var;
+
+.link {
+  @include var.linkA;
+}
+
+.message {
+  max-width: 36rem;
+}

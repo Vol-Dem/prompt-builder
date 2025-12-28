@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
-import ActivationTag from "../../../activation-tag/ActivationTag";
-import TagList from "../../../tag-list/TagList";
+import ActivationTag from "../../../general-elements/activation-tag/ActivationTag";
+import TagList from "../../../general-elements/tag-list/TagList";
 import Arrow from "../../../ui/Arrow";
 import classes from "./RightSidebarCardExpanded.module.scss";
 

@@ -1,0 +1,83 @@
+@use "../../../variables/variables.scss" as var;
+
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 43rem;
+  height: 30rem;
+}
+
+.list {
+  position: relative;
+  list-style: none;
+  padding-bottom: 50%;
+  margin-left: 15%;
+  top: 50%;
+  transform: translateY(-50%);
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 40%;
+    left: -10%;
+    width: 100%;
+    padding-bottom: 100%;
+    border-radius: 50%;
+    background: radial-gradient(rgba(0, 0, 0, 0.2) 1%, transparent 60%);
+    transform: rotateX(80deg);
+  }
+}
+
+.item {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  box-shadow: var.$box-shadow;
+  -webkit-transform: perspective(11cm) rotateX(-7deg) rotateY(34deg);
+  transform: perspective(11cm) rotateX(-7deg) rotateY(34deg);
+}
+
+@media (max-width: 375px) {
+  .container {
+    height: 20rem;
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    top: 0rem;
+  }
+  50% {
+    top: 1rem;
+  }
+  100% {
+    top: 0rem;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(1rem, 1rem);
+    opacity: 0;
+  }
+}
+@keyframes fadeIn {
+  0% {
+    transform: translate(-4.2rem, -3.2rem);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translate(-3.2rem, -3.2rem);
+    opacity: 1;
+  }
+}

@@ -143,6 +143,7 @@ $clip-path-arrow-down: polygon(
   text-overflow: ellipsis;
   -webkit-line-clamp: $line;
   -webkit-box-orient: vertical;
+  line-clamp: $line;
 }
 
 @mixin animation-show {
