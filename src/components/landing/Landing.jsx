@@ -39,6 +39,12 @@ const carouselImages = [
   { url: carouselImage3, width: 700, height: 336 },
 ];
 
+/**
+ * Content for the Landing page.
+ *
+ * @component
+ * @returns {JSX.Element} The Landing page content.
+ */
 const Landing = () => {
   const [showVideo, setShowVideo] = useState(false);
   const dispatch = useDispatch();

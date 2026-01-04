@@ -7,6 +7,19 @@ import classes from "./RightSidebarCardExpanded.module.scss";
 
 const taglistItemHeight = 68;
 
+/**
+ * Animated right sidebar card component.
+ *
+ * Renders an expanded layout of the preview card inside the right sidebar.
+ * Provides quick access to model tags and activation tag.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.previewData - Data used to render the preview card.
+ *
+ * @returns {JSX.Element} The expanded content of the right sidebar card component.
+ */
 const RightSidebarCardExpanded = ({ previewData }) => {
   const [tagsIsOpen, setTagsIsOpen] = useState(false);
   const [tagsHeight, setTagsHeight] = useState(null);

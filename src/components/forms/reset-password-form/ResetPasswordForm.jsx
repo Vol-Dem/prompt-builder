@@ -1,0 +1,69 @@
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+import classes from "./ResetPasswordForm.module.scss";
+import Input from "../../ui/forms/Input";
+import ErrorMessage from "../../ui/ErrorMessage";
+import { resetUserPassword } from "../../../store/auth";
+import Buttton from "../../ui/buttons/Button";
+import { VALIDATION_EMAIL_MAX_LENGTH } from "../../../variables/constants";
+import SuccessMessage from "../../ui/SuccessMessage";
+
+const ResetPasswordForm = () => {
+  const [email, setEmail] = useState({
+    value: "",
+    isValid: false,
+  });
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
+  const successMessage = useSelector((state) => state.auth.successMessage);
+  const isLoading = useSelector((state) => state.auth.isLoading);
+  const dispatch = useDispatch();
+
+  const resetPassHandler = (e) => {
+    e.preventDefault();
+    setShowErrorMessage(true);
+
+    if (email.isValid) {
+      dispatch(resetUserPassword(email.value));
+    }
+  };
+
+  return (
+    <form onSubmit={resetPassHandler} className={classes["auth__form"]}>
+      <Input
+        label="Email"
+        name="email"
+        type="email"
+        input={{ disabled: isLoading }}
+        className={`${classes["auth__input"]} ${
+          showErrorMessage && !email.isValid ? classes.invalid : ""
+        }`}
+        autoFocus={true}
+        onChange={(e, isValid) => {
+          setEmail({ value: e.target.value, isValid });
+        }}
+        validation={{
+          required: true,
+          email: true,
+          maxLength: VALIDATION_EMAIL_MAX_LENGTH,
+        }}
+        showError={showErrorMessage}
+        value={email.value}
+      />
+      {errorMessageAuth && (
+        <ErrorMessage className={classes["auth__error"]}>
+          {errorMessageAuth}
+        </ErrorMessage>
+      )}
+      {successMessage && (
+        <SuccessMessage className={classes["auth__error"]}>
+          {successMessage}
+        </SuccessMessage>
+      )}
+      <Buttton>Reset password</Buttton>
+    </form>
+  );
+};
+
+export default ResetPasswordForm;

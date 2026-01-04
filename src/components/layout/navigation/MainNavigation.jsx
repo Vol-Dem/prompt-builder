@@ -6,6 +6,17 @@ import { tabActions } from "../../../store/tabs";
 import { imagesActions } from "../../../store/images";
 import { modelActions } from "../../../store/model";
 
+/**
+ * Application main navigation bar.
+ *
+ * Displays different navigation links depending on the authentication state
+ * and resets tab, collection, and active carousel state when navigating
+ * between routes.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} The main navigation element.
+ */
 function MainNavigation() {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const dispatch = useDispatch();

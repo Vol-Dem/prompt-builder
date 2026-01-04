@@ -10,6 +10,23 @@ import UploadingRejected from "./uploading-rejected/UploadingRejected";
 import UploadingCompleted from "./uploading-completed/UploadingCompleted";
 import UploadingButton from "./uploading-button/UploadingButton";
 
+/**
+ * Uploading panel controller.
+ *
+ * Renders a toggle button that opens a dropdown panel for tracking
+ * the image uploading queue.
+ *
+ * Features:
+ * - Displays current uploading, rejected, and completed items.
+ * - Automatically starts uploading the next item in the queue.
+ * - Provides UI to retry rejected uploads and clear completed items.
+ * - Shows a browser warning when the user attempts to close the tab
+ *   while the upload queue is not empty.
+ * - Closes automatically when clicking outside of the panel.
+ *
+ * @component
+ * @returns {JSX.Element} The uploading panel controller.
+ */
 const UploadingPanel = () => {
   const [uploadingListIsOpen, setUploadingLIstIsOpen] = useState(false);
   const uid = useSelector((state) => state.auth.user.uid);
@@ -17,13 +34,12 @@ const UploadingPanel = () => {
   const curPostId = useSelector((state) => state.upload.curPostId);
   const dispatch = useDispatch();
 
-  const beforeUnloadHandler = useCallback((event) => {
-    // Recommended
-    event.preventDefault();
+  const beforeUnloadHandler = useCallback((e) => {
+    e.preventDefault();
     setUploadingLIstIsOpen(true);
 
     // Included for legacy support, e.g. Chrome/Edge < 119
-    event.returnValue = true;
+    e.returnValue = true;
   }, []);
 
   const closeUploadingLIstHandler = () => {
@@ -64,6 +80,7 @@ const UploadingPanel = () => {
     };
   }, [queue, beforeUnloadHandler]);
 
+  //Closes panel when clicked outside
   useEffect(() => {
     if (uploadingListIsOpen) {
       document.removeEventListener("click", closeMenuHandler);

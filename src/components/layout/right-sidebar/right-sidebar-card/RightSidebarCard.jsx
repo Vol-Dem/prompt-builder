@@ -15,6 +15,21 @@ import { SETTINGS_IMAGE_PREVIEW_WIDTH_BIG } from "../../../../variables/constant
 import ResourceTypeLabel from "../../../ui/text/ResourceTypeLabel";
 import RightSidebarCardExpanded from "../right-sidebar-card-expanded/RightSidebarCardExpanded";
 
+/**
+ * Animated right sidebar card component.
+ *
+ * Renders a model or collection preview card inside the right sidebar with support
+ * for short and expanded layouts and the ability to remove the card from the panel.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.previewData - Data used to render the preview card.
+ * @param {boolean} props.fullView - Whether to display the expanded card layout.
+ * @param {string} [props.layoutId] - Optional Framer Motion layout ID for shared layout animations.
+ *
+ * @returns {JSX.Element} The animated right sidebar card component.
+ */
 const RightSidebarCard = memo(({ previewData, fullView, layoutId }) => {
   const [cardIsHidden, setCardIsHidden] = useState(false);
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);

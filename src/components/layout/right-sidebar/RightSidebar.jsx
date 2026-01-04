@@ -3,7 +3,6 @@ import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import classes from "./RightSidebar.module.scss";
-import RightSidebarCard from "./right-sidebar-card/RightSidebarCard";
 import { usedModelsActions } from "../../../store/usedModels";
 import PlusSvg from "../../../assets/PlusSvg";
 import OpenSidePanelGuide from "../../general-elements/guide/model/OpenSidePanelGuide";
@@ -12,14 +11,38 @@ import RightSidebarFooter from "./right-sidebar-footer/RightSidebarFooter";
 import RightSidebarHeader from "./right-sidebar-header/RightSidebarHeader";
 import RightSidebarBtnOpen from "./right-sidebar-btn-open/RightSidebarBtnOpen";
 import useTouchOpenState from "../../../hooks/use-touch-open-state";
+import RightSidebarCardAnimated from "./right-sidebar-card/RightSidebarCardAnimated";
 
+// Distance in pixels to change open state to true
+const slideDistanceToOpen = 10;
+
+// Distance in pixels to change open state to falce
+const slideDistanceToClose = 40;
+
+// Open panel button initial width
+const defBtnOffsetWidth = 20;
+
+/**
+ * Application right sidebar with touch swipe support.
+ *
+ * Displays a slide-in sidebar panel that can be opened or closed using a toggle
+ * button or by swiping on touch devices.
+ *
+ * Shows reference images and models with controls to clear the panel, switch
+ * between compact and expanded card views, and a form for adding new models
+ * or collections.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} The animated right sidebar component.
+ */
 const RightSidebar = memo(() => {
   const usedModels = useSelector((state) => state.used.models);
   const usedImages = useSelector((state) => state.used.images);
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
   const fullCardView = useSelector((state) => state.used.fullCardView);
   const sidePanelRef = useRef({ offsetWidth: 0 });
-  const openPanelBtnRef = useRef({ offsetWidth: 20 });
+  const openPanelBtnRef = useRef({ offsetWidth: defBtnOffsetWidth });
   const panelContainerRef = useRef(null);
   const dispatch = useDispatch();
 
@@ -35,8 +58,8 @@ const RightSidebar = memo(() => {
     panelContainerRef,
     "X",
     true,
-    10,
-    40,
+    slideDistanceToOpen,
+    slideDistanceToClose,
     changeSidePanelStateOnTouch,
     panelIsOpen
   );
@@ -54,14 +77,11 @@ const RightSidebar = memo(() => {
   const modelCardsHtml = useMemo(() => {
     return usedModels.map((model) => {
       return (
-        <div key={`side-card-${model.id}`} style={{ position: "relative" }}>
-          <RightSidebarCard
-            layoutId={model.id}
-            previewData={model}
-            fullView={fullCardView}
-          />
-          <RightSidebarCard previewData={model} fullView={fullCardView} />
-        </div>
+        <RightSidebarCardAnimated
+          key={`sc-${model.id}`}
+          model={model}
+          fullView={fullCardView}
+        />
       );
     });
   }, [usedModels, fullCardView]);

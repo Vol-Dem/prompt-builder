@@ -3,6 +3,20 @@ import { useSelector } from "react-redux";
 
 import classes from "./UploadingButton.module.scss";
 
+/**
+ * Uploading panel toggle button.
+ *
+ * Displays counters for uploading, completed, and rejected image posts
+ * and toggles the visibility of the uploading queue dropdown.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {boolean} props.isOpen - Whether the uploading list dropdown is currently open.
+ * @param {() => void} props.onClick - Callback invoked to toggle the uploading list.
+ *
+ * @returns {JSX.Element} The uploading panel toggle button.
+ */
 const UploadingButton = ({ isOpen, onClick }) => {
   const queue = useSelector((state) => state.upload.queue);
   const rejected = useSelector((state) => state.upload.rejected);

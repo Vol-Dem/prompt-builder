@@ -12,7 +12,6 @@ import Fieldset from "../../ui/forms/Fieldset";
 import FieldCategory from "../../ui/forms/FieldCategory";
 import {
   clearFileExtension,
-  // createTagSetsInputData,
   handleErrors,
   throwCustomError,
 } from "../../../utils/generalUtils";

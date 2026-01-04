@@ -18,6 +18,17 @@ import {
 } from "../../../../store/usedModels";
 import { clearFileExtension } from "../../../../utils/generalUtils";
 
+/**
+ * Displays a list of reference images with the option to open or remove them from the list.
+ * Blurs nsfw images if they are not in active nsfw range
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {array} props.usedImages - Array of sidebar images.
+ *
+ * @returns {JSX.Element} The list of reference images.
+ */
 const ReferenceImageList = ({ usedImages }) => {
   const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const sfwValue = useSelector((state) => state.general.sfwValue);
@@ -42,7 +53,7 @@ const ReferenceImageList = ({ usedImages }) => {
     }
   };
 
-  const closeImageHandler = (hash, url) => {
+  const removeImageHandler = (hash, url) => {
     dispatch(removeImageFromPanel(hash, url));
   };
 
@@ -103,7 +114,7 @@ const ReferenceImageList = ({ usedImages }) => {
                       <span
                         className={classes.close}
                         onClick={() =>
-                          closeImageHandler(
+                          removeImageHandler(
                             usedImages[i]?.hash,
                             usedImages[i].url
                           )

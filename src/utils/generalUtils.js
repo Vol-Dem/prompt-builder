@@ -391,3 +391,18 @@ export const uploadLocalStorage = (key) => {
 export const removeFromLocalStorage = (key) => {
   localStorage.removeItem(key);
 };
+
+export const getUserNotifications = (notifications) => {
+  const notificationAcceptanceState = uploadLocalStorage(`notifications`);
+  const updatedNotifications = notifications.map((message) => {
+    const notice = noticeInfo?.messages?.find(
+      (userNotice) => userNotice.id === message.id
+    );
+    return {
+      ...message,
+      readed: notice ? notice.readed : message.readed,
+    };
+  });
+
+  return updatedNotifications;
+};

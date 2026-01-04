@@ -5,11 +5,30 @@ import { useState } from "react";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import classes from "./LeftSidebar.module.scss";
 
+/**
+ * Application left sidebar with touch swipe support.
+ *
+ * Displays a slide-in sidebar panel that can be opened and closed via a toggle
+ * button or by swiping on touch devices. Renders an overlay when open and
+ * animates its visibility using Framer Motion.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {boolean} props.isOpen - Whether the sidebar is currently open.
+ * @param {() => void} props.onClose - Callback to close the sidebar.
+ * @param {() => void} props.onOpen - Callback to open the sidebar.
+ * @param {string} [props.className] - Optional CSS class for custom styling.
+ * @param {React.ReactNode} [props.btnContent] - Optional custom content for the open button.
+ * @param {React.ReactNode} props.children - Sidebar content.
+ *
+ * @returns {JSX.Element} The animated left sidebar container.
+ */
 const LeftSidebar = ({
-  className,
   isOpen,
   onClose,
   onOpen,
+  className,
   btnContent = <Bars3Icon />,
   children,
 }) => {
@@ -38,13 +57,14 @@ const LeftSidebar = ({
     setCursorInitialX(clientX);
   };
 
+  // Close sidebar when user swipes left by more than 40px
   const mouseUp = () => {
     if (!cursorInitialX || !cursorCurX) return;
-    const offcet = Math.round(cursorInitialX) - Math.round(cursorCurX);
+    const offset = Math.round(cursorInitialX) - Math.round(cursorCurX);
     setCursorCurX(null);
     setCursorInitialX(null);
 
-    if (!!offcet && offcet > 0 && Math.abs(offcet) > 40) {
+    if (!!offset && offset > 0 && Math.abs(offset) > 40) {
       onClose();
     }
   };
@@ -65,7 +85,6 @@ const LeftSidebar = ({
       <motion.aside
         initial={{ left: "-100%" }}
         animate={{ left: isOpen ? 0 : "-100%" }}
-        // transition={{ type: "spring", bounce: 0.3 }}
         className={`${classes["sidebar"]} ${className || ""}`}
         onTouchEnd={mouseUp}
         onTouchStart={mouseDownHandler}

@@ -8,12 +8,7 @@ import Input from "../../ui/forms/Input";
 import classes from "./AuthForm.module.scss";
 import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
-import {
-  authActions,
-  authRequest,
-  authWithGoogle,
-  resetUserPassword,
-} from "../../../store/auth";
+import { authActions, authRequest, authWithGoogle } from "../../../store/auth";
 import Buttton from "../../ui/buttons/Button";
 import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
 import {
@@ -26,8 +21,8 @@ import {
 } from "../../../variables/constants";
 import Checkbox from "../../ui/forms/Checkbox";
 import LinkA from "../../ui/LinkA";
-import SuccessMessage from "../../ui/SuccessMessage";
 import GoogleLogo from "../../../assets/google.svg";
+import ResetPasswordForm from "../reset-password-form/ResetPasswordForm";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -42,7 +37,6 @@ const AuthForm = () => {
   const [agreement, setAgreement] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
-  const successMessage = useSelector((state) => state.auth.successMessage);
   const isLoading = useSelector((state) => state.auth.isLoading);
   const showResetPassword = useSelector(
     (state) => state.auth.showResetPassword
@@ -99,47 +93,6 @@ const AuthForm = () => {
     setAgreement((prevState) => !prevState);
   };
 
-  const resetPassHandler = (e) => {
-    e.preventDefault();
-    dispatch(resetUserPassword(email.value));
-  };
-
-  const resetPasswordForm = (
-    <form onSubmit={resetPassHandler} className={classes["auth__form"]}>
-      <Input
-        label="Email"
-        name="email"
-        type="email"
-        input={{ disabled: isLoading }}
-        className={`${classes["auth__input"]} ${
-          showErrorMessage && !email.isValid ? classes.invalid : ""
-        }`}
-        autoFocus={true}
-        onChange={(e, isValid) => {
-          setEmail({ value: e.target.value, isValid });
-        }}
-        validation={{
-          required: true,
-          email: true,
-          maxLength: VALIDATION_EMAIL_MAX_LENGTH,
-        }}
-        showError={showErrorMessage}
-        value={email.value}
-      />
-      {errorMessageAuth && (
-        <ErrorMessage className={classes["auth__error"]}>
-          {errorMessageAuth}
-        </ErrorMessage>
-      )}
-      {successMessage && (
-        <SuccessMessage className={classes["auth__error"]}>
-          {successMessage}
-        </SuccessMessage>
-      )}
-      <Buttton>Reset password</Buttton>
-    </form>
-  );
-
   return (
     <motion.div
       key={isLogin}
@@ -153,7 +106,7 @@ const AuthForm = () => {
           {isLogin ? "Log in" : "Sign Up"}
         </h3>
       )}
-      {showResetPassword && resetPasswordForm}
+      {showResetPassword && <ResetPasswordForm />}
       {!showResetPassword && (
         <form onSubmit={authHandler} className={classes["auth__form"]}>
           {isLogin && (
@@ -168,7 +121,6 @@ const AuthForm = () => {
                 alt="Google Logo"
                 className={classes["icon"]}
               />
-              {/* <GoogleLogo className={classes["icon"]} /> */}
               Sign in with Google
             </Buttton>
           )}

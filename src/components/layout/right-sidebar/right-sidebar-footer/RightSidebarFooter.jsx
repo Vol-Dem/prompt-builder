@@ -7,6 +7,12 @@ import discordWhiteIcon from "../../../../assets/discord-white.svg";
 import patreonWhiteLogo from "../../../../assets/patreon-w.png";
 import kofiDarkLogo from "../../../../assets/kofi_bg_tag_dark.webp";
 
+/**
+ * Right sidebar footer element.
+ *
+ * @component
+ * @returns {JSX.Element} The right sidebar footer element
+ */
 const RightSidebarFooter = () => {
   const [showSupport, setShowSupport] = useState(false);
 
@@ -35,7 +41,6 @@ const RightSidebarFooter = () => {
 
   return (
     <div className={classes["support"]}>
-      {/* <span className={classes["support__title"]}>Support project:</span>{" "} */}
       <div className={classes["support__links"]}>
         <a
           href="https://www.patreon.com/aidetools"

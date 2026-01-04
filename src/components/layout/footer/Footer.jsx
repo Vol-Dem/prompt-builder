@@ -3,6 +3,12 @@ import { Link } from "react-router-dom";
 import classes from "./Footer.module.scss";
 import LinkA from "../../ui/LinkA";
 
+/**
+ * Application footer element.
+ *
+ * @component
+ * @returns {JSX.Element} The application footer element
+ */
 const Footer = () => {
   return (
     <footer className={classes.footer}>

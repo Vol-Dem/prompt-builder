@@ -6,6 +6,13 @@ import ButtonTertiary from "../../../ui/buttons/ButtonTertiary";
 import { uploadActions } from "../../../../store/upload";
 import UploadingList from "../uploading-list/UploadingList";
 
+/**
+ * Renders a list of rejected images with buttons to clear the list or re-upload.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} The list of rejected images.
+ */
 const UploadingRejected = () => {
   const rejected = useSelector((state) => state.upload.rejected);
   const curPostId = useSelector((state) => state.upload.curPostId);

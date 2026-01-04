@@ -8,6 +8,14 @@ import { ERROR_MESSAGE_OFFLINE } from "../../../variables/constants";
 import NotificationMessage from "../../ui/NotificationMessage";
 import PreviewCard from "../../general-elements/preview-card/PreviewCard";
 
+/**
+ * Displays a list of collections
+ * Displays a fallback message if the category is empty.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} List of collections.
+ */
 const CollectionList = () => {
   const collectionPreviews = useSelector(
     (state) => state.images.collectionPreviews

@@ -5,7 +5,14 @@ import { forwardRef } from "react";
 import classes from "./RightSidebarBtnOpen.module.scss";
 import { usedModelsActions } from "../../../../store/usedModels";
 
-
+/**
+ * Displays a button to open the right sidebar.
+ * Changes the open state of the sidebar when clicked.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} The right sidebar open button.
+ */
 const RightSidebarBtnOpen = forwardRef((props, ref) => {
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
   const dispatch = useDispatch();
@@ -13,6 +20,7 @@ const RightSidebarBtnOpen = forwardRef((props, ref) => {
   const openPanelHandler = () => {
     dispatch(usedModelsActions.panelState(!panelIsOpen));
   };
+
   return (
     <button
       ref={ref}

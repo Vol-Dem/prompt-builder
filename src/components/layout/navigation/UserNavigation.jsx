@@ -9,6 +9,17 @@ import { tabActions } from "../../../store/tabs";
 import { imagesActions } from "../../../store/images";
 import { modelActions } from "../../../store/model";
 
+/**
+ * Application user navigation bar.
+ *
+ * Displays the current user name and related navigation links, provides a logout
+ * option, and resets tab, collection, and active carousel state when navigating
+ * between routes.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} The user navigation bar element.
+ */
 const UserNavigation = () => {
   const email = useSelector((state) => state.auth.user.email);
   const userName =

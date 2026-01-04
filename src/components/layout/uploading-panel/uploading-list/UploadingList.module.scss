@@ -1,7 +1,7 @@
 @use "../../../../variables/variables.scss" as var;
 @use "sass:color";
 
-.rejected-panel {
+.panel {
   display: flex;
   flex-direction: column;
   align-items: center;

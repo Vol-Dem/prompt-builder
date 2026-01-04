@@ -12,6 +12,24 @@ import {
   usedModelsActions,
 } from "../../../../store/usedModels";
 
+/**
+ * Right sidebar header with panel controls.
+ *
+ * Renders controls for:
+ * - Clearing the right sidebar panel.
+ * - Switching between short and expanded card views.
+ * - Rendering the sidebar form controller.
+ * - Displaying the contextual sidebar guide.
+ *
+ * In development mode, when `DEV_GUIDE_TEST` is enabled, also renders
+ * temporary debug buttons that allow manually switching between
+ * interactive guide steps. These controls are intended **only for
+ * testing and debugging the guide flow** and are not part of the
+ * production UI.
+ *
+ * @component
+ * @returns {JSX.Element} The right sidebar header with panel controls.
+ */
 const RightSidebarHeader = () => {
   const fullCardView = useSelector((state) => state.used.fullCardView);
   const dispatch = useDispatch();

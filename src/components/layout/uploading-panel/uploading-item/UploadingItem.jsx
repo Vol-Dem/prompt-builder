@@ -3,6 +3,22 @@ import { Link } from "react-router-dom";
 import Image from "../../../ui/image/Image";
 import classes from "./UploadingItem.module.scss";
 
+/**
+ * Uploading queue item card.
+ *
+ * Renders a preview card inside the uploading dropdown list and reflects
+ * the current upload state (uploading, rejected, or completed).
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.data - Image post data associated with this queue item.
+ * @param {number} props.curPostId - ID of the post currently being uploaded.
+ * @param {boolean} props.rejected - Indicates whether the upload has failed.
+ * @param {boolean} props.completed - Indicates whether the upload has finished successfully.
+ *
+ * @returns {JSX.Element} The uploading queue item card.
+ */
 const UploadingItem = ({ data, curPostId, rejected, completed }) => {
   return (
     <li

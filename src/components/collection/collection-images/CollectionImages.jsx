@@ -17,6 +17,25 @@ import FolderSvg from "../../../assets/FolderSvg";
 import useIntersection from "../../../hooks/use-intersection";
 import { getColectionImagesByIds } from "../../../store/images";
 
+/**
+ * Displays all images belonging to the active collection with infinite scroll support.
+ *
+ * Uses two intersection observers to detect when more images should be loaded:
+ * - `intersectingSmall` is the primary trigger with a positive root margin to preload
+ *   the next page early.
+ * - `intersecting` acts as a fallback when the content is too short to push the
+ *   sentinel beyond the margin, ensuring loading still works for small collections.
+ *
+ * Fetches images in pages from Firestore, handles loading and error states, and
+ * displays a guidance message when the collection is empty.
+ *
+ * The component is memoized to avoid unnecessary re-renders when collection state
+ * does not change.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} List of collection images with infinite scroll behavior.
+ */
 const CollectionImages = memo(() => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [imagesIsLoading, setImagesIsLoading] = useState(false);
@@ -32,15 +51,19 @@ const CollectionImages = memo(() => {
   const imageData = collectionImages?.images;
   const isLastPage = !!collectionImages?.isLastPage;
   const endPageRef = useRef(null);
-  const intersecting = useIntersection(endPageRef, false, 0);
+  const isOnline = useOnlineStatus();
+  const dispatch = useDispatch();
+
+  // Primary trigger with rootMargin to preload next page early
   const intersectingSmall = useIntersection(
     endPageRef,
     false,
     0,
     `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`
   );
-  const isOnline = useOnlineStatus();
-  const dispatch = useDispatch();
+
+  // Fallback trigger used when the content is too short to reach the margin
+  const intersecting = useIntersection(endPageRef, false, 0);
 
   useEffect(() => {
     setIsIntersecting(intersecting || intersectingSmall);

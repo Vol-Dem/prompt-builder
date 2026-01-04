@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence } from "framer-motion";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { DocumentArrowDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useLocation } from "react-router-dom";
 
 import classes from "./RightSidebarForm.module.scss";
@@ -12,6 +12,21 @@ import UpdateModelForm from "../../../forms/update-model-form/UpdateModelForm";
 import SaveToCollectionForm from "../../../forms/save-to-collection-form/SaveToCollectionForm";
 import ErrorMessage from "../../../ui/ErrorMessage";
 
+/**
+ * Right sidebar form controller.
+ *
+ * Renders a toggle button that opens a form panel inside the right sidebar
+ * for adding either a model or a collection, with controls to switch between
+ * the two form types.
+ *
+ * If the user is not authenticated, clicking the button opens the
+ * authorization modal instead of the form.
+ *
+ * The button is disabled while user data is loading.
+ *
+ * @component
+ * @returns {JSX.Element} Right sidebar model/collection form controller.
+ */
 const RightSidebarForm = () => {
   const [resourceType, setResourceType] = useState("model");
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
@@ -86,20 +101,7 @@ const RightSidebarForm = () => {
         >
           {!formIsOpen ? (
             <>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
-                />
-              </svg>
+              <DocumentArrowDownIcon />
               New resource
             </>
           ) : (
@@ -111,7 +113,6 @@ const RightSidebarForm = () => {
       </div>
       <div></div>
       {userDataLoadError && <ErrorMessage>{userDataLoadError}</ErrorMessage>}
-      {/* <UpdateDb /> */}
       <AnimatePresence>
         {formIsOpen && isAuth && (
           <div className={classes.forms}>

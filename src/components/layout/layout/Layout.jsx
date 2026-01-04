@@ -28,6 +28,19 @@ import Notifications from "../notifications/Notifications";
 import RightSidebar from "../right-sidebar/RightSidebar";
 import logo from "../../../assets/logo-730.webp";
 
+/**
+ * Main application layout container.
+ *
+ * Orchestrates the global UI structure including header, navigation, sidebars,
+ * routed content, authentication modal, maintenance mode, notifications,
+ * and footer. Tracks authentication and email verification state, controls
+ * the auth form modal, and conditionally renders content based on maintenance
+ * status.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} The full application layout wrapper.
+ */
 const Layout = () => {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const emailVerified = useSelector((state) => state.auth.user.emailVerified);
@@ -36,9 +49,12 @@ const Layout = () => {
   const maintenance = useSelector((state) => state.notification.maintenance);
   const dispatch = useDispatch();
 
+  // Opens the authentication modal
   const openAuth = () => {
     dispatch(authActions.openAuthForm());
   };
+
+  // Closes the authentication modal
   const closeAuth = () => {
     dispatch(authActions.closeAuthForm());
   };

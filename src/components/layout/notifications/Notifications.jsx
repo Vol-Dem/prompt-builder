@@ -5,12 +5,23 @@ import { useSelector } from "react-redux";
 import classes from "./Notifications.module.scss";
 import Notification from "../../ui/Notification";
 import {
+  getUserNotifications,
   saveToLocalStorage,
   saveToStorage,
   uploadLocalStorage,
   uploadStorage,
 } from "../../../utils/generalUtils";
 
+/**
+ * Application notifications.
+ *
+ * Displays an app notification or cookie notification depending on the authentication state.
+ * Handles loading and saving notification acceptance state from storage.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} The application notifications.
+ */
 const Notifications = () => {
   const [cookificationIsOpen, setCookificationIsOpen] = useState(false);
   const [activeNotification, setActiveNotification] = useState({});
@@ -27,9 +38,9 @@ const Notifications = () => {
         setCookificationIsOpen(true);
       }
     } else {
-      const noticeInfo = uploadLocalStorage(`notifications`);
+      const notificationAcceptanceState = uploadLocalStorage(`notifications`);
       const updatedNotifications = notifications.map((message) => {
-        const notice = noticeInfo?.messages?.find(
+        const notice = notificationAcceptanceState?.messages?.find(
           (userNotice) => userNotice.id === message.id
         );
         return {
