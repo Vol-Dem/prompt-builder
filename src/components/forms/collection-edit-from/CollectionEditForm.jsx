@@ -43,6 +43,28 @@ const subCatsDefData = {
   errorMessage: "",
 };
 
+/**
+ * Collection edit form component.
+ *
+ * Provides collection editing flow including updating collection metadata,
+ * assigned category and subcategories.
+ * Handles form validation, loading and error states.
+ *
+ * Responsibilities:
+ * - Renders editable collection fields.
+ * - Validates user input.
+ * - Displays backend and client-side error messages.
+ * - Updates selected category and subcategories.
+ *
+ * Side effects:
+ * - Dispatches editCollectionData action.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.collectionData - Collection data structure.
+ * @returns {JSX.Element} Collection edit form.
+ */
 const CollectionEditForm = ({ collectionData }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");

@@ -19,6 +19,23 @@ import { handleErrors } from "../../../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 
+/**
+ * Version status form component.
+ *
+ * Provides editing flow for version download status.
+ *
+ * Responsibilities:
+ * - Displays error messages.
+ *
+ * Side effects:
+ * - Calls updateDoc to persist version status.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.modelData - Model data.
+ * @returns {JSX.Element} Version status form.
+ */
 const VersionStatusForm = ({ modelData }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, seteErrorMessage] = useState("");

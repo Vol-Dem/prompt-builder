@@ -23,6 +23,31 @@ import {
   throwCustomError,
 } from "../../../utils/generalUtils";
 
+/**
+ * Preset form component.
+ *
+ * Provides creation and editing flow for prompt presets.
+ * Supports both positive and negative prompt types.
+ *
+ * Responsibilities:
+ * - Renders editable preset fields.
+ * - Validates user input.
+ * - Displays validation and error messages.
+ * - Submits preset data and closes the form on success.
+ *
+ * Side effects:
+ * - Dispatches updatePresets actions.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {('positive' | 'negative')} props.type - Defines whether the preset belongs to the positive or negative prompt.
+ * @param {string} [props.id] - Preset ID for edit mode.
+ * @param {string} [props.name] - Preset name.
+ * @param {string} [props.words] - Comma-separated list of preset words.
+ * @param {() => void} props.onClose - Callback triggered after successful submit to close the form.
+ * @returns {JSX.Element} Preset management form.
+ */
 const PresetForm = ({ type, id, name, words, onClose }) => {
   const [promptType, setPromptType] = useState(type || "positive");
   const [presetName, setPresetName] = useState({

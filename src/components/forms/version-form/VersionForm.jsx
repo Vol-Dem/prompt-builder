@@ -36,6 +36,43 @@ import { createTagSetsInputData } from "../../../utils/promptUtils";
 
 const firestore = getFirestore(firebaseApp);
 
+/**
+ * Model Version edit form component.
+ *
+ * Provides editing flow for saved model version data.
+ * Supports both version-specific and model-wide default editing modes.
+ *
+ * Data population logic:
+ * - versionData populates fields that were explicitly modified by the user.
+ * - defaultData populates remaining fields that were not customized.
+ *
+ * Default override mode:
+ * - When isDefault is true, the form updates model-level default values
+ *   that will be applied to all versions.
+ * - Default updates override model defaults but do NOT overwrite any
+ *   version-specific user data.
+ *
+ * Handles form validation, loading and error states.
+ *
+ * Responsibilities:
+ * - Renders version-specific or default editable fields.
+ * - Merges user and default data for form population.
+ * - Validates user input.
+ * - Displays backend and client-side error messages.
+ *
+ * Side effects:
+ * - Calls updateDoc to persist version or default model data.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.versionData - User-modified model version fields.
+ * @param {object} props.defaultData - Model-level default version fields.
+ * @param {number} props.modelId - Model ID.
+ * @param {('checkpoint' | 'lora' | string)} props.modelType - Model type.
+ * @param {boolean} props.isDefault - Enables model-wide default editing mode.
+ * @returns {JSX.Element} Model Version edit form.
+ */
 const VersionForm = ({
   versionData,
   defaultData,

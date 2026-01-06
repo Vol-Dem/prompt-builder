@@ -67,6 +67,7 @@ const UploadingPanel = () => {
     setUploadingLIstIsOpen((prevstate) => !prevstate);
   };
 
+  // Shows a browser warning when the user attempts to close the tab while the upload queue is not empty.
   useEffect(() => {
     if (queue.length) {
       window.removeEventListener("beforeunload", beforeUnloadHandler);
@@ -80,7 +81,7 @@ const UploadingPanel = () => {
     };
   }, [queue, beforeUnloadHandler]);
 
-  //Closes panel when clicked outside
+  // Closes automatically when clicking outside of the panel.
   useEffect(() => {
     if (uploadingListIsOpen) {
       document.removeEventListener("click", closeMenuHandler);

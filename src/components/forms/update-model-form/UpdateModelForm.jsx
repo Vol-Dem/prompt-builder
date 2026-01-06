@@ -59,6 +59,46 @@ const subCatsDefData = {
   errorMessage: "This field is required",
 };
 
+/**
+ * Model edit form component.
+ *
+ * Provides model creation and editing flows with three distinct scenarios:
+ *
+ * 1) Create new model (no props):
+ *    - Fetches model metadata from the Civitai API using saveModelData utility.
+ *    - Saves the model to the application database.
+ *
+ * 2) Create model from resource list (newModelId / newModelVersionId provided):
+ *    - Form is prepopulated with non-editable model and version IDs.
+ *    - Saves the model to the application database.
+ *    - On successful save, calls onSave callback to update the resource list preview.
+ *
+ * 3) Edit existing model (modelData provided):
+ *    - Renders additional editable fields for existing model.
+ *    - Updates model metadata, category and subcategories.
+ *
+ * Handles form validation, loading and error states for all scenarios.
+ *
+ * Responsibilities:
+ * - Renders appropriate input fields depending on creation/editing mode.
+ * - Validates user input.
+ * - Displays backend and client-side error messages.
+ * - Updates selected category and subcategories.
+ *
+ * Side effects:
+ * - Dispatches setBaseModels and resetModelData actions.
+ * - Calls saveModelData utility to fetch model data from Civitai API when creating new models.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} [props.modelData] - Existing model data for edit mode.
+ * @param {number} [props.newModelId] - Model ID when creating from resource list.
+ * @param {number} [props.newModelVersionId] - Model version ID when creating from resource list.
+ * @param {(preview: object) => void} [props.onSave] - Callback triggered after successful save to update resource preview.
+ * @param {string} [props.className] - Optional CSS class name.
+ * @returns {JSX.Element} Model edit form.
+ */
 const UpdateModelForm = ({
   modelData,
   newModelId,

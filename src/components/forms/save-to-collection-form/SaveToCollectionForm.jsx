@@ -43,18 +43,44 @@ const subCatsDefData = {
   errorMessage: "",
 };
 
-const SaveToCollectionForm = ({
-  postId,
-  type,
-  location,
-  images,
-  modelId,
-  versionId,
-  activeImageIndex,
-  existedImgsAmount,
-  onSave,
-  isDeleting,
-}) => {
+/**
+ * Save to Collection form component.
+ *
+ * Allows saving images to a collection from a model image list.
+ * Renders three searchable, creatable select inputs:
+ * - Category
+ * - Subcategory (optional, populated after category selection)
+ * - Collection name (populated after category selection and filtered by selected subcategories)
+ *
+ * Each select supports free text input with filtering. If no exact match is found,
+ * a "Create" option is displayed to create a new category / subcategory / collection.
+ *
+ * Supports multiple subcategories via the "+ Add subcategory" control, which dynamically
+ * appends additional subcategory select fields.
+ *
+ * On submit, creates new categories, subcategories, and collections as needed,
+ * then forwards the resolved collection data and selected images to ChooseImageForm.
+ *
+ * Responsibilities:
+ * - Renders dynamic category, subcategory, and collection selectors.
+ * - Filters available collections based on selected category and subcategories.
+ * - Handles creation of new category / subcategory / collection entities.
+ * - Displays validation and error messages.
+ *
+ * Side effects:
+ * - Creates new categories, subcategories, and collections in the database.
+ * - Forwards resolved collection data to ChooseImageForm.
+ *
+ * @component
+ * @param {object} props
+ * @param {number} props.postId - Source post ID.
+ * @param {Array<object>} props.images - List of post images.
+ * @param {number} props.activeImageIndex - Index of the image active when the form was opened.
+ * @param {(location: 'collections', imageIds: number[], collectionData: object, postData: object) => void} props.onSave
+ *        Callback forwarded to ChooseImageForm after successful submit.
+ * @returns {JSX.Element} Save to Collection form.
+ */
+const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
   const [chooseImageIsOpen, setChooseImageIsOpen] = useState(false);
   const [collectionInfoIsLoading, setCollectionInfoIsLoading] = useState(false);
   const [collectionInfo, setCollectionInfo] = useState({});
@@ -401,18 +427,14 @@ const SaveToCollectionForm = ({
       {chooseImageIsOpen && (
         <ChooseImageForm
           postId={postId}
-          type={type}
-          location={location}
+          type="save"
+          location="collections"
           collectionInfo={collectionInfo}
-          modelId={modelId}
           postData={savedPostData}
           savedImageIds={savedPostData.imageIds}
-          versionId={versionId}
           images={images}
           activeImageIndex={activeImageIndex}
-          existedImgsAmount={existedImgsAmount}
           onSave={onSave}
-          isDeleting={isDeleting}
         />
       )}
     </>

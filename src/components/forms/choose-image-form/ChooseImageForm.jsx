@@ -11,6 +11,39 @@ import { ERROR_MESSAGE_OFFLINE } from "../../../variables/constants";
 import ImageLabel from "../../ui/forms/ImageLabel";
 import SuccessMessage from "../../ui/SuccessMessage";
 
+/**
+ * Choose Image form component.
+ *
+ * Provides image saving and deleting flows for models and collections.
+ * Displays a list of post images and allows selecting which images to save or delete by clicking them.
+ * Already saved images are displayed as disabled and cannot be selected for saving.
+ * Renders controls to save/delete all images at once or only the selected ones.
+ *
+ * Responsibilities:
+ * - Renders a selectable list of post images.
+ * - Detects and disables already saved images.
+ * - Tracks active and selected image state.
+ * - Displays validation and error messages.
+ * - Prevents submission when the user is offline.
+ *
+ * Side effects:
+ * - Adds selected images to the uploading queue.
+ * - Dispatches image save/delete actions.
+ *
+ * @component
+ * @param {object} props
+ * @param {('save' | 'del')} props.type - Defines whether images are being saved or deleted.
+ * @param {('models' | 'collections')} props.location - Target entity type for saving/deleting images.
+ * @param {object} props.collectionInfo - Target collection data (used when location is "collections").
+ * @param {Array} props.images - List of post images.
+ * @param {string} props.modelId - Target model ID (used when location is "models").
+ * @param {number} props.activeImageIndex - Index of the image active when the form was opened.
+ * @param {(location: string, imageIds: number[], collectionData: object, postData: object) => void} props.onSave - Callback triggered with selected image IDs on submit.
+ * @param {boolean} props.isDeleting - Indicates whether delete operation is in progress.
+ * @param {object} props.postData - Source post data.
+ * @param {Array<number>} props.savedImageIds - IDs of images already saved.
+ * @returns {JSX.Element} Choose Image form.
+ */
 const ChooseImageForm = memo(
   ({
     type,
@@ -41,11 +74,7 @@ const ChooseImageForm = memo(
         const checked = activeImageIndex === i;
         let saved;
 
-        if (
-          savedImageIds?.length &&
-          type === "save"
-          // location === "models"
-        ) {
+        if (savedImageIds?.length && type === "save") {
           saved = savedImageIds.includes(image?.id);
         }
 

@@ -24,6 +24,27 @@ import { createTagSetsInputData } from "../../../utils/promptUtils";
 
 const firestore = getFirestore(firebaseApp);
 
+/**
+ * Tag sets form component.
+ *
+ * Provides creation and editing flow for tag sets.
+ *
+ * Responsibilities:
+ * - Renders editable tag sets fields.
+ * - Validates user input.
+ * - Displays validation and error messages.
+ * - Submits tag sets data and closes the form on success.
+ *
+ * Side effects:
+ * - Dispatches setModelData actions.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {string} props.modelId - Model ID.
+ * @param {() => void} props.onClose - Callback triggered after successful submit to close the form.
+ * @returns {JSX.Element} Tag sets management form.
+ */
 const TagSetsForm = ({ modelId, onClose }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");

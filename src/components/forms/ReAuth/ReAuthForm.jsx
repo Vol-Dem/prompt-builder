@@ -14,6 +14,23 @@ import {
   VALIDATION_PASSWORD_MAX_LENGTH,
 } from "../../../variables/constants";
 
+/**
+ * Re-authentication form component.
+ *
+ * Provides re-authentication flows.
+ * Handles form validation, loading and error states.
+ *
+ * Responsibilities:
+ * - Validates password inputs.
+ * - Submits re-authentication requests via Redux actions.
+ * - Displays backend and client-side error messages.
+ *
+ * Side effects:
+ * - Dispatches reAuthUser.
+ *
+ * @component
+ * @returns {JSX.Element} Re-authentication form.
+ */
 const ReAuthForm = () => {
   const [password, setPassword] = useState({
     value: "",

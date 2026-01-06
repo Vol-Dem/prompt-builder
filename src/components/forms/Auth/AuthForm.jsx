@@ -24,6 +24,28 @@ import LinkA from "../../ui/LinkA";
 import GoogleLogo from "../../../assets/google.svg";
 import ResetPasswordForm from "../reset-password-form/ResetPasswordForm";
 
+/**
+ * Authentication form component.
+ *
+ * Provides login and registration flows with email/password and Google OAuth.
+ * Handles form validation, loading and error states, agreement confirmation,
+ * password reset flow, and animated transitions between modes.
+ *
+ * Responsibilities:
+ * - Switches between login and sign-up modes.
+ * - Validates email and password inputs.
+ * - Submits authentication requests via Redux actions.
+ * - Displays backend and client-side error messages.
+ * - Shows reset-password form when requested.
+ * - Prevents submission when offline or when agreement is not accepted.
+ *
+ * Side effects:
+ * - Dispatches authRequest, authWithGoogle and authActions.
+ * - Clears auth error/success messages on unmount.
+ *
+ * @component
+ * @returns {JSX.Element} Authentication form.
+ */
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState({

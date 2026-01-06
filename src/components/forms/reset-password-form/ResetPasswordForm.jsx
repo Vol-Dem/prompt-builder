@@ -9,6 +9,22 @@ import Buttton from "../../ui/buttons/Button";
 import { VALIDATION_EMAIL_MAX_LENGTH } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
 
+/**
+ * Reset Password form component.
+ *
+ * Provides password reset flow by submitting the user's email address.
+ *
+ * Responsibilities:
+ * - Validates email input.
+ * - Submits password reset requests via Redux actions.
+ * - Displays backend and client-side error messages.
+ *
+ * Side effects:
+ * - Dispatches resetUserPassword action.
+ *
+ * @component
+ * @returns {JSX.Element} Reset Password form.
+ */
 const ResetPasswordForm = () => {
   const [email, setEmail] = useState({
     value: "",

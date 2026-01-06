@@ -25,6 +25,29 @@ import { createTagSetsInputData } from "../../../utils/promptUtils";
 
 const firestore = getFirestore(firebaseApp);
 
+/**
+ * Tags form component.
+ *
+ * Provides editing flow for model tags.
+ *
+ * Responsibilities:
+ * - Renders editable tags fields.
+ * - Validates user input.
+ * - Displays validation and error messages.
+ * - Submits tags data and closes the form on success.
+ *
+ * Side effects:
+ * - Dispatches setModelData actions.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {string} props.modelId - Model ID.
+ * @param {object} props.versionData - Version tags data.
+ * @param {object} props.defaultData - Default tags data.
+ * @param {() => void} props.onClose - Callback triggered after successful submit to close the form.
+ * @returns {JSX.Element} Tags management form.
+ */
 const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");

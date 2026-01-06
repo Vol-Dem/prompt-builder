@@ -25,6 +25,39 @@ import InfoPostId from "../../general-elements/guide/info/InfoPostId";
 import { getPostIdFromInput } from "../../../utils/imageUtils";
 import { fixCivImagesMeta } from "../../../utils/tempUtils";
 
+/**
+ * Save Image form component.
+ *
+ * Allows saving images to the current model or collection using a post ID or URL.
+ * Accepts a numeric post ID or a full Civitai URL, parses the ID when needed,
+ * fetches post images from the Civitai API, and forwards the result to
+ * ChooseImageForm for selection and saving.
+ *
+ * Model-specific behavior:
+ * - When location is "models", renders additional inputs for model version.
+ * - Provides a "Show only images related to this model" option to filter
+ *   fetched post images to those generated with the selected model version.
+ *
+ * Responsibilities:
+ * - Renders input for post ID / URL parsing.
+ * - Extracts post ID from URLs.
+ * - Fetches post image data from the Civitai API.
+ * - Passes fetched images to ChooseImageForm.
+ * - Displays validation and error messages.
+ *
+ * Side effects:
+ * - Fetches post images from the Civitai API.
+ *
+ * @component
+ * @param {object} props
+ * @param {object} [props.modelData] - Current model data (used when location is "models").
+ * @param {number} [props.curVersion] - Currently selected model version ID.
+ * @param {('models' | 'collections')} props.location - Target entity type for saving images.
+ * @param {object} [props.collectionInfo] - Target collection data (used when location is "collections").
+ * @param {Array<string>} [props.savedPosts] - IDs of images already saved to the collection.
+ * @param {object} [props.savedModelPosts] - Map of version IDs to saved image IDs for models.
+ * @returns {JSX.Element} Save Image form.
+ */
 const SaveImageForm = ({
   modelData,
   curVersion,

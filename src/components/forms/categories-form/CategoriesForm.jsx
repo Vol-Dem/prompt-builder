@@ -14,6 +14,34 @@ import {
 import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 import { updateCollectionCategories } from "../../../store/images";
 
+/**
+ * Categories form component.
+ *
+ * Displays and manages a sorted list of categories with the ability to rename
+ * and delete them. Supports both top-level categories and nested subcategories
+ * when an activeCategory is provided.
+ *
+ * When activeCategory is present, the form operates on subcategories of the
+ * selected category instead of the root category list.
+ *
+ * Responsibilities:
+ * - Renders list of categories or subcategories depending on activeCategory.
+ * - Renames existing categories.
+ * - Deletes categories.
+ * - Prevents duplicate category names.
+ * - Displays validation and error messages.
+ *
+ * Side effects:
+ * - Dispatches updateCategories and updateCollectionCategories actions.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {('models' | 'collections')} props.modelType - Defines whether categories belong to models or collections.
+ * @param {string} [props.activeCategory] - Active parent category name to operate on its subcategories.
+ * @param {Array} props.categories - Categories data structure.
+ * @returns {JSX.Element} Categories management form.
+ */
 const CategoriesForm = ({ modelType, activeCategory, categories }) => {
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
   const [deleteCategoryData, setDeleteCategoryData] = useState("");
