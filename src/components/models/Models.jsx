@@ -8,7 +8,7 @@ import { MODEL_TYPES } from "../../variables/constants";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import LinkA from "../ui/LinkA";
-import Guide from "../general-elements/guide/Guide";
+import QuickStartGuide from "../general-elements/guide/QuickStartGuide";
 import OpenCategoryGuide from "../general-elements/guide/home/OpenCategoryGuide";
 import Modal from "../ui/Modal";
 import IntroGuide from "../general-elements/guide/IntroGuide";
@@ -136,13 +136,13 @@ const Models = () => {
                 !authIsOpen &&
                 !userDataIsLoading &&
                 !userDataLoadError && (
-                  <Guide
+                  <QuickStartGuide
                     className={classes.guide}
                     stage={formIsOpen ? 2 : 1}
                     onClose={() => {
                       setGuideIsOpen(false);
                     }}
-                  ></Guide>
+                  ></QuickStartGuide>
                 )}
             </div>
           )}

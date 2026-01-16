@@ -5,6 +5,18 @@ import classes from "./PreviewCardExpanded.module.scss";
 import ResourceTypeLabel from "../../../ui/text/ResourceTypeLabel";
 import ActivationTag from "../../activation-tag/ActivationTag";
 
+/**
+ * Preview card expanded component.
+ *
+ * Renders a model or collection preview card for expanded layout.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.previewData - Data used to render the preview card.
+ *
+ * @returns {JSX.Element} Preview card content for expanded version.
+ */
 const PreviewCardExpanded = ({ previewData, currVersion, onClick }) => {
   const currSidePanelData = useMemo(() => {
     return {

@@ -23,6 +23,55 @@ import CarouselSave from "./carousel-save/CarouselSave";
 import CarouselImages from "./carousel-images/CarouselImages";
 import { updateImagePostData } from "../../../utils/fetch/fetchImages";
 
+/**
+ * Carousel content component.
+ *
+ * Renders an animated infinite carousel with controls and pagination.
+ * Supports a fixed or auto-calculated number of visible images and touch gestures.
+ * Tracks slide transitions and handles slide-change animations.
+ * Tracks which carousel items are currently visible and passes this information
+ * to `CarouselImages` so only visible images receive a valid `src`.
+ *
+ * Behavior:
+ * - Opens the carousel when clicked.
+ * - When rendered inside the ActiveCarousel component, clicking opens a full-screen image instead.
+ * - Displays save/delete controls for post images.
+ * - Shows how many images from the current post are already saved when used on a model page.
+ * - Renders "Save" and "Show all images" action buttons.
+ *
+ * Responsibilities:
+ * - Manages carousel state and animations.
+ * - Handles touch swipe navigation.
+ * - Triggers save and delete flows for images.
+ *
+ * Optimization:
+ * - Prevents repeated network requests by ensuring each image is loaded only once.
+ * - Loads duplicated edge images at the same time as originals to avoid animation
+ *   flickering and double loading.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {Array<object>} props.imagesData - List of post images.
+ * @param {number} [props.visibleImgAmount] - Number of images visible at the same time. If omitted, calculated automatically.
+ * @param {number} props.postId - Post ID.
+ * @param {(ids: number[], postId: number) => void} props.onDelete - Callback triggered when images are deleted.
+ * @param {number} [props.modelId] - Model ID.
+ * @param {number} [props.versionId] - Model version ID.
+ * @param {number} [props.existedImgsAmount] - Number of images already saved for the current model.
+ * @param {boolean} props.saved - Whether the images were loaded from the application database.
+ * @param {number} props.activeImgNum - Index of the currently active carousel image.
+ * @param {boolean} props.active - Whether the carousel is currently open.
+ * @param {(curImgIndex: number) => void} props.onActiveNumChange - Callback triggered when the active image changes.
+ * @param {boolean} props.side - Whether the carousel is opened from the sidebar.
+ * @param {number} props.imageHeight - Carousel image height.
+ * @param {number} props.imageWidth - Carousel image width.
+ * @param {'models' | 'collections'} props.location - Firestore collection name where images belong.
+ * @param {number} props.locationId - Firestore document ID of the current model or collection.
+ * @param {object} props.curPostData - Metadata of the current post.
+ *
+ * @returns {JSX.Element} Carousel content.
+ */
 const CarouselContent = ({
   imagesData,
   visibleImgAmount,
@@ -392,17 +441,17 @@ const CarouselContent = ({
         images={imagesData}
         visibleImages={visibleImages}
         versionId={versionId}
-        openCarouselHandler={openCarouselHandler}
+        onClick={openCarouselHandler}
         saved={saved}
         active={active}
         side={side}
         imageWidth={imageWidth}
         location={location}
         locationId={locationId}
-        openDeleteListHandler={openDeleteListHandler}
+        onDelete={openDeleteListHandler}
         translate={translate}
-        curTransitionDur={curTransitionDur}
-        openFullViewHandler={openFullViewHandler}
+        transitionDur={curTransitionDur}
+        onOpen={openFullViewHandler}
       />
       {imagesData?.length > curVisibleAmount && (
         <>

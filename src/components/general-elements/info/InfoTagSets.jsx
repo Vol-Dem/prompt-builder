@@ -1,15 +1,21 @@
 import classes from "./InfoTagsets.module.scss";
-import NotificationMessage from "../../../ui/NotificationMessage";
-import Image from "../../../ui/image/Image";
-import Video from "../../../ui/Video";
-import TextHighlight from "../../../ui/text/TextHighlight";
-import TextButton from "../../../ui/text/text-buttons/TextButton";
-import TextImageMenu from "../../../ui/text/text-buttons/TextImageMenu";
-import TextButtonTertiary from "../../../ui/text/text-buttons/TextButtonTertiary";
-import faqTagsetsPoster from "../../../../assets/guide/1-faq-tagsets-4k.jpg";
-import faqTagsetsMp4 from "../../../../assets/guide/1-faq-tagsets.mp4";
-import tsprev from "../../../../assets/guide/tsprev.jpg";
+import NotificationMessage from "../../ui/NotificationMessage";
+import Image from "../../ui/image/Image";
+import Video from "../../ui/Video";
+import TextHighlight from "../../ui/text/TextHighlight";
+import TextButton from "../../ui/text/text-buttons/TextButton";
+import TextImageMenu from "../../ui/text/text-buttons/TextImageMenu";
+import TextButtonTertiary from "../../ui/text/text-buttons/TextButtonTertiary";
+import faqTagsetsPoster from "../../../assets/guide/1-faq-tagsets-4k.jpg";
+import faqTagsetsMp4 from "../../../assets/guide/1-faq-tagsets.mp4";
+import tsprev from "../../../assets/guide/tsprev.jpg";
 
+/**
+ * Content for the tag sets hint.
+ *
+ * @component
+ * @returns {JSX.Element} The tag sets hint.
+ */
 const InfoTagsets = () => {
   return (
     <div className={classes.info}>

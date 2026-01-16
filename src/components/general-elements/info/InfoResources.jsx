@@ -6,11 +6,17 @@ import {
 } from "@heroicons/react/24/outline";
 
 import classes from "./InfoResources.module.scss";
-import TextHighlight from "../../../ui/text/TextHighlight";
-import TextButtonSquare from "../../../ui/text/text-buttons/TextButtonSquare";
-import NotificationMessage from "../../../ui/NotificationMessage";
-import TextButton from "../../../ui/text/text-buttons/TextButton";
+import TextHighlight from "../../ui/text/TextHighlight";
+import TextButtonSquare from "../../ui/text/text-buttons/TextButtonSquare";
+import NotificationMessage from "../../ui/NotificationMessage";
+import TextButton from "../../ui/text/text-buttons/TextButton";
 
+/**
+ * Content for the resources hint.
+ *
+ * @component
+ * @returns {JSX.Element} The resources hint.
+ */
 const InfoResources = () => {
   return (
     <div className={classes.info}>

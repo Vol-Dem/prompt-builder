@@ -17,7 +17,7 @@ import { guideActions } from "../../../store/guide";
 import Modal from "../../ui/Modal";
 import TagSetsForm from "../../forms/tag-sets-form/TagSetsForm";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
-import InfoTagsets from "../../general-elements/guide/info/InfoTagSets";
+import InfoTagsets from "../../general-elements/info/InfoTagSets";
 import NotificationMessage from "../../ui/NotificationMessage";
 
 const defVisibleTags = 2;

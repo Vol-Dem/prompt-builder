@@ -44,6 +44,7 @@ const ModelsList = () => {
   useEffect(() => {
     setIsIntersecting(intersecting || intersectingSmall);
   }, [
+    nsfwMode,
     intersecting,
     intersectingSmall,
     activeTab,

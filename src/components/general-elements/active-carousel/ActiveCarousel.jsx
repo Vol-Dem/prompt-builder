@@ -20,6 +20,24 @@ import {
 import CarouselImageList from "../carousel/carousel-image-list/CarouselImageList";
 import ActiveCarouselContentWrap from "./ActiveCarouselContentWrap";
 
+/**
+ * Active carousel popup component.
+ *
+ * Displays an opened carousel when an image is clicked from the image list.
+ * Shows the currently active image together with its prompt, generation metadata,
+ * and the list of resources (models, LoRAs, etc.) used to generate it.
+ *
+ * If the "Show all images" button is clicked instead of a specific image,
+ * the component renders a grid/list view of all images in the carousel.
+ *
+ * Responsibilities:
+ * - Renders the active image carousel or full image list depending on open mode.
+ * - Displays prompt, generation info, and used resources for the active image.
+ * - Resets active carousel state on close.
+ *
+ * @component
+ * @returns {JSX.Element} Active carousel popup.
+ */
 const ActiveCarousel = () => {
   const [activeImageNumber, setActiveImageNumber] = useState(null);
   const activeCarouselData = useSelector(

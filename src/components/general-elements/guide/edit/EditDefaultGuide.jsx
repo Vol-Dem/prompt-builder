@@ -3,11 +3,19 @@ import { useMemo } from "react";
 import classes from "./EditDefaultGuide.module.scss";
 import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_EDIT_DEFAULT } from "../../../../variables/constants";
-import useGuideIndex from "../../../../hooks/use-guide-index";
+import useGuideStep from "../../../../hooks/use-guide-step";
 
-const guideType = "edit";
-
+/**
+ * Edit default guide.
+ *
+ * Renders tutorial messages for the edit default.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Edit default guide element.
+ */
 const EditDefaultGuide = () => {
+  const guideType = "edit";
   const guideSteps = useMemo(() => {
     return [
       {
@@ -24,22 +32,20 @@ const EditDefaultGuide = () => {
     ];
   }, []);
 
-  const guideStepIndex = useGuideIndex(guideType, guideSteps);
+  const { index, step } = useGuideStep(guideType, guideSteps);
+
+  if (!step) return null;
 
   return (
-    <>
-      {guideStepIndex !== null && (
-        <GuideMessage
-          type={guideType}
-          className={`${classes[`guide__content--${guideStepIndex}`]}`}
-          step={guideSteps[guideStepIndex]?.step}
-          arrowPosition={guideSteps[guideStepIndex]?.arrowPosition}
-          next={guideSteps[guideStepIndex]?.next}
-        >
-          {guideSteps[guideStepIndex]?.text}
-        </GuideMessage>
-      )}
-    </>
+    <GuideMessage
+      type={guideType}
+      className={`${classes[`guide__content--${index}`]}`}
+      step={step.step}
+      arrowPosition={step.arrowPosition}
+      next={step.next}
+    >
+      {step.text}
+    </GuideMessage>
   );
 };
 

@@ -393,7 +393,7 @@ export const removeFromLocalStorage = (key) => {
 };
 
 export const getUserNotifications = (notifications) => {
-  const notificationAcceptanceState = uploadLocalStorage(`notifications`);
+  const noticeInfo = uploadLocalStorage(`notifications`);
   const updatedNotifications = notifications.map((message) => {
     const notice = noticeInfo?.messages?.find(
       (userNotice) => userNotice.id === message.id
@@ -405,4 +405,13 @@ export const getUserNotifications = (notifications) => {
   });
 
   return updatedNotifications;
+};
+
+export const checkIsNsfw = (nsfw, nsfwLevel, sfwValue) => {
+  return nsfw === false ||
+    nsfw === "None" ||
+    nsfwLevel === sfwValue ||
+    nsfwLevel === 1
+    ? false
+    : true;
 };

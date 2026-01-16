@@ -1,7 +1,13 @@
-import NotificationMessage from "../../../ui/NotificationMessage";
-import TextHighlight from "../../../ui/text/TextHighlight";
+import NotificationMessage from "../../ui/NotificationMessage";
+import TextHighlight from "../../ui/text/TextHighlight";
 import classes from "./InfoQuickEdit.module.scss";
 
+/**
+ * Content for the quick edit hint.
+ *
+ * @component
+ * @returns {JSX.Element} The quick edit hint.
+ */
 const InfoQuickEdit = () => {
   return (
     <div className={classes.info}>

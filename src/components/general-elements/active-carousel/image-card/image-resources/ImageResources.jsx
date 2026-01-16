@@ -13,14 +13,38 @@ import {
 } from "../../../../../utils/generalUtils";
 import Spinner from "../../../../ui/Spinner";
 import ButtonInfo from "../../../../ui/buttons/ButtonInfo";
-import InfoResources from "../../../guide/info/InfoResources";
+import InfoResources from "../../../info/InfoResources";
 import { parseMoelType } from "../../../../../utils/modelUtils";
 import { getImageInfo } from "../../../../../utils/fetch/fetchImages";
 import { fetchResourcesInfoFromDB } from "../../../../../utils/fetch/fetchImages";
 
 const timeoutDelay = 1000;
 
-const ImageResources = ({ imageData, onReset }) => {
+/**
+ * Image resources list component.
+ *
+ * Displays the list of resources (models, LoRAs, embeddings, etc.) that were used
+ * to generate the currently active image.
+ *
+ * For each resource it tries to fetch extended metadata from the Civitai API and application database,
+ * if the request fails, falls back to loading data only from the application database.
+ * The component also tracks loading, error and connection states and updates
+ * individual resource previews when they are modified.
+ *
+ * Responsibilities:
+ * - Fetches resource metadata for the active image.
+ * - Falls back to local database when Civitai API is unavailable.
+ * - Resolves model version by ID or by filename match when version ID is missing.
+ * - Displays loading state and error messages.
+ * - Updates resource preview data when child items report changes.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.imageData - Metadata of the active image whose resources are displayed.
+ * @returns {JSX.Element} Image resources list.
+ */
+const ImageResources = ({ imageData }) => {
   const [imageResources, setImageResources] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -92,7 +116,6 @@ const ImageResources = ({ imageData, onReset }) => {
         modelType={modelType}
         versionIsSaved={versionIsSaved}
         civConnectionError={civConnectionError}
-        onReset={onReset}
         onUpdateResources={updateImageResources}
       />
     );
@@ -111,11 +134,13 @@ const ImageResources = ({ imageData, onReset }) => {
         setCivConnectionError(false);
 
         try {
+          // Fetches data for all image resources from Civitai API and app DB
           resourcesInfo = await getImageInfo(curImageData);
         } catch (err) {
           handleErrors(err);
           setCivConnectionError(true);
           try {
+            // Fetches data for all image resources only from app DB
             resourcesInfo = await fetchResourcesInfoFromDB(curImageData);
           } catch (err) {
             handleErrors(err);

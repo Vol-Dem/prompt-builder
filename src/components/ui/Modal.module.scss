@@ -10,19 +10,14 @@
   left: 0;
   height: 100vh;
   width: 100vw;
-  // background-color: rgba(0, 0, 0, 0.5);
-  // -webkit-backdrop-filter: blur(12px);
-  // backdrop-filter: blur(12px);
   z-index: 999;
 
   &__backdrop {
     position: absolute;
     top: 0;
-    // left: 0;
     height: 100%;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    // z-index: 30;
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
@@ -30,22 +25,13 @@
   &__content {
     position: relative;
     z-index: 2;
-    // top: 50%;
-    // left: 50%;
-    // left: auto;
-    // margin: auto;
-    // height: auto;
     height: auto;
-    // transform: translate(-50%, -50%);
-    // z-index: 40;
     max-width: 95vw;
     min-width: 31rem;
     max-height: 95vh;
     border-radius: 10px;
     box-shadow: var.$box-shadow;
     width: max-content;
-    // overflow-y: scroll;
-    // @include var.custom-scroll;
   }
 
   &__close {
@@ -66,11 +52,6 @@
       color: color.adjust(var.$color-text-gray, $lightness: 20%);
     }
   }
-}
-
-.test {
-  position: relative;
-  // z-index: 20;
 }
 
 .title {

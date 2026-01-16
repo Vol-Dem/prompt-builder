@@ -21,7 +21,7 @@ import { uploadActions } from "../../../store/upload";
 import BackSvg from "../../../assets/BackSvg";
 import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
-import InfoPostId from "../../general-elements/guide/info/InfoPostId";
+import InfoPostId from "../../general-elements/info/InfoPostId";
 import { getPostIdFromInput } from "../../../utils/imageUtils";
 import { fixCivImagesMeta } from "../../../utils/tempUtils";
 

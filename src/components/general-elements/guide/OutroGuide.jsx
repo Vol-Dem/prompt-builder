@@ -6,6 +6,15 @@ import Buttton from "../../ui/buttons/Button";
 import { guideActions } from "../../../store/guide";
 import GuideActionMessage from "./GuideActionMessage";
 
+/**
+ * Guide outro component.
+ *
+ * Displays a guide outro message when user finished the guide.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Guide outro element.
+ */
 const OutroGuide = () => {
   const outroIsActive = useSelector((state) => state.guide.outroIsActive);
   const dispatch = useDispatch();

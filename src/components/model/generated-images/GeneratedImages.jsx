@@ -16,7 +16,7 @@ import GeneratedImagesGuide from "../../general-elements/guide/model/GeneratedIm
 import SavedImages from "./saved-images/SavedImages";
 import ExternalImages from "./external-images/ExternalImages";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
-import InfoGeneratedImages from "../../general-elements/guide/info/InfoGeneratedImages";
+import InfoGeneratedImages from "../../general-elements/info/InfoGeneratedImages";
 import ModelVersionsList from "../model-versions-list/ModelVersionsList";
 import ImageTabs from "./image-tabs/ImageTabs";
 

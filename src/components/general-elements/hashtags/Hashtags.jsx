@@ -11,6 +11,21 @@ import classes from "./Hashtags.module.scss";
 import { liveSearch, searchActions } from "../../../store/search";
 import { updateSearchParams } from "../../../utils/generalUtils";
 
+/**
+ * Hashtags component.
+ *
+ * Renders list of hashtags. Renders first five hashtags and "show all" butoon.
+ * On click navigates to search page with hashtag as search value, sets search filter to search by hashtag.
+ * Resets previos search result.
+ * Dispatches resetSearchData, resetSearchFilter, setSearchFilter, setSearchQuery, liveSearch
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {Array<string>} props.hashtags - List of hashtags.
+ *
+ * @returns {JSX.Element} Hashtags element.
+ */
 const Hashtags = ({ hashtags }) => {
   const [showAllHashtags, setShowAllHashtags] = useState(false);
   const nsfwMode = useSelector((state) => state.general.nsfwMode);

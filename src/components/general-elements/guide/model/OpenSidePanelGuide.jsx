@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 
 import classes from "./OpenSidePanelGuide.module.scss";
-import PlusSvg from "../../../../assets/PlusSvg";
 import GuideMessage from "../GuideMessage";
 import {
   GUIDE_STEP_SIDEPANEL,
@@ -11,48 +10,30 @@ import {
 import useGuideIndex from "../../../../hooks/use-guide-index";
 import GuideActionMessage from "../GuideActionMessage";
 
-const guideType = "model";
-
+/**
+ * Open side pane guide.
+ *
+ * Renders tutorial messages for the open side pane.
+ * Tracks if current guide step is the one of the sidebar ones and displays guide messahe of sidebar is closed.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Open side pane guide element.
+ */
 const OpenSidePanelGuide = () => {
+  const guideType = "model";
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
 
   const guideSteps = useMemo(() => {
-    const plusImage = (
-      <span className={classes["btn-container"]}>
-        <PlusSvg />
-      </span>
-    );
-
     return [
       {
         step: GUIDE_STEP_SIDEPANEL,
-        arrowPosition: 4,
-        next: true,
-        text: (
-          <>
-            You can use the sidebar for quick access to models and reference
-            images.
-          </>
-        ),
       },
       {
         step: GUIDE_STEP_SIDEPANEL_VIEW_SWITCH,
-        arrowPosition: 4,
-        next: true,
-        text: <>Click {plusImage} to add image</>,
       },
     ];
   }, []);
-
-  const openPanelData = {
-    step: "default",
-    arrowPosition: 4,
-    text: (
-      <>
-        <GuideActionMessage>Open sidebar</GuideActionMessage> to continue
-      </>
-    ),
-  };
 
   const guideStepIndex = useGuideIndex(guideType, guideSteps);
 
@@ -61,12 +42,11 @@ const OpenSidePanelGuide = () => {
       {!panelIsOpen && guideStepIndex !== null && (
         <GuideMessage
           type={guideType}
-          className={`${classes[`guide__content--${openPanelData.step}`]}`}
-          step={openPanelData?.step}
-          arrowPosition={openPanelData?.arrowPosition}
-          next={openPanelData?.next}
+          className={`${classes[`guide__content--default`]}`}
+          step="default"
+          arrowPosition={4}
         >
-          {openPanelData?.text}
+          <GuideActionMessage>Open sidebar</GuideActionMessage> to continue
         </GuideMessage>
       )}
     </>

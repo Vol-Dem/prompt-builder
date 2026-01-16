@@ -4,22 +4,28 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 
-import Video from "../../../ui/Video";
+import Video from "../../ui/Video";
 import classes from "./InfoPrompt.module.scss";
-import TextHighlight from "../../../ui/text/TextHighlight";
-import NotificationMessage from "../../../ui/NotificationMessage";
-import ImageComparisonSlider from "../../../ui/image-comparison-slider/ImageComparisonSlider";
-import Image from "../../../ui/image/Image";
-import TextButtonTertiary from "../../../ui/text/text-buttons/TextButtonTertiary";
-import faqPromptPoster from "../../../../assets/guide/3-faq-prompt.jpg";
-import faqPromptMp4 from "../../../../assets/guide/3-faq-prompt.mp4";
-import compSliderImgLeft from "../../../../assets/guide/prompt-text.jpg";
-import compSliderImgRight from "../../../../assets/guide/prompt-tags.jpg";
-import tracking from "../../../../assets/guide/tracking.jpg";
-import duplicates from "../../../../assets/guide/duplicates.png";
-import tagEdit from "../../../../assets/guide/tag-edit.png";
-import dnd from "../../../../assets/guide/dnd.png";
+import TextHighlight from "../../ui/text/TextHighlight";
+import NotificationMessage from "../../ui/NotificationMessage";
+import ImageComparisonSlider from "../../ui/image-comparison-slider/ImageComparisonSlider";
+import Image from "../../ui/image/Image";
+import TextButtonTertiary from "../../ui/text/text-buttons/TextButtonTertiary";
+import faqPromptPoster from "../../../assets/guide/3-faq-prompt.jpg";
+import faqPromptMp4 from "../../../assets/guide/3-faq-prompt.mp4";
+import compSliderImgLeft from "../../../assets/guide/prompt-text.jpg";
+import compSliderImgRight from "../../../assets/guide/prompt-tags.jpg";
+import tracking from "../../../assets/guide/tracking.jpg";
+import duplicates from "../../../assets/guide/duplicates.png";
+import tagEdit from "../../../assets/guide/tag-edit.png";
+import dnd from "../../../assets/guide/dnd.png";
 
+/**
+ * Content for the prompt hint.
+ *
+ * @component
+ * @returns {JSX.Element} The prompt hint.
+ */
 const InfoPrompt = () => {
   return (
     <div className={classes.info}>

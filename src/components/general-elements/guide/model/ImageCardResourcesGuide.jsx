@@ -5,12 +5,19 @@ import classes from "./ImageCardResourcesGuide.module.scss";
 import PlusSvg from "../../../../assets/PlusSvg";
 import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_IMAGE_RESOURCES } from "../../../../variables/constants";
-import useGuideIndex from "../../../../hooks/use-guide-index";
+import useGuideStep from "../../../../hooks/use-guide-step";
 
-
-const guideType = "model";
-
+/**
+ * Image card resources guide.
+ *
+ * Renders tutorial messages for the image card resources.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Image card resources guide element.
+ */
 const ImageCardResourcesGuide = () => {
+  const guideType = "model";
   const guideSteps = useMemo(() => {
     const plusImage = (
       <span className={classes["btn-container"]}>
@@ -30,9 +37,6 @@ const ImageCardResourcesGuide = () => {
         next: true,
         text: (
           <>
-            {/* Models added to the collection and their versions are marked, you
-            can also add them to the sidebar directly from here by clicking{" "}
-            {plusImage} */}
             {folderImage} Click to save the current resource to your collection.
             If the resource is already downloaded, the button will be replaced
             with a {plusImage}, which you can use to add the resource to the
@@ -43,22 +47,20 @@ const ImageCardResourcesGuide = () => {
     ];
   }, []);
 
-  const guideStepIndex = useGuideIndex(guideType, guideSteps);
+  const { index, step } = useGuideStep(guideType, guideSteps);
+
+  if (!step) return null;
 
   return (
-    <>
-      {guideStepIndex !== null && (
-        <GuideMessage
-          type={guideType}
-          className={`${classes[`guide__content--${guideStepIndex}`]}`}
-          step={guideSteps[guideStepIndex]?.step}
-          arrowPosition={guideSteps[guideStepIndex]?.arrowPosition}
-          next={guideSteps[guideStepIndex]?.next}
-        >
-          {guideSteps[guideStepIndex]?.text}
-        </GuideMessage>
-      )}
-    </>
+    <GuideMessage
+      type={guideType}
+      className={`${classes[`guide__content--${index}`]}`}
+      step={step.step}
+      arrowPosition={step.arrowPosition}
+      next={step.next}
+    >
+      {step.text}
+    </GuideMessage>
   );
 };
 

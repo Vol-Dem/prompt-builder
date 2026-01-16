@@ -2,8 +2,14 @@ import Image from "../../image/Image";
 import NotificationMessage from "../../NotificationMessage";
 import TextHighlight from "../../text/TextHighlight";
 import classes from "./InfoEditDefault.module.scss";
-import versions from "../../../../assets/guide/versions.jpg"
+import versions from "../../../../assets/guide/versions.jpg";
 
+/**
+ * Content for the default version editing hint.
+ *
+ * @component
+ * @returns {JSX.Element} The default version editing hint.
+ */
 const InfoEditDefault = () => {
   return (
     <div className={classes.info}>

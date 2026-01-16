@@ -3,7 +3,42 @@ import { useSelector } from "react-redux";
 
 import CarouselImage from "../carousel-image/CarouselImage";
 import classes from "./CarouselImages.module.scss";
+import { checkIsNsfw } from "../../../../utils/generalUtils";
 
+/**
+ * Carousel images container.
+ *
+ * Renders all carousel images including duplicated edge items for infinite scrolling.
+ * Receives a list of currently visible image indexes and passes a valid `src` only to
+ * those images. Non-visible images receive `"#"` so they are not loaded by the browser.
+ *
+ * Optimization:
+ * - Prevents repeated network requests by ensuring each image is loaded only once.
+ * - Loads duplicated edge images at the same time as originals to avoid animation
+ *   flickering and double loading.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {Array<number>} props.visibleImages - Indexes of currently visible images.
+ * @param {boolean} props.caruselIsVisible - Whether carousel is currently in viewport.
+ * @param {number} props.translate - Current translateX value.
+ * @param {number} props.transitionDur - Slide transition duration.
+ * @param {Array<object>} props.images - List of post images.
+ * @param {number} [props.visibleAmount] - Number of visible images.
+ * @param {boolean} props.active - Whether carousel is open.
+ * @param {boolean} props.saved - Whether images were loaded from application DB.
+ * @param {boolean} props.side - Whether carousel is opened from sidebar.
+ * @param {number} props.versionId - Model version ID.
+ * @param {number} props.imageWidth - Requested image width.
+ * @param {'models' | 'collections'} props.location - Firestore collection name.
+ * @param {number} props.locationId - Firestore document ID.
+ * @param {(position: number) => void} props.onClick - Callback when image clicked.
+ * @param {() => void} props.onOpen - Callback when image opened.
+ * @param {(ids: number[], postId: number) => void} props.onDelete - Callback on delete.
+ *
+ * @returns {JSX.Element} Carousel images container.
+ */
 const CarouselImages = forwardRef(
   (
     {
@@ -12,17 +47,17 @@ const CarouselImages = forwardRef(
       visibleImages,
       caruselIsVisible = true,
       versionId,
-      openCarouselHandler,
       saved,
       active,
       side,
       imageWidth,
       location,
       locationId,
-      openDeleteListHandler,
       translate,
-      curTransitionDur,
-      openFullViewHandler,
+      transitionDur,
+      onClick,
+      onOpen,
+      onDelete,
     },
     ref
   ) => {
@@ -37,6 +72,7 @@ const CarouselImages = forwardRef(
           caruselIsVisible
             ? image.url
             : "#";
+        const isNsfw = checkIsNsfw(image?.nsfw, image?.nsfwLevel, sfwValue);
 
         return (
           <CarouselImage
@@ -46,22 +82,15 @@ const CarouselImages = forwardRef(
             saved={saved}
             active={!!active}
             versionId={versionId}
-            onClick={openCarouselHandler}
-            onDelete={openDeleteListHandler}
-            onOpen={openFullViewHandler}
+            onClick={onClick}
+            onDelete={onDelete}
+            onOpen={onOpen}
             id={image?.hash}
-            dataset={i + visibleAmount}
+            position={i + visibleAmount}
             src={src}
             alt="example image"
             side={side}
-            nsfw={
-              image?.nsfw === false ||
-              image?.nsfw === "None" ||
-              image?.nsfwLevel === sfwValue ||
-              image.nsfwLevel === 1
-                ? false
-                : true
-            }
+            nsfw={isNsfw}
             imageWidth={imageWidth}
             location={location}
             locationId={locationId}
@@ -78,6 +107,8 @@ const CarouselImages = forwardRef(
             visibleImages.includes(i + visibleAmount) && caruselIsVisible
               ? image.url
               : "";
+          const isNsfw = checkIsNsfw(image?.nsfw, image?.nsfwLevel, sfwValue);
+
           return (
             <CarouselImage
               key={image?.id + "r" + i}
@@ -86,22 +117,15 @@ const CarouselImages = forwardRef(
               saved={saved}
               active={!!active}
               versionId={versionId}
-              onClick={openCarouselHandler}
-              onDelete={openDeleteListHandler}
-              onOpen={openFullViewHandler}
+              onClick={onClick}
+              onDelete={onDelete}
+              onOpen={onOpen}
               id={image?.hash}
-              dataset={i + visibleAmount}
+              position={i + visibleAmount}
               src={src}
               alt="example image"
               side={side}
-              nsfw={
-                image?.nsfw === false ||
-                image?.nsfw === "None" ||
-                image?.nsfwLevel === sfwValue ||
-                image.nsfwLevel === 1
-                  ? false
-                  : true
-              }
+              nsfw={isNsfw}
               imageWidth={imageWidth}
               location={location}
               locationId={locationId}
@@ -115,6 +139,8 @@ const CarouselImages = forwardRef(
             caruselIsVisible
               ? image.url
               : "";
+          const isNsfw = checkIsNsfw(image?.nsfw, image?.nsfwLevel, sfwValue);
+
           return (
             <CarouselImage
               key={image?.id + "l" + i}
@@ -123,22 +149,15 @@ const CarouselImages = forwardRef(
               saved={saved}
               active={!!active}
               versionId={versionId}
-              onClick={openCarouselHandler}
-              onDelete={openDeleteListHandler}
-              onOpen={openFullViewHandler}
+              onClick={onClick}
+              onDelete={onDelete}
+              onOpen={onOpen}
               id={image?.hash}
-              dataset={i}
+              position={i}
               src={src}
               alt="example image"
               side={side}
-              nsfw={
-                image?.nsfw === false ||
-                image?.nsfw === "None" ||
-                image?.nsfwLevel === sfwValue ||
-                image.nsfwLevel === 1
-                  ? false
-                  : true
-              }
+              nsfw={isNsfw}
               imageWidth={imageWidth}
               location={location}
               locationId={locationId}
@@ -156,7 +175,7 @@ const CarouselImages = forwardRef(
           className={`${classes["carousel__images"]} `}
           style={{
             transform: `translate3D(${translate}px, 0, 0)`,
-            transitionDuration: `${curTransitionDur}ms`,
+            transitionDuration: `${transitionDur}ms`,
           }}
           ref={ref}
         >

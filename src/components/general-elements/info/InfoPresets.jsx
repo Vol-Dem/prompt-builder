@@ -1,12 +1,18 @@
-import Image from "../../../ui/image/Image";
-import NotificationMessage from "../../../ui/NotificationMessage";
-import TextButton from "../../../ui/text/text-buttons/TextButton";
-import TextButtonTertiary from "../../../ui/text/text-buttons/TextButtonTertiary";
-import TextHighlight from "../../../ui/text/TextHighlight";
+import Image from "../../ui/image/Image";
+import NotificationMessage from "../../ui/NotificationMessage";
+import TextButton from "../../ui/text/text-buttons/TextButton";
+import TextButtonTertiary from "../../ui/text/text-buttons/TextButtonTertiary";
+import TextHighlight from "../../ui/text/TextHighlight";
 import classes from "./InfoPresets.module.scss";
-import presetAdd from "../../../../assets/guide/preset-add.jpg";
-import preset from "../../../../assets/guide/preset.jpg";
+import presetAdd from "../../../assets/guide/preset-add.jpg";
+import preset from "../../../assets/guide/preset.jpg";
 
+/**
+ * Content for the presets hint.
+ *
+ * @component
+ * @returns {JSX.Element} The presets hint.
+ */
 const InfoPresets = () => {
   return (
     <div className={classes.info}>

@@ -12,13 +12,22 @@ import {
   GUIDE_STEP_PROMPT_RESIZE,
   GUIDE_STEP_PROMPT_VIEW,
 } from "../../../../variables/constants";
-import useGuideIndex from "../../../../hooks/use-guide-index";
 import GuideActionMessage from "../GuideActionMessage";
 import CopySvg from "../../../../assets/CopySvg";
+import useGuideStep from "../../../../hooks/use-guide-step";
 
-const guideType = "model";
-
+/**
+ * Prompt guide.
+ *
+ * Renders tutorial messages for the prompt.
+ * Overrides active guide step with “open prompt” or “change mode” messages based on prompt UI state.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Prompt guide element.
+ */
 const PromptGuide = () => {
+  const guideType = "model";
   const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
   const isTextMode = useSelector((state) => state.prompt.isTextMode);
 
@@ -89,7 +98,7 @@ const PromptGuide = () => {
     ];
   }, []);
 
-  const openPanelData = {
+  const openPromptData = {
     step: "default",
     arrowPosition: 2,
     text: (
@@ -110,44 +119,31 @@ const PromptGuide = () => {
     ),
   };
 
-  const guideStepIndex = useGuideIndex(guideType, guideSteps);
+  let { index, step } = useGuideStep(guideType, guideSteps);
+
+  if (!step) return null;
+
+  let renderIndex = index;
+  let renderStep = step;
+
+  if (!promptIsOpen) {
+    renderIndex = "default";
+    renderStep = openPromptData;
+  } else if (isTextMode) {
+    renderIndex = "mode";
+    renderStep = changePromptMode;
+  }
 
   return (
-    <>
-      {promptIsOpen && !isTextMode && guideStepIndex !== null && (
-        <GuideMessage
-          type={guideType}
-          className={`${classes[`guide__content--${guideStepIndex}`]}`}
-          step={guideSteps[guideStepIndex]?.step}
-          arrowPosition={guideSteps[guideStepIndex]?.arrowPosition}
-          next={guideSteps[guideStepIndex]?.next}
-        >
-          {guideSteps[guideStepIndex]?.text}
-        </GuideMessage>
-      )}
-      {!promptIsOpen && guideStepIndex !== null && (
-        <GuideMessage
-          type={guideType}
-          className={`${classes[`guide__content--${openPanelData.step}`]}`}
-          step={openPanelData?.step}
-          arrowPosition={openPanelData?.arrowPosition}
-          next={openPanelData?.next}
-        >
-          {openPanelData?.text}
-        </GuideMessage>
-      )}
-      {promptIsOpen && isTextMode && guideStepIndex !== null && (
-        <GuideMessage
-          type={guideType}
-          className={`${classes[`guide__content--${changePromptMode.step}`]}`}
-          step={changePromptMode?.step}
-          arrowPosition={changePromptMode?.arrowPosition}
-          next={changePromptMode?.next}
-        >
-          {changePromptMode?.text}
-        </GuideMessage>
-      )}
-    </>
+    <GuideMessage
+      type={guideType}
+      className={`${classes[`guide__content--${renderIndex}`]}`}
+      step={renderStep.renderStep}
+      arrowPosition={renderStep.arrowPosition}
+      next={renderStep.next}
+    >
+      {renderStep.text}
+    </GuideMessage>
   );
 };
 

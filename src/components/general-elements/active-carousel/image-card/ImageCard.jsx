@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 
 import classes from "./ImageCard.module.scss";
 import TagList from "../../tag-list/TagList";
-import { modelActions } from "../../../../store/model";
 import ImageCardGuide from "../../guide/model/ImageCardGuide";
 import { GUIDE_STEP_ADD_TO_PROMPT } from "../../../../variables/constants";
 import { guideActions } from "../../../../store/guide";
@@ -12,8 +11,22 @@ import ImageResources from "./image-resources/ImageResources";
 import ImageInfo from "./image-info/ImageInfo";
 import { splitTags } from "../../../../utils/promptUtils";
 
+/**
+ * Image card component.
+ *
+ * Shows the currently active image prompt, generation metadata,
+ * and the list of resources (models, LoRAs, etc.) used to generate it.
+ *
+ * Responsibilities:
+ * - Displays prompt, generation info, and used resources for the active image.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.activeImgNum - Index of active carousel image.
+ * @returns {JSX.Element} Image card.
+ */
 const ImageCard = ({ activeImgNum }) => {
-  const modelId = useSelector((state) => state.model.model.id);
   const guideModelActive = useSelector((state) => state.guide.model.active);
   const guideIsActive = useSelector((state) => state.guide.active);
   const guideStep = useSelector((state) => state.guide.model.step);
@@ -44,13 +57,6 @@ const ImageCard = ({ activeImgNum }) => {
       );
     }
   }, [guideStep, imageData?.url, dispatch, guideIsActive]);
-
-  const resetModelData = (e) => {
-    if (+e.target.dataset.id !== modelId) {
-      dispatch(modelActions.resetModelData());
-      dispatch(modelActions.setActiveCarouselData({}));
-    }
-  };
 
   return (
     <>
@@ -97,10 +103,7 @@ const ImageCard = ({ activeImgNum }) => {
               </div>
               <div className={classes["example__config"]}>
                 <ImageInfo imageData={imageData} />
-                <ImageResources
-                  imageData={imageData}
-                  onReset={resetModelData}
-                />
+                <ImageResources imageData={imageData} />
               </div>
             </>
           </div>

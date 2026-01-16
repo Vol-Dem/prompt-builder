@@ -8,14 +8,22 @@ import {
   GUIDE_STEP_ADD_TO_PROMPT,
   GUIDE_STEP_HIGHLIGHTING_WORDS,
 } from "../../../../variables/constants";
-import useGuideIndex from "../../../../hooks/use-guide-index";
 import ContentComment from "../ContentComment";
 import GuideActionMessage from "../GuideActionMessage";
+import useGuideStep from "../../../../hooks/use-guide-step";
 
-const guideType = "model";
-const expectedTagsAmount = 2;
-
+/**
+ * Image card guide.
+ *
+ * Renders tutorial messages for the image card.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Image card guide element.
+ */
 const ImageCardGuide = () => {
+  const guideType = "model";
+  const expectedTagsAmount = 2;
   const prompt = useSelector((state) => state.prompt.curPromptArr);
 
   const guideSteps = useMemo(() => {
@@ -72,22 +80,20 @@ const ImageCardGuide = () => {
     ];
   }, [prompt]);
 
-  const guideStepIndex = useGuideIndex(guideType, guideSteps);
+  const { index, step } = useGuideStep(guideType, guideSteps);
+
+  if (!step) return null;
 
   return (
-    <>
-      {guideStepIndex !== null && (
-        <GuideMessage
-          type={guideType}
-          className={`${classes[`guide__content--${guideStepIndex}`]}`}
-          step={guideSteps[guideStepIndex]?.step}
-          arrowPosition={guideSteps[guideStepIndex]?.arrowPosition}
-          next={guideSteps[guideStepIndex]?.next}
-        >
-          {guideSteps[guideStepIndex]?.text}
-        </GuideMessage>
-      )}
-    </>
+    <GuideMessage
+      type={guideType}
+      className={`${classes[`guide__content--${index}`]}`}
+      step={step.step}
+      arrowPosition={step.arrowPosition}
+      next={step.next}
+    >
+      {step.text}
+    </GuideMessage>
   );
 };
 

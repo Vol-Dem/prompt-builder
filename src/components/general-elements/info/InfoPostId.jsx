@@ -1,12 +1,18 @@
-import Image from "../../../ui/image/Image";
-import NotificationMessage from "../../../ui/NotificationMessage";
-import TextHighlight from "../../../ui/text/TextHighlight";
+import Image from "../../ui/image/Image";
+import NotificationMessage from "../../ui/NotificationMessage";
+import TextHighlight from "../../ui/text/TextHighlight";
 import classes from "./InfoPostId.module.scss";
-import url from "../../../../assets/guide/url.png";
-import urlWebp from "../../../../assets/guide/url.webp";
-import civShare from "../../../../assets/guide/civ-share.png";
-import civShareWebp from "../../../../assets/guide/civ-share.webp";
+import url from "../../../assets/guide/url.png";
+import urlWebp from "../../../assets/guide/url.webp";
+import civShare from "../../../assets/guide/civ-share.png";
+import civShareWebp from "../../../assets/guide/civ-share.webp";
 
+/**
+ * Content for the post ID hint.
+ *
+ * @component
+ * @returns {JSX.Element} The post ID hint.
+ */
 const InfoPostId = ({ className }) => {
   return (
     <div className={`${classes.info} ${className || ""}`}>

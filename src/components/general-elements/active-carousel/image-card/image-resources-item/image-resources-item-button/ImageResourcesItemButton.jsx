@@ -6,6 +6,32 @@ import ButtonSquareSave from "../../../../../ui/buttons/ButtonSquareSave";
 import classes from "./ImageResourcesItemButton.module.scss";
 import Tooltip from "../../../../../ui/Tooltip";
 
+/**
+ * Image resources button component.
+ *
+ * Renders a context-aware action button for an image resource.
+ * If the model is already saved, the button adds or removes the item
+ * from the sidebar. Otherwise, it opens the save-model flow.
+ *
+ * When the model is not available for saving, the button displays a disabled
+ * state and shows an error tooltip on hover.
+ *
+ * Responsibilities:
+ * - Displays the correct action based on model save state.
+ * - Shows validation or availability errors on hover.
+ * - Triggers the save-model popup when required.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.resource - Raw resource data extracted from image metadata.
+ * @param {string} [props.errorMessage] - Error message shown when the model cannot be saved.
+ * @param {number|string} props.version - Model version ID resolved from metadata or filename.
+ * @param {string} [props.versionName] - Human-readable model version name.
+ * @param {() => void} props.onOpen - Callback to open the save-model form.
+ *
+ * @returns {JSX.Element} Image resources action button.
+ */
 const ImageResourcesItemButton = ({
   resource,
   errorMessage,

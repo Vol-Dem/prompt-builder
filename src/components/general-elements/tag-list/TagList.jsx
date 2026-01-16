@@ -9,6 +9,24 @@ import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import CopiedSvg from "../../../assets/CopiedSvg";
 import CopySvg from "../../../assets/CopySvg";
 
+/**
+ * List of interactive tags used to build a prompt.
+ *
+ * Renders list of interactive tags and buttons to add or remove all tags from the prompt field.
+ * Only tags that is not yet in the prompt would be added.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {Array<string>} props.tags - List of tags.
+ * @param {string} props.name - List name.
+ * @param {string} [props.coment] - Additional text.
+ * @param {string} [props.className] - Optional class name.
+ * @param {'positive' | 'negative'} props.promptType - Type of prompt this tag belongs to.
+ * @param {React.Ref<HTMLElement>} [props.ref] - Optional ref to the tag element (React 19 ref-as-prop).
+ *
+ * @returns {JSX.Element} The list of interactive tags element.
+ */
 const TagList = ({ tags, name, coment, className, promptType, ref }) => {
   const [copied, setCopied] = useState(false);
   const dispatch = useDispatch();

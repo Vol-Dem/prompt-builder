@@ -3,6 +3,17 @@ import LinkA from "../../../../ui/LinkA";
 import ImageInfoItem from "../image-info-item/ImageInfoItem";
 import ImageSeed from "../image-seed/ImageSeed";
 
+/**
+ * Image info component.
+ *
+ * Shows the currently active image generation metadata.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.imageData - Image data.
+ * @returns {JSX.Element} Image info.
+ */
 const ImageInfo = ({ imageData }) => {
   return (
     <>

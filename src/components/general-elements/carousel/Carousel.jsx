@@ -9,6 +9,28 @@ import {
   SETTINGS_CAROUSEL_INTERSECTION_MARGIN,
 } from "../../../variables/constants";
 
+/**
+ * Carousel wrapper component.
+ *
+ * Conditionally renders carousel content based on viewport visibility.
+ * Uses IntersectionObserver to delay rendering until the carousel is close to the viewport,
+ * improving performance on long image lists.
+ *
+ * Responsibilities:
+ * - Observes its own visibility when `showInView` is enabled.
+ * - Lazily mounts `CarouselContent` only when the component enters the viewport.
+ * - Forwards layout-related props to the carousel content.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {boolean} [props.showInView=false] - If true, renders carousel content only when it is close to the viewport.
+ * @param {number} [props.imageHeight=SETTINGS_CAROUSEL_IMAGE_HEIGHT] - Height of carousel images.
+ * @param {number} [props.imageWidth=SETTINGS_CAROUSEL_IMAGE_WIDTH] - Width of carousel images.
+ * @param {number} [props.visibleImgAmount] - Number of images visible at the same time.
+ *
+ * @returns {JSX.Element} Carousel wrapper element.
+ */
 const Carousel = ({
   showInView = false,
   imageHeight = SETTINGS_CAROUSEL_IMAGE_HEIGHT,
@@ -26,7 +48,7 @@ const Carousel = ({
   return (
     <div
       ref={carouselRef}
-      className={classes["carousel-test"]}
+      className={classes["carousel"]}
       style={{
         height: imageHeight,
         maxWidth: visibleImgAmount === 1 ? `${imageWidth}px` : null,

@@ -5,21 +5,27 @@ import {
   Squares2X2Icon,
 } from "@heroicons/react/24/outline";
 
-import Video from "../../../ui/Video";
+import Video from "../../ui/Video";
 import classes from "./InfoGeneratedImages.module.scss";
-import NotificationMessage from "../../../ui/NotificationMessage";
+import NotificationMessage from "../../ui/NotificationMessage";
 import InfoPostId from "./InfoPostId";
-import TextHighlight from "../../../ui/text/TextHighlight";
-import TextButton from "../../../ui/text/text-buttons/TextButton";
-import TextButtonSquare from "../../../ui/text/text-buttons/TextButtonSquare";
-import TextImageMenu from "../../../ui/text/text-buttons/TextImageMenu";
-import Image from "../../../ui/image/Image";
-import TextButtonSaved from "../../../ui/text/text-buttons/TextButtonSaved";
-import faqImagesPoster from "../../../../assets/guide/2-faq-images-2.jpg";
-import faqImagesMp4 from "../../../../assets/guide/2-faq-images-lite.mp4";
-import imageSelect from "../../../../assets/guide/image-select.png";
-import menu from "../../../../assets/guide/menu.png";
+import TextHighlight from "../../ui/text/TextHighlight";
+import TextButton from "../../ui/text/text-buttons/TextButton";
+import TextButtonSquare from "../../ui/text/text-buttons/TextButtonSquare";
+import TextImageMenu from "../../ui/text/text-buttons/TextImageMenu";
+import Image from "../../ui/image/Image";
+import TextButtonSaved from "../../ui/text/text-buttons/TextButtonSaved";
+import faqImagesPoster from "../../../assets/guide/2-faq-images-2.jpg";
+import faqImagesMp4 from "../../../assets/guide/2-faq-images-lite.mp4";
+import imageSelect from "../../../assets/guide/image-select.png";
+import menu from "../../../assets/guide/menu.png";
 
+/**
+ * Content for the default version editing hint.
+ *
+ * @component
+ * @returns {JSX.Element} The default version editing hint.
+ */
 const InfoGeneratedImages = () => {
   return (
     <>

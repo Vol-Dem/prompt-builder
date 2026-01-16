@@ -3,12 +3,20 @@ import { useMemo } from "react";
 import classes from "./CloseImageGuide.module.scss";
 import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_CLOSE_IMAGE } from "../../../../variables/constants";
-import useGuideIndex from "../../../../hooks/use-guide-index";
 import GuideActionMessage from "../GuideActionMessage";
+import useGuideStep from "../../../../hooks/use-guide-step";
 
-const guideType = "model";
-
+/**
+ * Close image guide.
+ *
+ * Renders tutorial messages for the close image.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Close image guide element.
+ */
 const CloseImageGuide = () => {
+  const guideType = "model";
   const guideSteps = useMemo(() => {
     return [
       {
@@ -23,22 +31,20 @@ const CloseImageGuide = () => {
     ];
   }, []);
 
-  const guideStepIndex = useGuideIndex(guideType, guideSteps);
+  const { index, step } = useGuideStep(guideType, guideSteps);
+
+  if (!step) return null;
 
   return (
-    <>
-      {guideStepIndex !== null && (
-        <GuideMessage
-          type={guideType}
-          className={`${classes[`guide__content--${guideStepIndex}`]}`}
-          step={guideSteps[guideStepIndex]?.step}
-          arrowPosition={guideSteps[guideStepIndex]?.arrowPosition}
-          next={guideSteps[guideStepIndex]?.next}
-        >
-          {guideSteps[guideStepIndex]?.text}
-        </GuideMessage>
-      )}
-    </>
+    <GuideMessage
+      type={guideType}
+      className={`${classes[`guide__content--${index}`]}`}
+      step={step.step}
+      arrowPosition={step.arrowPosition}
+      next={step.next}
+    >
+      {step.text}
+    </GuideMessage>
   );
 };
 

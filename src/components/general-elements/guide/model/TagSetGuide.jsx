@@ -6,13 +6,22 @@ import {
   GUIDE_STEP_MODEL_ADD_TAGSET,
   GUIDE_STEP_MODEL_TAGSET,
 } from "../../../../variables/constants";
-import useGuideIndex from "../../../../hooks/use-guide-index";
 import DotsSvg from "../../../../assets/DotsSvg";
 import GuideActionMessage from "../GuideActionMessage";
+import ContentComment from "../ContentComment";
+import useGuideStep from "../../../../hooks/use-guide-step";
 
-const guideType = "model";
-
+/**
+ * Tag sets guide.
+ *
+ * Renders tutorial messages for the tag sets.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Tag sets guide element.
+ */
 const TagSetGuide = () => {
+  const guideType = "model";
   const guideSteps = useMemo(() => {
     return [
       {
@@ -26,9 +35,9 @@ const TagSetGuide = () => {
               Click "Add tag set" button
             </GuideActionMessage>{" "}
             to create multiple sets of trigger words
-            <div className={classes["guide__content__comment"]}>
+            <ContentComment>
               (concepts, character outfits, appearances, etc.)
-            </div>
+            </ContentComment>
           </>
         ),
       },
@@ -46,22 +55,20 @@ const TagSetGuide = () => {
     ];
   }, []);
 
-  const guideStepIndex = useGuideIndex(guideType, guideSteps);
+  const { index, step } = useGuideStep(guideType, guideSteps);
+
+  if (!step) return null;
 
   return (
-    <>
-      {guideStepIndex !== null && (
-        <GuideMessage
-          type={guideType}
-          className={`${classes[`guide__content--${guideStepIndex}`]}`}
-          step={guideSteps[guideStepIndex]?.step}
-          arrowPosition={guideSteps[guideStepIndex]?.arrowPosition}
-          next={guideSteps[guideStepIndex]?.next}
-        >
-          {guideSteps[guideStepIndex]?.text}
-        </GuideMessage>
-      )}
-    </>
+    <GuideMessage
+      type={guideType}
+      className={`${classes[`guide__content--${index}`]}`}
+      step={step.step}
+      arrowPosition={step.arrowPosition}
+      next={step.next}
+    >
+      {step.text}
+    </GuideMessage>
   );
 };
 

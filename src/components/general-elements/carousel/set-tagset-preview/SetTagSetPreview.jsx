@@ -17,6 +17,30 @@ import Buttton from "../../../ui/buttons/Button";
 import Modal from "../../../ui/Modal";
 import TextHighlight from "../../../ui/text/TextHighlight";
 
+/**
+ * Set tagset preview component.
+ *
+ * Displays tag sets associated with the current model version including their names,
+ * preview images, and controls to assign the current image as a SFW or NSFW preview.
+ * Provides access to `TagSetsForm` for creating and editing tag sets.
+ * Allows switching between versions that contain tag sets.
+ *
+ * When the application NSFW mode is enabled, also renders:
+ * - A SFW / NSFW toggle for preview filtering.
+ * - A button to assign the current image as an NSFW preview.
+ *
+ * Responsibilities:
+ * - Renders tag set previews for the selected model version.
+ * - Allows assigning the current image as preview or NSFW preview.
+ * - Provides navigation between versions that have tag sets.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {string} props.src - Source URL of the currently active image used for preview assignment.
+ *
+ * @returns {JSX.Element} Set tagset preview.
+ */
 const SetTagSetPreview = ({ src }) => {
   const [tagSetsFormIsOpen, setTagSetsFormIsOpen] = useState(false);
   const [showNsfwPreview, setShowNsfwPreview] = useState(false);

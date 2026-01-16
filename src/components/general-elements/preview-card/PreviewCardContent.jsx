@@ -11,7 +11,23 @@ import ResourceTypeLabel from "../../ui/text/ResourceTypeLabel";
 import PreviewCardExpanded from "./preview-card-expanded/PreviewCardExpanded";
 import PreviewCardShort from "./preview-card-short/PreviewCardShort";
 
-const PreviewCardContent = ({ previewData, onClick, fullView, animate }) => {
+/**
+ * Animated preview card component.
+ *
+ * Renders a model or collection preview card with support
+ * for short and expanded layouts and the ability to add the card to the right sidebar.
+ * Renders different image previw dependent on nsfw mode.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.previewData - Data used to render the preview card.
+ * @param {boolean} props.fullView - Whether to display the expanded card layout.
+ * @param {string} [props.animate] - Whether card will have Framer Motion layout ID for shared layout animations.
+ *
+ * @returns {JSX.Element} The animated preview card component.
+ */
+const PreviewCardContent = ({ previewData, fullView, animate }) => {
   const isNsfwMode = useSelector((state) => state.model.nsfwMode);
   const isMobile = useSelector((state) => state.general.isMobile);
   const imgRef = useRef();
@@ -56,7 +72,6 @@ const PreviewCardContent = ({ previewData, onClick, fullView, animate }) => {
               ? `/images/${previewData.id}`
               : `/models/${previewData.id}`
           }
-          onClick={onClick}
         >
           <ResourceTypeLabel
             type={previewData.type}
@@ -81,7 +96,6 @@ const PreviewCardContent = ({ previewData, onClick, fullView, animate }) => {
         <PreviewCardExpanded
           previewData={previewData}
           currVersion={currVersion}
-          onClick={onClick}
         />
       )}
     </motion.div>

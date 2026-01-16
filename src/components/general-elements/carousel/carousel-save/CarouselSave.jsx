@@ -10,6 +10,42 @@ import Spinner from "../../../ui/Spinner";
 import Modal from "../../../ui/Modal";
 import Buttton from "../../../ui/buttons/Button";
 
+/**
+ * Carousel save buttons component.
+ *
+ * Renders controls for saving images from the active carousel to a model or collection.
+ * If the post originates from an external source, also displays controls to save images
+ * to the current model and shows how many images from the post are already saved.
+ *
+ * Behavior:
+ * - Displays save buttons for post images.
+ * - Shows the number of already saved images when used on a model page.
+ * - Disables "Save to model" when all post images are already saved.
+ * - Disables "Save to model" and displays a spinner while any image from the post
+ *   is currently being uploaded.
+ * - When saving to a collection, opens `SaveToCollectionForm`.
+ * - When saving to a model:
+ *   - If the carousel contains a single image, saves it immediately.
+ *   - Otherwise opens `ChooseImageForm` to select images.
+ *
+ * Responsibilities:
+ * - Determines available save actions based on post source and save state.
+ * - Controls which save form should be opened.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {Array<object>} props.images - List of post images.
+ * @param {boolean} props.saved - Whether the images were loaded from the application database.
+ * @param {number} props.postId - Post ID.
+ * @param {object} props.curPostData - Metadata of the current post.
+ * @param {({ type: string, location: string, isOpen: boolean }) => void} props.onOpenForm
+ *   Callback to open the appropriate save form.
+ * @param {(type: string, location: string, isOpen: boolean) => void} props.onSave
+ *   Callback triggered when a single image is saved directly to the model.
+ *
+ * @returns {JSX.Element} Carousel save buttons.
+ */
 const CarouselSave = ({
   images,
   saved,

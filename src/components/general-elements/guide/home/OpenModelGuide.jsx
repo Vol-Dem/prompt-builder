@@ -3,12 +3,20 @@ import { useMemo } from "react";
 import classes from "./OpenModelGuide.module.scss";
 import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_OPEN_MODEL } from "../../../../variables/constants";
-import useGuideIndex from "../../../../hooks/use-guide-index";
 import GuideActionMessage from "../GuideActionMessage";
+import useGuideStep from "../../../../hooks/use-guide-step";
 
-const guideType = "home";
-
+/**
+ * Open model guide.
+ *
+ * Renders tutorial messages for the open model.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Open model guide element.
+ */
 const OpenModelGuide = () => {
+  const guideType = "home";
   const guideSteps = useMemo(() => {
     return [
       {
@@ -24,22 +32,20 @@ const OpenModelGuide = () => {
     ];
   }, []);
 
-  const guideStepIndex = useGuideIndex(guideType, guideSteps);
+  const { index, step } = useGuideStep(guideType, guideSteps);
+
+  if (!step) return null;
 
   return (
-    <>
-      {guideStepIndex !== null && (
-        <GuideMessage
-          type={guideType}
-          className={`${classes[`guide__content--${guideStepIndex}`]}`}
-          step={guideSteps[guideStepIndex]?.step}
-          arrowPosition={guideSteps[guideStepIndex]?.arrowPosition}
-          next={guideSteps[guideStepIndex]?.next}
-        >
-          {guideSteps[guideStepIndex]?.text}
-        </GuideMessage>
-      )}
-    </>
+    <GuideMessage
+      type={guideType}
+      className={`${classes[`guide__content--${index}`]}`}
+      step={step.step}
+      arrowPosition={step.arrowPosition}
+      next={step.next}
+    >
+      {step.text}
+    </GuideMessage>
   );
 };
 

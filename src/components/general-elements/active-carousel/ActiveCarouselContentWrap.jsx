@@ -1,6 +1,14 @@
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 
+/**
+ * Active carousel animation container.
+ *
+ * Disables animation when header is fixed to prevents animation glitches.
+ *
+ * @component
+ * @returns {JSX.Element} Active carousel animation container.
+ */
 const ActiveCarouselContentWrap = ({ className, children }) => {
   const isFixed = useSelector((state) => state.general.headerIsFixed);
 

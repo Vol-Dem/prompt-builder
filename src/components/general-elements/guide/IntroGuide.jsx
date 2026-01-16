@@ -5,6 +5,15 @@ import Buttton from "../../ui/buttons/Button";
 import { guideActions } from "../../../store/guide";
 import GuideActionMessage from "./GuideActionMessage";
 
+/**
+ * Guide intro component.
+ *
+ * Displays a guide wellcome message and buttons to start or exit the guide.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Guide intro element.
+ */
 const IntroGuide = () => {
   const guideIsActive = useSelector((state) => state.guide.active);
   const introDisabled = useSelector((state) => state.guide.introDisabled);

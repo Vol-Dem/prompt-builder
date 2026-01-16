@@ -10,13 +10,22 @@ import {
   GUIDE_STEP_MODEL_EDIT,
   GUIDE_STEP_OPEN_IMAGE,
 } from "../../../../variables/constants";
-import useGuideIndex from "../../../../hooks/use-guide-index";
 import GuideActionMessage from "../GuideActionMessage";
 import SettingsSvg from "../../../../assets/SettingsSvg";
+import useGuideStep from "../../../../hooks/use-guide-step";
 
-const guideType = "model";
-
+/**
+ * Carousel guide.
+ *
+ * Renders tutorial messages for the carousel.
+ * Tracks images added to the sidebar and automatically switches to the next step.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Carousel guide element.
+ */
 const CarouselGuide = () => {
+  const guideType = "model";
   const usedImages = useSelector((state) => state.used.images);
   const dispatch = useDispatch();
 
@@ -33,7 +42,6 @@ const CarouselGuide = () => {
         arrowPosition: 6,
         text: (
           <>
-            {" "}
             <GuideActionMessage> Click {plusImage}</GuideActionMessage> to add
             the image to the quick access sidebar to use as a reference.
           </>
@@ -64,32 +72,30 @@ const CarouselGuide = () => {
     ];
   }, []);
 
-  const guideStepIndex = useGuideIndex(guideType, guideSteps);
+  const { index, step } = useGuideStep(guideType, guideSteps);
 
   useEffect(() => {
     if (
-      guideStepIndex !== null &&
-      guideSteps[guideStepIndex].step === GUIDE_STEP_ADD_IMAGE_TO_SIDEPANEL &&
+      index !== null &&
+      guideSteps[index].step === GUIDE_STEP_ADD_IMAGE_TO_SIDEPANEL &&
       !!usedImages.length
     ) {
       dispatch(guideActions.guideNextStep({ type: guideType }));
     }
-  }, [usedImages, guideStepIndex, guideSteps, dispatch]);
+  }, [usedImages, index, guideSteps, dispatch]);
+
+  if (!step) return null;
 
   return (
-    <>
-      {guideStepIndex !== null && (
-        <GuideMessage
-          type={guideType}
-          className={`${classes[`guide__content--${guideStepIndex}`]}`}
-          step={guideSteps[guideStepIndex]?.step}
-          arrowPosition={guideSteps[guideStepIndex]?.arrowPosition}
-          next={guideSteps[guideStepIndex]?.next}
-        >
-          {guideSteps[guideStepIndex]?.text}
-        </GuideMessage>
-      )}
-    </>
+    <GuideMessage
+      type={guideType}
+      className={`${classes[`guide__content--${index}`]}`}
+      step={step.step}
+      arrowPosition={step.arrowPosition}
+      next={step.next}
+    >
+      {step.text}
+    </GuideMessage>
   );
 };
 

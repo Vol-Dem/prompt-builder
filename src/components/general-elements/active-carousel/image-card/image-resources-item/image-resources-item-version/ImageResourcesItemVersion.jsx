@@ -6,6 +6,18 @@ import {
 import Tooltip from "../../../../../ui/Tooltip";
 import classes from "./ImageResourcesItemVersion.module.scss";
 
+/**
+ * Image resources version name component.
+ *
+ * Renders image resource version name and saved status icon.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.resource - Resource data.
+ * @param {boolean} props.versionIsSaved - If current model version is saved.
+ * @returns {JSX.Element} Image resources version name.
+ */
 const ImageResourcesItemVersion = ({
   resource,
   versionName,

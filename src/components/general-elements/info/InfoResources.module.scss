@@ -1,4 +1,4 @@
-@use "./../../../../variables/variables.scss" as var;
+@use "./../../../variables/variables.scss" as var;
 
 .info {
   display: flex;
@@ -12,64 +12,6 @@
   @include var.custom-scroll;
 }
 
-.video {
-  //   width: 50rem;
-  margin: auto;
-  margin-top: 2rem;
-}
-
-.text {
-  margin-bottom: 0.6rem;
-}
-
-.btn-tertiary {
-  display: inline-flex;
-  cursor: default;
-
-  &:hover {
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    // background-color: inherit;
-  }
-
-  & svg {
-    width: 2rem;
-    height: 2rem;
-    color: var.$color-text-white;
-  }
-}
-
-.btn-del {
-  background-color: var.$color-background-red !important;
-}
-
-.h2 {
-  font-size: 2.2rem;
-  margin-top: 1rem;
-  // margin-bottom: 2rem;
-  padding-left: 1rem;
-  border-left: 5px solid var.$color-primary;
-}
-
-.h3 {
-  font-size: 1.8rem;
-  // display: inline-block;
-  margin-top: 1rem;
-  // margin-bottom: 1rem;
-  width: fit-content;
-  // margin-left: 1.4rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var.$color-primary;
-}
-
-.text-white {
-  color: var.$color-text-white;
-}
-
-.block {
-  padding: 0;
-  overflow: visible;
-}
-
 .image {
   background-color: transparent;
   border-radius: 10px;
@@ -78,5 +20,67 @@
   & img {
     position: relative;
     height: auto;
+  }
+}
+
+.video {
+  margin: auto;
+  margin-top: 2rem;
+}
+
+.text {
+  margin-bottom: 0.6rem;
+}
+
+.h2 {
+  font-size: 2.2rem;
+  margin-top: 1rem;
+  padding-left: 1rem;
+  border-left: 5px solid var.$color-primary;
+}
+
+.h3 {
+  font-size: 1.8rem;
+  margin-top: 1rem;
+  width: fit-content;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var.$color-primary;
+}
+
+.text-white {
+  color: var.$color-text-white;
+}
+
+.link {
+  color: var.$color-link;
+}
+
+.block {
+  padding: 0;
+  overflow: visible;
+}
+
+.saved {
+  border: 1px solid #5c5c5c;
+  border-radius: 10px 0 0 10px;
+  color: #fff;
+  display: inline-flex;
+  flex-shrink: 0;
+  font-size: 1.5rem;
+  justify-content: center;
+  padding: 0.2rem 0.3rem;
+  transition: all 0.3s;
+  width: 7rem;
+}
+
+.status {
+  position: relative;
+  bottom: -0.4rem;
+  width: 2rem;
+  color: var.$color-text-yellow;
+  flex-shrink: 0;
+
+  &--saved {
+    color: var.$color-text-green;
   }
 }

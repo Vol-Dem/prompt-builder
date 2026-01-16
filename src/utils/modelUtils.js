@@ -148,6 +148,41 @@ export const createModelPreviewData = (
 };
 
 /**
+ * Creates object with sidebar preview data
+ * @param {object} previewData - model data
+ * @param {object} curVersion - current version data
+ * @param {object} curCustomVersionData - current custom version data
+ * @returns {object} preview data
+ */
+export const createSidebarPreviewData = (
+  versionId,
+  previewData,
+  curVersionData
+) => {
+  return {
+    ...previewData,
+    activeVersionId: versionId || null,
+    title: previewData?.name || previewData.title || null,
+    versionName: previewData?.versionName || curVersionData?.name || null,
+    imgUrl: previewData?.customPreviewImgUrl || previewData?.imgUrl || null,
+    type: previewData?.type || previewData?.modelType || null,
+    baseModel: curVersionData?.baseModel || previewData?.baseModel || null,
+    mainTag:
+      curVersionData?.mainTag ||
+      previewData?.mainTag ||
+      curVersionData?.defActTag ||
+      null,
+    weight: curVersionData?.weight || previewData?.weight || null,
+    minWeight: curVersionData?.minWeight || previewData?.minWeight || null,
+    maxWeight: curVersionData?.maxWeight || previewData?.maxWeight || null,
+    size: curVersionData?.size || previewData?.size || null,
+    tags: curVersionData?.trainedWords || previewData?.tags || null,
+    helperTags: curVersionData?.helperTags || previewData?.helperTags || null,
+    updatedAt: previewData?.updatedAt || null,
+  };
+};
+
+/**
  * Parse model type from string
  * @param {string} value - string value
  * @returns {string} model type

@@ -12,7 +12,7 @@ import Tooltip from "../../ui/Tooltip";
 import ModelTagsGuide from "../../general-elements/guide/model/ModelTagsGuide";
 import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
-import InfoQuickEdit from "../../general-elements/guide/info/InfoQuickEdit";
+import InfoQuickEdit from "../../general-elements/info/InfoQuickEdit";
 
 const ModelTags = ({ customData, modelPreview }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);

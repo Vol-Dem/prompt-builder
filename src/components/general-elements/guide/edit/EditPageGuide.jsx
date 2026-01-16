@@ -7,11 +7,19 @@ import {
   GUIDE_STEP_EDIT_UPD_DEL,
   GUIDE_STEP_EDIT_VERSIONS_SWITCH,
 } from "../../../../variables/constants";
-import useGuideIndex from "../../../../hooks/use-guide-index";
+import useGuideStep from "../../../../hooks/use-guide-step";
 
-const guideType = "edit";
-
+/**
+ * Edit page guide.
+ *
+ * Renders tutorial messages for the edit page.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Edit page guide element.
+ */
 const EditPageGuide = () => {
+  const guideType = "edit";
   const guideSteps = useMemo(() => {
     return [
       {
@@ -40,22 +48,20 @@ const EditPageGuide = () => {
     ];
   }, []);
 
-  const guideStepIndex = useGuideIndex(guideType, guideSteps);
+  const { index, step } = useGuideStep(guideType, guideSteps);
+
+  if (!step) return null;
 
   return (
-    <>
-      {guideStepIndex !== null && (
-        <GuideMessage
-          type={guideType}
-          className={`${classes[`guide__content--${guideStepIndex}`]}`}
-          step={guideSteps[guideStepIndex]?.step}
-          arrowPosition={guideSteps[guideStepIndex]?.arrowPosition}
-          next={guideSteps[guideStepIndex]?.next}
-        >
-          {guideSteps[guideStepIndex]?.text}
-        </GuideMessage>
-      )}
-    </>
+    <GuideMessage
+      type={guideType}
+      className={`${classes[`guide__content--${index}`]}`}
+      step={step.step}
+      arrowPosition={step.arrowPosition}
+      next={step.next}
+    >
+      {step.text}
+    </GuideMessage>
   );
 };
 

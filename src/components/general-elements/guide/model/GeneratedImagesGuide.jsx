@@ -9,12 +9,20 @@ import {
   GUIDE_STEP_SAVE_IMAGE,
   GUIDE_STEP_SAVED_TAB,
 } from "../../../../variables/constants";
-import useGuideIndex from "../../../../hooks/use-guide-index";
 import DotsSvg from "../../../../assets/DotsSvg";
+import useGuideStep from "../../../../hooks/use-guide-step";
 
-const guideType = "model";
-
+/**
+ * Generated images guide.
+ *
+ * Renders tutorial messages for the generated images.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Generated images guide element.
+ */
 const GeneratedImagesGuide = () => {
+  const guideType = "model";
   const guideSteps = useMemo(() => {
     const downloadImage = (
       <FolderSvg className={`${classes["svg"]} ${classes["svg--medium"]}`} />
@@ -67,22 +75,20 @@ const GeneratedImagesGuide = () => {
     ];
   }, []);
 
-  const guideStepIndex = useGuideIndex(guideType, guideSteps);
+  const { index, step } = useGuideStep(guideType, guideSteps);
+
+  if (!step) return null;
 
   return (
-    <>
-      {guideStepIndex !== null && (
-        <GuideMessage
-          type={guideType}
-          className={`${classes[`guide__content--${guideStepIndex}`]}`}
-          step={guideSteps[guideStepIndex]?.step}
-          arrowPosition={guideSteps[guideStepIndex]?.arrowPosition}
-          next={guideSteps[guideStepIndex]?.next}
-        >
-          {guideSteps[guideStepIndex]?.text}
-        </GuideMessage>
-      )}
-    </>
+    <GuideMessage
+      type={guideType}
+      className={`${classes[`guide__content--${index}`]}`}
+      step={step.step}
+      arrowPosition={step.arrowPosition}
+      next={step.next}
+    >
+      {step.text}
+    </GuideMessage>
   );
 };
 

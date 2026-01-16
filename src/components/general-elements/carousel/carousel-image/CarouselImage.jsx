@@ -19,24 +19,77 @@ import {
 import SetTagSetPreview from "../set-tagset-preview/SetTagSetPreview";
 import { transformSrcPreview } from "../../../../utils/imageUtils";
 
+/**
+ * Carousel image component.
+ *
+ * Renders a single image or video inside the carousel with contextual controls.
+ * Supports adding/removing the image to the sidebar, setting previews, and handling
+ * save/delete flows for posts.
+ * Stores image `src` in local state and updates it only when a valid source
+ * is provided (not "#"), ensuring each image is loaded only once during carousel
+ * navigation.
+ *
+ * Video handling:
+ * - If the image has video sources and the carousel is open, renders the video player.
+ * - If the carousel is closed, renders an image preview with a video indicator icon.
+ *
+ * Behavior:
+ * - Clicking the image opens the carousel.
+ * - When rendered inside `ActiveCarousel`, clicking opens the full-screen image viewer instead.
+ * - If the carousel contains only one image, delete is executed immediately;
+ *   otherwise the ChooseImageForm is opened.
+ *
+ * Lazy-loading behavior:
+ * - Receives `"#"` for non-visible images and ignores it.
+ * - Updates internal `src` state only when a valid URL is received.
+ *
+ * Responsibilities:
+ * - Manages loading state and displays a preloader.
+ * - Generates optimized media URLs for requested image width and video formats.
+ * - Displays context menu actions (save, delete, set preview / NSFW preview).
+ * - Triggers save and delete flows for post images.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {string} props.id - Image ID.
+ * @param {string} props.src - Base image source URL.
+ * @param {string} props.alt - Image alt text.
+ * @param {boolean} props.nsfw - Whether the image is marked as NSFW.
+ * @param {number} props.postId - Parent post ID.
+ * @param {number} props.position - Image index inside the carousel.
+ * @param {boolean} props.active - Whether the carousel is currently open.
+ * @param {boolean} props.saved - Whether images were loaded from the application database.
+ * @param {boolean} props.side - Whether the carousel is opened from the sidebar.
+ * @param {object} props.imageData - Full image metadata object.
+ * @param {number} props.versionId - Model version ID associated with the image.
+ * @param {number} props.imageWidth - Requested carousel image width.
+ * @param {'models' | 'collections'} props.location - Firestore collection name where images belong.
+ * @param {number} props.locationId - Firestore document ID of the current model or collection.
+ * @param {(position: number) => void} props.onClick - Callback triggered when the image is clicked.
+ * @param {() => void} props.onOpen - Callback triggered when the image is opened.
+ * @param {(ids: number[], postId: number) => void} props.onDelete - Callback triggered when images are deleted.
+ *
+ * @returns {JSX.Element} Carousel image.
+ */
 const CarouselImage = ({
   id,
   src,
   alt,
-  onClick,
-  onDelete,
-  dataset,
-  postId,
-  versionId,
-  saved,
   nsfw,
-  imageData,
-  onOpen,
+  postId,
+  position,
+  saved,
   active,
   side,
+  imageData,
+  versionId,
   imageWidth,
   location,
   locationId,
+  onClick,
+  onOpen,
+  onDelete,
 }) => {
   const [imgIsLoading, setImgIsLoading] = useState(false);
   const [imgIsLoaded, setImgIsLoaded] = useState(false);
@@ -80,14 +133,8 @@ const CarouselImage = ({
     setImgIsLoading(false);
   };
 
-  const setPreviwImgHandler = () => {
-    dispatch(
-      setPreviewImg(imgSrc, false, location, locationId, imageData.type)
-    );
-    setMenuIsOpen(false);
-  };
-  const setNsfwPreviwImgHandler = () => {
-    dispatch(setPreviewImg(imgSrc, true, location, locationId, imageData.type));
+  const setPreviwImgHandler = (nsfw) => {
+    dispatch(setPreviewImg(imgSrc, nsfw, location, locationId, imageData.type));
     setMenuIsOpen(false);
   };
 
@@ -161,11 +208,11 @@ const CarouselImage = ({
       {imgError && (
         <div
           className={classes.placeholder}
-          onClick={() => onClick(dataset)}
-          data-position={dataset}
+          onClick={() => onClick(position)}
+          data-position={position}
         ></div>
       )}
-      <div className={classes["image-svg"]} onClick={() => onClick(dataset)}>
+      <div className={classes["image-svg"]} onClick={() => onClick(position)}>
         <ImageSvg />
       </div>
       {!imgIsLoading && !side && imgSrc !== "#" && (
@@ -189,7 +236,7 @@ const CarouselImage = ({
                 >
                   <li
                     className={classes["menu__item"]}
-                    onClick={setPreviwImgHandler}
+                    onClick={() => setPreviwImgHandler(false)}
                   >
                     Set as preview
                   </li>
@@ -204,7 +251,7 @@ const CarouselImage = ({
                   {nsfwMode && (
                     <li
                       className={classes["menu__item"]}
-                      onClick={setNsfwPreviwImgHandler}
+                      onClick={() => setPreviwImgHandler(true)}
                     >
                       Set as NSFW preview
                     </li>
@@ -245,10 +292,10 @@ const CarouselImage = ({
                 imgIsLoading && !imgIsLoaded ? classes["image--hidden"] : ""
               } ${!nsfwMode && nsfw ? classes["image--nsfw"] : ""}`}
               draggable={false}
-              onClick={() => onClick(dataset)}
+              onClick={() => onClick(position)}
               onLoad={imgLoadHandler}
               onError={imgErrorHandler}
-              data-position={dataset}
+              data-position={position}
               id={id}
               src={imgSrc}
               alt={alt}
@@ -257,12 +304,12 @@ const CarouselImage = ({
           {imageData.type === "video" && (
             <div
               className={classes["play-icon"]}
-              onClick={() => onClick(dataset)}
-              data-position={dataset}
+              onClick={() => onClick(position)}
+              data-position={position}
             >
               <PlayIcon
                 className={classes["play-icon__svg"]}
-                data-position={dataset}
+                data-position={position}
               />
             </div>
           )}
@@ -276,7 +323,7 @@ const CarouselImage = ({
               preload="none"
               muted
               poster={imgSrc}
-              onClick={() => onClick(dataset)}
+              onClick={() => onClick(position)}
               className={`${classes.image} ${
                 imageData?.width - imageData?.height < 0
                   ? classes["image--portrait"]

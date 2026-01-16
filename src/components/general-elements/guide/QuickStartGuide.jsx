@@ -1,7 +1,7 @@
 import { createPortal } from "react-dom";
 import { useState } from "react";
 
-import classes from "./Guide.module.scss";
+import classes from "./QuickStartGuide.module.scss";
 import LinkA from "../../ui/LinkA";
 import TextButtonCreate from "../../ui/text/text-buttons/TextButtonCreate";
 import ArrowRightSvg from "../../../assets/ArrowRight";
@@ -10,7 +10,21 @@ import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import CopiedSvg from "../../../assets/CopiedSvg";
 import CopySvg from "../../../assets/CopySvg";
 
-const Guide = (props) => {
+/**
+ * Guide component.
+ *
+ * Displays a short beginers guide on adding a new model.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {number} stage - Current guide stage.
+ * @param {() => void} onClose - Close callback.
+ * @param {string} className - Optional classname.
+ *
+ * @returns {JSX.Element} Guide element.
+ */
+const QuickStartGuide = ({ stage, onClose, className }) => {
   const [copied, setCopied] = useState(false);
 
   const copyHandler = () => {
@@ -24,23 +38,23 @@ const Guide = (props) => {
   return (
     <>
       {createPortal(
-        <div className={`${props?.className ? props?.className : ""}`}>
+        <div className={`${className ? className : ""}`}>
           <div
             className={`${classes.guide} ${classes["guide__backdrop-left"]} ${
-              classes[`guide__backdrop-left--${props.stage}`]
+              classes[`guide__backdrop-left--${stage}`]
             }`}
           ></div>
           <div
             className={`${classes.guide} ${classes["guide__backdrop-bottom"]} ${
-              classes[`guide__backdrop-bottom--${props.stage}`]
+              classes[`guide__backdrop-bottom--${stage}`]
             }`}
           ></div>
           <div
             className={`${classes.guide} ${classes["guide__content"]} ${
-              classes[`guide__content--${props.stage}`]
+              classes[`guide__content--${stage}`]
             }`}
           >
-            {props.stage === 1 && (
+            {stage === 1 && (
               <div className={classes["guide__content__item"]}>
                 <p className={classes["guide__content__text"]}>
                   Click "New Resource" to add your first model
@@ -49,7 +63,7 @@ const Guide = (props) => {
               </div>
             )}
 
-            {props.stage === 2 && (
+            {stage === 2 && (
               <ul className={classes["guide__content__list"]}>
                 <li className={classes["guide__content__item"]}>
                   <p className={classes["guide__content__text"]}>
@@ -105,7 +119,7 @@ const Guide = (props) => {
                 </li>
               </ul>
             )}
-            <div className={classes["guide__close"]} onClick={props.onClose}>
+            <div className={classes["guide__close"]} onClick={onClose}>
               <span>Close</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -130,4 +144,4 @@ const Guide = (props) => {
   );
 };
 
-export default Guide;
+export default QuickStartGuide;

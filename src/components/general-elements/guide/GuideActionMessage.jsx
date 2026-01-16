@@ -1,13 +1,9 @@
 import classes from "./GuideActionMessage.module.scss";
 
-const GuideActionMessage = (props) => {
+const GuideActionMessage = ({ className, children }) => {
   return (
-    <span
-      className={`${classes.message} ${
-        props?.className ? props.className : ""
-      }`}
-    >
-      {props.children}
+    <span className={`${classes.message} ${className ? className : ""}`}>
+      {children}
     </span>
   );
 };

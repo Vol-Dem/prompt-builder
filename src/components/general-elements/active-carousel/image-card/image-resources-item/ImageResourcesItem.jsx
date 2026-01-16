@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 
 import classes from "./ImageResourcesItem.module.scss";
@@ -13,7 +14,38 @@ import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../../../../variables/constants";
+import { modelActions } from "../../../../../store/model";
 
+/**
+ * Image resource item component.
+ *
+ * Renders a single resource card for an image, including model metadata,
+ * links to the model on Civitai and inside the application, and controls
+ * to save the model or add it to the sidebar if it is already saved.
+ *
+ * When the user chooses to save a model, this component displays a popup
+ * with the model save / edit form and reports successful updates back to
+ * the parent resource list.
+ *
+ * Responsibilities:
+ * - Displays resource model information and version details.
+ * - Provides links to the model on Civitai and within the app.
+ * - Allows saving a model or adding it to the sidebar.
+ * - Notifies parent component when resource preview data changes.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.resource - Raw resource data extracted from image metadata.
+ * @param {number|string} props.version - Model version ID resolved from metadata or filename.
+ * @param {string} [props.versionName] - Human-readable model version name.
+ * @param {string} props.modelType - Model type (e.g. "checkpoint", "lora", etc.).
+ * @param {boolean} props.versionIsSaved - Whether the current model version is already saved.
+ * @param {boolean} props.civConnectionError - Indicates that the Civitai API is currently unavailable.
+ * @param {(preview: object) => void} props.onUpdateResources - Callback triggered when resource data is updated.
+ *
+ * @returns {JSX.Element} Image resource item card.
+ */
 const ImageResourcesItem = ({
   resource,
   version,
@@ -21,10 +53,11 @@ const ImageResourcesItem = ({
   modelType,
   versionIsSaved,
   civConnectionError,
-  onReset,
   onUpdateResources,
 }) => {
   const [fromIsOpen, setFormIsOpen] = useState(false);
+  const modelId = useSelector((state) => state.model.model.id);
+  const dispatch = useDispatch();
 
   const openFormHandler = () => {
     setFormIsOpen(true);
@@ -40,6 +73,13 @@ const ImageResourcesItem = ({
       <p>There may be heavy load or maintenance at the moment.</p>
     </div>
   );
+
+  const resetModelData = (e) => {
+    if (+e.target.dataset.id !== modelId) {
+      dispatch(modelActions.resetModelData());
+      dispatch(modelActions.setActiveCarouselData({}));
+    }
+  };
 
   return (
     <>
@@ -57,7 +97,7 @@ const ImageResourcesItem = ({
           resource={resource}
           version={version}
           versionName={versionName}
-          onReset={onReset}
+          onClick={resetModelData}
         />
         <ImageResourcesItemButton
           resource={resource}

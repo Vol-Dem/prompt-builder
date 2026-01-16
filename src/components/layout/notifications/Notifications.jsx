@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 import classes from "./Notifications.module.scss";
 import Notification from "../../ui/Notification";
 import {
-  getUserNotifications,
   saveToLocalStorage,
   saveToStorage,
   uploadLocalStorage,

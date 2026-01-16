@@ -7,14 +7,20 @@ import {
   GUIDE_STEP_SIDEPANEL,
   GUIDE_STEP_SIDEPANEL_VIEW_SWITCH,
 } from "../../../../variables/constants";
-import useGuideIndex from "../../../../hooks/use-guide-index";
 import ContentComment from "../ContentComment";
+import useGuideStep from "../../../../hooks/use-guide-step";
 
-const guideType = "model";
-
+/**
+ * Side panel guide.
+ *
+ * Renders tutorial messages for the side panel.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Side panel guide element.
+ */
 const SidePanelGuide = () => {
-  const guideIsActive = useSelector((state) => state.guide.active);
-  const modelGuideIsActive = useSelector((state) => state.guide.model.active);
+  const guideType = "model";
   const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
 
   const guideSteps = useMemo(() => {
@@ -40,25 +46,20 @@ const SidePanelGuide = () => {
     ];
   }, []);
 
-  const guideStepIndex = useGuideIndex(guideType, guideSteps);
+  const { index, step } = useGuideStep(guideType, guideSteps);
+
+  if (!step || !panelIsOpen) return null;
 
   return (
-    <>
-      {guideStepIndex !== null &&
-        panelIsOpen &&
-        guideIsActive &&
-        modelGuideIsActive && (
-          <GuideMessage
-            type={guideType}
-            className={`${classes[`guide__content--${guideStepIndex}`]}`}
-            step={guideSteps[guideStepIndex]?.step}
-            arrowPosition={guideSteps[guideStepIndex]?.arrowPosition}
-            next={guideSteps[guideStepIndex]?.next}
-          >
-            {guideSteps[guideStepIndex]?.text}
-          </GuideMessage>
-        )}
-    </>
+    <GuideMessage
+      type={guideType}
+      className={`${classes[`guide__content--${index}`]}`}
+      step={step.step}
+      arrowPosition={step.arrowPosition}
+      next={step.next}
+    >
+      {step.text}
+    </GuideMessage>
   );
 };
 

@@ -13,16 +13,57 @@ import {
 } from "../../../variables/constants";
 import CrossSvg from "../../../assets/CrossSvg";
 
-const GuideMessage = (props) => {
-  const {
-    type,
-    step,
-    next,
-    arrowPosition,
-    className,
-    autoScroll = true,
-    autoScrollTo = "center",
-  } = props;
+/**
+ * Guide message component.
+ *
+ * Renders an animated interactive tutorial message with navigation controls.
+ * Provides "Next step" / "Finish tutorial" and "Exit" actions and optionally
+ * auto-scrolls into view.
+ *
+ * Behavior:
+ * - When `next` is false, the "Next step" button is disabled and its label is
+ *   replaced with: "To proceed, perform the action highlighted in yellow".
+ * - When the current step is the last one, renders "Finish tutorial" instead
+ *   of "Next step".
+ * - Renders a pointing arrow according to `arrowPosition`:
+ *   0 - disabled  
+ *   1 - top left  
+ *   2 - top center  
+ *   3 - top right  
+ *   4 - right  
+ *   5 - bottom right  
+ *   6 - bottom center  
+ *   7 - bottom left  
+ *   8 - left
+ *
+ * Side effects:
+ * - Dispatches `guideNextStep`, `setGuideIsActive`, and `setOutroIsActive`
+ *   Redux actions on navigation events.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {('home' | 'model' | 'edit')} props.type - Tutorial type.
+ * @param {number} props.step - Current guide step index.
+ * @param {boolean} props.next - Whether the "Next step" button is enabled.
+ * @param {number} props.arrowPosition - Index of predefined arrow position (0–8).
+ * @param {boolean} [props.autoScroll=true] - Whether the message should auto-scroll into view.
+ * @param {('start' | 'center' | 'end' | 'nearest')} [props.autoScrollTo="center"] - Vertical alignment when auto-scrolling.
+ * @param {string} props.className - Positioning class name.
+ * @param {React.ReactNode} props.children - Guide message content.
+ *
+ * @returns {JSX.Element} Guide message element.
+ */
+const GuideMessage = ({
+  type,
+  step,
+  next,
+  arrowPosition,
+  autoScroll = true,
+  autoScrollTo = "center",
+  className,
+  children,
+}) => {
   const [exitRequestIsOpen, setExitRequestIsOpen] = useState(false);
   const dispatch = useDispatch();
   const guideMessageRef = useRef(null);
@@ -73,9 +114,7 @@ const GuideMessage = (props) => {
         >
           <div className={`${classes.guide} ${classes["guide__content"]}`}>
             <div className={classes["guide__content__item"]}>
-              <p className={classes["guide__content__text"]}>
-                {props.children}
-              </p>
+              <p className={classes["guide__content__text"]}>{children}</p>
             </div>
             <div className={classes["guide__controls"]}>
               <div className={classes["guide__controls-steps"]}>
@@ -103,7 +142,7 @@ const GuideMessage = (props) => {
                       next ? classes["guide__controls-btn--next"] : ""
                     }`}
                     onClick={finishHandler}
-                    title="Next tip"
+                    title="Finish"
                   >
                     <span>Finish tutorial</span> <ArrowRightSvg />
                   </ButtonTertiary>
