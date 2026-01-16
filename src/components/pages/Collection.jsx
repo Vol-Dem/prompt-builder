@@ -33,6 +33,7 @@ const Collection = ({ title }) => {
 
   useEffect(() => {
     if (!isAuth || !collectionId) return;
+    dispatch(imagesActions.resetCollectionData());
     const getCollectionData = async () => {
       try {
         setIsLoading(true);

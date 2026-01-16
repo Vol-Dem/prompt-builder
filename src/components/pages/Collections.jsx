@@ -61,7 +61,7 @@ const Collections = ({ title }) => {
 
   useEffect(() => {
     setIsIntersecting(intersecting || intersectingSmall);
-  }, [intersecting, intersectingSmall]);
+  }, [intersecting, intersectingSmall, activeCategory, activeSubcategory]);
 
   const openCategoryHandler = (e) => {
     dispatch(imagesActions.setActiveCategory(e.target.dataset.value));

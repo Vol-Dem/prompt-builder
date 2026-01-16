@@ -41,34 +41,6 @@
   gap: 2rem;
 }
 
-.category__link {
-  position: relative;
-  transition: all 0.3s;
-  border-bottom: 1px solid transparent;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:not(.active):hover {
-    color: color.adjust(var.$color-primary, $lightness: 20%);
-  }
-
-  &--all {
-    border: 1px solid var.$color-violet-grey;
-    border-radius: 10px;
-    padding: 0.2rem 1.3rem;
-    font-size: 1.6rem;
-    transition: all 0.3s ease;
-
-    &:not(.active):hover {
-      border: 1px solid color.adjust(var.$color-primary, $lightness: 20%);
-    }
-
-    &.active {
-      border-color: var.$color-primary;
-    }
-  }
-}
-
 .tip {
   gap: 4rem;
   width: 100%;

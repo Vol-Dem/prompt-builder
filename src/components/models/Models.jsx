@@ -90,13 +90,10 @@ const Models = () => {
           <CategoryList
             activeCategory={activeTab}
             onClick={categorySwitchHandler}
-            className={classes["tag-menu__labels"]}
           >
             <ButtonCategoryAll
               onClick={categorySwitchHandler}
-              className={`${classes[`category__link`]} ${
-                activeTab === "all" ? classes.active : ""
-              }`}
+              className={` ${activeTab === "all" ? classes.active : ""}`}
               activeCategory={activeTab}
             />
             {modelTypesHtml}
