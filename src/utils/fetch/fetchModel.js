@@ -48,7 +48,7 @@ const auth = getAuth(firebaseApp);
 export const getModelData = async (modelId) => {
   try {
     const model = await fetchData(
-      `https://civitai.com/api/v1/models/${modelId}`
+      `https://civitai.com/api/v1/models/${modelId}`,
     );
 
     // Clears empty keys and excessive data (too much weight for Firestore) from image metadata
@@ -102,7 +102,7 @@ export const deleteModelDoc = async (uid, model) => {
     "users",
     uid,
     "preview",
-    model.id + ""
+    model.id + "",
   );
 
   await deleteDoc(modelRef);
@@ -133,7 +133,7 @@ export const fetchModelFromCivitai = async (id) => {
 export const fetchModelData = async (modelId) => {
   const customModelData = await fetchUserDataFromFirestore(
     "models",
-    modelId + ""
+    modelId + "",
   );
 
   let defModelData = {};
@@ -154,7 +154,7 @@ export const fetchModelData = async (modelId) => {
  */
 export const fetchModelUpdates = async (modelId) => {
   const updateModelResData = await fetchData(
-    `${URL_CF_UPDATE_MODEL}/updateModel?modelId=${modelId}`
+    `${URL_CF_UPDATE_MODEL}/updateModel?modelId=${modelId}`,
   );
 
   if (!updateModelResData?.modelId) {
@@ -177,7 +177,7 @@ export const updateUserCustomModelData = async (
   newModelData,
   newVersions,
   model,
-  curBaseModels
+  curBaseModels,
 ) => {
   const newVersionsCustomData = {};
 
@@ -188,7 +188,7 @@ export const updateUserCustomModelData = async (
 
     if (Object.hasOwn(version, "files") && version?.files) {
       fileName = clearFileExtension(
-        version.files.find((file) => file?.primary).name
+        version.files.find((file) => file?.primary).name,
       ).toLowerCase();
     }
 
@@ -210,7 +210,7 @@ export const updateUserCustomModelData = async (
     modelVersionsCustomData[customVersion.versionId] = {
       ...customVersion,
       index: newModelData?.modelVersions?.find(
-        (version) => version.id === customVersion.versionId
+        (version) => version.id === customVersion.versionId,
       )?.index,
     };
   });
@@ -218,7 +218,7 @@ export const updateUserCustomModelData = async (
   const fileNames = newModelData.modelVersions?.flatMap((version) => {
     if (Object.hasOwn(version, "files") && version?.files) {
       return clearFileExtension(
-        version.files.find((file) => file?.primary).name
+        version.files.find((file) => file?.primary).name,
       ).toLowerCase();
     }
     return [];
@@ -228,11 +228,11 @@ export const updateUserCustomModelData = async (
     ?.flatMap((version) => {
       if (Object.hasOwn(version, "files") && version?.files) {
         const primaryFileHashes = version?.files.find(
-          (file) => file?.primary
+          (file) => file?.primary,
         )?.hashes;
         if (primaryFileHashes) {
           return Object.values(primaryFileHashes)?.map((hash) =>
-            hash.toLowerCase()
+            hash.toLowerCase(),
           );
         }
       }
@@ -244,7 +244,7 @@ export const updateUserCustomModelData = async (
     newModelData.modelVersions?.map((version) => version.id) || [];
 
   const baseModels = new Set(
-    newModelData.modelVersions?.flatMap((version) => version?.baseModel || [])
+    newModelData.modelVersions?.flatMap((version) => version?.baseModel || []),
   );
 
   let newBaseModel = false;
@@ -252,7 +252,7 @@ export const updateUserCustomModelData = async (
   if (curBaseModels?.length) {
     baseModels?.forEach((baseModel) => {
       const exists = curBaseModels?.some(
-        (curBaseModel) => curBaseModel === baseModel
+        (curBaseModel) => curBaseModel === baseModel,
       );
       if (!exists) {
         newBaseModel = true;
@@ -270,7 +270,7 @@ export const updateUserCustomModelData = async (
       {
         baseModels: arrayUnion(...baseModels),
       },
-      { merge: true }
+      { merge: true },
     );
   }
 
@@ -279,7 +279,7 @@ export const updateUserCustomModelData = async (
     {
       modelVersionsCustomData: modelVersionsCustomData,
     },
-    { merge: true }
+    { merge: true },
   );
   await updateDoc(
     modelsPrevRef,
@@ -291,7 +291,7 @@ export const updateUserCustomModelData = async (
       tags: newModelData.tags,
       baseModels: arrayUnion(...baseModels),
     },
-    { merge: true }
+    { merge: true },
   );
 };
 
@@ -307,7 +307,7 @@ export const saveModelData = async (
   newModelData,
   categories,
   curBaseModels,
-  modelData
+  modelData,
 ) => {
   try {
     let data = {};
@@ -319,7 +319,7 @@ export const saveModelData = async (
       "users",
       uid,
       "models",
-      newModelData.modelId + ""
+      newModelData.modelId + "",
     );
     const userRef = doc(firestore, "users", uid);
     const modelsPrevRef = doc(
@@ -327,7 +327,7 @@ export const saveModelData = async (
       "users",
       uid,
       "preview",
-      newModelData.modelId + ""
+      newModelData.modelId + "",
     );
 
     const modelsPrevRefSnap = await getDoc(modelsPrevRef);
@@ -350,7 +350,7 @@ export const saveModelData = async (
         }
 
         const responseCiv = await fetch(
-          `${URL_CIV_MODELS}${newModelData.modelId}`
+          `${URL_CIV_MODELS}${newModelData.modelId}`,
         );
 
         data = await responseCiv.json();
@@ -359,8 +359,8 @@ export const saveModelData = async (
         data = modelData.data;
         modelVersions = data?.modelVersions.filter((version) =>
           Object.keys(modelData?.modelVersionsCustomData).includes(
-            `${version.id}`
-          )
+            `${version.id}`,
+          ),
         );
       }
 
@@ -385,7 +385,7 @@ export const saveModelData = async (
           curVersionDlStatus = true;
         } else {
           curVersionDlStatus = newModelData.versionsDownloadStatus.find(
-            (dlData) => Number.parseInt(dlData.id) === version.id
+            (dlData) => Number.parseInt(dlData.id) === version.id,
           )?.value;
         }
 
@@ -396,7 +396,7 @@ export const saveModelData = async (
             : false;
         const currVersionData = Object.hasOwn(
           modelVersionsCustomData,
-          version.id
+          version.id,
         )
           ? modelVersionsCustomData[version.id]
           : {};
@@ -404,7 +404,7 @@ export const saveModelData = async (
         let fileName;
         if (Object.hasOwn(version, "files") && version?.files) {
           fileName = clearFileExtension(
-            version.files.find((file) => file?.primary).name
+            version.files.find((file) => file?.primary).name,
           ).toLowerCase();
         }
 
@@ -433,7 +433,8 @@ export const saveModelData = async (
       });
 
       const activePreviewId = modelVersions.find(
-        (version) => modelVersionsCustomData[version.id].downloadStatus === true
+        (version) =>
+          modelVersionsCustomData[version.id].downloadStatus === true,
       )?.id;
 
       const activePreviewImg =
@@ -449,7 +450,7 @@ export const saveModelData = async (
       const { previewSrc } = transformSrcPreview(
         previewImgData?.url,
         SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
-        previewImgData?.type
+        previewImgData?.type,
       );
       const previewImg = previewSrc;
 
@@ -459,7 +460,7 @@ export const saveModelData = async (
             ...new Set(
               version.files
                 .filter((file) => file?.type === "Model")
-                .map((file) => clearFileExtension(file?.name).toLowerCase())
+                .map((file) => clearFileExtension(file?.name).toLowerCase()),
             ),
           ];
         }
@@ -494,7 +495,7 @@ export const saveModelData = async (
 
       const baseModels = [
         ...new Set(
-          modelVersions?.flatMap((version) => version?.baseModel || [])
+          modelVersions?.flatMap((version) => version?.baseModel || []),
         ),
       ];
 
@@ -512,7 +513,7 @@ export const saveModelData = async (
       } else {
         baseModels.forEach((baseModel) => {
           const exists = curUserBaseModels.some(
-            (curBaseModel) => curBaseModel === baseModel
+            (curBaseModel) => curBaseModel === baseModel,
           );
           if (!exists) {
             newBaseModel = true;
@@ -525,7 +526,7 @@ export const saveModelData = async (
       let subIds;
       const mainCategoryData = categories[newModelData.modelType]?.find(
         (category) =>
-          category.name?.toLowerCase() === newModelData.main?.toLowerCase()
+          category.name?.toLowerCase() === newModelData.main?.toLowerCase(),
       );
 
       if (!mainCategoryData) {
@@ -533,7 +534,7 @@ export const saveModelData = async (
         const currCategories = categories[newModelData.modelType] || [];
         mainId = createCategoryId(
           newModelData.main,
-          categories[newModelData.modelType]
+          categories[newModelData.modelType],
         );
         subIds = newModelData.sub;
         updatedCategories = [
@@ -552,14 +553,15 @@ export const saveModelData = async (
         const newSubcategoriesData = newModelData.sub.flatMap((subcategory) => {
           const subExists = mainCategoryData.subcategories.find(
             (oldSucategories) =>
-              oldSucategories.name?.toLowerCase() === subcategory?.toLowerCase()
+              oldSucategories.name?.toLowerCase() ===
+              subcategory?.toLowerCase(),
           );
 
           if (!subExists) {
             newSubcategory = true;
             const categoryId = createCategoryId(
               subcategory,
-              mainCategoryData.subcategories
+              mainCategoryData.subcategories,
             );
 
             subIds = [...subIds, categoryId];
@@ -573,7 +575,7 @@ export const saveModelData = async (
           }
         });
         const mainCategoryIndex = categories[newModelData.modelType].findIndex(
-          (category) => category.name === newModelData.main
+          (category) => category.name === newModelData.main,
         );
 
         const curUpdatedCategory = {
@@ -601,7 +603,7 @@ export const saveModelData = async (
               categoriesById: { [newModelData.modelType]: updatedCategories },
               baseModels: baseModels,
             },
-            { merge: true }
+            { merge: true },
           );
         } else {
           batch.update(
@@ -610,7 +612,7 @@ export const saveModelData = async (
               [categoryField]: updatedCategories,
               baseModels: arrayUnion(...baseModels),
             },
-            { merge: true }
+            { merge: true },
           );
         }
       }

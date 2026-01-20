@@ -5,6 +5,19 @@ import classes from "./ModelDescription.module.scss";
 
 const minDescriptionHeight = 300;
 
+/**
+ * Content for the model description section.
+ *
+ * Renders the model description with a fixed-height container and a
+ * "Read more" / "Hide" toggle.
+ *
+ * Implementation notes:
+ * - Uses `dangerouslySetInnerHTML` to render HTML descriptions provided by the model.
+ * - The HTML content is assumed to be sanitized or trusted at the data source level.
+ *
+ * @component
+ * @returns {JSX.Element} Model description content.
+ */
 const ModelDescription = () => {
   const [descHeight, setDescHeight] = useState(null);
   const [descriptionIsOpen, setDescriptionIsOpen] = useState(false);

@@ -13,6 +13,7 @@ import SaveImageForm from "../forms/save-image-form/SaveImageForm";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import ButtonSquareAdd from "../general-elements/button-square-add/ButtonSquareAdd";
+import { DEFAULT_PAGE_TITLE } from "../../variables/constants";
 
 const Collection = ({ title }) => {
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
@@ -23,13 +24,20 @@ const Collection = ({ title }) => {
   const dispatch = useDispatch();
   const collectionData = useSelector((state) => state.images.collectionData);
   const collectionPreviews = useSelector(
-    (state) => state.images.collectionPreviews
+    (state) => state.images.collectionPreviews,
   );
   const categoriesData = useSelector((state) => state.images.categories);
   const collectionPreview = collectionPreviews?.data?.find(
-    (preview) => preview.id === collectionData.id
+    (preview) => preview.id === collectionData.id,
   );
-  document.title = collectionData?.name || title;
+
+  useEffect(() => {
+    document.title = collectionData?.name || title;
+
+    return () => {
+      document.title = DEFAULT_PAGE_TITLE;
+    };
+  }, [title]);
 
   useEffect(() => {
     if (!isAuth || !collectionId) return;
@@ -65,13 +73,13 @@ const Collection = ({ title }) => {
     navigate("/images");
   };
   const activeCategoryData = categoriesData.find(
-    (category) => category.id === collectionData?.category
+    (category) => category.id === collectionData?.category,
   );
 
   const subcategoriesHtml = collectionData?.subcategories?.flatMap(
     (subcategoryId, i) => {
       const subcategoryName = activeCategoryData?.subcategories?.find(
-        (subcategory) => subcategory.id === subcategoryId
+        (subcategory) => subcategory.id === subcategoryId,
       )?.name;
 
       if (!subcategoryName) {
@@ -86,14 +94,14 @@ const Collection = ({ title }) => {
             onClick={openCategoriesHandler.bind(
               null,
               collectionData?.category,
-              subcategoryId
+              subcategoryId,
             )}
           >
             {subcategoryName}
           </Link>
         </li>
       );
-    }
+    },
   );
 
   const addImgByIdHandler = () => {
@@ -113,7 +121,7 @@ const Collection = ({ title }) => {
               onClick={openCategoriesHandler.bind(
                 null,
                 collectionData?.category,
-                null
+                null,
               )}
             >
               {activeCategoryData?.name}
@@ -161,7 +169,7 @@ const Collection = ({ title }) => {
                     },
                     subcategoriesData: activeCategoryData.subcategories.filter(
                       (subcategory) =>
-                        collectionData?.subcategories.includes(subcategory.id)
+                        collectionData?.subcategories.includes(subcategory.id),
                     ),
                   }}
                 />

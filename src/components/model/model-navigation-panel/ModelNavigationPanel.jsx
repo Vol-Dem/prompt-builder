@@ -5,6 +5,16 @@ import NavigationPanel from "../../layout/navigation-panel/NavigationPanel";
 import { tabActions } from "../../../store/tabs";
 import classes from "./ModelNavigationPanel.module.scss";
 
+/**
+ * Application inner navigation for model page.
+ *
+ * Displays navigation controls including a back button, a link to the edit page,
+ * and category / subcategory navigation links for the current model.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} The model navigation panel element.
+ */
 const ModelNavigationPanel = () => {
   const model = useSelector((state) => state.model.model);
   const categories = useSelector((state) => state.tabs.categoriesData);

@@ -13,6 +13,21 @@ import ButtonCategoryAll from "../../ui/buttons/ButtonCategoryAll";
 import CategoryListItem from "../../ui/lists/CategoryListItem";
 import NotificationMessage from "../../ui/NotificationMessage";
 
+/**
+ * Categories.
+ *
+ * Displays sorted model categories.
+ *
+ * Responsibilities:
+ * - Supports switching between categories and "All models" view of active tub.
+ * - Loads model preview data from Firestore.
+ * - Integrates guide flows.
+ * - Handles edit flow
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Categories component.
+ */
 const Categories = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
   const activeCategory = useSelector((state) => state.tabs.currCategory);
@@ -21,7 +36,7 @@ const Categories = () => {
   const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const guideHomeState = useSelector((state) => state.guide.home);
   const userDataIsLoading = useSelector(
-    (state) => state.auth.userDataIsLoading
+    (state) => state.auth.userDataIsLoading,
   );
   const dispatch = useDispatch();
 
@@ -35,8 +50,8 @@ const Categories = () => {
           e.target.dataset.value,
           null,
           false,
-          nsfwMode
-        )
+          nsfwMode,
+        ),
       );
     }
   };

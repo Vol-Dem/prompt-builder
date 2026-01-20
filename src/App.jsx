@@ -16,6 +16,7 @@ import AboutModelSettings from "./components/about/AboutModelSettings";
 import AboutImageCollections from "./components/about/AboutImageCollections";
 import AboutTopPanel from "./components/about/AboutTopPanel";
 import AboutSidebar from "./components/about/AboutSidebar";
+import Models from "./components/models/Models";
 // import Landing from "./components/landing/Landing";
 
 const About = lazy(() => import("./components/pages/About"));
@@ -60,7 +61,7 @@ function App() {
         },
         {
           index: isAuth,
-          element: <Home title="AIDE-TOOLS" />,
+          element: <Models title="Models" />,
           errorElement: <ErrorPage />,
         },
         {

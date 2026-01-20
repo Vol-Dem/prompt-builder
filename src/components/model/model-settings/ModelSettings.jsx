@@ -33,6 +33,17 @@ import {
 } from "../../../utils/fetch/fetchModel";
 import { handleErrors } from "../../../utils/generalUtils";
 
+/**
+ * Model settings.
+ *
+ * Renders button to back, check for updates and delete model.
+ * Displays left sidebar that allows to switch between general, default and versions forms for current model.
+ * On update calls fetchModelUpdates func that fetches model data from Civitai and if new versions was found updates current model data.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} The navigation panel element.
+ */
 const ModelSettings = () => {
   const [curTab, setCurTab] = useState("general");
   const [mobileMenuIsOpen, setMobileMenuIsOpen] = useState(false);

@@ -30,6 +30,32 @@ import {
   getInitialVersionData,
 } from "../../utils/modelUtils";
 
+/**
+ * Model page.
+ *
+ * High-level route responsible for displaying a model and its versions.
+ *
+ * Responsibilities:
+ * - Loads model and user-specific model data from Firestore.
+ * - Synchronizes active model version with the `versionId` URL parameter.
+ * - Selects a default version when no version is specified.
+ * - Coordinates version switching without leaving the page.
+ * - Manages page-level loading, error, and empty states.
+ * - Integrates onboarding/guide flow side effects.
+ * - Updates the document title based on the active model.
+ *
+ * Side effects:
+ * - Fetches model data on route change.
+ * - Updates Redux model and guide state.
+ * - Sets and restores `document.title`.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {string} props.title - Fallback page title used before model data is loaded.
+ *
+ * @returns {JSX.Element} Model page.
+ */
 const Model = ({ title }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -93,10 +119,11 @@ const Model = ({ title }) => {
 
   useEffect(() => {
     if (!!model?.modelVersionsCustomData && model.id !== curVersion?.modelId) {
+      // Selects the initial version data
       const curVersionData = getInitialVersionData(model, versionIdParam);
 
       dispatch(
-        modelActions.setCurVersion({ ...curVersionData, modelId: model.id })
+        modelActions.setCurVersion({ ...curVersionData, modelId: model.id }),
       );
     }
   }, [model, dispatch, curVersion?.modelId, versionIdParam]);
@@ -104,7 +131,7 @@ const Model = ({ title }) => {
   const openVersionHandler = (e) => {
     const id = +e.target.id;
     const curVer = model?.data?.modelVersions.find(
-      (version) => version.id === id
+      (version) => version.id === id,
     );
 
     dispatch(modelActions.setCurVersion({ ...curVer, modelId: model.id }));

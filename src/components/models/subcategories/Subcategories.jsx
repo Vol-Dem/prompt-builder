@@ -11,6 +11,21 @@ import SubcategoryList from "../../ui/lists/SubcategoryList";
 import ButtonCategoryAll from "../../ui/buttons/ButtonCategoryAll";
 import CategoryListItem from "../../ui/lists/CategoryListItem";
 
+/**
+ * Subcategories.
+ *
+ * Displays sorted model subcategories.
+ *
+ * Responsibilities:
+ * - Supports switching between subcategories and "All models" view of active category.
+ * - Loads model preview data from Firestore.
+ * - Integrates guide flows.
+ * - Handles edit flow
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Subcategories components.
+ */
 const Subcategories = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
   const activeSubcategory = useSelector((state) => state.tabs.currSubcategory);
@@ -28,7 +43,7 @@ const Subcategories = () => {
   };
 
   const subcategoriesData = categories[activeTab].find(
-    (category) => category.id === activeCategory
+    (category) => category.id === activeCategory,
   )?.subcategories;
 
   const subcategoriesHtml = subcategoriesData

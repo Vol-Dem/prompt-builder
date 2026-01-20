@@ -14,6 +14,27 @@ import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import InfoQuickEdit from "../../general-elements/info/InfoQuickEdit";
 
+/**
+ * Model tags panel.
+ *
+ * Displays model activation tag, trigger words, helper words, and negative words,
+ * along with controls to manage and apply them to the prompt.
+ *
+ * Responsibilities:
+ * - Renders model activation and trigger-related tags.
+ * - Allows adding or removing all trigger words to/from the prompt.
+ * - Supports copying trigger words to the clipboard.
+ * - Opens a modal form to edit trigger words.
+ * - Generates an activation tag based on the model file name.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.customData - User-specific model data.
+ * @param {object} props.modelPreview - Default model preview data.
+ *
+ * @returns {JSX.Element} Model tags panel.
+ */
 const ModelTags = ({ customData, modelPreview }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const model = useSelector((state) => state.model.model);

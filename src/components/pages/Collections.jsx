@@ -8,6 +8,7 @@ import { useOnlineStatus } from "../../hooks/use-online-status";
 import ErrorMessage from "../ui/ErrorMessage";
 import Spinner from "../ui/Spinner";
 import {
+  DEFAULT_PAGE_TITLE,
   ERROR_MESSAGE_OFFLINE,
   SETTINGS_LOAD_MORE_MARGIN_SMALL,
 } from "../../variables/constants";
@@ -32,32 +33,39 @@ const Collections = ({ title }) => {
   const [isSubcategory, setIsSubcategory] = useState(false);
   const categories = useSelector((state) => state.images.categories);
   const collectionPreviews = useSelector(
-    (state) => state.images.collectionPreviews
+    (state) => state.images.collectionPreviews,
   );
   const isLastPage = useSelector((state) => state.images.isLastPreviewsPage);
   const isLoading = useSelector((state) => state.images.previewsIsLoading);
   const errorMessage = useSelector(
-    (state) => state.images.previewsErrorMessage
+    (state) => state.images.previewsErrorMessage,
   );
   const activeCategory = useSelector((state) => state.images.activeCategory);
   const activeSubcategory = useSelector(
-    (state) => state.images.activeSubcategory
+    (state) => state.images.activeSubcategory,
   );
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const endPageRef = useRef(null);
   const isOnline = useOnlineStatus();
   const dispatch = useDispatch();
   const subcategories = categories?.find(
-    (category) => category.id === activeCategory
+    (category) => category.id === activeCategory,
   )?.subcategories;
   const intersecting = useIntersection(endPageRef, false, 0);
   const intersectingSmall = useIntersection(
     endPageRef,
     false,
     0,
-    `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`
+    `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`,
   );
-  document.title = title;
+
+  useEffect(() => {
+    document.title = title;
+
+    return () => {
+      document.title = DEFAULT_PAGE_TITLE;
+    };
+  }, [title]);
 
   useEffect(() => {
     setIsIntersecting(intersecting || intersectingSmall);
@@ -106,7 +114,7 @@ const Collections = ({ title }) => {
           {subcategory.name}
         </CategoryListItem>
       );
-    }
+    },
   );
 
   //Load previews on scroll
@@ -129,8 +137,8 @@ const Collections = ({ title }) => {
           activeCategory,
           activeSubcategory,
           !!collectionPreviews?.data?.length,
-          nsfwMode
-        )
+          nsfwMode,
+        ),
       );
     }
   }, [

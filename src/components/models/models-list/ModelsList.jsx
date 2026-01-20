@@ -18,6 +18,19 @@ import useIntersection from "../../../hooks/use-intersection";
 import PreviewCard from "../../general-elements/preview-card/PreviewCard";
 import ModelsListPanel from "./models-list-panel/ModelsListPanel";
 
+/**
+ * Displays a list of model previews with infinite scrolling support.
+ *
+ * Responsibilities:
+ * - Fetches and displays model previews for the selected model version.
+ * - Supports infinite scrolling with fallbacks.
+ * - Displays helpful guidance when no images are available.
+ * - Handles loading and error states.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} List of model previews with infinite scroll behavior.
+ */
 const ModelsList = () => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const modelsData = useSelector((state) => state.tabs.modelsData);
@@ -38,7 +51,7 @@ const ModelsList = () => {
     endPageRef,
     false,
     0,
-    `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`
+    `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`,
   );
 
   useEffect(() => {
@@ -61,7 +74,7 @@ const ModelsList = () => {
         guideActions.setGuideStep({
           type: "home",
           value: GUIDE_STEP_OPEN_MODEL,
-        })
+        }),
       );
     }
   }, [guideState, modelsData?.previews, dispatch]);
@@ -89,8 +102,8 @@ const ModelsList = () => {
           activeCategory,
           activeSubcategory,
           loadMore,
-          nsfwMode
-        )
+          nsfwMode,
+        ),
       );
     }
   }, [

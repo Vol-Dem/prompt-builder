@@ -4,6 +4,14 @@ import classes from "./ModelInfo.module.scss";
 import LinkA from "../../ui/LinkA";
 import ResourceTypeLabel from "../../ui/text/ResourceTypeLabel";
 
+/**
+ * Content for the model info section.
+ *
+ * Displays model information with link to Civitai.
+ *
+ * @component
+ * @returns {JSX.Element} The model info content.
+ */
 const ModelInfo = ({ customData }) => {
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);

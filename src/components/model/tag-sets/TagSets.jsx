@@ -22,6 +22,26 @@ import NotificationMessage from "../../ui/NotificationMessage";
 
 const defVisibleTags = 2;
 
+/**
+ * Model tag sets component.
+ *
+ * Displays user-defined tag sets for the active model version, including
+ * version-specific and default tag sets.
+ *
+ * Responsibilities:
+ * - Renders tag sets with preview images.
+ * - Allows adding or removing all tags to/from the prompt.
+ * - Supports copying tag sets to the clipboard.
+ * - Provides controls to add new tag sets and display contextual hints.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.customData - User-defined tag sets for the current version.
+ * @param {object} props.defaultData - Default tag sets shared across versions.
+ *
+ * @returns {JSX.Element} Model tag sets panel.
+ */
 const TagSets = ({ customData, defaultData }) => {
   const [tagSetsIsOpen, setTagSetsIsOpen] = useState(false);
   const [tagSetsFormIsOpen, setTagSetsFormIsOpen] = useState(false);

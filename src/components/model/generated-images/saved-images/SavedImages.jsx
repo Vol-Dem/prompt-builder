@@ -17,7 +17,26 @@ import FolderSvg from "../../../../assets/FolderSvg";
 import useIntersection from "../../../../hooks/use-intersection";
 import useFetchFirestoreImages from "../../../../hooks/use-fetch-firestore-images";
 
-const SavedImages = memo(({ curImagesModelVersionId }) => {
+/**
+ * Displays all saved images belonging to the active model version with infinite scroll support.
+ * Handles image deletion.
+ *
+ * Uses intersection observers to detect when more images should be loaded.
+ *
+ * Fetches images in pages from Firestore, handles loading and error states, and
+ * displays a guidance message when the model is empty.
+ *
+ * The component is memoized to avoid unnecessary re-renders when collection state
+ * does not change.
+ *
+ * @component
+ * 
+ * @param {object} props
+ * @param {number} props.versionId - Model version ID.
+ *
+ * @returns {JSX.Element} List of model images with infinite scroll behavior.
+ */
+const SavedImages = memo(({ versionId }) => {
   const model = useSelector((state) => state.model.model);
   const savedImagesData = useSelector((state) => state.model.savedImages);
   const curVersion = useSelector((state) => state.model.curVersion);
@@ -35,7 +54,7 @@ const SavedImages = memo(({ curImagesModelVersionId }) => {
     isFetching: imagesIsLoading,
     isLastPage,
     errorMessage,
-  } = useFetchFirestoreImages(curImagesModelVersionId);
+  } = useFetchFirestoreImages(versionId);
 
   const deleteImageHandler = (ids, postId) => {
     setImageData((prevState) => {
@@ -84,7 +103,7 @@ const SavedImages = memo(({ curImagesModelVersionId }) => {
     return (
       <Carousel
         key={i}
-        versionId={curImagesModelVersionId}
+        versionId={versionId}
         imagesData={item}
         postId={item[0].postId}
         visibleImgAmount={1}

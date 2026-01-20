@@ -16,6 +16,15 @@ import { handleErrors } from "../../../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 
+/**
+ * Displays preview images belonging to the active model version.
+ *
+ * Fetches previw images of current model version and displays them as carousel.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Model default images component.
+ */
 const ModelDefImages = () => {
   const [curVersionImages, setCurVersionImages] = useState([]);
   const [curVersionImagesIsLoading, setCurVersionImagesIsLoading] =

@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import classes from "./Models.module.scss";
 import Categories from "./categories/Categories";
 import { getModelsPreview, tabActions } from "../../store/tabs";
-import { MODEL_TYPES } from "../../variables/constants";
+import { DEFAULT_PAGE_TITLE, MODEL_TYPES } from "../../variables/constants";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import LinkA from "../ui/LinkA";
@@ -22,7 +22,27 @@ import TextHighlight from "../ui/text/TextHighlight";
 import NotificationMessage from "../ui/NotificationMessage";
 import Text from "../ui/text/Text";
 
-const Models = () => {
+/**
+ * Models page.
+ *
+ * Top-level route responsible for displaying and managing user models.
+ *
+ * Responsibilities:
+ * - Displays model categories and model previews.
+ * - Supports switching between categories and "All models" view.
+ * - Loads model preview data from Firestore.
+ * - Handles loading, empty, and error states.
+ * - Integrates onboarding and guide flows.
+ * - Updates the document title.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {string} props.title - Page title.
+ *
+ * @returns {JSX.Element} Models page.
+ */
+const Models = ({ title }) => {
   const [guideIsOpen, setGuideIsOpen] = useState(true);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const authIsOpen = useSelector((state) => state.auth.authFormIsOpen);
@@ -34,22 +54,30 @@ const Models = () => {
   const guideHomeState = useSelector((state) => state.guide.home);
   const guideIsActive = useSelector((state) => state.guide.active);
   const guideIntroIsDisabled = useSelector(
-    (state) => state.guide.introDisabled
+    (state) => state.guide.introDisabled,
   );
   const userDataIsLoading = useSelector(
-    (state) => state.auth.userDataIsLoading
+    (state) => state.auth.userDataIsLoading,
   );
   const userDataLoadError = useSelector(
-    (state) => state.auth.userDataLoadError
+    (state) => state.auth.userDataLoadError,
   );
   const dispatch = useDispatch();
 
-  const categorySwitchHandler = (e) => {
+  useEffect(() => {
+    document.title = title;
+
+    return () => {
+      document.title = DEFAULT_PAGE_TITLE;
+    };
+  }, [title]);
+
+  const tabSwitchHandler = (e) => {
     if (activeTab === e.target.dataset.value) return;
     dispatch(tabActions.setCurrentTab(e.target.dataset.value));
     if (e.target.dataset.value === "all") {
       dispatch(
-        getModelsPreview(e.target.dataset.value, null, null, false, nsfwMode)
+        getModelsPreview(e.target.dataset.value, null, null, false, nsfwMode),
       );
     }
   };
@@ -57,7 +85,7 @@ const Models = () => {
   const modelTypesHtml = Object.keys(categories)
     .map((categoryId) => {
       const modelTypeInfo = MODEL_TYPES.find(
-        (modelType) => modelType.value === categoryId
+        (modelType) => modelType.value === categoryId,
       );
 
       return {
@@ -72,7 +100,7 @@ const Models = () => {
         <CategoryListItem
           key={category.id}
           dataValue={category.id}
-          onClick={categorySwitchHandler}
+          onClick={tabSwitchHandler}
           active={activeTab === category.id}
         >
           {category.name}
@@ -87,12 +115,9 @@ const Models = () => {
     <>
       <div className={classes["tag-menu"]}>
         {!!modelTypesHtml?.length && (
-          <CategoryList
-            activeCategory={activeTab}
-            onClick={categorySwitchHandler}
-          >
+          <CategoryList activeCategory={activeTab} onClick={tabSwitchHandler}>
             <ButtonCategoryAll
-              onClick={categorySwitchHandler}
+              onClick={tabSwitchHandler}
               className={` ${activeTab === "all" ? classes.active : ""}`}
               activeCategory={activeTab}
             />
