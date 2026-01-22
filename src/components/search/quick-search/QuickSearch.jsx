@@ -20,6 +20,27 @@ import QuickSearchResultList from "../quick-search-list/QuickSearchResultList";
 
 const searchTimeoutMs = 1000;
 
+/**
+ * Lightweight live-search dropdown shown outside the Search page.
+ *
+ * Responsibilities:
+ * - Debounces user input.
+ * - Dispatches `liveSearch` with a small limit.
+ * - Shows first N results.
+ * - Displays "Show more" when more results exist.
+ * - Navigates to the full Search page on submit.
+ * - Displays matching subcategories via CategoriesSearch.
+ *
+ * Implementation note:
+ * The live search request fetches
+ * SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE + 1 items.
+ * The extra item is used only to detect whether
+ * more results exist (Firestore does not provide
+ * a reliable "hasNextPage" flag).
+ *
+ * @component
+ * @returns {JSX.Element} Live-search dropdown.
+ */
 const QuickSearch = ({ onSubmit, onOpen }) => {
   const searchIsLoading = useSelector((state) => state.search.isLoading);
   const errorMessage = useSelector((state) => state.search.errorMessage);
@@ -32,11 +53,7 @@ const QuickSearch = ({ onSubmit, onOpen }) => {
   const timeoutRef = useRef(null);
 
   useEffect(() => {
-    if (
-      searchInput.length >= 3 &&
-      isOnline &&
-      location.pathname !== "/search"
-    ) {
+    if (isOnline) {
       let curQuery = searchInput.trim();
 
       dispatch(searchActions.resetQuickSearchData());
@@ -54,8 +71,8 @@ const QuickSearch = ({ onSubmit, onOpen }) => {
             nsfwMode,
             SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE + 1,
             false,
-            true
-          )
+            true,
+          ),
         );
       };
 

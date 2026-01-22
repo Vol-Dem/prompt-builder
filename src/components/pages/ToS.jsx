@@ -3,15 +3,36 @@ import { NavLink } from "react-router-dom";
 
 import LinkA from "../ui/LinkA";
 import classes from "./ToS.module.scss";
+import { DEFAULT_PAGE_TITLE } from "../../variables/constants";
 
+/**
+ * Terms of Service page.
+ *
+ * High-level route responsible for displaying a terms of service.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {string} props.title - Page title.
+ *
+ * @returns {JSX.Element} Terms of Service page.
+ */
 const ToS = ({ title }) => {
   useEffect(() => {
     document.title = title;
+
+    return () => {
+      document.title = DEFAULT_PAGE_TITLE;
+    };
   }, [title]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    document.title = title;
+
+    return () => {
+      document.title = DEFAULT_PAGE_TITLE;
+    };
+  }, [title]);
 
   return (
     <div className={classes.tos}>
@@ -272,9 +293,11 @@ const ToS = ({ title }) => {
         reason, with or without notice, and without any liability to you arising
         from such termination. You may terminate your Account and these Terms at
         any time by following the instructions in your Account or contacting us
-        at <LinkA href="mailto:support@aide-tools.com">
+        at{" "}
+        <LinkA href="mailto:support@aide-tools.com">
           support@aide-tools.com
-        </LinkA>.
+        </LinkA>
+        .
       </p>
       <p className={classes["tos__text"]}>
         12.3 Effect of Termination. Upon termination of these Terms: (a) your

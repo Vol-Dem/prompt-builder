@@ -1,20 +1,20 @@
-import ImageComparisonSlider from "../ui/image-comparison-slider/ImageComparisonSlider";
-import NotificationMessage from "../ui/NotificationMessage";
-import H1 from "../ui/text/H1";
-import List from "../ui/text/List";
-import ListItem from "../ui/text/ListItem";
-import Text from "../ui/text/Text";
-import TextContentBlock from "../ui/text/TextContentBlock";
-import TextHighlight from "../ui/text/TextHighlight";
-import Video from "../ui/Video";
+import ImageComparisonSlider from "../../ui/image-comparison-slider/ImageComparisonSlider";
+import NotificationMessage from "../../ui/NotificationMessage";
+import H1 from "../../ui/text/H1";
+import List from "../../ui/text/List";
+import ListItem from "../../ui/text/ListItem";
+import Text from "../../ui/text/Text";
+import TextContentBlock from "../../ui/text/TextContentBlock";
+import TextHighlight from "../../ui/text/TextHighlight";
+import Video from "../../ui/Video";
 import classes from "./AboutMain.module.scss";
-import AboutContentWrap from "./layout/AboutContentWrap";
-import introWebm from "../../assets/home/intro-s.webp";
-import introMp4 from "../../assets/home/intro.mp4";
-import compSliderLeftImg from "../../assets/guide/prompt-text.webp";
-import compSliderRightImg from "../../assets/guide/prompt-tags.webp";
-import patreonLogoWhite from "../../assets/patreon-w.png";
-import kofiLogoDark from "../../assets/kofi_bg_tag_dark.webp";
+import AboutContentWrap from "../../about/layout/AboutContentWrap";
+import introWebm from "../../../assets/home/intro-s.webp";
+import introMp4 from "../../../assets/home/intro.mp4";
+import compSliderLeftImg from "../../../assets/guide/prompt-text.webp";
+import compSliderRightImg from "../../../assets/guide/prompt-tags.webp";
+import patreonLogoWhite from "../../../assets/patreon-w.png";
+import kofiLogoDark from "../../../assets/kofi_bg_tag_dark.webp";
 
 /**
  * Content for the About page "About" section.

@@ -40,7 +40,7 @@ const carouselImages = [
 ];
 
 /**
- * Content for the Landing page.
+ * Landing page.
  *
  * @component
  * @returns {JSX.Element} The Landing page content.
@@ -196,11 +196,9 @@ const Landing = () => {
               disablePictureInPicture
               preload="none"
               muted
-              // loading="lazy"
               poster={mainStoreWebm}
               className={classes["section__video"]}
             >
-              {/* <source src={videoSrc?.webm} type="video/webm" /> */}
               <source src={mainStoreMp4} type="video/mp4" />
             </Video>
           </div>

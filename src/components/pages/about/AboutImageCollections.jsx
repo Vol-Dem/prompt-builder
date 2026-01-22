@@ -4,34 +4,34 @@ import {
   FolderPlusIcon,
 } from "@heroicons/react/24/outline";
 
-import Image from "../ui/image/Image";
-import TextButton from "../ui/text/text-buttons/TextButton";
-import TextHighlight from "../ui/text/TextHighlight";
+import Image from "../../ui/image/Image";
+import TextButton from "../../ui/text/text-buttons/TextButton";
+import TextHighlight from "../../ui/text/TextHighlight";
 import classes from "./AboutImageCollections.module.scss";
-import Text from "../ui/text/Text";
-import TextImageBlock from "../ui/text/TextImageBlock";
-import TextContentBlock from "../ui/text/TextContentBlock";
-import TextButtonCreate from "../ui/text/text-buttons/TextButtonCreate";
-import H3 from "../ui/text/H3";
-import TextImageMenu from "../ui/text/text-buttons/TextImageMenu";
-import TextButtonSquare from "../ui/text/text-buttons/TextButtonSquare";
-import TextButtonCollection from "../ui/text/text-buttons/TextButtonCollection";
-import AboutAddImageById from "./AboutAddImageById";
-import H1 from "../ui/text/H1";
-import AboutContentWrap from "./layout/AboutContentWrap";
-import AboutSection from "./layout/AboutSection";
-import collectionsModel from "../../assets/about/20-collections-model-1.jpg";
-import collectionsModelWebm from "../../assets/about/20-collections-model-1.webp";
-import collectionsModel2 from "../../assets/about/20-collections-model-2.jpg";
-import collectionsModel2Webm from "../../assets/about/20-collections-model-2.webp";
-import collectionsModel3 from "../../assets/about/20-collections-model-3.jpg";
-import collectionsModel3Webm from "../../assets/about/20-collections-model-3.webp";
-import collectionsModel4 from "../../assets/about/20-collections-model-4.jpg";
-import collectionsModel4Webm from "../../assets/about/20-collections-model-4.webp";
-import collectionsSidebar from "../../assets/about/21-collections-sidebar.jpg";
-import collectionsSidebarWebm from "../../assets/about/21-collections-sidebar.webp";
-import collectionsPrev from "../../assets/about/20-collections-prev.jpg";
-import collectionsPrevWebm from "../../assets/about/20-collections-prev.webp";
+import Text from "../../ui/text/Text";
+import TextImageBlock from "../../ui/text/TextImageBlock";
+import TextContentBlock from "../../ui/text/TextContentBlock";
+import TextButtonCreate from "../../ui/text/text-buttons/TextButtonCreate";
+import H3 from "../../ui/text/H3";
+import TextImageMenu from "../../ui/text/text-buttons/TextImageMenu";
+import TextButtonSquare from "../../ui/text/text-buttons/TextButtonSquare";
+import TextButtonCollection from "../../ui/text/text-buttons/TextButtonCollection";
+import AboutAddImageById from "../../about/AboutAddImageById";
+import H1 from "../../ui/text/H1";
+import AboutContentWrap from "../../about/layout/AboutContentWrap";
+import AboutSection from "../../about/layout/AboutSection";
+import collectionsModel from "../../../assets/about/20-collections-model-1.jpg";
+import collectionsModelWebm from "../../../assets/about/20-collections-model-1.webp";
+import collectionsModel2 from "../../../assets/about/20-collections-model-2.jpg";
+import collectionsModel2Webm from "../../../assets/about/20-collections-model-2.webp";
+import collectionsModel3 from "../../../assets/about/20-collections-model-3.jpg";
+import collectionsModel3Webm from "../../../assets/about/20-collections-model-3.webp";
+import collectionsModel4 from "../../../assets/about/20-collections-model-4.jpg";
+import collectionsModel4Webm from "../../../assets/about/20-collections-model-4.webp";
+import collectionsSidebar from "../../../assets/about/21-collections-sidebar.jpg";
+import collectionsSidebarWebm from "../../../assets/about/21-collections-sidebar.webp";
+import collectionsPrev from "../../../assets/about/20-collections-prev.jpg";
+import collectionsPrevWebm from "../../../assets/about/20-collections-prev.webp";
 
 /**
  * Content for the About page "Image collections" section.

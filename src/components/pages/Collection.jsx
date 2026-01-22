@@ -15,6 +15,30 @@ import ErrorMessage from "../ui/ErrorMessage";
 import ButtonSquareAdd from "../general-elements/button-square-add/ButtonSquareAdd";
 import { DEFAULT_PAGE_TITLE } from "../../variables/constants";
 
+/**
+ * Collection page.
+ *
+ * High-level route responsible for displaying a collection.
+ *
+ * Responsibilities:
+ * - Loads collection data from Firestore.
+ * - Manages page-level loading, error, and empty states.
+ * - Updates the document title based on the active collection.
+ * - Provides actions to add images manually.
+ * - Provides a back button to return to the collection page.
+ *
+ * Side effects:
+ * - Fetches collection data on route change.
+ * - Updates Redux collection state.
+ * - Sets and restores `document.title`.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {string} props.title - Fallback page title used before collection data is loaded.
+ *
+ * @returns {JSX.Element} Collection page.
+ */
 const Collection = ({ title }) => {
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

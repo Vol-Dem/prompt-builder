@@ -9,6 +9,23 @@ import Modal from "../ui/Modal";
 import AuthForm from "../forms/Auth/AuthForm";
 import { ERROR_MESSAGE_DEFAULT } from "../../variables/constants";
 
+/**
+ * Error page.
+ *
+ * High-level route responsible for displaying application errors
+ * (e.g. 404 and unexpected route failures).
+ *
+ * Responsibilities:
+ * - Displays error status and user-friendly messages.
+ * - Provides navigation back to the home page.
+ * - Prompts unauthenticated users to sign in (for 404 cases).
+ *
+ * Side effects:
+ * - Opens and closes the authentication modal via Redux.
+ *
+ * @component
+ * @returns {JSX.Element} Error page layout.
+ */
 const ErrorPage = () => {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const authIsOpen = useSelector((state) => state.auth.authFormIsOpen);

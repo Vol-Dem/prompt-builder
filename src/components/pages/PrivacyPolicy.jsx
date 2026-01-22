@@ -3,15 +3,32 @@ import { useEffect } from "react";
 
 import classes from "./PrivacyPolicy.module.scss";
 import LinkA from "../ui/LinkA";
+import { DEFAULT_PAGE_TITLE } from "../../variables/constants";
 
+/**
+ * Privacy policy page.
+ *
+ * High-level route responsible for displaying a privacy policy.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {string} props.title - Page title.
+ *
+ * @returns {JSX.Element} Privacy policy page.
+ */
 const PrivacyPolicy = ({ title }) => {
   useEffect(() => {
     document.title = title;
   }, [title]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    document.title = title;
+
+    return () => {
+      document.title = DEFAULT_PAGE_TITLE;
+    };
+  }, [title]);
 
   return (
     <div className={classes.policy}>

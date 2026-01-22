@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 
 import classes from "./Models.module.scss";
-import Categories from "./categories/Categories";
+import Categories from "../models/categories/Categories";
 import { getModelsPreview, tabActions } from "../../store/tabs";
 import { DEFAULT_PAGE_TITLE, MODEL_TYPES } from "../../variables/constants";
 import Spinner from "../ui/Spinner";
@@ -13,7 +13,7 @@ import OpenCategoryGuide from "../general-elements/guide/home/OpenCategoryGuide"
 import Modal from "../ui/Modal";
 import IntroGuide from "../general-elements/guide/IntroGuide";
 import { guideActions } from "../../store/guide";
-import ModelsList from "./models-list/ModelsList";
+import ModelsList from "../models/models-list/ModelsList";
 import CategoryList from "../ui/lists/CategoryList";
 import ButtonCategoryAll from "../ui/buttons/ButtonCategoryAll";
 import CategoryListItem from "../ui/lists/CategoryListItem";

@@ -1,26 +1,26 @@
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 
-import Image from "../ui/image/Image";
-import TextButton from "../ui/text/text-buttons/TextButton";
-import TextHighlight from "../ui/text/TextHighlight";
+import Image from "../../ui/image/Image";
+import TextButton from "../../ui/text/text-buttons/TextButton";
+import TextHighlight from "../../ui/text/TextHighlight";
 import classes from "./AboutModelSettings.module.scss";
-import Text from "../ui/text/Text";
-import TextImageBlock from "../ui/text/TextImageBlock";
-import TextContentBlock from "../ui/text/TextContentBlock";
-import H3 from "../ui/text/H3";
-import AboutContentWrap from "./layout/AboutContentWrap";
-import H1 from "../ui/text/H1";
-import AboutSection from "./layout/AboutSection";
-import modelSettings from "../../assets/about/9-model-settings.jpg";
-import modelSettingsWebp from "../../assets/about/9-model-settings.webp";
-import generalSettings from "../../assets/about/10-general-settings.jpg";
-import generalSettingsWebp from "../../assets/about/10-general-settings.webp";
-import generalSettings1 from "../../assets/about/11-versions-settings-1.jpg";
-import generalSettings1Webp from "../../assets/about/11-versions-settings-1.webp";
-import generalSettings2 from "../../assets/about/11-versions-settings-2.jpg";
-import generalSettings2Webp from "../../assets/about/11-versions-settings-2.webp";
-import generalSettings3 from "../../assets/about/11-versions-settings-3.jpg";
-import generalSettings3Webp from "../../assets/about/11-versions-settings-3.webp";
+import Text from "../../ui/text/Text";
+import TextImageBlock from "../../ui/text/TextImageBlock";
+import TextContentBlock from "../../ui/text/TextContentBlock";
+import H3 from "../../ui/text/H3";
+import AboutContentWrap from "../../about/layout/AboutContentWrap";
+import H1 from "../../ui/text/H1";
+import AboutSection from "../../about/layout/AboutSection";
+import modelSettings from "../../../assets/about/9-model-settings.jpg";
+import modelSettingsWebp from "../../../assets/about/9-model-settings.webp";
+import generalSettings from "../../../assets/about/10-general-settings.jpg";
+import generalSettingsWebp from "../../../assets/about/10-general-settings.webp";
+import generalSettings1 from "../../../assets/about/11-versions-settings-1.jpg";
+import generalSettings1Webp from "../../../assets/about/11-versions-settings-1.webp";
+import generalSettings2 from "../../../assets/about/11-versions-settings-2.jpg";
+import generalSettings2Webp from "../../../assets/about/11-versions-settings-2.webp";
+import generalSettings3 from "../../../assets/about/11-versions-settings-3.jpg";
+import generalSettings3Webp from "../../../assets/about/11-versions-settings-3.webp";
 
 /**
  * Content for the About page "Model Settings" section.

@@ -13,6 +13,20 @@ import { modelActions } from "../../../store/model";
 import Image from "../../ui/image/Image";
 import ButtonSquareAdd from "../../general-elements/button-square-add/ButtonSquareAdd";
 
+/**
+ * Quick search item card.
+ *
+ * Renders a model or collection preview card with
+ * ability to add the card to the right sidebar.
+ * Renders different image previw dependent on nsfw mode.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {object} props.modelPreveiw - Data used to render the preview card.
+ *
+ * @returns {JSX.Element} The quick search item card.
+ */
 const QuickSearchItem = ({ modelPreveiw }) => {
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const dispatch = useDispatch();

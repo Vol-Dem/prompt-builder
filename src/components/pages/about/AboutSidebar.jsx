@@ -7,21 +7,21 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
-import Image from "../ui/image/Image";
+import Image from "../../ui/image/Image";
 import classes from "./AboutSidebar.module.scss";
-import Text from "../ui/text/Text";
-import TextImageBlock from "../ui/text/TextImageBlock";
-import TextContentBlock from "../ui/text/TextContentBlock";
-import TextButtonTertiary from "../ui/text/text-buttons/TextButtonTertiary";
-import TextButtonSquare from "../ui/text/text-buttons/TextButtonSquare";
-import AboutContentWrap from "./layout/AboutContentWrap";
-import H1 from "../ui/text/H1";
-import H3 from "../ui/text/H3";
-import AboutSection from "./layout/AboutSection";
-import sidebar1 from "../../assets/about/18-sidebar-1.jpg";
-import sidebar1Webp from "../../assets/about/18-sidebar-1.webp";
-import sidebar2 from "../../assets/about/18-sidebar-2.jpg";
-import sidebar2Webp from "../../assets/about/18-sidebar-2.webp";
+import Text from "../../ui/text/Text";
+import TextImageBlock from "../../ui/text/TextImageBlock";
+import TextContentBlock from "../../ui/text/TextContentBlock";
+import TextButtonTertiary from "../../ui/text/text-buttons/TextButtonTertiary";
+import TextButtonSquare from "../../ui/text/text-buttons/TextButtonSquare";
+import AboutContentWrap from "../../about/layout/AboutContentWrap";
+import H1 from "../../ui/text/H1";
+import H3 from "../../ui/text/H3";
+import AboutSection from "../../about/layout/AboutSection";
+import sidebar1 from "../../../assets/about/18-sidebar-1.jpg";
+import sidebar1Webp from "../../../assets/about/18-sidebar-1.webp";
+import sidebar2 from "../../../assets/about/18-sidebar-2.jpg";
+import sidebar2Webp from "../../../assets/about/18-sidebar-2.webp";
 
 /**
  * Content for the About page "Sidebar" section.

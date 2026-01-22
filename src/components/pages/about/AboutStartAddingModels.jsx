@@ -1,23 +1,23 @@
 import { DocumentArrowDownIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 
-import Image from "../ui/image/Image";
-import LinkA from "../ui/LinkA";
-import TextButton from "../ui/text/text-buttons/TextButton";
-import TextHighlight from "../ui/text/TextHighlight";
+import Image from "../../ui/image/Image";
+import LinkA from "../../ui/LinkA";
+import TextButton from "../../ui/text/text-buttons/TextButton";
+import TextHighlight from "../../ui/text/TextHighlight";
 import classes from "./AboutStartAddingModels.module.scss";
-import Text from "../ui/text/Text";
-import TextImageBlock from "../ui/text/TextImageBlock";
-import TextContentBlock from "../ui/text/TextContentBlock";
-import TextButtonCreate from "../ui/text/text-buttons/TextButtonCreate";
-import AboutContentWrap from "./layout/AboutContentWrap";
-import H1 from "../ui/text/H1";
-import newResource from "../../assets/about/3-new-resource.jpg";
-import newResourceWebp from "../../assets/about/3-new-resource.webp";
-import addModel from "../../assets/about/4-add-model.jpg";
-import addModelWebp from "../../assets/about/4-add-model.webp";
-import addedModels from "../../assets/about/5-added-models.jpg";
-import addedModelsWebp from "../../assets/about/5-added-models.webp";
+import Text from "../../ui/text/Text";
+import TextImageBlock from "../../ui/text/TextImageBlock";
+import TextContentBlock from "../../ui/text/TextContentBlock";
+import TextButtonCreate from "../../ui/text/text-buttons/TextButtonCreate";
+import AboutContentWrap from "../../about/layout/AboutContentWrap";
+import H1 from "../../ui/text/H1";
+import newResource from "../../../assets/about/3-new-resource.jpg";
+import newResourceWebp from "../../../assets/about/3-new-resource.webp";
+import addModel from "../../../assets/about/4-add-model.jpg";
+import addModelWebp from "../../../assets/about/4-add-model.webp";
+import addedModels from "../../../assets/about/5-added-models.jpg";
+import addedModelsWebp from "../../../assets/about/5-added-models.webp";
 
 /**
  * Content for the About page "Start: Adding Models" section.

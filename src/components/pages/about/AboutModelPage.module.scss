@@ -1,4 +1,4 @@
-@use "../../variables/variables.scss" as var;
+@use "../../../variables/variables.scss" as var;
 
 .img {
   // display: block;
@@ -76,4 +76,16 @@
   margin-bottom: -0.2rem;
   width: 2rem;
   height: 2rem;
+}
+
+.status {
+  position: relative;
+  bottom: -0.4rem;
+  width: 2rem;
+  color: var.$color-text-yellow;
+  flex-shrink: 0;
+
+  &--saved {
+    color: var.$color-text-green;
+  }
 }

@@ -10,6 +10,7 @@ import firebaseApp from "../../firebase-config";
 import Spinner from "../ui/Spinner";
 import ErrorMessage from "../ui/ErrorMessage";
 import {
+  DEFAULT_PAGE_TITLE,
   ERROR_MESSAGE_DEFAULT,
   GUIDE_STEP_MODEL_EDIT,
 } from "../../variables/constants";
@@ -20,7 +21,37 @@ import { fetchDataFromFirestore } from "../../utils/fetch/fetchUtils";
 
 const firestore = getFirestore(firebaseApp);
 
-const Edit = ({ title }) => {
+/**
+ * Model edit page.
+ *
+ * High-level route responsible for displaying a model editing forms.
+ *
+ * Responsibilities:
+ * - Loads model data from Firestore.
+ * - Keeps user model data in sync across browser tabs.
+ * - Manages page-level loading and error states.
+ * - Updates the document title based on the active collection.
+ * - Integrates onboarding and guide flows.
+ *
+ * Data synchronization:
+ * - Subscribes to the user's model document using `onSnapshot` to reflect
+ *   live changes from other tabs and prevent overwriting.
+ * - Fetches the base model data separately from the public `models` collection
+ *   and merges it with user-specific edits.
+ *
+ * Side effects:
+ * - Subscribes to Firestore on mount and cleans up on unmount.
+ * - Updates Redux model state.
+ * - Sets and restores `document.title`.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {string} props.title - Fallback page title used before model data is loaded.
+ *
+ * @returns {JSX.Element} Model edit page.
+ */
+const ModelEdit = ({ title }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const isAuth = useSelector((state) => state.auth.user.uid);
@@ -65,7 +96,7 @@ const Edit = ({ title }) => {
             dispatch(modelActions.setModelData(data));
             dispatch(modelActions.setModelPreview({}));
             setIsLoading(false);
-          }
+          },
         );
 
         const defModelData = await fetchDataFromFirestore("models", modelId);
@@ -73,7 +104,7 @@ const Edit = ({ title }) => {
         dispatch(
           modelActions.setModelData({
             data: defModelData,
-          })
+          }),
         );
         document.title = defModelData?.name
           ? `Edit - ${defModelData?.name}`
@@ -95,7 +126,7 @@ const Edit = ({ title }) => {
       if (unsub) {
         unsub();
       }
-      document.title = "Prompt builder";
+      document.title = DEFAULT_PAGE_TITLE;
     };
   }, [modelId, isAuth, dispatch, uid, title]);
 
@@ -121,4 +152,4 @@ const Edit = ({ title }) => {
   );
 };
 
-export default Edit;
+export default ModelEdit;

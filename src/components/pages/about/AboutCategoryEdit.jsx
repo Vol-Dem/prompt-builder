@@ -1,17 +1,17 @@
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
-import Image from "../ui/image/Image";
+import Image from "../../ui/image/Image";
 import classes from "./AboutCategoryEdit.module.scss";
-import Text from "../ui/text/Text";
-import TextImageBlock from "../ui/text/TextImageBlock";
-import TextContentBlock from "../ui/text/TextContentBlock";
-import TextButtonTertiary from "../ui/text/text-buttons/TextButtonTertiary";
-import AboutContentWrap from "./layout/AboutContentWrap";
-import H1 from "../ui/text/H1";
-import categoryEdit from "../../assets/about/19-category-edit-1.jpg";
-import categoryEditWebm from "../../assets/about/19-category-edit-1.webp";
-import categoryEdit2 from "../../assets/about/19-category-edit-2.jpg";
-import categoryEdit2Webm from "../../assets/about/19-category-edit-2.webp";
+import Text from "../../ui/text/Text";
+import TextImageBlock from "../../ui/text/TextImageBlock";
+import TextContentBlock from "../../ui/text/TextContentBlock";
+import TextButtonTertiary from "../../ui/text/text-buttons/TextButtonTertiary";
+import AboutContentWrap from "../../about/layout/AboutContentWrap";
+import H1 from "../../ui/text/H1";
+import categoryEdit from "../../../assets/about/19-category-edit-1.jpg";
+import categoryEditWebm from "../../../assets/about/19-category-edit-1.webp";
+import categoryEdit2 from "../../../assets/about/19-category-edit-2.jpg";
+import categoryEdit2Webm from "../../../assets/about/19-category-edit-2.webp";
 
 /**
  * Content for the About page "Category edit" section.

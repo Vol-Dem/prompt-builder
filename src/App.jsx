@@ -7,16 +7,16 @@ import { initAuth } from "./store/auth";
 import ErrorPage from "./components/pages/ErrorPage";
 import { generalActions } from "./store/general";
 import { checkIsMobile } from "./utils/generalUtils";
-import AboutMain from "./components/about/AboutMain";
-import AboutStartAddingModels from "./components/about/AboutStartAddingModels";
-import AboutCategoryEdit from "./components/about/AboutCategoryEdit";
-import AboutWorkingWithPrompts from "./components/about/AboutWorkingWithPrompts";
-import AboutModelPage from "./components/about/AboutModelPage";
-import AboutModelSettings from "./components/about/AboutModelSettings";
-import AboutImageCollections from "./components/about/AboutImageCollections";
-import AboutTopPanel from "./components/about/AboutTopPanel";
-import AboutSidebar from "./components/about/AboutSidebar";
-import Models from "./components/models/Models";
+import AboutMain from "./components/pages/about/AboutMain";
+import AboutStartAddingModels from "./components/pages/about/AboutStartAddingModels";
+import AboutCategoryEdit from "./components/pages/about/AboutCategoryEdit";
+import AboutWorkingWithPrompts from "./components/pages/about/AboutWorkingWithPrompts";
+import AboutModelPage from "./components/pages/about/AboutModelPage";
+import AboutModelSettings from "./components/pages/about/AboutModelSettings";
+import AboutImageCollections from "./components/pages/about/AboutImageCollections";
+import AboutTopPanel from "./components/pages/about/AboutTopPanel";
+import AboutSidebar from "./components/pages/about/AboutSidebar";
+import Models from "./components/pages/Models";
 // import Landing from "./components/landing/Landing";
 
 const About = lazy(() => import("./components/pages/About"));
@@ -30,7 +30,7 @@ const Collection = lazy(() => import("./components/pages/Collection"));
 const CollectionEdit = lazy(() => import("./components/pages/CollectionEdit"));
 const Edit = lazy(() => import("./components/pages/Edit"));
 const Home = lazy(() => import("./components/pages/Home"));
-const Landing = lazy(() => import("./components/landing/Landing"));
+const Landing = lazy(() => import("./components/pages/Landing"));
 
 function App() {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);

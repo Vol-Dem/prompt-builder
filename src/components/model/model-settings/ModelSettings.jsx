@@ -36,13 +36,29 @@ import { handleErrors } from "../../../utils/generalUtils";
 /**
  * Model settings.
  *
- * Renders button to back, check for updates and delete model.
- * Displays left sidebar that allows to switch between general, default and versions forms for current model.
- * On update calls fetchModelUpdates func that fetches model data from Civitai and if new versions was found updates current model data.
+ * Displays model settings and version-specific configuration.
+ *
+ * Responsibilities:
+ * - Displays model and version settings.
+ * - Allows switching between settings sections and model versions.
+ * - Checks for and applies model updates.
+ * - Handles model deletion and navigates away on success.
+ * - Supports mobile sidebar navigation.
+ *
+ * Update behavior:
+ * - Fetches the latest model data from the external source.
+ * - Detects newly added versions by comparing against the current model.
+ * - Merges only new versions into the user's custom model data.
+ * - Updates Redux state with the refreshed base model data.
+ *
+ * Navigation behavior:
+ * - Uses a collapsible left sidebar on small screens.
+ * - Automatically closes the menu after selecting a section.
+ * - Provides a back button to return to the model page.
  *
  * @component
  *
- * @returns {JSX.Element} The navigation panel element.
+ * @returns {JSX.Element} Model settings component.
  */
 const ModelSettings = () => {
   const [curTab, setCurTab] = useState("general");
@@ -110,13 +126,13 @@ const ModelSettings = () => {
         newModelData,
         newVersions,
         model,
-        curBaseModels
+        curBaseModels,
       );
 
       dispatch(
         modelActions.setModelData({
           data: newModelData,
-        })
+        }),
       );
       seteSuccessMessage("Updated");
       setIsLoading(false);
@@ -186,7 +202,6 @@ const ModelSettings = () => {
   };
 
   const backHandler = () => {
-    // navigate(-1);
     navigate(`/models/${model.id}`);
   };
 

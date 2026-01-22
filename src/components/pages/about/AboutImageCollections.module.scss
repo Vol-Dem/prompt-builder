@@ -1,33 +1,4 @@
-@use "../../variables/variables.scss" as var;
-
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  list-style: circle;
-  margin-left: 2rem;
-  font-size: 1.6rem;
-  // width: 80%;
-  margin-bottom: 2rem;
-
-  &-item {
-    font-size: 1.6rem;
-    margin-bottom: 0.4rem;
-    &--sub {
-      list-style: none;
-    }
-  }
-}
-
-.sub-list {
-  // list-style: "— ";
-  margin-left: 2rem;
-  margin-bottom: 1rem;
-}
-
-.link {
-  @include var.linkA;
-}
+@use "../../../variables/variables.scss" as var;
 
 .img {
   // display: block;
@@ -60,11 +31,6 @@
   flex-shrink: 0;
   width: 100%;
   height: auto;
-  max-width: 98rem;
-}
-
-.comparison {
-  margin: 2rem 0;
 }
 
 .btn-civ {
@@ -110,11 +76,4 @@
   margin-bottom: -0.2rem;
   width: 2rem;
   height: 2rem;
-}
-
-.img-link {
-  position: relative;
-  top: 0.7rem;
-  height: 2.2rem;
-  width: auto;
 }

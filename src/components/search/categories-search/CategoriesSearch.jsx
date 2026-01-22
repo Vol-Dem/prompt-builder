@@ -7,11 +7,27 @@ import { useOnlineStatus } from "../../../hooks/use-online-status";
 import { subcategoriesSearch } from "../../../utils/searchUtils";
 import CategoriesSearchItem from "../categories-search-item/CategoriesSearchItem";
 
+/**
+ * CategoriesSearch
+ *
+ * Live subcategory search for the QuickSearch dropdown.
+ *
+ * Finds matching model and collection subcategories based on
+ * the current search query and displays them as navigation shortcuts.
+ *
+ * Responsibilities:
+ * - Filters all available categories and subcategories by search query.
+ * - Combines model and collection category sources into a single result set.
+ * - Updates results in real time as the user types.
+ * - Clears results when offline.
+ *
+ * @component
+ * @returns {JSX.Element} Subcategory quick search result list.
+ */
 const CategoriesSearch = () => {
   const [subcategoriesSearchResult, setSubcategoriesSearchResult] = useState(
-    []
+    [],
   );
-  const uid = useSelector((state) => state.auth.user.uid);
   const searchInput = useSelector((state) => state.search.searchQuery);
   const categories = useSelector((state) => state.tabs.categoriesData);
   const collectionCategories = useSelector((state) => state.images.categories);
@@ -38,26 +54,21 @@ const CategoriesSearch = () => {
   }, [categories, collectionCategories]);
 
   useEffect(() => {
-    if (
-      uid &&
-      searchInput.length >= 3 &&
-      isOnline &&
-      location.pathname !== "/search"
-    ) {
+    if (isOnline) {
       const searchResult = subcategoriesSearch(
         searchInput,
-        categoriesSearchData
+        categoriesSearchData,
       );
       setSubcategoriesSearchResult(searchResult);
     } else {
       setSubcategoriesSearchResult([]);
     }
-  }, [searchInput, uid, categoriesSearchData, location?.pathname, isOnline]);
+  }, [searchInput, categoriesSearchData, location?.pathname, isOnline]);
 
   const categoriesSearchResultHtml = subcategoriesSearchResult.map(
     (result, i) => {
       return <CategoriesSearchItem key={i} result={result} />;
-    }
+    },
   );
 
   return (

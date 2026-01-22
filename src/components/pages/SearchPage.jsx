@@ -20,6 +20,28 @@ import { checkObjectsIsEqual } from "../../utils/generalUtils";
 import useIntersection from "../../hooks/use-intersection";
 import SearchFilter from "../search/search-filter/SearchFilter";
 
+/**
+ * Full search page with filters and infinite scroll.
+ *
+ * Responsibilities:
+ * - Reads query and filters from the URL.
+ * - Performs paginated search with intersection observers.
+ * - Preserves results when navigating away and back.
+ * - Reloads only when query, filters, or NSFW mode change.
+ * - Displays filters in a collapsible sidebar.
+ *
+ * Pagination state:
+ * - isLastPage: no more model-name results
+ * - isLastCollectionsPage: no more collection-name results
+ * - isLastSubPage: no more metadata-field results
+ *
+ * Infinite scrolling continues while ANY of them is false.
+ *
+ * @param {object} props
+ * @param {string} props.title - Page title.
+ *
+ * @returns {JSX.Element} Search page.
+ */
 const SearchPage = ({ title }) => {
   const [initial, setInitial] = useState(true);
   const [isIntersecting, setIsIntersecting] = useState(true);
@@ -31,7 +53,7 @@ const SearchPage = ({ title }) => {
   const isLastPage = useSelector((state) => state.search.isLastPage);
   const isLastSubPage = useSelector((state) => state.search.isLastSubPage);
   const isLastCollectionsPage = useSelector(
-    (state) => state.search.isLastCollectionsPage
+    (state) => state.search.isLastCollectionsPage,
   );
   const errorMessage = useSelector((state) => state.search.errorMessage);
   const nsfwMode = useSelector((state) => state.model.nsfwMode);
@@ -44,7 +66,7 @@ const SearchPage = ({ title }) => {
     endPageRef,
     false,
     0,
-    `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`
+    `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`,
   );
   const searchQueryParam = searchParams.get("searchQuery");
 
@@ -114,8 +136,8 @@ const SearchPage = ({ title }) => {
             loadMore,
             false,
             searchFilter.hashtag,
-            searchFilter
-          )
+            searchFilter,
+          ),
         );
       }, 1000);
     }

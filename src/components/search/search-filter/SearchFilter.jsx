@@ -9,6 +9,34 @@ import { searchActions } from "../../../store/search";
 import { MODEL_TYPES } from "../../../variables/constants";
 import { updateSearchParams } from "../../../utils/generalUtils";
 
+/**
+ * SearchFilter
+ *
+ * Dynamic filter sidebar for the search page.
+ *
+ * Provides model type, base model, and hashtag filters while
+ * enforcing backend query constraints (Firestore disjunction limits).
+ *
+ * The component dynamically restricts the number of selectable
+ * checkboxes so that the generated query is always valid.
+ *
+ * Constraint rules:
+ * - A maximum of 4 total disjunctions is allowed.
+ * - If 2–3 model types are selected, only 1 base model may be selected.
+ * - If 2–3 base models are selected, only 1 model type may be selected.
+ * - Otherwise, up to 3 selections are allowed per group.
+ *
+ * Behavior:
+ * - Synchronizes filter state with the URL query parameters.
+ * - Dispatches filter changes to the global search store.
+ * - Automatically disables options when limits are reached.
+ * - Re-enables options when selections are removed.
+ * - Supports full filter reset while preserving the search query.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} Search filter sidebar.
+ */
 const SearchFilter = () => {
   const [initial, setInitial] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -44,7 +72,7 @@ const SearchFilter = () => {
     const modelTypes = Object.keys(categories)
       .map((categoryId) => {
         const modelTypeInfo = MODEL_TYPES.find(
-          (modelType) => modelType.value === categoryId
+          (modelType) => modelType.value === categoryId,
         );
 
         return modelTypeInfo;
@@ -146,7 +174,7 @@ const SearchFilter = () => {
         .map((type) => type.id);
 
       dispatch(
-        searchActions.setSearchFilter({ type: "modelType", value: modelTypes })
+        searchActions.setSearchFilter({ type: "modelType", value: modelTypes }),
       );
 
       setSearchParams((prevParams) => {
@@ -175,7 +203,7 @@ const SearchFilter = () => {
         searchActions.setSearchFilter({
           type: "baseModel",
           value: baseModelsData,
-        })
+        }),
       );
 
       setSearchParams((prevParams) => {
@@ -197,7 +225,7 @@ const SearchFilter = () => {
       searchActions.setSearchFilter({
         type: "hashtag",
         value: e.target.checked,
-      })
+      }),
     );
 
     setSearchParams((prevParams) => {

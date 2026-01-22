@@ -12,6 +12,26 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../../variables/constants";
 
+/**
+ * CategoriesSearchItem
+ *
+ * Renders a single subcategory search result.
+ *
+ * Displays the parent category and subcategory name
+ * and navigates to the corresponding page on click.
+ *
+ * Responsibilities:
+ * - Displays subcategory and its parent category.
+ * - Routes to the correct section (models or collections).
+ * - Updates global navigation state.
+ * - Clears the active search state after navigation.
+ *
+ * @component
+ * @param {object} props
+ * @param {object} props.result - Subcategory search result data.
+ *
+ * @returns {JSX.Element} Subcategory search item.
+ */
 const CategoriesSearchItem = ({ result }) => {
   const dispatch = useDispatch();
 

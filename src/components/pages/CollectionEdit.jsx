@@ -11,10 +11,37 @@ import {
 } from "../../store/images";
 import Spinner from "../ui/Spinner";
 import ButtonDelete from "../ui/buttons/ButtonDelete";
-import { MESSAGE_DELETE_COLLECTION } from "../../variables/constants";
+import {
+  DEFAULT_PAGE_TITLE,
+  MESSAGE_DELETE_COLLECTION,
+} from "../../variables/constants";
 import ErrorMessage from "../ui/ErrorMessage";
 
-const CollectionEdit = () => {
+/**
+ * Collection edit page.
+ *
+ * High-level route responsible for displaying a collection editing form.
+ *
+ * Responsibilities:
+ * - Displays collection and version settings.
+ * - Loads collection data from Firestore.
+ * - Handles collection deletion and navigates away on success.
+ * - Manages page-level loading, error, and empty states.
+ * - Updates the document title based on the active collection.
+ *
+ * Side effects:
+ * - Fetches collection data on route change.
+ * - Updates Redux collection state.
+ * - Sets and restores `document.title`.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {string} props.title - Fallback page title used before collection data is loaded.
+ *
+ * @returns {JSX.Element} Collection edit page.
+ */
+const CollectionEdit = ({ title }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -46,11 +73,21 @@ const CollectionEdit = () => {
     };
   }, [collectionId, isAuth, dispatch]);
 
+  useEffect(() => {
+    document.title = collectionData?.name
+      ? `Edit - ${collectionData?.name}`
+      : title;
+
+    return () => {
+      document.title = DEFAULT_PAGE_TITLE;
+    };
+  }, [title, collectionData]);
+
   const deleteCollectionHandler = async () => {
     try {
       setIsDeleting(true);
       await dispatch(
-        deleteCollection(collectionData.id, collectionData.category)
+        deleteCollection(collectionData.id, collectionData.category),
       );
       dispatch(imagesActions.resetCollectionListState());
       navigate("/images");

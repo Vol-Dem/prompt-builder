@@ -27,6 +27,26 @@ import Text from "../ui/text/Text";
 import TextButtonCreate from "../ui/text/text-buttons/TextButtonCreate";
 import useIntersection from "../../hooks/use-intersection";
 
+/**
+ * Collections page.
+ *
+ * Top-level route responsible for displaying and managing user collections.
+ *
+ * Responsibilities:
+ * - Displays collection categories and collection previews.
+ * - Supports switching between categories and "All models" view.
+ * - Loads collection preview data from Firestore.
+ * - Handles loading, empty, and error states.
+ * - Integrates onboarding and guide flows.
+ * - Updates the document title.
+ *
+ * @component
+ *
+ * @param {object} props
+ * @param {string} props.title - Page title.
+ *
+ * @returns {JSX.Element} Collections page.
+ */
 const Collections = ({ title }) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [editIsOpen, setEditIsOpen] = useState(false);

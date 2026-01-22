@@ -20,6 +20,7 @@ import {
   ERROR_MESSAGE_OFFLINE,
   VALIDATION_PASSWORD_MAX_LENGTH,
   VALIDATION_USERNAME_MAX_LENGTH,
+  DEFAULT_PAGE_TITLE,
 } from "../../variables/constants";
 import SuccessMessage from "../ui/SuccessMessage";
 import ReAuthForm from "../forms/ReAuth/ReAuthForm";
@@ -59,6 +60,10 @@ const Profile = ({ title }) => {
 
   useEffect(() => {
     document.title = title;
+
+    return () => {
+      document.title = DEFAULT_PAGE_TITLE;
+    };
   }, [title]);
 
   const closeReAuth = () => {
@@ -329,7 +334,6 @@ const Profile = ({ title }) => {
     <Card>
       <div className={classes["profile__container"]}>
         <div className={classes["profile__img"]}>
-          {/* <UserIcon /> */}
           <UserCircleIcon />
         </div>
         <div>

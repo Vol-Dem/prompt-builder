@@ -4,16 +4,27 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
-import { liveSearch, searchActions } from "../../store/search";
-import { SETTINGS_SEARCH_RESULT_PER_PAGE } from "../../variables/constants";
+import { searchActions } from "../../store/search";
 import classes from "./SearchField.module.scss";
 import { updateSearchParams } from "../../utils/generalUtils";
 import QuickSearch from "./quick-search/QuickSearch";
 
+/**
+ * Global search input displayed in the app header.
+ *
+ * Responsibilities:
+ * - Owns the global `searchQuery` Redux value.
+ * - Opens QuickSearch when typing outside the Search page.
+ * - Navigates to /search on submit or mobile search icon click.
+ * - Syncs the query into the URL when already on /search.
+ * - Clears the query when leaving the Search page.
+ *
+ * @component
+ * @returns {JSX.Element} Search field.
+ */
 const SearchField = ({ className }) => {
   const [searchResultIsOpen, setSearchResultIsOpen] = useState(false);
   const searchInput = useSelector((state) => state.search.searchQuery);
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -50,16 +61,6 @@ const SearchField = ({ className }) => {
     if (location.pathname !== "/search") {
       dispatch(searchActions.resetSearchFilter());
     }
-
-    dispatch(
-      liveSearch(
-        searchInput.trim(),
-        nsfwMode,
-        SETTINGS_SEARCH_RESULT_PER_PAGE,
-        false,
-        false
-      )
-    );
   };
 
   return (
