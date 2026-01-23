@@ -53,6 +53,11 @@ const generalSlice = createSlice({
   },
 });
 
+/**
+ * Switches nsfw mode and saves current setting to user data
+ * @param {boolean} nsfw - Is nsfw
+ * @returns
+ */
 export const switchNsfwMode = (nsfw) => {
   return async (dispatch, getState) => {
     const sfwValue = getState().general.sfwValue;
@@ -73,11 +78,17 @@ export const switchNsfwMode = (nsfw) => {
       },
       {
         merge: true,
-      }
+      },
     );
   };
 };
 
+/**
+ * Sets values for sfw and nsfw modes and saves current settings to user data
+ * @param {boolean} sfw - SFW value
+ * @param {boolean} nsfw - NSFW value
+ * @returns
+ */
 export const setNsfwValues = (sfw, nsfw) => {
   return async (dispatch, getState) => {
     dispatch(generalActions.setSfwValue(sfw));
@@ -94,7 +105,7 @@ export const setNsfwValues = (sfw, nsfw) => {
       },
       {
         merge: true,
-      }
+      },
     );
   };
 };

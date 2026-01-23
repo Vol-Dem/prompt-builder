@@ -23,6 +23,35 @@ import firebaseApp from "../firebase-config";
 
 const firestore = getFirestore(firebaseApp);
 
+/**
+ * Fetches and paginates saved Firestore images for a specific model version.
+ * Applies NSFW filtering, deduplication, and client-side sorting.
+ *
+ * This hook:
+ * - Resets data when model version or NSFW level changes
+ * - Supports infinite scroll / manual pagination
+ * - Filters only images saved by the user
+ * - Applies current NSFW visibility rules
+ *
+ * @param {string} curImagesModelVersionId - Firestore model version ID used to filter images.
+ *
+ * @returns {{
+ *   fetchedData: Array<Array<Object>>,
+ *   fetchFirestoreData: () => Promise<void>,
+ *   setFetchedData: React.Dispatch<React.SetStateAction<Array<Array<Object>>>>,
+ *   isFetching: boolean,
+ *   isLastPage: boolean,
+ *   errorMessage: string
+ * }}
+ *
+ * @example
+ * const {
+ *   fetchedData,
+ *   fetchFirestoreData,
+ *   isFetching,
+ *   isLastPage
+ * } = useFetchFirestoreImages(modelVersionId);
+ */
 const useFetchFirestoreImages = (curImagesModelVersionId) => {
   const [isFetching, setIsFetching] = useState(false);
   const [isLastPage, setIsLastPage] = useState(false);
@@ -62,7 +91,7 @@ const useFetchFirestoreImages = (curImagesModelVersionId) => {
           where("versionsId", "array-contains", curImagesModelVersionId),
           orderBy("createdAt", "desc"),
           startAfter(lastVisible),
-          limit(SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE)
+          limit(SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE),
         );
       } else {
         q = query(
@@ -71,7 +100,7 @@ const useFetchFirestoreImages = (curImagesModelVersionId) => {
           where("hasSfw", "==", true),
           orderBy("createdAt", "desc"),
           startAfter(lastVisible),
-          limit(SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE)
+          limit(SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE),
         );
       }
 
@@ -98,12 +127,12 @@ const useFetchFirestoreImages = (curImagesModelVersionId) => {
 
               const isInCurrentNsfwRange = checkIsInCurrentNsfwRange(
                 nsfwLevel,
-                image?.nsfwLevel
+                image?.nsfwLevel,
               );
 
               return saved && isInCurrentNsfwRange;
             }),
-            "id"
+            "id",
           ).sort((a, b) => {
             return Date.parse(a.createdAt) - Date.parse(b.createdAt);
           });

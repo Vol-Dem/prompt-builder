@@ -3,6 +3,17 @@ import { useDispatch, useSelector } from "react-redux";
 import classes from "./PromptModeSwitch.module.scss";
 import { promptActions } from "../../../store/prompt";
 
+/**
+ * Prompt mode switch.
+ *
+ * Toggles between text-based and tag-based prompt editing.
+ *
+ * Responsibilities:
+ * - Switches prompt UI mode in Redux.
+ *
+ * @component
+ * @returns {JSX.Element} Prompt mode switch.
+ */
 const PromptModeSwitch = () => {
   const promptTextMode = useSelector((state) => state.prompt.isTextMode);
   const dispatch = useDispatch();

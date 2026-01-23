@@ -11,6 +11,15 @@ import classes from "./Notification.module.scss";
 // import { ReactComponent as TriangleIcon } from "./../../assets/triangle.svg";
 // import ExclamationCircleSvg from "../../assets/ExclamationCircleSvg";
 
+/**
+ * Floating notification popup rendered via portal.
+ *
+ * @param {"notification"|"warning"} [type="notification"] - Notification type.
+ * @param {string} [title] - Optional title.
+ * @param {function} onClick - Called when user confirms.
+ * @param {React.ReactNode} children - Notification message.
+ * @returns {JSX.Element} Rendered notification.
+ */
 const Notification = ({ type = "notification", title, onClick, children }) => {
   return (
     <>
@@ -38,7 +47,7 @@ const Notification = ({ type = "notification", title, onClick, children }) => {
             </Buttton>
           </Card>
         </motion.div>,
-        document.body
+        document.body,
       )}
     </>
   );

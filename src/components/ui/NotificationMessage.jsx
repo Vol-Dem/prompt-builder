@@ -6,6 +6,14 @@ import {
 import classes from "./NotificationMessage.module.scss";
 // import { ReactComponent as TriangleIcon } from "./../../assets/triangle.svg";
 
+/**
+ * Inline notification message block.
+ *
+ * @param {React.ReactNode} children - Message content.
+ * @param {"notification"|"warning"} [type] - Icon style.
+ * @param {string} [className] - Optional custom class.
+ * @returns {JSX.Element} Rendered notification message.
+ */
 const NotificationMessage = ({ children, type, className }) => {
   return (
     <div className={`${classes.notification}  ${className || ""}`}>

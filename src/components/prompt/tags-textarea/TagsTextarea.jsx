@@ -8,12 +8,30 @@ import TagsTextareaItem from "./tags-textarea-item/TagsTextareaItem";
 import { getNewTagPosition } from "../../../utils/promptUtils";
 import TagsTextareaPlaceholder from "./tags-textarea-placeholder/TagsTextareaPlaceholder";
 
-const TagsTextarea = ({
-  className,
-  placeholder,
-  aditionalPlacegholder,
-  promptType,
-}) => {
+/**
+ * Tag-based prompt editor.
+ *
+ * Converts the prompt array from Redux into interactive tags
+ * that support:
+ * - reordering
+ * - cross-field moving
+ * - inline editing
+ *
+ * Responsibilities:
+ * - Maps Redux prompt arrays to UI tag models.
+ * - Handles drag & drop logic.
+ * - Dispatches structural changes to Redux.
+ *
+ * @component
+ *
+ * @param {Object} props
+ * @param {'positive' | 'negative'} props.promptType - Prompt channel this field belongs to.
+ * @param {string} props.placeholder - Main placeholder shown when no tags exist.
+ * @param {string} props.aditionalPlacegholder - Secondary helper placeholder.
+ *
+ * @returns {JSX.Element} Tag-based prompt editor.
+ */
+const TagsTextarea = ({ promptType, placeholder, aditionalPlacegholder }) => {
   const [curPrompt, setCurrentPrompt] = useState([]);
   const curPosPromptArr = useSelector((state) => state.prompt.curPromptArr);
   const curNegPromptArr = useSelector((state) => state.prompt.curNegPromptArr);
@@ -89,16 +107,16 @@ const TagsTextarea = ({
       if (!fieldType) return;
 
       dispatch(
-        promptActions.removeTag({ id, type, dropTargetType: fieldType })
+        promptActions.removeTag({ id, type, dropTargetType: fieldType }),
       );
       dispatch(
-        promptActions.addTagToPrompt({ id: id, value: tag, type: fieldType })
+        promptActions.addTagToPrompt({ id: id, value: tag, type: fieldType }),
       );
       return;
     }
 
     const { id: dropTargetId, type: dropTargetType } = JSON.parse(
-      targetTagContainer.dataset.item
+      targetTagContainer.dataset.item,
     );
 
     if (
@@ -114,7 +132,7 @@ const TagsTextarea = ({
       const newPosition = getNewTagPosition(
         position,
         dropTargetPosition,
-        dropTargetLeft
+        dropTargetLeft,
       );
 
       // //Abort when droped on the same position
@@ -131,7 +149,7 @@ const TagsTextarea = ({
           type,
           dropTargetType,
           prevPosition: position,
-        })
+        }),
       );
     }
   };
@@ -167,7 +185,7 @@ const TagsTextarea = ({
       promptActions.setPromptHeight({
         type: promptType,
         value: fieldRef.current.offsetHeight,
-      })
+      }),
     );
   };
 
@@ -183,7 +201,7 @@ const TagsTextarea = ({
         promptType === "positive"
           ? classes["field--positive"]
           : classes["field--negative"]
-      } ${className || ""}`}
+      } `}
     >
       {!curPrompt.length && (
         <TagsTextareaPlaceholder>{placeholder}</TagsTextareaPlaceholder>

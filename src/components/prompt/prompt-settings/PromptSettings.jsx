@@ -15,6 +15,25 @@ import Presets from "../presets/Presets";
 import PromptModeSwitch from "../prompt-mode-switch/PromptModeSwitch";
 import PromptClear from "../prompt-clear/PromptClear";
 
+/**
+ * Prompt panel controls.
+ *
+ * Top-level control bar for the prompt panel.
+ *
+ * Responsibilities:
+ * - Switches between text and tag prompt modes.
+ * - Opens the presets modal (auth-gated).
+ * - Inserts a special "BREAK" tag into the positive prompt.
+ * - Displays contextual help tooltips.
+ * - Clears prompt content via PromptClear.
+ *
+ * Side effects:
+ * - Opens auth modal if user is not authenticated.
+ * - Dispatches prompt mutations.
+ *
+ * @component
+ * @returns {JSX.Element} Prompt settings panel.
+ */
 const PromptSettings = () => {
   const [presetsIsOpen, setPresetsIsOpen] = useState(false);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
@@ -30,7 +49,7 @@ const PromptSettings = () => {
 
   const addBreakHandler = () => {
     dispatch(
-      promptActions.addTagToPrompt({ type: "positive", value: "BREAK" })
+      promptActions.addTagToPrompt({ type: "positive", value: "BREAK" }),
     );
   };
 

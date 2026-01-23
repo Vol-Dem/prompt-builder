@@ -7,6 +7,25 @@ import classes from "./TagsTextareaItemEdit.module.scss";
 import { promptActions } from "../../../../store/prompt";
 import { changeTagWeight } from "../../../../utils/promptUtils";
 
+/**
+ * Inline tag editor.
+ *
+ * Allows editing the tag text and its weight.
+ *
+ * Responsibilities:
+ * - Edits tag value and weight.
+ * - Validates and normalizes input.
+ * - Commits changes back to Redux.
+ *
+ * @component
+ *
+ * @param {Object} props
+ * @param {'positive' | 'negative'} props.promptType - Prompt channel this tag belongs to.
+ * @param {Object} props.item - Current tag data being edited.
+ * @param {number} props.inputWidth - Calculated width for the input field.
+ *
+ * @returns {JSX.Element} Tag edit controls.
+ */
 const TagsTextareaItemEdit = ({ item, inputWidth, promptType }) => {
   const [editTagInput, setEditTagInput] = useState({ value: item.tag });
   const [editWeightInput, setEditWeightInput] = useState({

@@ -10,6 +10,30 @@ import TagsTextareaItemEdit from "../tags-textarea-item-edit/TagsTextareaItemEdi
 
 const inputControlsWidth = 165;
 
+/**
+ * Interactive prompt tag.
+ *
+ * Represents one prompt token with drag, edit and delete support.
+ *
+ * Responsibilities:
+ * - Enables drag & drop.
+ * - Switches to edit mode.
+ * - Detects BREAK tags.
+ * - Visually indicates drop position.
+ *
+ * @component
+ *
+ * @param {Object} props
+ * @param {'positive' | 'negative'} props.promptType - Prompt channel this tag belongs to.
+ * @param {Object} props.item - Tag model from Redux (id, tag, position, weight, etc).
+ * @param {number} props.containerWidth - Width of the parent container in pixels.
+ * @param {(id: number) => void} props.onEdit - Activates edit mode for the given tag.
+ * @param {(e: DragEvent, id: number, isLeftSide: boolean) => void} props.onDragOver - Reports drag position relative to this tag.
+ * @param {() => void} props.onDragLeave - Clears drop indicators.
+ * @param {() => void} props.onDragEnd - Resets drag state after drop.
+ *
+ * @returns {JSX.Element} Tag UI element.
+ */
 const TagsTextareaItem = ({
   item,
   promptType,
@@ -22,6 +46,7 @@ const TagsTextareaItem = ({
   const [isDragged, setIsDragged] = useState(false);
   const [inputWidth, setInputWidth] = useState(null);
   const lastTagRef = useRef(null);
+  // Check if current tag is special "BREAK" tag.
   const isBreak = SETTINGS_PROMPT_BREAK_ALIASES.includes(item.tag.trim());
   const dispatch = useDispatch();
 
@@ -47,7 +72,7 @@ const TagsTextareaItem = ({
       promptActions.removeTag({
         ...JSON.parse(value),
         type: promptType,
-      })
+      }),
     );
   };
 
@@ -56,7 +81,7 @@ const TagsTextareaItem = ({
 
     e.dataTransfer.setData(
       "text/plain",
-      JSON.stringify({ ...item, type: promptType })
+      JSON.stringify({ ...item, type: promptType }),
     );
     e.dataTransfer.effectAllowed = "move";
   };
@@ -68,7 +93,7 @@ const TagsTextareaItem = ({
 
     const targetContainerWidth = targetTagContainer.offsetWidth;
     const targetContainerLeft = Math.round(
-      targetTagContainer.getBoundingClientRect().left
+      targetTagContainer.getBoundingClientRect().left,
     );
     const isLeftSide =
       targetContainerWidth / 2 + targetContainerLeft > e.clientX;
@@ -147,9 +172,7 @@ const TagsTextareaItem = ({
           </>
         </div>
       </motion.span>
-      {SETTINGS_PROMPT_BREAK_ALIASES.includes(item.tag.trim()) && (
-        <hr className={classes["divider"]}></hr>
-      )}
+      {isBreak && <hr className={classes["divider"]}></hr>}
     </li>
   );
 };

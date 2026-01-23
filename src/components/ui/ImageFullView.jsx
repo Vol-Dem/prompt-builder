@@ -10,13 +10,37 @@ import Spinner from "./Spinner";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_BIG } from "../../variables/constants";
 import { transformSrcPreview } from "../../utils/imageUtils";
 
+/**
+ * ImageFullView component.
+ *
+ * Renders a fullscreen modal viewer for images or videos
+ * with optional navigation controls.
+ *
+ * Responsibilities:
+ * - Displays optimized full-size media.
+ * - Shows loading spinner for images.
+ * - Renders HTML5 video with multiple sources.
+ * - Supports previous/next navigation.
+ * - Closes when backdrop or close button is clicked.
+ *
+ * @component
+ *
+ * @param {Object} props
+ * @param {string} props.src - Base image or video source URL.
+ * @param {string} [props.alt] - Image alt text.
+ * @param {('image' | 'video')} [props.type] - Media type.
+ * @param {boolean} [props.controls] - Whether navigation controls are enabled.
+ * @param {() => void} [props.nextSlide] - Callback for next media item.
+ * @param {() => void} [props.prevSlide] - Callback for previous media item.
+ * @param {(e: React.MouseEvent) => void} props.onClose - Callback triggered to close the viewer.
+ *
+ * @returns {JSX.Element} Fullscreen media viewer.
+ */
 const ImageFullView = ({
   src,
   type,
   onClose,
-  title,
   alt,
-  children,
   nextSlide,
   prevSlide,
   controls,
@@ -51,7 +75,6 @@ const ImageFullView = ({
             onClick={onClose}
           ></motion.div>
           <div className={`${classes.modal} ${classes["modal--content"]}`}>
-            {title && <h2 className={classes.title}>{title}</h2>}
             {imgIsLoading && (
               <div className={classes["spiner-container"]}>
                 <Spinner size="medium" />
@@ -95,7 +118,6 @@ const ImageFullView = ({
                 <source src={originalVideoMp4Src} type="video/mp4" />
               </video>
             )}
-            {children}
           </div>
           <div className={classes["modal__close"]} onClick={onClose}>
             <CrossSvg />
@@ -117,7 +139,7 @@ const ImageFullView = ({
             </div>
           )}
         </div>,
-        document.body
+        document.body,
       )}
     </>
   );

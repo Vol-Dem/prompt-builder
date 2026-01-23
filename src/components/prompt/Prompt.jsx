@@ -13,6 +13,25 @@ const positiveMinHeight = 100;
 const negativeMinHeight = 60;
 const negativeMaxHeight = 180;
 
+/**
+ * Prompt panel controller.
+ *
+ * High-level composite component that coordinates the entire
+ * prompt editing system (positive & negative).
+ *
+ * Responsibilities:
+ * - Controls panel visibility.
+ * - Synchronizes prompt field sizes with Redux.
+ * - Bridges Redux state with child prompt fields.
+ * - Dispatches prompt text and tag changes.
+ *
+ * State ownership:
+ * - Prompt values, layout sizes and mode flags are stored in Redux.
+ * - This component only coordinates and forwards events.
+ *
+ * @component
+ * @returns {JSX.Element} Prompt panel.
+ */
 const Prompt = memo(() => {
   const curPrompt = useSelector((state) => state.prompt.curPrompt);
   const curNegPrompt = useSelector((state) => state.prompt.curNegPrompt);
@@ -24,10 +43,10 @@ const Prompt = memo(() => {
 
   useEffect(() => {
     dispatch(
-      promptActions.setPromptHeight(promptContainerRef.current.offsetHeight)
+      promptActions.setPromptHeight(promptContainerRef.current.offsetHeight),
     );
     dispatch(
-      promptActions.setPromptBtnHeight(showPromptBtnRef.current.offsetHeight)
+      promptActions.setPromptBtnHeight(showPromptBtnRef.current.offsetHeight),
     );
   }, [promptContainerRef?.current?.offsetHeight, promptIsOpen, dispatch]);
 
@@ -35,17 +54,17 @@ const Prompt = memo(() => {
     dispatch(promptActions.setPromptIsOpen(!promptIsOpen));
   };
 
-  const promptHandler = (e) => {
+  const positivePromptHandler = (e) => {
     dispatch(promptActions.setCurrentPrompt(e.target.value));
   };
 
-  const negPromptHandler = (e) => {
+  const negativePromptHandler = (e) => {
     dispatch(promptActions.setCurrentNegPrompt(e.target.value));
   };
 
   const promptResizeHandler = () => {
     dispatch(
-      promptActions.setPromptHeight(promptContainerRef.current.offsetHeight)
+      promptActions.setPromptHeight(promptContainerRef.current.offsetHeight),
     );
   };
 
@@ -71,7 +90,7 @@ const Prompt = memo(() => {
               minHeight={positiveMinHeight}
               maxHeight={positiveMaxHeight}
               prompt={curPrompt}
-              promptHandler={promptHandler}
+              promptHandler={positivePromptHandler}
               onPromptResize={promptResizeHandler}
             />
             <PromptField
@@ -81,7 +100,7 @@ const Prompt = memo(() => {
               minHeight={negativeMinHeight}
               maxHeight={negativeMaxHeight}
               prompt={curNegPrompt}
-              promptHandler={negPromptHandler}
+              promptHandler={negativePromptHandler}
               onPromptResize={promptResizeHandler}
             />
           </div>

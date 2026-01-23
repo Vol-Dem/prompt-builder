@@ -5,6 +5,15 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../../variables/constants";
 
+/**
+ * Motion wrapper with slide-in animation.
+ *
+ * Used for animated mounting/unmounting of panel content.
+ *
+ * @param {React.ReactNode} children - Wrapped content.
+ * @param {object} props - Motion div props.
+ * @returns {JSX.Element} Animated container.
+ */
 const AddToPanelAnimContainer = ({ children, ...props }) => {
   return (
     <motion.div

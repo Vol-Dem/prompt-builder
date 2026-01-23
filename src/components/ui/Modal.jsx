@@ -10,6 +10,18 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../variables/constants";
 
+/**
+ * Portal-based modal with animated backdrop and content.
+ *
+ * Disables page scroll while open.
+ *
+ * @param {string} [disableClass] - Optional class for modal root.
+ * @param {function} onClose - Called when backdrop or close button is clicked.
+ * @param {string} [className] - Optional class for modal content.
+ * @param {string} [title] - Optional modal title.
+ * @param {React.ReactNode} children - Modal content.
+ * @returns {JSX.Element} Rendered modal.
+ */
 const Modal = ({ disableClass, onClose, className, title, children }) => {
   useEffect(() => {
     const scrollTop = document.documentElement.scrollTop;
@@ -17,12 +29,8 @@ const Modal = ({ disableClass, onClose, className, title, children }) => {
       window.scrollTo(0, scrollTop);
     };
     window.addEventListener("scroll", disableScrollHandler);
-    // document.body.style.overflow = "hidden";
-    // document.body.style.marginRight = "8px";
     return () => {
       window.removeEventListener("scroll", disableScrollHandler);
-      // document.body.style.overflow = null;
-      // document.body.style.marginRight = "0";
     };
   }, []);
 
@@ -65,7 +73,7 @@ const Modal = ({ disableClass, onClose, className, title, children }) => {
             </Card>
           </motion.div>
         </div>,
-        document.body
+        document.body,
       )}
     </>
   );

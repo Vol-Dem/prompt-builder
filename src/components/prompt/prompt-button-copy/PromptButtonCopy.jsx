@@ -6,6 +6,23 @@ import {
 
 import classes from "./PromptButtonCopy.module.scss";
 
+/**
+ * Prompt copy button.
+ *
+ * Copies the provided prompt string to the clipboard and
+ * briefly shows a visual confirmation state.
+ *
+ * Responsibilities:
+ * - Copies prompt text to the system clipboard.
+ * - Displays temporary "copied" feedback.
+ *
+ * @component
+ *
+ * @param {Object} props
+ * @param {string} props.promptData - Current prompt string to copy.
+ *
+ * @returns {JSX.Element} Copy prompt button.
+ */
 const PromptButtonCopy = ({ promptData }) => {
   const [copied, setCopied] = useState(false);
   const timeoutCopiedRef = useRef(null);

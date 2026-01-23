@@ -5,6 +5,16 @@ import classes from "./Carousel3d.module.scss";
 
 const slideDelaySec = 4;
 
+/**
+ * 3D-style auto-rotating image carousel.
+ *
+ * Cycles through images with transform-based transitions.
+ * Resets seamlessly when reaching the end.
+ *
+ * @param {Array<{url:string,width:number,height:number}>} images - Images to display.
+ * @param {string} [className] - Optional custom class.
+ * @returns {JSX.Element} Rendered 3D carousel.
+ */
 const Carousel3d = ({ images, className }) => {
   const [curSlideIndex, setCurSlideIndex] = useState(0);
   const [transitionSec, setTransitionSec] = useState(0.9);

@@ -6,6 +6,15 @@ import {
 } from "../../variables/constants";
 import classes from "./DropDownList.module.scss";
 
+/**
+ * Animated dropdown container with header and close button.
+ *
+ * @param {React.ReactNode} children - Dropdown content.
+ * @param {string} [className] - Optional custom class.
+ * @param {function} onClose - Called when dropdown is closed.
+ * @param {string} title - Dropdown title.
+ * @returns {JSX.Element} Rendered dropdown list.
+ */
 const DropDownList = ({ children, className, onClose, title }) => {
   return (
     <div className={`${classes["dropdown"]} ${className || ""}`}>

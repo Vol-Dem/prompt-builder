@@ -1,5 +1,17 @@
 import classes from "./Checkbox.module.scss";
 
+/**
+ * Presentational wrapper for checkbox inputs.
+ * Binds <label> to <input> and applies app-specific styles.
+ *
+ * @param {string} id - Input id used for label binding.
+ * @param {string} label - Text label shown next to checkbox.
+ * @param {string} [className] - Optional custom class.
+ * @param {boolean} [disabled] - Disables the checkbox and applies disabled styles.
+ * @param {object} props - Native input props passed to <input>.
+ *
+ * @returns {JSX.Element} Checkbox input.
+ */
 const Checkbox = ({ id, label, className, disabled, ...props }) => {
   return (
     <div>

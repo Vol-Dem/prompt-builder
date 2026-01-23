@@ -4,6 +4,18 @@ import ErrorMessage from "./ErrorMessage";
 import Modal from "./Modal";
 import Spinner from "./Spinner";
 
+/**
+ * Confirmation dialog for destructive delete actions.
+ *
+ * Displays a message, error state, or loading spinner.
+ *
+ * @param {string} message - Confirmation message.
+ * @param {function} onSubmit - Called when user confirms delete.
+ * @param {function} onClose - Called when modal is closed.
+ * @param {boolean} isDeleting - Indicates delete is in progress.
+ * @param {string} [errorMessage] - Error message from delete request.
+ * @returns {JSX.Element} Rendered delete confirmation modal.
+ */
 const DeleteRequest = ({
   message,
   onSubmit,

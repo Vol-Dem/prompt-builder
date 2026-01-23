@@ -3,6 +3,28 @@ import { useEffect, useState } from "react";
 import classes from "./InputNumber.module.scss";
 import { validateInput } from "../../../utils/validationUtils";
 
+/**
+ * Numeric input with increment/decrement controls and validation.
+ *
+ * @param {string} id - Input id.
+ * @param {string} type - Input type (number, text).
+ * @param {string} name - Input name.
+ * @param {string} [label] - Optional label text.
+ * @param {object} [input] - Native input props.
+ * @param {string} [className] - Optional custom class.
+ * @param {function} [onBlur] - Blur handler.
+ * @param {function} onChange - Change handler (e, isValid?, errorMessage?).
+ * @param {function} [onClick] - Click handler.
+ * @param {function} [onFocus] - Focus handler.
+ * @param {string} [error] - External error message.
+ * @param {boolean} [autoFocus] - Autofocus input.
+ * @param {string|number} value - Controlled value.
+ * @param {string} [placeholder] - Placeholder text.
+ * @param {object} [validation] - Validation rules.
+ * @param {boolean} [showError] - Force show errors.
+ * @param {number} [step=1] - Step size for increment/decrement.
+ * @returns {JSX.Element} Rendered numeric input component.
+ */
 const InputNumber = ({
   id,
   type,
@@ -71,7 +93,7 @@ const InputNumber = ({
             if (validation) {
               const { isValid, errorMessage } = validateInput(
                 validation,
-                e.target.value
+                e.target.value,
               );
 
               onChange(e, isValid, errorMessage);

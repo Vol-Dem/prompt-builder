@@ -5,6 +5,22 @@ import classes from "./PromptClear.module.scss";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import { promptActions } from "../../../store/prompt";
 
+/**
+ * Prompt clear controls.
+ *
+ * Displays buttons to clear the positive, negative, or both prompts.
+ *
+ * Responsibilities:
+ * - Clears positive prompt only.
+ * - Clears negative prompt only.
+ * - Clears both prompts at once.
+ *
+ * Side effects:
+ * - Resets prompt arrays and text values in Redux.
+ *
+ * @component
+ * @returns {JSX.Element} Prompt clear controls.
+ */
 const PromptClear = () => {
   const dispatch = useDispatch();
 

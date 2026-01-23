@@ -16,6 +16,17 @@ import {
   ANIMATIONS_FM_FADEOUT_EXIT,
 } from "../../../variables/constants";
 
+/**
+ * Dynamic fieldset for managing multiple tag sets.
+ *
+ * Allows adding, editing and removing tag name/value pairs.
+ *
+ * @param {Array<Array<object>>} tagSetsInputs - Current tag set fields.
+ * @param {function} setTagSetsInputs - State setter for tag sets.
+ * @param {boolean} showErrorMessage - Forces validation messages.
+ * @param {boolean} isSaving - Disables controls while saving.
+ * @returns {JSX.Element} Rendered tag sets fieldset.
+ */
 const TagSetsInputFieldset = ({
   tagSetsInputs,
   setTagSetsInputs,

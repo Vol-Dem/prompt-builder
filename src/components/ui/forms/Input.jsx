@@ -8,6 +8,34 @@ import {
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
 } from "../../../variables/constants";
 
+/**
+ * Controlled text input with validation and animated error display.
+ *
+ * Supports inline validation, auto-resizing (fitContent),
+ * and custom change handlers with validity feedback.
+ *
+ * @param {string} id - Input id.
+ * @param {string} type - Input type (text, password, email, etc.).
+ * @param {string} name - Input name.
+ * @param {string} [label] - Optional label text.
+ * @param {object} [input] - Native input props spread to element.
+ * @param {string} [className] - Optional custom class.
+ * @param {function} [onBlur] - Blur event handler.
+ * @param {function} onChange - Change handler (e, isValid?, errorMessage?).
+ * @param {function} [onClick] - Click handler.
+ * @param {function} [onFocus] - Focus handler.
+ * @param {string} [autoComplete] - Autocomplete attribute.
+ * @param {string} [error] - External error message.
+ * @param {boolean} [autoFocus] - Autofocus input.
+ * @param {string|number} value - Controlled value.
+ * @param {string} [placeholder] - Placeholder text.
+ * @param {object} [validation] - Validation rules object.
+ * @param {boolean} [showError] - Force show error messages.
+ * @param {boolean} [fitContent] - Auto-resize width to content.
+ * @param {boolean} [readOnly] - Makes input read-only.
+ * @param {object} props - Native input props.
+ * @returns {JSX.Element} Rendered input component.
+ */
 const Input = ({
   id,
   type,
@@ -28,7 +56,6 @@ const Input = ({
   showError,
   fitContent,
   readOnly,
-  // isValid,
   ...props
 }) => {
   const [inputErrorMessage, setInputErrorMessage] = useState("");
@@ -79,7 +106,7 @@ const Input = ({
           if (validation) {
             const { isValid, errorMessage } = validateInput(
               validation,
-              e.target.value
+              e.target.value,
             );
 
             onChange(e, isValid, errorMessage);

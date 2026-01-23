@@ -9,6 +9,18 @@ import {
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
 } from "../../../variables/constants";
 
+/**
+ * Custom animated select dropdown with radio options.
+ *
+ * @param {string} [id="select"] - Base id for select.
+ * @param {{name: string, value: string|number}[]} options - Select options.
+ * @param {function} onChange - Callback when value changes.
+ * @param {string} [className] - Optional custom class.
+ * @param {string} [label] - Optional label text.
+ * @param {string|number} [selected] - Selected value.
+ * @param {object} props - Native input props for radio inputs.
+ * @returns {JSX.Element} Rendered select component.
+ */
 const Select = ({
   id = "select",
   options,
@@ -61,7 +73,7 @@ const Select = ({
   useEffect(() => {
     if (selected) {
       const selectedData = options.find(
-        (option) => option.value + "" === selected + ""
+        (option) => option.value + "" === selected + "",
       );
 
       setSelectedFieldName(selectedData.name);

@@ -5,6 +5,32 @@ import TagsTextarea from "../tags-textarea/TagsTextarea";
 import PromptButtonCopy from "../prompt-button-copy/PromptButtonCopy";
 import classes from "./PromptField.module.scss";
 
+/**
+ * Prompt field container.
+ *
+ * Displays either a text textarea or a tag-based editor depending
+ * on the current prompt mode.
+ *
+ * Responsibilities:
+ * - Switches between text and tag views.
+ * - Manages resizable field height.
+ * - Notifies parent when layout size changes.
+ *
+ * @component
+ *
+ * @param {Object} props
+ * @param {'positive' | 'negative'} props.promptType - Prompt channel this field controls.
+ * @param {string} props.placeholderText - Placeholder for the text-mode textarea.
+ * @param {string} props.placeholderTags - Placeholder for the tag-mode editor.
+ * @param {string} [props.aditionalPlacegholder] - Secondary helper placeholder (tags mode).
+ * @param {number} props.minHeight - Minimum resizable height in pixels.
+ * @param {number} props.maxHeight -  Maximum resizable height in pixels.
+ * @param {string} props.prompt - Current prompt string from Redux.
+ * @param {(e: React.ChangeEvent<HTMLTextAreaElement>) => void} props.promptHandler - Callback to update the prompt string in Redux.
+ * @param {() => void} props.onPromptResize - Notifies parent that the field height changed.
+ *
+ * @returns {JSX.Element} Prompt field UI.
+ */
 const PromptField = ({
   promptType,
   placeholderText,
@@ -28,7 +54,7 @@ const PromptField = ({
       const newHeight = clamp(
         startHeight + (moveEventY - startY),
         minHeight,
-        maxHeight
+        maxHeight,
       );
 
       setPromptHeight(newHeight);
@@ -53,9 +79,9 @@ const PromptField = ({
   };
 
   return (
-    <div className={`${classes.field} ${classes["field--neg"]}`}>
+    <div className={`${classes.field}`}>
       <div
-        className={`${classes.prompt} ${classes["prompt--neg"]}`}
+        className={`${classes.prompt}`}
         style={{
           height: `${promptHeight}px`,
         }}
@@ -65,7 +91,6 @@ const PromptField = ({
             aditionalPlacegholder={aditionalPlacegholder}
             promptType={promptType}
             placeholder={placeholderTags}
-            className={`${classes["tagarea"]} ${classes["tagarea--neg"]}`}
           />
         )}
         {promptTextMode && (

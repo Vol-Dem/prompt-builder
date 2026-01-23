@@ -12,6 +12,29 @@ import PresetsList from "./presets-list/PresetsList";
 import PresetsBlock from "./presets-block/PresetsBlock";
 import NotificationMessage from "../../ui/NotificationMessage";
 
+/**
+ * Presets popup.
+ *
+ * Displays user-defined trigger word presets and allows
+ * creating, editing, applying, and deleting them.
+ *
+ * Responsibilities:
+ * - Displays positive and negative presets.
+ * - Opens the preset creation/edit form.
+ * - Applies a preset to the current prompt.
+ * - Handles preset deletion with confirmation.
+ *
+ * Side effects:
+ * - Mutates presets in Redux.
+ * - Adds preset tags to the active prompt.
+ *
+ * @component
+ *
+ * @param {Object} props
+ * @param {() => void} props.onClose - Callback triggered to close the presets modal.
+ *
+ * @returns {JSX.Element} Presets popup.
+ */
 const Presets = ({ onClose }) => {
   const [formIsOpen, setFormIsOpen] = useState(false);
   const [presetData, setPresetData] = useState({});
@@ -22,14 +45,14 @@ const Presets = ({ onClose }) => {
 
   const deleteHandler = () => {
     const updatedPresets = presets[presetToDel?.type].filter(
-      (preset) => preset.id !== presetToDel.id
+      (preset) => preset.id !== presetToDel.id,
     );
 
     dispatch(updatePresets(presetToDel?.type, updatedPresets));
     setDeleteRequestIsOpen(false);
   };
 
-  const chagePresetHandler = ({ type, id }) => {
+  const changePresetHandler = ({ type, id }) => {
     const curPreset = presets[type].find((preset) => preset.id === id);
     setPresetData({
       type,
@@ -79,7 +102,7 @@ const Presets = ({ onClose }) => {
                 <PresetsList
                   type="positive"
                   presets={presets?.positive}
-                  onEdit={chagePresetHandler}
+                  onEdit={changePresetHandler}
                   onClose={onClose}
                   onDelete={openDeleteReqeustHandler}
                 />
@@ -90,7 +113,7 @@ const Presets = ({ onClose }) => {
                 <PresetsList
                   type="negative"
                   presets={presets?.negative}
-                  onEdit={chagePresetHandler}
+                  onEdit={changePresetHandler}
                   onClose={onClose}
                   onDelete={openDeleteReqeustHandler}
                 />

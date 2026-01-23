@@ -3,6 +3,18 @@ import { ChevronUpDownIcon } from "@heroicons/react/24/outline";
 
 import classes from "./ImageComparisonSlider.module.scss";
 
+/**
+ * Before/after image comparison slider.
+ *
+ * Allows dragging to reveal left image over right image.
+ *
+ * @param {string} srcLeft - Left image URL.
+ * @param {string} srcRight - Right image URL.
+ * @param {number} [imgWidth] - Image width.
+ * @param {number} [imgHeight] - Image height.
+ * @param {string} [className] - Optional custom class.
+ * @returns {JSX.Element} Rendered comparison slider.
+ */
 const ImageComparisonSlider = ({
   srcLeft,
   srcRight,

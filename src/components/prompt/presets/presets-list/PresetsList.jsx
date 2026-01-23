@@ -11,6 +11,29 @@ import classes from "./PresetsList.module.scss";
 import { promptActions } from "../../../../store/prompt";
 import { splitTags } from "../../../../utils/promptUtils";
 
+/**
+ * Presets list.
+ *
+ * Displays a list of presets with controls to apply,
+ * edit, or delete each preset.
+ *
+ * Responsibilities:
+ * - Renders preset items.
+ * - Applies preset tags to the prompt on click.
+ * - Triggers preset edit and delete actions.
+ * - Closes the modal after applying a preset.
+ *
+ * @component
+ *
+ * @param {Object} props
+ * @param {Array} props.presets - List of user presets.
+ * @param {'positive' | 'negative'} props.type - Prompt channel this list controls.
+ * @param {() => void} props.onClose - Callback triggered to close presets modal.
+ * @param {(data: { type: string, id: string }) => void} props.onEdit - Callback triggered to open the preset form.
+ * @param {(data: { type: string, id: string }) => void} props.onDelete - Callback triggered to open delete confirmation.
+ *
+ * @returns {JSX.Element} Presets list.
+ */
 const PresetsList = ({ presets, type, onClose, onEdit, onDelete }) => {
   const dispatch = useDispatch();
 
@@ -20,12 +43,12 @@ const PresetsList = ({ presets, type, onClose, onEdit, onDelete }) => {
       promptActions.addAllTagsToPrompt({
         type: type,
         value: splitTags(words),
-      })
+      }),
     );
     onClose();
   };
 
-  const positivePresetsHtml = presets?.map((preset) => {
+  const presetsHtml = presets?.map((preset) => {
     return (
       <motion.li
         key={preset.id}
@@ -63,7 +86,7 @@ const PresetsList = ({ presets, type, onClose, onEdit, onDelete }) => {
       exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
       className={classes.presets}
     >
-      <AnimatePresence>{positivePresetsHtml}</AnimatePresence>
+      <AnimatePresence>{presetsHtml}</AnimatePresence>
     </motion.ul>
   );
 };

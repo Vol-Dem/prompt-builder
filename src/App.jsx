@@ -17,7 +17,6 @@ import AboutImageCollections from "./components/pages/about/AboutImageCollection
 import AboutTopPanel from "./components/pages/about/AboutTopPanel";
 import AboutSidebar from "./components/pages/about/AboutSidebar";
 import Models from "./components/pages/Models";
-// import Landing from "./components/landing/Landing";
 
 const About = lazy(() => import("./components/pages/About"));
 const ToS = lazy(() => import("./components/pages/ToS"));
@@ -29,9 +28,28 @@ const Profile = lazy(() => import("./components/pages/Profile"));
 const Collection = lazy(() => import("./components/pages/Collection"));
 const CollectionEdit = lazy(() => import("./components/pages/CollectionEdit"));
 const Edit = lazy(() => import("./components/pages/Edit"));
-const Home = lazy(() => import("./components/pages/Home"));
 const Landing = lazy(() => import("./components/pages/Landing"));
 
+/**
+ * Root application component.
+ *
+ * Responsibilities:
+ * - Initializes authentication and device state
+ * - Preloads heavy routes in development
+ * - Defines the full React Router structure
+ * - Handles conditional landing vs. models routing
+ *
+ * Routes include:
+ * - Models
+ * - Model editor
+ * - Image collections
+ * - Search
+ * - Profile
+ * - About documentation pages
+ * - Legal pages (ToS, Privacy)
+ *
+ * @returns {JSX.Element} Root RouterProvider with all app routes.
+ */
 function App() {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const initialAuth = useSelector((state) => state.auth.initialAuth);

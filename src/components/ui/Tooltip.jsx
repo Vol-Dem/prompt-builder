@@ -2,6 +2,17 @@ import { useRef, useState } from "react";
 
 import classes from "./Tooltip.module.scss";
 
+/**
+ * Adaptive tooltip with automatic edge positioning.
+ *
+ * Calculates viewport collisions and adjusts direction.
+ *
+ * @param {React.ReactNode} children - Trigger element.
+ * @param {React.ReactNode} content - Tooltip content.
+ * @param {string} [className] - Optional custom class.
+ * @param {"left"|"right"} [defSide="right"] - Preferred opening side.
+ * @returns {JSX.Element} Rendered tooltip.
+ */
 const Tooltip = ({ children, content, className, defSide = "right" }) => {
   const [translateX, setTranslateX] = useState(defSide === "right" ? 100 : 0);
   const [translateY, setTranslateY] = useState(-100);

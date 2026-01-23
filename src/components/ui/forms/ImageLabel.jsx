@@ -2,6 +2,19 @@ import classes from "./ImageLabel.module.scss";
 import Image from "../image/Image";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL } from "../../../variables/constants";
 
+/**
+ * Image label.
+ *
+ * Displays a clickable image preview used as a label
+ * for selecting an image in a form.
+ *
+ * @param {string} htmlFor - Input id used for label binding.
+ * @param {object} imageData - Image metadata and state.
+ * @param {'del' | 'save'} type - Form mode for styling.
+ * @param {string} [className] - Optional custom class.
+ *
+ * @returns {JSX.Element} Image label.
+ */
 const ImageLabel = ({ htmlFor, imageData, type, className }) => {
   return (
     <label
