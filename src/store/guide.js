@@ -6,14 +6,26 @@ import { saveGuideData } from "../utils/fetch/fetchUtils";
 
 const auth = getAuth(firebaseApp);
 
+/**
+ * Guide settings state.
+ *
+ * Controls:
+ * - User onboarding / guide flow state
+ *
+ * State:
+ * @property {boolean} active - Whether the guide system is active.
+ * @property {boolean} introDisabled - Whether the guide intro is disabled.
+ * @property {boolean} outroIsActive - Whether the guide outro is enabled.
+ * @property {{ active: boolean, step: number }} home - Home page guide state.
+ * @property {{ active: boolean, step: number }} model - Model page guide state.
+ * @property {{ active: boolean, step: number }} edit - Edit page guide state.
+ */
 const guideSlice = createSlice({
   name: "guide",
   initialState: {
-    newGuide: true,
     active: false,
     introDisabled: false,
     outroIsActive: false,
-    step: 1,
     home: {
       active: true,
       step: 1,
@@ -37,18 +49,20 @@ const guideSlice = createSlice({
     setOutroIsActive(state, action) {
       state.outroIsActive = action.payload;
     },
-    setGuideState(state, action) {
-      state[action.type] = action.payload;
-    },
-    switchGuideState(state, action) {
-      state[action.type].active = action.payload;
-    },
+    /**
+     * Advances the guide to the next step for the given section.
+     * @param {{ type: 'home' | 'model' | 'edit' }} action.payload
+     */
     guideNextStep(state, action) {
       const type = action.payload?.type;
       if (type) {
         state[type].step = state[type].step + 1;
       }
     },
+    /**
+     * Advances the guide to the previous step for the given section.
+     * @param {{ type: 'home' | 'model' | 'edit' }} action.payload
+     */
     guidePrevStep(state, action) {
       const type = action.payload?.type;
       if (type && state[type]?.step > 0) {
@@ -61,12 +75,25 @@ const guideSlice = createSlice({
     setGuideStep(state, action) {
       state[action.payload.type].step = action.payload.value;
     },
+    /**
+     * Replaces the entire guide state with persisted user data.
+     *
+     * Used when restoring the guide from the database on app start.
+     *
+     * @param {{
+     *   active: boolean,
+     *   introDisabled: boolean,
+     *   outroIsActive: boolean,
+     *   home: { active: boolean, step: number },
+     *   model: { active: boolean, step: number },
+     *   edit: { active: boolean, step: number }
+     * }} action.payload
+     */
     setGuideInitialState(state, action) {
       if (action.payload) {
         state.active = action.payload.active;
         state.introDisabled = action.payload.introDisabled;
         state.outroIsActive = action.payload.outroIsActive;
-        state.step = action.payload.step;
         state.home = action.payload.home;
         state.model = action.payload.model;
         state.edit = action.payload.edit;
@@ -74,6 +101,13 @@ const guideSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    /**
+     * Automatically persists guide state changes to the database.
+     *
+     * Listens to all actions from this slice (guide/*),
+     * except `setGuideInitialState`, and saves the current
+     * guide state for the authenticated user.
+     */
     builder.addMatcher(
       (action) =>
         action.type.startsWith("guide/") &&
@@ -81,9 +115,10 @@ const guideSlice = createSlice({
       (state) => {
         const uid = auth?.currentUser?.uid;
         if (uid) {
+          // Persist updated guide state
           saveGuideData(state, uid);
         }
-      }
+      },
     );
   },
 });

@@ -76,7 +76,7 @@ const SaveImageForm = ({
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [successMessage, seteSuccessMessage] = useState("");
   const [versionIdInput, setVersionIdInput] = useState(
-    curVersion || modelData?.data?.modelVersions[0].id
+    curVersion || modelData?.data?.modelVersions[0].id,
   );
   const [postIdInput, setPostIdInput] = useState({ value: "", isValid: false });
   const nsfwMode = useSelector((state) => state.general.nsfwMode);
@@ -111,7 +111,7 @@ const SaveImageForm = ({
           filterDisabledInput && modelData?.id
             ? `&modelId=${modelData?.id}`
             : ""
-        }&nsfw=${nsfwLevel}`
+        }&nsfw=${nsfwLevel}`,
       );
       const data = await imgExampleResponse.json();
       setImages(fixCivImagesMeta(data.items));
@@ -121,7 +121,7 @@ const SaveImageForm = ({
 
       if (location === "models") {
         curPostData = savedModelPosts[versionIdInput]?.find(
-          (post) => post.postId === postId
+          (post) => post.postId === postId,
         );
         curImageIds = curPostData?.imagesId;
       }
@@ -156,17 +156,29 @@ const SaveImageForm = ({
 
   const saveExampleHandler = async (location, ids, collectionData) => {
     const postId = getPostIdFromInput(postIdInput.value);
-    const postData =
-      modelData &&
-      Object.hasOwn(modelData, "savedImages") &&
-      modelData?.savedImages[versionIdInput?.value]?.find(
-        (post) => post.postId === +postId
-      );
+    // const postData =
+    //   modelData &&
+    //   Object.hasOwn(modelData, "savedImages") &&
+    //   modelData?.savedImages[versionIdInput?.value]?.find(
+    //     (post) => post.postId === +postId,
+    //   );
 
     const imagesForSaving = ids?.length
       ? images.filter((image) => ids.includes(image?.id))
       : images;
 
+    let curPostData;
+
+    if (location === "models" && Object.hasOwn(modelData, "savedImages")) {
+      curPostData = modelData?.savedImages[versionIdInput?.value]?.find(
+        (post) => post.postId === +postId,
+      );
+    }
+
+    if (location === "collections") {
+      curPostData = savedPosts?.find((post) => post.postId === postId);
+    }
+    console.log(curPostData);
     dispatch(
       uploadActions.addToQueue({
         postId: postId,
@@ -174,13 +186,13 @@ const SaveImageForm = ({
         modelName: modelData?.name || null,
         versionId: +versionIdInput || null,
         nsfwMode,
-        postData: postData || null,
+        postData: curPostData || null,
         imgUrl: imagesForSaving[0].url,
         ids: ids || [],
         images: imagesForSaving,
         location,
         collectionData,
-      })
+      }),
     );
     seteSuccessMessage("Added to download queue");
     setPostIdInput({ value: "", isValid: false });

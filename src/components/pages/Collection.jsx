@@ -61,7 +61,7 @@ const Collection = ({ title }) => {
     return () => {
       document.title = DEFAULT_PAGE_TITLE;
     };
-  }, [title]);
+  }, [title, collectionData?.name]);
 
   useEffect(() => {
     if (!isAuth || !collectionId) return;

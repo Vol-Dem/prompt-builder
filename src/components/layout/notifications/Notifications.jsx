@@ -27,7 +27,7 @@ const Notifications = () => {
   const [allNotification, setAllNotification] = useState([]);
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const notifications = useSelector(
-    (state) => state.notification.notifications
+    (state) => state.notification.notifications,
   );
 
   useEffect(() => {
@@ -40,15 +40,15 @@ const Notifications = () => {
       const notificationAcceptanceState = uploadLocalStorage(`notifications`);
       const updatedNotifications = notifications.map((message) => {
         const notice = notificationAcceptanceState?.messages?.find(
-          (userNotice) => userNotice.id === message.id
+          (userNotice) => userNotice.id === message.id,
         );
         return {
           ...message,
-          readed: notice ? notice.readed : message.readed,
+          read: notice ? notice.read : message.read,
         };
       });
       const notification = updatedNotifications.find(
-        (message) => !message.readed
+        (message) => !message.read,
       );
       setAllNotification(updatedNotifications);
       setActiveNotification(notification);
@@ -59,7 +59,7 @@ const Notifications = () => {
     const noticeInfo = allNotification.map((message) => {
       return {
         ...message,
-        readed: activeNotification.id === message.id ? true : message.readed,
+        read: activeNotification.id === message.id ? true : message.read,
       };
     });
     saveToLocalStorage(`notifications`, { messages: noticeInfo });

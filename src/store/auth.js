@@ -23,7 +23,6 @@ import firebaseApp from "../firebase-config";
 import { uploadPanelStateFromStorage, usedModelsActions } from "./usedModels";
 import { promptActions, uploadPromptFromStorage } from "./prompt";
 import { tabActions } from "./tabs";
-import { modelActions } from "./model";
 import {
   ERROR_MESSAGE_DEFAULT,
   ERROR_MESSAGE_USER_DATA_LOAD,
@@ -86,7 +85,7 @@ const authSlice = createSlice({
     logout(state) {
       state.isLoggedIn = false;
       state.user = Object.fromEntries(
-        Object.keys(state.user).map((key) => [key, ""])
+        Object.keys(state.user).map((key) => [key, ""]),
       );
 
       signOut(auth);
@@ -148,7 +147,7 @@ export const initAuth = () => {
             email: user.email,
             displayName: user.displayName,
             emailVerified: user.emailVerified,
-          })
+          }),
         );
         dispatch(getAppInfo());
         dispatch(uploadPanelStateFromStorage(user.uid));
@@ -176,13 +175,13 @@ export const authRequest = (isLogin, email, password) => {
         userCredential = await signInWithEmailAndPassword(
           auth,
           email,
-          password
+          password,
         );
       } else {
         userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
-          password
+          password,
         );
 
         await sendEmailVerification(auth.currentUser);
@@ -197,7 +196,7 @@ export const authRequest = (isLogin, email, password) => {
           email: user.email,
           displayName: user.displayName,
           emailVerified: user.emailVerified,
-        })
+        }),
       );
       // dispatch(authActions.setGuide({ topPanel: false, image: false }));
       if (user.emailVerified) {
@@ -263,7 +262,7 @@ export const authWithGoogle = () => {
             email: user.email,
             displayName: user.displayName,
             emailVerified: user.emailVerified,
-          })
+          }),
         );
         dispatch(authActions.closeAuthForm());
       })
@@ -343,7 +342,7 @@ export const changeUserEmail = (email) => {
           email: user.email,
           displayName: user.displayName,
           emailVerified: user.emailVerified,
-        })
+        }),
       );
       dispatch(authActions.setSuccessMessage("Email changed successfully"));
     } catch (error) {
@@ -352,8 +351,8 @@ export const changeUserEmail = (email) => {
       } else if (error.code === "auth/operation-not-allowed") {
         dispatch(
           authActions.setErrorMessage(
-            "Please verify the new email before changing email"
-          )
+            "Please verify the new email before changing email",
+          ),
         );
       } else {
         dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
@@ -366,18 +365,18 @@ export const promptForCredentials = async (password) => {
   try {
     const credential = EmailAuthProvider.credential(
       auth.currentUser.email,
-      password
+      password,
     );
 
     return credential;
   } catch (error) {
     if (error.code === "auth/invalid-login-credentials") {
       throw new Error(
-        "The current password you entered did not match our records"
+        "The current password you entered did not match our records",
       );
     } else if (error.code === "auth/too-many-requests") {
       throw new Error(
-        "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later"
+        "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later",
       );
     } else {
       throw new Error(error.message);
@@ -399,11 +398,11 @@ export const reAuthUser = async (type, password) => {
   } catch (error) {
     if (error.code === "auth/invalid-login-credentials") {
       throw new Error(
-        "The current password you entered did not match our records"
+        "The current password you entered did not match our records",
       );
     } else if (error.code === "auth/too-many-requests") {
       throw new Error(
-        "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later"
+        "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later",
       );
     } else {
       throw new Error(error.message);
@@ -433,7 +432,7 @@ export const reAuthUser = async (type, password) => {
 // };
 
 /**
- * Change user password
+ * Changes user password
  * @param {string} password - User password
  * @returns
  */
@@ -486,7 +485,7 @@ export const resetUserPassword = (email) => {
 };
 
 /**
- * Change user name
+ * Changes user name
  * @param {string} name - User name
  * @returns
  */
@@ -502,7 +501,7 @@ export const changeUserName = (name) => {
           email: user.email,
           displayName: user.displayName,
           emailVerified: user.emailVerified,
-        })
+        }),
       );
       dispatch(authActions.setSuccessMessage("Name changed successfully"));
     } catch (error) {
@@ -545,20 +544,21 @@ export const getUserData = (uid) => {
         if (userData?.nsfwValue)
           dispatch(generalActions.setNsfwValue(userData.nsfwValue));
         if (userData?.nsfwMode) {
-          dispatch(modelActions.setNsfwMode(userData.nsfwMode));
+          // dispatch(modelActions.setNsfwMode(userData.nsfwMode));
           dispatch(generalActions.setNsfwMode(userData.nsfwMode));
         }
         if (userData?.uiState) {
           dispatch(
-            tabActions.setPreviewFullView(userData.uiState?.previewFullView)
+            tabActions.setPreviewFullView(userData.uiState?.previewFullView),
           );
           dispatch(
             usedModelsActions.cardViewState(
-              userData.uiState?.sidePanelCardfullView
-            )
+              userData.uiState?.sidePanelCardfullView,
+            ),
           );
         }
-        if (userData?.guide && userData?.guide?.newGuide) {
+        // if (userData?.guide && userData?.guide?.newGuide) {
+        if (userData?.guide) {
           // console.log(userData.guide);
           dispatch(guideActions.setGuideInitialState(userData.guide));
         } else {

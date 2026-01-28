@@ -103,7 +103,7 @@ const CarouselImage = ({
   const dispatch = useDispatch();
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -112,7 +112,7 @@ const CarouselImage = ({
         transformSrcPreview(
           src,
           SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
-          imageData.type
+          imageData.type,
         );
       setImgSrc(previewSrc);
       setVideoSrc({
@@ -154,7 +154,7 @@ const CarouselImage = ({
   const deleteImgPostHandler = () => {
     const imgPostId = postId[0].postId;
     const postData = model?.savedImages[versionId]?.find(
-      (post) => post.postId === imgPostId
+      (post) => post.postId === imgPostId,
     );
 
     dispatch(deleteImgPost(versionId, imgPostId, postData));

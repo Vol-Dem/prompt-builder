@@ -107,7 +107,7 @@ const CarouselContent = ({
   const [cursorCurX, setCursorCurX] = useState(null);
   const carouselRef = useRef();
   const imagesRef = useRef();
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const modelName = useSelector((state) => state.model.model.name);
   const savedImages = useSelector((state) => state.model.savedImages);
   const dispatch = useDispatch();
@@ -170,13 +170,13 @@ const CarouselContent = ({
         currImgNum: currImgNum,
         location,
         locationId,
-      })
+      }),
     );
   };
 
   useEffect(() => {
     const curVisibleImgAmount = Math.floor(
-      dimensions.wrapWidth / dimensions.imgWidthWithGap
+      dimensions.wrapWidth / dimensions.imgWidthWithGap,
     );
     let visibleImagesAmount = visibleImgAmount;
 
@@ -188,7 +188,7 @@ const CarouselContent = ({
 
     const initialVisibleImages = Array.from(
       { length: visibleImagesAmount },
-      (_, i) => visibleImagesAmount + i
+      (_, i) => visibleImagesAmount + i,
     );
 
     setVisibleAmount(visibleImagesAmount);
@@ -202,7 +202,7 @@ const CarouselContent = ({
     ) {
       setCurrImgNum(activeImgNum);
       setVisibleImages(
-        initialVisibleImages.map((_, j) => activeImgNum + j + visibleImgAmount)
+        initialVisibleImages.map((_, j) => activeImgNum + j + visibleImgAmount),
       );
       setTranslate(-dimensions.imgWidthWithGap * (activeImgNum + 1) || 0);
     } else if (initial && !activeImgNum && dimensions?.imgWidthWithGap) {
@@ -225,21 +225,21 @@ const CarouselContent = ({
     if (visibleImages[0] === 0) {
       setCurTransitionDur(0);
       setVisibleImages((prevState) =>
-        prevState.map((el, i) => imagesData?.length + i)
+        prevState.map((el, i) => imagesData?.length + i),
       );
       setTranslate(-dimensions.imgWidthWithGap * imagesData?.length);
     }
     if (visibleImages[0] === imagesData?.length + curVisibleAmount) {
       setCurTransitionDur(0);
       setVisibleImages((prevState) =>
-        prevState.map((el, i) => curVisibleAmount + i)
+        prevState.map((el, i) => curVisibleAmount + i),
       );
       setTranslate(-dimensions.imgWidthWithGap * curVisibleAmount);
     }
     if (visibleImages[0] > imagesData?.length + curVisibleAmount) {
       setCurTransitionDur(0);
       setVisibleImages((prevState) =>
-        prevState.map(() => visibleImages[0] - imagesData?.length)
+        prevState.map(() => visibleImages[0] - imagesData?.length),
       );
     }
   }, [
@@ -308,7 +308,7 @@ const CarouselContent = ({
     }
     setVisibleImages((prevState) => {
       const newVisibleImages = prevState.map(
-        (el, j) => curImgIndex + j + visibleAmount
+        (el, j) => curImgIndex + j + visibleAmount,
       );
       return newVisibleImages;
     });
@@ -319,7 +319,7 @@ const CarouselContent = ({
     location,
     ids,
     collectionData,
-    postData
+    postData,
   ) => {
     const imagesForSaving = ids?.length
       ? imagesData.filter((image) => ids.includes(image?.id))
@@ -366,23 +366,23 @@ const CarouselContent = ({
       };
 
       if (location === "collections") {
-        await dispatch(updateCollectionPostsData(postInfo, curPostData));
+        await dispatch(updateCollectionPostsData(ids, curPostData));
       }
 
       if (location === "models") {
         if (!!ids?.length && ids?.length !== curPostData?.imagesId?.length) {
           const newImages = imagesData.filter(
-            (image) => !ids?.includes(image.id)
+            (image) => !ids?.includes(image.id),
           );
           const updatedPostData = await updateImagePostData(
             postInfo,
-            newImages
+            newImages,
           );
 
           // setImages(newImages);
           onDelete(ids, postInfo.postId);
           dispatch(
-            modelActions.updateSavedImages({ postInfo, data: updatedPostData })
+            modelActions.updateSavedImages({ postInfo, data: updatedPostData }),
           );
         } else {
           onDelete(ids, postInfo.postId);

@@ -19,7 +19,6 @@ import {
 
 import firebaseApp from "../firebase-config";
 import {
-  checkArraysIsEqual,
   checkIsInCurrentNsfwRange,
   createCategoryId,
   createCollectionId,
@@ -40,6 +39,30 @@ let lastVisiblePreview = "";
 
 const amountPerPage = 12;
 
+/**
+ * Image collections settings state.
+ *
+ * Controls:
+ * - Collection preview list
+ * - Collection data
+ * - Collection images
+ * - Collection categories and subcategories
+ *
+ * State:
+ * @property {array} categories - Collection categories.
+ * @property {string} activeCategory - Active collection category.
+ * @property {string} activeSubcategory - Active collection subcategory.
+ * @property {array} collectionPreviews - List of collection previews.
+ * @property {boolean} isLastPage - Whether the last collection images page is reached.
+ * @property {boolean} isLastPreviewsPage - Whether the last previews page is reached.
+ * @property {boolean} imagesIsLoading - Collection images loading state.
+ * @property {boolean} previewsIsLoading - Collection previews loading state.
+ * @property {boolean} collectionDataIsSaving - Collection saving state (collection edit page).
+ * @property {string} errorMessage - Collection images error message.
+ * @property {string} previewsErrorMessage - Collection previews error message.
+ * @property {{images: array, isLastPage: boolean}} collectionImages - Collection images data.
+ * @property {object} collectionData - Active collection data.
+ */
 const imagesSlice = createSlice({
   name: "images",
   initialState: {
@@ -54,7 +77,7 @@ const imagesSlice = createSlice({
     collectionDataIsSaving: false,
     errorMessage: "",
     previewsErrorMessage: "",
-    collectionImages: {},
+    collectionImages: { images: [], isLastPage: false },
     collectionData: {},
   },
   reducers: {
@@ -99,7 +122,7 @@ const imagesSlice = createSlice({
     },
     resetCollectionData(state) {
       state.collectionData = {};
-      state.collectionImages = {};
+      state.collectionImages = { images: [], isLastPage: false };
       state.errorMessage = "";
       state.isLastPage = false;
       state.imagesIsLoading = false;
@@ -107,12 +130,14 @@ const imagesSlice = createSlice({
     resetCollectionPreviews(state) {
       state.collectionPreviews = [];
       state.errorMessage = "";
+      state.previewsErrorMessage = "";
       state.isLastPreviewsPage = false;
       state.previewsIsLoading = false;
     },
     resetCollectionListState(state) {
       state.collectionPreviews = [];
       state.errorMessage = "";
+      state.previewsErrorMessage = "";
       state.isLastPreviewsPage = false;
       state.previewsIsLoading = false;
       state.activeCategory = "";
@@ -120,32 +145,64 @@ const imagesSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    /**
+     * Resets collection list state on logout.
+     *
+     * Listens to the logout action and clears collection-related state.
+     */
     builder.addCase(authActions.logout, (state, action) => {
       imagesSlice.caseReducers.resetCollectionListState(state, action);
       state.categories = [];
     });
+    /**
+     * Resets collection previews when category or subcategory is changed.
+     *
+     * Listens to all actions from this slice that start with `images/setActive*`
+     * and resets collection previews data.
+     */
     builder.addMatcher(
       (action) => action.type.startsWith("images/setActive"),
       (state, action) => {
         imagesSlice.caseReducers.resetCollectionPreviews(state, action);
-      }
+      },
     );
+    /**
+     * Resets collection images when NSFW mode or level is changed.
+     *
+     * Listens to all actions that start with `general/setNsfw*`
+     * and resets collection images data.
+     */
     builder.addMatcher(
       (action) => action.type.startsWith("general/setNsfw"),
       (state) => {
         state.collectionImages = {};
         state.errorMessage = "";
         state.isLastPage = false;
-      }
+      },
     );
   },
 });
 
+/**
+ * Saves post images to a collection.
+ *
+ * Side effects:
+ * - Adds or updates a post in the collection
+ * - Updates collection and preview data in Firestore
+ * - Updates collection and images state in Redux
+ *
+ * @param {Object} params
+ * @param {{id: string|number, name: string}} params.collectionData - Target collection.
+ * @param {Array<{id: string, name: string}>} params.subcategoriesData - Selected subcategories.
+ * @param {number} params.postId - Post ID.
+ * @param {Array<number>} params.imageIds - IDs of images to save.
+ * @param {Object|null} params.postData - Existing post data (if editing).
+ * @param {Array<Object>} params.images - Image objects to add.
+ * @returns {Function} Redux thunk.
+ */
 export const savePostToCollections = ({
   collectionData,
-  categoryData,
   subcategoriesData,
-  curCollectionSabcategories,
   postId,
   imageIds,
   postData,
@@ -153,14 +210,6 @@ export const savePostToCollections = ({
 }) => {
   return async (dispatch, getState) => {
     try {
-      if (!collectionData?.name) {
-        throwCustomError("Invalid collection name");
-      }
-
-      if (!categoryData?.name) {
-        throwCustomError("Invalid category name");
-      }
-
       if (!postId) {
         throwCustomError("Invalid post ID");
       }
@@ -168,45 +217,10 @@ export const savePostToCollections = ({
       const batch = writeBatch(firestore);
 
       const uid = getState().auth.user.uid;
-      const categories = getState().images.categories;
       const curCollectionData = getState().images.collectionData;
 
-      const curCategoryData = categories.find(
-        (category) => category.name === categoryData.name
-      );
-
-      const categoryId =
-        categoryData?.id || createCategoryId(categoryData.name, categories);
-      const collectionId = collectionData?.id || createCollectionId(categories);
-
-      let newSubcategories = [];
-
-      const newSubcategoryIds = subcategoriesData.flatMap((subcategory) => {
-        if (!subcategory.name) {
-          return [];
-        }
-        if (!subcategory.id) {
-          const subData = {
-            id: createCategoryId(
-              subcategory.name,
-              curCategoryData?.subcategories
-            ),
-            name: subcategory.name,
-          };
-          newSubcategories.push(subData);
-          return subData.id;
-        }
-        return subcategory.id;
-      });
-
-      const newCollectionSubcategoryIds = filterDuplicates([
-        ...newSubcategoryIds,
-        ...(curCollectionSabcategories || []),
-      ]);
-
-      const clollectionSubcategoriesIsChanged = !checkArraysIsEqual(
-        newCollectionSubcategoryIds,
-        curCollectionSabcategories
+      const newSubcategoryIds = subcategoriesData.map(
+        (subcategory) => subcategory.id,
       );
 
       const collectionsRef = doc(
@@ -214,72 +228,15 @@ export const savePostToCollections = ({
         "users",
         uid,
         "collections",
-        collectionId + ""
+        collectionData.id + "",
       );
       const collectionsPreviewRef = doc(
         firestore,
         "users",
         uid,
         "collectionPreviews",
-        collectionId + ""
+        collectionData.id + "",
       );
-      const userRef = doc(firestore, "users", uid);
-
-      let updatedCategories;
-
-      if (!categories?.length || !categoryData.id) {
-        updatedCategories = [
-          ...categories,
-          {
-            id: categoryId,
-            name: categoryData.name,
-            subcategories: newSubcategories,
-            collectionNames: [
-              {
-                id: collectionId,
-                name: collectionData.name,
-                subcategories: newCollectionSubcategoryIds,
-              },
-            ],
-          },
-        ];
-      } else {
-        updatedCategories = categories.map((category) => {
-          if (categoryData.id && categoryId === category.id) {
-            let collectionNames;
-            if (!collectionData.id) {
-              collectionNames = [
-                ...category.collectionNames,
-                {
-                  id: collectionId,
-                  name: collectionData.name,
-                  subcategories: newCollectionSubcategoryIds,
-                },
-              ];
-            } else {
-              const prevCollectionNames = category.collectionNames.filter(
-                (prevCollectionName) => prevCollectionName.id !== collectionId
-              );
-
-              collectionNames = [
-                ...prevCollectionNames,
-                {
-                  id: collectionId,
-                  name: collectionData.name,
-                  subcategories: newCollectionSubcategoryIds,
-                },
-              ];
-            }
-
-            return {
-              ...category,
-              subcategories: [...category.subcategories, ...newSubcategories],
-              collectionNames,
-            };
-          }
-          return category;
-        });
-      }
 
       if (postData?.postId) {
         batch.update(
@@ -287,87 +244,57 @@ export const savePostToCollections = ({
           {
             posts: arrayRemove(postData),
           },
-          { merge: true }
+          { merge: true },
         );
       }
 
       const newPost = { postId, imageIds, createdAt: Date.now() };
 
-      if (!collectionData.id) {
-        const savedImagesToCatPrev = {
-          id: collectionId,
-          name: collectionData.name,
-          nameArr: collectionData.name.toLowerCase().split(" "),
-          category: categoryId,
-          nsfw: false,
-          subcategories: newSubcategoryIds,
-          createdAt: Date.now(),
-        };
-
-        const savedImagesToCat = {
-          ...savedImagesToCatPrev,
-          description: "",
-          posts: [newPost],
-        };
-
-        batch.set(collectionsRef, savedImagesToCat, { merge: true });
-        batch.set(collectionsPreviewRef, savedImagesToCatPrev, { merge: true });
-      } else {
-        batch.update(
-          collectionsRef,
-          {
-            subcategories: arrayUnion(...newSubcategoryIds),
-            posts: arrayUnion(newPost),
-          },
-          { merge: true }
-        );
-        batch.update(
-          collectionsPreviewRef,
-          {
-            subcategories: arrayUnion(...newSubcategoryIds),
-          },
-          { merge: true }
-        );
-      }
-
-      if (
-        !collectionData.id ||
-        !categoryData.id ||
-        newSubcategories.length ||
-        clollectionSubcategoriesIsChanged
-      ) {
-        batch.set(
-          userRef,
-          {
-            imageCategories: updatedCategories,
-          },
-          { merge: true }
-        );
-      }
+      batch.update(
+        collectionsRef,
+        {
+          subcategories: arrayUnion(...newSubcategoryIds),
+          posts: arrayUnion(newPost),
+        },
+        { merge: true },
+      );
+      batch.update(
+        collectionsPreviewRef,
+        {
+          subcategories: arrayUnion(...newSubcategoryIds),
+        },
+        { merge: true },
+      );
 
       await batch.commit();
 
-      dispatch(imagesActions.setImageCategories(updatedCategories));
       const collectionImagesData = getState().images.collectionImages;
       if (
         (collectionImagesData?.collectionId &&
           curCollectionData.id === collectionImagesData.collectionId) ||
         !curCollectionData?.posts?.length
       ) {
+        const updatedPosts = [
+          ...(curCollectionData?.posts?.filter(
+            (post) => post.id !== newPost.id,
+          ) || []),
+          newPost,
+        ];
+
         dispatch(
           imagesActions.setCollectionData({
             ...curCollectionData,
-            posts: [...(curCollectionData?.posts || []), newPost],
-          })
+            posts: updatedPosts,
+          }),
         );
 
         if (
           !collectionImagesData?.collectionId ||
-          collectionId === collectionImagesData.collectionId
+          collectionData.id === collectionImagesData.collectionId
         ) {
           dispatch(
             imagesActions.setCollectionImages({
-              collectionId: collectionId,
+              collectionId: collectionData.id,
               isLastPage: !curCollectionData?.posts?.length,
               ...collectionImagesData,
               images: [
@@ -375,10 +302,10 @@ export const savePostToCollections = ({
                   return Date.parse(a.createdAt) - Date.parse(b.createdAt);
                 }),
                 ...(collectionImagesData?.images?.filter(
-                  (image) => image[0].postId !== postId
+                  (image) => image[0].postId !== postId,
                 ) || []),
               ],
-            })
+            }),
           );
         }
       }
@@ -389,6 +316,15 @@ export const savePostToCollections = ({
   };
 };
 
+/**
+ * Fetches collection data.
+ *
+ * Side effects:
+ * - Loads collection data from Firestore.
+ *
+ * @param {number|string} collectionId - Collection ID.
+ * @returns {Function} Redux thunk.
+ */
 export const getCollection = (collectionId) => {
   return async (dispatch) => {
     try {
@@ -401,22 +337,33 @@ export const getCollection = (collectionId) => {
   };
 };
 
+/**
+ * Fetches collection previews.
+ *
+ * Side effects:
+ * - Fetches collection previews from Firestore
+ * - Optionally merges with already loaded previews
+ *
+ * @param {string} activeCategory - Category ID.
+ * @param {string} activeSubcategory - Subcategory ID.
+ * @param {boolean} loadMore - Whether to append to existing previews.
+ * @param {boolean} nsfwMode - Whether to include NSFW collections.
+ * @returns {Function} Redux thunk.
+ */
 export const getCollectionPreviews = (
   activeCategory,
   activeSubcategory,
   loadMore = false,
-  nsfwMode
+  nsfwMode,
 ) => {
   return async (dispatch, getState) => {
     try {
-      dispatch(imagesActions.setErrorMessage(""));
+      dispatch(imagesActions.setPreviewsErrorMessage(""));
       if (!loadMore) {
         lastVisiblePreview = "";
         dispatch(imagesActions.setIsLastPreviewsPage(false));
       }
       const uid = getState().auth.user.uid;
-      const activeCategory = getState().images.activeCategory;
-      const activeSubcategory = getState().images.activeSubcategory;
       const isLastPreviewsPage = getState().images.isLastPreviewsPage;
       const sortBy = "name";
       const collectionPreviews = getState().images.collectionPreviews;
@@ -436,7 +383,7 @@ export const getCollectionPreviews = (
       }
       if (activeSubcategory && activeSubcategory !== "all") {
         optionalWhere.push(
-          where("subcategories", "array-contains", activeSubcategory)
+          where("subcategories", "array-contains", activeSubcategory),
         );
       }
 
@@ -446,7 +393,7 @@ export const getCollectionPreviews = (
         where("nsfw", "in", nsfwFilter),
         order,
         startAfter(lastVisiblePreview),
-        limit(amountPerPage)
+        limit(amountPerPage),
       );
 
       const querySnapshot = await getDocs(q);
@@ -472,18 +419,29 @@ export const getCollectionPreviews = (
             data: loadMore
               ? [...(collectionPreviews?.data || []), ...collectionsData]
               : collectionsData,
-          })
+          }),
         );
 
       dispatch(imagesActions.setIsLastPreviewsPage(isLast));
       dispatch(imagesActions.setPreviewsIsLoading(false));
     } catch (err) {
       dispatch(imagesActions.setPreviewsIsLoading(false));
-      dispatch(imagesActions.setErrorMessage(handleErrors(err)));
+      dispatch(imagesActions.setPreviewsErrorMessage(handleErrors(err)));
     }
   };
 };
 
+/**
+ * Fetches images for a collection by post IDs.
+ *
+ * Side effects:
+ * - Loads collection images from Firestore
+ * - Merges with already loaded images
+ *
+ * @param {Array<{postId: number, createdAt: number}>} posts - Collection posts.
+ * @param {number|string} collectionId - Collection ID.
+ * @returns {Function} Redux thunk.
+ */
 export const getColectionImagesByIds = (posts, collectionId) => {
   return async (dispatch, getState) => {
     try {
@@ -493,13 +451,13 @@ export const getColectionImagesByIds = (posts, collectionId) => {
 
       if (collectionImages?.isLastPage) return;
       const savedImagesData = getState().images.collectionData?.posts?.toSorted(
-        (a, b) => b.createdAt - a.createdAt
+        (a, b) => b.createdAt - a.createdAt,
       );
       const nsfwMode = getState().general.nsfwMode;
       const nsfwLevel = getState().general.nsfwLevel;
       const lastVisibleId = collectionImages?.lastVisibleId;
       const lastVisibleIndex = fileteredPosts.findIndex(
-        (post) => post.postId === lastVisibleId
+        (post) => post.postId === lastVisibleId,
       );
       let from;
       let to;
@@ -521,7 +479,7 @@ export const getColectionImagesByIds = (posts, collectionId) => {
         where("id", "in", ids),
         where("hasSfw", "in", nsfwFilter),
         orderBy("createdAt", "desc"),
-        limit(SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE + 1)
+        limit(SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE + 1),
       );
 
       const modelImagesSnap = await getDocs(q);
@@ -543,7 +501,7 @@ export const getColectionImagesByIds = (posts, collectionId) => {
 
             const isInCurrentNsfwRange = checkIsInCurrentNsfwRange(
               nsfwLevel,
-              image?.nsfwLevel
+              image?.nsfwLevel,
             );
 
             return saved && isInCurrentNsfwRange;
@@ -568,18 +526,31 @@ export const getColectionImagesByIds = (posts, collectionId) => {
           lastVisibleId: ids?.length ? ids[ids.length - 1] : null,
           images: [...(collectionImages.images || []), ...examples],
           isLastPage: isLast,
-        })
+        }),
       );
     } catch (err) {
       console.log(err);
-      // setErrorMessage(err);
-    } finally {
-      // dispatch(imagesActions.setImagesIsLoading(false));
-      // setExamplesIsLoading(false);
+      throw new Error(err.message);
     }
   };
 };
 
+/**
+ * Edits collection data.
+ *
+ * Side effects:
+ * - Saves collection metadata to Firestore
+ * - Creates new category and subcategories if needed
+ * - Updates Redux collection state
+ *
+ * @param {Object} params
+ * @param {{id?: string|number, name: string}} params.collectionData - Collection data.
+ * @param {{id?: string, name: string}} params.categoryData - Category data.
+ * @param {Array<{id?: string, name: string}>} params.subcategoriesData - Subcategories.
+ * @param {string} params.description - Collection description.
+ * @param {boolean} params.nsfw - Whether the collection is NSFW.
+ * @returns {Function} Redux thunk.
+ */
 export const editCollectionData = ({
   collectionData,
   categoryData,
@@ -595,42 +566,23 @@ export const editCollectionData = ({
 
       const batch = writeBatch(firestore);
       const uid = getState().auth.user.uid;
-      const categories = getState().images.categories;
       const curCollectionData = getState().images.collectionData;
-      const curCategoryData = categories.find(
-        (category) => category.name === categoryData.name
+
+      const {
+        collectionData: updatedCollectionData,
+        categoryData: updatedCategoryData,
+        subcategoriesData: updatedSubcategoriesData,
+      } = await dispatch(
+        addNewCollectionCategories({
+          collectionData,
+          categoryData,
+          subcategoriesData,
+          curCollectionSabcategories: subcategoriesData,
+        }),
       );
-      const existedCollectionName = curCategoryData?.collectionNames?.find(
-        (collection) => collection.id === collectionData?.id
-      )?.name;
-      const categoryId =
-        categoryData?.id || createCategoryId(categoryData.name, categories);
-      const collectionId =
-        collectionData?.id ||
-        createCategoryId(collectionData.name, curCategoryData?.collectionNames);
-      let newSubcategories = [];
 
-      const newSubcategoryIds = subcategoriesData.flatMap((subcategory) => {
-        if (!subcategory.name) {
-          return [];
-        }
-        if (!subcategory.id) {
-          const subData = {
-            id: createCategoryId(
-              subcategory.name,
-              curCategoryData?.subcategories
-            ),
-            name: subcategory.name,
-          };
-          newSubcategories.push(subData);
-          return subData.id;
-        }
-        return subcategory.id;
-      });
-
-      const clollectionSubcategoriesIsChanged = !checkArraysIsEqual(
-        newSubcategoryIds,
-        curCollectionData.subcategories
+      const newSubcategoryIds = updatedSubcategoriesData.map(
+        (subcategory) => subcategory.id,
       );
 
       const collectionsRef = doc(
@@ -638,67 +590,20 @@ export const editCollectionData = ({
         "users",
         uid,
         "collections",
-        collectionId + ""
+        updatedCollectionData.id + "",
       );
       const collectionsPreviewRef = doc(
         firestore,
         "users",
         uid,
         "collectionPreviews",
-        collectionId + ""
+        updatedCollectionData.id + "",
       );
-      const userRef = doc(firestore, "users", uid);
-
-      let updatedCategories;
-      let collectionNames;
-
-      if (!categories?.length || !categoryData.id) {
-        collectionNames = [
-          {
-            id: collectionId,
-            name: collectionData.name,
-            subcategories: newSubcategoryIds,
-          },
-        ];
-        updatedCategories = [
-          ...categories,
-          {
-            id: categoryId,
-            name: categoryData.name,
-            subcategories: newSubcategories,
-            collectionNames,
-          },
-        ];
-      } else {
-        updatedCategories = categories.map((category) => {
-          if (categoryData.id && categoryId === category.id) {
-            const prevCollectionNames = category.collectionNames.filter(
-              (prevCollectionName) => prevCollectionName.id !== collectionId
-            );
-
-            collectionNames = [
-              ...prevCollectionNames,
-              {
-                id: collectionId,
-                name: collectionData.name,
-                subcategories: newSubcategoryIds,
-              },
-            ];
-
-            return {
-              ...category,
-              subcategories: [...category.subcategories, ...newSubcategories],
-              collectionNames,
-            };
-          }
-          return category;
-        });
-      }
 
       const preview = {
-        name: collectionData.name,
-        nameArr: collectionData.name.toLowerCase().split(" "),
-        category: categoryId,
+        name: updatedCollectionData.name,
+        nameArr: updatedCollectionData.name.toLowerCase().split(" "),
+        category: updatedCategoryData.id,
         subcategories: newSubcategoryIds,
         nsfw,
       };
@@ -708,29 +613,15 @@ export const editCollectionData = ({
         description,
       };
 
-      dispatch(imagesActions.setImageCategories(updatedCategories));
       dispatch(
-        imagesActions.setCollectionData({ ...curCollectionData, ...collection })
+        imagesActions.setCollectionData({
+          ...curCollectionData,
+          ...collection,
+        }),
       );
 
       batch.update(collectionsPreviewRef, preview, { merge: true });
       batch.update(collectionsRef, collection, { merge: true });
-
-      if (
-        !collectionData.id ||
-        !categoryData.id ||
-        newSubcategories.length ||
-        existedCollectionName !== collectionData?.name ||
-        clollectionSubcategoriesIsChanged
-      ) {
-        batch.set(
-          userRef,
-          {
-            imageCategories: updatedCategories,
-          },
-          { merge: true }
-        );
-      }
 
       await batch.commit();
     } catch (err) {
@@ -742,19 +633,31 @@ export const editCollectionData = ({
   };
 };
 
-export const updateCollectionPostsData = (postInfo, postData) => {
+/**
+ * Updates collection post images.
+ *
+ * Side effects:
+ * - Removes images or posts from a collection in Firestore
+ * - Updates collection and images state in Redux
+ *
+ * @param {Array<string>} ids - Image IDs to remove.
+ * @param {{postId: number, imageIds: Array<string>}} postData - Post data.
+ * @returns {Function} Redux thunk.
+ */
+export const updateCollectionPostsData = (ids, postData) => {
   return async (dispatch, getState) => {
     try {
       const uid = getState().auth.user.uid;
       const collectionData = getState().images.collectionData;
-      const imageIds = postInfo?.ids?.length
-        ? postData.imageIds.filter((imageId) => !postInfo.ids.includes(imageId))
+      const imageIds = ids?.length
+        ? postData.imageIds.filter((imageId) => !ids.includes(imageId))
         : [];
+
       let updatedPosts;
 
       if (!imageIds?.length) {
         updatedPosts = collectionData.posts.filter(
-          (post) => post.postId !== postData.postId
+          (post) => post.postId !== postData.postId,
         );
       } else {
         updatedPosts = collectionData.posts.map((post) => {
@@ -774,8 +677,9 @@ export const updateCollectionPostsData = (postInfo, postData) => {
         "users",
         uid,
         "collections",
-        collectionData.id + ""
+        collectionData.id + "",
       );
+
       const batch = writeBatch(firestore);
 
       batch.update(
@@ -783,7 +687,7 @@ export const updateCollectionPostsData = (postInfo, postData) => {
         {
           posts: updatedPosts,
         },
-        { merge: true }
+        { merge: true },
       );
 
       await batch.commit();
@@ -791,14 +695,14 @@ export const updateCollectionPostsData = (postInfo, postData) => {
         imagesActions.setCollectionData({
           ...collectionData,
           posts: updatedPosts,
-        })
+        }),
       );
       const collectionImagesData = getState().images.collectionImages;
       if (collectionImagesData?.collectionId) {
         let updatedImages;
         if (!imageIds.length) {
           updatedImages = collectionImagesData.images.filter(
-            (post) => post[0].postId !== postData.postId
+            (post) => post[0].postId !== postData.postId,
           );
         } else {
           updatedImages = collectionImagesData.images.map((post) => {
@@ -813,7 +717,7 @@ export const updateCollectionPostsData = (postInfo, postData) => {
           imagesActions.setCollectionImages({
             ...collectionImagesData,
             images: updatedImages,
-          })
+          }),
         );
       }
     } catch (err) {
@@ -822,6 +726,16 @@ export const updateCollectionPostsData = (postInfo, postData) => {
   };
 };
 
+/**
+ * Updates collection categories.
+ *
+ * Side effects:
+ * - Saves collection categories to Firestore
+ * - Updates categories in Redux
+ *
+ * @param {Array<Object>} categories - Collection categories.
+ * @returns {Function} Redux thunk.
+ */
 export const updateCollectionCategories = (categories) => {
   return async (dispatch, getState) => {
     try {
@@ -833,7 +747,7 @@ export const updateCollectionCategories = (categories) => {
         {
           imageCategories: categories,
         },
-        { merge: true }
+        { merge: true },
       );
 
       dispatch(imagesActions.setImageCategories(categories));
@@ -843,6 +757,26 @@ export const updateCollectionCategories = (categories) => {
   };
 };
 
+/**
+ * Creates new collection categories and subcategories if needed.
+ *
+ * Side effects:
+ * - Creates new categories, subcategories, and collections in Firestore
+ * - Updates category list in Redux
+ *
+ * @param {Object} params
+ * @param {{id?: number, name: string}} params.collectionData
+ * @param {{id?: string, name: string}} params.categoryData
+ * @param {Array<{id?: string, name: string}>} params.subcategoriesData
+ * @param {Array<string>} params.curCollectionSabcategories - Existing subcategory IDs.
+ * @returns {Function} Redux thunk that resolves to:
+ * {
+ *   collectionData: {id: number, name: string},
+ *   categoryData: {id: string, name: string},
+ *   subcategoriesData: Array<{id: string, name: string}>,
+ *   curCollectionSabcategories: Array<string>
+ * }
+ */
 export const addNewCollectionCategories = ({
   collectionData,
   categoryData,
@@ -852,7 +786,7 @@ export const addNewCollectionCategories = ({
   return async (dispatch, getState) => {
     try {
       const hasNewSubcategories = subcategoriesData?.find(
-        (subcategory) => !subcategory?.id
+        (subcategory) => !subcategory?.id,
       );
 
       //Check for new categories data
@@ -880,7 +814,7 @@ export const addNewCollectionCategories = ({
       }
 
       const curCategoryData = latestCategories.find(
-        (category) => category.name === categoryData.name
+        (category) => category.name === categoryData.name,
       );
 
       const categoryId =
@@ -899,7 +833,7 @@ export const addNewCollectionCategories = ({
         if (!subcategory.id) {
           const newId = createCategoryId(
             subcategory.name,
-            curCategoryData?.subcategories
+            curCategoryData?.subcategories,
           );
           const subData = {
             id: newId,
@@ -966,14 +900,14 @@ export const addNewCollectionCategories = ({
           "users",
           uid,
           "collections",
-          collectionId + ""
+          collectionId + "",
         );
         const collectionsPreviewRef = doc(
           firestore,
           "users",
           uid,
           "collectionPreviews",
-          collectionId + ""
+          collectionId + "",
         );
 
         const savedImagesToCatPrev = {
@@ -1013,8 +947,19 @@ export const addNewCollectionCategories = ({
   };
 };
 
+/**
+ * Deletes a collection.
+ *
+ * Side effects:
+ * - Removes collection and its preview from Firestore
+ * - Updates user category data
+ *
+ * @param {number|string} collectionId - Collection ID.
+ * @param {string} categoryId - Category ID.
+ * @returns {Function} Redux thunk.
+ */
 export const deleteCollection = (collectionId, categoryId) => {
-  return async (dispatch, getState) => {
+  return async (_, getState) => {
     try {
       const uid = getState().auth.user.uid;
       const categories = getState().images.categories;
@@ -1024,18 +969,18 @@ export const deleteCollection = (collectionId, categoryId) => {
         "users",
         uid,
         "collections",
-        collectionId + ""
+        collectionId + "",
       );
       const collectionsPreviewRef = doc(
         firestore,
         "users",
         uid,
         "collectionPreviews",
-        collectionId + ""
+        collectionId + "",
       );
 
       const curCategoryIndex = categories.findIndex(
-        (category) => category.id === categoryId
+        (category) => category.id === categoryId,
       );
 
       const updatedCollectionNames = categories[
@@ -1052,7 +997,7 @@ export const deleteCollection = (collectionId, categoryId) => {
         {
           imageCategories: updatedCategories,
         },
-        { merge: true }
+        { merge: true },
       );
 
       await deleteDoc(collectionsRef);

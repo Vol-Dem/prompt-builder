@@ -27,7 +27,7 @@ import NsfwSwitchSettings from "./nsfw-switch-settings/NsfwSwitchSettings";
  */
 const NsfwSwitch = () => {
   const [settingsIsOpen, setSettingsIsOpen] = useState(false);
-  const isNsfwMode = useSelector((state) => state.model.nsfwMode);
+  const isNsfwMode = useSelector((state) => state.general.nsfwMode);
   const dispatch = useDispatch();
 
   const nsfwSwitchHandler = () => {

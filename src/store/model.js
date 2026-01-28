@@ -8,20 +8,36 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
 
 import firebaseApp from "../firebase-config";
-import { saveToStorage } from "../utils/generalUtils";
 import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 import { authActions } from "./auth";
 import { deleteImagePostDocs } from "../utils/fetch/fetchImages";
-import { getModelData } from "../utils/fetch/fetchModel";
 import { makeBatchRequest } from "../utils/fetch/fetchUtils";
-
-const auth = getAuth(firebaseApp);
 
 const firestore = getFirestore(firebaseApp);
 
+/**
+ * Model settings state.
+ *
+ * Controls:
+ * - Model preview list
+ * - Model data
+ * - Model version data
+ * - Model saved images data
+ * - Opened carousel data
+ *
+ * State:
+ * @property {object} model - Model data.
+ * @property {{modelId: number | null, data: Object}} savedImages - Saved post/image IDs for the active model.
+ * Map of model version → saved posts and image IDs, used to mark which Civitai posts/images
+ * are already saved for the active model.
+ * @property {Array<Object>} modelPreview - List of model previews.
+ * @property {boolean} isLoading - Model loading state.
+ * @property {string} errorMessage - Model error message.
+ * @property {Object} curVersion - Active model version data.
+ * @property {Object} activeCarouselData - Active carousel data.
+ */
 const initialModelState = {
   model: {},
   savedImages: {
@@ -32,10 +48,6 @@ const initialModelState = {
   isLoading: true,
   errorMessage: "",
   curVersion: {},
-  curExampleImgsType: "saved",
-  examplesPage: 1,
-  examplesImages: [],
-  nsfwMode: false,
   activeCarouselData: {},
 };
 
@@ -43,6 +55,10 @@ const modelSlice = createSlice({
   name: "model",
   initialState: initialModelState,
   reducers: {
+    /**
+     * Sets and merges model data.
+     * Also sets or resets `savedImages` depending on whether the model contains saved images.
+     */
     setModelData(state, action) {
       state.model = { ...state.model, ...action.payload };
 
@@ -58,6 +74,14 @@ const modelSlice = createSlice({
     setSavedImages(state, action) {
       state.savedImages = action.payload;
     },
+    /**
+     * Updates or adds saved images for a post.
+     *
+     * @param {{
+     *   data: Object,
+     *   postInfo: { versionId: number, postId: number, modelId: number }
+     * }} action.payload
+     */
     updateSavedImages(state, action) {
       const { versionId, postId, modelId } = action.payload.postInfo;
 
@@ -68,7 +92,7 @@ const modelSlice = createSlice({
         Object.hasOwn(state.savedImages.data, `${versionId}`)
       ) {
         const existedPostIndex = state.savedImages.data[versionId].findIndex(
-          (post) => post.postId === postId
+          (post) => post.postId === postId,
         );
         if (existedPostIndex !== -1) {
           const updatedSavedImages = [...state.savedImages.data[versionId]];
@@ -93,6 +117,13 @@ const modelSlice = createSlice({
         };
       }
     },
+    /**
+     * Deletes savedImages entry.
+     * @param {{
+     *   data: Object,
+     *   postInfo: { versionId: number, postId: number, modelId: number }
+     * }} action.payload
+     */
     deleteSavedImages(state, action) {
       const { versionId, postId, modelId } = action.payload.postInfo;
 
@@ -103,7 +134,7 @@ const modelSlice = createSlice({
         Object.hasOwn(state.savedImages.data, `${versionId}`)
       ) {
         const existedPostIndex = state.savedImages.data[versionId].findIndex(
-          (post) => post.postId === postId
+          (post) => post.postId === postId,
         );
         if (existedPostIndex !== -1) {
           state.savedImages.data[versionId].splice(existedPostIndex, 1);
@@ -125,11 +156,6 @@ const modelSlice = createSlice({
     setModelPreview(state, action) {
       state.modelPreview = action.payload;
     },
-    setNsfwMode(state, action) {
-      state.nsfwMode = action.payload;
-      const uid = auth.currentUser?.uid;
-      if (uid) saveToStorage(`${uid}-nsfw`, action.payload);
-    },
     setErrorMessage(state, action) {
       state.errorMessage = action.payload;
     },
@@ -138,6 +164,11 @@ const modelSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    /**
+     * Resets model state on logout.
+     *
+     * Listens to the logout action and clears model-related state.
+     */
     builder.addCase(authActions.logout, (state, action) => {
       modelSlice.caseReducers.resetModelData(state, action);
       state.activeCarouselData = {};
@@ -145,82 +176,28 @@ const modelSlice = createSlice({
   },
 });
 
-export const updateModel = (modelId) => {
-  return async (dispatch, getState) => {
-    const uid = getState().auth.user.uid;
-    const modelData = getState().model.model;
-    const data = await getModelData(modelId);
-
-    const newVerison = data.modelVersions.filter(
-      (version) =>
-        !modelData.data.modelVersions.some(
-          (oldVersions) => version.id === oldVersions.id
-        )
-    );
-
-    if (!newVerison.length) {
-      return;
-    }
-
-    data.modelVersions = [...newVerison, ...modelData.data.modelVersions];
-
-    const newVersionsCustomData = {};
-
-    newVerison.forEach((version) => {
-      newVersionsCustomData[version.id] = {
-        versionId: version.id,
-        versionName: version.name,
-        versionImageUrl:
-          version.images?.filter((img) => img.type === "image")[0]?.url || "",
-        downloadStatus: false,
-      };
-    });
-    const modelVersionsCustomData = {
-      ...newVersionsCustomData,
-      ...modelData?.modelVersionsCustomData,
-    };
-
-    const modelsRef = doc(
-      firestore,
-      "users",
-      uid,
-      "models",
-      modelData?.id + ""
-    );
-    const modelsPrevRef = doc(
-      firestore,
-      "users",
-      uid,
-      "preview",
-      modelData?.id + ""
-    );
-
-    await updateDoc(
-      modelsRef,
-      {
-        data: data,
-        modelVersionsCustomData: modelVersionsCustomData,
-      },
-      { merge: true }
-    );
-    await updateDoc(
-      modelsPrevRef,
-      {
-        modelVersionsCustomData: modelVersionsCustomData,
-      },
-      { merge: true }
-    );
-  };
-};
-
+/**
+ * Sets preview image for model or collection preview.
+ *
+ * Side effects:
+ * - Sets SFW or NSFW preview image for model or collection preview.
+ * - Updates preview data in Firestore
+ *
+ * @param {string} url - Image URL.
+ * @param {boolean} [isNsfw=false] - Whether to set NSFW or SFW preview.
+ * @param {'models' | 'collections'} location - Corresponding Firestore collection ("models" or "collections").
+ * @param {number} locationId - Corresponding Firestore document ID.
+ * @param {'image' | 'video'} [type='image'] - Src type.
+ * @returns {Function} Redux thunk.
+ */
 export const setPreviewImg = (
   url,
   isNsfw = false,
   location,
   locationId,
-  type = "image"
+  type = "image",
 ) => {
-  return async (__, getState) => {
+  return async (_, getState) => {
     try {
       const uid = getState().auth.user.uid;
 
@@ -239,7 +216,7 @@ export const setPreviewImg = (
         "users",
         uid,
         dbCollectionName,
-        locationId + ""
+        locationId + "",
       );
 
       await setDoc(
@@ -248,7 +225,7 @@ export const setPreviewImg = (
           [`${urlField}`]: url,
           [`${typeField}`]: type,
         },
-        { merge: true }
+        { merge: true },
       );
     } catch (err) {
       console.log(err);
@@ -256,6 +233,18 @@ export const setPreviewImg = (
   };
 };
 
+/**
+ * Sets preview image for tag set.
+ *
+ * Side effects:
+ * - Sets preview image for tag set.
+ * - Updates tag sets data in Firestore
+ * - Updates model state in Redux
+ *
+ * @param {number} versionId - Model version ID.
+ * @param {object} tagSetData - Tag set data.
+ * @returns {Function} Redux thunk.
+ */
 export const setTagSetPreviewImg = (versionId, tagSetData) => {
   return async (dispatch, getState) => {
     const uid = getState().auth.user.uid;
@@ -273,7 +262,7 @@ export const setTagSetPreviewImg = (versionId, tagSetData) => {
       {
         [`${urlField}`]: tagSetData,
       },
-      { merge: true }
+      { merge: true },
     );
 
     if (versionId === "tsv-def") {
@@ -284,7 +273,7 @@ export const setTagSetPreviewImg = (versionId, tagSetData) => {
       dispatch(
         modelActions.setModelData({
           defaultCustomData: updatedDefaultCustomData,
-        })
+        }),
       );
     } else {
       const updatedVersionsCustomData = {
@@ -297,12 +286,24 @@ export const setTagSetPreviewImg = (versionId, tagSetData) => {
       dispatch(
         modelActions.setModelData({
           modelVersionsCustomData: updatedVersionsCustomData,
-        })
+        }),
       );
     }
   };
 };
 
+/**
+ * Deletes a saved post.
+ *
+ * Side effects:
+ * - Removes the version ID from the post's version list in Firestore
+ * - Deletes the post document if no versions remain
+ * - Updates saved images in Redux
+ *
+ * @param {{ versionId: number, postId: number, modelId: number }} postInfo - Post info.
+ * @param {object} postData - Post data.
+ * @returns {Function} Redux thunk.
+ */
 export const deleteImgPost = (postInfo, postData) => {
   return async (dispatch, getState) => {
     try {
@@ -337,8 +338,17 @@ export const deleteImgPost = (postInfo, postData) => {
   };
 };
 
+/**
+ * Deletes a model.
+ *
+ * Side effects:
+ * - Deletes the model and its preview from Firestore
+ * - Deletes all image posts saved for this model
+ *
+ * @returns {Function} Redux thunk.
+ */
 export const deleteModel = () => {
-  return async (dispatch, getState) => {
+  return async (_, getState) => {
     const uid = getState().auth.user.uid;
     const model = getState().model.model;
 
@@ -360,7 +370,7 @@ export const deleteModel = () => {
       "users",
       uid,
       "preview",
-      model.id + ""
+      model.id + "",
     );
 
     await deleteDoc(modelRef);
@@ -368,8 +378,18 @@ export const deleteModel = () => {
   };
 };
 
+/**
+ * Updates model categories.
+ *
+ * Side effects:
+ * - Saves model categories to Firestore
+ *
+ * @param {string} modelType - Model type (lora, checkpoint, etc.).
+ * @param {Array<Object>} updatedCat - Updated category list.
+ * @returns {Function} Redux thunk.
+ */
 export const updateCategories = (modelType, updatedCat) => {
-  return async (dispatch, getState) => {
+  return async (_, getState) => {
     const uid = getState().auth.user.uid;
     if (uid) {
       const userRef = doc(firestore, "users", uid);
@@ -380,7 +400,7 @@ export const updateCategories = (modelType, updatedCat) => {
         {
           [categoryField]: updatedCat,
         },
-        { merge: true }
+        { merge: true },
       );
     }
   };
