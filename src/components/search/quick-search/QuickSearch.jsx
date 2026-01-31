@@ -7,6 +7,7 @@ import {
   ANIMATIONS_FM_ZOOM_IN,
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
   ERROR_MESSAGE_OFFLINE,
+  SETTINGS_SEARCH_MIN_QUERY_LENGTH,
   SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE,
 } from "../../../variables/constants";
 import classes from "./QuickSearch.module.scss";
@@ -44,8 +45,8 @@ const searchTimeoutMs = 1000;
 const QuickSearch = ({ onSubmit, onOpen }) => {
   const searchIsLoading = useSelector((state) => state.search.isLoading);
   const errorMessage = useSelector((state) => state.search.errorMessage);
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
-  const searchResult = useSelector((state) => state.search.quickSerchResult);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
+  const searchResult = useSelector((state) => state.search.quickSearchResult);
   const searchInput = useSelector((state) => state.search.searchQuery);
   const isOnline = useOnlineStatus();
   const location = useLocation();
@@ -53,9 +54,12 @@ const QuickSearch = ({ onSubmit, onOpen }) => {
   const timeoutRef = useRef(null);
 
   useEffect(() => {
-    if (isOnline) {
-      let curQuery = searchInput.trim();
-
+    let curQuery = searchInput.trim();
+    if (
+      isOnline &&
+      location?.pathname !== "/search" &&
+      curQuery?.length >= SETTINGS_SEARCH_MIN_QUERY_LENGTH
+    ) {
       dispatch(searchActions.resetQuickSearchData());
       dispatch(searchActions.setErrorMessage(""));
 
@@ -80,12 +84,6 @@ const QuickSearch = ({ onSubmit, onOpen }) => {
         timeoutRef.current = null;
         getModelsPreview();
       }, searchTimeoutMs);
-    } else {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      dispatch(searchActions.setSearchIsLoading(false));
     }
 
     return () => {

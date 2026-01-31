@@ -30,7 +30,6 @@ import {
   ERROR_MESSAGE_DB_CONNECTION,
   SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE,
 } from "../variables/constants";
-import { authActions } from "./auth";
 import { getCollectionData } from "../utils/fetch/fetchCollection";
 
 const firestore = getFirestore(firebaseApp);
@@ -145,15 +144,6 @@ const imagesSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    /**
-     * Resets collection list state on logout.
-     *
-     * Listens to the logout action and clears collection-related state.
-     */
-    builder.addCase(authActions.logout, (state, action) => {
-      imagesSlice.caseReducers.resetCollectionListState(state, action);
-      state.categories = [];
-    });
     /**
      * Resets collection previews when category or subcategory is changed.
      *

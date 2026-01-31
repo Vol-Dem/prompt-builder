@@ -32,7 +32,7 @@ import RightSidebarCardExpanded from "../right-sidebar-card-expanded/RightSideba
  */
 const RightSidebarCard = memo(({ previewData, fullView, layoutId }) => {
   const [cardIsHidden, setCardIsHidden] = useState(false);
-  const isNsfwMode = useSelector((state) => state.model.nsfwMode);
+  const isNsfwMode = useSelector((state) => state.general.nsfwMode);
   const dispatch = useDispatch();
   const imageSrc = isNsfwMode
     ? previewData.nsfwPreviewImgUrl ||

@@ -26,7 +26,7 @@ import { SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE } from "../../../variables/consta
  * @returns {JSX.Element} Quick search result list.
  */
 const QuickSearchResultList = () => {
-  const searchResult = useSelector((state) => state.search.quickSerchResult);
+  const searchResult = useSelector((state) => state.search.quickSearchResult);
 
   const searchResultHtml = searchResult?.result
     ?.slice(0, SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE)

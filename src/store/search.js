@@ -22,6 +22,23 @@ let lastVisible = "";
 let lastVisibleCollection = "";
 let lastVisibleSub = "";
 
+/**
+ * Search state.
+ *
+ * Controls:
+ * - Search
+ *
+ * State:
+ * @property {string} searchQuery - Search query.
+ * @property {{query: string, result: Array<Object>, nsfw: boolean, hashtag: boolean, filter: Object}} searchResult - Search result with active filter info.
+ * @property {{query: string, result: Array<Object>, nsfw: boolean}} quickSearchResult - Quick search result with active filter info.
+ * @property {{ modelType: Array<string>, baseModel: Array<string>, hashtag: boolean }} searchFilter - Search filter.
+ * @property {boolean} isLoading - Search loading state.
+ * @property {string} errorMessage - Search error message.
+ * @property {boolean} isLastPage - Whether the last page of name-based search results is reached.
+ * @property {boolean} isLastCollectionsPage - Whether the last page of collection search results is reached.
+ * @property {boolean} isLastSubPage - Whether the last page of secondary-field search results is reached.
+ */
 const searchSlice = createSlice({
   name: "search",
   initialState: {
@@ -33,7 +50,7 @@ const searchSlice = createSlice({
       hashtag: false,
       filter: {},
     },
-    quickSerchResult: { query: "", result: [], nsfw: false },
+    quickSearchResult: { query: "", result: [], nsfw: false },
     searchFilter: { modelType: [], baseModel: [], hashtag: false },
     isLoading: false,
     errorMessage: "",
@@ -49,13 +66,16 @@ const searchSlice = createSlice({
       state.searchResult = action.payload;
     },
     setQuickSearchResult(state, action) {
-      state.quickSerchResult = action.payload;
-    },
-    updateSearchResult(state, action) {
-      state.searchResult = [...state.searchResult, ...action.payload];
+      state.quickSearchResult = action.payload;
     },
     clearSearchResult(state) {
-      state.searchResult = [];
+      state.searchResult = {
+        query: "",
+        result: [],
+        nsfw: false,
+        hashtag: false,
+        filter: {},
+      };
     },
     setSearchIsLoading(state, action) {
       state.isLoading = action.payload;
@@ -80,14 +100,20 @@ const searchSlice = createSlice({
       state.searchFilter = { modelType: [], baseModel: [], hashtag: false };
     },
     resetSearchData(state) {
-      state.searchResult = { query: "", result: [], nsfw: false };
+      state.searchResult = {
+        query: "",
+        result: [],
+        nsfw: false,
+        hashtag: false,
+        filter: {},
+      };
       state.errorMessage = "";
       state.isLastPage = false;
       state.isLastCollectionsPage = false;
       state.isLastSubPage = false;
     },
     resetQuickSearchData(state) {
-      state.quickSerchResult = { query: "", result: [], nsfw: false };
+      state.quickSearchResult = { query: "", result: [], nsfw: false };
       state.errorMessage = "";
     },
     resetAllLastPageStatus(state) {
@@ -98,6 +124,15 @@ const searchSlice = createSlice({
   },
 });
 
+/**
+ * Creates firestore query filter.
+ * Generates case-insensitive and ID-aware Firestore search rules.
+ *
+ * @param {string} searchString - Search query.
+ * @param {boolean} nsfwFilter - Whether to include NSFW models and collections.
+ * @param {Array} optionalWhere - Optional filters.
+ * @returns {QueryConstraint} Firestore query constraint.
+ */
 const createNameQuery = (searchString, nsfwFilter, optionalWhere = []) => {
   const capitalized = searchString
     .split(" ")
@@ -110,7 +145,7 @@ const createNameQuery = (searchString, nsfwFilter, optionalWhere = []) => {
       ...optionalWhere,
       where("name", ">=", searchString),
       where("name", "<=", searchString + "\uf8ff"),
-      where("nsfw", "in", nsfwFilter)
+      where("nsfw", "in", nsfwFilter),
     ),
     //by id
     and(...optionalWhere, where("id", "==", +searchString)),
@@ -120,46 +155,62 @@ const createNameQuery = (searchString, nsfwFilter, optionalWhere = []) => {
       where(
         "name",
         ">=",
-        searchString.charAt(0).toUpperCase() + searchString.slice(1)
+        searchString.charAt(0).toUpperCase() + searchString.slice(1),
       ),
       where(
         "name",
         "<=",
-        searchString.charAt(0).toUpperCase() + searchString.slice(1) + "\uf8ff"
+        searchString.charAt(0).toUpperCase() + searchString.slice(1) + "\uf8ff",
       ),
-      where("nsfw", "in", nsfwFilter)
+      where("nsfw", "in", nsfwFilter),
     ),
     // capitalize all:
     and(
       ...optionalWhere,
       where("name", ">=", capitalized),
       where("name", "<=", capitalized + "\uf8ff"),
-      where("nsfw", "in", nsfwFilter)
+      where("nsfw", "in", nsfwFilter),
     ),
     // caps:
     and(
       ...optionalWhere,
       where("name", ">=", searchString.toUpperCase()),
       where("name", "<=", searchString.toUpperCase() + "\uf8ff"),
-      where("nsfw", "in", nsfwFilter)
+      where("nsfw", "in", nsfwFilter),
     ),
     // lowercase:
     and(
       ...optionalWhere,
       where("name", ">=", searchString.toLowerCase()),
       where("name", "<=", searchString.toLowerCase() + "\uf8ff"),
-      where("nsfw", "in", nsfwFilter)
+      where("nsfw", "in", nsfwFilter),
     ),
     and(
       ...optionalWhere,
       where("nameArr", "array-contains-any", [
         clearFileExtension(searchString).toLowerCase(),
       ]),
-      where("nsfw", "in", nsfwFilter)
-    )
+      where("nsfw", "in", nsfwFilter),
+    ),
   );
 };
 
+/**
+ * Searches for model and collection previews.
+ *
+ * Side effects:
+ * - Fetches model previews from Firestore
+ * - Optionally merges with already loaded previews
+ *
+ * @param {string} searchString - Search query.
+ * @param {boolean} nsfw - Whether to include NSFW models and collections.
+ * @param {number} [limitAmount=5] - Results per request.
+ * @param {boolean} [loadMore=false] - Whether to append to existing previews instead of replacing them.
+ * @param {boolean} [quickSerch=false] - Whether to perform a quick search (limited result set).
+ * @param {boolean} [isHashtag=false] - Whether to search only by hashtags.
+ * @param {Object} [filter] - Optional filter data.
+ * @returns {Function} Redux thunk.
+ */
 export const liveSearch = (
   searchString,
   nsfw,
@@ -167,7 +218,7 @@ export const liveSearch = (
   loadMore = false,
   quickSerch = false,
   isHashtag = false,
-  filter
+  filter,
 ) => {
   return async (dispatch, getState) => {
     try {
@@ -179,21 +230,13 @@ export const liveSearch = (
       const searchResult = getState().search.searchResult;
 
       if (isLastPage && isLastSubPage && isLastCollectionsPage) return;
+      if (!searchString) return;
 
       if (!loadMore) {
         lastVisible = "";
         lastVisibleCollection = "";
         lastVisibleSub = "";
         dispatch(searchActions.clearSearchResult());
-        // dispatch(
-        //   searchActions.setSearchResult({
-        //     query: "",
-        //     nsfw: false,
-        //     result: [],
-        //     hashtag: false,
-        //     filter: {},
-        //   })
-        // );
       }
 
       dispatch(searchActions.setSearchIsLoading(true));
@@ -203,7 +246,7 @@ export const liveSearch = (
         firestore,
         "users",
         uid,
-        `collectionPreviews`
+        `collectionPreviews`,
       );
 
       const nsfwFilter = !nsfw ? [false] : [true, false];
@@ -224,11 +267,11 @@ export const liveSearch = (
       const modelQueryByNameRule = createNameQuery(
         searchString,
         nsfwFilter,
-        optionalWhere
+        optionalWhere,
       );
       const collectionQueryByNameRule = createNameQuery(
         searchString,
-        nsfwFilter
+        nsfwFilter,
       );
 
       const queryModelsByName = query(
@@ -236,7 +279,7 @@ export const liveSearch = (
         modelQueryByNameRule,
         orderBy("name", "asc"),
         startAfter(lastVisible),
-        limit(limitAmount)
+        limit(limitAmount),
       );
 
       const queryCollectionsByName = query(
@@ -244,7 +287,7 @@ export const liveSearch = (
         collectionQueryByNameRule,
         orderBy("name", "asc"),
         startAfter(lastVisibleCollection),
-        limit(limitAmount)
+        limit(limitAmount),
       );
 
       let queryRuleSub;
@@ -260,7 +303,7 @@ export const liveSearch = (
             searchString.toLowerCase(),
             hashlessSearchString,
           ]),
-          where("nsfw", "in", nsfwFilter)
+          where("nsfw", "in", nsfwFilter),
         );
       } else {
         queryRuleSub = or(
@@ -269,26 +312,26 @@ export const liveSearch = (
             where("fileNames", "array-contains-any", [
               clearFileExtension(searchString).toLowerCase(),
             ]),
-            where("nsfw", "in", nsfwFilter)
+            where("nsfw", "in", nsfwFilter),
           ),
           and(
             ...optionalWhere,
             where("customFileNames", "array-contains-any", [
               clearFileExtension(searchString).toLowerCase(),
             ]),
-            where("nsfw", "in", nsfwFilter)
+            where("nsfw", "in", nsfwFilter),
           ),
           and(
             ...optionalWhere,
             where("mainTags", "array-contains-any", [
               clearFileExtension(searchString).toLowerCase(),
             ]),
-            where("nsfw", "in", nsfwFilter)
+            where("nsfw", "in", nsfwFilter),
           ),
           and(
             ...optionalWhere,
             where("versionIds", "array-contains-any", [+searchString]),
-            where("nsfw", "in", nsfwFilter)
+            where("nsfw", "in", nsfwFilter),
           ),
           and(
             ...optionalWhere,
@@ -297,15 +340,8 @@ export const liveSearch = (
               searchString.toLowerCase(),
               hashlessSearchString,
             ]),
-            where("nsfw", "in", nsfwFilter)
-          )
-          // and(
-          //   ...optionalWhere,
-          //   where("authorTags", "array-contains-any", [
-          //     searchString.toLowerCase(),
-          //   ]),
-          //   where("nsfw", "in", nsfwFilter)
-          // )
+            where("nsfw", "in", nsfwFilter),
+          ),
         );
       }
 
@@ -314,7 +350,7 @@ export const liveSearch = (
         queryRuleSub,
         orderBy("name", "asc"),
         startAfter(lastVisibleSub),
-        limit(limitAmount)
+        limit(limitAmount),
       );
 
       let modelsDataName = [];
@@ -384,10 +420,10 @@ export const liveSearch = (
       const newModelsIds = newModelsSearchResults.map(({ id }) => id);
       const ids = searchResult?.result?.map(({ id }) => id);
       const filteredNewResult = newModelsSearchResults.filter(
-        ({ id }, index) => !newModelsIds.includes(id, index + 1)
+        ({ id }, index) => !newModelsIds.includes(id, index + 1),
       );
       const filteredResult = filteredNewResult.filter(
-        ({ id }) => !ids?.includes(id)
+        ({ id }) => !ids?.includes(id),
       );
 
       let finalResult = [];
@@ -407,7 +443,7 @@ export const liveSearch = (
             query: searchString,
             nsfw,
             result: finalResult,
-          })
+          }),
         );
       } else {
         dispatch(
@@ -421,7 +457,7 @@ export const liveSearch = (
               baseModel: [],
               hashtag: hashtag,
             },
-          })
+          }),
         );
         dispatch(searchActions.setIsLastPage(isLast));
         dispatch(searchActions.setIsLastCollectionsPage(isLastCollection));

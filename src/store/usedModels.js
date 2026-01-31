@@ -3,7 +3,6 @@ import { getAuth } from "firebase/auth";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 
 import { saveToStorage, uploadStorage } from "../utils/generalUtils";
-import { authActions } from "./auth";
 import firebaseApp from "../firebase-config";
 import { SETTINGS_REF_IMAGE_AMOUNT } from "../variables/constants";
 import { checkIsMobile } from "../utils/generalUtils";
@@ -63,16 +62,6 @@ const usedModelsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      /**
-       * Resets sidebar state on logout.
-       *
-       * Listens to the logout action and clears sidebar-related state.
-       */
-      .addCase(authActions.logout, (state) => {
-        state.models = [];
-        state.panelIsOpen = true;
-        state.fullCardView = true;
-      })
       /**
        * Persists sidebar state to session storage.
        *

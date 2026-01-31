@@ -20,9 +20,9 @@ const ModelsListPanel = () => {
   const activeTab = useSelector((state) => state.tabs.currTab);
   const activeCategory = useSelector((state) => state.tabs.currCategory);
   const activeSubcategory = useSelector((state) => state.tabs.currSubcategory);
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const sortBy = useSelector((state) => state.tabs.sortBy);
-  const modelType = useSelector((state) => state.tabs.modelType);
+  const baseModel = useSelector((state) => state.tabs.baseModel);
   const baseModels = useSelector((state) => state.tabs.baseModels);
   const previewFullView = useSelector((state) => state.tabs.previewFullView);
   const dispatch = useDispatch();
@@ -59,8 +59,8 @@ const ModelsListPanel = () => {
               activeCategory,
               activeSubcategory,
               false,
-              nsfwMode
-            )
+              nsfwMode,
+            ),
           );
         }}
         options={sortSelectOption}
@@ -69,9 +69,9 @@ const ModelsListPanel = () => {
       <Select
         id="model"
         name="model"
-        selected={modelType}
+        selected={baseModel}
         onChange={(value) => {
-          dispatch(tabActions.setModelType(value));
+          dispatch(tabActions.setBaseModel(value));
           dispatch(tabActions.setModelsData([]));
           dispatch(
             getModelsPreview(
@@ -79,8 +79,8 @@ const ModelsListPanel = () => {
               activeCategory,
               activeSubcategory,
               false,
-              nsfwMode
-            )
+              nsfwMode,
+            ),
           );
         }}
         options={baseModelsData}

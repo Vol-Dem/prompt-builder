@@ -11,6 +11,7 @@ import uploadSlice from "./upload";
 import guideSlice from "./guide";
 import generalSlice from "./general";
 import imagesSlice from "./images";
+import { authListener } from "./authListener";
 
 const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ const store = configureStore({
     guide: guideSlice.reducer,
     images: imagesSlice.reducer,
   },
+  middleware: (getDefault) => getDefault().prepend(authListener.middleware),
 });
 
 export default store;

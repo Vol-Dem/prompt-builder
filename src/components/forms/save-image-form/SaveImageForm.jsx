@@ -156,12 +156,6 @@ const SaveImageForm = ({
 
   const saveExampleHandler = async (location, ids, collectionData) => {
     const postId = getPostIdFromInput(postIdInput.value);
-    // const postData =
-    //   modelData &&
-    //   Object.hasOwn(modelData, "savedImages") &&
-    //   modelData?.savedImages[versionIdInput?.value]?.find(
-    //     (post) => post.postId === +postId,
-    //   );
 
     const imagesForSaving = ids?.length
       ? images.filter((image) => ids.includes(image?.id))
@@ -178,7 +172,7 @@ const SaveImageForm = ({
     if (location === "collections") {
       curPostData = savedPosts?.find((post) => post.postId === postId);
     }
-    console.log(curPostData);
+
     dispatch(
       uploadActions.addToQueue({
         postId: postId,

@@ -8,6 +8,7 @@ import { searchActions } from "../../store/search";
 import classes from "./SearchField.module.scss";
 import { updateSearchParams } from "../../utils/generalUtils";
 import QuickSearch from "./quick-search/QuickSearch";
+import { SETTINGS_SEARCH_MIN_QUERY_LENGTH } from "../../variables/constants";
 
 /**
  * Global search input displayed in the app header.
@@ -98,7 +99,7 @@ const SearchField = ({ className }) => {
           </button>
         </form>
         <AnimatePresence>
-          {searchInput?.length >= 3 &&
+          {searchInput?.length >= SETTINGS_SEARCH_MIN_QUERY_LENGTH &&
             searchResultIsOpen &&
             location.pathname !== "/search" && (
               <QuickSearch

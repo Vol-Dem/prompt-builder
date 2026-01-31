@@ -41,7 +41,7 @@ const ModelsList = () => {
   const activeSubcategory = useSelector((state) => state.tabs.currSubcategory);
   const errorMessage = useSelector((state) => state.tabs.errorMessage);
   const previewFullView = useSelector((state) => state.tabs.previewFullView);
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const guideState = useSelector((state) => state.guide.home);
   const endPageRef = useRef(null);
   const isOnline = useOnlineStatus();

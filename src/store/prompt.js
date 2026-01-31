@@ -2,7 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 import { getAuth } from "firebase/auth";
 import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
 
-import { authActions } from "./auth";
 import firebaseApp from "../firebase-config";
 import { saveToStorage, uploadStorage } from "../utils/generalUtils";
 import {
@@ -16,6 +15,36 @@ import { splitTags } from "../utils/promptUtils";
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
 
+/**
+ * @typedef {Object} PromptTag
+ * @property {number} id
+ * @property {string} tag
+ * @property {string} weight
+ * @property {number} position
+ * @property {boolean} [duplicate]
+ */
+
+/**
+ * Prompt state.
+ *
+ * Controls:
+ * - Prompt
+ * - Presets
+ *
+ * State:
+ * @property {string} curPrompt - Current positive prompt value.
+ * @property {Array<PromptTag>} curPromptArr - Current positive prompt array.
+ * @property {string} curNegPrompt - Current negative prompt value.
+ * @property {Array<PromptTag>} curNegPromptArr - Current negative prompt array.
+ * @property {{ positive: Array<Object>, negative: Array<Object> }} presets - Presets data.
+ * @property {boolean} promptIsOpen - Whether prompt is open.
+ * @property {boolean} isTextMode - Whether prompt is in the text mode.
+ * @property {number|null} headerHeight - Header height.
+ * @property {number|null} promptBtnHeight - Open prompt button height.
+ * @property {number|null} promptHeight - Prompt height.
+ * @property {number|null} positivePromptHeight - Positive prompt field height.
+ * @property {number|null} negativePromptHeight - Negative prompt field height.
+ */
 const promptSlice = createSlice({
   name: "prompt",
   initialState: {
@@ -54,9 +83,19 @@ const promptSlice = createSlice({
     setPresets(state, action) {
       if (action?.payload) state.presets = action.payload;
     },
+    /**
+     * Opens prompt dropdown.
+     */
     setPromptIsOpen(state, action) {
       state.promptIsOpen = action.payload;
     },
+    /**
+     * Switches between text and tags mode.
+     * Converts text prompt version to array of tags data.
+     * Creates ID for each tag.
+     * Marks duplicate tags.
+     * Sets postive and negative prompt array states.
+     */
     setTextMode(state, action) {
       const allIds = [];
 
@@ -79,6 +118,11 @@ const promptSlice = createSlice({
       state.curPromptArr = newPosPromptArrDuplicates;
       state.curNegPromptArr = newNegPromptArrDuplicates;
     },
+    /**
+     * Inserts tag to position and updates position field of all tags.
+     * Marks duplicate tags.
+     * @param {{ item: Object, type: string, dropTargetType: string, prevPosition: number }} action.payload
+     */
     addTagToPosition(state, action) {
       const { dropTargetType } = action.payload;
 
@@ -100,6 +144,11 @@ const promptSlice = createSlice({
         state.curNegPromptArr = newPromptArrDuplicates;
       }
     },
+    /**
+     * Inserts tag at the end of the prompt.
+     * Creates tag ID for new tags.
+     * Marks duplicate tags.
+     */
     addTagToPrompt(state, action) {
       const allIds = [
         ...state.curPromptArr.map((tag) => tag.id),
@@ -143,6 +192,11 @@ const promptSlice = createSlice({
         state.curNegPromptArr = newPromptArrDuplicates;
       }
     },
+    /**
+     * Removes tag from prompt.
+     * Updates position field of all tags.
+     * @param {{ id: number, type: string, dropTargetType: string, value: string }} action.payload
+     */
     removeTag(state, action) {
       const { id, type, dropTargetType, value } = action.payload;
 
@@ -183,6 +237,11 @@ const promptSlice = createSlice({
         state.curNegPromptArr = newPromptArrDuplicates;
       }
     },
+    /**
+     * Inserts multiple tags at the end of the prompt.
+     * Creates tag ID for new tags.
+     * Marks duplicate tags.
+     */
     addAllTagsToPrompt(state, action) {
       const allIds = [
         ...state.curPromptArr.map((tag) => tag.id),
@@ -207,7 +266,7 @@ const promptSlice = createSlice({
 
       const newTags = action.payload?.value?.filter((newWord) => {
         const isInPrompt = curPromptArr.find(
-          (promptWord) => promptWord.tag === newWord
+          (promptWord) => promptWord.tag === newWord,
         );
         return !isInPrompt;
       });
@@ -244,6 +303,10 @@ const promptSlice = createSlice({
         }
       }
     },
+    /**
+     * Removes multiple tags from prompt.
+     * @param {{ type: string, value: Array }} action.payload
+     */
     removeAllTags(state, action) {
       const promptArr =
         action.payload.type === "positive"
@@ -262,6 +325,10 @@ const promptSlice = createSlice({
         state.curNegPromptArr = newPromptArrDuplicates;
       }
     },
+    /**
+     * Changes weight of activation tag in prompt.
+     * @param {{ newTag: string, prevTag: string, weight: string }} action.payload
+     */
     changeActivationTag(state, action) {
       const promptArr = state.curPromptArr;
 
@@ -291,11 +358,13 @@ const promptSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(authActions.logout, (state, action) => {
-        promptSlice.caseReducers.clearPrompt(state, action);
-        state.promptIsOpen = true;
-        state.isTextMode = false;
-      })
+      /**
+       * Automatically creates text version of the prompt.
+       *
+       * Listens to all actions from this slice (prompt/*),
+       * except `setCurrentPrompt`, `setCurrentNegPrompt`, `setTextMode`, and creates
+       * text version of the prompt.
+       */
       .addMatcher(
         (action) =>
           action.type.startsWith("prompt/") &&
@@ -310,8 +379,14 @@ const promptSlice = createSlice({
 
           state.curPrompt = newPrompt;
           state.curNegPrompt = newNegPrompt;
-        }
+        },
       )
+      /**
+       * Automatically creates array version of the prompt.
+       *
+       * Listens to all actions from this slice that start with `prompt/setCurrentPrompt*` or
+       * `prompt/setCurrentNegPrompt*` and creates array version of the prompt.
+       */
       .addMatcher(
         (action) =>
           action.type.startsWith("prompt/setCurrentPrompt") ||
@@ -336,8 +411,14 @@ const promptSlice = createSlice({
 
           state.curPromptArr = newPosPromptArrDuplicates;
           state.curNegPromptArr = newNegPromptArrDuplicates;
-        }
+        },
       )
+      /**
+       * Automatically persists prompt state changes to the session storage.
+       *
+       * Listens to all actions from this slice (prompt/*), and saves the current
+       * prompt state for the authenticated user.
+       */
       .addMatcher(
         (action) => action.type.startsWith("prompt/"),
         (state) => {
@@ -352,11 +433,20 @@ const promptSlice = createSlice({
               isTextMode: state.isTextMode,
             });
           }
-        }
+        },
       );
   },
 });
 
+/**
+ * Loads prompt state from session storage.
+ *
+ * Side effects:
+ * - Reads prompt data from session storage.
+ * - Updates prompt state in Redux.
+ *
+ * @returns {Function} Redux thunk.
+ */
 export const uploadPromptFromStorage = () => {
   return (dispatch, getState) => {
     const uid = getState().auth.user.uid;
@@ -370,14 +460,14 @@ export const uploadPromptFromStorage = () => {
         promptActions.addAllTagsToPrompt({
           value: splitTags(prompt),
           type: "positive",
-        })
+        }),
       );
     if (negPrompt)
       dispatch(
         promptActions.addAllTagsToPrompt({
           value: splitTags(negPrompt),
           type: "negative",
-        })
+        }),
       );
     if (promptState) {
       dispatch(promptActions.setPromptIsOpen(promptState.promptIsOpen));
@@ -388,6 +478,17 @@ export const uploadPromptFromStorage = () => {
   };
 };
 
+/**
+ * Updates user presets.
+ *
+ * Side effects:
+ * - Saves the presets data to Firestore.
+ * - Updates presets state in Redux.
+ *
+ * @param {string} presetType - Preset category.
+ * @param {Array<Object>} updatedPresets - Updated preset list.
+ * @returns {Function} Redux thunk.
+ */
 export const updatePresets = (presetType, updatedPresets) => {
   return async (dispatch, getState) => {
     const uid = getState().auth.user.uid;
@@ -401,22 +502,31 @@ export const updatePresets = (presetType, updatedPresets) => {
         {
           [presetField]: updatedPresets,
         },
-        { merge: true }
+        { merge: true },
       );
 
       dispatch(
         promptActions.setPresets({
           ...curPreset,
           [presetType]: updatedPresets,
-        })
+        }),
       );
     }
   };
 };
 
-export const getUserPresets = (uid) => {
-  return async (dispatch) => {
+/**
+ * Fetches user presets.
+ *
+ * Side effects:
+ * - Fetches user presets from Firestore.
+ *
+ * @returns {Function} Redux thunk.
+ */
+export const getUserPresets = () => {
+  return async (dispatch, getState) => {
     try {
+      const uid = getState().auth.user.uid;
       const userRef = doc(firestore, "users", uid);
       const presetsDoc = await getDoc(userRef);
       if (presetsDoc.exists()) {

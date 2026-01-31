@@ -28,7 +28,7 @@ import ButtonSquareAdd from "../../general-elements/button-square-add/ButtonSqua
  * @returns {JSX.Element} The quick search item card.
  */
 const QuickSearchItem = ({ modelPreveiw }) => {
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const dispatch = useDispatch();
 
   return (

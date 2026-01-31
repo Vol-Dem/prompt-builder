@@ -56,7 +56,7 @@ const SearchPage = ({ title }) => {
     (state) => state.search.isLastCollectionsPage,
   );
   const errorMessage = useSelector((state) => state.search.errorMessage);
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const isOnline = useOnlineStatus();
   const dispatch = useDispatch();
   const fetchTimeoutRef = useRef(null);

@@ -13,7 +13,6 @@ import {
 } from "firebase/firestore";
 
 import firebaseApp from "../firebase-config";
-import { authActions } from "./auth";
 import { handleErrors } from "../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
@@ -22,14 +21,34 @@ let lastVisible = "";
 
 const amountPerPage = 12;
 
+/**
+ * Model tabs state.
+ *
+ * Controls:
+ * - Model tabs
+ * - Model previews
+ *
+ * State:
+ * @property {string} currTab - Active model type.
+ * @property {string} currCategory - Active model category.
+ * @property {string} currSubcategory - Active model subcategory.
+ * @property {Object} categoriesData - Model categories data.
+ * @property {string} errorMessage - Model images error message.
+ * @property {{tab: string, category: string, subcategory: string, nsfw: boolean, previews: Array<Object>}} modelsData - Model previews with active filter info.
+ * @property {boolean} previewFullView - Whether the model list shows full or compact cards.
+ * @property {Array<string>} baseModels - List of base models of saved models (SDXL, FLUX, etc.).
+ * @property {'createdAt'|'name'} sortBy - Field to sort by.
+ * @property {string} baseModel - Filter previews by base model.
+ * @property {boolean} isLoading - Model previews loading state.
+ * @property {boolean} isLastPage - Whether the last model previews page is reached.
+ */
 const tabsSlice = createSlice({
   name: "tabs",
   initialState: {
     currTab: "",
     currCategory: "",
     currSubcategory: "",
-    allCategories: [],
-    categoriesData: "",
+    categoriesData: {},
     errorMessage: "",
     modelsData: {
       tab: "",
@@ -39,36 +58,62 @@ const tabsSlice = createSlice({
       previews: [],
     },
     previewFullView: false,
-    subcategories: [],
     baseModels: [],
     sortBy: "createdAt",
-    modelType: "",
+    baseModel: "",
     isLoading: false,
     isLastPage: false,
   },
   reducers: {
+    /**
+     * Sets current tab and resets category, subcatgory and model previews.
+     */
     setCurrentTab(state, action) {
       state.currSubcategory = "";
       state.currCategory = "";
-      state.modelsData = [];
+      state.modelsData = {
+        tab: "",
+        category: "",
+        subcategory: "",
+        nsfw: false,
+        previews: [],
+      };
       state.currTab = action.payload;
     },
+    /**
+     * Sets current category and resets subcatgory and model previews.
+     */
     setCurrentCategory(state, action) {
       state.currSubcategory = "";
-      state.modelsData = [];
+      state.modelsData = {
+        tab: "",
+        category: "",
+        subcategory: "",
+        nsfw: false,
+        previews: [],
+      };
       state.currCategory = action.payload;
     },
+    /**
+     * Sets current subcatgory and resets model previews, last page and last visible state.
+     */
     setCurrentSubcategory(state, action) {
-      lastVisible = "";
-      state.modelsData = [];
+      state.modelsData = {
+        tab: "",
+        category: "",
+        subcategory: "",
+        nsfw: false,
+        previews: [],
+      };
       state.isLastPage = false;
       state.currSubcategory = action.payload;
     },
     setCategories(state, action) {
-      if (action.payload) {
-        state.categoriesData = action.payload;
-      }
+      state.categoriesData = action.payload;
     },
+    /**
+     * Sets and sorts base models.
+     */
     setBaseModels(state, action) {
       if (action.payload) {
         state.baseModels = action.payload.sort();
@@ -77,8 +122,8 @@ const tabsSlice = createSlice({
     setSortBy(state, action) {
       state.sortBy = action.payload;
     },
-    setModelType(state, action) {
-      state.modelType = action.payload;
+    setBaseModel(state, action) {
+      state.baseModel = action.payload;
     },
     setErrorMessage(state, action) {
       state.errorMessage = action.payload;
@@ -96,9 +141,6 @@ const tabsSlice = createSlice({
       };
       state.isLastPage = false;
     },
-    setSubcategories(state, action) {
-      state.subcategories = action.payload.sort();
-    },
     setIsLoading(state, action) {
       state.isLoading = action.payload;
     },
@@ -108,8 +150,7 @@ const tabsSlice = createSlice({
     reset(state) {
       state.currCategory = "";
       state.currSubcategory = "";
-      state.categoriesData = [];
-      state.subcategories = [];
+      state.categoriesData = {};
     },
     resetActiveTabs(state) {
       state.currTab = "";
@@ -121,26 +162,41 @@ const tabsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(authActions.logout, (state, action) => {
-      tabsSlice.caseReducers.resetActiveTabs(state, action);
-      tabsSlice.caseReducers.reset(state, action);
-      tabsSlice.caseReducers.resetModelsData(state, action);
-    });
+    /**
+     * Resets model previews when NSFW mode or level changes.
+     *
+     * Listens to all actions that start with `general/setNsfw`
+     * and resets model preview data.
+     */
     builder.addMatcher(
       (action) => action.type.startsWith("general/setNsfw"),
       (state, action) => {
         tabsSlice.caseReducers.resetModelsData(state, action);
-      }
+      },
     );
   },
 });
 
+/**
+ * Fetches model previews.
+ *
+ * Side effects:
+ * - Fetches model previews from Firestore
+ * - Optionally merges with already loaded previews
+ *
+ * @param {string} activeTab - Model type ID.
+ * @param {string} activeCategory - Category ID.
+ * @param {string} activeSubcategory - Subcategory ID.
+ * @param {boolean} loadMore - Whether to append to existing previews instead of replacing them.
+ * @param {boolean} nsfwMode - Whether to include NSFW models.
+ * @returns {Function} Redux thunk.
+ */
 export const getModelsPreview = (
   activeTab,
   activeCategory,
   activeSubcategory,
   loadMore = false,
-  nsfwMode
+  nsfwMode,
 ) => {
   return async (dispatch, getState) => {
     try {
@@ -153,18 +209,14 @@ export const getModelsPreview = (
       }
 
       const uid = getState().auth.user.uid;
-      const activeTab = getState().tabs.currTab;
-      const activeCategory = getState().tabs.currCategory;
-      const activeSubcategory = getState().tabs.currSubcategory;
       const isLastPage = getState().tabs.isLastPage;
       const sortBy = getState().tabs.sortBy;
-      const baseModel = getState().tabs.modelType;
+      const baseModel = getState().tabs.baseModel;
       const curModelsData = getState().tabs.modelsData.previews;
       if (isLastPage) return;
 
       const direction = sortBy === "name" ? "asc" : "desc";
       const order = orderBy(sortBy, direction);
-      // let q;
 
       const nsfwFilter = !nsfwMode ? [false] : [true, false];
 
@@ -189,7 +241,7 @@ export const getModelsPreview = (
         where("nsfw", "in", nsfwFilter),
         order,
         startAfter(lastVisible),
-        limit(amountPerPage)
+        limit(amountPerPage),
       );
 
       const querySnapshot = await getDocs(q);
@@ -214,7 +266,7 @@ export const getModelsPreview = (
             subcategory: activeSubcategory,
             nsfw: nsfwMode,
             previews: loadMore ? [...curModelsData, ...modelsData] : modelsData,
-          })
+          }),
         );
 
       dispatch(tabActions.setIsLastPage(isLast));
@@ -226,6 +278,16 @@ export const getModelsPreview = (
   };
 };
 
+/**
+ * Changes between compact and full preview card view.
+ *
+ * Side effects:
+ * - Saves the view state to Firestore.
+ * - Updates the view state in Redux.
+ *
+ * @param {boolean} isFullView - Whether full card view is enabled.
+ * @returns {Function} Redux thunk.
+ */
 export const switchPreviewFullView = (isFullView) => {
   return async (dispatch, getState) => {
     dispatch(tabActions.setPreviewFullView(isFullView));
@@ -238,7 +300,7 @@ export const switchPreviewFullView = (isFullView) => {
       },
       {
         merge: true,
-      }
+      },
     );
   };
 };

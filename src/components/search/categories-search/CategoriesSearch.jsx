@@ -6,6 +6,7 @@ import classes from "./CategoriesSearch.module.scss";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import { subcategoriesSearch } from "../../../utils/searchUtils";
 import CategoriesSearchItem from "../categories-search-item/CategoriesSearchItem";
+import { SETTINGS_SEARCH_MIN_QUERY_LENGTH } from "../../../variables/constants";
 
 /**
  * CategoriesSearch
@@ -54,7 +55,7 @@ const CategoriesSearch = () => {
   }, [categories, collectionCategories]);
 
   useEffect(() => {
-    if (isOnline) {
+    if (isOnline && searchInput.length >= SETTINGS_SEARCH_MIN_QUERY_LENGTH) {
       const searchResult = subcategoriesSearch(
         searchInput,
         categoriesSearchData,

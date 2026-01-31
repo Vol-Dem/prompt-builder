@@ -3,7 +3,6 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   signInWithEmailAndPassword,
-  signOut,
   onAuthStateChanged,
   updatePassword,
   updateProfile,
@@ -17,7 +16,6 @@ import {
   EmailAuthProvider,
 } from "firebase/auth";
 import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 import firebaseApp from "../firebase-config";
 import { uploadPanelStateFromStorage, usedModelsActions } from "./usedModels";
@@ -36,7 +34,7 @@ import { handleErrors } from "../utils/generalUtils";
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 const provider = new GoogleAuthProvider();
-let unsubUserData;
+export let unsubUserData;
 
 const authInitialState = {
   isLoggedIn: false,
@@ -49,7 +47,6 @@ const authInitialState = {
   userDataLoadError: "",
   errorMessage: "",
   successMessage: "",
-  categories: [],
   user: {
     idToken: "",
     refreshToken: "",
@@ -60,10 +57,32 @@ const authInitialState = {
   },
 };
 
+/**
+ * Auth state.
+ *
+ * Controls:
+ * - Authentication
+ *
+ * State:
+ * @property {boolean} isLoggedIn - Whether user is logged in.
+ * @property {boolean} initialAuth - Whether initial authentication was finished.
+ * @property {boolean} authFormIsOpen - Whether auth form is shown.
+ * @property {boolean} reAuthFormIsOpen - Whether re-auth form is shown.
+ * @property {boolean} showResetPassword - Whether reset password form is shown.
+ * @property {boolean} isLoading - Auth request loading state.
+ * @property {boolean} userDataIsLoading - User data loading state.
+ * @property {string} userDataLoadError - User data error message.
+ * @property {string} errorMessage - Forms error message.
+ * @property {string} successMessage - Success message.
+ * @property {{ idToken: string, refreshToken: string, uid: string, email: string, userName: string|null, emailVerified: boolean}} user - User data.
+ */
 const authSlice = createSlice({
   name: "auth",
   initialState: authInitialState,
   reducers: {
+    /**
+     * Signs in a user.
+     */
     login(state, action) {
       state.isLoggedIn = true;
       state.user = {
@@ -73,26 +92,20 @@ const authSlice = createSlice({
         userName: action.payload.displayName,
         emailVerified: action.payload.emailVerified,
       };
-
-      initializeAppCheck(firebaseApp, {
-        provider: new ReCaptchaV3Provider(import.meta.env.VITE_FIREBASE_REC),
-
-        // Optional argument. If true, the SDK automatically refreshes App Check
-        // tokens as needed.
-        isTokenAutoRefreshEnabled: true,
-      });
     },
+    /**
+     * Signs out the current user.
+     */
     logout(state) {
       state.isLoggedIn = false;
-      state.user = Object.fromEntries(
-        Object.keys(state.user).map((key) => [key, ""]),
-      );
-
-      signOut(auth);
-
-      if (unsubUserData) {
-        unsubUserData();
-      }
+      state.user = {
+        idToken: "",
+        refreshToken: "",
+        uid: "",
+        email: "",
+        userName: "",
+        emailVerified: false,
+      };
     },
     openAuthForm(state) {
       state.authFormIsOpen = true;
@@ -134,7 +147,7 @@ const authSlice = createSlice({
  * - Retrieve and store application settings and state from session storage
  * - Fetch user data from the database
  * Finally, it sets the initial authentication state.
- * @returns
+ * @returns {Function} Redux thunk.
  */
 export const initAuth = () => {
   return (dispatch) => {
@@ -151,7 +164,7 @@ export const initAuth = () => {
         );
         dispatch(getAppInfo());
         dispatch(uploadPanelStateFromStorage(user.uid));
-        dispatch(uploadPromptFromStorage(user.uid));
+        dispatch(uploadPromptFromStorage());
         dispatch(getUserData(user.uid));
       }
       dispatch(authActions.setInitialAuth(true));
@@ -164,7 +177,7 @@ export const initAuth = () => {
  * @param {boolean} isLogin - Type of request. If false, create new user. If true, authorizes the user.
  * @param {string} email - User email
  * @param {string} password - User password
- * @returns
+ * @returns {Function} Redux thunk.
  */
 export const authRequest = (isLogin, email, password) => {
   return async (dispatch) => {
@@ -198,7 +211,7 @@ export const authRequest = (isLogin, email, password) => {
           emailVerified: user.emailVerified,
         }),
       );
-      // dispatch(authActions.setGuide({ topPanel: false, image: false }));
+
       if (user.emailVerified) {
         dispatch(authActions.closeAuthForm());
       }
@@ -240,11 +253,10 @@ export const authRequest = (isLogin, email, password) => {
 
 /**
  * Initializes user authentication via Google sign-in and dispatches the login action with user information (access token, user ID, email, etc.)
- * @returns
+ * @returns {Function} Redux thunk.
  */
 export const authWithGoogle = () => {
   return (dispatch) => {
-    // signInWithRedirect(auth, provider);
     signInWithPopup(auth, provider)
       .then((result) => {
         // This gives you a Google Access Token. You can use it to access the Google API.
@@ -252,7 +264,6 @@ export const authWithGoogle = () => {
         // const token = credential.accessToken;
         // The signed-in user info.
         const user = result.user;
-        // console.log(user);
         // IdP data available using getAdditionalUserInfo(result)
         // ...
         dispatch(
@@ -280,55 +291,12 @@ export const authWithGoogle = () => {
   };
 };
 
-// export const authFromRedirect = () => {
-//   return async (dispatch, getState) => {
-//     // const result = await getRedirectResult(auth);
-//     // const user = result?.user;
-//     // getRedirectResult(auth)
-//     //   .then((result) => {
-//     //     // This gives you a Google Access Token. You can use it to access Google APIs.
-//     //     // const credential = GoogleAuthProvider.credentialFromResult(result);
-//     //     // const token = credential.accessToken;
-
-//     //     // The signed-in user info.
-//     //     const user = result?.user;
-//     //     console.log(user);
-//     //     // IdP data available using getAdditionalUserInfo(result)
-//     //     // ...
-//     //     if (result?.user) {
-//     //       dispatch(
-//     //         authActions.login({
-//     //           accessToken: user.accessToken,
-//     //           uid: user.uid,
-//     //           email: user.email,
-//     //           displayName: user.displayName,
-//     //         })
-//     //       );
-//     //       // dispatch(authActions.closeAuthForm());
-//     //     }
-//     //   })
-//     //   .catch((error) => {
-//     //     // Handle Errors here.
-//     //     console.log(error);
-//     //     console.log(error.message);
-//     //     const errorCode = error.code;
-//     //     const errorMessage = error.message;
-//     //     // The email of the user's account used.
-//     //     const email = error?.customData?.email;
-//     //     // The AuthCredential type that was used.
-//     //     const credential = GoogleAuthProvider.credentialFromError(error);
-//     //     console.log(credential);
-//     //     // ...
-//     //     dispatch(authActions.setErrorMessage(error.message));
-//     //   });
-//   };
-// };
-
 /**
  * Changes the user's email and dispatches appropriate actions based on the result.
  * If the email change is successful, the function updates the user state and displays a success message.
  * In case of errors, the function handles different scenarios such as requiring reauthentication or verifying the new email before change.
  * @param {String} email - The new email address to update
+ * @returns {Function} Redux thunk.
  */
 export const changeUserEmail = (email) => {
   return async (dispatch) => {
@@ -409,32 +377,13 @@ export const reAuthUser = async (type, password) => {
     }
   }
 };
-// export const reAuthUser = (type, password) => {
-//   return async (dispatch, getState) => {
-//     try {
-//       const user = auth.currentUser;
-
-//       if (type === "pass") {
-//         const credential = await promptForCredentials(password);
-//         console.log(credential);
-//         const result = await reauthenticateWithCredential(user, credential);
-//       }
-//       if (type === "popup") {
-//         const resultPopup = await reauthenticateWithPopup(user, provider);
-//       }
-
-//       dispatch(authActions.setReauthFormIsOpen(false));
-//     } catch (error) {
-//       dispatch(authActions.setErrorMessage(error.message));
-//       console.log(error.message);
-//     }
-//   };
-// };
 
 /**
- * Changes user password
+ * Changes user password.
+ *
  * @param {string} password - User password
- * @returns
+ * @param {string} oldPassword - Old user password
+ * @returns {Function} Redux thunk.
  */
 export const changeUserPassword = (password, oldPassword) => {
   return async (dispatch) => {
@@ -449,21 +398,21 @@ export const changeUserPassword = (password, oldPassword) => {
 
       dispatch(authActions.setSuccessMessage("Password changed successfully"));
     } catch (error) {
-      // if (error.code === "auth/requires-recent-login") {
-      //   dispatch(authActions.setReauthFormIsOpen(true));
-      // } else {
-      //   dispatch(authActions.setErrorMessage(error.message));
-      // }
       dispatch(authActions.setErrorMessage(handleErrors(error)));
     }
   };
 };
 
+/**
+ * Sends a password reset email to the given email address.
+ *
+ * @param {string} email - User email.
+ * @returns {Function} Redux thunk.
+ */
 export const resetUserPassword = (email) => {
   return async (dispatch) => {
     sendPasswordResetEmail(auth, email)
       .then(() => {
-        // Password reset email sent!
         dispatch(authActions.setSuccessMessage("Password reset email sent!"));
       })
       .catch((error) => {
@@ -472,22 +421,16 @@ export const resetUserPassword = (email) => {
         } else {
           dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
         }
-        // ..
       });
-    // try {
-    //   const user = auth.currentUser;
-    //   await updatePassword(user, password);
-    // } catch (error) {
-    //   dispatch(authActions.setErrorMessage(error.message));
-    //   console.log(error.message);
-    // }
   };
 };
 
 /**
- * Changes user name
- * @param {string} name - User name
- * @returns
+ * Changes the current user name.
+ * Updates a user's profile data.
+ *
+ * @param {string} name - User name.
+ * @returns {Function} Redux thunk.
  */
 export const changeUserName = (name) => {
   return async (dispatch) => {
@@ -510,6 +453,13 @@ export const changeUserName = (name) => {
   };
 };
 
+/**
+ * Fetches the current user data.
+ * Creates a listener for the current user data.
+ *
+ * @param {string} uid - User ID.
+ * @returns {Function} Redux thunk.
+ */
 export const getUserData = (uid) => {
   return async (dispatch) => {
     try {
@@ -519,11 +469,13 @@ export const getUserData = (uid) => {
       unsubUserData = onSnapshot(doc(firestore, "users", uid), (doc) => {
         const data = doc.data();
         if (data?.categoriesById) {
-          dispatch(tabActions.setCategories(data?.categoriesById));
+          dispatch(tabActions.setCategories(data.categoriesById));
         }
         if (data?.imageCategories)
           dispatch(imagesActions.setImageCategories(data.imageCategories));
         if (data?.presets) dispatch(promptActions.setPresets(data.presets));
+        if (data?.baseModels)
+          dispatch(tabActions.setBaseModels(data.baseModels));
       });
 
       const userRef = doc(firestore, "users", uid);
@@ -531,20 +483,12 @@ export const getUserData = (uid) => {
       const userDataDoc = await getDoc(userRef);
       if (userDataDoc.exists()) {
         const userData = userDataDoc.data();
-        if (userData?.categoriesById)
-          dispatch(tabActions.setCategories(userData.categoriesById));
-        if (userData?.imageCategories)
-          dispatch(imagesActions.setImageCategories(userData.imageCategories));
-        if (userData?.baseModels)
-          dispatch(tabActions.setBaseModels(userData.baseModels));
-        if (userData?.presets)
-          dispatch(promptActions.setPresets(userData.presets));
+
         if (userData?.sfwValue)
           dispatch(generalActions.setSfwValue(userData.sfwValue));
         if (userData?.nsfwValue)
           dispatch(generalActions.setNsfwValue(userData.nsfwValue));
         if (userData?.nsfwMode) {
-          // dispatch(modelActions.setNsfwMode(userData.nsfwMode));
           dispatch(generalActions.setNsfwMode(userData.nsfwMode));
         }
         if (userData?.uiState) {
@@ -557,12 +501,9 @@ export const getUserData = (uid) => {
             ),
           );
         }
-        // if (userData?.guide && userData?.guide?.newGuide) {
+
         if (userData?.guide) {
-          // console.log(userData.guide);
           dispatch(guideActions.setGuideInitialState(userData.guide));
-        } else {
-          // dispatch(authActions.setGuide({ topPanel: false, image: false }));
         }
       }
       dispatch(authActions.setUserDataIsLoading(false));

@@ -28,7 +28,7 @@ import PreviewCardShort from "./preview-card-short/PreviewCardShort";
  * @returns {JSX.Element} The animated preview card component.
  */
 const PreviewCardContent = ({ previewData, fullView, animate }) => {
-  const isNsfwMode = useSelector((state) => state.model.nsfwMode);
+  const isNsfwMode = useSelector((state) => state.general.nsfwMode);
   const isMobile = useSelector((state) => state.general.isMobile);
   const imgRef = useRef();
   const imageSrc = isNsfwMode

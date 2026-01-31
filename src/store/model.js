@@ -11,7 +11,6 @@ import {
 
 import firebaseApp from "../firebase-config";
 import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
-import { authActions } from "./auth";
 import { deleteImagePostDocs } from "../utils/fetch/fetchImages";
 import { makeBatchRequest } from "../utils/fetch/fetchUtils";
 
@@ -162,17 +161,6 @@ const modelSlice = createSlice({
     setActiveCarouselData(state, action) {
       state.activeCarouselData = action.payload;
     },
-  },
-  extraReducers: (builder) => {
-    /**
-     * Resets model state on logout.
-     *
-     * Listens to the logout action and clears model-related state.
-     */
-    builder.addCase(authActions.logout, (state, action) => {
-      modelSlice.caseReducers.resetModelData(state, action);
-      state.activeCarouselData = {};
-    });
   },
 });
 

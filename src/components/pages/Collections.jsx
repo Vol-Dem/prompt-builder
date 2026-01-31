@@ -64,7 +64,7 @@ const Collections = ({ title }) => {
   const activeSubcategory = useSelector(
     (state) => state.images.activeSubcategory,
   );
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const endPageRef = useRef(null);
   const isOnline = useOnlineStatus();
   const dispatch = useDispatch();
