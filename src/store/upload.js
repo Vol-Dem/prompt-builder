@@ -8,7 +8,8 @@ import {
   SETTINGS_UPLOADING_COMPLETED_AMOUNT,
 } from "../variables/constants";
 import { updateImagePostData } from "../utils/fetch/fetchImages";
-import { transformImageData } from "../utils/transformUtils";
+import { transformImageData } from "../../shared/utils";
+// import { transformImageData } from "../utils/transformUtils";
 
 /**
  * Upload state.

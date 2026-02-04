@@ -53,6 +53,10 @@
   transform: translateY(2px);
 }
 
+div.z-index {
+  z-index: 9999;
+}
+
 @media (max-width: 1025px) {
   .guide__content {
     &--default {

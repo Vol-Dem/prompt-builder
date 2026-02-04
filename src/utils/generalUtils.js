@@ -5,53 +5,53 @@ import {
   ERROR_MESSAGE_DEFAULT,
   REGEX_MOBAL,
   SETTINGS_NSFW_VALUES_DATA,
-  SETTINGS_SUPPORTED_FILE_EXTENSIONS,
+  // SETTINGS_SUPPORTED_FILE_EXTENSIONS,
 } from "../variables/constants";
 import { isNumber } from "./validationUtils";
 
-/**
- * Removes unsupported Firestore symbols from object keys
- * @param {object} obj - The object
- * @returns The cleaned object
- */
-export const clearObjectKeys = (obj) => {
-  const convertedMetaArr = Object.entries(obj).map((entry, i) => {
-    let newKey;
-    newKey = entry[0]
-      ? entry[0].replace(/[^\w\s]/gi, "X").replace(/[^\\x00-\\xFF]*/giu, "")
-      : `key${i}`;
-    newKey = newKey.replaceAll("__", "");
-    if (newKey === "" || newKey === undefined) {
-      newKey = `key${i}`;
-    }
-    let newValue = entry[1];
-    if (!newValue) {
-      newValue = null;
-    }
-    return [newKey, newValue];
-  });
-  return Object.fromEntries(convertedMetaArr);
-};
+// /**
+//  * Removes unsupported Firestore symbols from object keys
+//  * @param {object} obj - The object
+//  * @returns The cleaned object
+//  */
+// export const clearObjectKeys = (obj) => {
+//   const convertedMetaArr = Object.entries(obj).map((entry, i) => {
+//     let newKey;
+//     newKey = entry[0]
+//       ? entry[0].replace(/[^\w\s]/gi, "X").replace(/[^\\x00-\\xFF]*/giu, "")
+//       : `key${i}`;
+//     newKey = newKey.replaceAll("__", "");
+//     if (newKey === "" || newKey === undefined) {
+//       newKey = `key${i}`;
+//     }
+//     let newValue = entry[1];
+//     if (!newValue) {
+//       newValue = null;
+//     }
+//     return [newKey, newValue];
+//   });
+//   return Object.fromEntries(convertedMetaArr);
+// };
 
-/**
- * Removes supported file extensions from file name.
- * Supported file extensions: safetensors, pt, pth, ckpt, mp4, mov, webm
- * @param {string} name - The file name
- * @returns The file name without the file extension
- */
-export const clearFileExtension = (name) => {
-  if (!name) return;
+// /**
+//  * Removes supported file extensions from file name.
+//  * Supported file extensions: safetensors, pt, pth, ckpt, mp4, mov, webm
+//  * @param {string} name - The file name
+//  * @returns The file name without the file extension
+//  */
+// export const clearFileExtension = (name) => {
+//   if (!name) return;
 
-  const extension = SETTINGS_SUPPORTED_FILE_EXTENSIONS.find((extension) =>
-    name.endsWith(`.${extension}`)
-  );
+//   const extension = SETTINGS_SUPPORTED_FILE_EXTENSIONS.find((extension) =>
+//     name.endsWith(`.${extension}`)
+//   );
 
-  if (extension) {
-    return name.replace(`.${extension}`, "");
-  } else {
-    return name;
-  }
-};
+//   if (extension) {
+//     return name.replace(`.${extension}`, "");
+//   } else {
+//     return name;
+//   }
+// };
 
 /**
  * Adds a promise that resolves after the specified delay
@@ -66,18 +66,18 @@ export const addDelayPromise = (delay) => {
   });
 };
 
-/**
- * Converts value to a string
- * @param {*} value - The value to convert
- * @returns The stringified value
- */
-export const convertToString = (value) => {
-  if (typeof value === "string") {
-    return value;
-  } else {
-    return JSON.stringify(value);
-  }
-};
+// /**
+//  * Converts value to a string
+//  * @param {*} value - The value to convert
+//  * @returns The stringified value
+//  */
+// export const convertToString = (value) => {
+//   if (typeof value === "string") {
+//     return value;
+//   } else {
+//     return JSON.stringify(value);
+//   }
+// };
 
 /**
  * Freezes scroll
@@ -145,10 +145,10 @@ export const disableAnimationsOnMobile = () => {
  */
 export const checkIsInCurrentNsfwRange = (curNsfwLevel, curNsfwvalue) => {
   const nsfwValues = SETTINGS_NSFW_VALUES_DATA.map(
-    (nsfwValueData) => nsfwValueData.value
+    (nsfwValueData) => nsfwValueData.value,
   );
   const curNsfwLevelIndex = nsfwValues.findIndex(
-    (nsfwValue) => nsfwValue === curNsfwLevel
+    (nsfwValue) => nsfwValue === curNsfwLevel,
   );
   const displayedValues = nsfwValues.slice(0, curNsfwLevelIndex + 1);
 
@@ -222,7 +222,8 @@ export const createCategoryId = (id, categoriesData) => {
 export const createCollectionId = (collectionCategories) => {
   const collectionIds = collectionCategories.flatMap(
     (category) =>
-      category?.collectionNames.map((collectionName) => collectionName.id) || []
+      category?.collectionNames.map((collectionName) => collectionName.id) ||
+      [],
   );
 
   if (!collectionIds?.length) return 1;
@@ -396,7 +397,7 @@ export const getUserNotifications = (notifications) => {
   const noticeInfo = uploadLocalStorage(`notifications`);
   const updatedNotifications = notifications.map((message) => {
     const notice = noticeInfo?.messages?.find(
-      (userNotice) => userNotice.id === message.id
+      (userNotice) => userNotice.id === message.id,
     );
     return {
       ...message,

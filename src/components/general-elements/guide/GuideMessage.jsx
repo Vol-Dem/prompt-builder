@@ -26,14 +26,14 @@ import CrossSvg from "../../../assets/CrossSvg";
  * - When the current step is the last one, renders "Finish tutorial" instead
  *   of "Next step".
  * - Renders a pointing arrow according to `arrowPosition`:
- *   0 - disabled  
- *   1 - top left  
- *   2 - top center  
- *   3 - top right  
- *   4 - right  
- *   5 - bottom right  
- *   6 - bottom center  
- *   7 - bottom left  
+ *   0 - disabled
+ *   1 - top left
+ *   2 - top center
+ *   3 - top right
+ *   4 - right
+ *   5 - bottom right
+ *   6 - bottom center
+ *   7 - bottom left
  *   8 - left
  *
  * Side effects:
@@ -105,7 +105,6 @@ const GuideMessage = ({
     <>
       {guideState?.active && curGuideIsActive && (
         <motion.div
-          style={{ zIndex: 9999 }}
           layoutId="guide-message"
           ref={guideMessageRef}
           className={`${classes["guide-container"]} ${

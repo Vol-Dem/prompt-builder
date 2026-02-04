@@ -19,13 +19,14 @@ import {
 } from "../../variables/constants";
 import { fetchData, makeBatchRequest } from "./fetchUtils";
 import {
-  clearFileExtension,
+  // clearFileExtension,
   filterDuplicates,
   throwCustomError,
 } from "../generalUtils";
-import { transformImageData } from "../transformUtils";
+// import { transformImageData } from "../transformUtils";
 import { parseModelIds } from "../modelUtils";
 import { getUniqImageResources } from "../imageUtils";
+import { clearFileExtension, transformImageData } from "../../../shared/utils";
 
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
@@ -44,7 +45,7 @@ export const getImageInfo = async (image) => {
     if (imageResources?.length) {
       const updatedRes = await makeBatchRequest(
         imageResources,
-        fetchResourceInfo
+        fetchResourceInfo,
       );
 
       updatedImgResources = [...updatedImgResources, ...updatedRes];
@@ -56,13 +57,13 @@ export const getImageInfo = async (image) => {
         .filter(Boolean)
         .flatMap((hash) => {
           const isInRes = image.meta?.resources?.find(
-            (res) => res.hash === hash
+            (res) => res.hash === hash,
           );
           const isInCivRes = image.meta?.civitaiResources?.find(
-            (res) => res.hash === hash
+            (res) => res.hash === hash,
           );
           const isInAddRes = image.meta?.additionalResources?.find(
-            (res) => res.hash === hash
+            (res) => res.hash === hash,
           );
 
           if (!isInRes && !isInCivRes && !isInAddRes) {
@@ -73,14 +74,14 @@ export const getImageInfo = async (image) => {
 
       const updatedHashRes = await makeBatchRequest(
         hashesData,
-        fetchResourceInfo
+        fetchResourceInfo,
       );
 
       updatedImgResources = [...updatedImgResources, ...updatedHashRes];
     }
     return await fetchResourcesInfoFromDB(
       image,
-      filterDuplicates(updatedImgResources, "modelVersionId")
+      filterDuplicates(updatedImgResources, "modelVersionId"),
     );
   } catch (err) {
     // console.log(err);
@@ -109,7 +110,7 @@ export const fetchResourceInfo = async (resourcesData) => {
         }
 
         return await fetchData(url);
-      })
+      }),
     );
 
     const updatedResources = resourcesData.map((resource, i) => {
@@ -136,7 +137,7 @@ export const fetchResourceInfo = async (resourcesData) => {
         }),
         ...(modelsData[i]?.value?.files && {
           fileName: clearFileExtension(
-            modelsData[i]?.value.files.find((file) => file?.primary)?.name
+            modelsData[i]?.value.files.find((file) => file?.primary)?.name,
           ),
         }),
       };
@@ -164,7 +165,7 @@ export const deleteImagePostDocs = async (posts) => {
       "models",
       post.modelId + "",
       post.type,
-      post.postId + ""
+      post.postId + "",
     );
 
     batch.delete(imgPostRef);
@@ -204,7 +205,7 @@ export const updateImagePostData = async (postInfo, imagesData) => {
     const batch = writeBatch(firestore);
 
     const hasSfw = !!imagesData.find((image) =>
-      SETTINGS_SFW_RANGE.includes(image?.nsfwLevel)
+      SETTINGS_SFW_RANGE.includes(image?.nsfwLevel),
     );
 
     const docSnap = await getDoc(modelImagesRef);
@@ -218,7 +219,7 @@ export const updateImagePostData = async (postInfo, imagesData) => {
     const curImgIds = curPostData?.items?.map((item) => item?.id);
 
     const newImagesData = imagesData.filter(
-      (image) => !curImgIds?.includes(image.id)
+      (image) => !curImgIds?.includes(image.id),
     );
 
     if (newImagesData?.length || !curPostData?.id || location === "models") {
@@ -231,7 +232,7 @@ export const updateImagePostData = async (postInfo, imagesData) => {
           createdAt: imagesData[0].createdAt,
           hasSfw: hasSfw,
         },
-        { merge: true }
+        { merge: true },
       );
     }
 
@@ -250,7 +251,7 @@ export const updateImagePostData = async (postInfo, imagesData) => {
               [`${versionId}`]: arrayUnion(newImgData),
             },
           },
-          { merge: true }
+          { merge: true },
         );
       }
     }
@@ -274,12 +275,12 @@ export const updateImagePostData = async (postInfo, imagesData) => {
 export const getVersionImagesFromCiv = async (modelId, username, version) => {
   try {
     const versionImagesRequest = await fetch(
-      `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${username}&nsfw=X&limit=200&sort=Oldest`
+      `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${username}&nsfw=X&limit=200&sort=Oldest`,
     );
     const versionImages = await versionImagesRequest.json();
     const updatedImages = version?.images?.flatMap((image) => {
       const fullImgData = versionImages?.items?.find(
-        (verImg) => verImg.hash === image.hash
+        (verImg) => verImg.hash === image.hash,
       );
 
       if (!fullImgData) return [];
@@ -311,7 +312,7 @@ export const getImageModelInfo = async (resourcesData) => {
       return resourcesData;
     }
     const data = await fetchData(
-      `https://civitai.com/api/v1/model-versions/by-hash/${modelHash}`
+      `https://civitai.com/api/v1/model-versions/by-hash/${modelHash}`,
     );
 
     const updatedResources = {
@@ -337,7 +338,7 @@ export const getImageModelInfo = async (resourcesData) => {
  */
 export const fetchResourcesInfoFromDB = async (
   curImageData,
-  resourcesInfoCiv
+  resourcesInfoCiv,
 ) => {
   try {
     const imageResources =
@@ -356,19 +357,19 @@ export const fetchResourcesInfoFromDB = async (
     if (modelHash) {
       checkpointQ = query(
         collection(firestore, "users", uid, `preview`),
-        where("hashes", "array-contains", modelHash)
+        where("hashes", "array-contains", modelHash),
       );
     } else if (curImageData?.meta?.Model?.includes("urn:air")) {
       const [modelId] = parseModelIds(curImageData.meta.Model);
       checkpointQ = query(
         collection(firestore, "users", uid, `preview`),
-        where("id", "==", modelId)
+        where("id", "==", modelId),
       );
     } else {
       const checkpointName = curImageData?.meta?.Model || "";
       checkpointQ = query(
         collection(firestore, "users", uid, `preview`),
-        where("fileNames", "array-contains", checkpointName?.toLowerCase())
+        where("fileNames", "array-contains", checkpointName?.toLowerCase()),
       );
     }
 
@@ -408,7 +409,7 @@ export const fetchResourcesInfoFromDB = async (
       const q = query(
         collection(firestore, "users", uid, `preview`),
         //firestore query limit 30
-        where("id", "in", modelsIds.slice(0, 29))
+        where("id", "in", modelsIds.slice(0, 29)),
       );
       const querySnapshot = await getDocs(q);
 
@@ -423,7 +424,7 @@ export const fetchResourcesInfoFromDB = async (
     if (modelsVersionIds.length) {
       const q = query(
         collection(firestore, "users", uid, `preview`),
-        where("versionIds", "array-contains-any", modelsVersionIds)
+        where("versionIds", "array-contains-any", modelsVersionIds),
       );
       const querySnapshot = await getDocs(q);
 
@@ -437,7 +438,7 @@ export const fetchResourcesInfoFromDB = async (
     if (modelsHashes.length) {
       const q = query(
         collection(firestore, "users", uid, `preview`),
-        where("hashes", "array-contains-any", modelsHashes)
+        where("hashes", "array-contains-any", modelsHashes),
       );
       const querySnapshot = await getDocs(q);
 
@@ -457,18 +458,18 @@ export const fetchResourcesInfoFromDB = async (
               return model?.fileNames?.includes(
                 name
                   .replace(`-${nameArr[nameArr?.length - 1]}`, "")
-                  .toLowerCase()
+                  .toLowerCase(),
               );
             } else {
               return model?.fileNames?.includes(name.toLowerCase());
             }
-          })
+          }),
       );
 
       if (uniqModelsNames.length) {
         const q = query(
           collection(firestore, "users", uid, `preview`),
-          where("fileNames", "array-contains-any", uniqModelsNames)
+          where("fileNames", "array-contains-any", uniqModelsNames),
         );
         const querySnapshot = await getDocs(q);
 
@@ -488,8 +489,8 @@ export const fetchResourcesInfoFromDB = async (
           preview?.versionIds?.includes(versionId) ||
           preview?.hashes?.includes(resource.hash) ||
           preview?.fileNames?.includes(
-            clearFileExtension(resource.name)?.toLowerCase()
-          )
+            clearFileExtension(resource.name)?.toLowerCase(),
+          ),
       );
 
       if (preview) {
@@ -514,7 +515,7 @@ export const fetchResourcesInfoFromDB = async (
         } else if (obj1?.name) {
           //filters duplicate models that only have names that match the file name
           const arrIndex = arr.findIndex(
-            (obj2) => obj1?.name === obj2?.fileName
+            (obj2) => obj1?.name === obj2?.fileName,
           );
           return arrIndex === i || arrIndex < 0;
         } else {

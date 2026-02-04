@@ -97,15 +97,15 @@ export const SETTINGS_NSFW_RANGE = ["Soft", "Mature", "X"];
 export const SETTINGS_PROMPT_DUPLICATE_EXCEPTIONS = ["BREAK", "<BREAK>"];
 export const SETTINGS_PROMPT_BREAK_ALIASES = ["BREAK", "<BREAK>"];
 export const SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV = false;
-export const SETTINGS_SUPPORTED_FILE_EXTENSIONS = [
-  "safetensors",
-  "pt",
-  "pth",
-  "ckpt",
-  "mp4",
-  "mov",
-  "webm",
-];
+// export const SETTINGS_SUPPORTED_FILE_EXTENSIONS = [
+//   "safetensors",
+//   "pt",
+//   "pth",
+//   "ckpt",
+//   "mp4",
+//   "mov",
+//   "webm",
+// ];
 
 //URLS
 export const URL_CIV_MODELS = "https://civitai.com/api/v1/models/";

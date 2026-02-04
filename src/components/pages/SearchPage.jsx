@@ -11,6 +11,7 @@ import ErrorMessage from "../ui/ErrorMessage";
 import {
   ERROR_MESSAGE_OFFLINE,
   SETTINGS_LOAD_MORE_MARGIN_SMALL,
+  SETTINGS_SEARCH_MIN_QUERY_LENGTH,
   SETTINGS_SEARCH_RESULT_PER_PAGE,
 } from "../../variables/constants";
 import { useOnlineStatus } from "../../hooks/use-online-status";
@@ -119,7 +120,7 @@ const SearchPage = ({ title }) => {
     if (
       ((isNotLastPage && isIntersecting) || searchParamsIsChanged) &&
       isOnline &&
-      searchQueryParam?.length > 3 &&
+      searchQueryParam?.length >= SETTINGS_SEARCH_MIN_QUERY_LENGTH &&
       !searchIsLoading
     ) {
       fetchTimeoutRef.current = setTimeout(() => {

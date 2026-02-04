@@ -23,7 +23,8 @@ import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import InfoPostId from "../../general-elements/info/InfoPostId";
 import { getPostIdFromInput } from "../../../utils/imageUtils";
-import { fixCivImagesMeta } from "../../../utils/tempUtils";
+import { fixCivImagesMeta } from "../../../../shared/utils";
+// import { fixCivImagesMeta } from "../../../utils/tempUtils";
 
 /**
  * Save Image form component.

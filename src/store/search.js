@@ -12,9 +12,10 @@ import {
   where,
 } from "firebase/firestore";
 
-import { clearFileExtension } from "../utils/generalUtils";
+// import { clearFileExtension } from "../utils/generalUtils";
 import firebaseApp from "../firebase-config";
 import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
+import { clearFileExtension } from "../../shared/utils";
 
 const firestore = getFirestore(firebaseApp);
 

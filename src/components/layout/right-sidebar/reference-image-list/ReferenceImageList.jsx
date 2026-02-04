@@ -16,8 +16,9 @@ import {
   removeImageFromPanel,
   usedModelsActions,
 } from "../../../../store/usedModels";
-import { clearFileExtension } from "../../../../utils/generalUtils";
-
+import { clearFileExtension } from "../../../../../shared/utils";
+// import { clearFileExtension } from "../../../../utils/generalUtils";
+clearFileExtension;
 /**
  * Displays a list of reference images with the option to open or remove them from the list.
  * Blurs nsfw images if they are not in active nsfw range
@@ -45,7 +46,7 @@ const ReferenceImageList = ({ usedImages }) => {
           postId: image.postId,
           saved: true,
           side: true,
-        })
+        }),
       );
       if (document.body.offsetWidth < 1024) {
         dispatch(usedModelsActions.panelState(false));
@@ -58,7 +59,7 @@ const ReferenceImageList = ({ usedImages }) => {
   };
 
   const numberOfRows = Math.ceil(
-    usedImages?.length / SETTINGS_REF_IMAGE_ROW_LENGTH
+    usedImages?.length / SETTINGS_REF_IMAGE_ROW_LENGTH,
   );
 
   const imageList = numberOfRows
@@ -116,7 +117,7 @@ const ReferenceImageList = ({ usedImages }) => {
                         onClick={() =>
                           removeImageHandler(
                             usedImages[i]?.hash,
-                            usedImages[i].url
+                            usedImages[i].url,
                           )
                         }
                       >
@@ -134,7 +135,7 @@ const ReferenceImageList = ({ usedImages }) => {
                     </li>
                   );
                 }
-              }
+              },
             )}
           </motion.ul>
         );

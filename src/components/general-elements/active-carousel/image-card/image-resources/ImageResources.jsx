@@ -8,7 +8,7 @@ import ImageCardResourcesGuide from "../../../guide/model/ImageCardResourcesGuid
 import { GUIDE_STEP_IMAGE_RESOURCES } from "../../../../../variables/constants";
 import ImageResourcesItem from "../image-resources-item/ImageResourcesItem";
 import {
-  clearFileExtension,
+  // clearFileExtension,
   handleErrors,
 } from "../../../../../utils/generalUtils";
 import Spinner from "../../../../ui/Spinner";
@@ -17,6 +17,7 @@ import InfoResources from "../../../info/InfoResources";
 import { parseMoelType } from "../../../../../utils/modelUtils";
 import { getImageInfo } from "../../../../../utils/fetch/fetchImages";
 import { fetchResourcesInfoFromDB } from "../../../../../utils/fetch/fetchImages";
+import { clearFileExtension } from "../../../../../../shared/utils";
 
 const timeoutDelay = 1000;
 
@@ -58,7 +59,7 @@ const ImageResources = ({ imageData }) => {
   const updateImageResources = (previewData) => {
     setImageResources((prevState) => {
       const updatedResourceIndex = prevState.findIndex(
-        (resource) => resource.modelId === previewData.id
+        (resource) => resource.modelId === previewData.id,
       );
 
       if (updatedResourceIndex < 0) return prevState;
@@ -99,7 +100,7 @@ const ImageResources = ({ imageData }) => {
         Object.values(resource?.preview?.modelVersionsCustomData).find(
           (version) =>
             clearFileExtension(version.defFileName) ===
-            clearFileExtension(resource?.name)?.toLowerCase()
+            clearFileExtension(resource?.name)?.toLowerCase(),
         );
       versionIsSaved = curVersion?.downloadStatus;
       versionName = curVersion?.versionName;

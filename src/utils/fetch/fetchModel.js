@@ -28,13 +28,14 @@ import {
 } from "./fetchUtils";
 import { deleteImagePostDocs } from "./fetchImages";
 import {
-  clearFileExtension,
+  // clearFileExtension,
   createCategoryId,
   throwCustomError,
 } from "../generalUtils";
 import { transformModelData } from "../transformUtils";
 import { cleanImageMeta, transformSrcPreview } from "../imageUtils";
 import { splitTags } from "../promptUtils";
+import { clearFileExtension } from "../../../shared/utils";
 
 const firestore = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp);

@@ -11,7 +11,7 @@ import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
 import Fieldset from "../../ui/forms/Fieldset";
 import FieldCategory from "../../ui/forms/FieldCategory";
 import {
-  clearFileExtension,
+  // clearFileExtension,
   handleErrors,
   throwCustomError,
 } from "../../../utils/generalUtils";
@@ -33,6 +33,7 @@ import Spinner from "../../ui/Spinner";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
 import { createTagSetsInputData } from "../../../utils/promptUtils";
+import { clearFileExtension } from "../../../../shared/utils";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -219,8 +220,8 @@ const VersionForm = ({
     setTagSetsInputs(
       createTagSetsInputData(
         versionData?.tagSetsData,
-        DEFAULT_DATA_TAGSETS_INPUT
-      )
+        DEFAULT_DATA_TAGSETS_INPUT,
+      ),
     );
   }, [versionData]);
 
@@ -231,7 +232,7 @@ const VersionForm = ({
       seteSuccessMessage("");
       setShowErrorMessage(true);
       const tagsetsIsNotValid = !!tagSetsInputs.find(
-        (input) => input[0].isValid === false || input[1].isValid === false
+        (input) => input[0].isValid === false || input[1].isValid === false,
       );
 
       const baseInputsIsNotValid =
@@ -386,7 +387,7 @@ const VersionForm = ({
         "users",
         uid,
         "preview",
-        modelId + ""
+        modelId + "",
       );
 
       const versionPath = isDefault
@@ -397,7 +398,7 @@ const VersionForm = ({
         {
           [versionPath]: updatedVersionData,
         },
-        { merge: true }
+        { merge: true },
       );
       await updateDoc(
         modelsPrevRef,
@@ -406,7 +407,7 @@ const VersionForm = ({
           mainTags: mainTags,
           customFileNames: customFileNames,
         },
-        { merge: true }
+        { merge: true },
       );
       seteSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
       setIsSaving(false);

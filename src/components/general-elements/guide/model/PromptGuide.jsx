@@ -137,7 +137,7 @@ const PromptGuide = () => {
   return (
     <GuideMessage
       type={guideType}
-      className={`${classes[`guide__content--${renderIndex}`]}`}
+      className={`${classes[`guide__content--${renderIndex}`]} ${classes["z-index"]}`}
       step={renderStep.renderStep}
       arrowPosition={renderStep.arrowPosition}
       next={renderStep.next}

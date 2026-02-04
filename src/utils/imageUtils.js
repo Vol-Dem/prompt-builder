@@ -1,7 +1,8 @@
+import { clearFileExtension } from "../../shared/utils";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_DEF } from "../variables/constants";
 import {
   checkIsInCurrentNsfwRange,
-  clearFileExtension,
+  // clearFileExtension,
   filterDuplicates,
 } from "./generalUtils";
 import { parseModelIds } from "./modelUtils";
@@ -16,7 +17,7 @@ import { parseModelIds } from "./modelUtils";
 export const transformSrcPreview = (
   src,
   width = SETTINGS_IMAGE_PREVIEW_WIDTH_DEF,
-  type = "image"
+  type = "image",
 ) => {
   if (!src) return;
 
@@ -28,7 +29,7 @@ export const transformSrcPreview = (
   const srcArr = src.split("/");
   const widthIndex = srcArr.findIndex((srcSlice) => srcSlice.includes("width"));
   const originalIndex = srcArr.findIndex((srcSlice) =>
-    srcSlice.includes("original")
+    srcSlice.includes("original"),
   );
   const configIndex = widthIndex < 0 ? originalIndex : widthIndex;
 
