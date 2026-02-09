@@ -14,6 +14,7 @@
     overflow-y: scroll;
     height: 100%;
     align-items: flex-start;
+    overscroll-behavior: none;
     @include var.custom-scroll(transparent);
   }
 

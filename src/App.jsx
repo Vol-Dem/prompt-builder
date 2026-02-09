@@ -4,31 +4,31 @@ import { lazy, useEffect } from "react";
 
 import Layout from "./components/layout/layout/Layout";
 import { initAuth } from "./store/auth";
-import ErrorPage from "./components/pages/ErrorPage";
+import ErrorPage from "./pages/ErrorPage";
 import { generalActions } from "./store/general";
 import { checkIsMobile } from "./utils/generalUtils";
-import AboutMain from "./components/pages/about/AboutMain";
-import AboutStartAddingModels from "./components/pages/about/AboutStartAddingModels";
-import AboutCategoryEdit from "./components/pages/about/AboutCategoryEdit";
-import AboutWorkingWithPrompts from "./components/pages/about/AboutWorkingWithPrompts";
-import AboutModelPage from "./components/pages/about/AboutModelPage";
-import AboutModelSettings from "./components/pages/about/AboutModelSettings";
-import AboutImageCollections from "./components/pages/about/AboutImageCollections";
-import AboutTopPanel from "./components/pages/about/AboutTopPanel";
-import AboutSidebar from "./components/pages/about/AboutSidebar";
-import Models from "./components/pages/Models";
+import AboutMain from "./pages/about/AboutMain";
+import AboutStartAddingModels from "./pages/about/AboutStartAddingModels";
+import AboutCategoryEdit from "./pages/about/AboutCategoryEdit";
+import AboutWorkingWithPrompts from "./pages/about/AboutWorkingWithPrompts";
+import AboutModelPage from "./pages/about/AboutModelPage";
+import AboutModelSettings from "./pages/about/AboutModelSettings";
+import AboutImageCollections from "./pages/about/AboutImageCollections";
+import AboutTopPanel from "./pages/about/AboutTopPanel";
+import AboutSidebar from "./pages/about/AboutSidebar";
+import Models from "./pages/Models";
 
-const About = lazy(() => import("./components/pages/About"));
-const ToS = lazy(() => import("./components/pages/ToS"));
-const PrivacyPolicy = lazy(() => import("./components/pages/PrivacyPolicy"));
-const Model = lazy(() => import("./components/pages/Model"));
-const Collections = lazy(() => import("./components/pages/Collections"));
-const SearchPage = lazy(() => import("./components/pages/SearchPage"));
-const Profile = lazy(() => import("./components/pages/Profile"));
-const Collection = lazy(() => import("./components/pages/Collection"));
-const CollectionEdit = lazy(() => import("./components/pages/CollectionEdit"));
-const Edit = lazy(() => import("./components/pages/Edit"));
-const Landing = lazy(() => import("./components/pages/Landing"));
+const About = lazy(() => import("./pages/About"));
+const ToS = lazy(() => import("./pages/ToS"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const Model = lazy(() => import("./pages/Model"));
+const Collections = lazy(() => import("./pages/Collections"));
+const SearchPage = lazy(() => import("./pages/SearchPage"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Collection = lazy(() => import("./pages/Collection"));
+const CollectionEdit = lazy(() => import("./pages/CollectionEdit"));
+const Edit = lazy(() => import("./pages/Edit"));
+const Landing = lazy(() => import("./pages/Landing"));
 
 /**
  * Root application component.
@@ -63,7 +63,7 @@ function App() {
 
   //Removes delay on first navigation in dev mode
   useEffect(() => {
-    import("./components/pages/Model");
+    import("./pages/Model");
   }, []);
 
   const router = createBrowserRouter([
