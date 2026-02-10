@@ -64,6 +64,7 @@
     // min-height: 10rem;
     width: 100%;
     height: 100%;
+    overscroll-behavior: none;
     @include var.custom-scroll;
 
     &::placeholder {
