@@ -57,6 +57,7 @@
     max-height: 30rem;
     list-style: none;
     overflow-y: scroll;
+    overscroll-behavior: none;
     @include var.custom-scroll;
   }
 
