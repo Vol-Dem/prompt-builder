@@ -17,7 +17,6 @@ import {
   ERROR_MESSAGE_INVALID_DATA,
   SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
   SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV,
-  URL_CF_UPDATE_MODEL,
   URL_CIV_MODELS,
 } from "../../variables/constants";
 import {
@@ -27,11 +26,7 @@ import {
   makeBatchRequest,
 } from "./fetchUtils";
 import { deleteImagePostDocs } from "./fetchImages";
-import {
-  // clearFileExtension,
-  createCategoryId,
-  throwCustomError,
-} from "../generalUtils";
+import { createCategoryId, throwCustomError } from "../generalUtils";
 import { transformModelData } from "../transformUtils";
 import { cleanImageMeta, transformSrcPreview } from "../imageUtils";
 import { splitTags } from "../promptUtils";
@@ -40,6 +35,7 @@ import { clearFileExtension } from "../../../shared/utils";
 const firestore = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp);
 const auth = getAuth(firebaseApp);
+const updateModel = httpsCallable(functions, "updateModelCall");
 
 /**
  * Fetch model data from Civitai
@@ -154,17 +150,16 @@ export const fetchModelData = async (modelId) => {
  * @returns {object} The updated model data
  */
 export const fetchModelUpdates = async (modelId) => {
-  const updateModelResData = await fetchData(
-    `${URL_CF_UPDATE_MODEL}/updateModel?modelId=${modelId}`,
-  );
+  const updateModelResData = await updateModel({
+    id: modelId,
+  });
 
-  if (!updateModelResData?.modelId) {
+  if (updateModelResData?.data?.error) {
+    console.error(updateModelResData.data.error);
     throwCustomError("Failed to update");
   }
 
-  const newModelData = fetchDataFromFirestore("models", `${modelId}`);
-
-  return newModelData;
+  return updateModelResData.data.modelData;
 };
 
 /**
@@ -339,7 +334,6 @@ export const saveModelData = async (
     } else {
       if (!modelData) {
         //Upload model to database
-        const updateModel = httpsCallable(functions, "updateModelCall");
 
         const uploadResponse = await updateModel({
           id: modelData?.id || newModelData.modelId,

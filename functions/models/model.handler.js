@@ -72,6 +72,7 @@ export const updateModelHandler = async (request) => {
       if (timeNow - curModelData.updatedAt < updateDelayMs) {
         return {
           modelId: modelId,
+          modelData: curModelData,
           updated: false,
           message: "Already up to date",
         };
@@ -94,6 +95,7 @@ export const updateModelHandler = async (request) => {
 
           return {
             modelId: modelDataCiv?.id,
+            modelData: curModelData,
             updated: true,
             message: "No new versions found",
           };
@@ -108,7 +110,7 @@ export const updateModelHandler = async (request) => {
           )?.index;
           return {
             ...version,
-            index,
+            index: index || 0,
           };
         });
 
@@ -126,6 +128,7 @@ export const updateModelHandler = async (request) => {
 
         return {
           modelId: modelDataCiv?.id,
+          modelData: { ...modelDataCiv, modelVersions: newVersionsWithIndex },
           updated: true,
           message: "Update complete",
         };

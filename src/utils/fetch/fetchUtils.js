@@ -21,7 +21,7 @@ export const makeBatchRequest = async (
   fetchFunc,
   concurrencyLimit = 5,
   returnResult = true,
-  delay = 500
+  delay = 500,
 ) => {
   try {
     let result = [];
@@ -116,7 +116,7 @@ export const saveGuideData = async (guideData, uid) => {
       {
         guide: guideData,
       },
-      { merge: true }
+      { merge: true },
     );
   } catch (err) {
     console.error(err.message);

@@ -19,6 +19,7 @@ import {
 
 import firebaseApp from "../firebase-config";
 import {
+  checkArraysIsEqual,
   checkIsInCurrentNsfwRange,
   createCategoryId,
   createCollectionId,
@@ -545,6 +546,7 @@ export const editCollectionData = ({
   collectionData,
   categoryData,
   subcategoriesData,
+  curCollectionSabcategories,
   description,
   nsfw,
 }) => {
@@ -567,7 +569,9 @@ export const editCollectionData = ({
           collectionData,
           categoryData,
           subcategoriesData,
-          curCollectionSabcategories: subcategoriesData,
+          curCollectionSabcategories: subcategoriesData
+            ?.map((sub) => sub.id)
+            .filter(Boolean),
         }),
       );
 
@@ -755,10 +759,10 @@ export const updateCollectionCategories = (categories) => {
  * - Updates category list in Redux
  *
  * @param {Object} params
- * @param {{id?: number, name: string}} params.collectionData
- * @param {{id?: string, name: string}} params.categoryData
- * @param {Array<{id?: string, name: string}>} params.subcategoriesData
- * @param {Array<string>} params.curCollectionSabcategories - Existing subcategory IDs.
+ * @param {{id?: number, name: string}} params.collectionData - Input collection data.
+ * @param {{id?: string, name: string}} params.categoryData - Input category data.
+ * @param {Array<{id?: string, name: string}>} params.subcategoriesData - Input subcategories data.
+ * @param {Array<string>} params.curCollectionSabcategories - All collection subcategory IDs.
  * @returns {Function} Redux thunk that resolves to:
  * {
  *   collectionData: {id: number, name: string},
@@ -775,21 +779,16 @@ export const addNewCollectionCategories = ({
 }) => {
   return async (dispatch, getState) => {
     try {
-      const hasNewSubcategories = subcategoriesData?.find(
-        (subcategory) => !subcategory?.id,
-      );
-
-      //Check for new categories data
-      if (!hasNewSubcategories && categoryData?.id && collectionData?.id) {
-        return {
-          collectionData,
-          categoryData,
-          subcategoriesData,
-          curCollectionSabcategories,
-        };
-      }
-
       const uid = getState().auth.user.uid;
+      const existedCategoriesData = getState().images.categories;
+      const existedCategory = existedCategoriesData.find(
+        (catData) => catData.id === categoryData?.id,
+      );
+      const existedCurCollectionSubcategoryIds =
+        existedCategory?.collectionNames?.find(
+          (collData) => collData.id === collectionData?.id,
+        )?.subcategories;
+
       const userRef = doc(firestore, "users", uid);
 
       const userDataDoc = await getDoc(userRef);
@@ -842,6 +841,27 @@ export const addNewCollectionCategories = ({
         ...curCollectionSabcategories,
       ]);
 
+      const hasNewSubcategories = subcategoriesData?.find(
+        (subcategory) => !subcategory?.id,
+      );
+      //Check for new categories data
+      if (
+        !hasNewSubcategories &&
+        categoryData?.id &&
+        collectionData?.id &&
+        checkArraysIsEqual(
+          newCollectionSubcategoryIds,
+          existedCurCollectionSubcategoryIds,
+        )
+      ) {
+        return {
+          collectionData,
+          categoryData,
+          subcategoriesData,
+          curCollectionSabcategories,
+        };
+      }
+
       let updatedCategories;
 
       if (!latestCategories?.length || !categoryData.id) {
@@ -863,16 +883,29 @@ export const addNewCollectionCategories = ({
       } else {
         updatedCategories = latestCategories.map((category) => {
           if (categoryData.id && categoryId === category.id) {
-            const collectionNames = !collectionData.id
-              ? [
-                  ...category.collectionNames,
-                  {
-                    id: collectionId,
-                    name: collectionData.name,
-                    subcategories: newCollectionSubcategoryIds,
-                  },
-                ]
-              : category.collectionNames;
+            let collectionNames;
+            if (!collectionData.id) {
+              collectionNames = [
+                ...category.collectionNames,
+                {
+                  id: collectionId,
+                  name: collectionData.name,
+                  subcategories: newCollectionSubcategoryIds,
+                },
+              ];
+            } else {
+              collectionNames = category.collectionNames.map(
+                (collectionName) => {
+                  if (collectionName.id === collectionData.id) {
+                    return {
+                      ...collectionName,
+                      subcategories: newCollectionSubcategoryIds,
+                    };
+                  }
+                  return collectionName;
+                },
+              );
+            }
 
             return {
               ...category,
@@ -906,7 +939,7 @@ export const addNewCollectionCategories = ({
           nameArr: collectionData.name.toLowerCase().split(" "),
           category: categoryId,
           nsfw: false,
-          subcategories: subcategories.map((subcategory) => subcategory.id),
+          subcategories: newCollectionSubcategoryIds,
           createdAt: Date.now(),
         };
 

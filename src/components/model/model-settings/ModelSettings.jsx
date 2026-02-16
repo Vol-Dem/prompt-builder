@@ -116,7 +116,7 @@ const ModelSettings = () => {
       const newModelData = await fetchModelUpdates(model.id);
       const newVersions = filterNewModelVersions(newModelData, model);
 
-      if (!newVersions.length) {
+      if (!newVersions?.length) {
         seteSuccessMessage("No new versions found");
         setIsLoading(false);
         return;
