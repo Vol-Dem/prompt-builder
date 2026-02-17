@@ -1,3 +1,5 @@
+import type { UserModelDoc, CivitaiModelDoc } from "./firestore";
+
 export interface Creator {
   image: string;
   username: string;
@@ -80,30 +82,6 @@ export interface ModelVersion {
   trainedWords: string[];
 }
 
-export interface CivitaiModel {
-  allowCommercialUse: string[];
-  allowDerivatives: boolean;
-  allowDifferentLicense: boolean;
-  allowNoCredit: boolean;
-  availability: string;
-  cosmetic: string | null;
-  creator: Creator;
-  description: string;
-  id: number;
-  minor: boolean;
-  modelVersions: ModelVersion[];
-  name: string;
-  nsfw: boolean;
-  nsfwLevel: number;
-  poi: boolean;
-  sfwOnly: boolean;
-  stats: ModelStats;
-  supportsGeneration: boolean;
-  tags: string[];
-  type: string;
-  updatedAt: number;
-}
-
 export interface UserModelDefaultCustomData {
   description: string;
 }
@@ -134,55 +112,6 @@ export interface ModelSavedImages {
   [versionId: string]: ModelSavedPostInfo[];
 }
 
-export interface UserModel {
-  createdAt: number;
-  defaultCustomData: UserModelDefaultCustomData;
-  hashtags: string[];
-  id: number;
-  main: string;
-  mainTag: string;
-  modelType: string;
-  modelVersionsCustomData: ModelVersionsCustomData;
-  name: string;
-  nsfw: boolean;
-  savedImages: ModelSavedImages;
-  src: string;
-  sub: string[];
-  updatedAt: string;
-  versionIds: string[];
-}
-
-export interface ModelData extends UserModel {
-  data: CivitaiModel;
-}
-
-export interface ModelPreview {
-  authorTags: string[];
-  baseModel: string;
-  baseModels: string[];
-  createdAt: number;
-  creator: Creator;
-  customFileNames: string[];
-  fileName: string;
-  fileNames: string[];
-  hashes: string[];
-  id: number;
-  imgType: string;
-  imgUrl: string;
-  latestFileName: string;
-  main: string;
-  mainTag: string;
-  modelType: string;
-  modelVersionsCustomData: ModelVersionsCustomData;
-  name: string;
-  nameArr: string[];
-  nsfw: boolean;
-  nsfwLevel: number;
-  size: string;
-  src: string;
-  sub: string[];
-  tags: string[];
-  type: string;
-  updatedAt: string;
-  versionIds: number[];
+export interface ModelData extends UserModelDoc {
+  data?: CivitaiModelDoc;
 }
