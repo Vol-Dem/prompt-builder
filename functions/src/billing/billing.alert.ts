@@ -5,7 +5,7 @@ import { logger } from "firebase-functions/logger";
 
 import { sendDiscordBillingMessage } from "../integrations/discord.js";
 import { disableBilling, isBillingEnabled } from "./billing.service.js";
-import { MIN_COST_DIF_FOR_ALERT } from "../variables/constants.js";
+import { MIN_COST_DIF_FOR_ALERT } from "../variables/constants";
 
 /**
  * Handles Google Cloud Billing budget alerts.

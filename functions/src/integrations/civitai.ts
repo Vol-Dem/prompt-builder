@@ -1,12 +1,15 @@
 import { HttpsError } from "firebase-functions/v2/https";
-
+import type { CivitaiModelDoc } from "../shared/types/firestore.js";
+import { Image } from "../shared/types/image.js";
 /**
  * Fetches model data from Civitai.
  *
  * @param {number | string} modelId - Civitai model ID.
- * @returns {Object} The model data.
+ * @returns {Promise<CivitaiModelDoc>} The model data.
  */
-export const fetchModel = async (modelId) => {
+export const fetchModel = async (
+  modelId: number | string,
+): Promise<CivitaiModelDoc> => {
   const responseCiv = await fetch(
     `https://civitai.com/api/v1/models/${modelId}`,
   );
@@ -26,9 +29,13 @@ export const fetchModel = async (modelId) => {
  * @param {number | string} modelId - Civitai model ID.
  * @param {number | string} versionId - Civitai model version ID.
  * @param {string} username - Civitai creator name.
- * @returns {Array} The model images.
+ * @returns {Image[]} The model images.
  */
-export const fetchImages = async (modelId, versionId, username) => {
+export const fetchImages = async (
+  modelId: number | string,
+  versionId: number | string,
+  username: string,
+): Promise<{ items: Image[] }> => {
   const versionImagesRequest = await fetch(
     `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${versionId}&username=${username}&nsfw=X&limit=200&sort=Oldest`,
   );

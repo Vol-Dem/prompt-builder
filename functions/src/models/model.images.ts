@@ -6,22 +6,34 @@ import {
 } from "@utils/shared";
 
 import { fetchImages } from "../integrations/civitai.js";
+import { ModelVersion } from "../shared/types/model.js";
+import type { Image } from "@utils/shared/types/image.ts";
 
 /**
  * Fetches and stores version images.
  */
-export const saveVersionImages = async (modelId, username, versionsData) => {
+export const saveVersionImages = async (
+  modelId: number | string,
+  username: string,
+  versionsData: ModelVersion[],
+) => {
   const updatedModelversions = await Promise.all(
     versionsData?.map(async (version) => {
       const versionImages = await fetchImages(modelId, version.id, username);
 
       // Fix for Civitai bug with meta data in meta.meta
-      const fixedVersionImages = fixCivImagesMeta(versionImages?.items);
+      const fixedVersionImages = fixCivImagesMeta(
+        versionImages?.items,
+      ) as Image[];
+
+      if (!version?.images?.length) return;
 
       const updatedImages = version?.images?.flatMap((image) => {
         const fullImgData = fixedVersionImages?.find((verImg) => {
-          if (verImg?.type === "video") {
-            const uniqUrlPart = clearFileExtension(verImg.url.split("/").pop());
+          if (verImg?.type === "video" && !!verImg?.url) {
+            const uniqUrlPart = clearFileExtension(
+              verImg.url.split("/").pop()!,
+            );
             return uniqUrlPart && image.url.includes(uniqUrlPart);
           }
           return verImg.hash === image.hash;
@@ -33,6 +45,8 @@ export const saveVersionImages = async (modelId, username, versionsData) => {
 
         return { ...image, ...transformedImgData };
       });
+
+      if (!updatedImages?.length) return;
 
       const modelDataRef = getFirestore()
         .collection("models")

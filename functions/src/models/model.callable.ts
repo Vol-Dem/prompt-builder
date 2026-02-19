@@ -1,6 +1,6 @@
 import { onCall } from "firebase-functions/v2/https";
 
-import { updateModelHandler } from "./model.handler.js";
+import { updateModelHandler } from "./model.handler";
 
 /**
  * Fetches or updates a Civitai model and stores it in Firestore.

@@ -1,14 +1,19 @@
 import { Timestamp } from "firebase-admin/firestore";
 import { getFirestore } from "firebase-admin/firestore";
-import { HttpsError } from "firebase-functions/v2/https";
+import { CallableRequest, HttpsError } from "firebase-functions/v2/https";
 
-import { fetchModel } from "../integrations/civitai.js";
+import { fetchModel } from "../integrations/civitai";
+import { saveVersionImages } from "./model.images";
 import {
   ERROR_MESSAGE_AUTH,
   ERROR_MESSAGE_INVALID_DATA,
   ERROR_MESSAGE_INVALID_ID,
-} from "../variables/constants.js";
-import { saveVersionImages } from "./model.images.js";
+} from "../variables/constants";
+import { CivitaiModelDoc } from "../shared/types/firestore";
+import type {
+  UpdateModelRequest,
+  UpdateModelResponse,
+} from "../shared/types/api";
 
 /**
  * Core handler for fetching and updating Civitai models.
@@ -25,120 +30,117 @@ import { saveVersionImages } from "./model.images.js";
  * - Models are only refreshed every 5 minutes
  * - Only new versions trigger image downloads
  */
-export const updateModelHandler = async (request) => {
+export const updateModelHandler = async (
+  request: CallableRequest<UpdateModelRequest>,
+): Promise<UpdateModelResponse> => {
   try {
-    const modelId = request?.data?.id;
-    const uid = request?.auth?.uid;
+    const modelId = request.data?.id;
+    const uid = request.auth?.uid;
 
     if (!uid) {
       throw new HttpsError("unauthenticated", ERROR_MESSAGE_AUTH);
     }
 
-    if (!Number.isFinite(+modelId) || modelId.length === 0) {
+    if (!modelId || !Number.isFinite(+modelId)) {
       throw new HttpsError("invalid-argument", ERROR_MESSAGE_INVALID_ID);
     }
 
-    const modelDataRef = getFirestore().collection("models").doc(`${modelId}`);
+    const modelDataRef = getFirestore()
+      .collection("models")
+      .doc(modelId + "");
     const modelDataDoc = await modelDataRef.get();
     const updateDelayMs = 5 * 60 * 1000;
 
     if (!modelDataDoc.exists) {
       const modelDataCiv = await fetchModel(modelId);
 
-      if (modelDataCiv?.id) {
-        await getFirestore()
-          .collection("models")
-          .doc(`${modelDataCiv?.id}`)
-          .set({ ...modelDataCiv, updatedAt: Timestamp.now().toMillis() });
-
-        saveVersionImages(
-          modelId,
-          modelDataCiv?.creator?.username,
-          modelDataCiv.modelVersions,
-        );
-
-        return {
-          modelId: modelDataCiv?.id,
-          modelData: modelDataCiv,
-          message: "Upload complete",
-        };
-      } else {
+      if (!modelDataCiv?.id) {
         throw new HttpsError("unavailable", ERROR_MESSAGE_INVALID_DATA);
       }
-    } else {
-      const curModelData = modelDataDoc.data();
-      const timeNow = Timestamp.now().toMillis();
 
-      if (timeNow - curModelData.updatedAt < updateDelayMs) {
-        return {
-          modelId: modelId,
-          modelData: curModelData,
-          updated: false,
-          message: "Already up to date",
-        };
-      }
+      await modelDataRef.set({
+        ...modelDataCiv,
+        updatedAt: Timestamp.now().toMillis(),
+      });
 
-      const modelDataCiv = await fetchModel(modelId);
+      await saveVersionImages(
+        modelId,
+        modelDataCiv.creator?.username,
+        modelDataCiv.modelVersions,
+      );
 
-      if (modelDataCiv?.id) {
-        const newVersions = modelDataCiv.modelVersions.filter(
-          (version) =>
-            !curModelData.modelVersions?.some(
-              (oldVersions) => version?.id === oldVersions?.id,
-            ),
-        );
-
-        if (!newVersions?.length) {
-          await modelDataRef.update({
-            updatedAt: timeNow,
-          });
-
-          return {
-            modelId: modelDataCiv?.id,
-            modelData: curModelData,
-            updated: true,
-            message: "No new versions found",
-          };
-        }
-
-        const newVersionsWithIndex = [
-          ...newVersions,
-          ...curModelData.modelVersions,
-        ].map((version) => {
-          const index = modelDataCiv?.modelVersions?.find(
-            (newVersion) => newVersion?.id === version?.id,
-          )?.index;
-          return {
-            ...version,
-            index: index || 0,
-          };
-        });
-
-        await modelDataRef.update({
-          modelVersions: newVersionsWithIndex,
-          description: modelDataCiv.description,
-          updatedAt: timeNow,
-        });
-
-        saveVersionImages(
-          modelId,
-          modelDataCiv?.creator?.username,
-          newVersions,
-        );
-
-        return {
-          modelId: modelDataCiv?.id,
-          modelData: { ...modelDataCiv, modelVersions: newVersionsWithIndex },
-          updated: true,
-          message: "Update complete",
-        };
-      } else {
-        throw new HttpsError("unavailable", ERROR_MESSAGE_INVALID_DATA);
-      }
+      return {
+        modelId: modelDataCiv.id,
+        modelData: modelDataCiv,
+        message: "Upload complete",
+      };
     }
+
+    const curModelData = modelDataDoc.data()! as CivitaiModelDoc;
+    const timeNow = Timestamp.now().toMillis();
+
+    if (timeNow - curModelData.updatedAt < updateDelayMs) {
+      return {
+        modelId: Number(modelId),
+        modelData: curModelData,
+        updated: false,
+        message: "Already up to date",
+      };
+    }
+
+    const modelDataCiv = await fetchModel(modelId);
+
+    if (!modelDataCiv?.id) {
+      throw new HttpsError("unavailable", ERROR_MESSAGE_INVALID_DATA);
+    }
+
+    const newVersions = modelDataCiv.modelVersions.filter(
+      (version) =>
+        !curModelData.modelVersions?.some((old) => version.id === old.id),
+    );
+
+    if (!newVersions.length) {
+      await modelDataRef.update({ updatedAt: timeNow });
+
+      return {
+        modelId: modelDataCiv.id,
+        modelData: curModelData,
+        updated: true,
+        message: "No new versions found",
+      };
+    }
+
+    const newVersionsWithIndex = [
+      ...newVersions,
+      ...curModelData.modelVersions,
+    ].map((version) => {
+      const index =
+        modelDataCiv.modelVersions.find((v) => v.id === version.id)?.index ?? 0;
+
+      return { ...version, index };
+    });
+
+    await modelDataRef.update({
+      modelVersions: newVersionsWithIndex,
+      description: modelDataCiv.description,
+      updatedAt: timeNow,
+    });
+
+    await saveVersionImages(
+      modelId,
+      modelDataCiv.creator?.username,
+      newVersions,
+    );
+
+    return {
+      modelId: modelDataCiv.id,
+      modelData: { ...modelDataCiv, modelVersions: newVersionsWithIndex },
+      updated: true,
+      message: "Update complete",
+    };
   } catch (err) {
     return {
-      error: err.message,
+      error: err instanceof Error ? err.message : "Unknown error",
     };
   }
 };

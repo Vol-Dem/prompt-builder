@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const src = path.join(__dirname, "shared");
-const dest = path.join(__dirname, "functions", "shared");
+const dest = path.join(__dirname, "functions", "src", "shared");
 
 console.log("Syncing shared → functions/shared");
 
