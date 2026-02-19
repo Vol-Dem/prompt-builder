@@ -2,14 +2,14 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "commonjs",
-    "rootDir": "src",
-    "outDir": "lib",
+    // "rootDir": "src",
+    // "outDir": "lib",
 
     "strict": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "skipLibCheck": true
-  },
-  "exclude": ["src/shared"]
+  }
+  // "exclude": ["src/shared"]
 }

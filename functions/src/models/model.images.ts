@@ -3,11 +3,11 @@ import {
   clearFileExtension,
   fixCivImagesMeta,
   transformImageData,
-} from "@utils/shared";
+} from "../../../shared/utils";
 
 import { fetchImages } from "../integrations/civitai.js";
-import { ModelVersion } from "../shared/types/model.js";
-import type { Image } from "@utils/shared/types/image.ts";
+import { ModelVersion } from "../../../shared/types/model.js";
+import type { Image } from "../../../shared/types/image.ts";
 
 /**
  * Fetches and stores version images.

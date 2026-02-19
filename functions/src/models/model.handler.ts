@@ -9,11 +9,11 @@ import {
   ERROR_MESSAGE_INVALID_DATA,
   ERROR_MESSAGE_INVALID_ID,
 } from "../variables/constants";
-import { CivitaiModelDoc } from "../shared/types/firestore";
+import { CivitaiModelDoc } from "../../../shared/types/firestore";
 import type {
   UpdateModelRequest,
   UpdateModelResponse,
-} from "../shared/types/api";
+} from "../../../shared/types/api";
 
 /**
  * Core handler for fetching and updating Civitai models.

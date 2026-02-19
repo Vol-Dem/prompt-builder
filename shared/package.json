@@ -1,6 +1,0 @@
-{
-  "name": "@utils/shared",
-  "version": "1.0.0",
-  "type": "commonjs",
-  "main": "utils.js"
-}

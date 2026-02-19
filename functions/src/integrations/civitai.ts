@@ -1,6 +1,6 @@
 import { HttpsError } from "firebase-functions/v2/https";
-import type { CivitaiModelDoc } from "../shared/types/firestore.js";
-import { Image } from "../shared/types/image.js";
+import type { CivitaiModelDoc } from "../../../shared/types/firestore.js";
+import { Image } from "../../../shared/types/image.js";
 /**
  * Fetches model data from Civitai.
  *
