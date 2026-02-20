@@ -69,6 +69,16 @@ export const transformFilesData = (fileData) => {
   return newFileData;
 };
 
+// export const mapFirebaseUser = (user: User): LoginPayload => ({
+export const mapFirebaseUser = (user) => ({
+  accessToken: user.accessToken,
+  refreshToken: user.refreshToken,
+  uid: user.uid,
+  email: user.email,
+  displayName: user.displayName,
+  emailVerified: user.emailVerified,
+});
+
 // /**
 //  * Creates an image object
 //  * @param {object} imageData - image data

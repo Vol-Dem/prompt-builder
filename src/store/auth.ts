@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   createUserWithEmailAndPassword,
   getAuth,
@@ -14,6 +14,10 @@ import {
   updateEmail,
   reauthenticateWithPopup,
   EmailAuthProvider,
+  type Unsubscribe,
+  type UserCredential,
+  type Auth,
+  AuthCredential,
 } from "firebase/auth";
 import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
 
@@ -29,14 +33,20 @@ import { guideActions } from "./guide";
 import { generalActions } from "./general";
 import { imagesActions } from "./images";
 import { getAppInfo } from "./notification";
-import { handleErrors } from "../utils/generalUtils";
+import { handleErrors, throwCustomError } from "../utils/generalUtils";
+import type { AuthState, LoginPayload } from "../types/auth.types";
+import type { AppThunk } from "./store";
+import type { FirebaseError } from "firebase/app";
+import type { UserDoc } from "../../shared/types/firestore";
+
+type ReAuthType = "pass" | "popup";
 
 const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 const provider = new GoogleAuthProvider();
-export let unsubUserData;
+export let unsubUserData: Unsubscribe | null = null;
 
-const authInitialState = {
+const authInitialState: AuthState = {
   isLoggedIn: false,
   initialAuth: false,
   authFormIsOpen: false,
@@ -51,8 +61,8 @@ const authInitialState = {
     idToken: "",
     refreshToken: "",
     uid: "",
-    email: "",
-    userName: "",
+    email: null,
+    userName: null,
     emailVerified: false,
   },
 };
@@ -83,7 +93,7 @@ const authSlice = createSlice({
     /**
      * Signs in a user.
      */
-    login(state, action) {
+    login(state, action: PayloadAction<LoginPayload>) {
       state.isLoggedIn = true;
       state.user = {
         idToken: action.payload.accessToken,
@@ -91,6 +101,7 @@ const authSlice = createSlice({
         email: action.payload.email,
         userName: action.payload.displayName,
         emailVerified: action.payload.emailVerified,
+        refreshToken: action.payload.refreshToken,
       };
     },
     /**
@@ -110,31 +121,31 @@ const authSlice = createSlice({
     openAuthForm(state) {
       state.authFormIsOpen = true;
     },
-    setInitialAuth(state, action) {
+    setInitialAuth(state, action: PayloadAction<boolean>) {
       state.initialAuth = action.payload;
     },
     closeAuthForm(state) {
       state.authFormIsOpen = false;
     },
-    setReauthFormIsOpen(state, action) {
+    setReauthFormIsOpen(state, action: PayloadAction<boolean>) {
       state.reAuthFormIsOpen = action.payload;
     },
-    setShowResetPassword(state, action) {
+    setShowResetPassword(state, action: PayloadAction<boolean>) {
       state.showResetPassword = action.payload;
     },
-    setErrorMessage(state, action) {
+    setErrorMessage(state, action: PayloadAction<string>) {
       state.errorMessage = action.payload;
     },
-    setSuccessMessage(state, action) {
+    setSuccessMessage(state, action: PayloadAction<string>) {
       state.successMessage = action.payload;
     },
-    setIsLoading(state, action) {
+    setIsLoading(state, action: PayloadAction<boolean>) {
       state.isLoading = action.payload;
     },
-    setUserDataIsLoading(state, action) {
+    setUserDataIsLoading(state, action: PayloadAction<boolean>) {
       state.userDataIsLoading = action.payload;
     },
-    setUserDataLoadError(state, action) {
+    setUserDataLoadError(state, action: PayloadAction<string>) {
       state.userDataLoadError = action.payload;
     },
   },
@@ -149,17 +160,19 @@ const authSlice = createSlice({
  * Finally, it sets the initial authentication state.
  * @returns {Function} Redux thunk.
  */
-export const initAuth = () => {
+export const initAuth = (): AppThunk => {
   return (dispatch) => {
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
+        // console.log(user);
         dispatch(
           authActions.login({
-            accessToken: user.accessToken,
+            accessToken: await user.getIdToken(),
             uid: user.uid,
             email: user.email,
             displayName: user.displayName,
             emailVerified: user.emailVerified,
+            refreshToken: user.refreshToken,
           }),
         );
         dispatch(getAppInfo());
@@ -179,11 +192,16 @@ export const initAuth = () => {
  * @param {string} password - User password
  * @returns {Function} Redux thunk.
  */
-export const authRequest = (isLogin, email, password) => {
+export const authRequest = (
+  isLogin: boolean,
+  email: string,
+  password: string,
+): AppThunk => {
   return async (dispatch) => {
     dispatch(authActions.setIsLoading(true));
     try {
-      let userCredential = {};
+      let userCredential: UserCredential;
+
       if (isLogin) {
         userCredential = await signInWithEmailAndPassword(
           auth,
@@ -196,28 +214,29 @@ export const authRequest = (isLogin, email, password) => {
           email,
           password,
         );
-
-        await sendEmailVerification(auth.currentUser);
+        if (auth.currentUser) await sendEmailVerification(auth.currentUser);
       }
 
       const user = userCredential.user;
 
       dispatch(
         authActions.login({
-          accessToken: user.accessToken,
+          accessToken: await user.getIdToken(),
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,
           emailVerified: user.emailVerified,
+          refreshToken: user.refreshToken,
         }),
       );
 
       if (user.emailVerified) {
         dispatch(authActions.closeAuthForm());
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      const err = error as FirebaseError;
       let errMessage;
-      switch (error.code) {
+      switch (err.code) {
         case "auth/invalid-login-credentials":
           errMessage = "Invalid login credentials";
           break;
@@ -241,7 +260,7 @@ export const authRequest = (isLogin, email, password) => {
             "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later";
           break;
         default:
-          errMessage = error.message;
+          errMessage = err.message;
       }
 
       dispatch(authActions.setErrorMessage(errMessage));
@@ -255,39 +274,28 @@ export const authRequest = (isLogin, email, password) => {
  * Initializes user authentication via Google sign-in and dispatches the login action with user information (access token, user ID, email, etc.)
  * @returns {Function} Redux thunk.
  */
-export const authWithGoogle = () => {
-  return (dispatch) => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        // const credential = GoogleAuthProvider.credentialFromResult(result);
-        // const token = credential.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        // IdP data available using getAdditionalUserInfo(result)
-        // ...
-        dispatch(
-          authActions.login({
-            accessToken: user.accessToken,
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            emailVerified: user.emailVerified,
-          }),
-        );
-        dispatch(authActions.closeAuthForm());
-      })
-      .catch((error) => {
-        // Handle Errors here.
-        // const errorCode = error.code;
-        // const errorMessage = error.message;
-        // The email of the user's account used.
-        // const email = error.customData.email;
-        // The AuthCredential type that was used.
-        // const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
-        dispatch(authActions.setErrorMessage(error.message));
-      });
+export const authWithGoogle = (): AppThunk => {
+  return async (dispatch) => {
+    try {
+      const userCredential = await signInWithPopup(auth, provider);
+
+      const user = userCredential.user;
+
+      dispatch(
+        authActions.login({
+          accessToken: await user.getIdToken(),
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          emailVerified: user.emailVerified,
+          refreshToken: user.refreshToken,
+        }),
+      );
+      dispatch(authActions.closeAuthForm());
+    } catch (error: unknown) {
+      const err = error as FirebaseError;
+      dispatch(authActions.setErrorMessage(err.message));
+    }
   };
 };
 
@@ -298,25 +306,32 @@ export const authWithGoogle = () => {
  * @param {String} email - The new email address to update
  * @returns {Function} Redux thunk.
  */
-export const changeUserEmail = (email) => {
+export const changeUserEmail = (email: string): AppThunk => {
   return async (dispatch) => {
     try {
       const user = auth.currentUser;
+
+      if (!user) throw new Error(ERROR_MESSAGE_DEFAULT);
+
       await updateEmail(user, email);
+
       dispatch(
         authActions.login({
-          accessToken: user.accessToken,
+          accessToken: await user.getIdToken(),
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,
           emailVerified: user.emailVerified,
+          refreshToken: user.refreshToken,
         }),
       );
       dispatch(authActions.setSuccessMessage("Email changed successfully"));
-    } catch (error) {
-      if (error.code === "auth/requires-recent-login") {
+    } catch (error: unknown) {
+      const err = error as FirebaseError;
+
+      if (err.code === "auth/requires-recent-login") {
         dispatch(authActions.setReauthFormIsOpen(true));
-      } else if (error.code === "auth/operation-not-allowed") {
+      } else if (err.code === "auth/operation-not-allowed") {
         dispatch(
           authActions.setErrorMessage(
             "Please verify the new email before changing email",
@@ -329,51 +344,63 @@ export const changeUserEmail = (email) => {
   };
 };
 
-export const promptForCredentials = async (password) => {
+export const promptForCredentials = async (
+  password: string,
+): Promise<AuthCredential> => {
   try {
+    if (!auth.currentUser?.email) throw new Error(ERROR_MESSAGE_DEFAULT);
+
     const credential = EmailAuthProvider.credential(
       auth.currentUser.email,
       password,
     );
 
     return credential;
-  } catch (error) {
-    if (error.code === "auth/invalid-login-credentials") {
+  } catch (error: unknown) {
+    const err = error as FirebaseError;
+    if (err.code === "auth/invalid-login-credentials") {
       throw new Error(
         "The current password you entered did not match our records",
       );
-    } else if (error.code === "auth/too-many-requests") {
+    } else if (err.code === "auth/too-many-requests") {
       throw new Error(
         "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later",
       );
     } else {
-      throw new Error(error.message);
+      throw new Error(err.message);
     }
   }
 };
 
-export const reAuthUser = async (type, password) => {
+export const reAuthUser = async (type: ReAuthType, password: string) => {
   try {
     const user = auth.currentUser;
 
+    if (!user) throw new Error(ERROR_MESSAGE_DEFAULT);
+
     if (type === "pass") {
       const credential = await promptForCredentials(password);
+
+      if (!credential) throw new Error(ERROR_MESSAGE_DEFAULT);
+
       await reauthenticateWithCredential(user, credential);
     }
     if (type === "popup") {
       await reauthenticateWithPopup(user, provider);
     }
-  } catch (error) {
-    if (error.code === "auth/invalid-login-credentials") {
+  } catch (error: unknown) {
+    const err = error as FirebaseError;
+
+    if (err.code === "auth/invalid-login-credentials") {
       throw new Error(
         "The current password you entered did not match our records",
       );
-    } else if (error.code === "auth/too-many-requests") {
+    } else if (err.code === "auth/too-many-requests") {
       throw new Error(
         "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later",
       );
     } else {
-      throw new Error(error.message);
+      throw new Error(err.message);
     }
   }
 };
@@ -385,10 +412,16 @@ export const reAuthUser = async (type, password) => {
  * @param {string} oldPassword - Old user password
  * @returns {Function} Redux thunk.
  */
-export const changeUserPassword = (password, oldPassword) => {
+export const changeUserPassword = (
+  password: string,
+  oldPassword: string,
+): AppThunk => {
   return async (dispatch) => {
     try {
       const user = auth.currentUser;
+
+      if (!user) throw new Error(ERROR_MESSAGE_DEFAULT);
+
       if (!oldPassword) {
         await updatePassword(user, password);
       } else {
@@ -397,8 +430,9 @@ export const changeUserPassword = (password, oldPassword) => {
       }
 
       dispatch(authActions.setSuccessMessage("Password changed successfully"));
-    } catch (error) {
-      dispatch(authActions.setErrorMessage(handleErrors(error)));
+    } catch (error: unknown) {
+      const err = error as FirebaseError;
+      dispatch(authActions.setErrorMessage(handleErrors(err)));
     }
   };
 };
@@ -409,19 +443,21 @@ export const changeUserPassword = (password, oldPassword) => {
  * @param {string} email - User email.
  * @returns {Function} Redux thunk.
  */
-export const resetUserPassword = (email) => {
+export const resetUserPassword = (email: string): AppThunk => {
   return async (dispatch) => {
-    sendPasswordResetEmail(auth, email)
-      .then(() => {
-        dispatch(authActions.setSuccessMessage("Password reset email sent!"));
-      })
-      .catch((error) => {
-        if (error.code === "auth/invalid-email") {
-          dispatch(authActions.setErrorMessage("Invalid email"));
-        } else {
-          dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
-        }
-      });
+    try {
+      await sendPasswordResetEmail(auth, email);
+
+      dispatch(authActions.setSuccessMessage("Password reset email sent!"));
+    } catch (error: unknown) {
+      const err = error as FirebaseError;
+
+      if (err.code === "auth/invalid-email") {
+        dispatch(authActions.setErrorMessage("Invalid email"));
+      } else {
+        dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
+      }
+    }
   };
 };
 
@@ -432,23 +468,29 @@ export const resetUserPassword = (email) => {
  * @param {string} name - User name.
  * @returns {Function} Redux thunk.
  */
-export const changeUserName = (name) => {
+export const changeUserName = (name: string): AppThunk => {
   return async (dispatch) => {
     try {
       const user = auth.currentUser;
+
+      if (!user) throw new Error(ERROR_MESSAGE_DEFAULT);
+
       await updateProfile(user, { displayName: name });
+
       dispatch(
         authActions.login({
-          accessToken: user.accessToken,
+          accessToken: await user.getIdToken(),
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,
           emailVerified: user.emailVerified,
+          refreshToken: user.refreshToken,
         }),
       );
       dispatch(authActions.setSuccessMessage("Name changed successfully"));
-    } catch (error) {
-      dispatch(authActions.setErrorMessage(handleErrors(error)));
+    } catch (error: unknown) {
+      const err = error as FirebaseError;
+      dispatch(authActions.setErrorMessage(handleErrors(err)));
     }
   };
 };
@@ -460,14 +502,14 @@ export const changeUserName = (name) => {
  * @param {string} uid - User ID.
  * @returns {Function} Redux thunk.
  */
-export const getUserData = (uid) => {
+export const getUserData = (uid: string): AppThunk => {
   return async (dispatch) => {
     try {
       dispatch(authActions.setUserDataLoadError(""));
       dispatch(authActions.setUserDataIsLoading(true));
 
       unsubUserData = onSnapshot(doc(firestore, "users", uid), (doc) => {
-        const data = doc.data();
+        const data = doc.data() as UserDoc;
         if (data?.categoriesById) {
           dispatch(tabActions.setCategories(data.categoriesById));
         }
@@ -507,7 +549,9 @@ export const getUserData = (uid) => {
         }
       }
       dispatch(authActions.setUserDataIsLoading(false));
-    } catch (err) {
+    } catch (error: unknown) {
+      const err = error as FirebaseError;
+
       console.error(err.message);
       dispatch(authActions.setUserDataLoadError(ERROR_MESSAGE_USER_DATA_LOAD));
       dispatch(authActions.setUserDataIsLoading(false));

@@ -1,7 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 
 import firebaseApp from "../firebase-config";
+import type { AppThunk } from "./store";
+import type { FirebaseError } from "firebase/app";
+import type {
+  NotificationData,
+  NotificationState,
+} from "../types/notification.types";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -14,18 +20,18 @@ const firestore = getFirestore(firebaseApp);
  *
  * State:
  * @property {boolean} maintenance - Whether maintenance mode is enabled.
- * @property {Array<Object>} notifications - List of notification messages.
+ * @property {NotificationState[]} notifications - List of notification messages.
  */
 const notificationSlice = createSlice({
   name: "notification",
-  initialState: { maintenance: false, notifications: [] },
+  initialState: { maintenance: false, notifications: [] } as NotificationState,
   reducers: {
     /**
      * Sets notification list and marks all notifications as unread.
      *
      * @param {Array<Object>} action.payload - List of notification objects.
      */
-    setNotifications(state, action) {
+    setNotifications(state, action: PayloadAction<NotificationData[]>) {
       state.notifications = action.payload.map((message) => {
         return {
           ...message,
@@ -48,7 +54,7 @@ const notificationSlice = createSlice({
  *
  * @returns {Function} Redux thunk.
  */
-export const getAppInfo = () => {
+export const getAppInfo = (): AppThunk => {
   return async (dispatch) => {
     try {
       const appInfoRef = doc(firestore, "application", "info");
@@ -60,7 +66,8 @@ export const getAppInfo = () => {
         dispatch(notificationActions.setNotifications(appData.notifications));
         dispatch(notificationActions.setMaintenance(appData.maintenance));
       }
-    } catch (err) {
+    } catch (error: unknown) {
+      const err = error as FirebaseError;
       console.error(err.message);
     }
   };
