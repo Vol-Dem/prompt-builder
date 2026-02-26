@@ -1,3 +1,9 @@
+import type {
+  PromptItem,
+  Tag,
+  TagSet,
+  TagSetInputData,
+} from "../types/prompt.types";
 import {
   REGEX_ACTIVATION_TAG,
   REGEX_SPLIT_TAGS,
@@ -9,7 +15,7 @@ import {
  * @param {String} prompt - current prompt
  * @returns {Array} array of tags
  */
-export const splitTags = (prompt) => {
+export const splitTags = (prompt: string): string[] => {
   const promptWithFixedBreak = fixBreakInPrompt(prompt);
   return promptWithFixedBreak
     ?.split(REGEX_SPLIT_TAGS)
@@ -19,15 +25,15 @@ export const splitTags = (prompt) => {
 /**
  * Adds a duplicateId field with an ID to tags that have duplicates
  * Exceptions: "BREAK", "<BREAK>"
- * @param {Array} tagsArr
- * @returns {Array} array of tags with marked duplicates
+ * @param {Tag} tagsArr
+ * @returns {Tag} array of tags with marked duplicates
  */
-export const markDuplicateTags = (tagsArr) => {
-  const duplicates = [];
+export const markDuplicateTags = (tagsArr: Tag[]): Tag[] => {
+  const duplicates: Tag[] = [];
 
   return tagsArr.map((tag, i, tags) => {
     const duplicateIndex = duplicates.findIndex(
-      (duplicate) => duplicate.tag === tag.tag
+      (duplicate) => duplicate.tag === tag.tag,
     );
 
     if (duplicateIndex < 0) {
@@ -35,9 +41,9 @@ export const markDuplicateTags = (tagsArr) => {
         .slice(i + 1)
         .find((nextTag) => nextTag.tag === tag.tag);
 
-      const isException = SETTINGS_PROMPT_DUPLICATE_EXCEPTIONS.includes(
-        duplicate?.tag
-      );
+      const isException =
+        duplicate &&
+        SETTINGS_PROMPT_DUPLICATE_EXCEPTIONS.includes(duplicate.tag);
 
       if (duplicate && !isException) {
         duplicates.push(tag);
@@ -53,10 +59,10 @@ export const markDuplicateTags = (tagsArr) => {
 
 /**
  * Parce tag weight from tag
- * @param {String} tag - tag
- * @returns {Number} tag weight
+ * @param {string} tag - tag
+ * @returns {number} tag weight
  */
-export const getTagWeight = (tag) => {
+export const getTagWeight = (tag: string): number => {
   let regex = /\(|<[^)|>]*\)|>/i;
   const hasWeight = regex.test(tag);
 
@@ -79,12 +85,16 @@ export const getTagWeight = (tag) => {
 
 /**
  * Create prompt item object
- * @param {String} tag - tag
- * @param {Number} id  - id
- * @param {Number} position - position
- * @returns {Object} prompt item object
+ * @param {string} tag - tag
+ * @param {number} id  - id
+ * @param {number} position - position
+ * @returns {PromptItem} prompt item object
  */
-export const createPromptItem = (tag, id, position) => {
+export const createPromptItem = (
+  tag: string,
+  id: number,
+  position: number,
+): PromptItem => {
   return {
     id,
     tag,
@@ -96,11 +106,14 @@ export const createPromptItem = (tag, id, position) => {
 /**
  * Creates tagsets input data
  * @param {Array} tagSetsData - current tagset data
- * @param {Array} defTagSetData - default tagset data
+ * @param {Array} defTagSetData - default tagset input data
  * @returns {Array} tagsets input data
  */
-export const createTagSetsInputData = (tagSetsData, defTagSetData) => {
-  let tagSets;
+export const createTagSetsInputData = (
+  tagSetsData: TagSet[],
+  defTagSetData: TagSetInputData[],
+): TagSetInputData[] => {
+  let tagSets: TagSetInputData[];
 
   if (!tagSetsData?.length) {
     tagSets = structuredClone(defTagSetData);
@@ -135,7 +148,7 @@ export const createTagSetsInputData = (tagSetsData, defTagSetData) => {
  * @param {String} prompt - prompt
  * @returns {String} promt for proper structure
  */
-export const fixBreakInPrompt = (prompt) => {
+export const fixBreakInPrompt = (prompt: string): string => {
   const fixedPromt = prompt
     ?.replaceAll("BREAK ", "BREAK, ")
     ?.replaceAll("BREAK\n", "BREAK, ");
@@ -154,11 +167,17 @@ export const moveElementToPosition = ({
   dropTargetType,
   prevPosition,
   curPromptArr,
-}) => {
+}: {
+  item: PromptItem;
+  type: string;
+  dropTargetType: string;
+  prevPosition: number;
+  curPromptArr: PromptItem[];
+}): PromptItem[] => {
   const curPromptArrUpdatedPosition = curPromptArr.toSpliced(
     item.position,
     0,
-    item
+    item,
   );
   return curPromptArrUpdatedPosition.map((tag) => {
     if (dropTargetType === type && Number.isFinite(prevPosition)) {
@@ -191,11 +210,11 @@ export const moveElementToPosition = ({
 
 /**
  * Updates the tag weight
- * @param {String} newTag - Current tag
- * @param {String} newWeight - New tag weight
+ * @param {string} newTag - Current tag
+ * @param {number} newWeight - New tag weight
  * @returns {String} Tag with updated weight
  */
-export const changeTagWeight = (newTag, newWeight) => {
+export const changeTagWeight = (newTag: string, newWeight: number): string => {
   const isActivationTag = REGEX_ACTIVATION_TAG.test(newTag);
   let tagName;
 
@@ -225,14 +244,14 @@ export const changeTagWeight = (newTag, newWeight) => {
  * @param {number} position - Current tag position
  * @param {number} dropTargetPosition - Drop target position
  * @param {boolean} dropTargetLeft - Whether to drop element on the left side
- * @returns {number} New tag position
+ * @returns {number | null} New tag position
  */
 export const getNewTagPosition = (
-  position,
-  dropTargetPosition,
-  dropTargetLeft
-) => {
-  let newPosition;
+  position: number,
+  dropTargetPosition: number,
+  dropTargetLeft: boolean,
+): number => {
+  let newPosition: number | null = null;
 
   if (
     (dropTargetLeft && position >= dropTargetPosition) ||
@@ -249,5 +268,5 @@ export const getNewTagPosition = (
     newPosition = dropTargetPosition + 1;
   }
 
-  return newPosition;
+  return newPosition || position;
 };

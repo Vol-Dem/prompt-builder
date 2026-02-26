@@ -176,7 +176,8 @@ export const ERROR_MESSAGE_DB_CONNECTION = "Connection error";
 export const ERROR_MESSAGE_UPLOAD_MODEL = "Failed to load model data";
 export const ERROR_MESSAGE_CIV_CONNECTION =
   "Failed to conect to Civitai API. There may be heavy load or maintenance at the moment. Try again later.";
-export const ERROR_MESSAGE_MODEL_LOAD = "Failed to load model.";
+export const ERROR_MESSAGE_MODEL_LOAD = "Failed to load model";
+export const ERROR_MESSAGE_MODEL_UPDATE = "Failed to load update";
 
 //GUIDE STEPS HOME PAGE
 export const GUIDE_STEP_OPEN_CATEGORY = 1;

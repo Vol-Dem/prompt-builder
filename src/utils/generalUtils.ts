@@ -7,58 +7,31 @@ import {
   SETTINGS_NSFW_VALUES_DATA,
   // SETTINGS_SUPPORTED_FILE_EXTENSIONS,
 } from "../variables/constants";
-import { isNumber } from "./validationUtils";
+// import { isNumber } from "./validationUtils";
+import type {
+  CollectionCategory,
+  ModelCategory,
+} from "../../shared/types/user";
+import type { NotificationData } from "../types/notification.types";
+import { FirebaseError } from "firebase/app";
 
-// /**
-//  * Removes unsupported Firestore symbols from object keys
-//  * @param {object} obj - The object
-//  * @returns The cleaned object
-//  */
-// export const clearObjectKeys = (obj) => {
-//   const convertedMetaArr = Object.entries(obj).map((entry, i) => {
-//     let newKey;
-//     newKey = entry[0]
-//       ? entry[0].replace(/[^\w\s]/gi, "X").replace(/[^\\x00-\\xFF]*/giu, "")
-//       : `key${i}`;
-//     newKey = newKey.replaceAll("__", "");
-//     if (newKey === "" || newKey === undefined) {
-//       newKey = `key${i}`;
-//     }
-//     let newValue = entry[1];
-//     if (!newValue) {
-//       newValue = null;
-//     }
-//     return [newKey, newValue];
-//   });
-//   return Object.fromEntries(convertedMetaArr);
-// };
+// type CustomError = Error & { isCustom: true };
 
-// /**
-//  * Removes supported file extensions from file name.
-//  * Supported file extensions: safetensors, pt, pth, ckpt, mp4, mov, webm
-//  * @param {string} name - The file name
-//  * @returns The file name without the file extension
-//  */
-// export const clearFileExtension = (name) => {
-//   if (!name) return;
+interface CustomError extends Error {
+  isCustom: true;
+}
 
-//   const extension = SETTINGS_SUPPORTED_FILE_EXTENSIONS.find((extension) =>
-//     name.endsWith(`.${extension}`)
-//   );
-
-//   if (extension) {
-//     return name.replace(`.${extension}`, "");
-//   } else {
-//     return name;
-//   }
-// };
+type ClientCoords = {
+  clientX: number;
+  clientY: number;
+};
 
 /**
  * Adds a promise that resolves after the specified delay
  * @param {number} delay - The delay in ms
- * @returns {Promise} The promise that resolves after the specified delay
+ * @returns {Promise<string>} The promise that resolves after the specified delay
  */
-export const addDelayPromise = (delay) => {
+export const addDelayPromise = (delay: number): Promise<string> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve("resolve");
@@ -83,7 +56,7 @@ export const addDelayPromise = (delay) => {
  * Freezes scroll
  * @param {number} scrollTop - The distance to the top
  */
-export const disableScrollHandler = (scrollTop) => {
+export const disableScrollHandler = (scrollTop: number): void => {
   window.scrollTo(0, scrollTop);
 };
 
@@ -91,8 +64,8 @@ export const disableScrollHandler = (scrollTop) => {
  * Throws a new error with isCustom set to true
  * @param {string} message - The error message
  */
-export const throwCustomError = (message) => {
-  const error = new Error(message);
+export const throwCustomError = (message: string): never => {
+  const error = new Error(message) as CustomError;
   error.isCustom = true; // Add a custom flag
   throw error;
 };
@@ -102,7 +75,7 @@ export const throwCustomError = (message) => {
  * @param {object} err - The error object
  * @returns {string} - The custom or default error message
  */
-export const handleErrors = (err) => {
+export const handleErrors = (err: CustomError): string => {
   let errorMessage = ERROR_MESSAGE_DEFAULT;
 
   if (err.isCustom) {
@@ -123,14 +96,14 @@ export const handleErrors = (err) => {
  * Checks if the current user's device is mobile
  * @returns {boolean} True if the device is mobile, otherwise false
  */
-export const checkIsMobile = () => {
+export const checkIsMobile = (): boolean => {
   return REGEX_MOBAL.test(navigator.userAgent);
 };
 
 /**
  * Disables Framer Motion animations on mobile devices
  */
-export const disableAnimationsOnMobile = () => {
+export const disableAnimationsOnMobile = (): void => {
   const isMobile = checkIsMobile();
   if (isMobile) {
     MotionGlobalConfig.skipAnimations = true;
@@ -143,7 +116,10 @@ export const disableAnimationsOnMobile = () => {
  * @param {string} curNsfwvalue - The current NSFW value to check
  * @returns {boolean} True if the value is within range, otherwise false
  */
-export const checkIsInCurrentNsfwRange = (curNsfwLevel, curNsfwvalue) => {
+export const checkIsInCurrentNsfwRange = (
+  curNsfwLevel: string,
+  curNsfwvalue: string,
+): boolean => {
   const nsfwValues = SETTINGS_NSFW_VALUES_DATA.map(
     (nsfwValueData) => nsfwValueData.value,
   );
@@ -161,30 +137,40 @@ export const checkIsInCurrentNsfwRange = (curNsfwLevel, curNsfwvalue) => {
  * @param {string} field - The object field
  * @returns {array} The filtered array
  */
-export const filterDuplicates = (arr, field) => {
-  if (!Array.isArray(arr) || !arr?.length) return arr;
+// export function filterDuplicates<T>(arr: T[]): T[];
+
+// export function filterDuplicates<T, K extends keyof T>(arr: T[], field: K): T[];
+
+export const filterDuplicates = <T, K extends keyof T>(
+  arr: T[],
+  field?: K,
+): T[] => {
+  if (!Array.isArray(arr) || !arr.length) return arr;
 
   if (field) {
     const values = arr.map((item) => item[field]);
+
     return arr.filter((item, index) => {
-      if (!item[field]) return item;
-      return !values.includes(item[field], index + 1);
+      const value = item[field];
+      if (!value) return true;
+
+      return !values.includes(value, index + 1);
     });
-  } else {
-    return [...new Set(arr)];
   }
+
+  return [...new Set(arr)];
 };
 
 /**
  * Creates a category ID from the category name
  * @param {string} id - The category name
  * @param {object} categoriesData - The existing categories data
- * @returns {string} The created ID
+ * @returns {string | null} The created ID
  */
-export const createCategoryId = (id, categoriesData) => {
-  if (!id) {
-    return null;
-  }
+export const createCategoryId = (
+  id: string,
+  categoriesData: ModelCategory[],
+): string => {
   let curId = id?.toString()?.toLowerCase();
 
   //Checks if a category ID exists
@@ -202,10 +188,10 @@ export const createCategoryId = (id, categoriesData) => {
     curId = `${curId}-1`;
   } else if (existedIds?.length > 1) {
     const idIndexes = existedIds
-      .map((existedId) => +existedId.id.split("-").pop())
+      .map((existedId) => +existedId.id.split("-").slice(-1)[0])
       .filter(Boolean)
       .sort();
-
+    console.log(idIndexes);
     if (idIndexes?.length) {
       curId = `${curId}-${idIndexes[idIndexes.length - 1] + 1}`;
     }
@@ -217,12 +203,14 @@ export const createCategoryId = (id, categoriesData) => {
 /**
  * Generates a collection ID
  * @param {array} collectionCategories - The existing collection data
- * @returns The collection ID
+ * @returns {number} The collection ID
  */
-export const createCollectionId = (collectionCategories) => {
+export const createCollectionId = (
+  collectionCategories: CollectionCategory[],
+): number => {
   const collectionIds = collectionCategories.flatMap(
     (category) =>
-      category?.collectionNames.map((collectionName) => collectionName.id) ||
+      category?.collectionNames?.map((collectionName) => collectionName.id) ||
       [],
   );
 
@@ -240,23 +228,28 @@ export const createCollectionId = (collectionCategories) => {
  * @param {('asc'|'desc')} direction - The sort direction ("asc" or "desc")
  * @returns {array} The new sorted array of objects
  */
-export const sortArrayBy = (arr, field = null, direction = "asc") => {
-  if (!arr) return;
+export const sortArrayBy = <T, K extends keyof T>(
+  arr: T[],
+  field?: K,
+  direction: "asc" | "desc" = "asc",
+): T[] => {
+  if (!arr) return arr;
 
   return arr.toSorted((a, b) => {
-    if (!field) {
-      if (isNumber(a) && isNumber(b)) {
-        return direction === "asc" ? a - b : b - a;
-      }
+    const order = direction === "asc" ? 1 : -1;
 
-      return a.localeCompare(b);
-    } else {
-      if (isNumber(a[field]) && isNumber(b[field])) {
-        return direction === "asc" ? a[field] - b[field] : b[field] - a[field];
-      }
+    const aValue = field ? a[field] : a;
+    const bValue = field ? b[field] : b;
 
-      return a[field]?.localeCompare(b[field]);
+    if (typeof aValue === "number" && typeof bValue === "number") {
+      return (aValue - bValue) * order;
     }
+
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      return aValue.localeCompare(bValue) * order;
+    }
+
+    return 0;
   });
 };
 
@@ -265,13 +258,13 @@ export const sortArrayBy = (arr, field = null, direction = "asc") => {
  * @param {object} obj - The object to sort
  * @returns {boolean} The new sorted object
  */
-export const sortObjectByKeys = (obj) => {
+export const sortObjectByKeys = <T extends Record<string, any>>(obj: T): T => {
   return Object.keys(obj)
     .toSorted()
-    .reduce((newObj, key) => {
-      newObj[key] = obj[key];
-      return newObj;
-    }, {});
+    .reduce((acc, key) => {
+      acc[key as keyof T] = obj[key as keyof T];
+      return acc;
+    }, {} as T);
 };
 
 /**
@@ -280,7 +273,7 @@ export const sortObjectByKeys = (obj) => {
  * @param {array} arr2 - The second array
  * @returns {boolean} True if the arrays are equal, otherwise false
  */
-export const checkArraysIsEqual = (arr1, arr2) => {
+export const checkArraysIsEqual = <T, K>(arr1: T[], arr2: K[]): boolean => {
   return arr1?.toSorted().toString() === arr2?.toSorted().toString();
 };
 
@@ -290,7 +283,10 @@ export const checkArraysIsEqual = (arr1, arr2) => {
  * @param {object} obj2 - The second object
  * @returns {boolean} True if the objects are equal, otherwise false
  */
-export const checkObjectsIsEqual = (obj1, obj2) => {
+export const checkObjectsIsEqual = (
+  obj1: Record<string, any>,
+  obj2: Record<string, any>,
+): boolean => {
   return (
     JSON.stringify(sortObjectByKeys(obj1)) ===
     JSON.stringify(sortObjectByKeys(obj2))
@@ -299,26 +295,35 @@ export const checkObjectsIsEqual = (obj1, obj2) => {
 
 /**
  * Enables smooth scroling
- * @param {string} hashId - The element ID
+ * @param {string | number} hashId - The element ID
  * @returns
  */
-export const smoothScroll = (hashId) => {
+export const smoothScroll = (hashId: string | number): void => {
   if (hashId) {
     const scrollTarget = document?.querySelector(`${hashId}`);
-    const headerHeight = document.querySelector("#header").offsetHeight;
-    const distToTop =
-      window.scrollY + scrollTarget?.getBoundingClientRect().top;
-    window.scrollTo({ top: distToTop - headerHeight - 10, behavior: "smooth" });
+    const headerElement = document.querySelector("#header") as HTMLDivElement;
+
+    if (!scrollTarget || !headerElement) return;
+
+    const distToTop = window.scrollY + scrollTarget.getBoundingClientRect().top;
+
+    window.scrollTo({
+      top: distToTop - headerElement.offsetHeight - 10,
+      behavior: "smooth",
+    });
   }
 };
 
 /**
  *  Adds a new entry to the URL search params
- * @param {string} prevParams - The previous params
- * @param {string} newEntry  - The new search params entry
- * @returns {string} The updated URL search params
+ * @param {URLSearchParams} prevParams - The previous params
+ * @param {URLSearchParams} newEntry  - The new search params entry
+ * @returns {URLSearchParams} The updated URL search params
  */
-export const updateSearchParams = (prevParams, newEntry) => {
+export const updateSearchParams = (
+  prevParams: URLSearchParams,
+  newEntry: URLSearchParams,
+): URLSearchParams => {
   return new URLSearchParams({
     ...Object.fromEntries(prevParams.entries()),
     ...newEntry,
@@ -330,21 +335,22 @@ export const updateSearchParams = (prevParams, newEntry) => {
  * @param {number | string} value - The margin value
  * @returns {string} The intersection margin value in a suitable form
  */
-export const parseIntersectionMargin = (value) => {
-  let rootMarginValue;
-  const parcedValue = parseInt(value);
+export const parseIntersectionMargin = (value: number | string): string => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return `${value}px`;
+  }
+  const parsedValue = parseInt(value + "");
 
-  if (Number.isFinite(value)) {
-    rootMarginValue = `${value}px`;
-  } else if (parcedValue ?? value?.includes("%")) {
-    rootMarginValue = `${parcedValue}%`;
-  } else if (parcedValue ?? value?.includes("px")) {
-    rootMarginValue = `${parcedValue}px`;
-  } else {
-    value = "0px";
+  if (typeof value === "string") {
+    if (parsedValue ?? value.includes("%")) {
+      return `${parsedValue}%`;
+    }
+    if (parsedValue ?? value.includes("px")) {
+      return `${parsedValue}px`;
+    }
   }
 
-  return rootMarginValue;
+  return "0px";
 };
 
 /**
@@ -352,14 +358,22 @@ export const parseIntersectionMargin = (value) => {
  * @param {Event} e - event
  * @returns {{clientX: number, clientY: number}}
  */
-export const getClientCoord = (e) => {
-  const clientX = Math.round(e.clientX || e.touches[0].clientX);
-  const clientY = Math.round(e.clientY || e.touches[0].clientY);
+export const getClientCoord = (e: MouseEvent | TouchEvent): ClientCoords => {
+  if ("touches" in e) {
+    const touch = e.touches[0];
+    return {
+      clientX: Math.round(touch.clientX),
+      clientY: Math.round(touch.clientY),
+    };
+  }
 
-  return { clientX, clientY };
+  return {
+    clientX: Math.round(e.clientX),
+    clientY: Math.round(e.clientY),
+  };
 };
 
-export const timeout = function (s) {
+export const timeout = function (s: number): Promise<Error> {
   return new Promise(function (_, reject) {
     setTimeout(function () {
       reject(new Error(`Request took too long! Timeout after ${s} second`));
@@ -367,52 +381,99 @@ export const timeout = function (s) {
   });
 };
 
-export const saveToStorage = (key, data) => {
+export const saveToStorage = <T>(key: string, data: T): void => {
   window.sessionStorage.setItem(key, JSON.stringify(data));
 };
 
-export const uploadStorage = (key) => {
+export const uploadStorage = <T>(key: string): T | null => {
   const storageData = window.sessionStorage?.getItem(key);
   return storageData ? JSON.parse(storageData) : null;
 };
 
-export const removeFromStorage = (key) => {
+export const removeFromStorage = (key: string): void => {
   window.sessionStorage.removeItem(key);
 };
 
-export const saveToLocalStorage = (key, data) => {
+export const saveToLocalStorage = <T>(key: string, data: T): void => {
   localStorage.setItem(key, JSON.stringify(data));
 };
 
-export const uploadLocalStorage = (key) => {
+export const uploadLocalStorage = (key: string) => {
   const storageData = localStorage?.getItem(key);
   return storageData ? JSON.parse(storageData) : null;
 };
 
-export const removeFromLocalStorage = (key) => {
+export const removeFromLocalStorage = (key: string): void => {
   localStorage.removeItem(key);
 };
 
-export const getUserNotifications = (notifications) => {
-  const noticeInfo = uploadLocalStorage(`notifications`);
+export const getUserNotifications = (
+  notifications: NotificationData[],
+): NotificationData[] => {
+  const noticeInfo = uploadLocalStorage(`notifications`) as {
+    messages: NotificationData[];
+  };
   const updatedNotifications = notifications.map((message) => {
     const notice = noticeInfo?.messages?.find(
       (userNotice) => userNotice.id === message.id,
     );
     return {
       ...message,
-      readed: notice ? notice.readed : message.readed,
+      read: notice ? notice.read : message.read,
     };
   });
 
   return updatedNotifications;
 };
 
-export const checkIsNsfw = (nsfw, nsfwLevel, sfwValue) => {
+export const checkIsNsfw = (
+  nsfw: boolean | string,
+  nsfwLevel: string | number,
+  sfwValue: string,
+): boolean => {
   return nsfw === false ||
     nsfw === "None" ||
     nsfwLevel === sfwValue ||
     nsfwLevel === 1
     ? false
     : true;
+};
+
+export class AppError extends Error {
+  public readonly code?: string;
+  public readonly original?: unknown;
+  public readonly isCustom?: unknown;
+
+  constructor(
+    message: string,
+    code?: string,
+    original?: unknown,
+    isCustom?: boolean,
+  ) {
+    super(message);
+    this.name = "AppError";
+    this.code = code;
+    this.original = original;
+    this.isCustom = isCustom === false ? false : true;
+  }
+}
+
+export const normalizeError = (error: unknown): AppError => {
+  // Firebase error
+  if (error instanceof FirebaseError) {
+    return new AppError(error.message, error.code, error, false);
+  }
+
+  // Already an AppError
+  if (error instanceof AppError) {
+    return error;
+  }
+
+  // Generic JS error
+  if (error instanceof Error) {
+    return new AppError(error.message, undefined, error, false);
+  }
+
+  // Totally unknown
+  return new AppError(ERROR_MESSAGE_DEFAULT, undefined, error, false);
 };

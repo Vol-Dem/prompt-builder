@@ -2,7 +2,9 @@ import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 import firebaseApp from "../../firebase-config";
-import { addDelayPromise, throwCustomError } from "../generalUtils";
+import { addDelayPromise, AppError, normalizeError } from "../generalUtils";
+import type { UserGuideState } from "../../../shared/types/user";
+import { ERROR_MESSAGE_DEFAULT } from "../../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
@@ -16,37 +18,43 @@ const auth = getAuth(firebaseApp);
  * @param {number} delay - The delay between each request in milliseconds
  * @returns {Promise<array | void>} A promise that resolves with fetched data if returnResult is true
  */
-export const makeBatchRequest = async (
-  data,
-  fetchFunc,
-  concurrencyLimit = 5,
-  returnResult = true,
-  delay = 500,
-) => {
+export const makeBatchRequest = async <T, R>(
+  data: T[],
+  fetchFunc: (curBatch: T[]) => Promise<R[] | void>,
+  concurrencyLimit: number = 5,
+  returnResult: boolean = true,
+  delay: number = 500,
+): Promise<R[]> => {
   try {
-    let result = [];
-    const queue = data.slice();
+    let result: R[] = [];
+    const queue = [...data];
 
     const processQueue = async () => {
       while (queue.length > 0) {
-        const curBatch = [];
+        const curBatch: T[] = [];
+
         for (let i = 0; i < concurrencyLimit && queue.length > 0; i++) {
           const curElement = queue.shift();
-          curBatch.push(curElement);
+          if (curElement !== undefined) {
+            curBatch.push(curElement);
+          }
         }
+
         await addDelayPromise(delay);
 
         const batchResults = await fetchFunc(curBatch);
 
-        if (returnResult) result = [...result, ...batchResults];
+        if (returnResult && batchResults) {
+          result.push(...batchResults);
+        }
       }
     };
 
     await processQueue();
+
     return result;
-  } catch (err) {
-    // console.log(err);
-    throw new Error(err);
+  } catch (error) {
+    throw normalizeError(error);
   }
 };
 
@@ -56,12 +64,15 @@ export const makeBatchRequest = async (
  * @param {object} config - The fetch configuration
  * @returns A promise that resolves with the fetched data
  */
-export const fetchData = async (url, config) => {
+export const fetchData = async <T>(
+  url: string,
+  config?: Record<string, any>,
+): Promise<T> => {
   const response = await fetch(url, config);
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || `Error (${response.status})`);
+    throw new AppError(data.message || `Error (${response.status})`);
   }
 
   return data;
@@ -73,18 +84,20 @@ export const fetchData = async (url, config) => {
  * @returns {Promise} A promise resolved with the document content
  * @throws If the final path has an odd number of segments and does not point to a document.
  */
-export const fetchDataFromFirestore = async (...docPath) => {
+export const fetchDataFromFirestore = async <T>(
+  ...docPath: [string, ...string[]]
+): Promise<T> => {
   try {
     const dataDoc = doc(firestore, ...docPath);
     const docSnap = await getDoc(dataDoc);
 
-    if (docSnap.exists()) {
-      return docSnap.data();
-    } else {
-      throwCustomError("Can't find document");
+    if (!docSnap.exists()) {
+      throw new AppError("Can't find document");
     }
-  } catch (err) {
-    throw new Error(err);
+
+    return docSnap.data() as T;
+  } catch (error) {
+    throw normalizeError(error);
   }
 };
 
@@ -94,8 +107,9 @@ export const fetchDataFromFirestore = async (...docPath) => {
  * @returns {Promise}  A promise resolved with the document content
  * @throws If the final path has an odd number of segments and does not point to a document.
  */
-export const fetchUserDataFromFirestore = async (...docPath) => {
+export const fetchUserDataFromFirestore = async (...docPath: string[]) => {
   const uid = auth?.currentUser?.uid;
+  if (!uid) throw new AppError(ERROR_MESSAGE_DEFAULT);
   return fetchDataFromFirestore("users", uid, ...docPath);
 };
 
@@ -105,7 +119,7 @@ export const fetchUserDataFromFirestore = async (...docPath) => {
  * @param {string} uid - The user ID
  * @returns {Promise<void>} A promise that resolves when the guide state is saved
  */
-export const saveGuideData = async (guideData, uid) => {
+export const saveGuideData = async (guideData: UserGuideState, uid: string) => {
   try {
     if (!guideData || !uid) return;
 
@@ -118,7 +132,8 @@ export const saveGuideData = async (guideData, uid) => {
       },
       { merge: true },
     );
-  } catch (err) {
+  } catch (error) {
+    const err = normalizeError(error);
     console.error(err.message);
   }
 };

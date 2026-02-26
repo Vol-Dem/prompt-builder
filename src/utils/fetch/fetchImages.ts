@@ -14,19 +14,34 @@ import { getAuth } from "firebase/auth";
 
 import firebaseApp from "../../firebase-config";
 import {
+  ERROR_MESSAGE_DEFAULT,
   ERROR_MESSAGE_INVALID_DATA,
   SETTINGS_SFW_RANGE,
 } from "../../variables/constants";
 import { fetchData, makeBatchRequest } from "./fetchUtils";
-import {
-  // clearFileExtension,
-  filterDuplicates,
-  throwCustomError,
-} from "../generalUtils";
-// import { transformImageData } from "../transformUtils";
+import { AppError, filterDuplicates, normalizeError } from "../generalUtils";
 import { parseModelIds } from "../modelUtils";
 import { getUniqImageResources } from "../imageUtils";
 import { clearFileExtension, transformImageData } from "../../../shared/utils";
+import type {
+  AdditionalResource,
+  CivitaiResource,
+  ComfyResource,
+  Image,
+  ImageMeta,
+  ModelResource,
+} from "../../../shared/types/image";
+import type {
+  ImageMetaWithUpdatedModelData,
+  ImageResourceData,
+  PostForDeletion,
+} from "../../types/images.types";
+import type {
+  CivitaiModelDoc,
+  ModelPreviewDoc,
+  SavedImagePostDoc,
+} from "../../../shared/types/firestore";
+import type { ModelVersion } from "../../../shared/types/model";
 
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
@@ -36,11 +51,11 @@ const auth = getAuth(firebaseApp);
  * @param {object} image - The image data
  * @returns {array} The updated image resources
  */
-export const getImageInfo = async (image) => {
+export const getImageInfo = async (image: Image) => {
   try {
     const imageResources = getUniqImageResources(image);
 
-    let updatedImgResources = [];
+    let updatedImgResources: ImageResourceData[] = [];
 
     if (imageResources?.length) {
       const updatedRes = await makeBatchRequest(
@@ -52,7 +67,7 @@ export const getImageInfo = async (image) => {
     }
 
     if (image.meta?.hashes) {
-      const hashes = { ...image.meta?.hashes, vae: null };
+      const hashes = { ...image.meta?.hashes };
       const hashesData = Object.values(hashes)
         .filter(Boolean)
         .flatMap((hash) => {
@@ -79,13 +94,13 @@ export const getImageInfo = async (image) => {
 
       updatedImgResources = [...updatedImgResources, ...updatedHashRes];
     }
+
     return await fetchResourcesInfoFromDB(
       image,
       filterDuplicates(updatedImgResources, "modelVersionId"),
     );
-  } catch (err) {
-    // console.log(err);
-    throw new Error(err);
+  } catch (error) {
+    throw normalizeError(error);
   }
 };
 
@@ -94,59 +109,58 @@ export const getImageInfo = async (image) => {
  * @param {array} resourcesData - The existing resource data
  * @returns {array} The updated resources data
  */
-export const fetchResourceInfo = async (resourcesData) => {
+export const fetchResourceInfo = async (
+  resourcesData: (
+    | CivitaiResource
+    | ModelResource
+    | AdditionalResource
+    | ComfyResource
+  )[],
+): Promise<ImageResourceData[]> => {
   try {
     const modelsData = await Promise.allSettled(
       resourcesData.map(async (resource) => {
-        let url;
-        if (resource.modelVersionId) {
+        let url: string | undefined;
+
+        if ("modelVersionId" in resource && resource.modelVersionId) {
           url = `https://civitai.com/api/v1/model-versions/${resource.modelVersionId}`;
-        } else if (resource.hash) {
+        } else if ("hash" in resource && resource.hash) {
           url = `https://civitai.com/api/v1/model-versions/by-hash/${resource.hash}`;
         } else {
-          return new Promise((resolve) => {
-            resolve({});
-          });
+          return null;
         }
 
-        return await fetchData(url);
+        return fetchData<CivitaiModelDoc>(url);
       }),
     );
 
     const updatedResources = resourcesData.map((resource, i) => {
-      if (modelsData.status === "rejected") {
+      const result = modelsData[i];
+
+      if (result.status !== "fulfilled" || !result.value) {
         return resource;
       }
 
+      const value = result.value;
+
       return {
         ...resource,
-        ...(modelsData[i]?.value?.model?.name && {
-          name: modelsData[i]?.value.model?.name,
-        }),
-        ...(modelsData[i]?.value?.modelId && {
-          modelId: modelsData[i]?.value?.modelId,
-        }),
-        ...(modelsData[i]?.value?.name && {
-          versionName: modelsData[i]?.value?.name,
-        }),
-        ...(modelsData[i]?.value?.id && {
-          versionId: modelsData[i]?.value?.id,
-        }),
-        ...(modelsData[i]?.value?.model?.type && {
-          type: modelsData[i]?.value?.model?.type,
-        }),
-        ...(modelsData[i]?.value?.files && {
+        ...(value.model?.name && { name: value.model.name }),
+        ...(value.modelId && { modelId: value.modelId }),
+        ...(value.name && { versionName: value.name }),
+        ...(value.id && { versionId: value.id }),
+        ...(value.model?.type && { type: value.model.type }),
+        ...(value.files && {
           fileName: clearFileExtension(
-            modelsData[i]?.value.files.find((file) => file?.primary)?.name,
+            value.files.find((file) => file?.primary)?.name || "",
           ),
         }),
       };
     });
 
     return updatedResources;
-  } catch (err) {
-    // console.log(err.message);
-    throw new Error(err);
+  } catch (error) {
+    throw normalizeError(error);
   }
 };
 
@@ -154,7 +168,9 @@ export const fetchResourceInfo = async (resourcesData) => {
  * Deletes image posts from the database
  * @param {array} posts - The array of posts to delete
  */
-export const deleteImagePostDocs = async (posts) => {
+export const deleteImagePostDocs = async (
+  posts: PostForDeletion[],
+): Promise<void> => {
   const batch = writeBatch(firestore);
 
   posts.forEach((post) => {
@@ -175,21 +191,44 @@ export const deleteImagePostDocs = async (posts) => {
   await batch.commit();
 };
 
+export interface PostInfo {
+  postId: number;
+  modelId: number;
+  versionId: number;
+  location: string;
+  existedAmount?: number | null;
+  ids: number[];
+  images: Image[];
+  imgUrl: string;
+  modelName: string;
+  nsfwMode: boolean;
+  delete: boolean;
+  collectionData: Record<string, any> | null;
+  postData?: { imagesId: number[]; postId: number };
+}
+
 /**
  * Adds new images to post data in the database or creates new post data if it doesn't exist
  * @param {object} postInfo - The post data
  * @param {array} imagesData - The array of image data
  * @returns {object} An object containing the post ID and the updated array of saved image IDs
  */
-export const updateImagePostData = async (postInfo, imagesData) => {
+export const updateImagePostData = async (
+  postInfo: PostInfo,
+  imagesData: Image[],
+) => {
   try {
     const { postId, modelId, versionId, postData, location } = postInfo;
 
     if (!location) {
-      throwCustomError(ERROR_MESSAGE_INVALID_DATA);
+      throw new AppError(ERROR_MESSAGE_INVALID_DATA);
     }
 
-    const uid = auth.currentUser.uid;
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      throw new AppError(ERROR_MESSAGE_DEFAULT);
+    }
+
     const locationRef = doc(firestore, "users", uid, location, modelId + "");
     const modelImagesRef = doc(firestore, "users", uid, "images", postId + "");
     const newImagesId = imagesData.map((image) => image.id);
@@ -204,8 +243,10 @@ export const updateImagePostData = async (postInfo, imagesData) => {
 
     const batch = writeBatch(firestore);
 
-    const hasSfw = !!imagesData.find((image) =>
-      SETTINGS_SFW_RANGE.includes(image?.nsfwLevel),
+    const hasSfw = !!imagesData.find(
+      (image) =>
+        typeof image?.nsfwLevel === "string" &&
+        SETTINGS_SFW_RANGE.includes(image?.nsfwLevel),
     );
 
     const docSnap = await getDoc(modelImagesRef);
@@ -213,7 +254,7 @@ export const updateImagePostData = async (postInfo, imagesData) => {
     let curPostData;
 
     if (docSnap.exists()) {
-      curPostData = docSnap.data();
+      curPostData = docSnap.data() as SavedImagePostDoc;
     }
 
     const curImgIds = curPostData?.items?.map((item) => item?.id);
@@ -259,9 +300,8 @@ export const updateImagePostData = async (postInfo, imagesData) => {
     // Commit the batch
     await batch.commit();
     return newImgData;
-  } catch (err) {
-    console.error(err.message);
-    throw new Error(err);
+  } catch (error) {
+    throw normalizeError(error);
   }
 };
 
@@ -272,12 +312,18 @@ export const updateImagePostData = async (postInfo, imagesData) => {
  * @param {object} version - The current version data
  * @returns {array} The images with generation data included
  */
-export const getVersionImagesFromCiv = async (modelId, username, version) => {
+export const getVersionImagesFromCiv = async (
+  modelId: number,
+  username: string,
+  version: ModelVersion,
+): Promise<Image[] | null> => {
   try {
     const versionImagesRequest = await fetch(
       `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${username}&nsfw=X&limit=200&sort=Oldest`,
     );
-    const versionImages = await versionImagesRequest.json();
+    const versionImages = (await versionImagesRequest.json()) as {
+      items: Image[];
+    };
     const updatedImages = version?.images?.flatMap((image) => {
       const fullImgData = versionImages?.items?.find(
         (verImg) => verImg.hash === image.hash,
@@ -290,9 +336,9 @@ export const getVersionImagesFromCiv = async (modelId, username, version) => {
       return { ...image, ...transformedImgData };
     });
 
-    return updatedImages.filter(Boolean);
-  } catch (err) {
-    throw new Error(err);
+    return updatedImages?.filter(Boolean) || null;
+  } catch (error) {
+    throw normalizeError(error);
   }
 };
 
@@ -301,7 +347,9 @@ export const getVersionImagesFromCiv = async (modelId, username, version) => {
  * @param {object} resourcesData - The resource data
  * @returns The updated resource data
  */
-export const getImageModelInfo = async (resourcesData) => {
+export const getImageModelInfo = async (
+  resourcesData: ImageMeta,
+): Promise<ImageMetaWithUpdatedModelData> => {
   try {
     let modelHash;
     if (Object.hasOwn(resourcesData, "Model hash")) {
@@ -311,7 +359,7 @@ export const getImageModelInfo = async (resourcesData) => {
     } else {
       return resourcesData;
     }
-    const data = await fetchData(
+    const data = await fetchData<CivitaiModelDoc>(
       `https://civitai.com/api/v1/model-versions/by-hash/${modelHash}`,
     );
 
@@ -324,9 +372,8 @@ export const getImageModelInfo = async (resourcesData) => {
     };
 
     return updatedResources;
-  } catch (err) {
-    // console.log(err.message);
-    throw new Error(err);
+  } catch (error) {
+    throw normalizeError(error);
   }
 };
 
@@ -337,18 +384,27 @@ export const getImageModelInfo = async (resourcesData) => {
  * @returns {array} The updated image resources
  */
 export const fetchResourcesInfoFromDB = async (
-  curImageData,
-  resourcesInfoCiv,
+  curImageData: Image,
+  resourcesInfoCiv: CivitaiResource[] | ImageResourceData[],
 ) => {
   try {
     const imageResources =
       resourcesInfoCiv || getUniqImageResources(curImageData);
     const uid = auth?.currentUser?.uid;
-    let modelHash = "";
+    if (!uid) {
+      throw new AppError(ERROR_MESSAGE_DEFAULT);
+    }
+    let modelHash: string | null = null;
 
-    if (Object.hasOwn(curImageData?.meta, "Model hash")) {
+    if (
+      Object.hasOwn(curImageData?.meta, "Model hash") &&
+      curImageData.meta["Model hash"]
+    ) {
       modelHash = curImageData.meta["Model hash"];
-    } else if (Object.hasOwn(curImageData?.meta, "Modelhash")) {
+    } else if (
+      Object.hasOwn(curImageData?.meta, "Modelhash") &&
+      curImageData.meta["Modelhash"]
+    ) {
       modelHash = curImageData.meta["Modelhash"];
     }
 
@@ -377,17 +433,17 @@ export const fetchResourcesInfoFromDB = async (
 
     const checkpointSearchResult = checkpointQuerySnapshot.docs.map((doc) => {
       // doc.data() is never undefined for query doc snapshots
-      return doc.data();
+      return doc.data() as ModelPreviewDoc;
     });
     const checkpointData = checkpointSearchResult?.length
       ? checkpointSearchResult[0]
       : null;
 
-    let modelsIds = [];
-    let modelsVersionIds = [];
-    let modelsHashes = [];
-    let modelsNames = [];
-    let allModelsPreviews = [];
+    let modelsIds: number[] = [];
+    let modelsVersionIds: number[] = [];
+    let modelsHashes: string[] = [];
+    let modelsNames: string[] = [];
+    let allModelsPreviews: ModelPreviewDoc[] = [];
 
     if (checkpointData) {
       allModelsPreviews = [checkpointData];
@@ -396,9 +452,11 @@ export const fetchResourcesInfoFromDB = async (
     imageResources?.forEach((resource) => {
       if (resource?.modelId) {
         modelsIds.push(resource?.modelId);
-      } else if (resource?.versionId || resource?.modelVersionId) {
-        modelsVersionIds.push(resource?.versionId || resource?.modelVersionId);
-      } else if (resource?.hash) {
+      } else if (resource?.versionId) {
+        modelsVersionIds.push(resource?.versionId);
+      } else if (resource?.modelVersionId) {
+        modelsVersionIds.push(resource?.modelVersionId);
+      } else if ("hash" in resource && resource?.hash) {
         modelsHashes.push(resource?.hash);
       } else if (resource?.name) {
         modelsNames.push(clearFileExtension(resource?.name).toLowerCase());
@@ -415,7 +473,7 @@ export const fetchResourcesInfoFromDB = async (
 
       const modelsPrewiewById = querySnapshot.docs.map((doc) => {
         // doc.data() is never undefined for query doc snapshots
-        return doc.data();
+        return doc.data() as ModelPreviewDoc;
       });
 
       allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewById];
@@ -430,7 +488,7 @@ export const fetchResourcesInfoFromDB = async (
 
       const modelsPrewiewByVersionId = querySnapshot.docs.map((doc) => {
         // doc.data() is never undefined for query doc snapshots
-        return doc.data();
+        return doc.data() as ModelPreviewDoc;
       });
       allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewByVersionId];
     }
@@ -444,7 +502,7 @@ export const fetchResourcesInfoFromDB = async (
 
       const modelsPrewiewByHash = querySnapshot.docs.map((doc) => {
         // doc.data() is never undefined for query doc snapshots
-        return doc.data();
+        return doc.data() as ModelPreviewDoc;
       });
       allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewByHash];
     }
@@ -475,22 +533,25 @@ export const fetchResourcesInfoFromDB = async (
 
         const modelsPrewiewByName = querySnapshot.docs.map((doc) => {
           // doc.data() is never undefined for query doc snapshots
-          return doc.data();
+          return doc.data() as ModelPreviewDoc;
         });
         allModelsPreviews = [...allModelsPreviews, ...modelsPrewiewByName];
       }
     }
 
-    const resources = imageResources?.map((resource) => {
+    const resources: ImageResourceData[] = imageResources?.map((resource) => {
       const versionId = resource?.modelVersionId || resource?.versionId;
       const preview = allModelsPreviews.find(
         (preview) =>
           preview?.id === resource.modelId ||
-          preview?.versionIds?.includes(versionId) ||
-          preview?.hashes?.includes(resource.hash) ||
-          preview?.fileNames?.includes(
-            clearFileExtension(resource.name)?.toLowerCase(),
-          ),
+          (versionId && preview?.versionIds?.includes(versionId)) ||
+          ("hash" in resource &&
+            resource?.hash &&
+            preview?.hashes?.includes(resource.hash)) ||
+          (resource?.name &&
+            preview?.fileNames?.includes(
+              clearFileExtension(resource.name)?.toLowerCase(),
+            )),
       );
 
       if (preview) {
@@ -545,7 +606,7 @@ export const fetchResourcesInfoFromDB = async (
     // );
 
     return filteredNewResult;
-  } catch (err) {
-    throw new Error(err.message);
+  } catch (error) {
+    throw normalizeError(error);
   }
 };

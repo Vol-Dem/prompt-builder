@@ -1,11 +1,19 @@
+import type {
+  CategorySearchItem,
+  ModelCategorySearchData,
+} from "../types/search.types";
+
 /**
  * Searches for subcategories
  * @param {string} query - Search query
- * @param {array} categories - Categories data
+ * @param {array} categories - Categories search data
  * @returns {array} Search result
  */
-export const subcategoriesSearch = (query, categories) => {
-  let searchResult = [];
+export const subcategoriesSearch = (
+  query: string,
+  categories: ModelCategorySearchData[],
+): CategorySearchItem[] => {
+  let searchResult: CategorySearchItem[] = [];
 
   categories.forEach((category) => {
     const subcategories = category?.subcategories?.filter((subcategory) => {
@@ -14,7 +22,7 @@ export const subcategoriesSearch = (query, categories) => {
         .includes(`${query.toLowerCase().trim()}`);
     });
 
-    const subcategoriesData = subcategories.map((subcategory) => {
+    const subcategoriesData = subcategories?.map((subcategory) => {
       return {
         type: category.type,
         id: category.id,
@@ -23,7 +31,7 @@ export const subcategoriesSearch = (query, categories) => {
         subName: subcategory.name,
       };
     });
-    searchResult = [...searchResult, ...subcategoriesData];
+    searchResult = [...searchResult, ...(subcategoriesData || [])];
   });
 
   return searchResult;

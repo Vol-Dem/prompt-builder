@@ -8,13 +8,19 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { getFunctions, httpsCallable } from "firebase/functions";
+import {
+  getFunctions,
+  httpsCallable,
+  type HttpsCallableResult,
+} from "firebase/functions";
 
 import firebaseApp from "../../firebase-config";
 import {
   ERROR_MESSAGE_CIV_CONNECTION,
+  ERROR_MESSAGE_DEFAULT,
   ERROR_MESSAGE_EXISTS,
   ERROR_MESSAGE_INVALID_DATA,
+  ERROR_MESSAGE_MODEL_UPDATE,
   SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
   SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV,
   URL_CIV_MODELS,
@@ -26,11 +32,25 @@ import {
   makeBatchRequest,
 } from "./fetchUtils";
 import { deleteImagePostDocs } from "./fetchImages";
-import { createCategoryId, throwCustomError } from "../generalUtils";
+import { AppError, createCategoryId, normalizeError } from "../generalUtils";
 import { transformModelData } from "../transformUtils";
 import { cleanImageMeta, transformSrcPreview } from "../imageUtils";
 import { splitTags } from "../promptUtils";
 import { clearFileExtension } from "../../../shared/utils";
+import type {
+  CivitaiModelDoc,
+  UserModelDoc,
+} from "../../../shared/types/firestore";
+import type { UpdateModelResponse } from "../../../shared/types/api";
+import type { ModelData } from "../../types/models.types";
+import type {
+  ModelVersionCivitai,
+  ModelVersionsCustomData,
+} from "../../../shared/types/model";
+import type {
+  ModelCategories,
+  ModelCategory,
+} from "../../../shared/types/user";
 
 const firestore = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp);
@@ -42,15 +62,15 @@ const updateModel = httpsCallable(functions, "updateModelCallDev");
  * @param {number | string} modelId - The model ID
  * @returns {object} The model data
  */
-export const getModelData = async (modelId) => {
+export const getModelData = async (modelId: number) => {
   try {
-    const model = await fetchData(
+    const model = (await fetchData(
       `https://civitai.com/api/v1/models/${modelId}`,
-    );
+    )) as CivitaiModelDoc;
 
     // Clears empty keys and excessive data (too much weight for Firestore) from image metadata
     const updatedModelversions = model?.modelVersions.map((modelVersion) => {
-      const cleanedImages = modelVersion.images.map((image) => {
+      const cleanedImages = modelVersion?.images?.map((image) => {
         return cleanImageMeta(image);
       });
 
@@ -66,8 +86,8 @@ export const getModelData = async (modelId) => {
     };
 
     return transformModelData(updatedModelData);
-  } catch (err) {
-    throw new Error(err);
+  } catch (error) {
+    throw normalizeError(error);
   }
 };
 
@@ -76,7 +96,7 @@ export const getModelData = async (modelId) => {
  * @param {string} uid - The user ID
  * @param {object} model - The model data
  */
-export const deleteModelDoc = async (uid, model) => {
+export const deleteModelDoc = async (uid: string, model: UserModelDoc) => {
   if (model?.savedImages) {
     Object.values(model.savedImages).forEach(async (versionData) => {
       const postsData = versionData.map((post) => {
@@ -111,12 +131,12 @@ export const deleteModelDoc = async (uid, model) => {
  * @param {number | string} id - The model ID
  * @returns {object} The model data
  */
-export const fetchModelFromCivitai = async (id) => {
+export const fetchModelFromCivitai = async (id: number | string) => {
   const responseCiv = await fetch(`https://civitai.com/api/v1/models/${id}`);
   const responseData = await responseCiv.json();
 
   if (!responseCiv?.ok) {
-    throwCustomError(ERROR_MESSAGE_CIV_CONNECTION);
+    throw new AppError(ERROR_MESSAGE_CIV_CONNECTION);
   }
 
   return responseData;
@@ -127,18 +147,23 @@ export const fetchModelFromCivitai = async (id) => {
  * @param {number | string} modelId - The model ID
  * @returns {object} User custom model data with default model data
  */
-export const fetchModelData = async (modelId) => {
-  const customModelData = await fetchUserDataFromFirestore(
+export const fetchModelData = async (
+  modelId: number | string,
+): Promise<ModelData> => {
+  const customModelData = (await fetchUserDataFromFirestore(
     "models",
     modelId + "",
-  );
+  )) as UserModelDoc;
 
-  let defModelData = {};
+  let defModelData: CivitaiModelDoc;
 
   if (SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV) {
     defModelData = await fetchModelFromCivitai(modelId);
   } else {
-    defModelData = await fetchDataFromFirestore("models", modelId);
+    defModelData = (await fetchDataFromFirestore(
+      "models",
+      modelId + "",
+    )) as CivitaiModelDoc;
   }
 
   return { ...customModelData, data: defModelData };
@@ -149,14 +174,16 @@ export const fetchModelData = async (modelId) => {
  * @param {number | string} modelId - The model ID
  * @returns {object} The updated model data
  */
-export const fetchModelUpdates = async (modelId) => {
-  const updateModelResData = await updateModel({
+export const fetchModelUpdates = async (
+  modelId: number | string,
+): Promise<CivitaiModelDoc | undefined> => {
+  const updateModelResData = (await updateModel({
     id: modelId,
-  });
+  })) as HttpsCallableResult<UpdateModelResponse>;
 
-  if (updateModelResData?.data?.error) {
+  if ("error" in updateModelResData?.data) {
     console.error(updateModelResData.data.error);
-    throwCustomError("Failed to update");
+    throw new AppError(ERROR_MESSAGE_MODEL_UPDATE);
   }
 
   return updateModelResData.data.modelData;
@@ -170,12 +197,12 @@ export const fetchModelUpdates = async (modelId) => {
  * @param {array} curBaseModels - The list of currently existing base models
  */
 export const updateUserCustomModelData = async (
-  newModelData,
-  newVersions,
-  model,
-  curBaseModels,
-) => {
-  const newVersionsCustomData = {};
+  newModelData: CivitaiModelDoc,
+  newVersions: ModelVersionCivitai[],
+  model: UserModelDoc,
+  curBaseModels: string[],
+): Promise<void> => {
+  const newVersionsCustomData: ModelVersionsCustomData = {};
 
   newVersions.forEach((version) => {
     version.modelId = model.id;
@@ -184,7 +211,7 @@ export const updateUserCustomModelData = async (
 
     if (Object.hasOwn(version, "files") && version?.files) {
       fileName = clearFileExtension(
-        version.files.find((file) => file?.primary).name,
+        version.files.find((file) => file?.primary)?.name || "",
       ).toLowerCase();
     }
 
@@ -205,16 +232,17 @@ export const updateUserCustomModelData = async (
   Object.values(model?.modelVersionsCustomData).forEach((customVersion) => {
     modelVersionsCustomData[customVersion.versionId] = {
       ...customVersion,
-      index: newModelData?.modelVersions?.find(
-        (version) => version.id === customVersion.versionId,
-      )?.index,
+      index:
+        newModelData?.modelVersions?.find(
+          (version) => version.id === customVersion.versionId,
+        )?.index || 0,
     };
   });
 
   const fileNames = newModelData.modelVersions?.flatMap((version) => {
     if (Object.hasOwn(version, "files") && version?.files) {
       return clearFileExtension(
-        version.files.find((file) => file?.primary).name,
+        version.files.find((file) => file?.primary)?.name || "",
       ).toLowerCase();
     }
     return [];
@@ -256,6 +284,11 @@ export const updateUserCustomModelData = async (
     });
   }
   const uid = auth?.currentUser?.uid;
+
+  if (!uid) {
+    throw new Error(ERROR_MESSAGE_DEFAULT);
+  }
+
   const modelsRef = doc(firestore, "users", uid, "models", model?.id + "");
   const modelsPrevRef = doc(firestore, "users", uid, "preview", model?.id + "");
   const userRef = doc(firestore, "users", uid);
@@ -266,7 +299,7 @@ export const updateUserCustomModelData = async (
       {
         baseModels: arrayUnion(...baseModels),
       },
-      { merge: true },
+      // { merge: true },
     );
   }
 
@@ -275,7 +308,7 @@ export const updateUserCustomModelData = async (
     {
       modelVersionsCustomData: modelVersionsCustomData,
     },
-    { merge: true },
+    // { merge: true },
   );
   await updateDoc(
     modelsPrevRef,
@@ -287,9 +320,33 @@ export const updateUserCustomModelData = async (
       tags: newModelData.tags,
       baseModels: arrayUnion(...baseModels),
     },
-    { merge: true },
+    // { merge: true },
   );
 };
+
+interface ModelFormVersionsDownloadStatus {
+  id: string;
+  label: string;
+  name: string;
+  type: string;
+  value: boolean;
+}
+
+interface ModelFormData {
+  categories: ModelCategories;
+  fileName: string;
+  hashtags: string[];
+  main: string;
+  mainTag: string;
+  modelId: number;
+  modelName: string;
+  modelType: string;
+  modelVersionId: number | null;
+  nsfw: boolean;
+  size: number;
+  sub: string[];
+  versionsDownloadStatus: ModelFormVersionsDownloadStatus[];
+}
 
 /**
  * Saves model data to database
@@ -300,15 +357,19 @@ export const updateUserCustomModelData = async (
  * @returns {{preview: object, baseModels: array}} The model's preview data and updated user's base models
  */
 export const saveModelData = async (
-  newModelData,
-  categories,
-  curBaseModels,
-  modelData,
+  newModelData: ModelFormData,
+  categories: ModelCategories,
+  curBaseModels: string[],
+  modelData: ModelData,
 ) => {
   try {
-    let data = {};
+    let data: CivitaiModelDoc;
     let modelVersions = [];
     const uid = auth?.currentUser?.uid;
+
+    if (!uid) {
+      throw new Error(ERROR_MESSAGE_DEFAULT);
+    }
 
     const modelsRef = doc(
       firestore,
@@ -330,25 +391,24 @@ export const saveModelData = async (
 
     // Throw error if user try to add existing model using new model form
     if (modelsPrevRefSnap.exists() && !modelData) {
-      throwCustomError(ERROR_MESSAGE_EXISTS);
+      throw new AppError(ERROR_MESSAGE_EXISTS);
     } else {
       if (!modelData) {
         //Upload model to database
 
-        const uploadResponse = await updateModel({
-          id: modelData?.id || newModelData.modelId,
-        });
+        const uploadResponse = (await updateModel({
+          id: newModelData.modelId,
+        })) as HttpsCallableResult<UpdateModelResponse>;
 
-        if (uploadResponse?.error) {
-          throw new Error(uploadResponse.error);
-          // throwCustomError(ERROR_MESSAGE_UPLOAD_MODEL);
+        if ("error" in uploadResponse.data) {
+          throw new AppError(uploadResponse.data.error);
         }
 
         const responseCiv = await fetch(
           `${URL_CIV_MODELS}${newModelData.modelId}`,
         );
 
-        data = await responseCiv.json();
+        data = (await responseCiv.json()) as CivitaiModelDoc;
         modelVersions = data?.modelVersions;
       } else {
         data = modelData.data;
@@ -359,11 +419,8 @@ export const saveModelData = async (
         );
       }
 
-      if (data?.error) {
-        throwCustomError(data.error);
-      }
       if (!data?.id) {
-        throwCustomError(ERROR_MESSAGE_INVALID_DATA);
+        throw new AppError(ERROR_MESSAGE_INVALID_DATA);
       }
 
       let modelVersionsCustomData = modelData?.modelVersionsCustomData || {};
@@ -399,7 +456,7 @@ export const saveModelData = async (
         let fileName;
         if (Object.hasOwn(version, "files") && version?.files) {
           fileName = clearFileExtension(
-            version.files.find((file) => file?.primary).name,
+            version.files.find((file) => file?.primary)?.name || "",
           ).toLowerCase();
         }
 
@@ -436,18 +493,24 @@ export const saveModelData = async (
         (activePreviewId &&
           modelVersions
             ?.find((version) => version.id === activePreviewId)
-            .images?.filter((img) => img.type === "image")[0]) ||
+            ?.images?.filter((img) => img.type === "image")[0]) ||
         "";
 
-      const previewImgDefault = modelVersions[0]?.images[0] || "";
+      const previewImgDefault =
+        (modelVersions.length &&
+          modelVersions[0]?.images?.length &&
+          modelVersions[0]?.images[0]) ||
+        "";
 
       const previewImgData = activePreviewImg || previewImgDefault;
-      const { previewSrc } = transformSrcPreview(
-        previewImgData?.url,
-        SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
-        previewImgData?.type,
-      );
-      const previewImg = previewSrc;
+      const imagePreviews =
+        previewImgData &&
+        transformSrcPreview(
+          previewImgData?.url,
+          SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
+          previewImgData?.type,
+        );
+      const previewImg = imagePreviews && imagePreviews?.previewSrc;
 
       const fileNames = modelVersions?.flatMap((version) => {
         if (Object.hasOwn(version, "files") && version?.files) {
@@ -476,7 +539,10 @@ export const saveModelData = async (
 
       const customFileNames = Object.values(modelVersionsCustomData)
         ?.map((version) => {
-          return clearFileExtension(version?.fileName)?.toLowerCase();
+          return (
+            version?.fileName &&
+            clearFileExtension(version.fileName)?.toLowerCase()
+          );
         })
         .filter(Boolean);
 
@@ -516,9 +582,9 @@ export const saveModelData = async (
         });
       }
 
-      let updatedCategories;
-      let mainId;
-      let subIds;
+      let updatedCategories: ModelCategory[];
+      let mainId: string | null;
+      let subIds: string[];
       const mainCategoryData = categories[newModelData.modelType]?.find(
         (category) =>
           category.name?.toLowerCase() === newModelData.main?.toLowerCase(),
@@ -546,13 +612,13 @@ export const saveModelData = async (
         mainId = mainCategoryData.id;
         subIds = [];
         const newSubcategoriesData = newModelData.sub.flatMap((subcategory) => {
-          const subExists = mainCategoryData.subcategories.find(
+          const subExists = mainCategoryData?.subcategories?.find(
             (oldSucategories) =>
               oldSucategories.name?.toLowerCase() ===
               subcategory?.toLowerCase(),
           );
 
-          if (!subExists) {
+          if (!subExists && mainCategoryData?.subcategories) {
             newSubcategory = true;
             const categoryId = createCategoryId(
               subcategory,
@@ -564,10 +630,12 @@ export const saveModelData = async (
               id: categoryId,
               name: subcategory,
             };
-          } else {
+          }
+          if (subExists) {
             subIds = [...subIds, subExists.id];
             return [];
           }
+          return [];
         });
         const mainCategoryIndex = categories[newModelData.modelType].findIndex(
           (category) => category.name === newModelData.main,
@@ -577,10 +645,11 @@ export const saveModelData = async (
           id: mainId,
           name: mainCategoryData.name,
           subcategories: [
-            ...mainCategoryData.subcategories,
+            ...(mainCategoryData.subcategories || []),
             ...newSubcategoriesData,
           ],
         };
+
         updatedCategories = [
           ...categories[newModelData.modelType].slice(0, mainCategoryIndex),
           curUpdatedCategory,
@@ -607,22 +676,24 @@ export const saveModelData = async (
               [categoryField]: updatedCategories,
               baseModels: arrayUnion(...baseModels),
             },
-            { merge: true },
+            // { merge: true },
           );
         }
       }
 
       let createdAt;
       if (modelData?.createdAt) {
-        createdAt = Number.isFinite(modelData?.createdAt)
-          ? modelData?.createdAt
-          : Date.parse(modelData?.createdAt);
+        createdAt =
+          typeof modelData?.createdAt === "number"
+            ? modelData?.createdAt
+            : Date.parse(modelData?.createdAt);
       } else {
-        createdAt = Date.parse(modelData?.downloadedAt) || Date.now();
+        createdAt =
+          (modelData?.downloadedAt && Date.parse(modelData?.downloadedAt)) ||
+          Date.now();
       }
 
       const modelInfo = {
-        defaultCustomData: {},
         ...modelData,
         id: modelData?.id || +newModelData.modelId,
         versionIds,
@@ -640,23 +711,23 @@ export const saveModelData = async (
         createdAt,
       };
 
-      let previewModelVersionsCustomData = {};
+      let previewModelVersionsCustomData: ModelVersionsCustomData = {};
 
       Object.values(modelVersionsCustomData).forEach((version) => {
         if (version?.versionId) {
           previewModelVersionsCustomData[version.versionId] = {
-            size: version?.size || "",
+            size: version?.size || null,
             weight: version?.weight || null,
             minWeight: version?.minWeight || null,
             maxWeight: version?.maxWeight || null,
             fileName: version?.fileName || "",
             name: version?.name || "",
             mainTag: version?.mainTag || "",
-            index: version?.index || null,
+            index: version?.index || 0,
             downloadStatus: version?.downloadStatus || false,
             trainedWords: version?.trainedWords || [],
             defActTag: version?.defActTag || "",
-            versionId: version?.versionId || null,
+            versionId: version?.versionId,
             defFileName: version?.defFileName || "",
             versionImageUrl: version?.versionImageUrl || "",
             baseModel: version?.baseModel || "",
@@ -675,7 +746,7 @@ export const saveModelData = async (
         name: newModelData.modelName || data.name || "",
         nameArr,
         imgUrl: previewImg || "",
-        imgType: previewImgData?.type || "",
+        imgType: (previewImgData && previewImgData?.type) || "",
         type: data.type,
         creator: data?.creator || "",
         nsfw: newModelData.nsfw || false,
@@ -714,11 +785,7 @@ export const saveModelData = async (
 
       return { preview: loraPrevData, baseModels: updatedBaseModels };
     }
-  } catch (err) {
-    if (err.isCustom) {
-      throwCustomError(err.message);
-    }
-
-    throw new Error(err.message);
+  } catch (error) {
+    throw normalizeError(error);
   }
 };

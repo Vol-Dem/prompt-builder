@@ -41,7 +41,7 @@ import ActiveCarouselContentWrap from "./ActiveCarouselContentWrap";
 const ActiveCarousel = () => {
   const [activeImageNumber, setActiveImageNumber] = useState(null);
   const activeCarouselData = useSelector(
-    (state) => state.model.activeCarouselData
+    (state) => state.model.activeCarouselData,
   );
   const savedImagesData = useSelector((state) => state.model.savedImages);
   const guideStep = useSelector((state) => state.guide.model.step);
@@ -51,7 +51,7 @@ const ActiveCarousel = () => {
     savedImagesData?.data &&
     Object.hasOwn(savedImagesData.data, activeCarouselData?.versionId) &&
     savedImagesData.data[`${activeCarouselData?.versionId}`]?.find(
-      (img) => img?.postId === +activeCarouselData?.images[0]?.postId
+      (img) => img?.postId === +activeCarouselData?.images[0]?.postId,
     );
   const isOpen = !!activeCarouselData?.images?.length;
 
@@ -88,7 +88,7 @@ const ActiveCarousel = () => {
         guideActions.setGuideStep({
           type: "model",
           value: GUIDE_STEP_PROMPT_VIEW,
-        })
+        }),
       );
     }
   };
@@ -103,7 +103,7 @@ const ActiveCarousel = () => {
         guideActions.setGuideStep({
           type: "model",
           value: GUIDE_STEP_MODEL_TAGS_EDIT,
-        })
+        }),
       );
     }
   }, [guideStep, activeCarouselData?.images, dispatch, guideIsActive]);

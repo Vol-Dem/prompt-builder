@@ -2,11 +2,13 @@ import type { CollectionSavedPost } from "./collection";
 import type { Image } from "./image";
 import type {
   Creator,
-  ModelVersion,
+  ModelVersionCivitai,
   ModelStats,
   UserModelDefaultCustomData,
   ModelVersionsCustomData,
   ModelSavedImages,
+  ModelVersion,
+  VersionFileCivitai,
 } from "./model";
 import type {
   ModelCategory,
@@ -26,6 +28,13 @@ export interface UserDoc {
   uiState: UserUiState;
 }
 
+export interface CivitaiBaseModelData {
+  name: string;
+  type: string;
+  nsfw: boolean;
+  poi: boolean;
+}
+
 export interface CivitaiModelDoc {
   allowCommercialUse: string[];
   allowDerivatives: boolean;
@@ -34,10 +43,10 @@ export interface CivitaiModelDoc {
   availability: string;
   cosmetic: string | null;
   creator: Creator;
-  description: string;
+  description: string | null;
   id: number;
   minor: boolean;
-  modelVersions: ModelVersion[];
+  modelVersions: ModelVersionCivitai[];
   name: string;
   nsfw: boolean;
   nsfwLevel: number;
@@ -48,10 +57,52 @@ export interface CivitaiModelDoc {
   tags: string[];
   type: string;
   updatedAt: number;
+  air: string;
+  baseModel: string;
+  baseModelType: string;
+  createdAt: string;
+  downloadUrl: string;
+  earlyAccessConfig: string | null;
+  earlyAccessEndsAt: string | null;
+  files: VersionFileCivitai[];
+  images: string;
+  model: CivitaiBaseModelData;
+  modelId: number;
+  publishedAt: string;
+  status: string;
+  trainedWords: string[];
+  trainingDetails: null;
+  trainingStatus: null;
+  uploadType: string;
+  usageControl: string;
+}
+
+export interface ModelDoc {
+  allowCommercialUse: string[];
+  allowDerivatives: boolean;
+  allowDifferentLicense: boolean;
+  allowNoCredit: boolean;
+  availability: string;
+  cosmetic: string | null;
+  creator: Creator;
+  description: string | null;
+  id: number;
+  minor: boolean;
+  modelVersions: ModelVersion[];
+  name: string;
+  nsfw: boolean;
+  nsfwLevel: number;
+  poi: boolean;
+  sfwOnly: boolean;
+  stats: string;
+  supportsGeneration: boolean;
+  tags: string[];
+  type: string;
+  updatedAt: number;
 }
 
 export interface UserModelDoc {
-  createdAt: number;
+  createdAt: number | string;
   defaultCustomData: UserModelDefaultCustomData;
   hashtags: string[];
   id: number;
@@ -66,6 +117,28 @@ export interface UserModelDoc {
   sub: string[];
   updatedAt: string;
   versionIds: string[];
+  downloadedAt?: string;
+}
+
+export interface ModelPreview {
+  baseModel: string;
+  id: number;
+  main: string;
+  sub: string[];
+  versionId: number;
+  imgUrl: string;
+  size: number | null;
+  src: string;
+  modelType: string;
+  tags: string[];
+  mainTag?: string;
+  title?: string;
+  versionName?: string;
+  weight?: number | null;
+  minWeight?: number | null;
+  maxWeight?: number | null;
+  helperTags?: string[];
+  updatedAt: string;
 }
 
 export interface ModelPreviewDoc {
@@ -79,24 +152,32 @@ export interface ModelPreviewDoc {
   fileNames: string[];
   hashes: string[];
   id: number;
+  versionId: number;
   imgType: string;
   imgUrl: string;
   latestFileName: string;
   main: string;
-  mainTag: string;
+  mainTag?: string;
   modelType: string;
   modelVersionsCustomData: ModelVersionsCustomData;
   name: string;
   nameArr: string[];
   nsfw: boolean;
   nsfwLevel: number;
-  size: string;
+  size: number | null;
   src: string;
   sub: string[];
   tags: string[];
   type: string;
   updatedAt: string;
   versionIds: number[];
+  title?: string;
+  versionName?: string;
+  customPreviewImgUrl?: string;
+  weight?: number | null;
+  minWeight?: number | null;
+  maxWeight?: number | null;
+  helperTags?: string[];
 }
 
 export interface CollectionDoc {

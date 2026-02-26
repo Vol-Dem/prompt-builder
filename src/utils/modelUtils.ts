@@ -1,11 +1,23 @@
-import { throwCustomError } from "./generalUtils";
+import type {
+  CivitaiModelDoc,
+  ModelPreview,
+  ModelPreviewDoc,
+  UserModelDoc,
+} from "../../shared/types/firestore";
+import type {
+  ModelVersionCivitai,
+  ModelVersionCustomData,
+} from "../../shared/types/model";
+import type { SidebarPreviewData } from "../types/general.types";
+import type { ModelData } from "../types/models.types";
+import { AppError } from "./generalUtils";
 
 /**
  * Parse model an version IDs from string (ID, URL, AIR)
  * @param {string} value - string value
  * @returns {array} an array with the model ID as the first element and the version ID as the second one
  */
-export const parseModelIds = (value) => {
+export const parseModelIds = (value: string): (number | null)[] => {
   if (Number.isFinite(+value)) {
     return [+value, null];
   }
@@ -26,29 +38,29 @@ export const parseModelIds = (value) => {
     ?.split("=");
 
   if (modelIdIndex < 0) {
-    throwCustomError("Invalid ID");
-  } else {
-    const modelId = parseInt(urlArr[modelIdIndex]) || null;
-    let modelVersionId = null;
-
-    if (modelVersionIdUrlArr?.length) {
-      modelVersionId =
-        parseInt(modelVersionIdUrlArr[modelVersionIdUrlArr.length - 1]) || null;
-    }
-
-    return [modelId, modelVersionId];
+    throw new AppError("Invalid ID");
   }
+
+  const modelId = parseInt(urlArr[modelIdIndex]) || null;
+  let modelVersionId = null;
+
+  if (modelVersionIdUrlArr?.length) {
+    modelVersionId =
+      parseInt(modelVersionIdUrlArr[modelVersionIdUrlArr.length - 1]) || null;
+  }
+
+  return [modelId, modelVersionId];
 };
 
 /**
  * Sort model versions by index and removes one that was not updated by current user.
- * @param {object} model - model data
- * @returns {array} - sorted and filtered model versions
+ * @param {ModelData} model - model data
+ * @returns {ModelVersionCivitai[]} - sorted and filtered model versions
  */
-export const sortModelVersions = (model) => {
+export const sortModelVersions = (model: ModelData): ModelVersionCivitai[] => {
   return model?.data?.modelVersions
     .filter((version) =>
-      Object.keys(model?.modelVersionsCustomData).includes(`${version.id}`)
+      Object.keys(model?.modelVersionsCustomData).includes(`${version.id}`),
     )
     .sort((a, b) => a?.index - b?.index)
     .map((version) => {
@@ -67,20 +79,25 @@ export const sortModelVersions = (model) => {
  * @param {string} versionIdParam - search param ID
  * @returns {number} version ID
  */
-export const getCurrentVersionId = (model, modelVersions, versionIdParam) => {
-  let curVersionId;
+export const getCurrentVersionId = (
+  model: ModelData,
+  modelVersions: ModelVersionCivitai[],
+  versionIdParam: string,
+): number | null => {
+  let curVersionId: number | null = null;
   if (
     versionIdParam &&
     !!modelVersions?.find((version) => version.id === +versionIdParam)
   ) {
     curVersionId = +versionIdParam;
   } else {
-    curVersionId = modelVersions?.find(
-      (version) =>
-        model?.modelVersionsCustomData &&
-        Object.hasOwn(model.modelVersionsCustomData, version.id) &&
-        model.modelVersionsCustomData[version.id].downloadStatus
-    )?.id;
+    curVersionId =
+      modelVersions?.find(
+        (version) =>
+          model?.modelVersionsCustomData &&
+          Object.hasOwn(model.modelVersionsCustomData, version.id) &&
+          model.modelVersionsCustomData[version.id].downloadStatus,
+      )?.id || null;
   }
 
   return curVersionId;
@@ -88,16 +105,19 @@ export const getCurrentVersionId = (model, modelVersions, versionIdParam) => {
 
 /**
  * Compare old and new model data and returns new model versions
- * @param {object} newModelData - new model data
- * @param {object} oldModelData - old model data
+ * @param {CivitaiModelDoc} newModelData - new model data
+ * @param {UserModelDoc | ModelData} oldModelData - old user model data
  * @returns {array} new model versions
  */
-export const filterNewModelVersions = (newModelData, oldModelData) => {
+export const filterNewModelVersions = (
+  newModelData: CivitaiModelDoc,
+  oldModelData: UserModelDoc | ModelData,
+): ModelVersionCivitai[] => {
   const newVersions = newModelData?.modelVersions?.filter(
     (version) =>
       !Object.values(oldModelData?.modelVersionsCustomData)?.some(
-        (oldVersions) => version?.id === oldVersions?.versionId
-      )
+        (oldVersions) => version?.id === oldVersions?.versionId,
+      ),
   );
 
   return newVersions;
@@ -111,23 +131,24 @@ export const filterNewModelVersions = (newModelData, oldModelData) => {
  * @returns {object} preview data
  */
 export const createModelPreviewData = (
-  model,
-  curVersion,
-  curCustomVersionData
-) => {
+  model: ModelData,
+  curVersion: ModelVersionCivitai,
+  curCustomVersionData: ModelVersionCustomData,
+): ModelPreview | null => {
   if (!model.id || !curVersion.id) return null;
+
   return {
     id: model.id,
     versionId: curVersion.id,
     src: model.src,
     main: model.main,
     sub: model.sub,
-    title: model.name || model.title || model.data.name,
+    title: model.name || model.data.name,
     versionName:
       curCustomVersionData?.name ||
       curCustomVersionData?.versionName ||
       curVersion.name,
-    imgUrl: curVersion?.images[0]?.url,
+    imgUrl: curVersion?.images ? curVersion?.images[0]?.url : "",
     modelType: model?.data?.type,
     baseModel: curVersion?.baseModel,
     mainTag:
@@ -139,7 +160,7 @@ export const createModelPreviewData = (
       curCustomVersionData?.minWeight || model?.defaultCustomData?.minWeight,
     maxWeight:
       curCustomVersionData?.maxWeight || model?.defaultCustomData?.maxWeight,
-    size: curCustomVersionData?.size || model?.defaultCustomData?.size,
+    size: curCustomVersionData?.size || model?.defaultCustomData?.size || null,
     tags: curCustomVersionData?.trainedWords || curVersion?.trainedWords,
     helperTags:
       curCustomVersionData?.helperTags || model?.defaultCustomData?.helperTags,
@@ -149,36 +170,35 @@ export const createModelPreviewData = (
 
 /**
  * Creates object with sidebar preview data
- * @param {object} previewData - model data
- * @param {object} curVersion - current version data
- * @param {object} curCustomVersionData - current custom version data
- * @returns {object} preview data
+ * @param {number} versionId - version ID
+ * @param {ModelPreviewDoc} previewData - current preview data
+ * @param {ModelVersionCustomData} curVersionData - current custom version data
+ * @returns {SidebarPreviewData} preview data
  */
 export const createSidebarPreviewData = (
-  versionId,
-  previewData,
-  curVersionData
-) => {
+  versionId: number,
+  previewData: ModelPreviewDoc,
+  curVersionData: ModelVersionCustomData,
+): SidebarPreviewData => {
   return {
     ...previewData,
     activeVersionId: versionId || null,
-    title: previewData?.name || previewData.title || null,
-    versionName: previewData?.versionName || curVersionData?.name || null,
-    imgUrl: previewData?.customPreviewImgUrl || previewData?.imgUrl || null,
-    type: previewData?.type || previewData?.modelType || null,
-    baseModel: curVersionData?.baseModel || previewData?.baseModel || null,
+    title: previewData?.name || previewData?.title,
+    versionName: previewData?.versionName || curVersionData?.name,
+    imgUrl: previewData?.customPreviewImgUrl || previewData?.imgUrl,
+    type: previewData?.type || previewData?.modelType,
+    baseModel: curVersionData?.baseModel || previewData?.baseModel,
     mainTag:
       curVersionData?.mainTag ||
       previewData?.mainTag ||
-      curVersionData?.defActTag ||
-      null,
+      curVersionData?.defActTag,
     weight: curVersionData?.weight || previewData?.weight || null,
     minWeight: curVersionData?.minWeight || previewData?.minWeight || null,
     maxWeight: curVersionData?.maxWeight || previewData?.maxWeight || null,
-    size: curVersionData?.size || previewData?.size || null,
+    size: curVersionData?.size || previewData?.size,
     tags: curVersionData?.trainedWords || previewData?.tags || null,
-    helperTags: curVersionData?.helperTags || previewData?.helperTags || null,
-    updatedAt: previewData?.updatedAt || null,
+    helperTags: curVersionData?.helperTags || previewData?.helperTags,
+    updatedAt: previewData?.updatedAt,
   };
 };
 
@@ -187,12 +207,14 @@ export const createSidebarPreviewData = (
  * @param {string} value - string value
  * @returns {string} model type
  */
-export const parseMoelType = (value) => {
-  return value
-    .replace(/[{}]/g, "")
-    .split(",")
-    .find((field) => field.includes("Type"))
-    .split("=")[1];
+export const parseMoelType = (value: string): string | null => {
+  return (
+    value
+      ?.replace(/[{}]/g, "")
+      ?.split(",")
+      ?.find((field) => field.includes("Type"))
+      ?.split("=")[1] || null
+  );
 };
 
 /**
@@ -203,17 +225,21 @@ export const parseMoelType = (value) => {
  * @param {string} versionIdParam - version ID search parameter
  * @returns version data
  */
-export const getInitialVersionData = (model, versionIdParam) => {
+export const getInitialVersionData = (
+  model: ModelData,
+  versionIdParam: string,
+): ModelVersionCivitai => {
   const modelVersions = sortModelVersions(model);
   const curVersionId = getCurrentVersionId(
     model,
     modelVersions,
-    versionIdParam
+    versionIdParam,
   );
 
-  const curVersionData = curVersionId
-    ? modelVersions?.find((version) => version.id === curVersionId)
-    : modelVersions[0];
+  const selectedVersionData = modelVersions?.find(
+    (version) => version.id === curVersionId,
+  );
+  const curVersionData = selectedVersionData || modelVersions[0];
 
   return curVersionData;
 };

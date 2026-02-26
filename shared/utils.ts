@@ -1,4 +1,4 @@
-import type { Image } from "./types/image.ts";
+import type { ComfyResource, Image } from "./types/image.ts";
 
 export const SUPPORTED_FILE_EXTENSIONS = [
   "safetensors",
@@ -16,8 +16,8 @@ export const SUPPORTED_FILE_EXTENSIONS = [
  * @param {string} name - The file name
  * @returns The file name without the file extension
  */
-export const clearFileExtension = (name: string) => {
-  if (!name) return;
+export const clearFileExtension = (name: string): string => {
+  if (!name) return name;
   //test
   const extension = SUPPORTED_FILE_EXTENSIONS.find((extension) =>
     name.endsWith(`.${extension}`),
@@ -35,7 +35,7 @@ export const clearFileExtension = (name: string) => {
  * @param {*} value - The value to convert
  * @returns The stringified value
  */
-export const convertToString = (value: any) => {
+export const convertToString = <T>(value: T): string => {
   if (typeof value === "string") {
     return value;
   } else {
@@ -70,11 +70,153 @@ export const clearObjectKeys = (
 };
 
 /**
+ * Parses ComfyUI JSON string and creates array of comfy resources
+ * @param {string} workflowString - comfy string
+ * @returns {ComfyResource[]} aray of comfy resources
+ */
+export const extractComfyResources = (
+  workflowString: string | undefined,
+): ComfyResource[] => {
+  if (!workflowString || typeof workflowString !== "string") return [];
+
+  let data;
+  try {
+    data = JSON.parse(workflowString);
+  } catch {
+    return [];
+  }
+
+  const results: ComfyResource[] = [];
+  const seen = new Set();
+
+  const add = (name: string, type: string, weight: number = 1) => {
+    if (!name || typeof name !== "string") return;
+
+    const key = `${type}:${name}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+
+    results.push({
+      name,
+      type,
+      weight: Number(weight) || 1,
+    });
+  };
+
+  const nodes = data?.workflow?.nodes ?? [];
+
+  for (const node of nodes) {
+    const type = node.type || "";
+    const widgets = node.widgets_values ?? [];
+
+    // -------------------------------------------------
+    // CHECKPOINT
+    // -------------------------------------------------
+    if (type.toLowerCase().includes("checkpoint")) {
+      const modelName = widgets[0];
+      if (typeof modelName === "string") {
+        add(modelName, "checkpoint");
+      }
+    }
+
+    // -------------------------------------------------
+    // VAE
+    // -------------------------------------------------
+    if (type.toLowerCase().includes("vae")) {
+      const vaeName = widgets[0];
+      if (typeof vaeName === "string") {
+        add(vaeName, "vae");
+      }
+    }
+
+    // -------------------------------------------------
+    // LORA MANAGER (your case)
+    // -------------------------------------------------
+    if (type === "Lora Loader (LoraManager)") {
+      const loraList = widgets[1];
+      if (Array.isArray(loraList)) {
+        for (const lora of loraList) {
+          if (!lora?.active) continue;
+
+          add(lora.name, "lora", lora.strength ?? lora.clipStrength ?? 1);
+        }
+      }
+    }
+
+    // -------------------------------------------------
+    // NORMAL LORA LOADER
+    // -------------------------------------------------
+    if (
+      type.toLowerCase().includes("lora") &&
+      type !== "Lora Loader (LoraManager)"
+    ) {
+      const name = widgets[0];
+      const weight = widgets[1] ?? 1;
+
+      if (typeof name === "string") {
+        add(name, "lora", weight);
+      }
+    }
+
+    // -------------------------------------------------
+    // CONTROLNET
+    // -------------------------------------------------
+    if (type.toLowerCase().includes("control")) {
+      const name = widgets[0];
+      if (typeof name === "string") {
+        add(name, "controlnet");
+      }
+    }
+
+    // -------------------------------------------------
+    // IPADAPTER
+    // -------------------------------------------------
+    if (type.toLowerCase().includes("ipadapter")) {
+      const name = widgets[0];
+      if (typeof name === "string") {
+        add(name, "ipadapter");
+      }
+    }
+  }
+
+  // -------------------------------------------------
+  // EMBEDDINGS (from prompt text)
+  // -------------------------------------------------
+  const prompt = data?.prompt;
+
+  if (prompt && typeof prompt === "object") {
+    for (const key in prompt) {
+      const node = prompt[key];
+      const text = node?.inputs?.text;
+
+      if (typeof text !== "string") continue;
+
+      const embeddingRegex = /\bembedding:([^\s,]+)/gi;
+      let match;
+
+      while ((match = embeddingRegex.exec(text)) !== null) {
+        add(match[1], "embedding", 1);
+      }
+    }
+  }
+
+  return results;
+};
+
+/**
  * Creates an image object
  * @param {Image} imageData - image data
  * @returns {Image} image object
  */
 export const transformImageData = (imageData: Image): Image => {
+  let comfyResources: ComfyResource[] | null = null;
+
+  if (imageData?.meta?.comfyResources) {
+    comfyResources = imageData?.meta?.comfyResources;
+  } else if (imageData?.meta?.comfy) {
+    comfyResources = extractComfyResources(imageData?.meta?.comfy);
+  }
+
   const newImageData = {
     id: imageData.id,
     ...(imageData?.postId && { postId: imageData.postId }),
@@ -88,6 +230,9 @@ export const transformImageData = (imageData: Image): Image => {
     ...(imageData?.nsfwLevel && { nsfwLevel: imageData.nsfwLevel }),
     ...(imageData?.type && { type: imageData.type }),
     ...(imageData?.username && { username: imageData.username }),
+    ...(imageData?.modelVersionIds && {
+      modelVersionIds: imageData.modelVersionIds,
+    }),
     ...(imageData?.meta && {
       meta: {
         ...(imageData?.meta?.ADetailerconfidence && {
@@ -170,6 +315,9 @@ export const transformImageData = (imageData: Image): Image => {
         }),
         ...(imageData?.meta?.additionalResources && {
           additionalResources: imageData.meta.additionalResources,
+        }),
+        ...(comfyResources && {
+          comfyResources,
         }),
         //To large file size for firestore
         // ...(imageData?.meta?.comfy && {

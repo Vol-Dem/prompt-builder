@@ -3,19 +3,47 @@ export interface AdditionalResource {
   strength?: number;
   strengthClip?: number;
   type: string;
+  hash?: string;
+  modelVersionId?: number | null;
 }
 
 export interface CivitaiResource {
   modelVersionId: number;
   weight?: number;
   type?: string;
+  hash?: string;
+  modelId?: number;
+  versionId?: number;
+  name?: string;
 }
+
+export interface ModelResource {
+  modelVersionId?: number;
+  weight?: number;
+  type?: string;
+  hash?: string;
+}
+
+export interface ComfyResource {
+  name: string;
+  type: string;
+  weight: number;
+  modelVersionId?: number;
+  hash?: string;
+}
+
+// export interface AllImageResources extends ModelResource,CivitaiResource,AdditionalResource {}
+export type AllImageResources = ModelResource &
+  CivitaiResource &
+  AdditionalResource &
+  ComfyResource;
 
 export interface ImageMeta {
   Model?: string;
   additionalResources?: AdditionalResource[];
   cfgScale?: number;
   civitaiResources?: CivitaiResource[];
+  comfyResources?: ComfyResource[];
   clipSkip?: number;
   controlNets?: string;
   denoise?: number;
@@ -49,7 +77,7 @@ export interface ImageMeta {
   VAE?: string;
   Scheduletype?: string;
   Size?: number;
-  resources?: string;
+  resources?: ModelResource[];
   scheduler?: string;
   comfy?: string;
   "Model hash"?: string;
@@ -61,7 +89,7 @@ export interface Image {
   hash?: string;
   id: number;
   meta: ImageMeta;
-  nsfw: boolean;
+  nsfw: boolean | string;
   nsfwLevel?: string | number;
   postId?: number;
   type?: string;
@@ -69,4 +97,5 @@ export interface Image {
   username?: string;
   height: number;
   width: number;
+  modelVersionIds?: number[];
 }

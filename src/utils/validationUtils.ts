@@ -8,6 +8,18 @@ import {
 } from "../variables/constants";
 import { parseModelIds } from "./modelUtils";
 
+type ValidTypes = {
+  email: boolean;
+  password: boolean;
+  required: boolean;
+  number: boolean;
+  maxLength: number;
+  minLength: number;
+  modelId: boolean;
+};
+
+type Validated = { inputValue: string; isValid: boolean; errorMessage: string };
+
 /**
  * Validates input data
  * @param {({email: boolean, password: boolean, required: boolean, number: boolean, maxLength: number, minLength: number, modelId: boolean})} validTypes - An object with validation types as keys (email, password, required, number, minLength, maxLength, modelId) and their configurations as values.
@@ -15,97 +27,103 @@ import { parseModelIds } from "./modelUtils";
  * @returns {({inputValue: string, isValid: boolean, errorMessage: string})} The state object containing the provided value, validation state, and error message.
  * Structure: {inputValue: string, isValid: boolean, errorMessage: string}
  */
-export const validateInput = (validTypes, value) => {
+export const validateInput = (
+  validTypes: ValidTypes,
+  value: string,
+): Validated | null => {
   if (!validTypes) {
-    return;
+    return null;
   }
 
-  const errorMessages = [];
+  const errorMessages: string[] = [];
 
-  Object.keys(validTypes).forEach((type) => {
-    if (!validTypes[type]) return;
+  for (const [type, typeValue] of Object.entries(validTypes) as [
+    keyof ValidTypes,
+    boolean,
+  ][]) {
+    if (typeValue) {
+      switch (type) {
+        case "email":
+          if (!isEmail(value)) {
+            errorMessages.push("Please enter a valid email address");
+          }
+          break;
 
-    switch (type) {
-      case "email":
-        if (!isEmail(value)) {
-          errorMessages.push("Please enter a valid email address");
-        }
-        break;
-
-      case "password": {
-        const hasNotMinLength = !hasMinLength(
-          value,
-          VALIDATION_PASSWORD_MIN_LENGTH
-        );
-        const hasNotLettersCombination =
-          VALIDATION_VALIDATE_PASSWORD_LETTER_COMBINATION &&
-          !hasLettersCombination(value);
-        const hasNotSpecialCharacters =
-          VALIDATION_VALIDATE_PASSWORD_SPECIAL_CHARACTERS &&
-          !hasSpecialCharacters(value);
-        const hasNotNumbers =
-          VALIDATION_VALIDATE_PASSWORD_NUMBER_INCLUSION && !hasNumbers(value);
-
-        if (
-          hasNotMinLength ||
-          hasNotLettersCombination ||
-          hasNotSpecialCharacters ||
-          hasNotNumbers
-        ) {
-          errorMessages.push(
-            `Password must be at leas ${VALIDATION_PASSWORD_MIN_LENGTH} characters long${
-              VALIDATION_VALIDATE_PASSWORD_LETTER_COMBINATION
-                ? ", contain a mix of upper and lower case letters"
-                : ""
-            }${
-              VALIDATION_VALIDATE_PASSWORD_SPECIAL_CHARACTERS
-                ? ", include special characters"
-                : ""
-            }${
-              VALIDATION_VALIDATE_PASSWORD_NUMBER_INCLUSION
-                ? ", and contain numbers"
-                : ""
-            }`
+        case "password": {
+          const hasNotMinLength = !hasMinLength(
+            value,
+            VALIDATION_PASSWORD_MIN_LENGTH,
           );
+          const hasNotLettersCombination =
+            VALIDATION_VALIDATE_PASSWORD_LETTER_COMBINATION &&
+            !hasLettersCombination(value);
+          const hasNotSpecialCharacters =
+            VALIDATION_VALIDATE_PASSWORD_SPECIAL_CHARACTERS &&
+            !hasSpecialCharacters(value);
+          const hasNotNumbers =
+            VALIDATION_VALIDATE_PASSWORD_NUMBER_INCLUSION && !hasNumbers(value);
+
+          if (
+            hasNotMinLength ||
+            hasNotLettersCombination ||
+            hasNotSpecialCharacters ||
+            hasNotNumbers
+          ) {
+            errorMessages.push(
+              `Password must be at leas ${VALIDATION_PASSWORD_MIN_LENGTH} characters long${
+                VALIDATION_VALIDATE_PASSWORD_LETTER_COMBINATION
+                  ? ", contain a mix of upper and lower case letters"
+                  : ""
+              }${
+                VALIDATION_VALIDATE_PASSWORD_SPECIAL_CHARACTERS
+                  ? ", include special characters"
+                  : ""
+              }${
+                VALIDATION_VALIDATE_PASSWORD_NUMBER_INCLUSION
+                  ? ", and contain numbers"
+                  : ""
+              }`,
+            );
+          }
+          break;
         }
-        break;
+        case "required":
+          if (!isNotEmpty(value)) {
+            errorMessages.push("This field is required");
+          }
+          break;
+
+        case "number":
+          if (!isNumber(value)) {
+            errorMessages.push("Value must be a number");
+          }
+          break;
+
+        case "maxLength":
+          if (isNumber(typeValue) && !lessThenMaxLength(value, typeValue)) {
+            errorMessages.push(
+              `Value cannot be more than ${typeValue} characters`,
+            );
+          }
+          break;
+
+        case "minLength":
+          if (isNumber(typeValue) && !hasMinLength(value, typeValue)) {
+            errorMessages.push(
+              `Value cannot be longer than ${typeValue} characters`,
+            );
+          }
+          break;
+
+        case "modelId":
+          if (!isModelId(value)) {
+            errorMessages.push(ERROR_MESSAGE_INVALID_MODEL_ID);
+          }
+          break;
+        default:
       }
-      case "required":
-        if (!isNotEmpty(value)) {
-          errorMessages.push("This field is required");
-        }
-        break;
-
-      case "number":
-        if (!isNumber(value)) {
-          errorMessages.push("Value must be a number");
-        }
-        break;
-
-      case "maxLength":
-        if (!lessThenMaxLength(value, validTypes[type])) {
-          errorMessages.push(
-            `Value cannot be more than ${validTypes[type]} characters`
-          );
-        }
-        break;
-
-      case "minLength":
-        if (!hasMinLength(value, validTypes[type])) {
-          errorMessages.push(
-            `Value cannot be longer than ${validTypes[type]} characters`
-          );
-        }
-        break;
-
-      case "modelId":
-        if (!isModelId(value)) {
-          errorMessages.push(ERROR_MESSAGE_INVALID_MODEL_ID);
-        }
-        break;
-      default:
     }
-  });
+  }
 
   const isValid = !errorMessages.length;
   const errorMessage = !isValid ? errorMessages[0] : "";
@@ -117,7 +135,7 @@ export const validateInput = (validTypes, value) => {
  * @param {string} value - Provided value
  * @returns {boolean} True if the value is a valid email, otherwise false
  */
-const isEmail = (value) => {
+const isEmail = (value: string): boolean => {
   return value.includes("@");
 };
 
@@ -126,7 +144,7 @@ const isEmail = (value) => {
  * @param {string} value - Provided value
  * @returns {boolean} True if the value contains both uppercase and lowercase characters, otherwise false
  */
-const hasLettersCombination = (value) => {
+const hasLettersCombination = (value: string): boolean => {
   const upper = /[A-Z]/.test(value);
   const lower = /[a-z]/.test(value);
 
@@ -138,7 +156,7 @@ const hasLettersCombination = (value) => {
  * @param {string} value - Provided value
  * @returns {boolean} True if the value contains numbers, otherwise false
  */
-const hasNumbers = (value) => {
+const hasNumbers = (value: string): boolean => {
   const numbers = /[0-9]/.test(value);
   return numbers;
 };
@@ -148,7 +166,7 @@ const hasNumbers = (value) => {
  * @param {string} value - Provided value
  * @returns {boolean} True if the value contains special characters, otherwise false
  */
-const hasSpecialCharacters = (value) => {
+const hasSpecialCharacters = (value: string): boolean => {
   return VALIDATION_PASSWORD_SPECIAL_CHARACTERS.test(value);
 };
 
@@ -157,7 +175,7 @@ const hasSpecialCharacters = (value) => {
  * @param {string} value - Provided value
  * @returns {boolean} True if the value is not empty, otherwise false
  */
-const isNotEmpty = (value) => {
+const isNotEmpty = (value: string): boolean => {
   return value.trim() !== "";
 };
 
@@ -166,8 +184,8 @@ const isNotEmpty = (value) => {
  * @param {string} value - Provided value
  * @returns {boolean} True if the value is a number, otherwise false
  */
-export const isNumber = (value) => {
-  return Number.isFinite(+value);
+export const isNumber = (value: unknown): value is number => {
+  return typeof value === "number" && Number.isFinite(value);
 };
 
 /**
@@ -176,17 +194,17 @@ export const isNumber = (value) => {
  * @param {string} minLength - Provided minimum length
  * @returns {boolean} True if the value meets the minimum length, otherwise false
  */
-const hasMinLength = (value, minLength) => {
+const hasMinLength = (value: string, minLength: number): boolean => {
   return value.length >= minLength;
 };
 
 /**
  * Checks if the provided value is not longer than the provided maximum length.
  * @param {string} value - Provided value
- * @param {string} maxLength - Provided maximum length
+ * @param {number} maxLength - Provided maximum length
  * @returns {boolean} True if the value is within the maximum length, otherwise false
  */
-const lessThenMaxLength = (value, maxLength) => {
+const lessThenMaxLength = (value: string, maxLength: number): boolean => {
   return value.length <= maxLength;
 };
 
@@ -205,7 +223,7 @@ const lessThenMaxLength = (value, maxLength) => {
  * @param {string} value - Provided value
  * @returns {boolean} True if the value is a valid model ID, otherwise false
  */
-const isModelId = (value) => {
+const isModelId = (value: string): boolean => {
   const [modelId] = parseModelIds(value);
   return !!modelId;
 };

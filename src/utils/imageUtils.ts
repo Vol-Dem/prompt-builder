@@ -1,4 +1,12 @@
-import { clearFileExtension } from "../../shared/utils";
+import type {
+  AdditionalResource,
+  CivitaiResource,
+  ComfyResource,
+  Image,
+  ModelResource,
+} from "../../shared/types/image";
+import { clearFileExtension, extractComfyResources } from "../../shared/utils";
+import type { ImageSrcs } from "../types/images.types";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_DEF } from "../variables/constants";
 import {
   checkIsInCurrentNsfwRange,
@@ -11,15 +19,15 @@ import { parseModelIds } from "./modelUtils";
  * Creates a new src link to request image/video with desired width and separate links for video in different formats
  * @param {string} src - image/video src
  * @param {number} width - desired image/video width
- * @param {string} type - file type: "video" or "image"
+ * @param {'video' | 'image'} type - file type: "video" or "image"
  * @returns {object} object with previews {previewSrc, previewVideoWebmSrc, previewVideoMp4Src, originalVideoMp4Src, originalVideoWebmSrc}
  */
 export const transformSrcPreview = (
-  src,
-  width = SETTINGS_IMAGE_PREVIEW_WIDTH_DEF,
-  type = "image",
-) => {
-  if (!src) return;
+  src: string,
+  width: number = SETTINGS_IMAGE_PREVIEW_WIDTH_DEF,
+  type: string = "image",
+): ImageSrcs => {
+  // if (!src) return {previewSrc: src};
 
   let previewSrc;
   let previewVideoWebmSrc;
@@ -80,7 +88,7 @@ export const transformSrcPreview = (
  * @param {string} postInput - input string
  * @returns {number} post ID
  */
-export const getPostIdFromInput = (postInput) => {
+export const getPostIdFromInput = (postInput: string): number | null => {
   if (Number.isFinite(+postInput)) {
     return +postInput;
   }
@@ -100,9 +108,9 @@ export const getPostIdFromInput = (postInput) => {
  * @param {string} url - image url
  * @returns {string} uniq ID
  */
-export const getUrlId = (url) => {
+export const getUrlId = (url: string): string | null => {
   if (typeof url !== "string") return null;
-  return clearFileExtension(url?.split("/").pop());
+  return clearFileExtension(url.split("/").slice(-1)[0]);
 };
 
 /**
@@ -110,8 +118,7 @@ export const getUrlId = (url) => {
  * @param {string} url - url
  * @returns {boolean}
  */
-export const checkIsVideo = (url) => {
-  if (typeof url !== "string") return;
+export const checkIsVideo = (url: string): boolean => {
   return (
     url
       .split(".")
@@ -121,17 +128,19 @@ export const checkIsVideo = (url) => {
 
 /**
  * Removes images that are not in the current NSFW range.
- * @param {array} images - images data
+ * @param {Image[]} images - images data
  * @param {string} nsfwLevel - current NSFW Level
- * @returns {array} filtered images
+ * @returns {Image[]} filtered images
  */
-export const filterNsfwImages = (images, nsfwLevel) => {
+export const filterNsfwImages = (
+  images: Image[],
+  nsfwLevel: string,
+): Image[] => {
   return images?.filter((image) => {
     if (image?.nsfwLevel) {
-      return (
-        checkIsInCurrentNsfwRange(nsfwLevel, image.nsfwLevel) ||
-        image.nsfwLevel === 1
-      );
+      return typeof image.nsfwLevel === "string"
+        ? checkIsInCurrentNsfwRange(nsfwLevel, image.nsfwLevel)
+        : image.nsfwLevel === 1;
     } else {
       return image?.nsfw === "None" || image?.nsfw === false;
     }
@@ -145,37 +154,39 @@ export const filterNsfwImages = (images, nsfwLevel) => {
  * @param {string} sortBy - field to sort by
  * @returns {array} an array of arrays in which all elements are grouped and sorted by a specified fields
  */
-export const groupAndSortByField = (items, groupBy, sortBy) => {
-  const sortedItems = {};
+export const groupAndSortByField = <
+  T,
+  GroupKey extends keyof T,
+  SortKey extends keyof T,
+>(
+  items: T[],
+  groupBy: GroupKey,
+  sortBy: SortKey,
+): T[][] => {
+  const grouped: Record<string, T[]> = {};
 
-  items.forEach((item) => {
-    if (Object.hasOwn(sortedItems, item.postId)) {
-      sortedItems[item[groupBy]].push(item);
-    } else {
-      sortedItems[item[groupBy]] = [item];
+  for (const item of items) {
+    const key = String(item[groupBy]);
+
+    if (!grouped[key]) {
+      grouped[key] = [];
     }
-  });
 
-  if (!sortedItems) return;
+    grouped[key].push(item);
+  }
 
-  const sortedImageArr = Object.keys(sortedItems).sort((a, b) => {
-    return (
-      Date.parse(sortedItems[b].slice(-1).pop()[sortBy]) -
-      Date.parse(sortedItems[a].slice(-1).pop()[sortBy])
+  for (const key in grouped) {
+    grouped[key].sort(
+      (a, b) =>
+        Date.parse(a[sortBy] as string) - Date.parse(b[sortBy] as string),
     );
-  });
+  }
 
-  const images = sortedImageArr.map((key) => {
-    return sortedItems[key];
-  });
-
-  const sortedImageArrWithSortedImages = images.map((post) => {
-    return post.sort((a, b) => {
-      return Date.parse(a[sortBy]) - Date.parse(b[sortBy]);
-    });
-  });
-
-  return sortedImageArrWithSortedImages;
+  return Object.values(grouped).sort(
+    (a, b) =>
+      Date.parse(b[b.length - 1][sortBy] as string) -
+      Date.parse(a[a.length - 1][sortBy] as string),
+  );
 };
 
 /**
@@ -183,7 +194,7 @@ export const groupAndSortByField = (items, groupBy, sortBy) => {
  * @param {object} image - image data
  * @returns {object} cleaned image data
  */
-export const cleanImageMeta = (image) => {
+export const cleanImageMeta = (image: Image): Image => {
   if (image?.meta) {
     const metaArr = Object.entries(image.meta).filter((entry) => !!entry[0]);
 
@@ -207,7 +218,9 @@ export const cleanImageMeta = (image) => {
  * @param {object} imageData - image data
  * @returns {array} aray of unique image resources
  */
-export const getUniqImageResources = (imageData) => {
+export const getUniqImageResources = (
+  imageData: Image,
+): (CivitaiResource | ModelResource | AdditionalResource | ComfyResource)[] => {
   const resources = imageData?.meta?.resources || [];
   const additionalResources =
     imageData?.meta?.additionalResources?.map((res) => {
@@ -219,10 +232,20 @@ export const getUniqImageResources = (imageData) => {
       };
     }) || [];
   const civitaiResources = imageData?.meta?.civitaiResources || [];
+  const idResources =
+    imageData?.modelVersionIds?.map((versionId) => ({
+      modelVersionId: versionId,
+    })) || [];
+  const comfyResources =
+    imageData?.meta?.comfyResources ||
+    extractComfyResources(imageData?.meta?.comfy);
+
   const allImageResources = [
     ...resources,
     ...additionalResources,
     ...civitaiResources,
+    ...idResources,
+    ...comfyResources,
   ];
 
   return filterDuplicates(allImageResources, "modelVersionId");
