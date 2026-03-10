@@ -170,8 +170,8 @@ export const moveElementToPosition = ({
 }: {
   item: PromptItem;
   type: string;
-  dropTargetType: string;
-  prevPosition: number;
+  dropTargetType?: string;
+  prevPosition?: number;
   curPromptArr: PromptItem[];
 }): PromptItem[] => {
   const curPromptArrUpdatedPosition = curPromptArr.toSpliced(
@@ -180,7 +180,11 @@ export const moveElementToPosition = ({
     item,
   );
   return curPromptArrUpdatedPosition.map((tag) => {
-    if (dropTargetType === type && Number.isFinite(prevPosition)) {
+    if (
+      dropTargetType === type &&
+      prevPosition &&
+      Number.isFinite(prevPosition)
+    ) {
       if (
         item.position < prevPosition &&
         tag.position >= item.position &&

@@ -1,9 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { getAuth } from "firebase/auth";
 import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
 
 import firebaseApp from "../firebase-config";
-import { saveToStorage, uploadStorage } from "../utils/generalUtils";
+import {
+  normalizeError,
+  saveToStorage,
+  uploadStorage,
+} from "../utils/generalUtils";
 import {
   moveElementToPosition,
   createPromptItem,
@@ -11,6 +15,13 @@ import {
   markDuplicateTags,
 } from "../utils/promptUtils";
 import { splitTags } from "../utils/promptUtils";
+import type { Presets } from "../../shared/types/user";
+import type {
+  PromptOpenState,
+  PromptState,
+  TextModeState,
+} from "../types/prompt.types";
+import type { AppThunk } from "./store";
 
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
@@ -60,7 +71,7 @@ const promptSlice = createSlice({
     promptHeight: null,
     positivePromptHeight: null,
     negativePromptHeight: null,
-  },
+  } as PromptState,
   reducers: {
     setCurrentPrompt(state, action) {
       state.curPrompt = action.payload;
@@ -97,7 +108,7 @@ const promptSlice = createSlice({
      * Sets postive and negative prompt array states.
      */
     setTextMode(state, action) {
-      const allIds = [];
+      const allIds: number[] = [];
 
       const promptArr = splitTags(state.curPrompt).map((tag, i) => {
         const newId = allIds[allIds.length - 1] + 1 || 0;
@@ -205,7 +216,8 @@ const promptSlice = createSlice({
 
       let newPromptArr;
 
-      let delIndex;
+      let delIndex: number | null = null;
+
       if (!dropTargetType && value) {
         delIndex = promptArr.findIndex((tag) => tag.tag === value);
       }
@@ -213,13 +225,13 @@ const promptSlice = createSlice({
         delIndex = promptArr.findIndex((tag) => tag.id === id);
       }
 
-      if (delIndex < 0) return;
+      if (delIndex && delIndex < 0) return;
 
       newPromptArr = promptArr.flatMap((tag) => {
         if (tag.position === delIndex) {
           return [];
         }
-        if (tag.position > delIndex) {
+        if (delIndex && tag.position > delIndex) {
           return {
             ...tag,
             position: tag.position - 1,
@@ -242,7 +254,10 @@ const promptSlice = createSlice({
      * Creates tag ID for new tags.
      * Marks duplicate tags.
      */
-    addAllTagsToPrompt(state, action) {
+    addAllTagsToPrompt(
+      state,
+      action: PayloadAction<{ type: string; value: string[] }>,
+    ) {
       const allIds = [
         ...state.curPromptArr.map((tag) => tag.id),
         ...state.curNegPromptArr.map((tag) => tag.id),
@@ -263,7 +278,7 @@ const promptSlice = createSlice({
       const curPromptPositions = isPositive
         ? promptPosPositions
         : promptPNegPositions;
-
+      console.log(action.payload);
       const newTags = action.payload?.value?.filter((newWord) => {
         const isInPrompt = curPromptArr.find(
           (promptWord) => promptWord.tag === newWord,
@@ -392,7 +407,7 @@ const promptSlice = createSlice({
           action.type.startsWith("prompt/setCurrentPrompt") ||
           action.type.startsWith("prompt/setCurrentNegPrompt"),
         (state) => {
-          const allIds = [];
+          const allIds: number[] = [];
 
           const promptArr = splitTags(state.curPrompt).map((tag, i) => {
             const newId = allIds[allIds.length - 1] + 1 || 0;
@@ -447,13 +462,13 @@ const promptSlice = createSlice({
  *
  * @returns {Function} Redux thunk.
  */
-export const uploadPromptFromStorage = () => {
+export const uploadPromptFromStorage = (): AppThunk => {
   return (dispatch, getState) => {
     const uid = getState().auth.user.uid;
-    const prompt = uploadStorage(`${uid}-prompt`);
-    const negPrompt = uploadStorage(`${uid}-neg-prompt`);
-    const promptState = uploadStorage(`${uid}-prompt-state`);
-    const isTextMode = uploadStorage(`${uid}-prompt-text`);
+    const prompt = uploadStorage<string>(`${uid}-prompt`);
+    const negPrompt = uploadStorage<string>(`${uid}-neg-prompt`);
+    const promptState = uploadStorage<PromptOpenState>(`${uid}-prompt-state`);
+    const isTextMode = uploadStorage<TextModeState>(`${uid}-prompt-text`);
 
     if (prompt)
       dispatch(
@@ -489,7 +504,10 @@ export const uploadPromptFromStorage = () => {
  * @param {Array<Object>} updatedPresets - Updated preset list.
  * @returns {Function} Redux thunk.
  */
-export const updatePresets = (presetType, updatedPresets) => {
+export const updatePresets = (
+  presetType: string,
+  updatedPresets: Presets,
+): AppThunk => {
   return async (dispatch, getState) => {
     const uid = getState().auth.user.uid;
     const curPreset = getState().prompt.presets;
@@ -502,7 +520,7 @@ export const updatePresets = (presetType, updatedPresets) => {
         {
           [presetField]: updatedPresets,
         },
-        { merge: true },
+        // { merge: true },
       );
 
       dispatch(
@@ -523,7 +541,7 @@ export const updatePresets = (presetType, updatedPresets) => {
  *
  * @returns {Function} Redux thunk.
  */
-export const getUserPresets = () => {
+export const getUserPresets = (): AppThunk => {
   return async (dispatch, getState) => {
     try {
       const uid = getState().auth.user.uid;
@@ -535,8 +553,8 @@ export const getUserPresets = () => {
           dispatch(promptActions.setPresets(presetsData.presets));
         }
       }
-    } catch (err) {
-      console.error(err.message);
+    } catch (error) {
+      throw normalizeError(error);
     }
   };
 };

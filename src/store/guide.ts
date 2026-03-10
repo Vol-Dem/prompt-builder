@@ -1,8 +1,14 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { getAuth } from "firebase/auth";
 
 import firebaseApp from "../firebase-config";
 import { saveGuideData } from "../utils/fetch/fetchUtils";
+import type {
+  GuideState,
+  SetGuideIsActivePayload,
+  SetStepPayload,
+  SwitchStepPayload,
+} from "../types/guide.types";
 
 const auth = getAuth(firebaseApp);
 
@@ -38,22 +44,22 @@ const guideSlice = createSlice({
       active: false,
       step: 1,
     },
-  },
+  } as GuideState,
   reducers: {
-    setGuideIsActive(state, action) {
+    setGuideIsActive(state, action: PayloadAction<boolean>) {
       state.active = action.payload;
     },
-    setIntroDisabled(state, action) {
+    setIntroDisabled(state, action: PayloadAction<boolean>) {
       state.introDisabled = action.payload;
     },
-    setOutroIsActive(state, action) {
+    setOutroIsActive(state, action: PayloadAction<boolean>) {
       state.outroIsActive = action.payload;
     },
     /**
      * Advances the guide to the next step for the given section.
-     * @param {{ type: 'home' | 'model' | 'edit' }} action.payload
+     * @param {SwitchStepPayload} action.payload
      */
-    guideNextStep(state, action) {
+    guideNextStep(state, action: PayloadAction<SwitchStepPayload>) {
       const type = action.payload?.type;
       if (type) {
         state[type].step = state[type].step + 1;
@@ -61,18 +67,18 @@ const guideSlice = createSlice({
     },
     /**
      * Advances the guide to the previous step for the given section.
-     * @param {{ type: 'home' | 'model' | 'edit' }} action.payload
+     * @param {SwitchStepPayload} action.payload
      */
-    guidePrevStep(state, action) {
+    guidePrevStep(state, action: PayloadAction<SwitchStepPayload>) {
       const type = action.payload?.type;
       if (type && state[type]?.step > 0) {
         state[type].step = state[type].step - 1;
       }
     },
-    setGuideActive(state, action) {
+    setGuideActive(state, action: PayloadAction<SetGuideIsActivePayload>) {
       state[action.payload.type].active = action.payload.value;
     },
-    setGuideStep(state, action) {
+    setGuideStep(state, action: PayloadAction<SetStepPayload>) {
       state[action.payload.type].step = action.payload.value;
     },
     /**
@@ -80,16 +86,9 @@ const guideSlice = createSlice({
      *
      * Used when restoring the guide from the database on app start.
      *
-     * @param {{
-     *   active: boolean,
-     *   introDisabled: boolean,
-     *   outroIsActive: boolean,
-     *   home: { active: boolean, step: number },
-     *   model: { active: boolean, step: number },
-     *   edit: { active: boolean, step: number }
-     * }} action.payload
+     * @param {GuideState} action.payload
      */
-    setGuideInitialState(state, action) {
+    setGuideInitialState(state, action: PayloadAction<GuideState>) {
       if (action.payload) {
         state.active = action.payload.active;
         state.introDisabled = action.payload.introDisabled;

@@ -7,6 +7,13 @@ import firebaseApp from "../firebase-config";
 import { SETTINGS_REF_IMAGE_AMOUNT } from "../variables/constants";
 import { checkIsMobile } from "../utils/generalUtils";
 import { checkIsVideo, getUrlId } from "../utils/imageUtils";
+import type { SidebarPreviewData } from "../types/general.types";
+import type { Image } from "../../shared/types/image";
+import type { AppThunk } from "./store";
+import type {
+  RightSidebarOpenState,
+  RightSidebarState,
+} from "../types/sidebar.types";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -35,7 +42,7 @@ const usedModelsSlice = createSlice({
     formIsOpen: false,
     fullCardView: false,
     sidePanelWidth: null,
-  },
+  } as RightSidebarState,
   reducers: {
     addModelsToPanel(state, action) {
       state.models = action.payload;
@@ -92,7 +99,7 @@ const usedModelsSlice = createSlice({
  * @param {number} id - Model ID.
  * @returns {Function} Redux thunk.
  */
-export const removeModelFromPanel = (id) => {
+export const removeModelFromPanel = (id: number): AppThunk => {
   return (dispatch, getState) => {
     const curModels = getState().used.models;
     const newModels = curModels.filter((model) => model.id !== id);
@@ -107,7 +114,7 @@ export const removeModelFromPanel = (id) => {
  * @param {Object} data - Model data.
  * @returns {Function} Redux thunk.
  */
-export const addModelToPanel = (data) => {
+export const addModelToPanel = (data: SidebarPreviewData): AppThunk => {
   return (dispatch, getState) => {
     const curModels = getState().used.models;
     const modelIsInPanel = getState().used.models.some(
@@ -133,13 +140,13 @@ export const addModelToPanel = (data) => {
  * @param {string} url - Image URL.
  * @returns {Function} Redux thunk.
  */
-export const addImageToPanel = (data, url) => {
+export const addImageToPanel = (data: Image, url: string): AppThunk => {
   return (dispatch, getState) => {
     const curImages = getState().used.images;
     const imageIsInPanel = getState().used.images.some((image) => {
       if (image?.type === "video" || (url && checkIsVideo(url))) {
         const uniqUrlPart = getUrlId(url);
-        return image.url.includes(uniqUrlPart);
+        if (uniqUrlPart) return image.url.includes(uniqUrlPart);
       }
       return image.hash === data.hash;
     });
@@ -158,13 +165,13 @@ export const addImageToPanel = (data, url) => {
  * @param {string} url - Image URL.
  * @returns {Function} Redux thunk.
  */
-export const removeImageFromPanel = (hash, url) => {
+export const removeImageFromPanel = (hash: string, url: string): AppThunk => {
   return (dispatch, getState) => {
     const curImages = getState().used.images;
     const newImages = curImages.filter((image) => {
       if (image?.type === "video" || (url && checkIsVideo(url))) {
         const uniqUrlPart = getUrlId(url);
-        return !image.url.includes(uniqUrlPart);
+        if (uniqUrlPart) return !image.url.includes(uniqUrlPart);
       }
       return image.hash !== hash;
     });
@@ -182,12 +189,14 @@ export const removeImageFromPanel = (hash, url) => {
  *
  * @returns {Function} Redux thunk.
  */
-export const uploadPanelStateFromStorage = () => {
+export const uploadPanelStateFromStorage = (): AppThunk => {
   return (dispatch, getState) => {
     const uid = getState().auth.user.uid;
     const storageData = uploadStorage(`${uid}-side`);
     const storageImgData = uploadStorage(`${uid}-side-img`);
-    const storagePanelState = uploadStorage(`${uid}-side-state`);
+    const storagePanelState = uploadStorage<RightSidebarOpenState>(
+      `${uid}-side-state`,
+    );
     // const storageViewState = uploadStorage(`${uid}-side-view`);
 
     if (storageData) dispatch(usedModelsActions.addModelsToPanel(storageData));
@@ -215,20 +224,14 @@ export const uploadPanelStateFromStorage = () => {
  * @param {boolean} isFullView - Whether full card view is enabled.
  * @returns {Function} Redux thunk.
  */
-export const switchSidePanelfullView = (isFullView) => {
+export const switchSidePanelfullView = (isFullView: boolean): AppThunk => {
   return async (dispatch, getState) => {
     dispatch(usedModelsActions.cardViewState(isFullView));
     const uid = getState().auth.user.uid;
     const userRef = doc(firestore, "users", uid);
-    await updateDoc(
-      userRef,
-      {
-        "uiState.sidePanelCardfullView": isFullView,
-      },
-      {
-        merge: true,
-      },
-    );
+    await updateDoc(userRef, {
+      "uiState.sidePanelCardfullView": isFullView,
+    });
   };
 };
 

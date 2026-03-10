@@ -1,7 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 
 import firebaseApp from "../firebase-config";
+import type { AppThunk } from "./store";
+import type { GeneralState } from "../types/general.types";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -33,19 +35,19 @@ const generalSlice = createSlice({
     sfwValue: "None",
     nsfwValue: "X",
     activeAboutSectionId: "",
-  },
+  } as GeneralState,
   reducers: {
-    setIsMobile(state, action) {
+    setIsMobile(state, action: PayloadAction<boolean>) {
       state.isMobile = action.payload;
     },
-    setHeaderIsFixed(state, action) {
+    setHeaderIsFixed(state, action: PayloadAction<boolean>) {
       state.headerIsFixed = action.payload;
     },
     /**
      * Enables or disables NSFW mode.
      * Automatically updates `nsfwLevel` based on the active mode.
      */
-    setNsfwMode(state, action) {
+    setNsfwMode(state, action: PayloadAction<boolean>) {
       state.nsfwMode = action.payload;
       if (action.payload) {
         state.nsfwLevel = state.nsfwValue;
@@ -53,17 +55,17 @@ const generalSlice = createSlice({
         state.nsfwLevel = state.sfwValue;
       }
     },
-    setNsfwLevel(state, action) {
+    setNsfwLevel(state, action: PayloadAction<string>) {
       state.nsfwLevel = action.payload;
     },
-    setActiveAboutSectionId(state, action) {
+    setActiveAboutSectionId(state, action: PayloadAction<string>) {
       state.activeAboutSectionId = action.payload;
     },
     /**
      * Updates SFW value.
      * If NSFW mode is disabled, also updates active `nsfwLevel`.
      */
-    setSfwValue(state, action) {
+    setSfwValue(state, action: PayloadAction<string>) {
       state.sfwValue = action.payload;
       if (!state.nsfwMode) {
         state.nsfwLevel = action.payload;
@@ -73,7 +75,7 @@ const generalSlice = createSlice({
      * Updates NSFW value.
      * If NSFW mode is disabled, also updates active `nsfwLevel`.
      */
-    setNsfwValue(state, action) {
+    setNsfwValue(state, action: PayloadAction<string>) {
       state.nsfwValue = action.payload;
       if (state.nsfwMode) {
         state.nsfwLevel = action.payload;
@@ -93,28 +95,21 @@ const generalSlice = createSlice({
  * @param {boolean} nsfw - Whether to enable NSFW mode.
  * @returns {Function} Redux thunk.
  */
-export const switchNsfwMode = (nsfw) => {
+export const switchNsfwMode = (nsfw: boolean): AppThunk => {
   return async (dispatch, getState) => {
     const sfwValue = getState().general.sfwValue;
     const nsfwValue = getState().general.nsfwValue;
     const nsfwLevel = nsfw ? nsfwValue : sfwValue;
 
     dispatch(generalActions.setNsfwMode(nsfw));
-    // dispatch(modelActions.setNsfwMode(nsfw));
     dispatch(generalActions.setNsfwLevel(nsfwLevel));
 
     const uid = getState().auth.user.uid;
 
     const userRef = doc(firestore, "users", uid);
-    await updateDoc(
-      userRef,
-      {
-        nsfwMode: nsfw,
-      },
-      {
-        merge: true,
-      },
-    );
+    await updateDoc(userRef, {
+      nsfwMode: nsfw,
+    });
   };
 };
 
@@ -124,7 +119,7 @@ export const switchNsfwMode = (nsfw) => {
  * @param {boolean} nsfw - NSFW value
  * @returns {Function} Redux thunk.
  */
-export const setNsfwValues = (sfw, nsfw) => {
+export const setNsfwValues = (sfw: string, nsfw: string): AppThunk => {
   return async (dispatch, getState) => {
     dispatch(generalActions.setSfwValue(sfw));
     dispatch(generalActions.setNsfwValue(nsfw));
@@ -132,16 +127,10 @@ export const setNsfwValues = (sfw, nsfw) => {
     const uid = getState().auth.user.uid;
 
     const userRef = doc(firestore, "users", uid);
-    await updateDoc(
-      userRef,
-      {
-        sfwValue: sfw,
-        nsfwValue: nsfw,
-      },
-      {
-        merge: true,
-      },
-    );
+    await updateDoc(userRef, {
+      sfwValue: sfw,
+      nsfwValue: nsfw,
+    });
   };
 };
 

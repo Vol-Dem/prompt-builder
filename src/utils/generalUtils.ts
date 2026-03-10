@@ -5,17 +5,13 @@ import {
   ERROR_MESSAGE_DEFAULT,
   REGEX_MOBAL,
   SETTINGS_NSFW_VALUES_DATA,
-  // SETTINGS_SUPPORTED_FILE_EXTENSIONS,
 } from "../variables/constants";
-// import { isNumber } from "./validationUtils";
 import type {
   CollectionCategory,
-  ModelCategory,
+  ModelCategoryInput,
 } from "../../shared/types/user";
 import type { NotificationData } from "../types/notification.types";
 import { FirebaseError } from "firebase/app";
-
-// type CustomError = Error & { isCustom: true };
 
 interface CustomError extends Error {
   isCustom: true;
@@ -75,13 +71,14 @@ export const throwCustomError = (message: string): never => {
  * @param {object} err - The error object
  * @returns {string} - The custom or default error message
  */
-export const handleErrors = (err: CustomError): string => {
+export const handleErrors = (err: AppError): string => {
   let errorMessage = ERROR_MESSAGE_DEFAULT;
 
   if (err.isCustom) {
     errorMessage = err.message;
   } else {
     console.error(err);
+    console.error(err.original);
   }
 
   //Error message for Civitai connection bug
@@ -169,15 +166,16 @@ export const filterDuplicates = <T, K extends keyof T>(
  */
 export const createCategoryId = (
   id: string,
-  categoriesData: ModelCategory[],
+  categoriesData: ModelCategoryInput[],
 ): string => {
   let curId = id?.toString()?.toLowerCase();
-
+  console.log(id);
+  console.log(categoriesData);
   //Checks if a category ID exists
   const existedIds = categoriesData?.filter((category) => {
     const normalizedId = category.id?.toString()?.toLowerCase();
     const normalizedIdWithoutIndex = normalizedId
-      .split("-")
+      ?.split("-")
       .toSpliced(-1, 1)
       .join("-");
 
@@ -188,8 +186,10 @@ export const createCategoryId = (
     curId = `${curId}-1`;
   } else if (existedIds?.length > 1) {
     const idIndexes = existedIds
-      .map((existedId) => +existedId.id.split("-").slice(-1)[0])
-      .filter(Boolean)
+      .map((existedId) =>
+        existedId.id ? +existedId.id.split("-").slice(-1)[0] : null,
+      )
+      .filter((a) => a !== null && a !== undefined)
       .sort();
     console.log(idIndexes);
     if (idIndexes?.length) {

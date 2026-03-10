@@ -20,6 +20,12 @@ export interface ModelCategory {
   subcategories?: ModelSubcategory[];
 }
 
+export interface ModelCategoryInput {
+  id: string | null;
+  name: string;
+  subcategories?: ModelSubcategory[];
+}
+
 export interface CollectionCategory {
   collectionNames?: CollectionName[];
   id: string;

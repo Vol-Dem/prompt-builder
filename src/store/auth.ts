@@ -16,7 +16,6 @@ import {
   EmailAuthProvider,
   type Unsubscribe,
   type UserCredential,
-  type Auth,
   AuthCredential,
 } from "firebase/auth";
 import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
@@ -33,7 +32,7 @@ import { guideActions } from "./guide";
 import { generalActions } from "./general";
 import { imagesActions } from "./images";
 import { getAppInfo } from "./notification";
-import { handleErrors, throwCustomError } from "../utils/generalUtils";
+import { handleErrors } from "../utils/generalUtils";
 import type { AuthState, LoginPayload } from "../types/auth.types";
 import type { AppThunk } from "./store";
 import type { FirebaseError } from "firebase/app";
@@ -176,7 +175,7 @@ export const initAuth = (): AppThunk => {
           }),
         );
         dispatch(getAppInfo());
-        dispatch(uploadPanelStateFromStorage(user.uid));
+        dispatch(uploadPanelStateFromStorage());
         dispatch(uploadPromptFromStorage());
         dispatch(getUserData(user.uid));
       }
