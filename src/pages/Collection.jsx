@@ -52,7 +52,7 @@ const Collection = ({ title }) => {
   );
   const categoriesData = useSelector((state) => state.images.categories);
   const collectionPreview = collectionPreviews?.data?.find(
-    (preview) => preview.id === collectionData.id,
+    (preview) => preview?.id === collectionData?.id,
   );
 
   useEffect(() => {

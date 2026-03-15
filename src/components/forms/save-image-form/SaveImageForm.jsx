@@ -136,7 +136,7 @@ const SaveImageForm = ({
         setSavedImageIds(curImageIds);
       }
 
-      if (!data.items.length) {
+      if (!data?.items?.length) {
         throwCustomError(ERROR_MESSAGE_EMPTY);
       }
 

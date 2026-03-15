@@ -42,6 +42,7 @@ import type {
   SavedImagePostDoc,
 } from "../../../shared/types/firestore";
 import type { ModelVersion } from "../../../shared/types/model";
+import type { UploadingItem } from "../../types/upload.types";
 
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
@@ -191,22 +192,6 @@ export const deleteImagePostDocs = async (
   await batch.commit();
 };
 
-export interface PostInfo {
-  postId: number;
-  modelId: number;
-  versionId: number;
-  location: string;
-  existedAmount?: number | null;
-  ids: number[];
-  images: Image[];
-  imgUrl: string;
-  modelName: string;
-  nsfwMode: boolean;
-  delete: boolean;
-  collectionData: Record<string, any> | null;
-  postData?: { imagesId: number[]; postId: number };
-}
-
 /**
  * Adds new images to post data in the database or creates new post data if it doesn't exist
  * @param {object} postInfo - The post data
@@ -214,7 +199,7 @@ export interface PostInfo {
  * @returns {object} An object containing the post ID and the updated array of saved image IDs
  */
 export const updateImagePostData = async (
-  postInfo: PostInfo,
+  postInfo: UploadingItem,
   imagesData: Image[],
 ) => {
   try {

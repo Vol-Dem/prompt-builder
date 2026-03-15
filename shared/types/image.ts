@@ -90,7 +90,7 @@ export interface Image {
   id: number;
   meta: ImageMeta;
   nsfw: boolean | string;
-  nsfwLevel?: string | number;
+  nsfwLevel: string | number;
   postId?: number;
   type?: string;
   url: string;
@@ -98,4 +98,12 @@ export interface Image {
   height: number;
   width: number;
   modelVersionIds?: number[];
+}
+
+export interface SavedPostDoc {
+  createdAt: string;
+  hasSfw: boolean;
+  id: number;
+  items: Image[];
+  versionsId: number[];
 }

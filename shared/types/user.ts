@@ -11,7 +11,7 @@ export interface CollectionSubcategory {
 export interface CollectionName {
   id: number;
   name: string;
-  subcategories: string[];
+  subcategories?: string[];
 }
 
 export interface ModelCategory {

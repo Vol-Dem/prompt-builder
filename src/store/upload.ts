@@ -1,6 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-import { filterDuplicates, throwCustomError } from "../utils/generalUtils";
+import {
+  AppError,
+  filterDuplicates,
+  normalizeError,
+  throwCustomError,
+} from "../utils/generalUtils";
 import { modelActions } from "./model";
 import { savePostToCollections } from "./images";
 import {
@@ -9,6 +14,9 @@ import {
 } from "../variables/constants";
 import { updateImagePostData } from "../utils/fetch/fetchImages";
 import { transformImageData } from "../../shared/utils";
+import type { UploadingItem, UploadState } from "../types/upload.types";
+import type { AppThunk } from "./store";
+import type { Image } from "../../shared/types/image";
 // import { transformImageData } from "../utils/transformUtils";
 
 /**
@@ -34,28 +42,31 @@ const uploadSlice = createSlice({
     completedAmount: 0,
     curPostId: null,
     isUploading: false,
-  },
+  } as UploadState,
   reducers: {
-    addToQueue(state, action) {
+    addToQueue(state, action: PayloadAction<UploadingItem>) {
       state.queue.push(action.payload);
     },
     /**
      * Removes post from uploading queue.
      */
-    removeFromQueue(state, action) {
+    removeFromQueue(
+      state,
+      action: PayloadAction<{ postId: number; versionId: number }>,
+    ) {
       const newQueue = state.queue.filter((item) => {
         return item.postId !== action.payload.postId;
       });
 
       state.queue = [...newQueue];
     },
-    setCurPostId(state, action) {
+    setCurPostId(state, action: PayloadAction<number | null>) {
       state.curPostId = action.payload;
     },
     /**
      * Adds post to rejected list.
      */
-    addToRejected(state, action) {
+    addToRejected(state, action: PayloadAction<UploadingItem>) {
       const itemExists = state.rejected.find(
         (item) => item.postId === action.payload.postId,
       );
@@ -68,14 +79,14 @@ const uploadSlice = createSlice({
      * Increases completedAmount.
      * Sets last 10 posts.
      */
-    addToCompleted(state, action) {
+    addToCompleted(state, action: PayloadAction<UploadingItem>) {
       state.completedAmount = state.completedAmount + 1;
       state.completed = [action.payload, ...state.completed].slice(
         0,
         SETTINGS_UPLOADING_COMPLETED_AMOUNT,
       );
     },
-    setIsUploading(state, action) {
+    setIsUploading(state, action: PayloadAction<boolean>) {
       state.isUploading = action.payload;
     },
     /**
@@ -117,7 +128,7 @@ const uploadSlice = createSlice({
  *
  * @returns {Function} Redux thunk.
  */
-export const savePost = (postInfo) => {
+export const savePost = (postInfo: UploadingItem): AppThunk => {
   return async (dispatch) => {
     try {
       const {
@@ -137,7 +148,7 @@ export const savePost = (postInfo) => {
       dispatch(uploadActions.setIsUploading(true));
       dispatch(uploadActions.setCurPostId(postId));
 
-      let data = { items: [] };
+      let data: { items: Image[] } = { items: [] };
 
       if (!images?.length) {
         const imgExampleResponse = await fetch(
@@ -145,7 +156,6 @@ export const savePost = (postInfo) => {
             nsfwMode ? `&nsfw=X` : `&nsfw=None`
           }`,
         );
-
         data = await imgExampleResponse.json();
       } else {
         data = { items: filterDuplicates(images, "id") };
@@ -160,7 +170,7 @@ export const savePost = (postInfo) => {
           postInfo?.ids?.length ? postInfo.ids.includes(image?.id) : true,
         )
         .sort((a, b) => {
-          return b.createdAt - a.createdAt;
+          return Date.parse(b.createdAt) - Date.parse(a.createdAt);
         })
         .map((imageData) => {
           return transformImageData(imageData);
@@ -171,7 +181,7 @@ export const savePost = (postInfo) => {
         examplesDataWithRes,
       );
 
-      if (location === "collections") {
+      if (location === "collections" && collectionData) {
         const imageIds = data.items.map((image) => image.id);
         await dispatch(
           savePostToCollections({
@@ -194,7 +204,7 @@ export const savePost = (postInfo) => {
       dispatch(uploadActions.removeFromQueue({ postId, versionId }));
       dispatch(uploadActions.addToCompleted(postInfo));
       dispatch(uploadActions.setIsUploading(false));
-    } catch (err) {
+    } catch (error) {
       dispatch(uploadActions.addToRejected(postInfo));
       dispatch(
         uploadActions.removeFromQueue({
@@ -204,8 +214,8 @@ export const savePost = (postInfo) => {
       );
       dispatch(uploadActions.setCurPostId(null));
       dispatch(uploadActions.setIsUploading(false));
-      console.error(err.message);
-      throw new Error(err);
+
+      throw normalizeError(error);
     }
   };
 };

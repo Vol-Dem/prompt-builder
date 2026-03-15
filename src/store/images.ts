@@ -11,31 +11,57 @@ import {
   limit,
   orderBy,
   query,
+  QueryDocumentSnapshot,
   setDoc,
   startAfter,
   where,
   writeBatch,
+  type DocumentData,
 } from "firebase/firestore";
 
 import firebaseApp from "../firebase-config";
 import {
+  AppError,
   checkArraysIsEqual,
   checkIsInCurrentNsfwRange,
   createCategoryId,
   createCollectionId,
   filterDuplicates,
   handleErrors,
+  normalizeError,
   throwCustomError,
 } from "../utils/generalUtils";
 import {
   ERROR_MESSAGE_DB_CONNECTION,
+  ERROR_MESSAGE_DEFAULT,
   SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE,
 } from "../variables/constants";
 import { getCollectionData } from "../utils/fetch/fetchCollection";
+import type {
+  AddCollectionData,
+  CollectionsState,
+  EditCollectionData,
+} from "../types/collections.types";
+import type { AppThunk } from "./store";
+import type { SavePostData } from "../types/upload.types";
+import type { CollectionPostSavedData } from "../types/collections.types";
+import type {
+  CollectionPreviewDoc,
+  UserDoc,
+} from "../../shared/types/firestore";
+import type { SavedPostDoc } from "../../shared/types/image";
+import type {
+  CollectionCategory,
+  CollectionSubcategory,
+} from "../../shared/types/user";
+import type { CollectionSavedPost } from "../../shared/types/collection";
 
 const firestore = getFirestore(firebaseApp);
 
-let lastVisiblePreview = "";
+let lastVisiblePreview: QueryDocumentSnapshot<
+  DocumentData,
+  DocumentData
+> | null = null;
 
 const amountPerPage = 12;
 
@@ -78,8 +104,8 @@ const imagesSlice = createSlice({
     errorMessage: "",
     previewsErrorMessage: "",
     collectionImages: { images: [], isLastPage: false },
-    collectionData: {},
-  },
+    collectionData: null,
+  } as CollectionsState,
   reducers: {
     setImageCategories(state, action) {
       state.categories = action.payload;
@@ -121,7 +147,7 @@ const imagesSlice = createSlice({
       state.collectionImages = action.payload;
     },
     resetCollectionData(state) {
-      state.collectionData = {};
+      state.collectionData = null;
       state.collectionImages = { images: [], isLastPage: false };
       state.errorMessage = "";
       state.isLastPage = false;
@@ -153,8 +179,8 @@ const imagesSlice = createSlice({
      */
     builder.addMatcher(
       (action) => action.type.startsWith("images/setActive"),
-      (state, action) => {
-        imagesSlice.caseReducers.resetCollectionPreviews(state, action);
+      (state) => {
+        imagesSlice.caseReducers.resetCollectionPreviews(state);
       },
     );
     /**
@@ -166,7 +192,7 @@ const imagesSlice = createSlice({
     builder.addMatcher(
       (action) => action.type.startsWith("general/setNsfw"),
       (state) => {
-        state.collectionImages = {};
+        state.collectionImages = { images: [], isLastPage: false };
         state.errorMessage = "";
         state.isLastPage = false;
       },
@@ -198,7 +224,7 @@ export const savePostToCollections = ({
   imageIds,
   postData,
   images,
-}) => {
+}: SavePostData): AppThunk => {
   return async (dispatch, getState) => {
     try {
       if (!postId) {
@@ -230,44 +256,33 @@ export const savePostToCollections = ({
       );
 
       if (postData?.postId) {
-        batch.update(
-          collectionsRef,
-          {
-            posts: arrayRemove(postData),
-          },
-          { merge: true },
-        );
+        batch.update(collectionsRef, {
+          posts: arrayRemove(postData),
+        });
       }
 
       const newPost = { postId, imageIds, createdAt: Date.now() };
 
-      batch.update(
-        collectionsRef,
-        {
-          subcategories: arrayUnion(...newSubcategoryIds),
-          posts: arrayUnion(newPost),
-        },
-        { merge: true },
-      );
-      batch.update(
-        collectionsPreviewRef,
-        {
-          subcategories: arrayUnion(...newSubcategoryIds),
-        },
-        { merge: true },
-      );
+      batch.update(collectionsRef, {
+        subcategories: arrayUnion(...newSubcategoryIds),
+        posts: arrayUnion(newPost),
+      });
+      batch.update(collectionsPreviewRef, {
+        subcategories: arrayUnion(...newSubcategoryIds),
+      });
 
       await batch.commit();
 
       const collectionImagesData = getState().images.collectionImages;
+
       if (
         (collectionImagesData?.collectionId &&
-          curCollectionData.id === collectionImagesData.collectionId) ||
+          curCollectionData?.id === collectionImagesData.collectionId) ||
         !curCollectionData?.posts?.length
       ) {
         const updatedPosts = [
           ...(curCollectionData?.posts?.filter(
-            (post) => post.id !== newPost.id,
+            (post) => post.postId !== newPost.postId,
           ) || []),
           newPost,
         ];
@@ -286,8 +301,8 @@ export const savePostToCollections = ({
           dispatch(
             imagesActions.setCollectionImages({
               collectionId: collectionData.id,
-              isLastPage: !curCollectionData?.posts?.length,
               ...collectionImagesData,
+              isLastPage: !curCollectionData?.posts?.length,
               images: [
                 images.sort((a, b) => {
                   return Date.parse(a.createdAt) - Date.parse(b.createdAt);
@@ -300,9 +315,8 @@ export const savePostToCollections = ({
           );
         }
       }
-    } catch (err) {
-      console.log(err);
-      throw new Error(err);
+    } catch (error) {
+      throw normalizeError(error);
     }
   };
 };
@@ -316,14 +330,14 @@ export const savePostToCollections = ({
  * @param {number|string} collectionId - Collection ID.
  * @returns {Function} Redux thunk.
  */
-export const getCollection = (collectionId) => {
+export const getCollection = (collectionId: number | string): AppThunk => {
   return async (dispatch) => {
     try {
       const collectionData = await getCollectionData(collectionId);
 
       dispatch(imagesActions.setCollectionData(collectionData));
-    } catch (err) {
-      throw new Error(err.message);
+    } catch (error) {
+      throw normalizeError(error);
     }
   };
 };
@@ -342,16 +356,16 @@ export const getCollection = (collectionId) => {
  * @returns {Function} Redux thunk.
  */
 export const getCollectionPreviews = (
-  activeCategory,
-  activeSubcategory,
-  loadMore = false,
-  nsfwMode,
-) => {
+  activeCategory: string,
+  activeSubcategory: string,
+  loadMore: boolean = false,
+  nsfwMode: boolean,
+): AppThunk => {
   return async (dispatch, getState) => {
     try {
       dispatch(imagesActions.setPreviewsErrorMessage(""));
       if (!loadMore) {
-        lastVisiblePreview = "";
+        lastVisiblePreview = null;
         dispatch(imagesActions.setIsLastPreviewsPage(false));
       }
       const uid = getState().auth.user.uid;
@@ -391,7 +405,7 @@ export const getCollectionPreviews = (
 
       const collectionsData = querySnapshot.docs.map((doc) => {
         // doc.data() is never undefined for query doc snapshots
-        return { type: "collection", ...doc.data() };
+        return { type: "collection", ...(doc.data() as CollectionPreviewDoc) };
       });
 
       const isLast =
@@ -408,14 +422,15 @@ export const getCollectionPreviews = (
             subcategory: activeSubcategory,
             nsfw: nsfwMode,
             data: loadMore
-              ? [...(collectionPreviews?.data || []), ...collectionsData]
+              ? [...(collectionPreviews || []), ...collectionsData]
               : collectionsData,
           }),
         );
 
       dispatch(imagesActions.setIsLastPreviewsPage(isLast));
       dispatch(imagesActions.setPreviewsIsLoading(false));
-    } catch (err) {
+    } catch (error) {
+      const err = normalizeError(error);
       dispatch(imagesActions.setPreviewsIsLoading(false));
       dispatch(imagesActions.setPreviewsErrorMessage(handleErrors(err)));
     }
@@ -433,7 +448,10 @@ export const getCollectionPreviews = (
  * @param {number|string} collectionId - Collection ID.
  * @returns {Function} Redux thunk.
  */
-export const getColectionImagesByIds = (posts, collectionId) => {
+export const getColectionImagesByIds = (
+  posts: CollectionPostSavedData[],
+  collectionId: number,
+): AppThunk => {
   return async (dispatch, getState) => {
     try {
       const uid = getState().auth.user.uid;
@@ -442,7 +460,7 @@ export const getColectionImagesByIds = (posts, collectionId) => {
 
       if (collectionImages?.isLastPage) return;
       const savedImagesData = getState().images.collectionData?.posts?.toSorted(
-        (a, b) => b.createdAt - a.createdAt,
+        (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt),
       );
       const nsfwMode = getState().general.nsfwMode;
       const nsfwLevel = getState().general.nsfwLevel;
@@ -478,7 +496,7 @@ export const getColectionImagesByIds = (posts, collectionId) => {
       const isLast = ids.length <= SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE;
 
       const data = modelImagesSnap.docs.flatMap((doc) => {
-        return doc.data();
+        return doc.data() as SavedPostDoc;
       });
 
       const examples = data
@@ -490,10 +508,9 @@ export const getColectionImagesByIds = (posts, collectionId) => {
                 ?.find((postData) => postData.postId === image.postId)
                 ?.imageIds?.includes(image.id);
 
-            const isInCurrentNsfwRange = checkIsInCurrentNsfwRange(
-              nsfwLevel,
-              image?.nsfwLevel,
-            );
+            const isInCurrentNsfwRange =
+              typeof image?.nsfwLevel === "string" &&
+              checkIsInCurrentNsfwRange(nsfwLevel, image.nsfwLevel);
 
             return saved && isInCurrentNsfwRange;
           });
@@ -504,10 +521,16 @@ export const getColectionImagesByIds = (posts, collectionId) => {
         })
         .filter((item) => !!item.length)
         .toSorted((a, b) => {
-          return (
-            curPosts.find((post) => post.postId === b[0].postId).createdAt -
-            curPosts.find((post) => post.postId === a[0].postId).createdAt
+          const curPostDataA = curPosts.find(
+            (post) => post.postId === a[0].postId,
           );
+          const curPostDataB = curPosts.find(
+            (post) => post.postId === b[0].postId,
+          );
+          if (curPostDataA && curPostDataB) {
+            return curPostDataB.createdAt - curPostDataA.createdAt;
+          }
+          return 0;
         })
         .slice(0, SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE);
 
@@ -519,9 +542,9 @@ export const getColectionImagesByIds = (posts, collectionId) => {
           isLastPage: isLast,
         }),
       );
-    } catch (err) {
-      console.log(err);
-      throw new Error(err.message);
+    } catch (error) {
+      console.log(error);
+      throw normalizeError(error);
     }
   };
 };
@@ -546,10 +569,9 @@ export const editCollectionData = ({
   collectionData,
   categoryData,
   subcategoriesData,
-  curCollectionSabcategories,
   description,
   nsfw,
-}) => {
+}: EditCollectionData): AppThunk => {
   return async (dispatch, getState) => {
     try {
       if (!collectionData?.name || !categoryData?.name) return;
@@ -614,13 +636,12 @@ export const editCollectionData = ({
         }),
       );
 
-      batch.update(collectionsPreviewRef, preview, { merge: true });
-      batch.update(collectionsRef, collection, { merge: true });
+      batch.update(collectionsPreviewRef, preview);
+      batch.update(collectionsRef, collection);
 
       await batch.commit();
-    } catch (err) {
-      console.log(err);
-      throw new Error(err.message);
+    } catch (error) {
+      throw normalizeError(error);
     } finally {
       dispatch(imagesActions.setCollectionDataIsSaving(false));
     }
@@ -638,7 +659,10 @@ export const editCollectionData = ({
  * @param {{postId: number, imageIds: Array<string>}} postData - Post data.
  * @returns {Function} Redux thunk.
  */
-export const updateCollectionPostsData = (ids, postData) => {
+export const updateCollectionPostsData = (
+  ids: number[],
+  postData: CollectionPostSavedData,
+): AppThunk => {
   return async (dispatch, getState) => {
     try {
       const uid = getState().auth.user.uid;
@@ -647,7 +671,11 @@ export const updateCollectionPostsData = (ids, postData) => {
         ? postData.imageIds.filter((imageId) => !ids.includes(imageId))
         : [];
 
-      let updatedPosts;
+      if (!collectionData) {
+        throw new AppError(ERROR_MESSAGE_DEFAULT);
+      }
+
+      let updatedPosts: CollectionSavedPost[];
 
       if (!imageIds?.length) {
         updatedPosts = collectionData.posts.filter(
@@ -676,13 +704,9 @@ export const updateCollectionPostsData = (ids, postData) => {
 
       const batch = writeBatch(firestore);
 
-      batch.update(
-        collectionsRef,
-        {
-          posts: updatedPosts,
-        },
-        { merge: true },
-      );
+      batch.update(collectionsRef, {
+        posts: updatedPosts,
+      });
 
       await batch.commit();
       dispatch(
@@ -714,8 +738,9 @@ export const updateCollectionPostsData = (ids, postData) => {
           }),
         );
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
+      handleErrors(normalizeError(error));
     }
   };
 };
@@ -730,7 +755,9 @@ export const updateCollectionPostsData = (ids, postData) => {
  * @param {Array<Object>} categories - Collection categories.
  * @returns {Function} Redux thunk.
  */
-export const updateCollectionCategories = (categories) => {
+export const updateCollectionCategories = (
+  categories: CollectionCategory[],
+): AppThunk => {
   return async (dispatch, getState) => {
     try {
       const uid = getState().auth.user.uid;
@@ -745,8 +772,9 @@ export const updateCollectionCategories = (categories) => {
       );
 
       dispatch(imagesActions.setImageCategories(categories));
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
+      handleErrors(normalizeError(error));
     }
   };
 };
@@ -776,7 +804,7 @@ export const addNewCollectionCategories = ({
   categoryData,
   subcategoriesData,
   curCollectionSabcategories,
-}) => {
+}: AddCollectionData): AppThunk<Promise<AddCollectionData>> => {
   return async (dispatch, getState) => {
     try {
       const uid = getState().auth.user.uid;
@@ -793,16 +821,16 @@ export const addNewCollectionCategories = ({
 
       const userDataDoc = await getDoc(userRef);
 
-      let latestCategories;
+      let latestCategories: CollectionCategory[] = [];
 
       if (userDataDoc.exists()) {
-        const userData = userDataDoc.data();
+        const userData = userDataDoc.data() as UserDoc;
         latestCategories = userData?.imageCategories || [];
       } else {
         throwCustomError(ERROR_MESSAGE_DB_CONNECTION);
       }
 
-      const curCategoryData = latestCategories.find(
+      const curCategoryData = latestCategories?.find(
         (category) => category.name === categoryData.name,
       );
 
@@ -812,8 +840,8 @@ export const addNewCollectionCategories = ({
       const collectionId =
         collectionData?.id || createCollectionId(latestCategories);
 
-      let newSubcategories = [];
-      let newSubcategoryIds = [];
+      let newSubcategories: CollectionSubcategory[] = [];
+      let newSubcategoryIds: string[] = [];
 
       const subcategories = subcategoriesData.flatMap((subcategory) => {
         if (!subcategory.name) {
@@ -847,6 +875,7 @@ export const addNewCollectionCategories = ({
       //Check for new categories data
       if (
         !hasNewSubcategories &&
+        existedCurCollectionSubcategoryIds &&
         categoryData?.id &&
         collectionData?.id &&
         checkArraysIsEqual(
@@ -862,7 +891,7 @@ export const addNewCollectionCategories = ({
         };
       }
 
-      let updatedCategories;
+      let updatedCategories: CollectionCategory[] = [];
 
       if (!latestCategories?.length || !categoryData.id) {
         updatedCategories = [
@@ -882,7 +911,11 @@ export const addNewCollectionCategories = ({
         ];
       } else {
         updatedCategories = latestCategories.map((category) => {
-          if (categoryData.id && categoryId === category.id) {
+          if (
+            categoryData.id &&
+            categoryId === category.id &&
+            category.collectionNames
+          ) {
             let collectionNames;
             if (!collectionData.id) {
               collectionNames = [
@@ -909,7 +942,10 @@ export const addNewCollectionCategories = ({
 
             return {
               ...category,
-              subcategories: [...category.subcategories, ...newSubcategories],
+              subcategories: [
+                ...(category.subcategories || []),
+                ...newSubcategories,
+              ],
               collectionNames,
             };
           }
@@ -964,8 +1000,8 @@ export const addNewCollectionCategories = ({
         subcategoriesData: subcategories,
         curCollectionSabcategories,
       };
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      throw normalizeError(error);
     }
   };
 };
@@ -981,7 +1017,10 @@ export const addNewCollectionCategories = ({
  * @param {string} categoryId - Category ID.
  * @returns {Function} Redux thunk.
  */
-export const deleteCollection = (collectionId, categoryId) => {
+export const deleteCollection = (
+  collectionId: number | string,
+  categoryId: string,
+): AppThunk => {
   return async (_, getState) => {
     try {
       const uid = getState().auth.user.uid;
@@ -1008,7 +1047,7 @@ export const deleteCollection = (collectionId, categoryId) => {
 
       const updatedCollectionNames = categories[
         curCategoryIndex
-      ].collectionNames.filter((collection) => collection.id !== collectionId);
+      ].collectionNames?.filter((collection) => collection.id !== collectionId);
 
       const updatedCategories = categories.toSpliced(curCategoryIndex, 1, {
         ...categories[curCategoryIndex],
@@ -1025,8 +1064,8 @@ export const deleteCollection = (collectionId, categoryId) => {
 
       await deleteDoc(collectionsRef);
       await deleteDoc(collectionsPreviewRef);
-    } catch (err) {
-      throw new Error(handleErrors(err));
+    } catch (error) {
+      throw normalizeError(error);
     }
   };
 };

@@ -362,7 +362,7 @@ export const transformImageData = (imageData: Image): Image => {
  * @returns Updated images with fixed data
  */
 export const fixCivImagesMeta = (images: any[]): Image[] => {
-  return images.map((image) => {
+  return images?.map((image) => {
     if (image?.meta && image?.meta?.meta) {
       return { ...image, meta: { ...image.meta, ...image.meta.meta } };
     }

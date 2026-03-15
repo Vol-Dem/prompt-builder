@@ -163,7 +163,6 @@ export const initAuth = (): AppThunk => {
   return (dispatch) => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // console.log(user);
         dispatch(
           authActions.login({
             accessToken: await user.getIdToken(),

@@ -166,11 +166,10 @@ export const filterDuplicates = <T, K extends keyof T>(
  */
 export const createCategoryId = (
   id: string,
-  categoriesData: ModelCategoryInput[],
+  categoriesData?: ModelCategoryInput[],
 ): string => {
   let curId = id?.toString()?.toLowerCase();
-  console.log(id);
-  console.log(categoriesData);
+
   //Checks if a category ID exists
   const existedIds = categoriesData?.filter((category) => {
     const normalizedId = category.id?.toString()?.toLowerCase();
@@ -184,7 +183,7 @@ export const createCategoryId = (
 
   if (existedIds?.length === 1) {
     curId = `${curId}-1`;
-  } else if (existedIds?.length > 1) {
+  } else if (existedIds && existedIds?.length > 1) {
     const idIndexes = existedIds
       .map((existedId) =>
         existedId.id ? +existedId.id.split("-").slice(-1)[0] : null,

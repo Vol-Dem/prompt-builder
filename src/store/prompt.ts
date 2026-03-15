@@ -278,7 +278,7 @@ const promptSlice = createSlice({
       const curPromptPositions = isPositive
         ? promptPosPositions
         : promptPNegPositions;
-      console.log(action.payload);
+
       const newTags = action.payload?.value?.filter((newWord) => {
         const isInPrompt = curPromptArr.find(
           (promptWord) => promptWord.tag === newWord,
