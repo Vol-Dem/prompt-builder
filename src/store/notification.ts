@@ -8,6 +8,7 @@ import type {
   NotificationData,
   NotificationState,
 } from "../types/notification.types";
+import { handleErrors, normalizeError } from "../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -66,9 +67,8 @@ export const getAppInfo = (): AppThunk => {
         dispatch(notificationActions.setNotifications(appData.notifications));
         dispatch(notificationActions.setMaintenance(appData.maintenance));
       }
-    } catch (error: unknown) {
-      const err = error as FirebaseError;
-      console.error(err.message);
+    } catch (error) {
+      handleErrors(normalizeError(error));
     }
   };
 };

@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   arrayRemove,
   deleteDoc,
@@ -13,6 +13,22 @@ import firebaseApp from "../firebase-config";
 import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 import { deleteImagePostDocs } from "../utils/fetch/fetchImages";
 import { makeBatchRequest } from "../utils/fetch/fetchUtils";
+import type {
+  ActiveCarousel,
+  ModelData,
+  ModelSavedImagesData,
+  ModelsState,
+  ResourceFirestoreCollection,
+  SrcType,
+  UpdateSavedImagesData,
+} from "../types/models.types";
+import type { ModelPreviewDoc } from "../../shared/types/firestore";
+import type { ModelVersion } from "../../shared/types/model";
+import type { AppThunk } from "./store";
+import type { TagSet } from "../types/prompt.types";
+import { AppError, handleErrors, normalizeError } from "../utils/generalUtils";
+import type { PostInfo, SavePostData } from "../types/upload.types";
+import type { ModelCategories } from "../../shared/types/user";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -37,17 +53,14 @@ const firestore = getFirestore(firebaseApp);
  * @property {Object} curVersion - Active model version data.
  * @property {Object} activeCarouselData - Active carousel data.
  */
-const initialModelState = {
-  model: {},
-  savedImages: {
-    modelId: null,
-    data: {},
-  },
+const initialModelState: ModelsState = {
+  model: null,
+  savedImages: null,
   modelPreview: [],
   isLoading: true,
   errorMessage: "",
-  curVersion: {},
-  activeCarouselData: {},
+  curVersion: null,
+  activeCarouselData: null,
 };
 
 const modelSlice = createSlice({
@@ -58,19 +71,31 @@ const modelSlice = createSlice({
      * Sets and merges model data.
      * Also sets or resets `savedImages` depending on whether the model contains saved images.
      */
-    setModelData(state, action) {
-      state.model = { ...state.model, ...action.payload };
+    setModelData(state, action: PayloadAction<ModelData | null>) {
+      state.model = action.payload;
 
       if (action?.payload?.savedImages) {
         state.savedImages = {
-          modelId: action.payload.id,
+          modelId: action.payload.id || null,
           data: action?.payload?.savedImages,
         };
       } else if (action?.payload?.id && !action?.payload?.savedImages) {
-        state.savedImages = { modelId: null, data: {} };
+        state.savedImages = null;
       }
     },
-    setSavedImages(state, action) {
+    updateModelDataField(state, action: PayloadAction<Partial<ModelData>>) {
+      if (state.model) Object.assign(state.model, action.payload);
+
+      if (action?.payload?.savedImages) {
+        state.savedImages = {
+          modelId: action.payload.id || null,
+          data: action?.payload?.savedImages,
+        };
+      } else if (action?.payload?.id && !action?.payload?.savedImages) {
+        state.savedImages = null;
+      }
+    },
+    setSavedImages(state, action: PayloadAction<ModelSavedImagesData>) {
       state.savedImages = action.payload;
     },
     /**
@@ -81,10 +106,10 @@ const modelSlice = createSlice({
      *   postInfo: { versionId: number, postId: number, modelId: number }
      * }} action.payload
      */
-    updateSavedImages(state, action) {
+    updateSavedImages(state, action: PayloadAction<UpdateSavedImagesData>) {
       const { versionId, postId, modelId } = action.payload.postInfo;
 
-      if (state.model.id !== modelId) return;
+      if (state.model?.id !== modelId) return;
 
       if (
         state?.savedImages?.data &&
@@ -110,7 +135,7 @@ const modelSlice = createSlice({
         state.savedImages = {
           modelId: modelId,
           data: {
-            ...state.savedImages.data,
+            ...state.savedImages?.data,
             [`${versionId}`]: updatedSavedImages,
           },
         };
@@ -126,7 +151,7 @@ const modelSlice = createSlice({
     deleteSavedImages(state, action) {
       const { versionId, postId, modelId } = action.payload.postInfo;
 
-      if (state.model.id !== modelId) return;
+      if (state.model?.id !== modelId) return;
 
       if (
         state?.savedImages?.data &&
@@ -141,24 +166,24 @@ const modelSlice = createSlice({
       }
     },
     resetModelData(state) {
-      state.model = {};
+      state.model = null;
       state.modelPreview = [];
       state.errorMessage = "";
-      state.curVersion = {};
+      state.curVersion = null;
     },
-    setIsLoading(state, action) {
+    setIsLoading(state, action: PayloadAction<boolean>) {
       state.isLoading = action.payload;
     },
-    setCurVersion(state, action) {
+    setCurVersion(state, action: PayloadAction<ModelVersion | null>) {
       state.curVersion = action.payload;
     },
-    setModelPreview(state, action) {
+    setModelPreview(state, action: PayloadAction<ModelPreviewDoc[]>) {
       state.modelPreview = action.payload;
     },
-    setErrorMessage(state, action) {
+    setErrorMessage(state, action: PayloadAction<string>) {
       state.errorMessage = action.payload;
     },
-    setActiveCarouselData(state, action) {
+    setActiveCarouselData(state, action: PayloadAction<ActiveCarousel | null>) {
       state.activeCarouselData = action.payload;
     },
   },
@@ -179,12 +204,12 @@ const modelSlice = createSlice({
  * @returns {Function} Redux thunk.
  */
 export const setPreviewImg = (
-  url,
-  isNsfw = false,
-  location,
-  locationId,
-  type = "image",
-) => {
+  url: string,
+  isNsfw: boolean = false,
+  location: ResourceFirestoreCollection,
+  locationId: number,
+  type: SrcType = "image",
+): AppThunk => {
   return async (_, getState) => {
     try {
       const uid = getState().auth.user.uid;
@@ -215,8 +240,8 @@ export const setPreviewImg = (
         },
         { merge: true },
       );
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      handleErrors(normalizeError(error));
     }
   };
 };
@@ -233,25 +258,28 @@ export const setPreviewImg = (
  * @param {object} tagSetData - Tag set data.
  * @returns {Function} Redux thunk.
  */
-export const setTagSetPreviewImg = (versionId, tagSetData) => {
+export const setTagSetPreviewImg = (
+  versionId: number | "tsv-def",
+  tagSetData: TagSet,
+): AppThunk => {
   return async (dispatch, getState) => {
     const uid = getState().auth.user.uid;
-    const id = getState().model.model.id;
+    const id = getState().model.model?.id;
     const model = getState().model.model;
-
+    console.log(tagSetData);
     const urlField =
       versionId === "tsv-def"
         ? `defaultCustomData.tagSetsData`
         : `modelVersionsCustomData.${versionId}.tagSetsData`;
 
     const modelRef = doc(firestore, "users", uid, "models", id + "");
-    await updateDoc(
-      modelRef,
-      {
-        [`${urlField}`]: tagSetData,
-      },
-      { merge: true },
-    );
+    await updateDoc(modelRef, {
+      [`${urlField}`]: tagSetData,
+    });
+
+    if (!model?.defaultCustomData) {
+      throw new AppError(ERROR_MESSAGE_DEFAULT);
+    }
 
     if (versionId === "tsv-def") {
       const updatedDefaultCustomData = {
@@ -259,20 +287,20 @@ export const setTagSetPreviewImg = (versionId, tagSetData) => {
         tagSetsData: tagSetData,
       };
       dispatch(
-        modelActions.setModelData({
+        modelActions.updateModelDataField({
           defaultCustomData: updatedDefaultCustomData,
         }),
       );
     } else {
       const updatedVersionsCustomData = {
-        ...model.modelVersionsCustomData,
+        ...model?.modelVersionsCustomData,
         [versionId]: {
           ...model.modelVersionsCustomData[versionId],
           tagSetsData: tagSetData,
         },
       };
       dispatch(
-        modelActions.setModelData({
+        modelActions.updateModelDataField({
           modelVersionsCustomData: updatedVersionsCustomData,
         }),
       );
@@ -292,12 +320,16 @@ export const setTagSetPreviewImg = (versionId, tagSetData) => {
  * @param {object} postData - Post data.
  * @returns {Function} Redux thunk.
  */
-export const deleteImgPost = (postInfo, postData) => {
+export const deleteImgPost = (
+  postInfo: PostInfo,
+  postData: SavePostData,
+): AppThunk => {
   return async (dispatch, getState) => {
     try {
+      console.log(postInfo);
       const { versionId, postId } = postInfo;
-      const uid = getState().auth.user.uid;
-      const id = getState().model.model.id;
+      const uid = getState().auth.user?.uid;
+      const id = getState().model.model?.id;
       const modelRef = doc(firestore, "users", uid, "models", id + "");
 
       const imgPostRef = doc(firestore, "users", uid, "images", postId + "");
@@ -320,8 +352,8 @@ export const deleteImgPost = (postInfo, postData) => {
         [`savedImages.${versionId}`]: arrayRemove(postData),
       });
       dispatch(modelActions.deleteSavedImages({ postInfo, data: postData }));
-    } catch (err) {
-      console.error(err.message);
+    } catch (error) {
+      handleErrors(normalizeError(error));
     }
   };
 };
@@ -335,34 +367,37 @@ export const deleteImgPost = (postInfo, postData) => {
  *
  * @returns {Function} Redux thunk.
  */
-export const deleteModel = () => {
+export const deleteModel = (): AppThunk => {
   return async (_, getState) => {
     const uid = getState().auth.user.uid;
     const model = getState().model.model;
 
-    Object.values(model.savedImages).forEach(async (versionData) => {
-      const postsData = versionData.map((post) => {
-        return {
-          ...post,
-          uid,
-          modelId: model.id,
-        };
+    if (model) {
+      Object.values(model.savedImages).forEach(async (versionData) => {
+        const postsData = versionData.map((post) => {
+          return {
+            ...post,
+            uid,
+            modelId: model.id,
+            type: "defaultImages",
+          };
+        });
+
+        await makeBatchRequest(postsData, deleteImagePostDocs, 5, false);
       });
 
-      await makeBatchRequest(postsData, deleteImagePostDocs, 5, false);
-    });
+      const modelRef = doc(firestore, "users", uid, "models", model.id + "");
+      const modelPreviewRef = doc(
+        firestore,
+        "users",
+        uid,
+        "preview",
+        model.id + "",
+      );
 
-    const modelRef = doc(firestore, "users", uid, "models", model.id + "");
-    const modelPreviewRef = doc(
-      firestore,
-      "users",
-      uid,
-      "preview",
-      model.id + "",
-    );
-
-    await deleteDoc(modelRef);
-    await deleteDoc(modelPreviewRef);
+      await deleteDoc(modelRef);
+      await deleteDoc(modelPreviewRef);
+    }
   };
 };
 
@@ -376,20 +411,19 @@ export const deleteModel = () => {
  * @param {Array<Object>} updatedCat - Updated category list.
  * @returns {Function} Redux thunk.
  */
-export const updateCategories = (modelType, updatedCat) => {
+export const updateCategories = (
+  modelType: string,
+  updatedCat: ModelCategories,
+): AppThunk => {
   return async (_, getState) => {
     const uid = getState().auth.user.uid;
     if (uid) {
       const userRef = doc(firestore, "users", uid);
       const categoryField = `categoriesById.${modelType}`;
 
-      await updateDoc(
-        userRef,
-        {
-          [categoryField]: updatedCat,
-        },
-        { merge: true },
-      );
+      await updateDoc(userRef, {
+        [categoryField]: updatedCat,
+      });
     }
   };
 };

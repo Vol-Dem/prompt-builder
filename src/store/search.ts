@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type Draft, type PayloadAction } from "@reduxjs/toolkit";
 import {
   and,
   collection,
@@ -8,20 +8,37 @@ import {
   or,
   orderBy,
   query,
+  QueryCompositeFilterConstraint,
+  QueryDocumentSnapshot,
+  QueryFieldFilterConstraint,
+  QuerySnapshot,
   startAfter,
   where,
+  type DocumentData,
 } from "firebase/firestore";
 
-// import { clearFileExtension } from "../utils/generalUtils";
 import firebaseApp from "../firebase-config";
-import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 import { clearFileExtension } from "../../shared/utils";
+import type {
+  CollectionPreviewDoc,
+  ModelPreviewDoc,
+} from "../../shared/types/firestore";
+import type { AppThunk } from "./store";
+import { handleErrors, normalizeError } from "../utils/generalUtils";
+import type {
+  QuickSearchResult,
+  SearchFilter,
+  SearchResult,
+  SearchResultCollection,
+  SearchResultData,
+  SearchState,
+} from "../types/search.types";
 
 const firestore = getFirestore(firebaseApp);
 
-let lastVisible = "";
-let lastVisibleCollection = "";
-let lastVisibleSub = "";
+let lastVisible: QueryDocumentSnapshot | string = "";
+let lastVisibleCollection: QueryDocumentSnapshot | string = "";
+let lastVisibleSub: QueryDocumentSnapshot | string = "";
 
 /**
  * Search state.
@@ -49,7 +66,7 @@ const searchSlice = createSlice({
       result: [],
       nsfw: false,
       hashtag: false,
-      filter: {},
+      filter: null,
     },
     quickSearchResult: { query: "", result: [], nsfw: false },
     searchFilter: { modelType: [], baseModel: [], hashtag: false },
@@ -58,15 +75,15 @@ const searchSlice = createSlice({
     isLastPage: false,
     isLastCollectionsPage: false,
     isLastSubPage: false,
-  },
+  } as SearchState,
   reducers: {
-    setSearchQuery(state, action) {
+    setSearchQuery(state, action: PayloadAction<string>) {
       state.searchQuery = action.payload;
     },
-    setSearchResult(state, action) {
+    setSearchResult(state, action: PayloadAction<SearchResultData>) {
       state.searchResult = action.payload;
     },
-    setQuickSearchResult(state, action) {
+    setQuickSearchResult(state, action: PayloadAction<QuickSearchResult>) {
       state.quickSearchResult = action.payload;
     },
     clearSearchResult(state) {
@@ -75,27 +92,29 @@ const searchSlice = createSlice({
         result: [],
         nsfw: false,
         hashtag: false,
-        filter: {},
+        filter: null,
       };
     },
-    setSearchIsLoading(state, action) {
+    setSearchIsLoading(state, action: PayloadAction<boolean>) {
       state.isLoading = action.payload;
     },
-    setErrorMessage(state, action) {
+    setErrorMessage(state, action: PayloadAction<string>) {
       state.errorMessage = action.payload;
     },
-    setIsLastPage(state, action) {
+    setIsLastPage(state, action: PayloadAction<boolean>) {
       state.isLastPage = action.payload;
     },
-    setIsLastCollectionsPage(state, action) {
+    setIsLastCollectionsPage(state, action: PayloadAction<boolean>) {
       state.isLastCollectionsPage = action.payload;
     },
-    setIsLastSubPage(state, action) {
+    setIsLastSubPage(state, action: PayloadAction<boolean>) {
       state.isLastSubPage = action.payload;
     },
-    setSearchFilter(state, action) {
-      if (action.payload.type)
-        state.searchFilter[action.payload.type] = action.payload.value;
+    setSearchFilter<K extends keyof SearchFilter>(
+      state: Draft<SearchState>,
+      action: PayloadAction<{ type: K; value: SearchFilter[K] }>,
+    ) {
+      state.searchFilter[action.payload.type] = action.payload.value;
     },
     resetSearchFilter(state) {
       state.searchFilter = { modelType: [], baseModel: [], hashtag: false };
@@ -106,7 +125,7 @@ const searchSlice = createSlice({
         result: [],
         nsfw: false,
         hashtag: false,
-        filter: {},
+        filter: null,
       };
       state.errorMessage = "";
       state.isLastPage = false;
@@ -132,9 +151,13 @@ const searchSlice = createSlice({
  * @param {string} searchString - Search query.
  * @param {boolean} nsfwFilter - Whether to include NSFW models and collections.
  * @param {Array} optionalWhere - Optional filters.
- * @returns {QueryConstraint} Firestore query constraint.
+ * @returns {QueryCompositeFilterConstraint} Firestore query constraint.
  */
-const createNameQuery = (searchString, nsfwFilter, optionalWhere = []) => {
+const createNameQuery = (
+  searchString: string,
+  nsfwFilter: boolean[],
+  optionalWhere: QueryFieldFilterConstraint[] = [],
+): QueryCompositeFilterConstraint => {
   const capitalized = searchString
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -213,14 +236,14 @@ const createNameQuery = (searchString, nsfwFilter, optionalWhere = []) => {
  * @returns {Function} Redux thunk.
  */
 export const liveSearch = (
-  searchString,
-  nsfw,
-  limitAmount = 5,
-  loadMore = false,
-  quickSerch = false,
-  isHashtag = false,
-  filter,
-) => {
+  searchString: string,
+  nsfw: boolean,
+  limitAmount: number = 5,
+  loadMore: boolean = false,
+  quickSerch: boolean = false,
+  isHashtag: boolean = false,
+  filter: SearchFilter,
+): AppThunk => {
   return async (dispatch, getState) => {
     try {
       dispatch(searchActions.setSearchIsLoading(true));
@@ -291,7 +314,7 @@ export const liveSearch = (
         limit(limitAmount),
       );
 
-      let queryRuleSub;
+      let queryRuleSub: QueryCompositeFilterConstraint;
 
       const hashlessSearchString =
         searchString.trim()[0] === "#" ? searchString.slice(1) : searchString;
@@ -354,16 +377,20 @@ export const liveSearch = (
         limit(limitAmount),
       );
 
-      let modelsDataName = [];
-      let collectionsDataNames = [];
-      let querySnapshot = {};
-      let queryCollectionsSnapshot = {};
+      let modelsDataName: ModelPreviewDoc[] = [];
+      let collectionsDataNames: SearchResultCollection[] = [];
+      let querySnapshot: QuerySnapshot<DocumentData, DocumentData> | null =
+        null;
+      let queryCollectionsSnapshot: QuerySnapshot<
+        DocumentData,
+        DocumentData
+      > | null = null;
 
       if (!isLastPage && !hashtag && !onlyCollections) {
         querySnapshot = await getDocs(queryModelsByName);
         modelsDataName = querySnapshot.docs.map((doc) => {
           // doc.data() is never undefined for query doc snapshots
-          return doc.data();
+          return doc.data() as ModelPreviewDoc;
         });
       }
 
@@ -376,15 +403,20 @@ export const liveSearch = (
         queryCollectionsSnapshot = await getDocs(queryCollectionsByName);
         collectionsDataNames = queryCollectionsSnapshot.docs.map((doc) => {
           // doc.data() is never undefined for query doc snapshots
-          return { type: "collection", ...doc.data() };
+          return {
+            type: "collection",
+            ...(doc.data() as CollectionPreviewDoc),
+          };
         });
       }
 
-      let modelsDataSub = [];
-      let querySnapshotSub = {};
+      let modelsDataSub: ModelPreviewDoc[] = [];
+      let querySnapshotSub: QuerySnapshot<DocumentData, DocumentData> | null =
+        null;
 
       const isLast =
-        !querySnapshot?.docs?.length || querySnapshot.docs.length < limitAmount;
+        !querySnapshot?.docs?.length ||
+        querySnapshot?.docs?.length < limitAmount;
       const isLastCollection =
         !queryCollectionsSnapshot?.docs?.length ||
         (queryCollectionsSnapshot?.docs?.length < limitAmount &&
@@ -394,7 +426,7 @@ export const liveSearch = (
         querySnapshotSub = await getDocs(querySub);
         modelsDataSub = querySnapshotSub.docs.map((doc) => {
           // doc.data() is never undefined for query doc snapshots
-          return doc.data();
+          return doc.data() as ModelPreviewDoc;
         });
       }
 
@@ -403,16 +435,16 @@ export const liveSearch = (
         (!querySnapshotSub?.docs?.length ||
           querySnapshotSub?.docs?.length < limitAmount);
 
-      if (!isLast) {
-        lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+      if (!isLast && querySnapshot) {
+        lastVisible = querySnapshot?.docs[querySnapshot.docs.length - 1];
       }
-      if (!isLastCollection && includeColections) {
+      if (!isLastCollection && includeColections && queryCollectionsSnapshot) {
         lastVisibleCollection =
           queryCollectionsSnapshot.docs[
             queryCollectionsSnapshot.docs.length - 1
           ];
       }
-      if (isLast && !isLastSub) {
+      if (isLast && !isLastSub && querySnapshotSub) {
         lastVisibleSub =
           querySnapshotSub.docs[querySnapshotSub.docs.length - 1];
       }
@@ -427,7 +459,8 @@ export const liveSearch = (
         ({ id }) => !ids?.includes(id),
       );
 
-      let finalResult = [];
+      let finalResult: SearchResult = [];
+
       if (loadMore) {
         finalResult = [...searchResult.result, ...filteredResult];
       } else {
@@ -464,10 +497,9 @@ export const liveSearch = (
         dispatch(searchActions.setIsLastCollectionsPage(isLastCollection));
         dispatch(searchActions.setIsLastSubPage(isLastSub));
       }
-    } catch (err) {
-      console.error(err);
-      console.error(err.message);
-      dispatch(searchActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
+    } catch (error) {
+      const errorMessage = handleErrors(normalizeError(error));
+      dispatch(searchActions.setErrorMessage(errorMessage));
     } finally {
       dispatch(searchActions.setSearchIsLoading(false));
     }

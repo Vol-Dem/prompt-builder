@@ -110,7 +110,7 @@ export interface ModelVersion {
 }
 
 export interface UserModelDefaultCustomData {
-  description: string;
+  description?: string;
   weight?: number;
   minWeight?: number;
   maxWeight?: number;
@@ -151,6 +151,6 @@ export interface ModelSavedImages {
   [versionId: string]: ModelSavedPostInfo[];
 }
 
-export interface ModelData extends UserModelDoc {
-  data?: CivitaiModelDoc;
-}
+// export interface ModelData extends UserModelDoc {
+//   data?: CivitaiModelDoc;
+// }

@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   collection,
   doc,
@@ -7,17 +7,23 @@ import {
   limit,
   orderBy,
   query,
+  QueryDocumentSnapshot,
   startAfter,
   updateDoc,
   where,
+  type DocumentData,
 } from "firebase/firestore";
 
 import firebaseApp from "../firebase-config";
-import { handleErrors } from "../utils/generalUtils";
+import { handleErrors, normalizeError } from "../utils/generalUtils";
+import type { ModelCategories } from "../../shared/types/user";
+import type { ModelPreviewDoc } from "../../shared/types/firestore";
+import type { AppThunk } from "./store";
+import type { TabsModelsData, TabsState } from "../types/tabs.types";
 
 const firestore = getFirestore(firebaseApp);
 
-let lastVisible = "";
+let lastVisible: QueryDocumentSnapshot<DocumentData, DocumentData> | "" = "";
 
 const amountPerPage = 12;
 
@@ -63,12 +69,12 @@ const tabsSlice = createSlice({
     baseModel: "",
     isLoading: false,
     isLastPage: false,
-  },
+  } as TabsState,
   reducers: {
     /**
      * Sets current tab and resets category, subcatgory and model previews.
      */
-    setCurrentTab(state, action) {
+    setCurrentTab(state, action: PayloadAction<string>) {
       state.currSubcategory = "";
       state.currCategory = "";
       state.modelsData = {
@@ -83,7 +89,7 @@ const tabsSlice = createSlice({
     /**
      * Sets current category and resets subcatgory and model previews.
      */
-    setCurrentCategory(state, action) {
+    setCurrentCategory(state, action: PayloadAction<string>) {
       state.currSubcategory = "";
       state.modelsData = {
         tab: "",
@@ -97,7 +103,7 @@ const tabsSlice = createSlice({
     /**
      * Sets current subcatgory and resets model previews, last page and last visible state.
      */
-    setCurrentSubcategory(state, action) {
+    setCurrentSubcategory(state, action: PayloadAction<string>) {
       state.modelsData = {
         tab: "",
         category: "",
@@ -108,27 +114,27 @@ const tabsSlice = createSlice({
       state.isLastPage = false;
       state.currSubcategory = action.payload;
     },
-    setCategories(state, action) {
+    setCategories(state, action: PayloadAction<ModelCategories>) {
       state.categoriesData = action.payload;
     },
     /**
      * Sets and sorts base models.
      */
-    setBaseModels(state, action) {
+    setBaseModels(state, action: PayloadAction<string[]>) {
       if (action.payload) {
         state.baseModels = action.payload.sort();
       }
     },
-    setSortBy(state, action) {
+    setSortBy(state, action: PayloadAction<string>) {
       state.sortBy = action.payload;
     },
-    setBaseModel(state, action) {
+    setBaseModel(state, action: PayloadAction<string>) {
       state.baseModel = action.payload;
     },
-    setErrorMessage(state, action) {
+    setErrorMessage(state, action: PayloadAction<string>) {
       state.errorMessage = action.payload;
     },
-    setModelsData(state, action) {
+    setModelsData(state, action: PayloadAction<TabsModelsData>) {
       state.modelsData = action.payload;
     },
     resetModelsData(state) {
@@ -141,10 +147,10 @@ const tabsSlice = createSlice({
       };
       state.isLastPage = false;
     },
-    setIsLoading(state, action) {
+    setIsLoading(state, action: PayloadAction<boolean>) {
       state.isLoading = action.payload;
     },
-    setIsLastPage(state, action) {
+    setIsLastPage(state, action: PayloadAction<boolean>) {
       state.isLastPage = action.payload;
     },
     reset(state) {
@@ -157,7 +163,7 @@ const tabsSlice = createSlice({
       state.currCategory = "";
       state.currSubcategory = "";
     },
-    setPreviewFullView(state, action) {
+    setPreviewFullView(state, action: PayloadAction<boolean>) {
       state.previewFullView = action.payload;
     },
   },
@@ -170,8 +176,8 @@ const tabsSlice = createSlice({
      */
     builder.addMatcher(
       (action) => action.type.startsWith("general/setNsfw"),
-      (state, action) => {
-        tabsSlice.caseReducers.resetModelsData(state, action);
+      (state) => {
+        tabsSlice.caseReducers.resetModelsData(state);
       },
     );
   },
@@ -192,12 +198,12 @@ const tabsSlice = createSlice({
  * @returns {Function} Redux thunk.
  */
 export const getModelsPreview = (
-  activeTab,
-  activeCategory,
-  activeSubcategory,
-  loadMore = false,
-  nsfwMode,
-) => {
+  activeTab: string,
+  activeCategory: string,
+  activeSubcategory: string,
+  loadMore: boolean = false,
+  nsfwMode: boolean,
+): AppThunk => {
   return async (dispatch, getState) => {
     try {
       dispatch(tabActions.setIsLoading(true));
@@ -248,7 +254,7 @@ export const getModelsPreview = (
 
       const modelsData = querySnapshot.docs.map((doc) => {
         // doc.data() is never undefined for query doc snapshots
-        return doc.data();
+        return doc.data() as ModelPreviewDoc;
       });
 
       const isLast =
@@ -271,9 +277,10 @@ export const getModelsPreview = (
 
       dispatch(tabActions.setIsLastPage(isLast));
       dispatch(tabActions.setIsLoading(false));
-    } catch (err) {
+    } catch (error) {
+      const errorMeassage = handleErrors(normalizeError(error));
       dispatch(tabActions.setIsLoading(false));
-      dispatch(tabActions.setErrorMessage(handleErrors(err)));
+      dispatch(tabActions.setErrorMessage(errorMeassage));
     }
   };
 };
@@ -288,20 +295,14 @@ export const getModelsPreview = (
  * @param {boolean} isFullView - Whether full card view is enabled.
  * @returns {Function} Redux thunk.
  */
-export const switchPreviewFullView = (isFullView) => {
+export const switchPreviewFullView = (isFullView: boolean): AppThunk => {
   return async (dispatch, getState) => {
     dispatch(tabActions.setPreviewFullView(isFullView));
     const uid = getState().auth.user.uid;
     const userRef = doc(firestore, "users", uid);
-    await updateDoc(
-      userRef,
-      {
-        "uiState.previewFullView": isFullView,
-      },
-      {
-        merge: true,
-      },
-    );
+    await updateDoc(userRef, {
+      "uiState.previewFullView": isFullView,
+    });
   };
 };
 

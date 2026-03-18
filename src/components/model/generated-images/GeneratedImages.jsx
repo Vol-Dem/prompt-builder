@@ -55,7 +55,7 @@ const GeneratedImages = memo(() => {
   let versionsCustomData =
     model?.modelVersionsCustomData &&
     Object.values(model?.modelVersionsCustomData)?.sort(
-      (a, b) => a?.index - b?.index
+      (a, b) => a?.index - b?.index,
     );
 
   if (curTab === "saved") {
@@ -87,7 +87,7 @@ const GeneratedImages = memo(() => {
       const latesVersionId = Object.values(model.modelVersionsCustomData)
         .sort((a, b) => a?.index - b?.index)
         .find((version) =>
-          Object.hasOwn(savedImages, version.versionId)
+          Object.hasOwn(savedImages, version.versionId),
         )?.versionId;
       if (latesVersionId) {
         setCurVersionId(latesVersionId);

@@ -84,7 +84,7 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
       setTrigerInput(
         versionData?.trainedWords
           ? { value: versionData?.trainedWords?.join(", "), isValid: true }
-          : { value: defaultData.trainedWords?.join(", "), isValid: true }
+          : { value: defaultData.trainedWords?.join(", "), isValid: true },
       );
     }
 
@@ -103,8 +103,8 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
     setTagSetsInputs(
       createTagSetsInputData(
         versionData?.tagSetsData,
-        DEFAULT_DATA_TAGSETS_INPUT
-      )
+        DEFAULT_DATA_TAGSETS_INPUT,
+      ),
     );
   }, [versionData]);
 
@@ -115,7 +115,7 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
       setSuccessMessage("");
       setShowErrorMessage(true);
       const tagsetsIsNotValid = !!tagSetsInputs.find(
-        (input) => input[0].isValid === false || input[1].isValid === false
+        (input) => input[0].isValid === false || input[1].isValid === false,
       );
 
       if (
@@ -170,7 +170,7 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
         "users",
         uid,
         "preview",
-        modelId + ""
+        modelId + "",
       );
 
       const versionPath = `modelVersionsCustomData.${versionData.versionId}`;
@@ -180,14 +180,14 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
         {
           [versionPath]: updatedVersionData,
         },
-        { merge: true }
+        { merge: true },
       );
       await updateDoc(
         modelsPrevRef,
         {
           [versionPath]: updatedVersionData,
         },
-        { merge: true }
+        { merge: true },
       );
 
       const updatedCustomData = {
@@ -196,9 +196,9 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
       };
 
       dispatch(
-        modelActions.setModelData({
+        modelActions.updateModelDataField({
           modelVersionsCustomData: updatedCustomData,
-        })
+        }),
       );
       setSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
       setIsSaving(false);

@@ -57,7 +57,12 @@ export const parseModelIds = (value: string): (number | null)[] => {
  * @param {ModelData} model - model data
  * @returns {ModelVersionCivitai[]} - sorted and filtered model versions
  */
-export const sortModelVersions = (model: ModelData): ModelVersionCivitai[] => {
+export const sortModelVersions = (
+  model: ModelData,
+): ModelVersionCivitai[] | null => {
+  if (!model?.data) {
+    return null;
+  }
   return model?.data?.modelVersions
     .filter((version) =>
       Object.keys(model?.modelVersionsCustomData).includes(`${version.id}`),
@@ -135,7 +140,7 @@ export const createModelPreviewData = (
   curVersion: ModelVersionCivitai,
   curCustomVersionData: ModelVersionCustomData,
 ): ModelPreview | null => {
-  if (!model.id || !curVersion.id) return null;
+  if (!model?.id || !curVersion?.id) return null;
 
   return {
     id: model.id,
@@ -143,13 +148,13 @@ export const createModelPreviewData = (
     src: model.src,
     main: model.main,
     sub: model.sub,
-    title: model.name || model.data.name,
+    title: model.name || model.data?.name,
     versionName:
       curCustomVersionData?.name ||
       curCustomVersionData?.versionName ||
       curVersion.name,
     imgUrl: curVersion?.images ? curVersion?.images[0]?.url : "",
-    modelType: model?.data?.type,
+    modelType: model?.data?.type || "",
     baseModel: curVersion?.baseModel,
     mainTag:
       curCustomVersionData?.mainTag ||
@@ -228,8 +233,11 @@ export const parseMoelType = (value: string): string | null => {
 export const getInitialVersionData = (
   model: ModelData,
   versionIdParam: string,
-): ModelVersionCivitai => {
+): ModelVersionCivitai | null => {
   const modelVersions = sortModelVersions(model);
+  if (!modelVersions) {
+    return null;
+  }
   const curVersionId = getCurrentVersionId(
     model,
     modelVersions,

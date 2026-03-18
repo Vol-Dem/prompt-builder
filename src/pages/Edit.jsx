@@ -102,7 +102,7 @@ const ModelEdit = ({ title }) => {
         const defModelData = await fetchDataFromFirestore("models", modelId);
 
         dispatch(
-          modelActions.setModelData({
+          modelActions.updateModelDataField({
             data: defModelData,
           }),
         );
@@ -120,9 +120,9 @@ const ModelEdit = ({ title }) => {
 
     return () => {
       setErrorMessage("");
-      dispatch(modelActions.setCurVersion({}));
-      dispatch(modelActions.setModelData({}));
-      dispatch(modelActions.setActiveCarouselData({}));
+      dispatch(modelActions.setCurVersion(null));
+      dispatch(modelActions.setModelData(null));
+      dispatch(modelActions.setActiveCarouselData(null));
       if (unsub) {
         unsub();
       }

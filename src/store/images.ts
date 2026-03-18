@@ -430,9 +430,9 @@ export const getCollectionPreviews = (
       dispatch(imagesActions.setIsLastPreviewsPage(isLast));
       dispatch(imagesActions.setPreviewsIsLoading(false));
     } catch (error) {
-      const err = normalizeError(error);
+      const errorMeassage = handleErrors(normalizeError(error));
       dispatch(imagesActions.setPreviewsIsLoading(false));
-      dispatch(imagesActions.setPreviewsErrorMessage(handleErrors(err)));
+      dispatch(imagesActions.setPreviewsErrorMessage(errorMeassage));
     }
   };
 };
@@ -543,7 +543,6 @@ export const getColectionImagesByIds = (
         }),
       );
     } catch (error) {
-      console.log(error);
       throw normalizeError(error);
     }
   };
@@ -739,7 +738,6 @@ export const updateCollectionPostsData = (
         );
       }
     } catch (error) {
-      console.log(error);
       handleErrors(normalizeError(error));
     }
   };
@@ -773,7 +771,6 @@ export const updateCollectionCategories = (
 
       dispatch(imagesActions.setImageCategories(categories));
     } catch (error) {
-      console.log(error);
       handleErrors(normalizeError(error));
     }
   };

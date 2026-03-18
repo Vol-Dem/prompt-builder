@@ -56,7 +56,7 @@ authListener.startListening({
     api.dispatch(imagesActions.resetCollectionListState());
     api.dispatch(imagesActions.setImageCategories([]));
     api.dispatch(modelActions.resetModelData());
-    api.dispatch(modelActions.setActiveCarouselData({}));
+    api.dispatch(modelActions.setActiveCarouselData(null));
     api.dispatch(promptActions.clearPrompt());
     api.dispatch(promptActions.setPromptIsOpen(false));
     api.dispatch(tabActions.resetActiveTabs());

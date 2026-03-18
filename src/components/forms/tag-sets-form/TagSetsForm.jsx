@@ -80,7 +80,7 @@ const TagSetsForm = ({ modelId, onClose }) => {
         },
       ],
     ],
-    []
+    [],
   );
 
   useEffect(() => {
@@ -89,7 +89,7 @@ const TagSetsForm = ({ modelId, onClose }) => {
         guideActions.setGuideStep({
           type: "model",
           value: GUIDE_STEP_MODEL_TAGS_EDIT_FROM,
-        })
+        }),
       );
     }
   }, [guideActive, guideStep, dispatch]);
@@ -107,7 +107,7 @@ const TagSetsForm = ({ modelId, onClose }) => {
       setSuccessMessage("");
       setShowErrorMessage(true);
       const tagsetsIsNotValid = !!tagSetsInputs.find(
-        (input) => input[0].isValid === false || input[1].isValid === false
+        (input) => input[0].isValid === false || input[1].isValid === false,
       );
 
       if (tagsetsIsNotValid) {
@@ -153,7 +153,7 @@ const TagSetsForm = ({ modelId, onClose }) => {
         {
           [versionPath]: updatedVersionData,
         },
-        { merge: true }
+        { merge: true },
       );
 
       const updatedCustomData = {
@@ -162,9 +162,9 @@ const TagSetsForm = ({ modelId, onClose }) => {
       };
 
       dispatch(
-        modelActions.setModelData({
+        modelActions.updateModelDataField({
           modelVersionsCustomData: updatedCustomData,
-        })
+        }),
       );
       setSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
       setIsSaving(false);

@@ -1,7 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 import {
-  AppError,
   filterDuplicates,
   normalizeError,
   throwCustomError,

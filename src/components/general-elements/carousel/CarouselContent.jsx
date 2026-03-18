@@ -108,7 +108,7 @@ const CarouselContent = ({
   const carouselRef = useRef();
   const imagesRef = useRef();
   const nsfwMode = useSelector((state) => state.general.nsfwMode);
-  const modelName = useSelector((state) => state.model.model.name);
+  const modelName = useSelector((state) => state.model.model?.name);
   const savedImages = useSelector((state) => state.model.savedImages);
   const dispatch = useDispatch();
 

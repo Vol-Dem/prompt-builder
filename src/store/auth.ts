@@ -32,7 +32,7 @@ import { guideActions } from "./guide";
 import { generalActions } from "./general";
 import { imagesActions } from "./images";
 import { getAppInfo } from "./notification";
-import { handleErrors } from "../utils/generalUtils";
+import { handleErrors, normalizeError } from "../utils/generalUtils";
 import type { AuthState, LoginPayload } from "../types/auth.types";
 import type { AppThunk } from "./store";
 import type { FirebaseError } from "firebase/app";
@@ -231,8 +231,8 @@ export const authRequest = (
       if (user.emailVerified) {
         dispatch(authActions.closeAuthForm());
       }
-    } catch (error: unknown) {
-      const err = error as FirebaseError;
+    } catch (error) {
+      const err = normalizeError(error);
       let errMessage;
       switch (err.code) {
         case "auth/invalid-login-credentials":
@@ -290,9 +290,9 @@ export const authWithGoogle = (): AppThunk => {
         }),
       );
       dispatch(authActions.closeAuthForm());
-    } catch (error: unknown) {
-      const err = error as FirebaseError;
-      dispatch(authActions.setErrorMessage(err.message));
+    } catch (error) {
+      const errorMeassage = handleErrors(normalizeError(error));
+      dispatch(authActions.setErrorMessage(errorMeassage));
     }
   };
 };
@@ -324,8 +324,8 @@ export const changeUserEmail = (email: string): AppThunk => {
         }),
       );
       dispatch(authActions.setSuccessMessage("Email changed successfully"));
-    } catch (error: unknown) {
-      const err = error as FirebaseError;
+    } catch (error) {
+      const err = normalizeError(error);
 
       if (err.code === "auth/requires-recent-login") {
         dispatch(authActions.setReauthFormIsOpen(true));
@@ -354,8 +354,8 @@ export const promptForCredentials = async (
     );
 
     return credential;
-  } catch (error: unknown) {
-    const err = error as FirebaseError;
+  } catch (error) {
+    const err = normalizeError(error);
     if (err.code === "auth/invalid-login-credentials") {
       throw new Error(
         "The current password you entered did not match our records",
@@ -386,8 +386,8 @@ export const reAuthUser = async (type: ReAuthType, password: string) => {
     if (type === "popup") {
       await reauthenticateWithPopup(user, provider);
     }
-  } catch (error: unknown) {
-    const err = error as FirebaseError;
+  } catch (error) {
+    const err = normalizeError(error);
 
     if (err.code === "auth/invalid-login-credentials") {
       throw new Error(
@@ -428,8 +428,8 @@ export const changeUserPassword = (
       }
 
       dispatch(authActions.setSuccessMessage("Password changed successfully"));
-    } catch (error: unknown) {
-      const err = error as FirebaseError;
+    } catch (error) {
+      const err = normalizeError(error);
       dispatch(authActions.setErrorMessage(handleErrors(err)));
     }
   };
@@ -447,8 +447,8 @@ export const resetUserPassword = (email: string): AppThunk => {
       await sendPasswordResetEmail(auth, email);
 
       dispatch(authActions.setSuccessMessage("Password reset email sent!"));
-    } catch (error: unknown) {
-      const err = error as FirebaseError;
+    } catch (error) {
+      const err = normalizeError(error);
 
       if (err.code === "auth/invalid-email") {
         dispatch(authActions.setErrorMessage("Invalid email"));
@@ -486,9 +486,9 @@ export const changeUserName = (name: string): AppThunk => {
         }),
       );
       dispatch(authActions.setSuccessMessage("Name changed successfully"));
-    } catch (error: unknown) {
-      const err = error as FirebaseError;
-      dispatch(authActions.setErrorMessage(handleErrors(err)));
+    } catch (error) {
+      const errorMeassage = handleErrors(normalizeError(error));
+      dispatch(authActions.setErrorMessage(errorMeassage));
     }
   };
 };
@@ -547,10 +547,8 @@ export const getUserData = (uid: string): AppThunk => {
         }
       }
       dispatch(authActions.setUserDataIsLoading(false));
-    } catch (error: unknown) {
-      const err = error as FirebaseError;
-
-      console.error(err.message);
+    } catch (error) {
+      handleErrors(normalizeError(error));
       dispatch(authActions.setUserDataLoadError(ERROR_MESSAGE_USER_DATA_LOAD));
       dispatch(authActions.setUserDataIsLoading(false));
     }

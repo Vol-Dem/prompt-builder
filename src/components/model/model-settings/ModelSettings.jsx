@@ -130,7 +130,7 @@ const ModelSettings = () => {
       );
 
       dispatch(
-        modelActions.setModelData({
+        modelActions.updateModelDataField({
           data: newModelData,
         }),
       );
