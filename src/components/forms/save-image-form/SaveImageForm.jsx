@@ -55,7 +55,7 @@ import { fixCivImagesMeta } from "../../../../shared/utils";
  * @param {number} [props.curVersion] - Currently selected model version ID.
  * @param {('models' | 'collections')} props.location - Target entity type for saving images.
  * @param {object} [props.collectionInfo] - Target collection data (used when location is "collections").
- * @param {Array<string>} [props.savedPosts] - IDs of images already saved to the collection.
+ * @param {Array<Object>} [props.savedPosts] - IDs of images already saved to the collection.
  * @param {object} [props.savedModelPosts] - Map of version IDs to saved image IDs for models.
  * @returns {JSX.Element} Save Image form.
  */

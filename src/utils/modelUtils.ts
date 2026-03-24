@@ -5,6 +5,7 @@ import type {
   UserModelDoc,
 } from "../../shared/types/firestore";
 import type {
+  ModelVersion,
   ModelVersionCivitai,
   ModelVersionCustomData,
 } from "../../shared/types/model";
@@ -87,7 +88,7 @@ export const sortModelVersions = (
 export const getCurrentVersionId = (
   model: ModelData,
   modelVersions: ModelVersionCivitai[],
-  versionIdParam: string,
+  versionIdParam: string | null,
 ): number | null => {
   let curVersionId: number | null = null;
   if (
@@ -136,9 +137,9 @@ export const filterNewModelVersions = (
  * @returns {object} preview data
  */
 export const createModelPreviewData = (
-  model: ModelData,
-  curVersion: ModelVersionCivitai,
-  curCustomVersionData: ModelVersionCustomData,
+  model: ModelData | null,
+  curVersion: ModelVersionCivitai | ModelVersion | null,
+  curCustomVersionData: ModelVersionCustomData | null,
 ): ModelPreview | null => {
   if (!model?.id || !curVersion?.id) return null;
 
@@ -232,7 +233,7 @@ export const parseMoelType = (value: string): string | null => {
  */
 export const getInitialVersionData = (
   model: ModelData,
-  versionIdParam: string,
+  versionIdParam: string | null,
 ): ModelVersionCivitai | null => {
   const modelVersions = sortModelVersions(model);
   if (!modelVersions) {

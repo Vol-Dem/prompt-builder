@@ -17,10 +17,10 @@ import CopySvg from "../../../assets/CopySvg";
  *
  * @component
  *
- * @param {object} props
- * @param {number} stage - Current guide stage.
- * @param {() => void} onClose - Close callback.
- * @param {string} className - Optional classname.
+ * @param {Object} props
+ * @param {number} props.stage - Current guide stage.
+ * @param {() => void} props.onClose - Close callback.
+ * @param {string} [props.className] - Optional classname.
  *
  * @returns {JSX.Element} Guide element.
  */
@@ -138,7 +138,7 @@ const QuickStartGuide = ({ stage, onClose, className }) => {
             </div>
           </div>
         </div>,
-        document.body
+        document.body,
       )}
     </>
   );

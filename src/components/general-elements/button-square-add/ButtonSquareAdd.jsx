@@ -28,8 +28,8 @@ import { createSidebarPreviewData } from "../../../utils/modelUtils";
  * @component
  *
  * @param {object} props
- * @param {object} props.previewData - Preview data for the model, collection, or image.
- * @param {('image' | 'model' | 'collection')} props.type - Type of sidebar item.
+ * @param {object | null} props.previewData - Preview data for the model, collection, or image.
+ * @param {('image' | 'model' | 'collection')} [props.type] - Type of sidebar item.
  * @param {number} [props.versionId] - Model version ID (used when type is "model").
  * @param {string} [props.className] - Optional CSS class name.
  * @returns {JSX.Element} Sidebar toggle button.
@@ -76,7 +76,7 @@ const ButtonAdd = ({ type, previewData, versionId, className, ...props }) => {
       const sidePanelData = createSidebarPreviewData(
         versionId,
         previewData,
-        curVersionData
+        curVersionData,
       );
 
       dispatch(addModelToPanel(sidePanelData));

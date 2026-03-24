@@ -1,0 +1,459 @@
+import {
+  CheckCircleIcon,
+  Cog6ToothIcon,
+  ExclamationCircleIcon,
+  FolderArrowDownIcon,
+  PencilSquareIcon,
+  PlusIcon,
+} from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
+
+import Image from "../../components/ui/image/Image";
+import TextButton from "../../components/ui/text/text-buttons/TextButton";
+import TextHighlight from "../../components/ui/text/TextHighlight";
+import classes from "./AboutModelPage.module.scss";
+import Text from "../../components/ui/text/Text";
+import TextImageBlock from "../../components/ui/text/TextImageBlock";
+import TextContentBlock from "../../components/ui/text/TextContentBlock";
+import TextButtonTertiary from "../../components/ui/text/text-buttons/TextButtonTertiary";
+import TextButtonAll from "../../components/ui/text/text-buttons/TextButtonAll";
+import H3 from "../../components/ui/text/H3";
+import TextImageMenu from "../../components/ui/text/text-buttons/TextImageMenu";
+import NotificationMessage from "../../components/ui/NotificationMessage";
+import TextButtonSquare from "../../components/ui/text/text-buttons/TextButtonSquare";
+import TextButtonSaved from "../../components/ui/text/text-buttons/TextButtonSaved";
+import AboutAddImageById from "../../components/about/AboutAddImageById";
+import AboutTagSets from "../../components/about/AboutTagSets";
+import AboutContentWrap from "../../components/about/layout/AboutContentWrap";
+import H1 from "../../components/ui/text/H1";
+import AboutSection from "../../components/about/layout/AboutSection";
+import modelPage1 from "../../assets/about/13-model-page-1.jpg";
+import modelPage1Webp from "../../assets/about/13-model-page-1.webp";
+import modelPage2 from "../../assets/about/13-model-page-2.jpg";
+import modelPage2Webp from "../../assets/about/13-model-page-2.webp";
+import editBtnModel1 from "../../assets/about/22-edit-btn-model-1.jpg";
+import editBtnModel1Webm from "../../assets/about/22-edit-btn-model-1.webp";
+import editBtnModel from "../../assets/about/22-edit-btn-model.jpg";
+import editBtnModelWebm from "../../assets/about/22-edit-btn-model.webp";
+import imgExamples1 from "../../assets/about/14-img-examples-1.jpg";
+import imgExamples1Webp from "../../assets/about/14-img-examples-1.webp";
+import imgExamples2 from "../../assets/about/14-img-examples-2.jpg";
+import imgExamples2Webp from "../../assets/about/14-img-examples-2.webp";
+import imgExamples5 from "../../assets/about/14-img-examples-5.jpg";
+import imgExamples5Webp from "../../assets/about/14-img-examples-5.webp";
+import imgExamples52 from "../../assets/about/14-img-examples-52.jpg";
+import imgExamples52Webp from "../../assets/about/14-img-examples-52.webp";
+import imgExamples3 from "../../assets/about/14-img-examples-3.jpg";
+import imgExamples3Webp from "../../assets/about/14-img-examples-3.webp";
+import imgExamples4 from "../../assets/about/14-img-examples-4.jpg";
+import imgExamples4Webp from "../../assets/about/14-img-examples-4.webp";
+import imgExamples6 from "../../assets/about/14-img-examples-6.jpg";
+import imgExamples6Webp from "../../assets/about/14-img-examples-6.webp";
+import imgExamples7 from "../../assets/about/14-img-examples-7.jpg";
+import imgExamples7Webp from "../../assets/about/14-img-examples-7.webp";
+import imgExamples8 from "../../assets/about/14-img-examples-8.jpg";
+import imgExamples8Webp from "../../assets/about/14-img-examples-8.webp";
+import imgExamples9 from "../../assets/about/14-img-examples-9.jpg";
+import imgExamples9Webp from "../../assets/about/14-img-examples-9.webp";
+import imgExamplesResources3 from "../../assets/about/14-img-examples-resources3.jpg";
+import imgExamplesResources3Webp from "../../assets/about/14-img-examples-resources3.webp";
+import imgExamplesResources4 from "../../assets/about/14-img-examples-resources4.jpg";
+import imgExamplesResources4Webp from "../../assets/about/14-img-examples-resources4.webp";
+
+/**
+ * Content for the About page "Model Page" section.
+ *
+ * @component
+ * @returns {JSX.Element} The "Model Page" section content.
+ */
+const AboutModelPage = () => {
+  return (
+    <AboutContentWrap>
+      <H1 id="model">Model Page</H1>
+      <TextContentBlock>
+        <Text>
+          Under model's name, there are tabs for model versions. The names of
+          versions marked as downloaded in the settings are purple, and those
+          not downloaded are white.
+        </Text>
+        <TextImageBlock>
+          <Image
+            loading="lazy"
+            width={1909}
+            height={918}
+            fullView={true}
+            className={classes["img"]}
+            src={modelPage1}
+            alt="Model page 1"
+            srcSet={modelPage1Webp}
+            type="image/webp"
+          />
+        </TextImageBlock>
+        <Text>
+          Below the model images, there is an information block about the model.
+          There will be displayed data you entered in the Settings, as well as a
+          block with trigger words where you can see all the added tags.
+        </Text>
+        <TextImageBlock>
+          <Image
+            loading="lazy"
+            width={1909}
+            height={918}
+            fullView={true}
+            className={classes["img"]}
+            src={modelPage2}
+            alt="Model page 2"
+            srcSet={modelPage2Webp}
+            type="image/webp"
+          />
+        </TextImageBlock>
+        <Text>
+          Clicking on a tag will add it to the prompt, and clicking again on an
+          already added tag will remove it from the prompt. If some tags are
+          already in the prompt, they will be{" "}
+          <TextButtonTertiary className={classes.tag}>
+            highlighted
+          </TextButtonTertiary>
+          . With the <TextButtonAll>Add All</TextButtonAll> and{" "}
+          <TextButtonAll>Remove All</TextButtonAll> buttons, you can add or
+          remove the entire group of tags from the prompt. When removing a
+          group, the rest of the prompt will remain unchanged.
+        </Text>
+        <Text>
+          The{" "}
+          <TextHighlight>
+            "Edit... <PencilSquareIcon className={classes["svg"]} />"
+          </TextHighlight>{" "}
+          button in the top right corner of the block gives you quick access to
+          editing trigger words of the current version.
+        </Text>
+        <TextImageBlock col={2}>
+          <Image
+            loading="lazy"
+            width={1909}
+            height={918}
+            fullView={true}
+            className={classes["img"]}
+            src={editBtnModel1}
+            alt="Edit button model 1"
+            srcSet={editBtnModel1Webm}
+            type="image/webp"
+          />
+          <Image
+            loading="lazy"
+            width={1909}
+            height={918}
+            fullView={true}
+            className={classes["img"]}
+            src={editBtnModel}
+            alt="Edit button model 2"
+            srcSet={editBtnModelWebm}
+            type="image/webp"
+          />
+        </TextImageBlock>
+        <AboutTagSets />
+        <AboutSection id="images">
+          <H3>Generated Images</H3>
+          <Text>
+            On the model page, after the basic information and description, you
+            will find images generated by users with this model. You can{" "}
+            <TextHighlight>save images</TextHighlight> from the generated list
+            either <TextHighlight>to the current model page</TextHighlight> or{" "}
+            <Link
+              className={classes.link}
+              to={{
+                pathname: `/about/image-collections`,
+                hash: "collection",
+              }}
+            >
+              to a separate collection
+            </Link>
+            , so you can use them as references later.
+          </Text>
+          <Text>
+            To save image to the current model page use the{" "}
+            <TextButtonSquare>
+              <FolderArrowDownIcon />
+            </TextButtonSquare>{" "}
+            <TextHighlight>"Save to Model"</TextHighlight> button at the top
+            left of an image. If there is more than one image, a popup window
+            will open where you can select the images you want to save. Click{" "}
+            <TextButton>Save All</TextButton> or{" "}
+            <TextButton>Save Selected</TextButton> to add it to the{" "}
+            <TextButtonSaved /> tab of the current model.
+          </Text>
+          <TextImageBlock col={2}>
+            <Image
+              loading="lazy"
+              width={1909}
+              height={918}
+              fullView={true}
+              className={classes["img"]}
+              src={imgExamples1}
+              alt="Image examples 1"
+              srcSet={imgExamples1Webp}
+              type="image/webp"
+            />
+            <Image
+              loading="lazy"
+              width={1909}
+              height={918}
+              fullView={true}
+              className={classes["img"]}
+              src={imgExamples2}
+              alt="Image examples 2"
+              srcSet={imgExamples2Webp}
+              type="image/webp"
+            />
+          </TextImageBlock>
+        </AboutSection>
+        <H3 id="addbyid">Add image by post ID</H3>
+        <Text>
+          Use the <TextButton>Add image by ID</TextButton> button to save an
+          image by the post ID from Civitai. To add an image, use the{" "}
+          <TextHighlight>Post ID</TextHighlight> from Civitai (not the image
+          ID).{" "}
+        </Text>
+        <AboutAddImageById />
+        {/* <InfoPostId /> */}
+        <Text>
+          Return to the site and enter the post ID, select the model version,
+          and select the images that you want to save.
+        </Text>
+        <TextImageBlock col={2}>
+          <Image
+            loading="lazy"
+            width={1409}
+            height={797}
+            fullView={true}
+            className={classes["img"]}
+            src={imgExamples5}
+            alt="Image examples 3"
+            srcSet={imgExamples5Webp}
+            type="image/webp"
+          />
+          <Image
+            loading="lazy"
+            width={1409}
+            height={797}
+            fullView={true}
+            className={classes["img"]}
+            src={imgExamples52}
+            alt="Image examples 4"
+            srcSet={imgExamples52Webp}
+            type="image/webp"
+          />
+        </TextImageBlock>
+        <NotificationMessage
+          type="notification"
+          className={classes.notification}
+        >
+          <Text>
+            Saved images are not stored on the server; only generation data is
+            stored. If an image is removed from the Civitai site, it will become
+            unavailable, but the generation data will be preserved and available
+            for use.
+          </Text>
+        </NotificationMessage>
+        <Text>
+          In the <TextButtonSaved /> tab, the image menu <TextImageMenu />{" "}
+          includes an option to delete images. You can delete either selected
+          images or all of them at once.
+        </Text>
+        <TextImageBlock col={2}>
+          <Image
+            loading="lazy"
+            width={1491}
+            height={754}
+            fullView={true}
+            className={classes["img"]}
+            src={imgExamples3}
+            alt="Image examples 3"
+            srcSet={imgExamples3Webp}
+            type="image/webp"
+          />
+          <Image
+            loading="lazy"
+            width={1491}
+            height={754}
+            fullView={true}
+            className={classes["img"]}
+            src={imgExamples4}
+            alt="Image examples 4"
+            srcSet={imgExamples4Webp}
+            type="image/webp"
+          />
+        </TextImageBlock>
+        <Text>
+          With the{" "}
+          <TextButtonSquare>
+            <PlusIcon />
+          </TextButtonSquare>{" "}
+          button, any image can be added to the sidebar as a reference. Clicking
+          the button again will remove the image from the sidebar.
+        </Text>
+        <TextImageBlock>
+          <Image
+            loading="lazy"
+            width={1491}
+            height={754}
+            fullView={true}
+            className={classes["img"]}
+            src={imgExamples6}
+            alt="Image examples 5"
+            srcSet={imgExamples6Webp}
+            type="image/webp"
+          />
+        </TextImageBlock>
+        <Text>
+          Any image on the model page can be set as the model preview. To do
+          this, in the image menu <TextImageMenu /> select{" "}
+          <TextHighlight>"Set as Preview"</TextHighlight>. If the NSFW mode is
+          enabled in the Top Bar, the menu will also include the option{" "}
+          <TextHighlight>"Set as NSFW Preview"</TextHighlight>. Each model can
+          have two previews: one for SFW and one for NSFW mode.
+        </Text>
+        <TextImageBlock col={2}>
+          <Image
+            loading="lazy"
+            width={1491}
+            height={754}
+            fullView={true}
+            className={classes["img"]}
+            src={imgExamples7}
+            alt="Image examples 6"
+            srcSet={imgExamples7Webp}
+            type="image/webp"
+          />
+          <Image
+            loading="lazy"
+            width={1491}
+            height={754}
+            fullView={true}
+            className={classes["img"]}
+            src={imgExamples8}
+            alt="Image examples 7"
+            srcSet={imgExamples8Webp}
+            type="image/webp"
+          />
+        </TextImageBlock>
+        <NotificationMessage
+          type="notification"
+          className={classes["notification"]}
+        >
+          You cannot upload your own image directly to the site. However, you
+          can upload it to Civitai under the corresponding model as a generation
+          example or simply as a separate post, and then add it to saved images
+          using the <TextButton>Add Image by ID</TextButton> button. After this,
+          you can use the image as a model preview or tag sets.
+        </NotificationMessage>
+        <Text>
+          When you click on an image, a popup window will appear where you can
+          see its prompt, add necessary tags, and view generation data.
+        </Text>
+        <TextImageBlock>
+          <Image
+            loading="lazy"
+            width={1491}
+            height={754}
+            fullView={true}
+            className={classes["img"]}
+            src={imgExamples9}
+            alt="Image examples 8"
+            srcSet={imgExamples9Webp}
+            type="image/webp"
+          />
+        </TextImageBlock>
+        <Text>
+          There you will also find resources used during generation: models,
+          their versions, type, weight, and source.
+        </Text>
+        <TextImageBlock>
+          <Image
+            loading="lazy"
+            width={1909}
+            height={918}
+            fullView={true}
+            className={classes["img"]}
+            src={imgExamplesResources3}
+            alt="Image examples resources"
+            srcSet={imgExamplesResources3Webp}
+            type="image/webp"
+          />
+        </TextImageBlock>
+        <Text>
+          <TextButtonSquare>
+            <FolderArrowDownIcon className={classes.svg} />
+          </TextButtonSquare>{" "}
+          – Click to save the current resource to your collection. If the
+          resource is already downloaded, the button will be replaced with a{" "}
+          <TextButtonSquare>
+            <PlusIcon className={classes.svg} />
+          </TextButtonSquare>
+          , which you can use to add the resource to the sidebar.
+        </Text>
+        <Text>
+          <TextButtonSquare>
+            <PlusIcon className={classes.svg} />
+          </TextButtonSquare>{" "}
+          – Click to add the model to the sidebar for quick access. Clicking
+          again will remove the model from the sidebar.
+        </Text>
+        <Text>
+          If the model is already in your collection, its name will appear as a{" "}
+          <span className={classes.link}>blue link</span> — click it to navigate
+          to the model’s page.
+        </Text>
+        <H3>Version tracking</H3>
+        <Text>
+          If the resource is downloaded, you’ll see two indicators to help track
+          its versions.
+        </Text>
+        <Text>
+          You can mark versions as downloaded or not downloaded in the{" "}
+          <Link
+            className={classes.link}
+            to={{
+              pathname: `/about/model-settings`,
+              hash: "settings",
+            }}
+          >
+            model settings
+          </Link>{" "}
+          by clicking the{" "}
+          <TextButton>
+            <Cog6ToothIcon /> Edit
+          </TextButton>{" "}
+          button on the model page.
+        </Text>
+        <Text>
+          <CheckCircleIcon
+            className={`${classes["status"]} ${classes["status--saved"]}`}
+          />{" "}
+          - Indicates that the version used as a resource is{" "}
+          <TextHighlight>marked</TextHighlight> as downloaded.
+        </Text>
+        <Text>
+          <ExclamationCircleIcon className={classes["status"]} /> - Indicates
+          that the version used as a resource is{" "}
+          <TextHighlight>not marked</TextHighlight> as downloaded.
+        </Text>
+        <TextImageBlock>
+          <Image
+            loading="lazy"
+            width={1491}
+            height={754}
+            fullView={true}
+            className={classes["img"]}
+            src={imgExamplesResources4}
+            alt="Image examples resources 2"
+            srcSet={imgExamplesResources4Webp}
+            type="image/webp"
+          />
+        </TextImageBlock>
+      </TextContentBlock>
+    </AboutContentWrap>
+  );
+};
+
+export default AboutModelPage;

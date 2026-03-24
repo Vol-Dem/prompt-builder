@@ -1,3 +1,4 @@
+import type { TagSet } from "../../src/types/prompt.types";
 import type { UserModelDoc, CivitaiModelDoc } from "./firestore";
 import type { Image } from "./image";
 
@@ -107,6 +108,7 @@ export interface ModelVersion {
   name: string;
   nsfwLevel: number | null;
   trainedWords: string[];
+  modelId?: number;
 }
 
 export interface UserModelDefaultCustomData {
@@ -116,6 +118,8 @@ export interface UserModelDefaultCustomData {
   maxWeight?: number;
   size?: number;
   helperTags?: string[];
+  negativeTags?: string[];
+  tagSetsData?: TagSet[];
 }
 
 export interface ModelVersionCustomData {
@@ -136,6 +140,9 @@ export interface ModelVersionCustomData {
   maxWeight?: number | null;
   helperTags?: string[];
   fileName?: string;
+  description?: string;
+  negativeTags?: string[];
+  tagSetsData?: TagSet[];
 }
 
 export interface ModelVersionsCustomData {

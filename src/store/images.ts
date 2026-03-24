@@ -95,7 +95,7 @@ const imagesSlice = createSlice({
     categories: [],
     activeCategory: "",
     activeSubcategory: "",
-    collectionPreviews: [],
+    collectionPreviews: null,
     isLastPage: false,
     isLastPreviewsPage: false,
     imagesIsLoading: false,
@@ -154,14 +154,14 @@ const imagesSlice = createSlice({
       state.imagesIsLoading = false;
     },
     resetCollectionPreviews(state) {
-      state.collectionPreviews = [];
+      state.collectionPreviews = null;
       state.errorMessage = "";
       state.previewsErrorMessage = "";
       state.isLastPreviewsPage = false;
       state.previewsIsLoading = false;
     },
     resetCollectionListState(state) {
-      state.collectionPreviews = [];
+      state.collectionPreviews = null;
       state.errorMessage = "";
       state.previewsErrorMessage = "";
       state.isLastPreviewsPage = false;
@@ -422,7 +422,7 @@ export const getCollectionPreviews = (
             subcategory: activeSubcategory,
             nsfw: nsfwMode,
             data: loadMore
-              ? [...(collectionPreviews || []), ...collectionsData]
+              ? [...(collectionPreviews?.data || []), ...collectionsData]
               : collectionsData,
           }),
         );

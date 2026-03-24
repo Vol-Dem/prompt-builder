@@ -25,7 +25,7 @@ import ModelVersionsItem from "../model-versions-item/ModelVersionsItem";
  * @component
  *
  * @param {object} props
- * @param {(event: React.MouseEvent) => void} [props.onClick] - Optional click handler for version selection.
+ * @param {(e: React.MouseEvent<HTMLElement>) => void} [props.onClick] - Optional click handler for version selection.
  * @param {React.ElementType} [props.itemComponent] - Component used to render version items
  *   (e.g. NavLink, span, button).
  * @param {object} props.versionsCustomData - Versions metadata indexed by version ID.

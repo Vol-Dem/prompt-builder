@@ -37,8 +37,8 @@ const defVisibleTags = 2;
  * @component
  *
  * @param {object} props
- * @param {object} props.customData - User-defined tag sets for the current version.
- * @param {object} props.defaultData - Default tag sets shared across versions.
+ * @param {Object[]} [props.customData] - User-defined tag sets for the current version.
+ * @param {Object[]} [props.defaultData] - Default tag sets shared across versions.
  *
  * @returns {JSX.Element} Model tag sets panel.
  */

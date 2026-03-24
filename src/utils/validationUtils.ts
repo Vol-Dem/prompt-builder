@@ -1,3 +1,4 @@
+import type { Validated, ValidationTypes } from "../types/general.types";
 import {
   ERROR_MESSAGE_INVALID_MODEL_ID,
   VALIDATION_PASSWORD_MIN_LENGTH,
@@ -8,18 +9,6 @@ import {
 } from "../variables/constants";
 import { parseModelIds } from "./modelUtils";
 
-type ValidTypes = {
-  email: boolean;
-  password: boolean;
-  required: boolean;
-  number: boolean;
-  maxLength: number;
-  minLength: number;
-  modelId: boolean;
-};
-
-type Validated = { inputValue: string; isValid: boolean; errorMessage: string };
-
 /**
  * Validates input data
  * @param {({email: boolean, password: boolean, required: boolean, number: boolean, maxLength: number, minLength: number, modelId: boolean})} validTypes - An object with validation types as keys (email, password, required, number, minLength, maxLength, modelId) and their configurations as values.
@@ -28,17 +17,13 @@ type Validated = { inputValue: string; isValid: boolean; errorMessage: string };
  * Structure: {inputValue: string, isValid: boolean, errorMessage: string}
  */
 export const validateInput = (
-  validTypes: ValidTypes,
+  validTypes: ValidationTypes,
   value: string,
-): Validated | null => {
-  if (!validTypes) {
-    return null;
-  }
-
+): Validated => {
   const errorMessages: string[] = [];
 
   for (const [type, typeValue] of Object.entries(validTypes) as [
-    keyof ValidTypes,
+    keyof ValidationTypes,
     boolean,
   ][]) {
     if (typeValue) {

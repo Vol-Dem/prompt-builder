@@ -117,6 +117,7 @@ const CarouselContent = ({
     : dimensions.imgWidthWithGap * curVisibleAmount - dimensions.gap;
 
   const postData =
+    savedImages?.data &&
     !!Object.keys(savedImages?.data)?.length &&
     savedImages.data[versionId]?.find((post) => post.postId === postId);
 

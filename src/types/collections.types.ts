@@ -16,11 +16,18 @@ export interface CollectionImages {
   lastVisibleId?: number;
 }
 
+export interface CollectionPreviewsData {
+  category: string;
+  data: CollectionPreviewDoc[];
+  nsfw: boolean;
+  subcategory: string;
+}
+
 export interface CollectionsState {
   categories: CollectionCategory[];
   activeCategory: string;
   activeSubcategory: string;
-  collectionPreviews: CollectionPreviewDoc[];
+  collectionPreviews: CollectionPreviewsData | null;
   isLastPage: boolean;
   isLastPreviewsPage: boolean;
   imagesIsLoading: boolean;

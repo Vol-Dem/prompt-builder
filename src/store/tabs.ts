@@ -199,8 +199,8 @@ const tabsSlice = createSlice({
  */
 export const getModelsPreview = (
   activeTab: string,
-  activeCategory: string,
-  activeSubcategory: string,
+  activeCategory: string | null,
+  activeSubcategory: string | null,
   loadMore: boolean = false,
   nsfwMode: boolean,
 ): AppThunk => {

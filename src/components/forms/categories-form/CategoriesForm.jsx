@@ -38,7 +38,7 @@ import { updateCollectionCategories } from "../../../store/images";
  *
  * @param {object} props
  * @param {('models' | 'collections')} props.modelType - Defines whether categories belong to models or collections.
- * @param {string} [props.activeCategory] - Active parent category name to operate on its subcategories.
+ * @param {string | null} [props.activeCategory] - Active parent category name to operate on its subcategories.
  * @param {Array} props.categories - Categories data structure.
  * @returns {JSX.Element} Categories management form.
  */
@@ -140,7 +140,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
       }
 
       const existedName = categoriesToUpdate.find(
-        (category) => category.name === categoryName
+        (category) => category.name === categoryName,
       );
 
       if (existedName) {
@@ -187,14 +187,14 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
     let updatedCategoriesData;
 
     const updatedCategories = categoriesToUpdate.filter(
-      (category) => category.id !== deleteCategoryData.id
+      (category) => category.id !== deleteCategoryData.id,
     );
 
     if (!activeCategory) {
       updatedCategoriesData = updatedCategories;
     } else {
       const mainCategoryIndex = categories.findIndex(
-        (category) => category.id === activeCategory
+        (category) => category.id === activeCategory,
       );
       const updatedMainCategory = {
         ...categories[mainCategoryIndex],
@@ -220,7 +220,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
   const showDeleteReqeustHandler = (e) => {
     const categoryId = e.target.dataset.id;
     const categoryName = categoriesToUpdate.find(
-      (category) => category.id === categoryId
+      (category) => category.id === categoryId,
     ).name;
     setDeleteCategoryData({ id: categoryId, name: categoryName });
     setDeleteRequestIsOpen(true);

@@ -3,8 +3,8 @@ import type { ModelCategories } from "../../shared/types/user";
 
 export interface TabsModelsData {
   tab: string;
-  category: string;
-  subcategory: string;
+  category: string | null;
+  subcategory: string | null;
   nsfw: boolean;
   previews: ModelPreviewDoc[];
 }

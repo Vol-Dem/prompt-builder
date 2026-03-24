@@ -40,6 +40,7 @@ export interface Tag {
 export interface TagSet {
   name: string;
   value: string;
+  imgUrl?: string;
 }
 
 export interface TagSetInputName {

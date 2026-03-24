@@ -31,7 +31,7 @@ import AddToPanelAnimContainer from "../../ui/animation/AddToPanelAnimContainer"
  *
  * @param {object} props
  * @param {object} props.item - Card data used to render the preview card.
- * @param {boolean} props.fullView - Whether to render the expanded card layout.
+ * @param {boolean} [props.fullView] - Whether to render the expanded card layout.
  * @param {boolean} [props.animate=true] - Whether animation is enabled.
  *
  * @returns {JSX.Element} Wrapper that renders animated and static sidebar cards.

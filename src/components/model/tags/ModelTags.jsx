@@ -29,9 +29,9 @@ import InfoQuickEdit from "../../general-elements/info/InfoQuickEdit";
  *
  * @component
  *
- * @param {object} props
- * @param {object} props.customData - User-specific model data.
- * @param {object} props.modelPreview - Default model preview data.
+ * @param {Object} props
+ * @param {Object | null} props.customData - User-specific model data.
+ * @param {Object | null} props.modelPreview - Default model preview data.
  *
  * @returns {JSX.Element} Model tags panel.
  */

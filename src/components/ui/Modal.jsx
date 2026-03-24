@@ -15,11 +15,12 @@ import {
  *
  * Disables page scroll while open.
  *
- * @param {string} [disableClass] - Optional class for modal root.
- * @param {function} onClose - Called when backdrop or close button is clicked.
- * @param {string} [className] - Optional class for modal content.
- * @param {string} [title] - Optional modal title.
- * @param {React.ReactNode} children - Modal content.
+ * @param {Object} props
+ * @param {string} [props.disableClass] - Optional class for modal root.
+ * @param {()=>void} props.onClose - Called when backdrop or close button is clicked.
+ * @param {string} [props.className] - Optional class for modal content.
+ * @param {string} [props.title] - Optional modal title.
+ * @param {React.ReactNode} props.children - Modal content.
  * @returns {JSX.Element} Rendered modal.
  */
 const Modal = ({ disableClass, onClose, className, title, children }) => {

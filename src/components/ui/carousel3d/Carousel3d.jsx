@@ -10,9 +10,9 @@ const slideDelaySec = 4;
  *
  * Cycles through images with transform-based transitions.
  * Resets seamlessly when reaching the end.
- *
- * @param {Array<{url:string,width:number,height:number}>} images - Images to display.
- * @param {string} [className] - Optional custom class.
+ * @param {object} props
+ * @param {Array<{url:string,width:number,height:number}>} props.images - Images to display.
+ * @param {string} [props.className] - Optional custom class.
  * @returns {JSX.Element} Rendered 3D carousel.
  */
 const Carousel3d = ({ images, className }) => {
