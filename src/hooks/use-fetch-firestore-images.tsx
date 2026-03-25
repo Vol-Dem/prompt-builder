@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import {
   collection,
   getDocs,
@@ -7,6 +6,7 @@ import {
   limit,
   orderBy,
   query,
+  QueryDocumentSnapshot,
   startAfter,
   where,
 } from "firebase/firestore";
@@ -20,6 +20,8 @@ import {
   filterDuplicates,
 } from "../utils/generalUtils";
 import firebaseApp from "../firebase-config";
+import { useAppSelector } from "../store/hooks/hooks";
+import type { Image, SavedPostDoc } from "../../shared/types/image";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -52,16 +54,18 @@ const firestore = getFirestore(firebaseApp);
  *   isLastPage
  * } = useFetchFirestoreImages(modelVersionId);
  */
-const useFetchFirestoreImages = (curImagesModelVersionId) => {
+const useFetchFirestoreImages = (curImagesModelVersionId: number) => {
   const [isFetching, setIsFetching] = useState(false);
   const [isLastPage, setIsLastPage] = useState(false);
-  const [lastVisible, setLastVisible] = useState({});
-  const [fetchedData, setFetchedData] = useState([]);
+  const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot | {}>(
+    {},
+  );
+  const [fetchedData, setFetchedData] = useState<Image[][]>([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const savedImagesData = useSelector((state) => state.model.savedImages);
-  const nsfwMode = useSelector((state) => state.general.nsfwMode);
-  const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
-  const uid = useSelector((state) => state.auth.user.uid);
+  const savedImagesData = useAppSelector((state) => state.model.savedImages);
+  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const nsfwLevel = useAppSelector((state) => state.general.nsfwLevel);
+  const uid = useAppSelector((state) => state.auth.user.uid);
 
   const resetImages = () => {
     setFetchedData([]);
@@ -111,7 +115,7 @@ const useFetchFirestoreImages = (curImagesModelVersionId) => {
         modelImagesSnap.docs.length < SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE;
 
       const data = modelImagesSnap.docs.flatMap((doc) => {
-        return doc.data();
+        return doc.data() as SavedPostDoc;
       });
 
       const images = data
@@ -157,7 +161,7 @@ const useFetchFirestoreImages = (curImagesModelVersionId) => {
     curImagesModelVersionId,
     isLastPage,
     lastVisible,
-    savedImagesData.data,
+    savedImagesData?.data,
     nsfwMode,
     nsfwLevel,
     uid,

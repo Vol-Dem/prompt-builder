@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
  * @returns The distance from the current scroll position to the top, in pixels
  */
 const useScrollTop = () => {
-  const [scrollTop, setScrollTop] = useState(null);
+  const [scrollTop, setScrollTop] = useState<number | null>(null);
 
   useEffect(() => {
     const getScroll = () => {

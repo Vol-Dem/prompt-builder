@@ -1,11 +1,24 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { filterDuplicates, throwCustomError } from "../utils/generalUtils";
+import {
+  filterDuplicates,
+  normalizeError,
+  throwCustomError,
+} from "../utils/generalUtils";
 import {
   ERROR_MESSAGE_CIV_CONNECTION,
   ERROR_MESSAGE_INVALID_DATA,
   FILTER_CIV_DUPLICATES,
 } from "../variables/constants";
+
+interface CivitaiFetchResultItem {
+  id: number;
+}
+
+interface CivitaiFetchResult {
+  items: CivitaiFetchResultItem[];
+  metadata: { nextCursor: string; nextPage: string };
+}
 
 /**
  * Fetches data from a given Civitai URL and manages the Civitai cursor-based pagination system
@@ -13,14 +26,14 @@ import {
  * @returns The state object containing the fetch function, fetched data, fetching state, last page state, error message,
  * and functions to update fetched data and the error message
  */
-const useFetchCivitai = (url) => {
+const useFetchCivitai = (url: string) => {
   const [isFetching, setIsFetching] = useState(false);
   const [isLastPage, setIsLastPage] = useState(false);
-  const [fetchedData, setFetchedData] = useState([]);
+  const [fetchedData, setFetchedData] = useState<any[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const [currCursor, setCurrCursor] = useState(null);
-  const [nextCursor, setNextCursor] = useState(null);
-  const abortControlerRef = useRef(null);
+  const [currCursor, setCurrCursor] = useState<string | null>(null);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const abortControlerRef = useRef<AbortController>(null);
 
   useEffect(() => {
     const resetExamples = () => {
@@ -40,7 +53,7 @@ const useFetchCivitai = (url) => {
   }, [url]);
 
   const fetchCivitai = useCallback(
-    async (setIsIntersecting) => {
+    async (setIsIntersecting: (isIntersecting: boolean) => void) => {
       if (!url) return;
       if (nextCursor && currCursor === nextCursor) return;
 
@@ -59,7 +72,7 @@ const useFetchCivitai = (url) => {
         const imgExampleResponse = await fetch(curUrl, {
           signal: newAbortControler.signal,
         });
-        const data = await imgExampleResponse.json();
+        const data = (await imgExampleResponse.json()) as CivitaiFetchResult;
 
         if (!data?.items) {
           throwCustomError(ERROR_MESSAGE_INVALID_DATA);
@@ -78,22 +91,23 @@ const useFetchCivitai = (url) => {
           return newExampleImages;
         });
 
-        setCurrCursor(nextCursor || true);
+        setCurrCursor(nextCursor);
         if (data.metadata?.nextCursor) {
           setNextCursor(data.metadata.nextCursor);
         } else {
           setIsLastPage(true);
         }
         setIsIntersecting(false);
-      } catch (err) {
-        if (err.name !== "AbortError") {
+      } catch (error) {
+        const err = normalizeError(error);
+        if (err?.name !== "AbortError") {
           setErrorMessage(ERROR_MESSAGE_CIV_CONNECTION);
         }
       } finally {
         setIsFetching(false);
       }
     },
-    [nextCursor, url, currCursor]
+    [nextCursor, url, currCursor],
   );
 
   return {

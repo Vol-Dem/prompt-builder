@@ -1,3 +1,4 @@
+import type { GuideStep, GuideType } from "../types/guide.types";
 import useGuideIndex from "./use-guide-index";
 
 /**
@@ -18,7 +19,7 @@ import useGuideIndex from "./use-guide-index";
  *   config: GuideStepConfig
  * } | null}
  */
-const useGuideStep = (guideType, steps) => {
+const useGuideStep = (guideType: GuideType, steps: GuideStep[]) => {
   const index = useGuideIndex(guideType, steps);
   return {
     index,

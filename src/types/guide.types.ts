@@ -31,3 +31,7 @@ export interface SetGuideIsActivePayload {
   type: GuideType;
   value: boolean;
 }
+
+export interface GuideStep {
+  step: number;
+}

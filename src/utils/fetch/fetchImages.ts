@@ -95,11 +95,16 @@ export const getImageInfo = async (image: Image) => {
 
       updatedImgResources = [...updatedImgResources, ...updatedHashRes];
     }
-
-    return await fetchResourcesInfoFromDB(
-      image,
-      filterDuplicates(updatedImgResources, "modelVersionId"),
+    const resourcesFilteredById = filterDuplicates(
+      updatedImgResources,
+      "modelVersionId",
     );
+    const resourcesFilteredByName = filterDuplicates(
+      resourcesFilteredById,
+      "name",
+    );
+
+    return await fetchResourcesInfoFromDB(image, resourcesFilteredByName);
   } catch (error) {
     throw normalizeError(error);
   }
@@ -382,12 +387,14 @@ export const fetchResourcesInfoFromDB = async (
     let modelHash: string | null = null;
 
     if (
-      Object.hasOwn(curImageData?.meta, "Model hash") &&
+      curImageData?.meta &&
+      Object.hasOwn(curImageData.meta, "Model hash") &&
       curImageData.meta["Model hash"]
     ) {
       modelHash = curImageData.meta["Model hash"];
     } else if (
-      Object.hasOwn(curImageData?.meta, "Modelhash") &&
+      curImageData?.meta &&
+      Object.hasOwn(curImageData.meta, "Modelhash") &&
       curImageData.meta["Modelhash"]
     ) {
       modelHash = curImageData.meta["Modelhash"];
@@ -467,8 +474,13 @@ export const fetchResourcesInfoFromDB = async (
     if (modelsVersionIds.length) {
       const q = query(
         collection(firestore, "users", uid, `preview`),
-        where("versionIds", "array-contains-any", modelsVersionIds),
+        where(
+          "versionIds",
+          "array-contains-any",
+          modelsVersionIds.slice(0, 29),
+        ),
       );
+
       const querySnapshot = await getDocs(q);
 
       const modelsPrewiewByVersionId = querySnapshot.docs.map((doc) => {
@@ -481,7 +493,7 @@ export const fetchResourcesInfoFromDB = async (
     if (modelsHashes.length) {
       const q = query(
         collection(firestore, "users", uid, `preview`),
-        where("hashes", "array-contains-any", modelsHashes),
+        where("hashes", "array-contains-any", modelsHashes.slice(0, 29)),
       );
       const querySnapshot = await getDocs(q);
 
@@ -512,7 +524,11 @@ export const fetchResourcesInfoFromDB = async (
       if (uniqModelsNames.length) {
         const q = query(
           collection(firestore, "users", uid, `preview`),
-          where("fileNames", "array-contains-any", uniqModelsNames),
+          where(
+            "fileNames",
+            "array-contains-any",
+            uniqModelsNames.slice(0, 29),
+          ),
         );
         const querySnapshot = await getDocs(q);
 
