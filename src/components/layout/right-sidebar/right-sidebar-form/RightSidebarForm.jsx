@@ -7,7 +7,7 @@ import { useLocation } from "react-router-dom";
 import classes from "./RightSidebarForm.module.scss";
 import { authActions } from "../../../../store/auth";
 import { usedModelsActions } from "../../../../store/usedModels";
-import Buttton from "../../../ui/buttons/Button";
+import Button from "../../../ui/buttons/Button";
 import UpdateModelForm from "../../../forms/update-model-form/UpdateModelForm";
 import SaveToCollectionForm from "../../../forms/save-to-collection-form/SaveToCollectionForm";
 import ErrorMessage from "../../../ui/ErrorMessage";
@@ -32,10 +32,10 @@ const RightSidebarForm = () => {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const formIsOpen = useSelector((state) => state.used.formIsOpen);
   const userDataIsLoading = useSelector(
-    (state) => state.auth.userDataIsLoading
+    (state) => state.auth.userDataIsLoading,
   );
   const userDataLoadError = useSelector(
-    (state) => state.auth.userDataLoadError
+    (state) => state.auth.userDataLoadError,
   );
   const dispatch = useDispatch();
   const location = useLocation();
@@ -91,7 +91,7 @@ const RightSidebarForm = () => {
             </button>
           </div>
         )}
-        <Buttton
+        <Button
           title="Hide form"
           className={`${classes["btn-forms"]} ${
             formIsOpen ? classes["btn-forms--close"] : ""
@@ -109,7 +109,7 @@ const RightSidebarForm = () => {
               <XMarkIcon />
             </>
           )}
-        </Buttton>
+        </Button>
       </div>
       <div></div>
       {userDataLoadError && <ErrorMessage>{userDataLoadError}</ErrorMessage>}

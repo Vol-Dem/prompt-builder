@@ -1,4 +1,4 @@
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import Modal from "../../ui/Modal";
 import classes from "./ExitGuideRequest.module.scss";
 
@@ -22,10 +22,10 @@ const ExitGuideRequest = ({ onSubmit, onClose, children }) => {
       <div className={classes["exit-request"]}>
         <div className={classes["exit-request__message"]}>{children}</div>
         <div className={classes["exit-request__btn-container"]}>
-          <Buttton className={classes["btn-exit"]} onClick={onSubmit}>
+          <Button className={classes["btn-exit"]} onClick={onSubmit}>
             Exit tutorial
-          </Buttton>
-          <Buttton onClick={onClose}>Cancel</Buttton>
+          </Button>
+          <Button onClick={onClose}>Cancel</Button>
         </div>
       </div>
     </Modal>

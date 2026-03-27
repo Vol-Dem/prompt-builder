@@ -1,9 +1,9 @@
 import type { ComponentProps } from "react";
 import classes from "./Button.module.scss";
 
-type ButttonProps = ComponentProps<"button">;
+type ButtonProps = ComponentProps<"button">;
 
-const Buttton = ({ children, className, ...props }: ButttonProps) => {
+const Button = ({ children, className, ...props }: ButtonProps) => {
   return (
     <button className={`${classes.btn} ${className || ""}`} {...props}>
       {children}
@@ -11,4 +11,4 @@ const Buttton = ({ children, className, ...props }: ButttonProps) => {
   );
 };
 
-export default Buttton;
+export default Button;

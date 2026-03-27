@@ -104,9 +104,8 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
   };
 
   //Switch visibility of change name form
-  const changeNameIsActiveHandler = (e) => {
+  const changeNameIsActiveHandler = (categoryId) => {
     setErrorMessage("");
-    const categoryId = e.target.dataset.id;
 
     setCategoriesInputs((prevState) => {
       return prevState.map((category) => {
@@ -217,11 +216,12 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
     setDeleteRequestIsOpen(false);
   };
 
-  const showDeleteReqeustHandler = (e) => {
-    const categoryId = e.target.dataset.id;
+  const showDeleteReqeustHandler = (categoryId) => {
     const categoryName = categoriesToUpdate.find(
       (category) => category.id === categoryId,
-    ).name;
+    )?.name;
+    console.log(categoriesToUpdate);
+    console.log(categoryId);
     setDeleteCategoryData({ id: categoryId, name: categoryName });
     setDeleteRequestIsOpen(true);
   };
@@ -236,7 +236,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
       <form key={i} onSubmit={changeCategoryNameHandler}>
         <div className={classes["category__form"]}>
           {!category.active && (
-            <div className={classes["category__name"]}>{category.name}</div>
+            <div className={classes["category__name"]}>{category?.name}</div>
           )}
           {category.active && (
             <>
@@ -262,18 +262,16 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
           )}
           <ButtonTertiary
             type="button"
-            button={{ "data-id": category.id }}
             className={classes["btn"]}
-            onClick={changeNameIsActiveHandler}
+            onClick={() => changeNameIsActiveHandler(category.id)}
           >
             {!category.active ? "Change" : "Cancel"}
           </ButtonTertiary>
           {!category.active && (
             <ButtonTertiary
               type="button"
-              button={{ "data-id": category.id }}
               className={`${classes["btn"]} ${classes["btn--del"]}`}
-              onClick={showDeleteReqeustHandler}
+              onClick={() => showDeleteReqeustHandler(category.id)}
             >
               Delete
             </ButtonTertiary>
@@ -298,7 +296,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
       <AnimatePresence>
         {deleteRequestIsOpen && (
           <DeleteRequest
-            message={`Are you sure you want to delete "${deleteCategoryData.name}" category? This action can't
+            message={`Are you sure you want to delete "${deleteCategoryData?.name}" category? This action can't
         be undone`}
             onSubmit={deleteCategoryHandler}
             onClose={closeDeleteReqeustHandler}

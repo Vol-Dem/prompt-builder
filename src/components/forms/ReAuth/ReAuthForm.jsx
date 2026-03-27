@@ -7,7 +7,7 @@ import classes from "./ReAuthForm.module.scss";
 import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { authActions, reAuthUser } from "../../../store/auth";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import {
   ERROR_MESSAGE_INPUT_DEF,
   ERROR_MESSAGE_OFFLINE,
@@ -85,7 +85,7 @@ const ReAuthForm = () => {
           id="password"
           name="password"
           type="password"
-          input={{ disabled: isLoading }}
+          disabled={isLoading}
           className={`${classes["auth__input"]} ${
             showErrorMessage && !password.isValid ? classes.invalid : ""
           }`}
@@ -107,16 +107,13 @@ const ReAuthForm = () => {
           </ErrorMessage>
         )}
         <div className={classes["auth__controls"]}>
-          <Buttton
-            disabled={isLoading}
-            className={classes["auth__btn--submit"]}
-          >
+          <Button disabled={isLoading} className={classes["auth__btn--submit"]}>
             {isLoading && <Spinner size="small" />}
             <span>Submit</span>
-          </Buttton>
+          </Button>
         </div>
       </form>
-      <Buttton onClick={authHandlerPopup}>Google</Buttton>
+      <Button onClick={authHandlerPopup}>Google</Button>
     </section>
   );
 };

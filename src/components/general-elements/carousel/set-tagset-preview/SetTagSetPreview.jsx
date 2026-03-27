@@ -13,7 +13,7 @@ import {
 } from "../../../../variables/constants";
 import ExclamationCircleSvg from "../../../../assets/ExclamationCircleSvg";
 import TagSetsForm from "../../../forms/tag-sets-form/TagSetsForm";
-import Buttton from "../../../ui/buttons/Button";
+import Button from "../../../ui/buttons/Button";
 import Modal from "../../../ui/Modal";
 import TextHighlight from "../../../ui/text/TextHighlight";
 
@@ -48,7 +48,7 @@ const SetTagSetPreview = ({ src }) => {
   const dispatch = useDispatch();
   const model = useSelector((state) => state.model.model);
   const curVersion = useSelector((state) => state.model.curVersion);
-  const nsfwMode = useSelector((state) => state.model.nsfwMode);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
 
   useEffect(() => {
     setShowNsfwPreview(nsfwMode);
@@ -60,7 +60,7 @@ const SetTagSetPreview = ({ src }) => {
     }
   }, [model, curVersion]);
 
-  const setTagSetPreviwImgHandler = (e) => {
+  const setTagSetPreviwImgHandler = (id, isNsfw) => {
     let curtagSet;
     if (curTagSetVersionId === "tsv-def") {
       curtagSet = model.defaultCustomData.tagSetsData;
@@ -68,14 +68,12 @@ const SetTagSetPreview = ({ src }) => {
       curtagSet = model.modelVersionsCustomData[curTagSetVersionId].tagSetsData;
     }
 
-    const isNsfw = e.target.dataset.nsfw === "nsfw";
-
     const imgKey = isNsfw ? "nsfwImgUrl" : "imgUrl";
 
     setShowNsfwPreview(isNsfw);
 
     const updatedTagSet = curtagSet.map((tagSet, i) => {
-      if (i === +e.target.dataset.id) {
+      if (i === id) {
         return {
           ...tagSet,
           [imgKey]: src,
@@ -145,16 +143,14 @@ const SetTagSetPreview = ({ src }) => {
             <div className={classes["tag-sets__btn-container"]}>
               <ButttonTertiary
                 type="button"
-                onClick={setTagSetPreviwImgHandler}
-                button={{ "data-id": i, "data-nsfw": "safe" }}
+                onClick={() => setTagSetPreviwImgHandler(i, false)}
               >
                 Set as preview
               </ButttonTertiary>
               {nsfwMode && (
                 <ButttonTertiary
                   type="button"
-                  onClick={setTagSetPreviwImgHandler}
-                  button={{ "data-id": i, "data-nsfw": "nsfw" }}
+                  onClick={() => setTagSetPreviwImgHandler(i, true)}
                 >
                   Set as NSFW preview
                 </ButttonTertiary>
@@ -163,7 +159,7 @@ const SetTagSetPreview = ({ src }) => {
           </div>
         </motion.li>
       );
-    }
+    },
   );
 
   const versionTagsetsHtml =
@@ -191,16 +187,14 @@ const SetTagSetPreview = ({ src }) => {
               <div className={classes["tag-sets__btn-container"]}>
                 <ButttonTertiary
                   type="button"
-                  onClick={setTagSetPreviwImgHandler}
-                  button={{ "data-id": i, "data-nsfw": "safe" }}
+                  onClick={() => setTagSetPreviwImgHandler(i, false)}
                 >
                   Set as preview
                 </ButttonTertiary>
                 {nsfwMode && (
                   <ButttonTertiary
                     type="button"
-                    onClick={setTagSetPreviwImgHandler}
-                    button={{ "data-id": i, "data-nsfw": "nsfw" }}
+                    onClick={() => setTagSetPreviwImgHandler(i, true)}
                   >
                     Set as NSFW preview
                   </ButttonTertiary>
@@ -209,7 +203,7 @@ const SetTagSetPreview = ({ src }) => {
             </div>
           </motion.li>
         );
-      }
+      },
     );
 
   return (
@@ -218,7 +212,7 @@ const SetTagSetPreview = ({ src }) => {
         <>
           <div className={classes["tag-sets-head"]}>
             <div className={classes["tag-sets-title"]}>Tag sets</div>
-            <Buttton onClick={openTagSetsForm}>Add tag set</Buttton>
+            <Button onClick={openTagSetsForm}>Add tag set</Button>
             {nsfwMode && (
               <div className={classes["mode-switch"]}>
                 <button

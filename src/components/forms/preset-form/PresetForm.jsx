@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import classes from "./PresetForm.module.scss";
 import { updatePresets } from "../../../store/prompt";
 import Textarea from "../../ui/forms/Textarea";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import Input from "../../ui/forms/Input";
 import Fieldset from "../../ui/forms/Fieldset";
 import ErrorMessage from "../../ui/ErrorMessage";
@@ -71,7 +71,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
       const curPresets = presets[promptType] || [];
       let updatedPresets;
       const nameExists = curPresets?.find(
-        (preset) => preset.name === presetName.value
+        (preset) => preset.name === presetName.value,
       );
 
       if (nameExists && presetName.value !== name) {
@@ -184,9 +184,9 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
           showError={showErrorMessage}
         />
       </Fieldset>
-      <Buttton className={classes["btn-submit"]} type="submit">
+      <Button className={classes["btn-submit"]} type="submit">
         Save
-      </Buttton>
+      </Button>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
     </motion.form>
   );

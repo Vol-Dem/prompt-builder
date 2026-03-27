@@ -5,7 +5,7 @@ import classes from "./SaveImageForm.module.scss";
 import Input from "../../ui/forms/Input";
 import Select from "../../ui/forms/Select";
 import Checkbox from "../../ui/forms/Checkbox";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
 import Spinner from "../../ui/Spinner";
@@ -238,7 +238,7 @@ const SaveImageForm = ({
           }
           autoFocus
           placeholder="post id or url"
-          input={{ disabled: isLoading }}
+          disabled={isLoading}
           value={postIdInput.value}
           onChange={(e, isValid) => {
             setPostIdInput({ value: e.target.value, isValid });
@@ -266,7 +266,7 @@ const SaveImageForm = ({
             />
           </div>
         )}
-        <Buttton
+        <Button
           type="button"
           disabled={isLoading}
           className={classes.submit}
@@ -275,7 +275,7 @@ const SaveImageForm = ({
           }}
         >
           {!isLoading ? "Select images" : <Spinner size="small" />}
-        </Buttton>
+        </Button>
         {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       </div>

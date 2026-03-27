@@ -393,7 +393,7 @@ export const saveModelData = async (
     if (modelsPrevRefSnap.exists() && !modelData) {
       throw new AppError(ERROR_MESSAGE_EXISTS);
     } else {
-      if (!modelData) {
+      if (!modelData?.data) {
         //Upload model to database
 
         const uploadResponse = (await updateModel({

@@ -9,7 +9,7 @@ import classes from "./AuthForm.module.scss";
 import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { authActions, authRequest, authWithGoogle } from "../../../store/auth";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
 import {
   MESSAGE_AGREEMENT,
@@ -61,7 +61,7 @@ const AuthForm = () => {
   const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
   const isLoading = useSelector((state) => state.auth.isLoading);
   const showResetPassword = useSelector(
-    (state) => state.auth.showResetPassword
+    (state) => state.auth.showResetPassword,
   );
   const dispatch = useDispatch();
 
@@ -132,7 +132,7 @@ const AuthForm = () => {
       {!showResetPassword && (
         <form onSubmit={authHandler} className={classes["auth__form"]}>
           {isLogin && (
-            <Buttton
+            <Button
               type="button"
               onClick={() => {
                 dispatch(authWithGoogle());
@@ -144,14 +144,14 @@ const AuthForm = () => {
                 className={classes["icon"]}
               />
               Sign in with Google
-            </Buttton>
+            </Button>
           )}
           <Input
             label="Email"
             id="email"
             name="email"
             type="email"
-            input={{ disabled: isLoading }}
+            disabled={isLoading}
             className={`${classes["auth__input"]} ${
               showErrorMessage && !email.isValid ? classes.invalid : ""
             }`}
@@ -173,7 +173,7 @@ const AuthForm = () => {
             id="password"
             name="password"
             type="password"
-            input={{ disabled: isLoading }}
+            disabled={isLoading}
             className={`${classes["auth__input"]} ${
               showErrorMessage && !password.isValid ? classes.invalid : ""
             }`}
@@ -236,13 +236,13 @@ const AuthForm = () => {
             >
               {isLogin ? "Create Account" : "Log in"}
             </ButttonSecondary>
-            <Buttton
+            <Button
               disabled={isLoading}
               className={classes["auth__btn--submit"]}
             >
               {isLoading && <Spinner size="small" />}
               <span>{isLogin ? "Log in" : "Sign up"}</span>
-            </Buttton>
+            </Button>
           </div>
         </form>
       )}

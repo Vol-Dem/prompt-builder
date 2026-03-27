@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import firebaseApp from "../../../firebase-config";
 import classes from "./TagSetsForm.module.scss";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
 import {
@@ -187,9 +187,9 @@ const TagSetsForm = ({ modelId, onClose }) => {
           />
         </div>
       </div>
-      <Buttton type="submit" disabled={isSaving} className={classes.submit}>
+      <Button type="submit" disabled={isSaving} className={classes.submit}>
         {!isSaving ? "Save" : <Spinner size="small" />}
-      </Buttton>
+      </Button>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
       <ModelTagsFormGuide />

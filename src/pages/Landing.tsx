@@ -5,7 +5,7 @@ import classes from "./Landing.module.scss";
 import { authActions } from "../store/auth";
 import { checkIsMobile } from "../utils/generalUtils";
 import Carousel3d from "../components/ui/carousel3d/Carousel3d";
-import Buttton from "../components/ui/buttons/Button";
+import Button from "../components/ui/buttons/Button";
 import LinkA from "../components/ui/LinkA";
 import TextHighlight from "../components/ui/text/TextHighlight";
 import Modal from "../components/ui/Modal";
@@ -84,13 +84,13 @@ const Landing = () => {
             </p>
           </div>
           <div className={classes["btn-container"]}>
-            <Buttton
+            <Button
               className={classes["btn-hero"]}
               onClick={openAuthFormHandler}
             >
               Get started
-            </Buttton>
-            <Buttton
+            </Button>
+            <Button
               onClick={() => {
                 setShowVideo(true);
               }}
@@ -98,7 +98,7 @@ const Landing = () => {
               title="Video"
             >
               <PlayIcon />
-            </Buttton>
+            </Button>
           </div>
         </div>
       </section>
@@ -434,12 +434,12 @@ const Landing = () => {
               today!
             </p>
           </div>
-          <Buttton
+          <Button
             className={classes["section--cta__btn"]}
             onClick={openAuthFormHandler}
           >
             Get started
-          </Buttton>
+          </Button>
         </div>
       </section>
       {showVideo && (

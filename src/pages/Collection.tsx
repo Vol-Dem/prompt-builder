@@ -7,7 +7,7 @@ import { getCollection, imagesActions } from "../store/images";
 import { DEFAULT_PAGE_TITLE } from "../variables/constants";
 import CollectionImages from "../components/collection/collection-images/CollectionImages";
 import NavigationPanel from "../components/layout/navigation-panel/NavigationPanel";
-import Buttton from "../components/ui/buttons/Button";
+import Button from "../components/ui/buttons/Button";
 import Modal from "../components/ui/Modal";
 import SaveImageForm from "../components/forms/save-image-form/SaveImageForm";
 import Spinner from "../components/ui/Spinner";
@@ -167,12 +167,9 @@ const Collection = ({ title }: CollectionProps) => {
             )}
           </div>
           {collectionData?.description && <p>{collectionData?.description}</p>}
-          <Buttton
-            className={classes["button-add"]}
-            onClick={addImgByIdHandler}
-          >
+          <Button className={classes["button-add"]} onClick={addImgByIdHandler}>
             Add Image by ID
-          </Buttton>
+          </Button>
           <div className={classes["images"]}>
             <CollectionImages />
           </div>

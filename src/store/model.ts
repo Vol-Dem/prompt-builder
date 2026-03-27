@@ -260,13 +260,13 @@ export const setPreviewImg = (
  */
 export const setTagSetPreviewImg = (
   versionId: number | "tsv-def",
-  tagSetData: TagSet,
+  tagSetData: TagSet[],
 ): AppThunk => {
   return async (dispatch, getState) => {
     const uid = getState().auth.user.uid;
     const id = getState().model.model?.id;
     const model = getState().model.model;
-    console.log(tagSetData);
+
     const urlField =
       versionId === "tsv-def"
         ? `defaultCustomData.tagSetsData`

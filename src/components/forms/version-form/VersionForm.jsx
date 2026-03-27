@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import classes from "./VersionForm.module.scss";
 import firebaseApp from "../../../firebase-config";
 import Textarea from "../../ui/forms/Textarea";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import Input from "../../ui/forms/Input";
 import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
 import Fieldset from "../../ui/forms/Fieldset";
@@ -654,8 +654,8 @@ const VersionForm = ({
                 step={0.1}
                 placeholder="Min"
                 value={minWeightInput.value}
-                onChange={(e, isValid) => {
-                  setMinWeightInput({ value: e.target.value, isValid });
+                onChange={(value, isValid) => {
+                  setMinWeightInput({ value, isValid });
                 }}
                 validation={{
                   number: true,
@@ -670,8 +670,8 @@ const VersionForm = ({
                 step={0.1}
                 placeholder="Max"
                 value={maxWeightInput.value}
-                onChange={(e, isValid) => {
-                  setMaxWeightInput({ value: e.target.value, isValid });
+                onChange={(value, isValid) => {
+                  setMaxWeightInput({ value, isValid });
                 }}
                 validation={{
                   number: true,
@@ -686,8 +686,8 @@ const VersionForm = ({
                 step={0.1}
                 placeholder="Recomended"
                 value={weightInput.value}
-                onChange={(e, isValid) => {
-                  setWeightInput({ value: e.target.value, isValid });
+                onChange={(value, isValid) => {
+                  setWeightInput({ value, isValid });
                 }}
                 validation={{
                   number: true,
@@ -842,9 +842,9 @@ const VersionForm = ({
       <div className={classes["submit-container"]}>
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
-        <Buttton type="submit" disabled={isSaving} className={classes.submit}>
+        <Button type="submit" disabled={isSaving} className={classes.submit}>
           {!isSaving ? "Save" : <Spinner size="small" />}
-        </Buttton>
+        </Button>
       </div>
     </form>
   );

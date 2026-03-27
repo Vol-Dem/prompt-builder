@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 import classes from "./OutroGuide.module.scss";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import { guideActions } from "../../../store/guide";
 import GuideActionMessage from "./GuideActionMessage";
 
@@ -45,14 +45,14 @@ const OutroGuide = () => {
             </p>
           </div>
           <div className={classes["btns"]}>
-            <Buttton
+            <Button
               className={classes.btn}
               onClick={() => {
                 dispatch(guideActions.setOutroIsActive(false));
               }}
             >
               OK
-            </Buttton>
+            </Button>
           </div>
         </div>
       )}

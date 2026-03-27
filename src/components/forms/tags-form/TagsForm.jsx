@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import firebaseApp from "../../../firebase-config";
 import classes from "./TagsForm.module.scss";
 import Textarea from "../../ui/forms/Textarea";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import Input from "../../ui/forms/Input";
 import FieldCategory from "../../ui/forms/FieldCategory";
 import ErrorMessage from "../../ui/ErrorMessage";
@@ -278,9 +278,9 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
           </FieldCategory>
         </div>
       </div>
-      <Buttton type="submit" disabled={isSaving} className={classes.submit}>
+      <Button type="submit" disabled={isSaving} className={classes.submit}>
         {!isSaving ? "Save" : <Spinner size="small" />}
-      </Buttton>
+      </Button>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
     </form>

@@ -5,7 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import classes from "./GeneratedImages.module.scss";
 import Modal from "../../ui/Modal";
 import SaveImageForm from "../../forms/save-image-form/SaveImageForm";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import {
@@ -103,9 +103,9 @@ const GeneratedImages = memo(() => {
     <div className={classes.container}>
       <div className={classes["controls"]}>
         <ImageTabs curTab={curTab} onClick={switchCurTab} />
-        <Buttton className={classes["button-add"]} onClick={addImgByIdHandler}>
+        <Button className={classes["button-add"]} onClick={addImgByIdHandler}>
           Add Image by ID
-        </Buttton>
+        </Button>
         <ButtonInfo>
           <InfoGeneratedImages />
         </ButtonInfo>

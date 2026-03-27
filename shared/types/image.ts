@@ -1,3 +1,5 @@
+import type { SrcType } from "../../src/types/models.types";
+
 export interface AdditionalResource {
   name: string;
   strength?: number;
@@ -92,7 +94,7 @@ export interface Image {
   nsfw: boolean | string;
   nsfwLevel: string | number;
   postId?: number;
-  type?: string;
+  type?: SrcType;
   url: string;
   username?: string;
   height: number;

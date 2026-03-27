@@ -1,3 +1,4 @@
+import type { ChangeEvent } from "react";
 import type { ModelPreviewDoc } from "../../shared/types/firestore";
 
 export interface GeneralState {
@@ -30,3 +31,9 @@ export type Validated = {
   isValid: boolean;
   errorMessage: string;
 };
+
+export type ExtendedOnChange<T = HTMLInputElement> = (
+  e: ChangeEvent<T>,
+  isValid: boolean | null,
+  errorMessage?: string,
+) => void;

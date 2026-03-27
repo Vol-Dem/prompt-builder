@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import ChooseImageForm from "../choose-image-form/ChooseImageForm";
 import classes from "./SaveToCollectionForm.module.scss";
 import Spinner from "../../ui/Spinner";
@@ -111,7 +111,7 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
       category.name
         .trim()
         .toLowerCase()
-        .includes(mainCategoryQuery.trim().toLowerCase())
+        .includes(mainCategoryQuery.trim().toLowerCase()),
     );
     return sortArrayBy(categoriesOptions, "name");
   }, [categories, mainCategoryQuery]);
@@ -129,7 +129,7 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
           .find((category) => category.name === mainCategorySelected.name)
           ?.collectionNames?.filter((collection) => {
             const isInSubcategories = collection?.subcategories?.some(
-              (subcategoryId) => inputSubcatIds?.includes(subcategoryId)
+              (subcategoryId) => inputSubcatIds?.includes(subcategoryId),
             );
 
             const isInQuery = collection.name
@@ -139,12 +139,12 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
               ? isInSubcategories && isInQuery
               : isInQuery;
           }) || [],
-        "name"
+        "name",
       )
     : [];
 
   const subcategories = categories.find(
-    (category) => category.name === mainCategorySelected.name
+    (category) => category.name === mainCategorySelected.name,
   )?.subcategories;
 
   const subCategoryOptions =
@@ -152,9 +152,9 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
       subcategories?.filter((subcategory) =>
         subcategory.name
           .toLowerCase()
-          .includes(subCategoryQuery.trim().toLowerCase())
+          .includes(subCategoryQuery.trim().toLowerCase()),
       ),
-      "name"
+      "name",
     ) || [];
 
   const selectMainCategoryHandler = (value, isValid, errorMessage) => {
@@ -264,7 +264,7 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
       setErrorMessage("");
       setSuccessMessage("");
       const subcategoriesIsInvalid = !!subCatInputs.find(
-        (subcategory) => !subcategory.isValid
+        (subcategory) => !subcategory.isValid,
       );
       if (
         !collectionNameSelected.isValid ||
@@ -280,10 +280,10 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
 
       if (mainCategorySelected?.id && collectionNameSelected?.id) {
         const collectionData = await getCollectionData(
-          collectionNameSelected.id
+          collectionNameSelected.id,
         );
         postData = collectionData?.posts?.find(
-          (post) => post.postId === postId
+          (post) => post.postId === postId,
         );
 
         curCollectionSabcategories = collectionData.subcategories;
@@ -303,7 +303,7 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
             ...subcategory,
             name: subcategory.name.trim(),
           };
-        }
+        },
       );
 
       const collectionInputData = {
@@ -320,7 +320,7 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
       };
 
       const categoriesWithId = await dispatch(
-        addNewCollectionCategories(collectionInputData)
+        addNewCollectionCategories(collectionInputData),
       );
 
       setCollectionInfo(categoriesWithId);
@@ -413,7 +413,7 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
               </>
             )}
           </div>
-          <Buttton type="submit" className={classes.submit}>
+          <Button type="submit" className={classes.submit}>
             {collectionInfoIsLoading ? (
               <Spinner size="small" />
             ) : images?.length ? (
@@ -421,7 +421,7 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
             ) : (
               "Create"
             )}
-          </Buttton>
+          </Button>
         </form>
       )}
       {chooseImageIsOpen && (

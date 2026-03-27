@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence } from "framer-motion";
 
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import classes from "./Presets.module.scss";
 import { updatePresets } from "../../../store/prompt";
 import PresetForm from "../../forms/preset-form/PresetForm";
@@ -79,7 +79,7 @@ const Presets = ({ onClose }) => {
     <>
       {!formIsOpen && (
         <>
-          <Buttton
+          <Button
             className={classes["btn-from"]}
             onClick={() => {
               setPresetData({});
@@ -87,7 +87,7 @@ const Presets = ({ onClose }) => {
             }}
           >
             Add preset
-          </Buttton>
+          </Button>
           <div className={classes["presets-container"]}>
             {!presets?.positive?.length && !presets?.negative?.length && (
               <NotificationMessage type="notification">

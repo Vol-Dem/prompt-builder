@@ -1,4 +1,4 @@
-import Buttton from "./buttons/Button";
+import Button from "./buttons/Button";
 import classes from "./DeleteRequest.module.scss";
 import ErrorMessage from "./ErrorMessage";
 import Modal from "./Modal";
@@ -45,10 +45,10 @@ const DeleteRequest = ({
         )}
         {!isDeleting && !errorMessage && (
           <div className={classes["del-request__btn-container"]}>
-            <Buttton className={classes["btn-del"]} onClick={onSubmit}>
+            <Button className={classes["btn-del"]} onClick={onSubmit}>
               Delete
-            </Buttton>
-            <Buttton onClick={onClose}>Cancel</Buttton>
+            </Button>
+            <Button onClick={onClose}>Cancel</Button>
           </div>
         )}
         {isDeleting && (

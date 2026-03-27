@@ -56,7 +56,7 @@ const ImageResourcesItem = ({
   onUpdateResources,
 }) => {
   const [fromIsOpen, setFormIsOpen] = useState(false);
-  const modelId = useSelector((state) => state.model.model.id);
+  const modelId = useSelector((state) => state.model.model?.id);
   const dispatch = useDispatch();
 
   const openFormHandler = () => {

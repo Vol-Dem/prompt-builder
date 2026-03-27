@@ -7,7 +7,7 @@ import { ArrowUturnLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import UpdateModelForm from "../../forms/update-model-form/UpdateModelForm";
 import VersionForm from "../../forms/version-form/VersionForm";
 import classes from "./ModelSettings.module.scss";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import VersionStatusForm from "../../forms/version-status-form/VersionStatusForm";
 import DeleteRequest from "../../ui/DeleteRequest";
 import SuccessMessage from "../../ui/SuccessMessage";
@@ -271,24 +271,24 @@ const ModelSettings = () => {
               : ""
           }`}
         >
-          <Buttton
+          <Button
             type="button"
             onClick={backHandler}
             className={classes["btn-back"]}
           >
             <ArrowUturnLeftIcon />
             <span className={classes["btn-back__text"]}>Back</span>
-          </Buttton>
-          <Buttton
+          </Button>
+          <Button
             type="button"
             onClick={updateModelHandler}
             className={classes["btn-update"]}
             disabled={isLoading}
           >
             {!isLoading ? "Check for updates" : <Spinner size="small" />}
-          </Buttton>
+          </Button>
 
-          <Buttton
+          <Button
             type="button"
             onClick={showDeleteReqeustHandler}
             className={classes["btn-del"]}
@@ -296,7 +296,7 @@ const ModelSettings = () => {
           >
             <TrashIcon />
             <span className={classes["btn-del__text"]}>Delete</span>
-          </Buttton>
+          </Button>
         </motion.div>
         {curTab === "general" && (
           <motion.div

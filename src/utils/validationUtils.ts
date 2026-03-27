@@ -79,7 +79,7 @@ export const validateInput = (
           break;
 
         case "number":
-          if (!isNumber(value)) {
+          if (!isNumber(+value) && isFinite(+value)) {
             errorMessages.push("Value must be a number");
           }
           break;

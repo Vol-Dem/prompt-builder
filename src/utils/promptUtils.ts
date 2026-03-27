@@ -130,6 +130,7 @@ export const createTagSetsInputData = (
           errorMessage: "",
         },
         {
+          type: "text",
           id: "set-value" + i,
           name: "set-value",
           placeholder: "Triger words",

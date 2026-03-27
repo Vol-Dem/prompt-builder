@@ -1,5 +1,4 @@
 import type { TagSet } from "../../src/types/prompt.types";
-import type { UserModelDoc, CivitaiModelDoc } from "./firestore";
 import type { Image } from "./image";
 
 export interface Creator {
@@ -157,7 +156,3 @@ export interface ModelSavedPostInfo {
 export interface ModelSavedImages {
   [versionId: string]: ModelSavedPostInfo[];
 }
-
-// export interface ModelData extends UserModelDoc {
-//   data?: CivitaiModelDoc;
-// }

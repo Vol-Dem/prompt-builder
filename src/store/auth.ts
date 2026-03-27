@@ -35,7 +35,6 @@ import { getAppInfo } from "./notification";
 import { handleErrors, normalizeError } from "../utils/generalUtils";
 import type { AuthState, LoginPayload } from "../types/auth.types";
 import type { AppThunk } from "./store";
-import type { FirebaseError } from "firebase/app";
 import type { UserDoc } from "../../shared/types/firestore";
 
 type ReAuthType = "pass" | "popup";

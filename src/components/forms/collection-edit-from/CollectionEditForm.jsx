@@ -23,7 +23,7 @@ import {
   sortArrayBy,
   throwCustomError,
 } from "../../../utils/generalUtils";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import Textarea from "../../ui/forms/Textarea";
 import Checkbox from "../../ui/forms/Checkbox";
 import { editCollectionData } from "../../../store/images";
@@ -88,28 +88,28 @@ const CollectionEditForm = ({ collectionData }) => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const categories = useSelector((state) => state.images.categories);
   const collectionDataIsSaving = useSelector(
-    (state) => state.images.collectionDataIsSaving
+    (state) => state.images.collectionDataIsSaving,
   );
   const dispatch = useDispatch();
 
   const mainCategoryOptions = useMemo(() => {
     return sortArrayBy(
       categories.filter((category) =>
-        category.name.toLowerCase().includes(mainCategoryQuery.toLowerCase())
+        category.name.toLowerCase().includes(mainCategoryQuery.toLowerCase()),
       ),
-      "name"
+      "name",
     );
   }, [categories, mainCategoryQuery]);
 
   const subcategories = categories.find(
-    (category) => category.name === mainCategorySelected.name
+    (category) => category.name === mainCategorySelected.name,
   )?.subcategories;
 
   const subCategoryOptions = sortArrayBy(
     subcategories?.filter((subcategory) =>
-      subcategory.name.toLowerCase().includes(subCategoryQuery.toLowerCase())
+      subcategory.name.toLowerCase().includes(subCategoryQuery.toLowerCase()),
     ) || [],
-    "name"
+    "name",
   );
 
   const selectMainCategoryHandler = (value, isValid, errorMessage) => {
@@ -143,7 +143,7 @@ const CollectionEditForm = ({ collectionData }) => {
     setNsfwInput(!!collectionData.nsfw);
 
     const categoryData = categories.find(
-      (category) => category.id === collectionData.category
+      (category) => category.id === collectionData.category,
     );
 
     if (categoryData?.name) {
@@ -160,7 +160,7 @@ const CollectionEditForm = ({ collectionData }) => {
       subcategoriesInputData = collectionData.subcategories.flatMap(
         (subcategoryId) => {
           const subcategoryData = categoryData?.subcategories?.find(
-            (subcategory) => subcategory.id === subcategoryId
+            (subcategory) => subcategory.id === subcategoryId,
           );
 
           //Skip deleted subcategories
@@ -177,7 +177,7 @@ const CollectionEditForm = ({ collectionData }) => {
             isValid: true,
             errorMessage: "",
           };
-        }
+        },
       );
     } else {
       subcategoriesInputData = [
@@ -273,7 +273,7 @@ const CollectionEditForm = ({ collectionData }) => {
       setErrorMessage("");
       setSuccessMessage("");
       const subcategoriesIsInvalid = !!subCatInputs.find(
-        (subcategory) => !subcategory.isValid
+        (subcategory) => !subcategory.isValid,
       );
       if (
         !collectionNameInput.isValid ||
@@ -401,13 +401,13 @@ const CollectionEditForm = ({ collectionData }) => {
           )}
         </div>
       )}
-      <Buttton
+      <Button
         type="submit"
         disabled={collectionDataIsSaving}
         className={classes.submit}
       >
         {!collectionDataIsSaving ? "Save" : <Spinner size="small" />}
-      </Buttton>
+      </Button>
     </form>
   );
 };

@@ -227,7 +227,7 @@ export const transformImageData = (imageData: Image): Image => {
     ...(imageData?.browsingLevel && {
       browsingLevel: imageData.browsingLevel,
     }),
-    ...(imageData?.nsfwLevel && { nsfwLevel: imageData.nsfwLevel }),
+    nsfwLevel: imageData.nsfwLevel,
     ...(imageData?.type && { type: imageData.type }),
     ...(imageData?.username && { username: imageData.username }),
     ...(imageData?.modelVersionIds && {

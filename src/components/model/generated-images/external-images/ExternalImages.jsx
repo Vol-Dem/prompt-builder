@@ -19,7 +19,7 @@ import {
 import useIntersection from "../../../../hooks/use-intersection";
 import Spinner from "../../../ui/Spinner";
 import ErrorMessage from "../../../ui/ErrorMessage";
-import Buttton from "../../../ui/buttons/Button";
+import Button from "../../../ui/buttons/Button";
 import useFetchCivitai from "../../../../hooks/use-fetch-civitai";
 import {
   filterNsfwImages,
@@ -165,25 +165,25 @@ const ExternalImages = memo(({ modelId, versionId, sortBy }) => {
         {!imagesIsLoading && (
           <div>
             {errorMessage && (
-              <Buttton
+              <Button
                 className={classes["btn-more"]}
                 onClick={retryImageLoadingHandler}
               >
                 Retry
-              </Buttton>
+              </Button>
             )}
           </div>
         )}
         {!imagesIsLoading && !isLastPage && !errorMessage && (
           <div>
-            <Buttton
+            <Button
               className={classes["btn-more"]}
               onClick={() => {
                 fetchCivitai();
               }}
             >
               Load more
-            </Buttton>
+            </Button>
           </div>
         )}
         {!imagesIsLoading && !imagesHtml.length && !errorMessage && (

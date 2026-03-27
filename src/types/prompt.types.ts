@@ -49,15 +49,16 @@ export interface TagSetInputName {
   name: string;
   placeholder: string;
   value: string;
-  isValid: boolean;
+  isValid: boolean | null;
   errorMessage: string;
 }
 export interface TagSetInputValue {
+  type: string;
   id: string;
   name: string;
   placeholder: string;
   value: string;
-  isValid: boolean;
+  isValid: boolean | null;
   errorMessage: string;
 }
 export type TagSetInputData = [TagSetInputName, TagSetInputValue];

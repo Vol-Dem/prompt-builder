@@ -91,11 +91,9 @@ const TagsTextareaItemEdit = ({ item, inputWidth, promptType }) => {
         onChange={(e) => {
           setEditTagInput({ value: e.target.value });
         }}
-        input={{
-          style: {
-            width: inputWidth ? inputWidth + 15 : "auto",
-            maxWidth: inputWidth ? inputWidth + 15 : "auto",
-          },
+        style={{
+          width: inputWidth ? inputWidth + 15 : "auto",
+          maxWidth: inputWidth ? inputWidth + 15 : "auto",
         }}
       />
       <Input

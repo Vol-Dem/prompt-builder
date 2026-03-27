@@ -10,7 +10,7 @@ import MainNavigation from "../navigation/MainNavigation";
 import MobileNavigation from "../navigation/MobileNavigation";
 import { authActions } from "../../../store/auth";
 import UserNavigation from "../navigation/UserNavigation";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import Modal from "../../ui/Modal";
 import AuthForm from "../../forms/Auth/AuthForm";
 import Spinner from "../../ui/Spinner";
@@ -89,9 +89,9 @@ const Layout = () => {
 
                 {isAuth && !maintenance && <UserNavigation />}
                 {!isAuth && (
-                  <Buttton onClick={openAuth} className={classes["btn-auth"]}>
+                  <Button onClick={openAuth} className={classes["btn-auth"]}>
                     Sign In
-                  </Buttton>
+                  </Button>
                 )}
               </div>
             </div>

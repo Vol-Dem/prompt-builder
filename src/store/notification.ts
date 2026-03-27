@@ -3,7 +3,6 @@ import { doc, getDoc, getFirestore } from "firebase/firestore";
 
 import firebaseApp from "../firebase-config";
 import type { AppThunk } from "./store";
-import type { FirebaseError } from "firebase/app";
 import type {
   NotificationData,
   NotificationState,

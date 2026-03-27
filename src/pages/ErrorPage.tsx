@@ -4,7 +4,7 @@ import classes from "./ErrorPage.module.scss";
 import { authActions } from "../store/auth";
 import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 import Card from "../components/ui/Card";
-import Buttton from "../components/ui/buttons/Button";
+import Button from "../components/ui/buttons/Button";
 import Modal from "../components/ui/Modal";
 import AuthForm from "../components/forms/Auth/AuthForm";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
@@ -59,9 +59,9 @@ const ErrorPage = () => {
           {errorStatus === 404 && <i>Page not found</i>}
         </p>
         {!isAuth && errorStatus === 404 && (
-          <Buttton onClick={openAuth} className={classes["btn-auth"]}>
+          <Button onClick={openAuth} className={classes["btn-auth"]}>
             Sign In
-          </Buttton>
+          </Button>
         )}
         {errorStatus === 404 && (
           <NavLink to="/" className={classes["error-page__link"]}>

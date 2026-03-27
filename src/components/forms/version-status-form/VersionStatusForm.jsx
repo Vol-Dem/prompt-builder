@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
 
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import FieldCategory from "../../ui/forms/FieldCategory";
 import Fieldset from "../../ui/forms/Fieldset";
 import classes from "./VersionStatusForm.module.scss";
@@ -47,7 +47,7 @@ const VersionStatusForm = ({ modelData }) => {
   useEffect(() => {
     if (!modelData) return;
     const versionStatusInputData = Object.values(
-      modelData?.modelVersionsCustomData
+      modelData?.modelVersionsCustomData,
     )
       ?.sort((a, b) => a?.index - b?.index)
       .map((version) => {
@@ -95,7 +95,7 @@ const VersionStatusForm = ({ modelData }) => {
 
       const previewImgDefault =
         modelData.data.modelVersions[0].images?.filter(
-          (img) => img.type === "image"
+          (img) => img.type === "image",
         )[0]?.url || "";
 
       const previewImg = activePreviewImg || previewImgDefault;
@@ -105,14 +105,14 @@ const VersionStatusForm = ({ modelData }) => {
         "users",
         uid,
         "models",
-        modelData.id + ""
+        modelData.id + "",
       );
       const modelsPrevRef = doc(
         firestore,
         "users",
         uid,
         "preview",
-        modelData.id + ""
+        modelData.id + "",
       );
 
       await updateDoc(
@@ -120,7 +120,7 @@ const VersionStatusForm = ({ modelData }) => {
         {
           modelVersionsCustomData: updatedVersionData,
         },
-        { merge: true }
+        { merge: true },
       );
 
       await updateDoc(
@@ -129,7 +129,7 @@ const VersionStatusForm = ({ modelData }) => {
           imgUrl: previewImg,
           modelVersionsCustomData: updatedVersionData,
         },
-        { merge: true }
+        { merge: true },
       );
       seteSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
       setIsSaving(false);
@@ -143,7 +143,7 @@ const VersionStatusForm = ({ modelData }) => {
     setVersionsDownloadStatus((prevState) => {
       const newState = [...prevState];
       const curIndex = newState.findIndex(
-        (version) => version.id === e.target.id
+        (version) => version.id === e.target.id,
       );
 
       newState[curIndex].value = e.target.checked;
@@ -176,9 +176,9 @@ const VersionStatusForm = ({ modelData }) => {
           )}
         </FieldCategory>
       </div>
-      <Buttton type="submit" disabled={isSaving} className={classes.submit}>
+      <Button type="submit" disabled={isSaving} className={classes.submit}>
         {!isSaving ? "Save" : <Spinner size="small" />}
-      </Buttton>
+      </Button>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
     </form>

@@ -1,7 +1,7 @@
 import { useState, type ComponentProps } from "react";
 import { AnimatePresence } from "framer-motion";
 
-import Buttton from "./Button";
+import Button from "./Button";
 import classes from "./ButtonDelete.module.scss";
 import DeleteRequest from "../DeleteRequest";
 
@@ -36,7 +36,7 @@ const ButtonDelete = ({
   };
   return (
     <>
-      <Buttton
+      <Button
         type="button"
         onClick={showDeleteReqeustHandler}
         className={`${classes["btn-del"]} ${className || ""}`}
@@ -44,7 +44,7 @@ const ButtonDelete = ({
         {...props}
       >
         Delete
-      </Buttton>
+      </Button>
       <AnimatePresence>
         {deleteRequestIsOpen && (
           <DeleteRequest

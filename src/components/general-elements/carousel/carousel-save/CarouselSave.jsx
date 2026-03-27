@@ -8,7 +8,7 @@ import { useState } from "react";
 import classes from "./CarouselSave.module.scss";
 import Spinner from "../../../ui/Spinner";
 import Modal from "../../../ui/Modal";
-import Buttton from "../../../ui/buttons/Button";
+import Button from "../../../ui/buttons/Button";
 
 /**
  * Carousel save buttons component.
@@ -135,7 +135,7 @@ const CarouselSave = ({
             setChooseSaveLocationIsOpen(false);
           }}
         >
-          <Buttton
+          <Button
             className={classes["btn-choose"]}
             onClick={() => {
               showSaveImagesListHandler("models");
@@ -143,8 +143,8 @@ const CarouselSave = ({
             }}
           >
             Save to model
-          </Buttton>
-          <Buttton
+          </Button>
+          <Button
             className={classes["btn-choose"]}
             onClick={() => {
               showSaveImagesListHandler("collections");
@@ -152,7 +152,7 @@ const CarouselSave = ({
             }}
           >
             Save to collection
-          </Buttton>
+          </Button>
         </Modal>
       )}
     </div>

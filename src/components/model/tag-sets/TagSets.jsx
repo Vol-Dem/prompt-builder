@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import classes from "./TagSets.module.scss";
 import TagList from "../../general-elements/tag-list/TagList";
 import Image from "../../ui/image/Image";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import TagSetGuide from "../../general-elements/guide/model/TagSetGuide";
 import {
   ANIMATIONS_FM_SLIDEIN,
@@ -48,7 +48,7 @@ const TagSets = ({ customData, defaultData }) => {
   const [tagsetItemHeight, setTagsetItemHeight] = useState(500);
   const [tagsetListHeight, setTagsetListHeight] = useState(500);
   const model = useSelector((state) => state.model.model);
-  const isNsfwMode = useSelector((state) => state.model.nsfwMode);
+  const isNsfwMode = useSelector((state) => state.general.nsfwMode);
   const guideActive = useSelector((state) => state.guide.model.active);
   const guideStep = useSelector((state) => state.guide.model.step);
   const tagSetItemRef = useRef();
@@ -152,7 +152,7 @@ const TagSets = ({ customData, defaultData }) => {
           </ButtonInfo>
         </div>
 
-        <Buttton onClick={openTagSetsForm}>Add tag set</Buttton>
+        <Button onClick={openTagSetsForm}>Add tag set</Button>
       </div>
       {!tagSets?.length && (
         <NotificationMessage>
@@ -184,7 +184,7 @@ const TagSets = ({ customData, defaultData }) => {
         )}
       </AnimatePresence>
       {tagSets?.length > 1 && (
-        <Buttton
+        <Button
           type="button"
           className={`${classes["tag-sets__btn"]} ${
             tagSets.length <= defVisibleTags
@@ -194,7 +194,7 @@ const TagSets = ({ customData, defaultData }) => {
           onClick={showAllTagSetsHandler}
         >
           {!tagSetsIsOpen ? "Show All" : "Hide"}
-        </Buttton>
+        </Button>
       )}
       <TagSetGuide />
       <AnimatePresence>

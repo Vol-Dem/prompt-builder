@@ -73,7 +73,6 @@ const AboutWorkingWithPrompts = () => {
           <TextHighlight>text mode</TextHighlight>.
         </Text>
         <ImageComparisonSlider
-          loading="lazy"
           className={classes.comparison}
           imgWidth="1714"
           imgHeight="626"

@@ -1,5 +1,5 @@
 import type { ModelPreviewDoc } from "../../shared/types/firestore";
-import type { ImageMeta } from "../../shared/types/image";
+import type { Image, ImageMeta } from "../../shared/types/image";
 
 export interface ImageSrcs {
   previewSrc: string;
@@ -32,4 +32,15 @@ export interface ImageMetaWithUpdatedModelData extends ImageMeta {
   modelId?: number;
   versionName?: string;
   versionId?: number;
+}
+
+export interface LabelImageData {
+  data: Image;
+  height: number;
+  id: number;
+  name: number;
+  saved: boolean;
+  type: string;
+  value: boolean;
+  width: number;
 }

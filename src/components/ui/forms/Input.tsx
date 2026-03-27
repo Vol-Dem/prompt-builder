@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { motion, type HTMLMotionProps } from "framer-motion";
 
 import classes from "./Input.module.scss";
@@ -7,23 +7,21 @@ import {
   ANIMATIONS_FM_SLIDEOUT,
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
 } from "../../../variables/constants";
-import type { ValidationTypes } from "../../../types/general.types";
+import type {
+  ExtendedOnChange,
+  ValidationTypes,
+} from "../../../types/general.types";
 import type { OverrideFields } from "../../../../shared/types/general";
 
 type InputProps = OverrideFields<
-  HTMLMotionProps<"input">,
+  HTMLMotionProps<"input"> & ComponentProps<"input">,
   {
     label?: string;
     validation?: ValidationTypes;
     showError?: boolean;
     fitContent?: boolean;
     error?: string;
-    value: string;
-    onChange: (
-      e: ChangeEvent<HTMLInputElement>,
-      isValid: boolean | null,
-      errorMessage?: string,
-    ) => void;
+    onChange?: ExtendedOnChange;
   }
 >;
 
@@ -86,8 +84,8 @@ const Input = ({
   }, [showError]);
 
   useEffect(() => {
-    if (validation) {
-      const { errorMessage } = validateInput(validation, value);
+    if (validation && value) {
+      const { errorMessage } = validateInput(validation, value + "");
 
       setInputErrorMessage(errorMessage);
     }

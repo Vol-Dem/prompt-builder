@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 
 import classes from "./IntroGuide.module.scss";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import { guideActions } from "../../../store/guide";
 import GuideActionMessage from "./GuideActionMessage";
 
@@ -42,7 +42,7 @@ const IntroGuide = () => {
             </p>
           </div>
           <div className={classes["btns"]}>
-            <Buttton
+            <Button
               className={classes.btn}
               onClick={() => {
                 dispatch(guideActions.setGuideIsActive(true));
@@ -50,15 +50,15 @@ const IntroGuide = () => {
               }}
             >
               Start
-            </Buttton>
-            <Buttton
+            </Button>
+            <Button
               className={`${classes.btn} ${classes["btn--close"]}`}
               onClick={() => {
                 dispatch(guideActions.setIntroDisabled(true));
               }}
             >
               Exit
-            </Buttton>
+            </Button>
           </div>
         </div>
       )}

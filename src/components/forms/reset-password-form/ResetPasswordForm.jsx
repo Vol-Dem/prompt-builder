@@ -5,7 +5,7 @@ import classes from "./ResetPasswordForm.module.scss";
 import Input from "../../ui/forms/Input";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { resetUserPassword } from "../../../store/auth";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import { VALIDATION_EMAIL_MAX_LENGTH } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
 
@@ -51,7 +51,7 @@ const ResetPasswordForm = () => {
         label="Email"
         name="email"
         type="email"
-        input={{ disabled: isLoading }}
+        disabled={isLoading}
         className={`${classes["auth__input"]} ${
           showErrorMessage && !email.isValid ? classes.invalid : ""
         }`}
@@ -77,7 +77,7 @@ const ResetPasswordForm = () => {
           {successMessage}
         </SuccessMessage>
       )}
-      <Buttton>Reset password</Buttton>
+      <Button>Reset password</Button>
     </form>
   );
 };

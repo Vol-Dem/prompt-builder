@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import classes from "./UpdateModelForm.module.scss";
 import Input from "../../ui/forms/Input";
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import Textarea from "../../ui/forms/Textarea";
 import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
 import Checkbox from "../../ui/forms/Checkbox";
@@ -112,7 +112,7 @@ const UpdateModelForm = ({
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [modelTypeInput, setModelTypeInput] = useState(
-    modelData?.modelType || SETTINGS_MODEL_TYPE_DEF
+    modelData?.modelType || SETTINGS_MODEL_TYPE_DEF,
   );
   const srcInput = {
     value: "civitai.com",
@@ -165,7 +165,7 @@ const UpdateModelForm = ({
       ? categories[modelTypeInput]?.filter((category) =>
           category.name
             .toLowerCase()
-            .includes(mainCategoryQuery.trim().toLowerCase())
+            .includes(mainCategoryQuery.trim().toLowerCase()),
         )
       : [];
   }, [categories, modelTypeInput, mainCategoryQuery, hasModelTypeInputField]);
@@ -176,7 +176,7 @@ const UpdateModelForm = ({
         ?.subcategories?.filter((subcategory) =>
           subcategory.name
             .toLowerCase()
-            .includes(subCategoryQuery.trim().toLowerCase())
+            .includes(subCategoryQuery.trim().toLowerCase()),
         )
     : [];
 
@@ -195,7 +195,7 @@ const UpdateModelForm = ({
 
       if (newModelType) {
         const existedModelType = MODEL_TYPES.find((type) =>
-          type.aliases.includes(newModelType.toLowerCase())
+          type.aliases.includes(newModelType.toLowerCase()),
         )?.value;
 
         if (existedModelType) {
@@ -208,7 +208,7 @@ const UpdateModelForm = ({
 
     if (modelData) {
       const versionStatusInputData = Object.values(
-        modelData?.modelVersionsCustomData
+        modelData?.modelVersionsCustomData,
       )
         ?.sort((a, b) => a?.index - b?.index)
         .map((version) => {
@@ -248,7 +248,7 @@ const UpdateModelForm = ({
       setSubCatInputs(subCats);
 
       const mainCategoryName = categories[modelData?.modelType]?.find(
-        (category) => category.id === modelData?.main
+        (category) => category.id === modelData?.main,
       )?.name;
 
       setMainCategorySelected({
@@ -260,8 +260,8 @@ const UpdateModelForm = ({
       setTagSetsInputs(
         createTagSetsInputData(
           modelData?.defaultCustomData?.tagSetsData,
-          DEFAULT_DATA_TAGSETS_INPUT
-        )
+          DEFAULT_DATA_TAGSETS_INPUT,
+        ),
       );
     }
   }, [modelData, categories, newModelType]);
@@ -278,10 +278,10 @@ const UpdateModelForm = ({
 
     try {
       const tagsetsIsNotValid = !!tagSetsInputs.find(
-        (input) => input[0].isValid === false || input[1].isValid === false
+        (input) => input[0].isValid === false || input[1].isValid === false,
       );
       const subcatsIsValid = !!subCatInputs.find(
-        (input) => input.isValid === true
+        (input) => input.isValid === true,
       );
       const mainInputsIsNotValid =
         !idInput.isValid || !mainCategorySelected.isValid || !subcatsIsValid;
@@ -350,7 +350,7 @@ const UpdateModelForm = ({
         newModelData,
         categories,
         curBaseModels,
-        modelData
+        modelData,
       );
 
       if (baseModels) {
@@ -466,7 +466,7 @@ const UpdateModelForm = ({
     setVersionsDownloadStatus((prevState) => {
       const newState = [...prevState];
       const curIndex = newState.findIndex(
-        (version) => version.id === e.target.id
+        (version) => version.id === e.target.id,
       );
 
       newState[curIndex].value = e.target.checked;
@@ -600,7 +600,7 @@ const UpdateModelForm = ({
               autoFocus
               placeholder="Model ID or URL"
               value={idInput.value}
-              input={{ hidden: modelData ? true : false }}
+              hidden={modelData ? true : false}
               onChange={(e, isValid) => {
                 setIdInput({ value: e.target.value, isValid });
               }}
@@ -673,13 +673,13 @@ const UpdateModelForm = ({
             )}
           </div>
         )}
-        <Buttton
+        <Button
           type="submit"
           disabled={modelIsSaving}
           className={classes.submit}
         >
           {!modelIsSaving ? "Save" : <Spinner size="small" />}
-        </Buttton>
+        </Button>
       </div>
     </form>
   );

@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import Buttton from "../../ui/buttons/Button";
+import Button from "../../ui/buttons/Button";
 import classes from "./ChooseImageForm.module.scss";
 import Spinner from "../../ui/Spinner";
 import CheckSvg from "../../../assets/CheckSvg";
@@ -62,7 +62,7 @@ const ChooseImageForm = memo(
     const [successMessage, setSuccessMessage] = useState("");
     const uid = useSelector((state) => state.auth.user.uid);
     const selectedAmount = imagesInputs.filter(
-      (input) => input?.value && !input?.saved
+      (input) => input?.value && !input?.saved,
     )?.length;
     const savedImages = useSelector((state) => state.model.savedImages);
     const isOnline = useOnlineStatus();
@@ -113,7 +113,7 @@ const ChooseImageForm = memo(
       setImagesInputs((prevState) => {
         const newState = [...prevState];
         const curIndex = newState.findIndex(
-          (version) => version.id === +e.target.id
+          (version) => version.id === +e.target.id,
         );
         if (!newState[curIndex].saved) {
           newState[curIndex].value = e.target.checked;
@@ -173,15 +173,15 @@ const ChooseImageForm = memo(
         {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
         {!successMessage && (
           <div className={classes["btns"]}>
-            <Buttton
+            <Button
               className={`${type === "del" ? classes["btn-del"] : ""}`}
               type="button"
               onClick={submitHandler.bind(null, true)}
               disabled={!!isDeleting || !isOnline}
             >
               {type === "save" ? "Save all" : "Delete all"}
-            </Buttton>
-            <Buttton
+            </Button>
+            <Button
               className={`${type === "del" ? classes["btn-del"] : ""}`}
               type="button"
               disabled={!!isDeleting || !isOnline || !selectedAmount}
@@ -190,13 +190,13 @@ const ChooseImageForm = memo(
               {type === "save" ? `Save (${selectedAmount}) selected` : ""}
               {type === "del" && !isDeleting ? "Delete selected" : ""}
               {!!isDeleting && <Spinner size="small" />}
-            </Buttton>
+            </Button>
           </div>
         )}
         {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
       </form>
     );
-  }
+  },
 );
 
 export default ChooseImageForm;
