@@ -37,3 +37,5 @@ export type ExtendedOnChange<T = HTMLInputElement> = (
   isValid: boolean | null,
   errorMessage?: string,
 ) => void;
+
+export type SelectOption = { id: string | number; name: string };

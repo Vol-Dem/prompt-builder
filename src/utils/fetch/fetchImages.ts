@@ -378,12 +378,14 @@ export const fetchResourcesInfoFromDB = async (
   resourcesInfoCiv: CivitaiResource[] | ImageResourceData[],
 ) => {
   try {
-    const imageResources =
-      resourcesInfoCiv || getUniqImageResources(curImageData);
     const uid = auth?.currentUser?.uid;
+
     if (!uid) {
       throw new AppError(ERROR_MESSAGE_DEFAULT);
     }
+
+    const imageResources =
+      resourcesInfoCiv || getUniqImageResources(curImageData);
     let modelHash: string | null = null;
 
     if (

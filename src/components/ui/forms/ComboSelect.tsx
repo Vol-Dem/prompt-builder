@@ -1,11 +1,5 @@
-import {
-  Combobox,
-  ComboboxButton,
-  ComboboxInput,
-  ComboboxOption,
-  ComboboxOptions,
-} from "@headlessui/react";
-import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
+import { Combobox, ComboboxButton, ComboboxInput } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, type ComponentProps } from "react";
 
@@ -15,9 +9,11 @@ import {
   ANIMATIONS_FM_SLIDEOUT,
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
 } from "../../../variables/constants";
-import type { ValidationTypes } from "../../../types/general.types";
-
-type SelectOption = { id: string | number; name: string };
+import type {
+  SelectOption,
+  ValidationTypes,
+} from "../../../types/general.types";
+import ComboSelectOptions from "./ComboSelectOptions";
 
 type ComboSelectProps = ComponentProps<"input"> & {
   optionsData: SelectOption[];
@@ -105,10 +101,6 @@ const ComboSelect = ({
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
-  const nameExists = optionsData?.find(
-    (option) => option.name.trim().toLowerCase() === query.trim().toLowerCase(),
-  );
-
   useEffect(() => {
     setShowErrorMessage(showError);
   }, [showError]);
@@ -190,59 +182,12 @@ const ComboSelect = ({
             </div>
             <AnimatePresence>
               {open && (
-                <ComboboxOptions
-                  static
-                  as={motion.div}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{
-                    opacity: 0,
-                    scale: 0.95,
-                    zIndex: -1,
-                    transition: {
-                      duration: 0.2,
-                      zIndex: {
-                        delay: 0.1,
-                        duration: 0.1,
-                      },
-                    },
-                  }}
-                  anchor="bottom"
-                  transition
-                  className={`${classes.options} ${
-                    optionsData?.length ? classes["options__border"] : ""
-                  }`}
-                  data-id={id}
-                  modal={false}
-                >
-                  {query.length > 0 && !nameExists && (
-                    <ComboboxOption
-                      value={{ id: null, name: query.trim() }}
-                      className={`${classes.option} ${classes["option--create"]}`}
-                    >
-                      <span className={`${classes["create-btn"]}`}>Create</span>{" "}
-                      <span className="font-bold">"{query.trim()}"</span>
-                    </ComboboxOption>
-                  )}
-                  {optionsData.map((options, i) => (
-                    <ComboboxOption
-                      key={options?.id || i}
-                      value={options}
-                      className={`${classes.option} ${
-                        options?.name && options?.name === selected?.name
-                          ? classes.selected
-                          : ""
-                      }`}
-                    >
-                      {options?.name && options?.name === selected?.name && (
-                        <CheckIcon className={classes.check} />
-                      )}
-                      <div className="text-sm/6 text-white">
-                        {options?.name}
-                      </div>
-                    </ComboboxOption>
-                  ))}
-                </ComboboxOptions>
+                <ComboSelectOptions
+                  optionsData={optionsData}
+                  query={query}
+                  id={id}
+                  selected={selected}
+                />
               )}
             </AnimatePresence>
           </>

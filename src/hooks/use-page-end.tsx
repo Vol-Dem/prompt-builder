@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type RefObject } from "react";
 
 /**
  * Checks if the current scroll has reached the end of the page
  * @returns True if the end of the page is reached, otherwise false
  */
-const usePageEnd = () => {
+const usePageEnd = (containerRef: RefObject<HTMLElement | null>) => {
   const [isPageEnd, setIsPageEnd] = useState(false);
 
   const handleScroll = useCallback(() => {
@@ -25,11 +25,15 @@ const usePageEnd = () => {
   }, [isPageEnd]);
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
+    if (containerRef.current)
+      containerRef.current.addEventListener("scroll", handleScroll);
+    // window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      if (containerRef.current)
+        containerRef.current.removeEventListener("scroll", handleScroll);
+      // window.removeEventListener("scroll", handleScroll);
     };
-  }, [handleScroll]);
+  }, [handleScroll, containerRef.current]);
 
   return isPageEnd;
 };

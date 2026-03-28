@@ -23,7 +23,7 @@ export const useIntersection = (
   scrollMargin: number | string = 0,
   threshold: number | number[] = 0,
   rootRef: RefObject<HTMLElement | null> | null = null,
-) => {
+): boolean => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const observerRef = useRef<IntersectionObserver>(null);
 
@@ -39,7 +39,7 @@ export const useIntersection = (
         root: rootRef?.current,
         rootMargin: parseIntersectionMargin(rootMargin),
         scrollMargin: parseIntersectionMargin(scrollMargin),
-        threshold: threshold,
+        threshold,
       } as IntersectionObserverInitFixed,
     );
   }, [elementRef, once, rootMargin, scrollMargin, threshold, rootRef]);
