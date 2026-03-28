@@ -2,6 +2,10 @@ import { useState, useEffect, useRef, useMemo, type RefObject } from "react";
 
 import { parseIntersectionMargin } from "../utils/generalUtils";
 
+interface IntersectionObserverInitFixed extends IntersectionObserverInit {
+  scrollMargin?: string;
+}
+
 /**
  * Intersection observer hook
  * @param {React.RefObject | null} elementRef - The reference to the element to observe
@@ -36,7 +40,7 @@ export const useIntersection = (
         rootMargin: parseIntersectionMargin(rootMargin),
         scrollMargin: parseIntersectionMargin(scrollMargin),
         threshold: threshold,
-      },
+      } as IntersectionObserverInitFixed,
     );
   }, [elementRef, once, rootMargin, scrollMargin, threshold, rootRef]);
 
