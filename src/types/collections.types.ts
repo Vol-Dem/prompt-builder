@@ -59,3 +59,5 @@ export interface AddCollectionData {
   subcategoriesData: CollectionSubcategory[];
   curCollectionSabcategories: string[];
 }
+
+export type SuggestedCollectionsSortType = "category" | "name";

@@ -128,7 +128,7 @@ const uploadSlice = createSlice({
  * @returns {Function} Redux thunk.
  */
 export const savePost = (postInfo: UploadingItem): AppThunk => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     try {
       const {
         modelId,
@@ -148,6 +148,8 @@ export const savePost = (postInfo: UploadingItem): AppThunk => {
       dispatch(uploadActions.setCurPostId(postId));
 
       let data: { items: Image[] } = { items: [] };
+
+      const isTester = getState().auth.tester;
 
       if (!images?.length) {
         const imgExampleResponse = await fetch(
@@ -178,6 +180,7 @@ export const savePost = (postInfo: UploadingItem): AppThunk => {
       const newPostData = await updateImagePostData(
         postInfo,
         examplesDataWithRes,
+        isTester,
       );
 
       if (location === "collections" && collectionData) {

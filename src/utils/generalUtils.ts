@@ -78,7 +78,6 @@ export const handleErrors = (err: AppError): string => {
     errorMessage = err.message;
   } else {
     console.error(err);
-    console.error(err.original);
   }
 
   //Error message for Civitai connection bug
@@ -117,6 +116,10 @@ export const checkIsInCurrentNsfwRange = (
   curNsfwLevel: string,
   curNsfwvalue: string | number,
 ): boolean => {
+  if (typeof curNsfwvalue === "number") {
+    return curNsfwLevel === "X" ? true : curNsfwvalue <= 1;
+  }
+
   const nsfwValues = SETTINGS_NSFW_VALUES_DATA.map(
     (nsfwValueData) => nsfwValueData.value,
   );
@@ -245,7 +248,7 @@ export const sortArrayBy = <T, K extends keyof T>(
     }
 
     if (typeof aValue === "string" && typeof bValue === "string") {
-      return aValue.localeCompare(bValue) * order;
+      return aValue.toLowerCase().localeCompare(bValue.toLowerCase()) * order;
     }
 
     return 0;
@@ -273,7 +276,7 @@ export const sortObjectByKeys = <T extends Record<string, any>>(obj: T): T => {
  * @returns {boolean} True if the arrays are equal, otherwise false
  */
 export const checkArraysIsEqual = <T, K>(arr1: T[], arr2: K[]): boolean => {
-  return arr1?.toSorted().toString() === arr2?.toSorted().toString();
+  return JSON.stringify(arr1?.toSorted()) === JSON.stringify(arr2?.toSorted());
 };
 
 /**

@@ -30,7 +30,7 @@ import ButtonAdd from "../../button-square-add/ButtonSquareAdd";
  */
 const CarouselImageList = ({ images }) => {
   const activeCarouselData = useSelector(
-    (state) => state.model.activeCarouselData
+    (state) => state.model.activeCarouselData,
   );
   const dispatch = useDispatch();
 
@@ -39,13 +39,16 @@ const CarouselImageList = ({ images }) => {
       modelActions.setActiveCarouselData({
         ...activeCarouselData,
         currImgNum: +position,
-      })
+      }),
     );
   };
 
   const imagesHtml = images.map((image, i) => {
     return (
-      <li key={image.id} className={classes["image-container"]}>
+      <li
+        key={image?.id || image?.hash || i}
+        className={classes["image-container"]}
+      >
         <Image
           onClick={() => openImageHandler(i)}
           className={classes.image}

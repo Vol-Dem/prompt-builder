@@ -138,12 +138,10 @@ export const filterNsfwImages = (
 ): Image[] => {
   return images?.filter((image) => {
     if (image?.nsfwLevel) {
-      return typeof image.nsfwLevel === "string"
-        ? checkIsInCurrentNsfwRange(nsfwLevel, image.nsfwLevel)
-        : image.nsfwLevel === 1;
-    } else {
-      return image?.nsfw === "None" || image?.nsfw === false;
+      return checkIsInCurrentNsfwRange(nsfwLevel, image.nsfwLevel);
     }
+
+    return image?.nsfw === "None" || image?.nsfw === false;
   });
 };
 
@@ -249,4 +247,46 @@ export const getUniqImageResources = (
   ];
 
   return filterDuplicates(allImageResources, "modelVersionId");
+};
+
+export const combineImagesData = (
+  newImageData: Image[],
+  oldImageData: Image[],
+  isTester: boolean,
+) => {
+  return filterDuplicates(
+    [
+      ...oldImageData,
+      ...newImageData.map((item) => {
+        let data = { ...item };
+        const curData = oldImageData.find((oldItem) => oldItem.id === item.id);
+        if (
+          curData &&
+          !item.modelVersionIds?.length &&
+          !!curData.modelVersionIds?.length &&
+          isTester
+        ) {
+          data = {
+            ...data,
+            modelVersionIds: curData.modelVersionIds,
+          };
+        }
+
+        if (
+          curData &&
+          !item?.meta?.prompt &&
+          !!curData?.meta?.prompt &&
+          isTester
+        ) {
+          data = {
+            ...data,
+            meta: { ...item?.meta, ...curData.meta },
+          };
+        }
+
+        return data;
+      }),
+    ],
+    "id",
+  );
 };

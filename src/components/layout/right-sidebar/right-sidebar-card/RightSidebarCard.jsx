@@ -78,7 +78,7 @@ const RightSidebarCard = memo(({ previewData, fullView, layoutId }) => {
           to={
             previewData.type === "collection"
               ? `/images/${previewData.id}`
-              : `/models/${previewData.id}?versionId=${previewData.versionId}`
+              : `/models/${previewData.id}${previewData.versionId ? `?versionId=${previewData.versionId}` : ""}`
           }
           state={{ versionId: previewData?.activeVersionId || null }}
           className={classes.link}

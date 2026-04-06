@@ -16,13 +16,19 @@ import firebaseApp from "../../firebase-config";
 import {
   ERROR_MESSAGE_DEFAULT,
   ERROR_MESSAGE_INVALID_DATA,
+  SETTINGS_FORCE_UPDATE_POST_DATA,
   SETTINGS_SFW_RANGE,
+  URL_CIV_IMAGES,
 } from "../../variables/constants";
 import { fetchData, makeBatchRequest } from "./fetchUtils";
 import { AppError, filterDuplicates, normalizeError } from "../generalUtils";
 import { parseModelIds } from "../modelUtils";
-import { getUniqImageResources } from "../imageUtils";
-import { clearFileExtension, transformImageData } from "../../../shared/utils";
+import { combineImagesData, getUniqImageResources } from "../imageUtils";
+import {
+  clearFileExtension,
+  fixCivImagesMeta,
+  transformImageData,
+} from "../../../shared/utils";
 import type {
   AdditionalResource,
   CivitaiResource,
@@ -206,6 +212,7 @@ export const deleteImagePostDocs = async (
 export const updateImagePostData = async (
   postInfo: UploadingItem,
   imagesData: Image[],
+  isTester: boolean,
 ) => {
   try {
     const { postId, modelId, versionId, postData, location } = postInfo;
@@ -241,7 +248,7 @@ export const updateImagePostData = async (
 
     const docSnap = await getDoc(modelImagesRef);
 
-    let curPostData;
+    let curPostData: SavedImagePostDoc | null = null;
 
     if (docSnap.exists()) {
       curPostData = docSnap.data() as SavedImagePostDoc;
@@ -253,13 +260,49 @@ export const updateImagePostData = async (
       (image) => !curImgIds?.includes(image.id),
     );
 
-    if (newImagesData?.length || !curPostData?.id || location === "models") {
+    let combinedImgData = imagesData;
+
+    if (curPostData?.items?.length) {
+      combinedImgData = combineImagesData(
+        imagesData,
+        curPostData?.items,
+        isTester,
+      );
+    }
+
+    if (!imagesData[0]?.meta?.prompt && isTester) {
+      const imgExampleResponse = await fetch(
+        `${URL_CIV_IMAGES}?postId=${postId}&nsfw=X`,
+      );
+      const data = (await imgExampleResponse.json()) as { items: Image[] };
+
+      if (data?.items?.length)
+        combinedImgData = combineImagesData(
+          imagesData,
+          fixCivImagesMeta(data.items),
+          isTester,
+        );
+    }
+
+    // console.log(imagesData);
+    // console.log(curPostData?.items);
+    // console.log(combinedImgData);
+
+    if (
+      (newImagesData?.length ||
+        !curPostData?.id ||
+        location === "models" ||
+        SETTINGS_FORCE_UPDATE_POST_DATA) &&
+      imagesData.length
+    ) {
       batch.set(
         modelImagesRef,
         {
           id: +postId,
           versionsId: arrayUnion(versionId),
-          items: arrayUnion(...imagesData),
+          items: SETTINGS_FORCE_UPDATE_POST_DATA
+            ? combinedImgData
+            : arrayUnion(...imagesData),
           createdAt: imagesData[0].createdAt,
           hasSfw: hasSfw,
         },

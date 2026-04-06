@@ -9,7 +9,10 @@ import classes from "./ModelDefImages.module.scss";
 import Spinner from "../../ui/Spinner";
 import CarouselGuide from "../../general-elements/guide/model/CarouselGuide";
 import firebaseApp from "../../../firebase-config";
-import { GUIDE_STEP_OPEN_IMAGE } from "../../../variables/constants";
+import {
+  GUIDE_STEP_OPEN_IMAGE,
+  SETTINGS_SHOW_ALL_DEF_IMAGES,
+} from "../../../variables/constants";
 import { filterNsfwImages } from "../../../utils/imageUtils";
 import { getVersionImagesFromCiv } from "../../../utils/fetch/fetchImages";
 import { handleErrors } from "../../../utils/generalUtils";
@@ -52,30 +55,43 @@ const ModelDefImages = () => {
           "models",
           model?.id + "",
           "defaultImages",
-          curVersion?.id + ""
+          curVersion?.id + "",
         );
 
         const defImagesSnap = await getDoc(modelDefImagesRef);
 
         let curImages;
 
+        const defImagesWithoutPrompt = model?.data?.modelVersions.find(
+          (version) => version?.id === curVersion?.id,
+        )?.images;
+
         if (defImagesSnap.exists()) {
           const versionImages = defImagesSnap.data()?.items;
-
           if (!versionImages?.length) {
-            curImages = model?.data?.modelVersions.find(
-              (version) => version?.id === curVersion?.id
-            )?.images;
+            curImages = defImagesWithoutPrompt;
           } else {
-            curImages = versionImages;
+            curImages = !SETTINGS_SHOW_ALL_DEF_IMAGES
+              ? versionImages
+              : defImagesWithoutPrompt.map((image) => {
+                  const imgWithPrompt = versionImages.find(
+                    (imageWithPrompt) => imageWithPrompt.hash === image.hash,
+                  );
+
+                  return imgWithPrompt || image;
+                });
           }
         } else {
           ///LOAD DEFAULT IMAGES FROM MODEL
           curImages = await getVersionImagesFromCiv(
             model.id,
             model?.data?.creator?.username,
-            curVersion
+            curVersion,
           );
+        }
+
+        if (!curImages?.length) {
+          curImages = defImagesWithoutPrompt;
         }
 
         if (curImages?.length) setCurVersionImages(curImages);

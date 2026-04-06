@@ -869,6 +869,11 @@ export const addNewCollectionCategories = ({
       const hasNewSubcategories = subcategoriesData?.find(
         (subcategory) => !subcategory?.id,
       );
+
+      const existedCollectionData = curCategoryData?.collectionNames?.find(
+        (collectionName) => collectionName.id === collectionData.id,
+      );
+
       //Check for new categories data
       if (
         !hasNewSubcategories &&
@@ -878,7 +883,8 @@ export const addNewCollectionCategories = ({
         checkArraysIsEqual(
           newCollectionSubcategoryIds,
           existedCurCollectionSubcategoryIds,
-        )
+        ) &&
+        existedCollectionData?.name === collectionData.name
       ) {
         return {
           collectionData,
@@ -929,6 +935,7 @@ export const addNewCollectionCategories = ({
                   if (collectionName.id === collectionData.id) {
                     return {
                       ...collectionName,
+                      name: collectionData.name,
                       subcategories: newCollectionSubcategoryIds,
                     };
                   }

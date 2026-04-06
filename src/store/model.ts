@@ -277,11 +277,11 @@ export const setTagSetPreviewImg = (
       [`${urlField}`]: tagSetData,
     });
 
-    if (!model?.defaultCustomData) {
+    if (!model) {
       throw new AppError(ERROR_MESSAGE_DEFAULT);
     }
 
-    if (versionId === "tsv-def") {
+    if (versionId === "tsv-def" && model?.defaultCustomData) {
       const updatedDefaultCustomData = {
         ...model.defaultCustomData,
         tagSetsData: tagSetData,
@@ -326,7 +326,6 @@ export const deleteImgPost = (
 ): AppThunk => {
   return async (dispatch, getState) => {
     try {
-      console.log(postInfo);
       const { versionId, postId } = postInfo;
       const uid = getState().auth.user?.uid;
       const id = getState().model.model?.id;

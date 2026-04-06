@@ -4,6 +4,7 @@ import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import firebaseApp from "../firebase-config";
 import type { AppThunk } from "./store";
 import type { GeneralState } from "../types/general.types";
+import type { SuggestedCollectionsSortType } from "../types/collections.types";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -35,6 +36,7 @@ const generalSlice = createSlice({
     sfwValue: "None",
     nsfwValue: "X",
     activeAboutSectionId: "",
+    suggestedCollectionsSortBy: "name",
   } as GeneralState,
   reducers: {
     setIsMobile(state, action: PayloadAction<boolean>) {
@@ -80,6 +82,12 @@ const generalSlice = createSlice({
       if (state.nsfwMode) {
         state.nsfwLevel = action.payload;
       }
+    },
+    setSuggestedCollectionsSortBy(
+      state,
+      action: PayloadAction<SuggestedCollectionsSortType>,
+    ) {
+      state.suggestedCollectionsSortBy = action.payload;
     },
   },
 });

@@ -15,6 +15,7 @@ import {
   ERROR_MESSAGE_OFFLINE,
   VALIDATION_POST_URL_MAX_LENGTH,
   ERROR_MESSAGE_INVALID_POST_ID,
+  URL_CIV_IMAGES,
 } from "../../../variables/constants";
 import ChooseImageForm from "../choose-image-form/ChooseImageForm";
 import { uploadActions } from "../../../store/upload";
@@ -108,13 +109,14 @@ const SaveImageForm = ({
       }
 
       const imgExampleResponse = await fetch(
-        `https://civitai.com/api/v1/images?postId=${postId}${
+        `${URL_CIV_IMAGES}?postId=${postId}${
           filterDisabledInput && modelData?.id
             ? `&modelId=${modelData?.id}`
             : ""
         }&nsfw=${nsfwLevel}`,
       );
       const data = await imgExampleResponse.json();
+
       setImages(fixCivImagesMeta(data.items));
 
       let curPostData;

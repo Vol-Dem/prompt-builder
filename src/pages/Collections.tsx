@@ -97,6 +97,7 @@ const Collections = ({ title }: CollectionsProps) => {
 
   const openCategoryHandler = (e: React.MouseEvent<HTMLElement>) => {
     if (!(e.target instanceof HTMLElement)) return;
+    if (activeCategory === e.target.dataset.value) return;
     dispatch(imagesActions.setActiveCategory(e.target.dataset.value));
     dispatch(imagesActions.setActiveSubcategory(""));
     dispatch(imagesActions.setCollectionPreviews([]));
@@ -105,6 +106,7 @@ const Collections = ({ title }: CollectionsProps) => {
 
   const openSubcategoryHandler = (e: React.MouseEvent<HTMLElement>) => {
     if (!(e.target instanceof HTMLElement)) return;
+    if (activeSubcategory === e.target.dataset.value) return;
     dispatch(imagesActions.setActiveSubcategory(e.target.dataset.value));
     dispatch(imagesActions.setCollectionPreviews([]));
     dispatch(imagesActions.resetCollectionPreviews());

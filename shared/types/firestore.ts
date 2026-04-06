@@ -147,12 +147,12 @@ export interface ModelPreviewDoc {
   baseModels: string[];
   createdAt: number;
   creator: Creator;
-  customFileNames: string[];
+  customFileNames?: string[];
   fileName: string;
   fileNames: string[];
   hashes: string[];
   id: number;
-  versionId: number;
+  versionId?: number;
   imgType: string;
   imgUrl: string;
   latestFileName: string;
@@ -163,11 +163,11 @@ export interface ModelPreviewDoc {
   name: string;
   nameArr: string[];
   nsfw: boolean;
-  nsfwLevel: number;
+  nsfwLevel: string | number;
   size: number | null;
   src: string;
   sub: string[];
-  tags: string[];
+  tags?: string[] | null;
   type: string;
   updatedAt: string;
   versionIds: number[];

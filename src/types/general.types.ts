@@ -1,5 +1,6 @@
 import type { ChangeEvent } from "react";
 import type { ModelPreviewDoc } from "../../shared/types/firestore";
+import type { SuggestedCollectionsSortType } from "./collections.types";
 
 export interface GeneralState {
   isMobile: boolean;
@@ -9,6 +10,7 @@ export interface GeneralState {
   sfwValue: string;
   nsfwValue: string;
   activeAboutSectionId: string;
+  suggestedCollectionsSortBy: SuggestedCollectionsSortType;
 }
 
 export interface SidebarPreviewData extends ModelPreviewDoc {

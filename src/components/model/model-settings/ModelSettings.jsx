@@ -166,7 +166,7 @@ const ModelSettings = () => {
   };
 
   const modelVersionsHtml =
-    model.id &&
+    model?.id &&
     Object.values(model?.modelVersionsCustomData)
       ?.sort((a, b) => a?.index - b?.index)
       .flatMap((version, i) => {

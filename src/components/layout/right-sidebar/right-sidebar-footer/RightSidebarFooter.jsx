@@ -75,7 +75,7 @@ const RightSidebarFooter = () => {
           />
         </a>
         <a
-          href="https://discord.gg/ES2JbdMk"
+          href="https://discord.gg/KXkmnZm9c"
           target="_blank"
           rel="noreferrer nofollow"
           title="Discord"

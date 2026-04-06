@@ -18,6 +18,7 @@ export interface AuthState {
   userDataLoadError: string;
   errorMessage: string;
   successMessage: string;
+  tester: boolean;
   user: AuthUser;
 }
 

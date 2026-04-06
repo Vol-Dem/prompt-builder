@@ -97,6 +97,9 @@ export const SETTINGS_NSFW_RANGE = ["Soft", "Mature", "X"];
 export const SETTINGS_PROMPT_DUPLICATE_EXCEPTIONS = ["BREAK", "<BREAK>"];
 export const SETTINGS_PROMPT_BREAK_ALIASES = ["BREAK", "<BREAK>"];
 export const SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV = false;
+export const SETTINGS_SHOW_ALL_DEF_IMAGES = true;
+export const SETTINGS_FORCE_UPDATE_POST_DATA = true; // force overwriting of post data
+export const SETTINGS_FORCE_HIDDEN_PROMPT_FETCH = true; // force overwriting of post data
 // export const SETTINGS_SUPPORTED_FILE_EXTENSIONS = [
 //   "safetensors",
 //   "pt",

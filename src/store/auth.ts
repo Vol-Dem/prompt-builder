@@ -55,6 +55,7 @@ const authInitialState: AuthState = {
   userDataLoadError: "",
   errorMessage: "",
   successMessage: "",
+  tester: false,
   user: {
     idToken: "",
     refreshToken: "",
@@ -145,6 +146,9 @@ const authSlice = createSlice({
     },
     setUserDataLoadError(state, action: PayloadAction<string>) {
       state.userDataLoadError = action.payload;
+    },
+    setTester(state, action: PayloadAction<boolean>) {
+      state.tester = action.payload;
     },
   },
 });
@@ -543,6 +547,9 @@ export const getUserData = (uid: string): AppThunk => {
 
         if (userData?.guide) {
           dispatch(guideActions.setGuideInitialState(userData.guide));
+        }
+        if (userData?.tester) {
+          dispatch(authActions.setTester(userData.tester));
         }
       }
       dispatch(authActions.setUserDataIsLoading(false));

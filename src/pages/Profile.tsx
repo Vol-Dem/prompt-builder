@@ -63,6 +63,7 @@ const Profile = ({ title }: ProfileProps) => {
   const userData = useAppSelector((state) => state.auth.user);
   const isAuth = useAppSelector((state) => state.auth.isLoggedIn);
   const reAuthIsOpen = useAppSelector((state) => state.auth.reAuthFormIsOpen);
+  const uid = useAppSelector((state) => state.auth.user.uid);
 
   useEffect(() => {
     document.title = title;
@@ -181,7 +182,7 @@ const Profile = ({ title }: ProfileProps) => {
   const nameForm = (
     <form onSubmit={changeNameHandler} className={classes["profile__form"]}>
       <div>
-        Name:{" "}
+        <span className={classes["profile__field-name"]}>Name:</span>{" "}
         {!changeNameIsActive && (
           <span>{userData.userName || userData?.email?.split("@")[0]}</span>
         )}
@@ -227,7 +228,10 @@ const Profile = ({ title }: ProfileProps) => {
 
   const emailForm = (
     <form onSubmit={changeEmailHandler} className={classes["profile__form"]}>
-      <div>Email: {!changeEmailIsActive && <span>{userData.email}</span>}</div>
+      <div>
+        <span className={classes["profile__field-name"]}>Email:</span>{" "}
+        {!changeEmailIsActive && <span>{userData.email}</span>}
+      </div>
       <div className={classes["profile__field"]}>
         {changeEmailIsActive && (
           <>
@@ -362,6 +366,9 @@ const Profile = ({ title }: ProfileProps) => {
         <div>
           <h1 className={classes["profile__title"]}>Profile</h1>
           <div className={classes["profile__info"]}>
+            <div className={classes["profile__element"]}>
+              <span className={classes["profile__field-name"]}>UID:</span> {uid}
+            </div>
             <div className={classes["profile__element"]}>{nameForm}</div>
             <div className={classes["profile__element"]}>{emailForm}</div>
             <div className={classes["profile__element"]}>{passForm}</div>

@@ -29,6 +29,7 @@ import {
 import { addNewCollectionCategories } from "../../../store/images";
 import SuccessMessage from "../../ui/SuccessMessage";
 import { getCollectionData } from "../../../utils/fetch/fetchCollection";
+import SuggestedCollections from "./SuggestedCollections";
 
 const SUBCATEGORIES_MAX_AMOUNT = 8;
 const subCatsDefData = {
@@ -105,6 +106,21 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
 
   const categories = useSelector((state) => state.images.categories);
   const dispatch = useDispatch();
+
+  const selectCollectionFromSuggestedListHandler = (
+    suggestedCollectionData,
+  ) => {
+    setMainCategorySelected({
+      name: suggestedCollectionData.categoryName,
+      id: suggestedCollectionData.categoryId,
+      isValid: true,
+    });
+    setCollectionNameSelected({
+      name: suggestedCollectionData.collectionName,
+      id: suggestedCollectionData.collectionId,
+      isValid: true,
+    });
+  };
 
   const mainCategoryOptions = useMemo(() => {
     const categoriesOptions = categories.filter((category) =>
@@ -334,7 +350,6 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
 
       setSuccessMessage(SUCCESS_MESSAGE_SAVED);
     } catch (err) {
-      console.log(err);
       setErrorMessage(err.errorMessage);
       setShowErrorMessage(true);
     } finally {
@@ -345,85 +360,95 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
   return (
     <>
       {!chooseImageIsOpen && (
-        <form
-          // initial={ANIMATIONS_FM_FADEIN_INITIAL}
-          // animate={ANIMATIONS_FM_FADEIN}
-          // transition={{ duration: 0.3 }}
-          className={classes.form}
-          onSubmit={submitHandler}
-        >
-          <div className={classes["fields"]}>
-            <ComboSelect
-              label="Category"
-              optionsData={mainCategoryOptions}
-              query={mainCategoryQuery}
-              setQuery={setMainCategoryQuery}
-              setSelected={selectMainCategoryHandler}
-              selected={mainCategorySelected}
-              placeholder="Main category"
-              validation={{
-                required: true,
-                maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-              }}
-              showError={showErrorMessage}
-            />
-            <Fieldset legend="Subcategories">
-              <AnimatePresence>{subCatHtml}</AnimatePresence>
-              {subCatInputs?.length < SUBCATEGORIES_MAX_AMOUNT && (
-                <ButttonSecondary
-                  type="button"
-                  id="sub"
-                  onClick={addSubHandler}
-                  className={classes["btn-secondary"]}
-                >
-                  + add subcategory
-                </ButttonSecondary>
+        <div className={classes["container"]}>
+          <form
+            // initial={ANIMATIONS_FM_FADEIN_INITIAL}
+            // animate={ANIMATIONS_FM_FADEIN}
+            // transition={{ duration: 0.3 }}
+            className={classes.form}
+            onSubmit={submitHandler}
+          >
+            <div className={classes["fields"]}>
+              <ComboSelect
+                label="Category"
+                optionsData={mainCategoryOptions}
+                query={mainCategoryQuery}
+                setQuery={setMainCategoryQuery}
+                setSelected={selectMainCategoryHandler}
+                selected={mainCategorySelected}
+                placeholder="Main category"
+                validation={{
+                  required: true,
+                  maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
+                }}
+                showError={showErrorMessage}
+              />
+              <Fieldset legend="Subcategories">
+                <AnimatePresence>{subCatHtml}</AnimatePresence>
+                {subCatInputs?.length < SUBCATEGORIES_MAX_AMOUNT && (
+                  <ButttonSecondary
+                    type="button"
+                    id="sub"
+                    onClick={addSubHandler}
+                    className={classes["btn-secondary"]}
+                  >
+                    + add subcategory
+                  </ButttonSecondary>
+                )}
+              </Fieldset>
+              <ComboSelect
+                id="colname"
+                label="Collection"
+                optionsData={collectionNameOptions}
+                query={collectionNameQuery}
+                setQuery={setCollectionNameQuery}
+                setSelected={selectCollectionNameHandler}
+                selected={collectionNameSelected}
+                placeholder="Collection name"
+                validation={{
+                  required: true,
+                  maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
+                }}
+                showError={showErrorMessage}
+              />
+            </div>
+            <div className={classes.status}>
+              {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+              {successMessage && (
+                <SuccessMessage>{successMessage}</SuccessMessage>
               )}
-            </Fieldset>
-            <ComboSelect
-              id="colname"
-              label="Collection"
-              optionsData={collectionNameOptions}
-              query={collectionNameQuery}
-              setQuery={setCollectionNameQuery}
-              setSelected={selectCollectionNameHandler}
-              selected={collectionNameSelected}
-              placeholder="Collection name"
-              validation={{
-                required: true,
-                maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-              }}
-              showError={showErrorMessage}
-            />
-          </div>
-          <div className={classes.status}>
-            {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-            {successMessage && (
-              <SuccessMessage>{successMessage}</SuccessMessage>
-            )}
-            {successMessage && !images?.length && (
-              <>
-                {"-"}
-                <Link
-                  to={`/images/${collectionInfo?.collectionData?.id}`}
-                  className={classes.link}
-                >
-                  Show collection
-                </Link>
-              </>
-            )}
-          </div>
-          <Button type="submit" className={classes.submit}>
-            {collectionInfoIsLoading ? (
-              <Spinner size="small" />
-            ) : images?.length ? (
-              "Choose images"
-            ) : (
-              "Create"
-            )}
-          </Button>
-        </form>
+              {successMessage && !images?.length && (
+                <>
+                  {"-"}
+                  <Link
+                    to={`/images/${collectionInfo?.collectionData?.id}`}
+                    className={classes.link}
+                  >
+                    Show collection
+                  </Link>
+                </>
+              )}
+            </div>
+
+            <Button type="submit" className={classes.submit}>
+              {collectionInfoIsLoading ? (
+                <Spinner size="small" />
+              ) : images?.length ? (
+                "Choose images"
+              ) : (
+                "Create"
+              )}
+            </Button>
+          </form>
+          <SuggestedCollections
+            images={images}
+            selectedCategoryId={mainCategorySelected.id}
+            selectedCollectionId={collectionNameSelected.id}
+            onSelect={selectCollectionFromSuggestedListHandler}
+          />
+        </div>
       )}
+
       {chooseImageIsOpen && (
         <ChooseImageForm
           postId={postId}

@@ -30,7 +30,7 @@ import useFetchFirestoreImages from "../../../../hooks/use-fetch-firestore-image
  * does not change.
  *
  * @component
- * 
+ *
  * @param {object} props
  * @param {number} props.versionId - Model version ID.
  *
@@ -44,7 +44,7 @@ const SavedImages = memo(({ versionId }) => {
   const isIntersecting = useIntersection(
     endPageRef,
     false,
-    SETTINGS_LOAD_MORE_MARGIN
+    SETTINGS_LOAD_MORE_MARGIN,
   );
   const isOnline = useOnlineStatus();
   const {
@@ -60,10 +60,10 @@ const SavedImages = memo(({ versionId }) => {
     setImageData((prevState) => {
       const updatedImages = [...prevState];
       const updatedPostIndex = updatedImages.findIndex(
-        (post) => post[0].postId === postId
+        (post) => post[0].postId === postId,
       );
       const updatedPostData = updatedImages[updatedPostIndex].filter(
-        (image) => !ids?.includes(image.id)
+        (image) => !ids?.includes(image.id),
       );
 
       if (!updatedPostData.length || ids === null) {
@@ -96,8 +96,8 @@ const SavedImages = memo(({ versionId }) => {
   ]);
 
   const imagesHtml = imageData.flatMap((item, i) => {
-    const postData = savedImagesData?.data[curVersion.id]?.find(
-      (post) => post.postId === item[0].postId
+    const postData = savedImagesData?.data[versionId]?.find(
+      (post) => post.postId === item[0].postId,
     );
 
     return (

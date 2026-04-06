@@ -2,14 +2,16 @@
 @use "sass:color";
 
 .form {
+  min-width: 24rem;
   animation: show 0.3s ease-in forwards;
 }
 
 .container {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-height: 85vh;
+  // grid-template-columns: 1fr 1fr;
+  // flex-direction: column;
+  gap: 2rem;
+  // max-height: 85vh;
 }
 
 .fields {
@@ -200,3 +202,10 @@
 }
 
 @include var.animation-show;
+
+@media (max-width: 600px) {
+  .container {
+    display: block;
+    gap: 0;
+  }
+}

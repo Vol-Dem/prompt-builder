@@ -122,16 +122,16 @@ export interface UserModelDefaultCustomData {
 }
 
 export interface ModelVersionCustomData {
-  baseModel: string;
+  baseModel?: string;
   defActTag?: string;
-  defFileName: string;
-  downloadStatus: boolean;
-  index: number;
-  name: string;
+  defFileName?: string;
+  downloadStatus?: boolean;
+  index?: number;
+  name?: string;
   trainedWords?: string[];
   versionId: number;
-  versionImageUrl: string;
-  versionName: string;
+  versionImageUrl?: string;
+  versionName?: string;
   mainTag?: string;
   size?: number | null;
   weight?: number | null;

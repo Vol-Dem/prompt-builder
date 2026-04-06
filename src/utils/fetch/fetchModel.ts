@@ -39,6 +39,7 @@ import { splitTags } from "../promptUtils";
 import { clearFileExtension } from "../../../shared/utils";
 import type {
   CivitaiModelDoc,
+  ModelPreviewDoc,
   UserModelDoc,
 } from "../../../shared/types/firestore";
 import type { UpdateModelResponse } from "../../../shared/types/api";
@@ -350,10 +351,10 @@ interface ModelFormData {
 
 /**
  * Saves model data to database
- * @param {object} newModelData - The new model data
- * @param {object} categories - Existed user categories
- * @param {array} curBaseModels - Existed user base models
- * @param {object} modelData - Existed model data
+ * @param  newModelData - The new model data
+ * @param  categories - Existed user categories
+ * @param curBaseModels - Existed user base models
+ * @param modelData - Existed model data
  * @returns {{preview: object, baseModels: array}} The model's preview data and updated user's base models
  */
 export const saveModelData = async (
@@ -361,7 +362,7 @@ export const saveModelData = async (
   categories: ModelCategories,
   curBaseModels: string[],
   modelData: ModelData,
-) => {
+): Promise<{ preview: ModelPreviewDoc; baseModels: string[] | null }> => {
   try {
     let data: CivitaiModelDoc;
     let modelVersions = [];
@@ -537,14 +538,14 @@ export const saveModelData = async (
         })
         .filter(Boolean);
 
-      const customFileNames = Object.values(modelVersionsCustomData)
-        ?.map((version) => {
-          return (
-            version?.fileName &&
-            clearFileExtension(version.fileName)?.toLowerCase()
-          );
-        })
-        .filter(Boolean);
+      const customFileNames = Object.values(modelVersionsCustomData)?.flatMap(
+        (version) => {
+          if (version?.fileName) {
+            return clearFileExtension(version.fileName)?.toLowerCase();
+          }
+          return [];
+        },
+      );
 
       const nameArr =
         (newModelData.modelName || data.name)
@@ -660,7 +661,7 @@ export const saveModelData = async (
       const categoryField = `categoriesById.${newModelData.modelType}`;
 
       if (newBaseModel || newCategory || newSubcategory) {
-        if (!categories) {
+        if (!categories || !Object.keys(categories)?.length) {
           batch.set(
             userRef,
             {
@@ -670,14 +671,10 @@ export const saveModelData = async (
             { merge: true },
           );
         } else {
-          batch.update(
-            userRef,
-            {
-              [categoryField]: updatedCategories,
-              baseModels: arrayUnion(...baseModels),
-            },
-            // { merge: true },
-          );
+          batch.update(userRef, {
+            [categoryField]: updatedCategories,
+            baseModels: arrayUnion(...baseModels),
+          });
         }
       }
 
@@ -776,7 +773,6 @@ export const saveModelData = async (
 
       // Commit the batch
       await batch.commit();
-
       let updatedBaseModels = null;
 
       if (newBaseModel) {
@@ -786,6 +782,7 @@ export const saveModelData = async (
       return { preview: loraPrevData, baseModels: updatedBaseModels };
     }
   } catch (error) {
+    console.log(error);
     throw normalizeError(error);
   }
 };
