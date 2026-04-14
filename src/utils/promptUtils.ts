@@ -180,10 +180,11 @@ export const moveElementToPosition = ({
     0,
     item,
   );
+
   return curPromptArrUpdatedPosition.map((tag) => {
     if (
       dropTargetType === type &&
-      prevPosition &&
+      prevPosition !== undefined &&
       Number.isFinite(prevPosition)
     ) {
       if (

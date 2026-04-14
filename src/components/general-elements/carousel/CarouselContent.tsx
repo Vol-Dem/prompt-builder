@@ -1,7 +1,12 @@
-import { useCallback, useLayoutEffect, useState } from "react";
+import {
+  useCallback,
+  useLayoutEffect,
+  useState,
+  type MouseEvent,
+  type TouchEvent,
+} from "react";
 import { useRef } from "react";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence } from "framer-motion";
 import {
   ChevronLeftIcon,
@@ -15,13 +20,63 @@ import { deleteImgPost, modelActions } from "../../../store/model";
 import Modal from "../../ui/Modal";
 import ChooseImageForm from "../../forms/choose-image-form/ChooseImageForm";
 import ImageFullView from "../../ui/ImageFullView";
-import { SETTINGS_CAROUSEL_TRANSITION_DURATION } from "../../../variables/constants";
+import {
+  ERROR_MESSAGE_DEFAULT,
+  SETTINGS_CAROUSEL_TRANSITION_DURATION,
+} from "../../../variables/constants";
 import SaveToCollectionForm from "../../forms/save-to-collection-form/SaveToCollectionForm";
 import { updateCollectionPostsData } from "../../../store/images";
 import CarouselPagination from "./carousel-pagination/CarouselPagination";
 import CarouselSave from "./carousel-save/CarouselSave";
 import CarouselImages from "./carousel-images/CarouselImages";
 import { updateImagePostData } from "../../../utils/fetch/fetchImages";
+import type { Image } from "../../../../shared/types/image";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type { PostSavedData } from "../../../types/collections.types";
+import type { ResourceFirestoreCollection } from "../../../types/models.types";
+import type {
+  UploadingCollectionData,
+  UploadingPostData,
+} from "../../../types/upload.types";
+import {
+  AppError,
+  handleErrors,
+  normalizeError,
+} from "../../../utils/generalUtils";
+
+export type CarouselContentProps = {
+  imagesData: Image[];
+  visibleImgAmount: number;
+  postId: number;
+  onDelete?: (ids: number[] | null, postId: number) => void;
+  modelId: number;
+  versionId: number;
+  existedImgsAmount: number | null;
+  activeImgNum: number;
+  saved: boolean;
+  active: boolean;
+  onActiveNumChange: (activeImage: number) => void;
+  side: boolean;
+  imageHeight?: number;
+  imageWidth?: number;
+  location: ResourceFirestoreCollection;
+  locationId: number;
+  curPostData?: PostSavedData;
+};
+
+export type CarouselImageFormState = {
+  isOpen: boolean;
+  location: ResourceFirestoreCollection | null;
+  type: "save" | "del";
+};
+
+type CarouselImageDementions = {
+  gap: number;
+  imgWidth: number;
+  imgWidthWithGap: number;
+  wrapWidth: number;
+  isOpen?: boolean;
+};
 
 /**
  * Carousel content component.
@@ -52,7 +107,7 @@ import { updateImagePostData } from "../../../utils/fetch/fetchImages";
  * @component
  *
  * @param {object} props
- * @param {Array<object>} props.imagesData - List of post images.
+ * @param {any} props.imagesData - List of post images.
  * @param {number} [props.visibleImgAmount] - Number of images visible at the same time. If omitted, calculated automatically.
  * @param {number} props.postId - Post ID.
  * @param {(ids: number[], postId: number) => void} props.onDelete - Callback triggered when images are deleted.
@@ -90,38 +145,49 @@ const CarouselContent = ({
   location,
   locationId,
   curPostData,
-}) => {
+}: CarouselContentProps) => {
   const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount || 0);
   const [initial, setInitial] = useState(true);
-  const [imageFormState, setImageFormState] = useState({});
+  const [imageFormState, setImageFormState] =
+    useState<CarouselImageFormState | null>(null);
   const [currImgNum, setCurrImgNum] = useState(0);
   const [translate, setTranslate] = useState(0);
   const [curTransitionDur, setCurTransitionDur] = useState(0);
   const [fullViewIsOpen, setFullViewIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [transitionEnd, setTransitionEnd] = useState(true);
-  const [visibleImages, setVisibleImages] = useState([]);
+  const [visibleImages, setVisibleImages] = useState<number[]>([]);
   const [curVisibleAmount, setCurVisibleAmount] = useState(visibleImgAmount);
-  const [dimensions, setDimensions] = useState({});
-  const [cursorInitialX, setCursorInitialX] = useState(null);
-  const [cursorCurX, setCursorCurX] = useState(null);
-  const carouselRef = useRef();
-  const imagesRef = useRef();
-  const nsfwMode = useSelector((state) => state.general.nsfwMode);
-  const modelName = useSelector((state) => state.model.model?.name);
-  const savedImages = useSelector((state) => state.model.savedImages);
-  const dispatch = useDispatch();
+  const [dimensions, setDimensions] = useState<CarouselImageDementions | null>(
+    null,
+  );
+  const [cursorInitialX, setCursorInitialX] = useState<number | null>(null);
+  const [cursorCurX, setCursorCurX] = useState<number | null>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const imagesRef = useRef<HTMLDivElement>(null);
+  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const modelName = useAppSelector((state) => state.model.model?.name);
+  const savedImages = useAppSelector((state) => state.model.savedImages);
+  const dispatch = useAppDispatch();
 
-  const carouselWidth = !curVisibleAmount
-    ? dimensions.imgWidth
-    : dimensions.imgWidthWithGap * curVisibleAmount - dimensions.gap;
+  let carouselWidth: number | null = null;
 
-  const postData =
-    savedImages?.data &&
-    !!Object.keys(savedImages?.data)?.length &&
-    savedImages.data[versionId]?.find((post) => post.postId === postId);
+  if (dimensions) {
+    carouselWidth = !curVisibleAmount
+      ? dimensions.imgWidth
+      : dimensions.imgWidthWithGap * curVisibleAmount - dimensions.gap;
+  }
+
+  let postData = null;
+
+  if (savedImages?.data && !!Object.keys(savedImages?.data)?.length) {
+    postData =
+      savedImages.data[versionId]?.find((post) => post.postId === postId) ||
+      null;
+  }
 
   useLayoutEffect(() => {
+    if (!imagesRef.current || !carouselRef.current) return;
     const gap = parseInt(getComputedStyle(imagesRef.current).gap);
     const imgWidth = imagesRef.current.children[0].clientWidth;
     const imgWidthWithGap = imgWidth + gap;
@@ -150,13 +216,16 @@ const CarouselContent = ({
     setFullViewIsOpen(true);
   };
 
-  const openCarouselHandler = (position) => {
-    let currImgNum;
-    const imgNum = +position - visibleAmount;
+  const openCarouselHandler = (position: number | null) => {
+    let currImgNum: number | null = null;
+    let imgNum: number | null = null;
+
+    if (position) {
+      imgNum = +position - visibleAmount;
+    }
+
     if (imgNum || imgNum === 0) {
       currImgNum = imgNum >= 0 ? imgNum : imagesData?.length + imgNum;
-    } else {
-      currImgNum = null;
     }
 
     dispatch(
@@ -176,14 +245,22 @@ const CarouselContent = ({
   };
 
   useEffect(() => {
-    const curVisibleImgAmount = Math.floor(
-      dimensions.wrapWidth / dimensions.imgWidthWithGap,
-    );
+    const curVisibleImgAmount =
+      dimensions &&
+      Math.floor(dimensions.wrapWidth / dimensions.imgWidthWithGap);
     let visibleImagesAmount = visibleImgAmount;
 
-    if (!visibleImgAmount && curVisibleImgAmount <= imagesData?.length) {
+    if (
+      !visibleImgAmount &&
+      curVisibleImgAmount &&
+      curVisibleImgAmount <= imagesData?.length
+    ) {
       visibleImagesAmount = curVisibleImgAmount;
-    } else if (!visibleImgAmount && curVisibleImgAmount > imagesData?.length) {
+    } else if (
+      !visibleImgAmount &&
+      curVisibleImgAmount &&
+      curVisibleImgAmount > imagesData?.length
+    ) {
       visibleImagesAmount = imagesData?.length;
     }
 
@@ -221,19 +298,19 @@ const CarouselContent = ({
     setTransitionEnd(true);
     document.removeEventListener("transitionstart", transitionStartHandler);
     document.removeEventListener("transitionend", transitionEndHandler);
-    if (!imagesRef?.current) return;
+    if (!imagesRef?.current || !dimensions) return;
 
     if (visibleImages[0] === 0) {
       setCurTransitionDur(0);
       setVisibleImages((prevState) =>
-        prevState.map((el, i) => imagesData?.length + i),
+        prevState.map((_, i) => imagesData?.length + i),
       );
       setTranslate(-dimensions.imgWidthWithGap * imagesData?.length);
     }
     if (visibleImages[0] === imagesData?.length + curVisibleAmount) {
       setCurTransitionDur(0);
       setVisibleImages((prevState) =>
-        prevState.map((el, i) => curVisibleAmount + i),
+        prevState.map((_, i) => curVisibleAmount + i),
       );
       setTranslate(-dimensions.imgWidthWithGap * curVisibleAmount);
     }
@@ -247,7 +324,7 @@ const CarouselContent = ({
     curVisibleAmount,
     visibleImages,
     imagesData,
-    dimensions.imgWidthWithGap,
+    dimensions?.imgWidthWithGap,
     transitionStartHandler,
   ]);
 
@@ -272,7 +349,7 @@ const CarouselContent = ({
   ]);
 
   const slideNextHandler = () => {
-    if (!transitionEnd || imagesData.length <= 1) return;
+    if (!transitionEnd || imagesData.length <= 1 || !dimensions) return;
     setCurTransitionDur(SETTINGS_CAROUSEL_TRANSITION_DURATION);
     const curImg = visibleImages[0] + 1;
     setVisibleImages((prevState) => prevState.map((el) => el + 1));
@@ -287,7 +364,7 @@ const CarouselContent = ({
   };
 
   const slidePrevHandler = () => {
-    if (!transitionEnd || imagesData.length <= 1) return;
+    if (!transitionEnd || imagesData.length <= 1 || !dimensions) return;
     setCurTransitionDur(SETTINGS_CAROUSEL_TRANSITION_DURATION);
     const curImg = visibleImages[0] - 1;
     setVisibleImages((prevState) => prevState.map((el) => el - 1));
@@ -300,7 +377,7 @@ const CarouselContent = ({
     }
   };
 
-  const scrollToImageHandler = (curImgIndex) => {
+  const scrollToImageHandler = (curImgIndex: number) => {
     setCurTransitionDur(SETTINGS_CAROUSEL_TRANSITION_DURATION);
     setCurrImgNum(curImgIndex);
 
@@ -309,18 +386,20 @@ const CarouselContent = ({
     }
     setVisibleImages((prevState) => {
       const newVisibleImages = prevState.map(
-        (el, j) => curImgIndex + j + visibleAmount,
+        (_, j) => curImgIndex + j + visibleAmount,
       );
       return newVisibleImages;
     });
-    setTranslate(-dimensions.imgWidthWithGap * (curImgIndex + 1) || 0);
+    setTranslate(
+      dimensions ? -dimensions.imgWidthWithGap * (curImgIndex + 1) : 0,
+    );
   };
 
   const saveExampleHandler = async (
-    location,
-    ids,
-    collectionData,
-    postData,
+    location: ResourceFirestoreCollection,
+    ids: number[] | null,
+    collectionData: UploadingCollectionData | null,
+    postData?: UploadingPostData | null,
   ) => {
     const imagesForSaving = ids?.length
       ? imagesData.filter((image) => ids.includes(image?.id))
@@ -342,12 +421,22 @@ const CarouselContent = ({
     };
 
     dispatch(uploadActions.addToQueue(postInfo));
-    setImageFormState((prevState) => ({ ...prevState, isOpen: false }));
+    setImageFormState(
+      (prevState) => prevState && { ...prevState, isOpen: false },
+    );
   };
 
-  const deleteExampleHandler = async (location, ids, collectionData) => {
+  const deleteExampleHandler = async (
+    location: ResourceFirestoreCollection,
+    ids: number[] | null,
+    collectionData: UploadingCollectionData | null,
+  ) => {
     try {
       const curPostId = imagesData[0].postId;
+
+      if (!curPostId) {
+        throw new AppError(ERROR_MESSAGE_DEFAULT);
+      }
 
       setIsDeleting(true);
 
@@ -366,7 +455,7 @@ const CarouselContent = ({
         existedAmount: existedImgsAmount,
       };
 
-      if (location === "collections") {
+      if (location === "collections" && curPostData) {
         await dispatch(updateCollectionPostsData(ids, curPostData));
       }
 
@@ -381,30 +470,51 @@ const CarouselContent = ({
           );
 
           // setImages(newImages);
-          onDelete(ids, postInfo.postId);
+
           dispatch(
             modelActions.updateSavedImages({ postInfo, data: updatedPostData }),
           );
         } else {
-          onDelete(ids, postInfo.postId);
-          dispatch(deleteImgPost(postInfo, curPostData));
+          if (curPostData) dispatch(deleteImgPost(postInfo, curPostData));
         }
+
+        if (postInfo.postId && onDelete) onDelete(ids, postInfo.postId);
       }
       setIsDeleting(false);
-      setImageFormState((prevState) => ({ ...prevState, isOpen: false }));
+      setImageFormState(
+        (prevState) => prevState && { ...prevState, isOpen: false },
+      );
     } catch (err) {
-      console.error(err.message);
+      handleErrors(normalizeError(err));
       setIsDeleting(false);
     }
   };
 
-  const moveElement = (e) => {
-    const clientX = Math.round(e.clientX || e.touches[0].clientX);
+  const moveElement = (
+    e: React.MouseEvent<HTMLElement> | React.TouchEvent<Element>,
+  ) => {
+    let clientX: number;
+
+    if ("touches" in e) {
+      clientX = e.touches[0].clientX;
+    } else {
+      clientX = e.clientX;
+    }
+
     setCursorCurX(clientX);
   };
 
-  const mouseDownHandler = (e) => {
-    const clientX = Math.round(e.clientX || e.touches[0].clientX);
+  const mouseDownHandler = (
+    e: MouseEvent<HTMLElement> | TouchEvent<Element>,
+  ) => {
+    let clientX: number;
+
+    if ("touches" in e) {
+      clientX = e.touches[0].clientX;
+    } else {
+      clientX = e.clientX;
+    }
+
     setCursorInitialX(clientX);
   };
 
@@ -478,7 +588,7 @@ const CarouselContent = ({
       {imagesData?.length > curVisibleAmount && (
         <CarouselPagination
           images={imagesData}
-          currImgIndex={currImgNum}
+          // currImgIndex={currImgNum}
           visibleAmount={visibleAmount}
           visibleImages={visibleImages}
           onClick={scrollToImageHandler}
@@ -496,7 +606,7 @@ const CarouselContent = ({
       {imagesData?.length > 1 && (
         <button
           className={classes["btn-all"]}
-          onClick={openCarouselHandler}
+          onClick={() => openCarouselHandler(null)}
           title="Show All Images"
         >
           <Squares2X2Icon />
@@ -521,19 +631,21 @@ const CarouselContent = ({
             title={
               imageFormState?.location === "collections"
                 ? "Save to collection"
-                : null
+                : undefined
             }
             onClose={() => {
-              setImageFormState((prevState) => ({
-                ...prevState,
-                isOpen: false,
-              }));
+              setImageFormState(
+                (prevState) =>
+                  prevState && {
+                    ...prevState,
+                    isOpen: false,
+                  },
+              );
             }}
           >
             {(imageFormState?.location === "models" ||
               imageFormState.type === "del") && (
               <ChooseImageForm
-                postId={postId}
                 postData={postData}
                 type={imageFormState.type}
                 location={imageFormState.location}
@@ -541,47 +653,26 @@ const CarouselContent = ({
                 versionId={versionId}
                 images={imagesData}
                 activeImageIndex={currImgNum}
-                existedImgsAmount={existedImgsAmount}
-                savedImageIds={postData?.imagesId || []}
+                savedImageIds={(postData && postData?.imagesId) || []}
                 onSave={
                   imageFormState.type === "save"
                     ? saveExampleHandler
                     : deleteExampleHandler
                 }
                 isDeleting={isDeleting}
-                onClose={() => {
-                  setImageFormState("");
-                  setImageFormState((prevState) => ({
-                    ...prevState,
-                    isOpen: false,
-                  }));
-                }}
               />
             )}
             {imageFormState?.location === "collections" &&
               imageFormState.type !== "del" && (
                 <SaveToCollectionForm
                   postId={postId}
-                  type={imageFormState.type}
-                  location={imageFormState.location}
-                  modelId={modelId}
-                  versionId={versionId}
                   images={imagesData}
                   activeImageIndex={currImgNum}
-                  existedImgsAmount={existedImgsAmount}
                   onSave={
                     imageFormState.type === "save"
                       ? saveExampleHandler
                       : deleteExampleHandler
                   }
-                  isDeleting={isDeleting}
-                  onClose={() => {
-                    setImageFormState("");
-                    setImageFormState((prevState) => ({
-                      ...prevState,
-                      isOpen: false,
-                    }));
-                  }}
                 />
               )}
           </Modal>

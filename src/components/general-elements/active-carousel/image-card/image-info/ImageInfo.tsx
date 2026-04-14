@@ -2,6 +2,9 @@ import classes from "./ImageInfo.module.scss";
 import LinkA from "../../../../ui/LinkA";
 import ImageInfoItem from "../image-info-item/ImageInfoItem";
 import ImageSeed from "../image-seed/ImageSeed";
+import type { Image } from "../../../../../../shared/types/image";
+
+type ImageInfoProps = { imageData: Image };
 
 /**
  * Image info component.
@@ -14,7 +17,7 @@ import ImageSeed from "../image-seed/ImageSeed";
  * @param {object} props.imageData - Image data.
  * @returns {JSX.Element} Image info.
  */
-const ImageInfo = ({ imageData }) => {
+const ImageInfo = ({ imageData }: ImageInfoProps) => {
   return (
     <>
       <ul className={classes["config-block"]}>
@@ -40,7 +43,7 @@ const ImageInfo = ({ imageData }) => {
             <ImageSeed value={imageData.meta.seed} />
           </ImageInfoItem>
         )}
-        {imageData?.meta?.Model && (
+        {!!imageData?.meta?.Model && (
           <ImageInfoItem name="Checkpoint">
             {imageData.meta.Model}
           </ImageInfoItem>

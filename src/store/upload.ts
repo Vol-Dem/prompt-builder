@@ -49,10 +49,7 @@ const uploadSlice = createSlice({
     /**
      * Removes post from uploading queue.
      */
-    removeFromQueue(
-      state,
-      action: PayloadAction<{ postId: number; versionId: number }>,
-    ) {
+    removeFromQueue(state, action: PayloadAction<{ postId: number }>) {
       const newQueue = state.queue.filter((item) => {
         return item.postId !== action.payload.postId;
       });
@@ -203,7 +200,7 @@ export const savePost = (postInfo: UploadingItem): AppThunk => {
       }
 
       dispatch(uploadActions.setCurPostId(null));
-      dispatch(uploadActions.removeFromQueue({ postId, versionId }));
+      dispatch(uploadActions.removeFromQueue({ postId }));
       dispatch(uploadActions.addToCompleted(postInfo));
       dispatch(uploadActions.setIsUploading(false));
     } catch (error) {
@@ -211,7 +208,6 @@ export const savePost = (postInfo: UploadingItem): AppThunk => {
       dispatch(
         uploadActions.removeFromQueue({
           postId: postInfo.postId,
-          versionId: postInfo.versionId,
         }),
       );
       dispatch(uploadActions.setCurPostId(null));

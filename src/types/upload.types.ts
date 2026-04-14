@@ -10,18 +10,18 @@ export interface UploadingCollectionData {
   collectionData: CollectionName;
   categoryData: ModelCategory;
   subcategoriesData: CollectionSubcategory[];
-  curCollectionSabcategories: CollectionSubcategory[];
+  curCollectionSabcategories: string[];
 }
 
 export interface UploadingPostData {
-  imagesId: number[];
+  imagesId?: number[];
   postId: number;
 }
 
 export interface SavePostData extends UploadingCollectionData {
   imageIds: number[];
   postId: number;
-  postData?: UploadingPostData;
+  postData?: UploadingPostData | null;
   images: Image[];
 }
 
@@ -29,32 +29,32 @@ export interface UploadingItem {
   collectionData: UploadingCollectionData | null;
   existedAmount?: number | null;
   ids: number[];
-  images: Image[];
+  images?: Image[];
   imgUrl: string;
   location: ResourceFirestoreCollection;
-  modelId: number;
-  modelName: string;
+  modelId: number | null;
+  modelName?: string;
   nsfwMode: boolean;
-  postData?: UploadingPostData;
+  postData?: UploadingPostData | null;
   postId: number;
-  versionId: number;
-  delete: boolean;
+  versionId: number | null;
+  delete?: boolean;
 }
 
 export interface PostInfo {
   postId: number;
-  modelId: number;
-  versionId: number;
+  modelId: number | null;
+  versionId: number | null;
   location: ResourceFirestoreCollection;
   existedAmount?: number | null;
   ids: number[];
-  images: Image[];
+  images?: Image[];
   imgUrl: string;
-  modelName: string;
+  modelName?: string;
   nsfwMode: boolean;
-  delete: boolean;
+  delete?: boolean;
   collectionData: Record<string, any> | null;
-  postData?: UploadingPostData;
+  postData?: UploadingPostData | null;
 }
 
 export interface UploadState {

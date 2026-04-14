@@ -56,7 +56,7 @@ import type {
 const firestore = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp);
 const auth = getAuth(firebaseApp);
-const updateModel = httpsCallable(functions, "updateModelCall");
+const updateModel = httpsCallable(functions, "updateModelCallDev");
 
 /**
  * Fetch model data from Civitai

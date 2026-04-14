@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
-import { MagnifyingGlassPlusIcon, PlayIcon } from "@heroicons/react/24/outline";
+import {
+  EllipsisHorizontalIcon,
+  MagnifyingGlassPlusIcon,
+  PhotoIcon,
+  PlayIcon,
+} from "@heroicons/react/24/outline";
 
 import classes from "./CarouselImage.module.scss";
-import { deleteImgPost, setPreviewImg } from "../../../../store/model";
+import { setPreviewImg } from "../../../../store/model";
 import ButttonTertiary from "../../../ui/buttons/ButtonTertiary";
 import Modal from "../../../ui/Modal";
-import DeleteRequest from "../../../ui/DeleteRequest";
 import ButtonAdd from "../../button-square-add/ButtonSquareAdd";
-import ImageSvg from "../../../../assets/ImageSvg";
-import DotsSvg from "../../../../assets/DotsSvg";
 import {
   ANIMATIONS_FM_ZOOM_IN,
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
@@ -18,6 +19,27 @@ import {
 } from "../../../../variables/constants";
 import SetTagSetPreview from "../set-tagset-preview/SetTagSetPreview";
 import { transformSrcPreview } from "../../../../utils/imageUtils";
+import type { ResourceFirestoreCollection } from "../../../../types/models.types";
+import type { Image } from "../../../../../shared/types/image";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
+
+type CarouselImageProps = {
+  id: string;
+  src: string;
+  alt: string;
+  nsfw: boolean;
+  position: number;
+  saved: boolean;
+  active: boolean;
+  side: boolean;
+  imageData: Image;
+  imageWidth?: number;
+  location: ResourceFirestoreCollection;
+  locationId: number;
+  onClick: (position: number | null) => void;
+  onOpen: () => void;
+  onDelete: () => void;
+};
 
 /**
  * Carousel image component.
@@ -77,34 +99,29 @@ const CarouselImage = ({
   src,
   alt,
   nsfw,
-  postId,
   position,
   saved,
   active,
   side,
   imageData,
-  versionId,
   imageWidth,
   location,
   locationId,
   onClick,
   onOpen,
   onDelete,
-}) => {
+}: CarouselImageProps) => {
   const [imgIsLoading, setImgIsLoading] = useState(false);
   const [imgIsLoaded, setImgIsLoaded] = useState(false);
-  const [imgIsSaved, setImgIsSaved] = useState(!!saved);
-  const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState("#");
   const [videoSrc, setVideoSrc] = useState({ mp4: "#", webm: "#" });
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [tagSetMenuIsOpen, settagSetMenuIsOpen] = useState(false);
-  const dispatch = useDispatch();
-  const model = useSelector((state) => state.model.model);
-  const curVersion = useSelector((state) => state.model.curVersion);
-  const nsfwMode = useSelector((state) => state.general.nsfwMode);
-  const videoRef = useRef(null);
+  const curVersion = useAppSelector((state) => state.model.curVersion);
+  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const dispatch = useAppDispatch();
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (src && !imgIsLoaded && !imgError) {
@@ -116,8 +133,8 @@ const CarouselImage = ({
         );
       setImgSrc(previewSrc);
       setVideoSrc({
-        mp4: previewVideoMp4Src,
-        webm: previewVideoWebmSrc,
+        mp4: previewVideoMp4Src || "#",
+        webm: previewVideoWebmSrc || "#",
       });
       if (imageData.type !== "video") setImgIsLoading(true);
     }
@@ -133,7 +150,7 @@ const CarouselImage = ({
     setImgIsLoading(false);
   };
 
-  const setPreviwImgHandler = (nsfw) => {
+  const setPreviwImgHandler = (nsfw: boolean) => {
     dispatch(setPreviewImg(imgSrc, nsfw, location, locationId, imageData.type));
     setMenuIsOpen(false);
   };
@@ -151,32 +168,18 @@ const CarouselImage = ({
     settagSetMenuIsOpen(false);
   };
 
-  const deleteImgPostHandler = () => {
-    const imgPostId = postId[0].postId;
-    const postData = model?.savedImages[versionId]?.find(
-      (post) => post.postId === imgPostId,
-    );
-
-    dispatch(deleteImgPost(versionId, imgPostId, postData));
-    setDeleteRequestIsOpen(false);
-    setMenuIsOpen(false);
-    setImgIsSaved(false);
-  };
-
-  const showDeleteReqeustHandler = (e) => {
-    onDelete(e);
-  };
-
-  const closeDeleteReqeustHandler = () => {
-    setDeleteRequestIsOpen(false);
+  const showDeleteReqeustHandler = () => {
+    onDelete();
   };
 
   const openFullViewHandler = () => {
-    onOpen(true);
+    onOpen();
   };
 
   useEffect(() => {
-    const closeMenuHandler = (e) => {
+    const closeMenuHandler = (e: PointerEvent) => {
+      if (!(e.target instanceof HTMLElement)) return;
+
       if (!e.target.closest(`.${classes.menu}`)) setMenuIsOpen(false);
     };
 
@@ -213,7 +216,7 @@ const CarouselImage = ({
         ></div>
       )}
       <div className={classes["image-svg"]} onClick={() => onClick(position)}>
-        <ImageSvg />
+        <PhotoIcon />
       </div>
       {!imgIsLoading && !side && imgSrc !== "#" && (
         <>
@@ -224,7 +227,7 @@ const CarouselImage = ({
               onClick={openMenuHandler}
               title="Image settings"
             >
-              <DotsSvg />
+              <EllipsisHorizontalIcon />
             </ButttonTertiary>
             <AnimatePresence>
               {menuIsOpen && (
@@ -234,35 +237,35 @@ const CarouselImage = ({
                   exit={ANIMATIONS_FM_ZOOM_IN_INITIAL}
                   className={classes["menu__list"]}
                 >
-                  <li
+                  <motion.li
                     className={classes["menu__item"]}
                     onClick={() => setPreviwImgHandler(false)}
                   >
                     Set as preview
-                  </li>
+                  </motion.li>
                   {curVersion?.id && (
-                    <li
+                    <motion.li
                       className={classes["menu__item"]}
                       onClick={openTagSetMenuHandler}
                     >
                       Set as tag set preview
-                    </li>
+                    </motion.li>
                   )}
                   {nsfwMode && (
-                    <li
+                    <motion.li
                       className={classes["menu__item"]}
                       onClick={() => setPreviwImgHandler(true)}
                     >
                       Set as NSFW preview
-                    </li>
+                    </motion.li>
                   )}
-                  {imgIsSaved && (
-                    <li
+                  {!!saved && (
+                    <motion.li
                       className={`${classes["menu__item"]} ${classes["menu__item--del"]}`}
                       onClick={showDeleteReqeustHandler}
                     >
                       Delete
-                    </li>
+                    </motion.li>
                   )}
                 </motion.menu>
               )}
@@ -344,14 +347,6 @@ const CarouselImage = ({
           >
             <SetTagSetPreview src={src} />
           </Modal>
-        )}
-        {deleteRequestIsOpen && (
-          <DeleteRequest
-            message={`Are you sure that you want to delete this post? This action can't
-          be reverted`}
-            onSubmit={deleteImgPostHandler}
-            onClose={closeDeleteReqeustHandler}
-          />
         )}
       </AnimatePresence>
     </motion.div>

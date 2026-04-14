@@ -1,10 +1,14 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import Image from "../../../ui/image/Image";
 import classes from "./CarouselImageList.module.scss";
 import { modelActions } from "../../../../store/model";
 import { SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL } from "../../../../variables/constants";
 import ButtonAdd from "../../button-square-add/ButtonSquareAdd";
+import type { Image as ImageType } from "../../../../../shared/types/image";
+import { useAppSelector } from "../../../../store/hooks/hooks";
+
+type CarouselImageListProps = { images: ImageType[] };
 
 /**
  * Carousel image list component.
@@ -28,19 +32,20 @@ import ButtonAdd from "../../button-square-add/ButtonSquareAdd";
  * @param {Array<object>} props.images - List of post images.
  * @returns {JSX.Element} Carousel image list.
  */
-const CarouselImageList = ({ images }) => {
-  const activeCarouselData = useSelector(
+const CarouselImageList = ({ images }: CarouselImageListProps) => {
+  const activeCarouselData = useAppSelector(
     (state) => state.model.activeCarouselData,
   );
   const dispatch = useDispatch();
 
-  const openImageHandler = (position) => {
-    dispatch(
-      modelActions.setActiveCarouselData({
-        ...activeCarouselData,
-        currImgNum: +position,
-      }),
-    );
+  const openImageHandler = (position: number) => {
+    if (activeCarouselData?.images)
+      dispatch(
+        modelActions.setActiveCarouselData({
+          ...activeCarouselData,
+          currImgNum: position,
+        }),
+      );
   };
 
   const imagesHtml = images.map((image, i) => {

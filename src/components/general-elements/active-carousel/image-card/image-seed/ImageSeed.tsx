@@ -6,6 +6,8 @@ import {
 
 import classes from "./ImageSeed.module.scss";
 
+type ImageSeedProps = { value: number };
+
 /**
  * Image seed component.
  *
@@ -18,15 +20,13 @@ import classes from "./ImageSeed.module.scss";
  * @param {object} props.value - Seed value.
  * @returns {JSX.Element} Image seed.
  */
-const ImageSeed = ({ value }) => {
+const ImageSeed = ({ value }: ImageSeedProps) => {
   const [copied, setCopied] = useState(false);
 
-  const copyHandler = (e) => {
-    const seed = e.target.closest(`.${classes.seed}`)?.innerText;
-    if (!seed) return;
-
-    navigator.clipboard.writeText(seed);
+  const copyHandler = () => {
+    navigator.clipboard.writeText(value + "");
     setCopied(true);
+
     setTimeout(() => {
       setCopied(false);
     }, 1000);

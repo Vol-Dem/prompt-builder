@@ -252,7 +252,7 @@ export const getUniqImageResources = (
 export const combineImagesData = (
   newImageData: Image[],
   oldImageData: Image[],
-  isTester: boolean,
+  isTester?: boolean,
 ) => {
   return filterDuplicates(
     [

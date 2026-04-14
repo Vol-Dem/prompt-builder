@@ -5,6 +5,13 @@ import {
 
 import Tooltip from "../../../../../ui/Tooltip";
 import classes from "./ImageResourcesItemVersion.module.scss";
+import type { ImageResourceData } from "../../../../../../types/images.types";
+
+type ImageResourcesItemVersionProps = {
+  resource: ImageResourceData;
+  versionName?: string | null;
+  versionIsSaved: boolean;
+};
 
 /**
  * Image resources version name component.
@@ -15,6 +22,7 @@ import classes from "./ImageResourcesItemVersion.module.scss";
  *
  * @param {object} props
  * @param {object} props.resource - Resource data.
+ * @param {string} props.versionName - Version name.
  * @param {boolean} props.versionIsSaved - If current model version is saved.
  * @returns {JSX.Element} Image resources version name.
  */
@@ -22,7 +30,7 @@ const ImageResourcesItemVersion = ({
   resource,
   versionName,
   versionIsSaved,
-}) => {
+}: ImageResourcesItemVersionProps) => {
   return (
     <Tooltip
       className={classes["tooltip--align-left"]}

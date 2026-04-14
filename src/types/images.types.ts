@@ -18,6 +18,9 @@ export interface ImageResourceData {
   versionId?: number;
   versionName?: string;
   preview?: ModelPreviewDoc;
+  weight?: number;
+  modelVersionName?: number;
+  hash?: string;
 }
 
 export interface PostForDeletion {

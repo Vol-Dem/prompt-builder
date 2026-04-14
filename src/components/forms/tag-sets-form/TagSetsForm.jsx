@@ -41,7 +41,7 @@ const firestore = getFirestore(firebaseApp);
  * @component
  *
  * @param {object} props
- * @param {string} props.modelId - Model ID.
+ * @param {number} props.modelId - Model ID.
  * @param {() => void} props.onClose - Callback triggered after successful submit to close the form.
  * @returns {JSX.Element} Tag sets management form.
  */

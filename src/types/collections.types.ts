@@ -39,9 +39,10 @@ export interface CollectionsState {
   collectionData: CollectionDoc | null;
 }
 
-export interface CollectionPostSavedData {
-  createdAt: number;
-  imageIds: number[];
+export interface PostSavedData {
+  createdAt?: number;
+  imageIds?: number[];
+  imagesId?: number[];
   postId: number;
 }
 

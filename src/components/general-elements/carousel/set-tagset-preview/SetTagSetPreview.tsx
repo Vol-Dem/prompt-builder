@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 
 import classes from "./SetTagSetPreview.module.scss";
@@ -11,11 +10,14 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
 } from "../../../../variables/constants";
-import ExclamationCircleSvg from "../../../../assets/ExclamationCircleSvg";
 import TagSetsForm from "../../../forms/tag-sets-form/TagSetsForm";
 import Button from "../../../ui/buttons/Button";
 import Modal from "../../../ui/Modal";
 import TextHighlight from "../../../ui/text/TextHighlight";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
+
+type SetTagSetPreviewProps = { src: string };
 
 /**
  * Set tagset preview component.
@@ -41,38 +43,42 @@ import TextHighlight from "../../../ui/text/TextHighlight";
  *
  * @returns {JSX.Element} Set tagset preview.
  */
-const SetTagSetPreview = ({ src }) => {
+const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
   const [tagSetsFormIsOpen, setTagSetsFormIsOpen] = useState(false);
   const [showNsfwPreview, setShowNsfwPreview] = useState(false);
   const [curTagSetVersionId, setCurTagSetVersionId] = useState("tsv-def");
-  const dispatch = useDispatch();
-  const model = useSelector((state) => state.model.model);
-  const curVersion = useSelector((state) => state.model.curVersion);
-  const nsfwMode = useSelector((state) => state.general.nsfwMode);
+  const model = useAppSelector((state) => state.model.model);
+  const curVersion = useAppSelector((state) => state.model.curVersion);
+  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     setShowNsfwPreview(nsfwMode);
   }, [nsfwMode]);
 
   useEffect(() => {
-    if (model?.modelVersionsCustomData[curVersion.id]?.tagSetsData?.length) {
+    if (
+      curVersion &&
+      model?.modelVersionsCustomData[curVersion.id]?.tagSetsData?.length
+    ) {
       setCurTagSetVersionId(`${curVersion.id}`);
     }
   }, [model, curVersion]);
 
-  const setTagSetPreviwImgHandler = (id, isNsfw) => {
+  const setTagSetPreviwImgHandler = (id: number, isNsfw: boolean) => {
     let curtagSet;
     if (curTagSetVersionId === "tsv-def") {
-      curtagSet = model.defaultCustomData.tagSetsData;
+      curtagSet = model?.defaultCustomData.tagSetsData;
     } else {
-      curtagSet = model.modelVersionsCustomData[curTagSetVersionId].tagSetsData;
+      curtagSet =
+        model?.modelVersionsCustomData[curTagSetVersionId].tagSetsData;
     }
 
     const imgKey = isNsfw ? "nsfwImgUrl" : "imgUrl";
 
     setShowNsfwPreview(isNsfw);
 
-    const updatedTagSet = curtagSet.map((tagSet, i) => {
+    const updatedTagSet = curtagSet?.map((tagSet, i) => {
       if (i === id) {
         return {
           ...tagSet,
@@ -82,11 +88,12 @@ const SetTagSetPreview = ({ src }) => {
       return tagSet;
     });
 
-    dispatch(setTagSetPreviewImg(curTagSetVersionId, updatedTagSet));
+    if (updatedTagSet)
+      dispatch(setTagSetPreviewImg(curTagSetVersionId, updatedTagSet));
   };
 
-  const openTagSetVersionHandler = (e) => {
-    setCurTagSetVersionId(e.target.id);
+  const openTagSetVersionHandler = (id: string) => {
+    setCurTagSetVersionId(id);
   };
 
   const nsfwSwitchHandler = () => {
@@ -103,7 +110,12 @@ const SetTagSetPreview = ({ src }) => {
   const tagSetVersionsHtml =
     model?.modelVersionsCustomData &&
     Object.values(model?.modelVersionsCustomData)
-      ?.sort((a, b) => a?.index - b?.index)
+      ?.sort((a, b) => {
+        if (a?.index && b?.index) {
+          return a?.index - b?.index;
+        }
+        return 0;
+      })
       .flatMap((version, i) => {
         if (!version?.tagSetsData?.length) return [];
         return (
@@ -115,7 +127,7 @@ const SetTagSetPreview = ({ src }) => {
                 ? classes["tag-sets-versions__item--active"]
                 : ""
             }`}
-            onClick={openTagSetVersionHandler}
+            onClick={() => openTagSetVersionHandler(`${version.versionId}`)}
           >
             {version.name}
           </li>
@@ -134,7 +146,11 @@ const SetTagSetPreview = ({ src }) => {
         >
           <div className={classes["tag-sets__img"]}>
             <Image
-              src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl}
+              src={
+                showNsfwPreview
+                  ? tagSet.nsfwImgUrl || "#"
+                  : tagSet.imgUrl || "#"
+              }
               imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL}
             />
           </div>
@@ -164,7 +180,7 @@ const SetTagSetPreview = ({ src }) => {
 
   const versionTagsetsHtml =
     model?.modelVersionsCustomData &&
-    model?.modelVersionsCustomData[curTagSetVersionId]?.tagSetsData.map(
+    model?.modelVersionsCustomData[curTagSetVersionId]?.tagSetsData?.map(
       (tagSet, i) => {
         return (
           <motion.li
@@ -176,7 +192,11 @@ const SetTagSetPreview = ({ src }) => {
           >
             <div className={classes["tag-sets__img"]}>
               <Image
-                src={showNsfwPreview ? tagSet.nsfwImgUrl : tagSet.imgUrl}
+                src={
+                  showNsfwPreview
+                    ? tagSet.nsfwImgUrl || "#"
+                    : tagSet.imgUrl || "#"
+                }
                 imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL}
               />
             </div>
@@ -237,7 +257,7 @@ const SetTagSetPreview = ({ src }) => {
             )}
           </div>
           <ul className={classes["tag-sets-versions"]}>
-            {!!model.defaultCustomData?.tagSetsData?.length && (
+            {!!model?.defaultCustomData?.tagSetsData?.length && (
               <li
                 id={`tsv-def`}
                 className={`${classes["tag-sets-versions__item"]} ${
@@ -245,17 +265,17 @@ const SetTagSetPreview = ({ src }) => {
                     ? classes["tag-sets-versions__item--active"]
                     : ""
                 }`}
-                onClick={openTagSetVersionHandler}
+                onClick={() => openTagSetVersionHandler(`tsv-def`)}
               >
                 Default
               </li>
             )}
             {tagSetVersionsHtml}
           </ul>
-          {!model.defaultCustomData?.tagSetsData?.length &&
+          {!model?.defaultCustomData?.tagSetsData?.length &&
             !tagSetVersionsHtml?.length && (
               <div className={classes["notification"]}>
-                <ExclamationCircleSvg
+                <ExclamationCircleIcon
                   className={classes["notification__svg"]}
                 />
                 <p className={classes["notification__text"]}>
@@ -266,7 +286,7 @@ const SetTagSetPreview = ({ src }) => {
             )}
           {!!tagSetVersionsHtml?.length && !versionTagsetsHtml && (
             <div className={classes["notification"]}>
-              <ExclamationCircleSvg className={classes["notification__svg"]} />
+              <ExclamationCircleIcon className={classes["notification__svg"]} />
               <p className={classes["notification__text"]}>
                 You don't have tag sets for this{" "}
                 <TextHighlight>version</TextHighlight>. <br /> Press "Add tag
@@ -282,7 +302,7 @@ const SetTagSetPreview = ({ src }) => {
           )}
         </>
       )}
-      {tagSetsFormIsOpen && (
+      {tagSetsFormIsOpen && model?.id && (
         <Modal onClose={closeTagSetsForm}>
           <TagSetsForm modelId={model.id} onClose={closeTagSetsForm} />
         </Modal>

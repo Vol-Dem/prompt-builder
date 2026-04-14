@@ -1,4 +1,9 @@
+import type { ComponentProps } from "react";
 import classes from "./ImageInfoItem.module.scss";
+
+type ImageInfoItemProps = ComponentProps<"li"> & {
+  name: string;
+};
 
 /**
  * Image info item container.
@@ -12,7 +17,7 @@ import classes from "./ImageInfoItem.module.scss";
  * @param {React.ReactNode} props.children - Metadata value.
  * @returns {JSX.Element} Image info item container.
  */
-const ImageInfoItem = ({ name, children }) => {
+const ImageInfoItem = ({ name, children }: ImageInfoItemProps) => {
   return (
     <li className={classes["info-item"]}>
       <span className={classes["info-name"]}>{name}:</span>

@@ -53,7 +53,7 @@ const useFetchCivitai = (url: string) => {
   }, [url]);
 
   const fetchCivitai = useCallback(
-    async (setIsIntersecting: (isIntersecting: boolean) => void) => {
+    async (setIsIntersecting?: (isIntersecting: boolean) => void) => {
       if (!url) return;
       if (nextCursor && currCursor === nextCursor) return;
 
@@ -80,15 +80,18 @@ const useFetchCivitai = (url: string) => {
 
         let dataUniq = data?.items;
 
-        // Remove dublicate images (fix for civitai bug)
-        if (FILTER_CIV_DUPLICATES) {
-          dataUniq = filterDuplicates(dataUniq, "id");
-        }
+        // Remove dublicate images (Civitai bug)
+        // if (FILTER_CIV_DUPLICATES) {
+        //   dataUniq = filterDuplicates(dataUniq, "id");
+        // }
 
         setFetchedData((prevState) => {
           const newExampleImages = [...dataUniq, ...prevState];
 
-          return newExampleImages;
+          // Remove dublicate images (Civitai bug)
+          return FILTER_CIV_DUPLICATES
+            ? filterDuplicates(newExampleImages, "id")
+            : newExampleImages;
         });
 
         setCurrCursor(nextCursor);
@@ -97,9 +100,11 @@ const useFetchCivitai = (url: string) => {
         } else {
           setIsLastPage(true);
         }
-        setIsIntersecting(false);
+
+        if (setIsIntersecting) setIsIntersecting(false);
       } catch (error) {
         const err = normalizeError(error);
+        console.log(error);
         if (err?.name !== "AbortError") {
           setErrorMessage(ERROR_MESSAGE_CIV_CONNECTION);
         }

@@ -1,6 +1,15 @@
 import { Link } from "react-router-dom";
 
 import classes from "./ImageResourcesItemName.module.scss";
+import type { ImageResourceData } from "../../../../../../types/images.types";
+import type { MouseEvent } from "react";
+
+type ImageResourcesItemNameProps = {
+  resource: ImageResourceData;
+  version?: number | null;
+  versionName?: string | null;
+  onClick: (e: MouseEvent<HTMLAnchorElement>) => void;
+};
 
 /**
  * Image resources name component.
@@ -13,7 +22,7 @@ import classes from "./ImageResourcesItemName.module.scss";
  * @param {object} props.resource - Resource data.
  * @param {number} props.version - Model version ID.
  * @param {string} props.versionName - Model version name.
- * @param {() => void} props.onClick - Callback to reset model data and currently opened carousel on navigation.
+ * @param {(e: MouseEvent<HTMLLinkElement>) => void} props.onClick - Callback to reset model data and currently opened carousel on navigation.
  * @returns {JSX.Element} Image resources name.
  */
 const ImageResourcesItemName = ({
@@ -21,7 +30,7 @@ const ImageResourcesItemName = ({
   version,
   versionName,
   onClick,
-}) => {
+}: ImageResourcesItemNameProps) => {
   const resourceName =
     resource?.name ||
     resource?.modelVersionName ||
@@ -48,7 +57,7 @@ const ImageResourcesItemName = ({
       {!resource?.preview && !versionName && (
         <div
           className={classes["name"]}
-          title={resource?.name || resource?.modelVersionId}
+          title={resource?.name || resource?.modelVersionId + "" || ""}
         >
           {resourceName}
         </div>

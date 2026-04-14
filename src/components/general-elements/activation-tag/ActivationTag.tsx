@@ -1,10 +1,13 @@
-import { useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 
 import Tag from "../tag/Tag";
 import classes from "./ActivationTag.module.scss";
 import { promptActions } from "../../../store/prompt";
 import { getTagWeight, splitTags } from "../../../utils/promptUtils";
+import type { ModelPreview } from "../../../../shared/types/firestore";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+
+type ActivationTagProps = { tag: string; modelData: ModelPreview };
 
 /**
  * Enhanced Tag component that allows adjusting tag weight inside the prompt.
@@ -21,49 +24,48 @@ import { getTagWeight, splitTags } from "../../../utils/promptUtils";
  *
  * @returns {JSX.Element} Activation tag with weight controls.
  */
-const ActivationTag = ({ tag, modelData }) => {
-  const dispatch = useDispatch();
-  const curPrompt = useSelector((state) => state.prompt.curPrompt);
+const ActivationTag = ({ tag, modelData }: ActivationTagProps) => {
+  const [tagWeight, setTagWeight] = useState(1);
+  const curPrompt = useAppSelector((state) => state.prompt.curPrompt);
+  const dispatch = useAppDispatch();
   const curTagName = tag.split(":").slice(0, -1).join(":");
-  const curTagWeight = useMemo(() => {
+  useEffect(() => {
     const activationTagFromPrompt = splitTags(curPrompt)?.find((word) =>
-      word.includes(curTagName)
+      word.includes(curTagName),
     );
-
-    return getTagWeight(activationTagFromPrompt);
+    if (activationTagFromPrompt) {
+      setTagWeight(getTagWeight(activationTagFromPrompt));
+    }
   }, [curPrompt, curTagName]);
 
-  const weightHandler = (e) => {
-    const weight =
-      e.target.dataset.type === "inc" ? curTagWeight + 0.1 : curTagWeight - 0.1;
-
+  const weightHandler = (type: "inc" | "dec") => {
+    const weight = type === "inc" ? tagWeight + 0.1 : tagWeight - 0.1;
+    setTagWeight(weight);
     dispatch(
       promptActions.changeActivationTag({
         prevTag: curTagName,
         newTag: `${curTagName}:${weight.toFixed(1)}>`,
         weight: +weight.toFixed(1),
-      })
+      }),
     );
   };
 
   return (
     <div className={classes["activation-tag"]}>
       <Tag
-        tag={curTagWeight ? `${curTagName}:${curTagWeight.toFixed(1)}>` : tag}
+        tag={tagWeight ? `${curTagName}:${tagWeight.toFixed(1)}>` : tag}
         promptType="positive"
         modelData={modelData}
       />
-      {curTagWeight !== null && (
+      {tagWeight !== null && (
         <div className={classes["activation-tag__btn-container"]}>
           <button
             type="button"
             title="up"
             className={classes["activation-tag__btn"]}
-            onClick={weightHandler}
-            data-type="inc"
+            onClick={() => weightHandler("inc")}
           >
             <span
-              data-type="inc"
               className={`${classes["activation-tag__btn-arrow"]} ${classes["activation-tag__btn-arrow--up"]}`}
             ></span>
           </button>
@@ -71,11 +73,9 @@ const ActivationTag = ({ tag, modelData }) => {
             type="button"
             title="down"
             className={classes["activation-tag__btn"]}
-            onClick={weightHandler}
-            data-type="dec"
+            onClick={() => weightHandler("dec")}
           >
             <span
-              data-type="dec"
               className={`${classes["activation-tag__btn-arrow"]} ${classes["activation-tag__btn-arrow--down"]}`}
             ></span>
           </button>

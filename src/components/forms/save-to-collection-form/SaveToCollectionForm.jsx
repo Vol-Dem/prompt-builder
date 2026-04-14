@@ -77,7 +77,7 @@ const subCatsDefData = {
  * @param {number} props.postId - Source post ID.
  * @param {Array<object>} props.images - List of post images.
  * @param {number} props.activeImageIndex - Index of the image active when the form was opened.
- * @param {(location: 'collections', imageIds: number[], collectionData: object, postData: object) => void} props.onSave
+ * @param {any} props.onSave
  *        Callback forwarded to ChooseImageForm after successful submit.
  * @returns {JSX.Element} Save to Collection form.
  */

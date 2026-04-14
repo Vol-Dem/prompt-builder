@@ -95,7 +95,8 @@ const subCatsDefData = {
  * @param {object} [props.modelData] - Existing model data for edit mode.
  * @param {number} [props.newModelId] - Model ID when creating from resource list.
  * @param {number} [props.newModelVersionId] - Model version ID when creating from resource list.
- * @param {(preview: object) => void} [props.onSave] - Callback triggered after successful save to update resource preview.
+ * @param {(previewData: any) => void} [props.onSave] - Callback triggered after successful save to update resource preview.
+ * @param {string | null} [props.newModelType] - Model type when creating from resource list.
  * @param {string} [props.className] - Optional CSS class name.
  * @returns {JSX.Element} Model edit form.
  */

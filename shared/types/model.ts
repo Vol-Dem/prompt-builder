@@ -122,6 +122,7 @@ export interface UserModelDefaultCustomData {
 }
 
 export interface ModelVersionCustomData {
+  id?: number;
   baseModel?: string;
   defActTag?: string;
   defFileName?: string;

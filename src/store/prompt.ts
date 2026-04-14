@@ -214,8 +214,6 @@ const promptSlice = createSlice({
       const promptArr =
         type === "positive" ? state.curPromptArr : state.curNegPromptArr;
 
-      let newPromptArr;
-
       let delIndex: number | null = null;
 
       if (!dropTargetType && value) {
@@ -227,11 +225,11 @@ const promptSlice = createSlice({
 
       if (delIndex && delIndex < 0) return;
 
-      newPromptArr = promptArr.flatMap((tag) => {
+      const newPromptArr = promptArr.flatMap((tag) => {
         if (tag.position === delIndex) {
           return [];
         }
-        if (delIndex && tag.position > delIndex) {
+        if (delIndex !== null && tag.position > delIndex) {
           return {
             ...tag,
             position: tag.position - 1,

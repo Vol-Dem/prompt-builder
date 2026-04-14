@@ -24,7 +24,7 @@ export interface ModelSavedImagesData {
 }
 
 export interface ActiveCarousel {
-  currImgNum: number;
+  currImgNum: number | null;
   existedImgsAmount?: number | null;
   images: Image[];
   location: ResourceFirestoreCollection;
@@ -34,6 +34,7 @@ export interface ActiveCarousel {
   saved: boolean;
   versionId: number;
   visibleImgAmount?: number | null;
+  side?: boolean;
 }
 
 export interface ModelsState {

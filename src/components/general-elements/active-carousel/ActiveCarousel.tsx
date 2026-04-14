@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence } from "framer-motion";
 
 import classes from "./ActiveCarousel.module.scss";
 import Carousel from "../carousel/Carousel";
 import ImageCard from "./image-card/ImageCard";
 import { modelActions } from "../../../store/model";
-import CrossSvg from "../../../assets/CrossSvg";
 import ImageCardCarouselGuide from "../guide/model/ImageCardCarouselGuide";
 import CloseImageGuide from "../guide/model/CloseImageGuide";
 import { guideActions } from "../../../store/guide";
@@ -19,6 +17,9 @@ import {
 } from "../../../variables/constants";
 import CarouselImageList from "../carousel/carousel-image-list/CarouselImageList";
 import ActiveCarouselContentWrap from "./ActiveCarouselContentWrap";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type { ModelSavedPostInfo } from "../../../../shared/types/model";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 /**
  * Active carousel popup component.
@@ -39,20 +40,31 @@ import ActiveCarouselContentWrap from "./ActiveCarouselContentWrap";
  * @returns {JSX.Element} Active carousel popup.
  */
 const ActiveCarousel = () => {
-  const [activeImageNumber, setActiveImageNumber] = useState(null);
-  const activeCarouselData = useSelector(
+  const [activeImageNumber, setActiveImageNumber] = useState<number | null>(
+    null,
+  );
+  const activeCarouselData = useAppSelector(
     (state) => state.model.activeCarouselData,
   );
-  const savedImagesData = useSelector((state) => state.model.savedImages);
-  const guideStep = useSelector((state) => state.guide.model.step);
-  const guideIsActive = useSelector((state) => state.guide.active);
-  const dispatch = useDispatch();
-  const existedExample =
+  const savedImagesData = useAppSelector((state) => state.model.savedImages);
+  const guideStep = useAppSelector((state) => state.guide.model.step);
+  const guideIsActive = useAppSelector((state) => state.guide.active);
+  const dispatch = useAppDispatch();
+  let existedExample: ModelSavedPostInfo | null = null;
+
+  if (
     savedImagesData?.data &&
-    Object.hasOwn(savedImagesData.data, activeCarouselData?.versionId) &&
-    savedImagesData.data[`${activeCarouselData?.versionId}`]?.find(
-      (img) => img?.postId === +activeCarouselData?.images[0]?.postId,
-    );
+    activeCarouselData?.versionId &&
+    Object.hasOwn(savedImagesData.data, activeCarouselData.versionId)
+  ) {
+    existedExample =
+      savedImagesData.data[`${activeCarouselData?.versionId}`]?.find(
+        (img) =>
+          activeCarouselData.images[0].postId &&
+          img.postId === +activeCarouselData.images[0].postId,
+      ) || null;
+  }
+
   const isOpen = !!activeCarouselData?.images?.length;
 
   useEffect(() => {
@@ -74,7 +86,7 @@ const ActiveCarousel = () => {
   }, [activeCarouselData]);
 
   const closeActiveCarouselHandler = () => {
-    dispatch(modelActions.setActiveCarouselData({}));
+    dispatch(modelActions.setActiveCarouselData(null));
 
     if (!guideIsActive) return;
 
@@ -135,12 +147,11 @@ const ActiveCarousel = () => {
                         postId={activeCarouselData?.postId}
                         modelId={activeCarouselData?.modelId}
                         visibleImgAmount={1}
-                        imgIsOpen={true}
                         activeImgNum={activeCarouselData?.currImgNum || 0}
                         active={true}
                         saved={activeCarouselData?.saved}
                         onActiveNumChange={setActiveImageNumber}
-                        side={activeCarouselData?.side}
+                        side={!!activeCarouselData?.side}
                         location={activeCarouselData?.location}
                         locationId={
                           activeCarouselData?.locationId ||
@@ -161,7 +172,7 @@ const ActiveCarousel = () => {
               className={classes["btn__close"]}
               onClick={closeActiveCarouselHandler}
             >
-              {isOpen && <CrossSvg />}
+              {isOpen && <XMarkIcon />}
             </div>
           </div>
           {isOpen && guideIsActive && <CloseImageGuide />}

@@ -1,4 +1,12 @@
+import type { Image } from "../../../../../shared/types/image";
 import classes from "./CarouselPagination.module.scss";
+
+type CarouselPaginationProps = {
+  images: Image[];
+  onClick: (index: number) => void;
+  visibleAmount: number;
+  visibleImages: number[];
+};
 
 /**
  * Carousel pagination component.
@@ -19,7 +27,7 @@ const CarouselPagination = ({
   onClick,
   visibleAmount,
   visibleImages,
-}) => {
+}: CarouselPaginationProps) => {
   const paginationHtml = images?.map((_, i) => {
     const isActive =
       visibleImages.includes(visibleAmount + i) ||

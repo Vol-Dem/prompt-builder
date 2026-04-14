@@ -18,7 +18,7 @@ import {
   ERROR_MESSAGE_INVALID_DATA,
   SETTINGS_FORCE_UPDATE_POST_DATA,
   SETTINGS_SFW_RANGE,
-  URL_CIV_IMAGES,
+  // URL_CIV_IMAGES,
 } from "../../variables/constants";
 import { fetchData, makeBatchRequest } from "./fetchUtils";
 import { AppError, filterDuplicates, normalizeError } from "../generalUtils";
@@ -26,7 +26,7 @@ import { parseModelIds } from "../modelUtils";
 import { combineImagesData, getUniqImageResources } from "../imageUtils";
 import {
   clearFileExtension,
-  fixCivImagesMeta,
+  // fixCivImagesMeta,
   transformImageData,
 } from "../../../shared/utils";
 import type {
@@ -58,7 +58,9 @@ const auth = getAuth(firebaseApp);
  * @param {object} image - The image data
  * @returns {array} The updated image resources
  */
-export const getImageInfo = async (image: Image) => {
+export const getImageInfo = async (
+  image: Image,
+): Promise<ImageResourceData[]> => {
   try {
     const imageResources = getUniqImageResources(image);
 
@@ -212,7 +214,7 @@ export const deleteImagePostDocs = async (
 export const updateImagePostData = async (
   postInfo: UploadingItem,
   imagesData: Image[],
-  isTester: boolean,
+  isTester?: boolean,
 ) => {
   try {
     const { postId, modelId, versionId, postData, location } = postInfo;
@@ -270,19 +272,19 @@ export const updateImagePostData = async (
       );
     }
 
-    if (!imagesData[0]?.meta?.prompt && isTester) {
-      const imgExampleResponse = await fetch(
-        `${URL_CIV_IMAGES}?postId=${postId}&nsfw=X`,
-      );
-      const data = (await imgExampleResponse.json()) as { items: Image[] };
+    // if (!imagesData[0]?.meta?.prompt && isTester) {
+    //   const imgExampleResponse = await fetch(
+    //     `${URL_CIV_IMAGES}?postId=${postId}&nsfw=X`,
+    //   );
+    //   const data = (await imgExampleResponse.json()) as { items: Image[] };
 
-      if (data?.items?.length)
-        combinedImgData = combineImagesData(
-          imagesData,
-          fixCivImagesMeta(data.items),
-          isTester,
-        );
-    }
+    //   if (data?.items?.length)
+    //     combinedImgData = combineImagesData(
+    //       imagesData,
+    //       fixCivImagesMeta(data.items),
+    //       isTester,
+    //     );
+    // }
 
     // console.log(imagesData);
     // console.log(curPostData?.items);
@@ -418,7 +420,7 @@ export const getImageModelInfo = async (
  */
 export const fetchResourcesInfoFromDB = async (
   curImageData: Image,
-  resourcesInfoCiv: CivitaiResource[] | ImageResourceData[],
+  resourcesInfoCiv?: CivitaiResource[] | ImageResourceData[],
 ) => {
   try {
     const uid = auth?.currentUser?.uid;
@@ -487,16 +489,16 @@ export const fetchResourcesInfoFromDB = async (
     }
 
     imageResources?.forEach((resource) => {
-      if (resource?.modelId) {
-        modelsIds.push(resource?.modelId);
-      } else if (resource?.versionId) {
-        modelsVersionIds.push(resource?.versionId);
+      if ("modelId" in resource && resource?.modelId) {
+        modelsIds.push(resource.modelId);
+      } else if ("versionId" in resource && resource?.versionId) {
+        modelsVersionIds.push(resource.versionId);
       } else if (resource?.modelVersionId) {
-        modelsVersionIds.push(resource?.modelVersionId);
+        modelsVersionIds.push(resource.modelVersionId);
       } else if ("hash" in resource && resource?.hash) {
-        modelsHashes.push(resource?.hash);
-      } else if (resource?.name) {
-        modelsNames.push(clearFileExtension(resource?.name).toLowerCase());
+        modelsHashes.push(resource.hash);
+      } else if ("name" in resource && resource?.name) {
+        modelsNames.push(clearFileExtension(resource.name).toLowerCase());
       }
     });
 
@@ -586,15 +588,23 @@ export const fetchResourcesInfoFromDB = async (
     }
 
     const resources: ImageResourceData[] = imageResources?.map((resource) => {
-      const versionId = resource?.modelVersionId || resource?.versionId;
+      let versionId: number | null = null;
+
+      if (resource?.modelVersionId) {
+        versionId = resource.modelVersionId;
+      } else if ("versionId" in resource && resource?.versionId) {
+        versionId = resource.versionId;
+      }
+
       const preview = allModelsPreviews.find(
         (preview) =>
-          preview?.id === resource.modelId ||
+          ("modelId" in resource && preview?.id === resource.modelId) ||
           (versionId && preview?.versionIds?.includes(versionId)) ||
           ("hash" in resource &&
             resource?.hash &&
             preview?.hashes?.includes(resource.hash)) ||
-          (resource?.name &&
+          ("name" in resource &&
+            resource?.name &&
             preview?.fileNames?.includes(
               clearFileExtension(resource.name)?.toLowerCase(),
             )),

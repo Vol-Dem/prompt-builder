@@ -1,5 +1,8 @@
 import { motion } from "framer-motion";
-import { useSelector } from "react-redux";
+import type { ComponentProps } from "react";
+import { useAppSelector } from "../../../store/hooks/hooks";
+
+type ActiveCarouselContentWrapProps = ComponentProps<"div">;
 
 /**
  * Active carousel animation container.
@@ -9,8 +12,11 @@ import { useSelector } from "react-redux";
  * @component
  * @returns {JSX.Element} Active carousel animation container.
  */
-const ActiveCarouselContentWrap = ({ className, children }) => {
-  const isFixed = useSelector((state) => state.general.headerIsFixed);
+const ActiveCarouselContentWrap = ({
+  className,
+  children,
+}: ActiveCarouselContentWrapProps) => {
+  const isFixed = useAppSelector((state) => state.general.headerIsFixed);
 
   return (
     <motion.div

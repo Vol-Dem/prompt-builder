@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import {
   FolderArrowDownIcon,
   FolderPlusIcon,
@@ -9,6 +8,30 @@ import classes from "./CarouselSave.module.scss";
 import Spinner from "../../../ui/Spinner";
 import Modal from "../../../ui/Modal";
 import Button from "../../../ui/buttons/Button";
+import type { Image } from "../../../../../shared/types/image";
+import type { ModelSavedPostInfo } from "../../../../../shared/types/model";
+import { useAppSelector } from "../../../../store/hooks/hooks";
+import type { CarouselImageFormState } from "../CarouselContent";
+import type { ResourceFirestoreCollection } from "../../../../types/models.types";
+import type {
+  UploadingCollectionData,
+  UploadingPostData,
+} from "../../../../types/upload.types";
+
+type CarouselSaveProps = {
+  images: Image[];
+  saved: boolean;
+  postId: number;
+  existedImgsAmount: number | null;
+  onSave: (
+    location: ResourceFirestoreCollection,
+    ids: number[] | null,
+    collectionData: UploadingCollectionData | null,
+    postData: UploadingPostData | null,
+  ) => void;
+  onOpenForm: (formState: CarouselImageFormState | null) => void;
+  postData: ModelSavedPostInfo | null;
+};
 
 /**
  * Carousel save buttons component.
@@ -41,7 +64,7 @@ import Button from "../../../ui/buttons/Button";
  * @param {object} props.curPostData - Metadata of the current post.
  * @param {({ type: string, location: string, isOpen: boolean }) => void} props.onOpenForm
  *   Callback to open the appropriate save form.
- * @param {(type: string, location: string, isOpen: boolean) => void} props.onSave
+ * @param {(type: string, location: string, isOpen: boolean, postData:Object) => void} props.onSave
  *   Callback triggered when a single image is saved directly to the model.
  *
  * @returns {JSX.Element} Carousel save buttons.
@@ -54,13 +77,13 @@ const CarouselSave = ({
   onSave,
   onOpenForm,
   postData,
-}) => {
+}: CarouselSaveProps) => {
   const [chooseSaveLocationIsOpen, setChooseSaveLocationIsOpen] =
     useState(false);
-  const queue = useSelector((state) => state.upload.queue);
+  const queue = useAppSelector((state) => state.upload.queue);
   const isUploading = !!queue.find((item) => item.postId === postId);
 
-  const showSaveImagesListHandler = (location) => {
+  const showSaveImagesListHandler = (location: ResourceFirestoreCollection) => {
     if (images.length === 1 && location === "models") {
       onSave("models", null, null, postData);
     } else {
@@ -85,7 +108,11 @@ const CarouselSave = ({
             onClick={() => {
               setChooseSaveLocationIsOpen(true);
             }}
-            disabled={!!isUploading || existedImgsAmount >= images?.length}
+            disabled={
+              !!isUploading ||
+              (existedImgsAmount !== null &&
+                existedImgsAmount >= images?.length)
+            }
             title="Save"
           >
             {!isUploading ? <FolderArrowDownIcon /> : <Spinner size="small" />}
@@ -99,7 +126,11 @@ const CarouselSave = ({
               isUploading ? classes["btn-save--saving"] : ""
             }`}
             onClick={() => showSaveImagesListHandler("models")}
-            disabled={!!isUploading || existedImgsAmount >= images?.length}
+            disabled={
+              !!isUploading ||
+              (existedImgsAmount !== null &&
+                existedImgsAmount >= images?.length)
+            }
             title="Save to model"
           >
             {!isUploading ? <FolderArrowDownIcon /> : <Spinner size="small" />}

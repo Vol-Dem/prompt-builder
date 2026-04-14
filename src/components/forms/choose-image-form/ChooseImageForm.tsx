@@ -1,15 +1,53 @@
-import { memo, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { memo, useEffect, useState, type ChangeEvent } from "react";
 
 import Button from "../../ui/buttons/Button";
 import classes from "./ChooseImageForm.module.scss";
 import Spinner from "../../ui/Spinner";
-import CheckSvg from "../../../assets/CheckSvg";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { ERROR_MESSAGE_OFFLINE } from "../../../variables/constants";
 import ImageLabel from "../../ui/forms/ImageLabel";
 import SuccessMessage from "../../ui/SuccessMessage";
+import { useAppSelector } from "../../../store/hooks/hooks";
+import type { ResourceFirestoreCollection } from "../../../types/models.types";
+import type { Image } from "../../../../shared/types/image";
+import type { ModelSavedPostInfo } from "../../../../shared/types/model";
+import type {
+  UploadingCollectionData,
+  UploadingPostData,
+} from "../../../types/upload.types";
+import type { AddCollectionData } from "../../../types/collections.types";
+import { CheckIcon } from "@heroicons/react/24/outline";
+
+type ChooseImageFormProps = {
+  type: "del" | "save";
+  location: ResourceFirestoreCollection | null;
+  collectionInfo?: AddCollectionData;
+  images: Image[];
+  modelId: number;
+  versionId: number;
+  activeImageIndex: number;
+  onSave: (
+    location: ResourceFirestoreCollection,
+    ids: number[] | null,
+    collectionData: UploadingCollectionData | null,
+    postData?: UploadingPostData | null,
+  ) => void;
+  isDeleting: boolean;
+  postData: ModelSavedPostInfo | null;
+  savedImageIds: number[];
+};
+
+type VersionStatusInputData = {
+  type: string;
+  id: number;
+  name: number;
+  data: Image;
+  width: number;
+  height: number;
+  value: boolean;
+  saved: boolean;
+};
 
 /**
  * Choose Image form component.
@@ -40,7 +78,7 @@ import SuccessMessage from "../../ui/SuccessMessage";
  * @param {number} props.activeImageIndex - Index of the image active when the form was opened.
  * @param {(location: string, imageIds: number[], collectionData: object, postData: object) => void} props.onSave - Callback triggered with selected image IDs on submit.
  * @param {boolean} props.isDeleting - Indicates whether delete operation is in progress.
- * @param {object} props.postData - Source post data.
+ * @param {any} props.postData - Source post data.
  * @param {Array<number>} props.savedImageIds - IDs of images already saved.
  * @returns {JSX.Element} Choose Image form.
  */
@@ -57,15 +95,17 @@ const ChooseImageForm = memo(
     isDeleting,
     postData,
     savedImageIds,
-  }) => {
-    const [imagesInputs, setImagesInputs] = useState([]);
+  }: ChooseImageFormProps) => {
+    const [imagesInputs, setImagesInputs] = useState<VersionStatusInputData[]>(
+      [],
+    );
     const [successMessage, setSuccessMessage] = useState("");
-    const uid = useSelector((state) => state.auth.user.uid);
+    const uid = useAppSelector((state) => state.auth.user.uid);
+    const savedImages = useAppSelector((state) => state.model.savedImages);
+    const isOnline = useOnlineStatus();
     const selectedAmount = imagesInputs.filter(
       (input) => input?.value && !input?.saved,
     )?.length;
-    const savedImages = useSelector((state) => state.model.savedImages);
-    const isOnline = useOnlineStatus();
 
     useEffect(() => {
       if (!images.length || imagesInputs.length) return;
@@ -109,14 +149,15 @@ const ChooseImageForm = memo(
       imagesInputs,
     ]);
 
-    const imageStatusChangeHandler = (e) => {
+    const imageStatusChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+      if (!(e.target instanceof HTMLInputElement)) return;
       setImagesInputs((prevState) => {
         const newState = [...prevState];
         const curIndex = newState.findIndex(
-          (version) => version.id === +e.target.id,
+          (version) => version.id === +(e.target as HTMLInputElement).id,
         );
         if (!newState[curIndex].saved) {
-          newState[curIndex].value = e.target.checked;
+          newState[curIndex].value = (e.target as HTMLInputElement).checked;
         }
         return newState;
       });
@@ -127,15 +168,16 @@ const ChooseImageForm = memo(
         <li key={i} className={classes["images-list__item"]}>
           {image?.saved && (
             <div className={classes["images-list__icon"]}>
-              <CheckSvg />
+              <CheckIcon />
             </div>
           )}
-          <ImageLabel htmlFor={image.id} imageData={image} type={type} />
+          <ImageLabel htmlFor={image.id + ""} imageData={image} type={type} />
           <input
+            title={image.id + ""}
             type="checkbox"
             className={classes["checkbox"]}
-            id={image.id}
-            name={image.name}
+            id={image.id + ""}
+            name={image.name + ""}
             checked={image.value}
             onChange={imageStatusChangeHandler}
             readOnly={!!image?.saved}
@@ -144,7 +186,7 @@ const ChooseImageForm = memo(
       );
     });
 
-    const submitHandler = (saveAll) => {
+    const submitHandler = (saveAll: boolean) => {
       setSuccessMessage("");
       let imageIds;
 
@@ -156,13 +198,13 @@ const ChooseImageForm = memo(
           .map((input) => input.id);
       }
 
-      let collectionData = {};
+      let collectionData = null;
 
       if (location === "collections" && collectionInfo) {
         collectionData = collectionInfo;
       }
 
-      onSave(location, imageIds, collectionData, postData);
+      if (location) onSave(location, imageIds, collectionData, postData);
     };
 
     return (

@@ -5,6 +5,16 @@ import ButtonAdd from "../../../../button-square-add/ButtonSquareAdd";
 import ButtonSquareSave from "../../../../../ui/buttons/ButtonSquareSave";
 import classes from "./ImageResourcesItemButton.module.scss";
 import Tooltip from "../../../../../ui/Tooltip";
+import type { ImageResourceData } from "../../../../../../types/images.types";
+import type { MouseEvent, ReactNode } from "react";
+
+type ImageResourcesItemButtonProps = {
+  resource: ImageResourceData;
+  errorMessage: string | ReactNode;
+  version?: number | null;
+  versionName?: string | null;
+  onOpen: (e: MouseEvent<HTMLButtonElement>) => void;
+};
 
 /**
  * Image resources button component.
@@ -25,10 +35,10 @@ import Tooltip from "../../../../../ui/Tooltip";
  *
  * @param {object} props
  * @param {object} props.resource - Raw resource data extracted from image metadata.
- * @param {string} [props.errorMessage] - Error message shown when the model cannot be saved.
+ * @param {string | React.ReactNode} [props.errorMessage] - Error message shown when the model cannot be saved.
  * @param {number|string} props.version - Model version ID resolved from metadata or filename.
  * @param {string} [props.versionName] - Human-readable model version name.
- * @param {() => void} props.onOpen - Callback to open the save-model form.
+ * @param {(e: MouseEvent<HTMLButtonElement>) => void} props.onOpen - Callback to open the save-model form.
  *
  * @returns {JSX.Element} Image resources action button.
  */
@@ -38,10 +48,10 @@ const ImageResourcesItemButton = ({
   version,
   versionName,
   onOpen,
-}) => {
-  let resorceButtonHtml;
+}: ImageResourcesItemButtonProps) => {
+  let resorceButtonHtml: ReactNode;
 
-  if (resource?.preview) {
+  if (resource?.preview && version) {
     resorceButtonHtml = (
       <ButtonAdd
         previewData={{
@@ -76,6 +86,7 @@ const ImageResourcesItemButton = ({
       </>
     );
   }
+
   return <>{resorceButtonHtml}</>;
 };
 

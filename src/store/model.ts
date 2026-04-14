@@ -27,8 +27,9 @@ import type { ModelVersion } from "../../shared/types/model";
 import type { AppThunk } from "./store";
 import type { TagSet } from "../types/prompt.types";
 import { AppError, handleErrors, normalizeError } from "../utils/generalUtils";
-import type { PostInfo, SavePostData } from "../types/upload.types";
+import type { PostInfo } from "../types/upload.types";
 import type { ModelCategories } from "../../shared/types/user";
+import type { PostSavedData } from "../types/collections.types";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -109,7 +110,7 @@ const modelSlice = createSlice({
     updateSavedImages(state, action: PayloadAction<UpdateSavedImagesData>) {
       const { versionId, postId, modelId } = action.payload.postInfo;
 
-      if (state.model?.id !== modelId) return;
+      if (!modelId || !versionId || state.model?.id !== modelId) return;
 
       if (
         state?.savedImages?.data &&
@@ -259,7 +260,7 @@ export const setPreviewImg = (
  * @returns {Function} Redux thunk.
  */
 export const setTagSetPreviewImg = (
-  versionId: number | "tsv-def",
+  versionId: string | "tsv-def",
   tagSetData: TagSet[],
 ): AppThunk => {
   return async (dispatch, getState) => {
@@ -322,7 +323,7 @@ export const setTagSetPreviewImg = (
  */
 export const deleteImgPost = (
   postInfo: PostInfo,
-  postData: SavePostData,
+  postData: PostSavedData,
 ): AppThunk => {
   return async (dispatch, getState) => {
     try {

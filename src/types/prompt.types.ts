@@ -41,6 +41,7 @@ export interface TagSet {
   name: string;
   value: string;
   imgUrl?: string;
+  nsfwImgUrl?: string;
 }
 
 export interface TagSetInputName {

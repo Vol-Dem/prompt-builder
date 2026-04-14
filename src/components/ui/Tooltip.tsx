@@ -1,19 +1,23 @@
-import { useRef, useState, type ComponentProps } from "react";
+import { useRef, useState, type ComponentProps, type ReactNode } from "react";
 
 import classes from "./Tooltip.module.scss";
+import type { OverrideFields } from "../../../shared/types/general";
 
-type TooltipProps = ComponentProps<"div"> & {
-  content: string;
-  defSide: "right" | "left";
-};
+type TooltipProps = OverrideFields<
+  ComponentProps<"div">,
+  {
+    content: string | ReactNode;
+    defSide: "right" | "left";
+  }
+>;
 
 /**
  * Adaptive tooltip with automatic edge positioning.
  *
  * Calculates viewport collisions and adjusts direction.
  *
- * @param {React.ReactNode} children - Trigger element.
- * @param {React.ReactNode} content - Tooltip content.
+ * @param {ReactNode} children - Trigger element.
+ * @param {ReactNode} content - Tooltip content.
  * @param {string} [className] - Optional custom class.
  * @param {"left"|"right"} [defSide="right"] - Preferred opening side.
  * @returns {JSX.Element} Rendered tooltip.

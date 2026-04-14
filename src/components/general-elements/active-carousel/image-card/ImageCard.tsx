@@ -1,5 +1,4 @@
 import { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
 import classes from "./ImageCard.module.scss";
 import TagList from "../../tag-list/TagList";
@@ -10,6 +9,9 @@ import NotificationMessage from "../../../ui/NotificationMessage";
 import ImageResources from "./image-resources/ImageResources";
 import ImageInfo from "./image-info/ImageInfo";
 import { splitTags } from "../../../../utils/promptUtils";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
+
+type ImageCardProps = { activeImgNum: number | null };
 
 /**
  * Image card component.
@@ -23,24 +25,29 @@ import { splitTags } from "../../../../utils/promptUtils";
  * @component
  *
  * @param {object} props
- * @param {object} props.activeImgNum - Index of active carousel image.
+ * @param {number} props.activeImgNum - Index of active carousel image.
  * @returns {JSX.Element} Image card.
  */
-const ImageCard = ({ activeImgNum }) => {
-  const guideModelActive = useSelector((state) => state.guide.model.active);
-  const guideIsActive = useSelector((state) => state.guide.active);
-  const guideStep = useSelector((state) => state.guide.model.step);
-  const activeCarouselData = useSelector(
-    (state) => state.model.activeCarouselData
+const ImageCard = ({ activeImgNum }: ImageCardProps) => {
+  const guideModelActive = useAppSelector((state) => state.guide.model.active);
+  const guideIsActive = useAppSelector((state) => state.guide.active);
+  const guideStep = useAppSelector((state) => state.guide.model.step);
+  const activeCarouselData = useAppSelector(
+    (state) => state.model.activeCarouselData,
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const imageData = useMemo(() => {
     return activeCarouselData?.images?.length
       ? activeCarouselData?.images[activeImgNum || 0]
       : null;
   }, [activeCarouselData, activeImgNum]);
-  const positiveWordsArr = splitTags(imageData?.meta?.prompt);
-  const negativeWordsArr = splitTags(imageData?.meta?.negativePrompt);
+
+  const positiveWordsArr = imageData?.meta?.prompt
+    ? splitTags(imageData?.meta?.prompt)
+    : null;
+  const negativeWordsArr = imageData?.meta?.negativePrompt
+    ? splitTags(imageData?.meta?.negativePrompt)
+    : null;
 
   useEffect(() => {
     if (
@@ -53,7 +60,7 @@ const ImageCard = ({ activeImgNum }) => {
         guideActions.setGuideStep({
           type: "model",
           value: GUIDE_STEP_ADD_TO_PROMPT,
-        })
+        }),
       );
     }
   }, [guideStep, imageData?.url, dispatch, guideIsActive]);

@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 
 import classes from "./ImageResourcesItem.module.scss";
 import Tooltip from "../../../../ui/Tooltip";
@@ -15,6 +14,22 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../../../../variables/constants";
 import { modelActions } from "../../../../../store/model";
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "../../../../../store/hooks/hooks";
+import type { ImageResourceData } from "../../../../../types/images.types";
+import type { ModelPreviewDoc } from "../../../../../../shared/types/firestore";
+
+type ImageResourcesItemProps = {
+  resource: ImageResourceData;
+  version?: number | null;
+  versionName?: string | null;
+  modelType?: string | null;
+  versionIsSaved: boolean;
+  civConnectionError: boolean;
+  onUpdateResources: (previewData: ModelPreviewDoc) => void;
+};
 
 /**
  * Image resource item component.
@@ -54,10 +69,10 @@ const ImageResourcesItem = ({
   versionIsSaved,
   civConnectionError,
   onUpdateResources,
-}) => {
+}: ImageResourcesItemProps) => {
   const [fromIsOpen, setFormIsOpen] = useState(false);
-  const modelId = useSelector((state) => state.model.model?.id);
-  const dispatch = useDispatch();
+  const modelId = useAppSelector((state) => state.model.model?.id);
+  const dispatch = useAppDispatch();
 
   const openFormHandler = () => {
     setFormIsOpen(true);
@@ -74,10 +89,11 @@ const ImageResourcesItem = ({
     </div>
   );
 
-  const resetModelData = (e) => {
-    if (+e.target.dataset.id !== modelId) {
+  const resetModelData = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (!(e.target instanceof HTMLElement)) return;
+    if (e.target.dataset.id && +e.target.dataset.id !== modelId) {
       dispatch(modelActions.resetModelData());
-      dispatch(modelActions.setActiveCarouselData({}));
+      dispatch(modelActions.setActiveCarouselData(null));
     }
   };
 
@@ -152,7 +168,6 @@ const ImageResourcesItem = ({
         {fromIsOpen && (
           <Modal title="Add new resource" onClose={closeFormHandler}>
             <UpdateModelForm
-              id="resources-form"
               newModelId={resource?.modelId}
               newModelVersionId={
                 resource?.modelVersionId || resource?.versionId

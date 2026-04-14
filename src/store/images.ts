@@ -44,7 +44,7 @@ import type {
 } from "../types/collections.types";
 import type { AppThunk } from "./store";
 import type { SavePostData } from "../types/upload.types";
-import type { CollectionPostSavedData } from "../types/collections.types";
+import type { PostSavedData } from "../types/collections.types";
 import type {
   CollectionPreviewDoc,
   UserDoc,
@@ -449,7 +449,7 @@ export const getCollectionPreviews = (
  * @returns {Function} Redux thunk.
  */
 export const getColectionImagesByIds = (
-  posts: CollectionPostSavedData[],
+  posts: PostSavedData[],
   collectionId: number,
 ): AppThunk => {
   return async (dispatch, getState) => {
@@ -527,7 +527,7 @@ export const getColectionImagesByIds = (
           const curPostDataB = curPosts.find(
             (post) => post.postId === b[0].postId,
           );
-          if (curPostDataA && curPostDataB) {
+          if (curPostDataB?.createdAt && curPostDataA?.createdAt) {
             return curPostDataB.createdAt - curPostDataA.createdAt;
           }
           return 0;
@@ -659,15 +659,16 @@ export const editCollectionData = ({
  * @returns {Function} Redux thunk.
  */
 export const updateCollectionPostsData = (
-  ids: number[],
-  postData: CollectionPostSavedData,
+  ids: number[] | null,
+  postData: PostSavedData,
 ): AppThunk => {
   return async (dispatch, getState) => {
     try {
       const uid = getState().auth.user.uid;
       const collectionData = getState().images.collectionData;
+
       const imageIds = ids?.length
-        ? postData.imageIds.filter((imageId) => !ids.includes(imageId))
+        ? postData?.imageIds?.filter((imageId) => !ids.includes(imageId))
         : [];
 
       if (!collectionData) {
@@ -717,7 +718,7 @@ export const updateCollectionPostsData = (
       const collectionImagesData = getState().images.collectionImages;
       if (collectionImagesData?.collectionId) {
         let updatedImages;
-        if (!imageIds.length) {
+        if (!imageIds?.length) {
           updatedImages = collectionImagesData.images.filter(
             (post) => post[0].postId !== postData.postId,
           );

@@ -125,7 +125,7 @@ const ExternalImages = memo(({ modelId, versionId, sortBy }) => {
 
   const retryImageLoadingHandler = () => {
     setErrorMessage("");
-    fetchCivitai();
+    fetchCivitai(setIsIntersecting);
   };
 
   const imagesHtml = imagesSortedByPost.map((item, i) => {
