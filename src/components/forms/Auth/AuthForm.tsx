@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, type SubmitEvent } from "react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -23,6 +22,7 @@ import Checkbox from "../../ui/forms/Checkbox";
 import LinkA from "../../ui/LinkA";
 import GoogleLogo from "../../../assets/google.svg";
 import ResetPasswordForm from "../reset-password-form/ResetPasswordForm";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Authentication form component.
@@ -58,12 +58,12 @@ const AuthForm = () => {
   });
   const [agreement, setAgreement] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
-  const isLoading = useSelector((state) => state.auth.isLoading);
-  const showResetPassword = useSelector(
+  const errorMessageAuth = useAppSelector((state) => state.auth.errorMessage);
+  const isLoading = useAppSelector((state) => state.auth.isLoading);
+  const showResetPassword = useAppSelector(
     (state) => state.auth.showResetPassword,
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     return () => {
@@ -73,7 +73,7 @@ const AuthForm = () => {
     };
   }, [dispatch]);
 
-  const authHandler = async (e) => {
+  const authHandler = async (e: SubmitEvent) => {
     e.preventDefault();
     dispatch(authActions.setErrorMessage(""));
     dispatch(authActions.setSuccessMessage(""));
@@ -117,7 +117,7 @@ const AuthForm = () => {
 
   return (
     <motion.div
-      key={isLogin}
+      key={isLogin + ""}
       initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
       animate={ANIMATIONS_FM_SLIDEIN}
       exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
@@ -157,7 +157,10 @@ const AuthForm = () => {
             }`}
             autoFocus={true}
             onChange={(e, isValid) => {
-              setEmail({ value: e.target.value, isValid });
+              setEmail({
+                value: e.target.value,
+                isValid: isValid === null ? true : isValid,
+              });
             }}
             validation={{
               required: true,
@@ -178,7 +181,10 @@ const AuthForm = () => {
               showErrorMessage && !password.isValid ? classes.invalid : ""
             }`}
             onChange={(e, isValid) => {
-              setPassword({ value: e.target.value, isValid });
+              setPassword({
+                value: e.target.value,
+                isValid: isValid === null ? true : isValid,
+              });
             }}
             validation={{
               required: true,

@@ -1,7 +1,7 @@
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import classes from "./Checkbox.module.scss";
 
-type CheckboxProps = ComponentProps<"input"> & { label: string };
+type CheckboxProps = ComponentProps<"input"> & { label: string | ReactNode };
 
 /**
  * Presentational wrapper for checkbox inputs.

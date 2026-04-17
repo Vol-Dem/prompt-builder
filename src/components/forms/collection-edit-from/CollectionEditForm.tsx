@@ -1,6 +1,5 @@
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useMemo, useState, type SubmitEvent } from "react";
 import { motion } from "framer-motion";
 
 import ComboSelect from "../../ui/forms/ComboSelect";
@@ -17,11 +16,12 @@ import {
   SUCCESS_MESSAGE_SAVED,
 } from "../../../variables/constants";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
-import CrossSvg from "../../../assets/CrossSvg";
 import {
+  AppError,
   filterDuplicates,
+  handleErrors,
+  normalizeError,
   sortArrayBy,
-  throwCustomError,
 } from "../../../utils/generalUtils";
 import Button from "../../ui/buttons/Button";
 import Textarea from "../../ui/forms/Textarea";
@@ -31,6 +31,11 @@ import Spinner from "../../ui/Spinner";
 import Input from "../../ui/forms/Input";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
+import type { CollectionDoc } from "../../../../shared/types/firestore";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type { SelectOption } from "../../../types/general.types";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import type { CollectionSubcategory } from "../../../../shared/types/user";
 
 const SUBCATEGORIES_MAX_AMOUNT = 8;
 const subCatsDefData = {
@@ -41,6 +46,27 @@ const subCatsDefData = {
   selected: { id: null, name: "" },
   isValid: true,
   errorMessage: "",
+};
+
+type CollectionEditFormProps = {
+  collectionData: CollectionDoc;
+};
+
+type SelectedInput = {
+  name: string;
+  id: string | number | null;
+  isValid: boolean;
+  errorMessage?: string;
+};
+
+type SubcategoryInput = {
+  type: string;
+  id: string | number;
+  name: string;
+  placeholder: string;
+  selected: SelectOption | null;
+  isValid: boolean;
+  errorMessage: string;
 };
 
 /**
@@ -65,20 +91,21 @@ const subCatsDefData = {
  * @param {object} props.collectionData - Collection data structure.
  * @returns {JSX.Element} Collection edit form.
  */
-const CollectionEditForm = ({ collectionData }) => {
+const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [mainCategoryQuery, setMainCategoryQuery] = useState("");
-  const [mainCategorySelected, setMainCategorySelected] = useState({
-    name: "",
-    id: "",
-    isValid: false,
-  });
+  const [mainCategorySelected, setMainCategorySelected] =
+    useState<SelectedInput>({
+      name: "",
+      id: "",
+      isValid: false,
+    });
   const [collectionNameInput, setCollectionNameInput] = useState({
     value: "",
     isValid: true,
   });
-  const [subCatInputs, setSubCatInputs] = useState([]);
+  const [subCatInputs, setSubCatInputs] = useState<SubcategoryInput[]>([]);
   const [subCategoryQuery, setSubCategoryQuery] = useState("");
   const [descriptionInput, setDescriptionInput] = useState({
     value: "",
@@ -86,11 +113,11 @@ const CollectionEditForm = ({ collectionData }) => {
   });
   const [nsfwInput, setNsfwInput] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const categories = useSelector((state) => state.images.categories);
-  const collectionDataIsSaving = useSelector(
+  const categories = useAppSelector((state) => state.images.categories);
+  const collectionDataIsSaving = useAppSelector(
     (state) => state.images.collectionDataIsSaving,
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const mainCategoryOptions = useMemo(() => {
     return sortArrayBy(
@@ -112,8 +139,14 @@ const CollectionEditForm = ({ collectionData }) => {
     "name",
   );
 
-  const selectMainCategoryHandler = (value, isValid, errorMessage) => {
-    setMainCategorySelected({ ...value, isValid, errorMessage });
+  const selectMainCategoryHandler = (
+    value: SelectOption | null,
+    isValid?: boolean,
+    errorMessage?: string,
+  ) => {
+    if (!value) return;
+
+    setMainCategorySelected({ ...value, isValid: !!isValid, errorMessage });
     setSubCatInputs([
       { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
     ]);
@@ -188,19 +221,24 @@ const CollectionEditForm = ({ collectionData }) => {
     if (subcategoriesInputData?.length) setSubCatInputs(subcategoriesInputData);
   }, [collectionData, categories]);
 
-  const subCatSelectHandler = (value, isValid, errorMessage, id) => {
+  const subCatSelectHandler = (
+    value: SelectOption | null,
+    isValid?: boolean,
+    errorMessage?: string,
+    id?: string,
+  ) => {
     setSubCatInputs((prevState) => {
       const newState = [...prevState];
 
       const curIndex = newState.findIndex((imageId) => {
-        return imageId.id + "" === id + "";
+        return id && imageId.id + "" === id;
       });
 
       if (curIndex < 0) return prevState;
 
       newState[curIndex].selected = value;
-      newState[curIndex].isValid = isValid;
-      newState[curIndex].errorMessage = errorMessage;
+      newState[curIndex].isValid = !!isValid;
+      newState[curIndex].errorMessage = errorMessage || "";
 
       return newState;
     });
@@ -214,8 +252,8 @@ const CollectionEditForm = ({ collectionData }) => {
       id: Date.now(),
       name: "sub",
       placeholder: "Subcategory",
-      value: "",
-      query: "",
+      // value: "",
+      // query: "",
       selected: { id: null, name: "" },
       isValid: false,
       errorMessage: "",
@@ -224,7 +262,7 @@ const CollectionEditForm = ({ collectionData }) => {
     setSubCatInputs(newFields);
   };
 
-  const deleteSubcategoryInputHandler = (index) => {
+  const deleteSubcategoryInputHandler = (index: number) => {
     setSubCatInputs((prevState) => {
       return prevState.toSpliced(index, 1);
     });
@@ -235,18 +273,18 @@ const CollectionEditForm = ({ collectionData }) => {
       <motion.div
         layout
         key={sub.id}
-        initial={i ? ANIMATIONS_FM_SLIDEOUT_INITIAL : null}
+        initial={i ? ANIMATIONS_FM_SLIDEOUT_INITIAL : false}
         animate={ANIMATIONS_FM_SLIDEOUT}
         exit={ANIMATIONS_FM_FADEOUT_EXIT}
         className={classes["subcategory"]}
       >
         <ComboSelect
-          id={sub.id}
+          id={sub.id + ""}
           optionsData={subCategoryOptions || []}
           query={subCategoryQuery}
           setQuery={setSubCategoryQuery}
           setSelected={subCatSelectHandler}
-          selected={{ ...sub.selected }}
+          selected={sub.selected ? { ...sub.selected } : null}
           placeholder="Subcategory"
           validation={{
             required: false,
@@ -260,14 +298,14 @@ const CollectionEditForm = ({ collectionData }) => {
             className={classes["input__btn-del"]}
             onClick={deleteSubcategoryInputHandler.bind(null, i)}
           >
-            <CrossSvg />
+            <XMarkIcon />
           </ButtonTertiary>
         )}
       </motion.div>
     );
   });
 
-  const submitHandler = async (e) => {
+  const submitHandler = async (e: SubmitEvent) => {
     try {
       e.preventDefault();
       setErrorMessage("");
@@ -279,11 +317,21 @@ const CollectionEditForm = ({ collectionData }) => {
         !collectionNameInput.isValid ||
         !mainCategorySelected.isValid ||
         !descriptionInput.isValid ||
-        subcategoriesIsInvalid
+        subcategoriesIsInvalid ||
+        !mainCategorySelected.id
       ) {
-        throwCustomError(ERROR_MESSAGE_INPUT_DEF);
+        throw new AppError(ERROR_MESSAGE_INPUT_DEF);
       }
-      const newSubcatsData = subCatInputs.map((subcat) => subcat.selected);
+
+      const newSubcatsData = subCatInputs.reduce<CollectionSubcategory[]>(
+        (prev, cur) => {
+          if (cur.selected !== null) {
+            return [...prev, { ...cur.selected, id: cur.selected.id + "" }];
+          }
+          return prev;
+        },
+        [],
+      );
       const subcategories = filterDuplicates(newSubcatsData, "name");
 
       const collection = {
@@ -292,7 +340,7 @@ const CollectionEditForm = ({ collectionData }) => {
           name: collectionNameInput.value,
         },
         categoryData: {
-          id: mainCategorySelected.id,
+          id: mainCategorySelected.id + "",
           name: mainCategorySelected.name,
         },
         curCollectionSabcategories: collectionData?.subcategories,
@@ -306,7 +354,8 @@ const CollectionEditForm = ({ collectionData }) => {
       setSuccessMessage(SUCCESS_MESSAGE_SAVED);
     } catch (err) {
       console.log(err);
-      setErrorMessage(err.message);
+      const errorMessage = handleErrors(normalizeError(err));
+      setErrorMessage(errorMessage);
       setShowErrorMessage(true);
     }
   };
@@ -323,7 +372,10 @@ const CollectionEditForm = ({ collectionData }) => {
             placeholder="Collection name"
             value={collectionNameInput.value}
             onChange={(e, isValid) => {
-              setCollectionNameInput({ value: e.target.value, isValid });
+              setCollectionNameInput({
+                value: e.target.value,
+                isValid: isValid === null ? true : isValid,
+              });
             }}
             validation={{
               required: true,
@@ -335,11 +387,14 @@ const CollectionEditForm = ({ collectionData }) => {
             label="Description"
             id="description"
             name="description"
-            rows="5"
+            rows={5}
             placeholder="Description"
             value={descriptionInput.value}
             onChange={(e, isValid) => {
-              setDescriptionInput({ value: e.target.value, isValid });
+              setDescriptionInput({
+                value: e.target.value,
+                isValid: isValid === null ? true : isValid,
+              });
             }}
             validation={{
               maxLength: VALIDATION_DESCRIPTION_MAX_LENGTH,

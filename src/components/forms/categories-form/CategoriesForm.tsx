@@ -1,5 +1,10 @@
-import { useDispatch } from "react-redux";
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type SubmitEvent,
+} from "react";
 import { AnimatePresence } from "framer-motion";
 
 import classes from "./CategoriesForm.module.scss";
@@ -10,9 +15,37 @@ import DeleteRequest from "../../ui/DeleteRequest";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
   ERROR_MESSAGE_OFFLINE,
+  ERROR_MESSAGE_INPUT_DEF,
 } from "../../../variables/constants";
-import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
+import {
+  AppError,
+  handleErrors,
+  normalizeError,
+  throwCustomError,
+} from "../../../utils/generalUtils";
 import { updateCollectionCategories } from "../../../store/images";
+import type { ResourceFirestoreCollection } from "../../../types/models.types";
+import type {
+  CollectionCategory,
+  ModelCategory,
+} from "../../../../shared/types/user";
+import { useAppDispatch } from "../../../store/hooks/hooks";
+
+type CategoriesFormProps = {
+  modelType: ResourceFirestoreCollection;
+  activeCategory: string;
+  categories: ModelCategory[] | CollectionCategory[];
+};
+
+type CategoryInput = {
+  type: string;
+  id: string;
+  name: string;
+  placeholder: string;
+  value: string;
+  active: boolean;
+  isValid: boolean;
+};
 
 /**
  * Categories form component.
@@ -42,13 +75,18 @@ import { updateCollectionCategories } from "../../../store/images";
  * @param {Array} props.categories - Categories data structure.
  * @returns {JSX.Element} Categories management form.
  */
-const CategoriesForm = ({ modelType, activeCategory, categories }) => {
+const CategoriesForm = ({
+  modelType,
+  activeCategory,
+  categories,
+}: CategoriesFormProps) => {
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
-  const [deleteCategoryData, setDeleteCategoryData] = useState("");
-  const [categoriesInputs, setCategoriesInputs] = useState([]);
+  const [deleteCategoryData, setDeleteCategoryData] =
+    useState<ModelCategory | null>(null);
+  const [categoriesInputs, setCategoriesInputs] = useState<CategoryInput[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const categoriesToUpdate = useMemo(() => {
     return !activeCategory
@@ -59,7 +97,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
 
   useEffect(() => {
     const categoriesInputData = categoriesToUpdate
-      .toSorted((a, b) => {
+      ?.toSorted((a, b) => {
         const nameA = a.name.toUpperCase(); // ignore upper and lowercase
         const nameB = b.name.toUpperCase(); // ignore upper and lowercase
         if (nameA < nameB) {
@@ -83,10 +121,14 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
           isValid: true,
         };
       });
-    setCategoriesInputs(categoriesInputData);
+
+    if (categoriesInputData) setCategoriesInputs(categoriesInputData);
   }, [categoriesToUpdate]);
 
-  const subcatChangeHandler = (e, isValid) => {
+  const subcatChangeHandler = (
+    e: ChangeEvent<HTMLInputElement>,
+    isValid: boolean | null,
+  ) => {
     setErrorMessage("");
     setCategoriesInputs((prevState) => {
       const newState = prevState.map((item) => {
@@ -94,7 +136,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
           return {
             ...item,
             value: e.target.value,
-            isValid,
+            isValid: isValid === null ? true : isValid,
           };
         }
         return item;
@@ -104,7 +146,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
   };
 
   //Switch visibility of change name form
-  const changeNameIsActiveHandler = (categoryId) => {
+  const changeNameIsActiveHandler = (categoryId: string) => {
     setErrorMessage("");
 
     setCategoriesInputs((prevState) => {
@@ -124,7 +166,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
   };
 
   //Retrive data from form and dispatch changeUserName action with new name
-  const changeCategoryNameHandler = (e) => {
+  const changeCategoryNameHandler = (e: SubmitEvent) => {
     try {
       e.preventDefault();
       setShowErrorMessage(true);
@@ -134,11 +176,11 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
 
       const inputData = categoriesInputs.find((input) => input.id === id);
 
-      if (!inputData.isValid) {
-        return;
+      if (!inputData?.isValid || typeof categoryName !== "string") {
+        throw new AppError(ERROR_MESSAGE_INPUT_DEF);
       }
 
-      const existedName = categoriesToUpdate.find(
+      const existedName = categoriesToUpdate?.find(
         (category) => category.name === categoryName,
       );
 
@@ -150,7 +192,7 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
         throwCustomError(ERROR_MESSAGE_OFFLINE);
       }
 
-      const updatedCategories = categoriesToUpdate.map((category) => {
+      const updatedCategories = categoriesToUpdate?.map((category) => {
         if (category.id === id) {
           return {
             ...category,
@@ -172,21 +214,26 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
             return category;
           });
 
+      if (!categoriesData) {
+        throw new AppError(ERROR_MESSAGE_INPUT_DEF);
+      }
+
       if (modelType === "collections") {
         dispatch(updateCollectionCategories(categoriesData));
       } else {
         dispatch(updateCategories(modelType, categoriesData));
       }
     } catch (err) {
-      setErrorMessage(handleErrors(err));
+      const errorMessage = handleErrors(normalizeError(err));
+      setErrorMessage(errorMessage);
     }
   };
 
   const deleteCategoryHandler = () => {
     let updatedCategoriesData;
 
-    const updatedCategories = categoriesToUpdate.filter(
-      (category) => category.id !== deleteCategoryData.id,
+    const updatedCategories = categoriesToUpdate?.filter(
+      (category) => category.id !== deleteCategoryData?.id,
     );
 
     if (!activeCategory) {
@@ -207,6 +254,8 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
       ];
     }
 
+    if (!updatedCategoriesData) return;
+
     if (modelType === "collections") {
       dispatch(updateCollectionCategories(updatedCategoriesData));
     } else {
@@ -216,18 +265,19 @@ const CategoriesForm = ({ modelType, activeCategory, categories }) => {
     setDeleteRequestIsOpen(false);
   };
 
-  const showDeleteReqeustHandler = (categoryId) => {
-    const categoryName = categoriesToUpdate.find(
+  const showDeleteReqeustHandler = (categoryId: string) => {
+    const categoryName = categoriesToUpdate?.find(
       (category) => category.id === categoryId,
     )?.name;
-    console.log(categoriesToUpdate);
-    console.log(categoryId);
-    setDeleteCategoryData({ id: categoryId, name: categoryName });
-    setDeleteRequestIsOpen(true);
+
+    if (categoryName) {
+      setDeleteCategoryData({ id: categoryId, name: categoryName });
+      setDeleteRequestIsOpen(true);
+    }
   };
 
   const closeDeleteReqeustHandler = () => {
-    setDeleteCategoryData("");
+    setDeleteCategoryData(null);
     setDeleteRequestIsOpen(false);
   };
 

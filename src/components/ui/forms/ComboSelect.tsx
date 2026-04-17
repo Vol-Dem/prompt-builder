@@ -18,12 +18,7 @@ import ComboSelectOptions from "./ComboSelectOptions";
 type ComboSelectProps = ComponentProps<"input"> & {
   optionsData: SelectOption[];
   query: string;
-  setQuery: (
-    value: string,
-    isUserInput?: boolean,
-    error?: string,
-    id?: string,
-  ) => void;
+  setQuery: (value: string) => void;
   setSelected: (
     value: SelectOption | null,
     isValid?: boolean,
@@ -31,11 +26,11 @@ type ComboSelectProps = ComponentProps<"input"> & {
     id?: string,
   ) => void;
   selected: SelectOption | null;
-  loading: boolean;
+  loading?: boolean;
   validation: ValidationTypes;
-  error: string;
-  showError: boolean;
-  label: string;
+  error?: string;
+  showError?: boolean;
+  label?: string;
 };
 
 /**
@@ -102,7 +97,7 @@ const ComboSelect = ({
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   useEffect(() => {
-    setShowErrorMessage(showError);
+    if (showError !== undefined) setShowErrorMessage(showError);
   }, [showError]);
 
   useEffect(() => {
@@ -160,7 +155,7 @@ const ComboSelect = ({
                 }`}
                 displayValue={(options: SelectOption) => options?.name}
                 onChange={(event) => {
-                  setQuery(event.target.value, true, "", id);
+                  setQuery(event.target.value);
                 }}
                 onBlur={(e) => {
                   if (onBlur) {

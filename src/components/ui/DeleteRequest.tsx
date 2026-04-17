@@ -8,8 +8,8 @@ type DeleteRequestProps = {
   message: string;
   onSubmit: () => void;
   onClose: () => void;
-  isDeleting: boolean;
-  errorMessage: string;
+  isDeleting?: boolean;
+  errorMessage?: string;
 };
 
 /**
