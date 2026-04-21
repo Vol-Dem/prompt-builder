@@ -41,12 +41,12 @@ const CollectionImages = memo(() => {
   const [imagesIsLoading, setImagesIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const savedImagesData = useSelector(
-    (state) => state.images.collectionData
+    (state) => state.images.collectionData,
   )?.posts?.toSorted((a, b) => b.createdAt - a.createdAt);
   const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
   const collectionData = useSelector((state) => state.images.collectionData);
   const collectionImages = useSelector(
-    (state) => state.images.collectionImages
+    (state) => state.images.collectionImages,
   );
   const imageData = collectionImages?.images;
   const isLastPage = !!collectionImages?.isLastPage;
@@ -59,7 +59,7 @@ const CollectionImages = memo(() => {
     endPageRef,
     false,
     0,
-    `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`
+    `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`,
   );
 
   // Fallback trigger used when the content is too short to reach the margin
@@ -104,9 +104,9 @@ const CollectionImages = memo(() => {
     dispatch,
   ]);
 
-  const postsHtml = imageData?.flatMap((item, i) => {
+  const postsHtml = imageData.flatMap((item, i) => {
     const postData = collectionData.posts.find(
-      (post) => post.postId === item[0].postId
+      (post) => post.postId === item[0].postId,
     );
 
     return (

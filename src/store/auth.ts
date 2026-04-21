@@ -73,17 +73,17 @@ const authInitialState: AuthState = {
  * - Authentication
  *
  * State:
- * @property {boolean} isLoggedIn - Whether user is logged in.
- * @property {boolean} initialAuth - Whether initial authentication was finished.
- * @property {boolean} authFormIsOpen - Whether auth form is shown.
- * @property {boolean} reAuthFormIsOpen - Whether re-auth form is shown.
- * @property {boolean} showResetPassword - Whether reset password form is shown.
- * @property {boolean} isLoading - Auth request loading state.
- * @property {boolean} userDataIsLoading - User data loading state.
- * @property {string} userDataLoadError - User data error message.
- * @property {string} errorMessage - Forms error message.
- * @property {string} successMessage - Success message.
- * @property {{ idToken: string, refreshToken: string, uid: string, email: string, userName: string|null, emailVerified: boolean}} user - User data.
+ * @property isLoggedIn - Whether user is logged in.
+ * @property initialAuth - Whether initial authentication was finished.
+ * @property authFormIsOpen - Whether auth form is shown.
+ * @property reAuthFormIsOpen - Whether re-auth form is shown.
+ * @property showResetPassword - Whether reset password form is shown.
+ * @property isLoading - Auth request loading state.
+ * @property userDataIsLoading - User data loading state.
+ * @property userDataLoadError - User data error message.
+ * @property errorMessage - Forms error message.
+ * @property successMessage - Success message.
+ * @property user - User data.
  */
 const authSlice = createSlice({
   name: "auth",
@@ -160,7 +160,7 @@ const authSlice = createSlice({
  * - Retrieve and store application settings and state from session storage
  * - Fetch user data from the database
  * Finally, it sets the initial authentication state.
- * @returns {Function} Redux thunk.
+ * @returns Redux thunk.
  */
 export const initAuth = (): AppThunk => {
   return (dispatch) => {
@@ -188,10 +188,10 @@ export const initAuth = (): AppThunk => {
 
 /**
  * Makes a firebase authentication request and authorizes the user.
- * @param {boolean} isLogin - Type of request. If false, create new user. If true, authorizes the user.
- * @param {string} email - User email
- * @param {string} password - User password
- * @returns {Function} Redux thunk.
+ * @param isLogin - Type of request. If false, create new user. If true, authorizes the user.
+ * @param email - User email
+ * @param password - User password
+ * @returns Redux thunk.
  */
 export const authRequest = (
   isLogin: boolean,
@@ -273,7 +273,7 @@ export const authRequest = (
 
 /**
  * Initializes user authentication via Google sign-in and dispatches the login action with user information (access token, user ID, email, etc.)
- * @returns {Function} Redux thunk.
+ * @returns Redux thunk.
  */
 export const authWithGoogle = (): AppThunk => {
   return async (dispatch) => {
@@ -304,8 +304,8 @@ export const authWithGoogle = (): AppThunk => {
  * Changes the user's email and dispatches appropriate actions based on the result.
  * If the email change is successful, the function updates the user state and displays a success message.
  * In case of errors, the function handles different scenarios such as requiring reauthentication or verifying the new email before change.
- * @param {String} email - The new email address to update
- * @returns {Function} Redux thunk.
+ * @param email - The new email address to update
+ * @returns Redux thunk.
  */
 export const changeUserEmail = (email: string): AppThunk => {
   return async (dispatch) => {
@@ -373,45 +373,47 @@ export const promptForCredentials = async (
   }
 };
 
-export const reAuthUser = async (type: ReAuthType, password: string) => {
-  try {
-    const user = auth.currentUser;
+export const reAuthUser = (type: ReAuthType, password: string): AppThunk => {
+  return async () => {
+    try {
+      const user = auth.currentUser;
 
-    if (!user) throw new Error(ERROR_MESSAGE_DEFAULT);
+      if (!user) throw new Error(ERROR_MESSAGE_DEFAULT);
 
-    if (type === "pass") {
-      const credential = await promptForCredentials(password);
+      if (type === "pass") {
+        const credential = await promptForCredentials(password);
 
-      if (!credential) throw new Error(ERROR_MESSAGE_DEFAULT);
+        if (!credential) throw new Error(ERROR_MESSAGE_DEFAULT);
 
-      await reauthenticateWithCredential(user, credential);
+        await reauthenticateWithCredential(user, credential);
+      }
+      if (type === "popup") {
+        await reauthenticateWithPopup(user, provider);
+      }
+    } catch (error) {
+      const err = normalizeError(error);
+
+      if (err.code === "auth/invalid-login-credentials") {
+        throw new Error(
+          "The current password you entered did not match our records",
+        );
+      } else if (err.code === "auth/too-many-requests") {
+        throw new Error(
+          "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later",
+        );
+      } else {
+        throw new Error(err.message);
+      }
     }
-    if (type === "popup") {
-      await reauthenticateWithPopup(user, provider);
-    }
-  } catch (error) {
-    const err = normalizeError(error);
-
-    if (err.code === "auth/invalid-login-credentials") {
-      throw new Error(
-        "The current password you entered did not match our records",
-      );
-    } else if (err.code === "auth/too-many-requests") {
-      throw new Error(
-        "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later",
-      );
-    } else {
-      throw new Error(err.message);
-    }
-  }
+  };
 };
 
 /**
  * Changes user password.
  *
- * @param {string} password - User password
- * @param {string} oldPassword - Old user password
- * @returns {Function} Redux thunk.
+ * @param password - User password
+ * @param oldPassword - Old user password
+ * @returns Redux thunk.
  */
 export const changeUserPassword = (
   password: string,
@@ -441,8 +443,8 @@ export const changeUserPassword = (
 /**
  * Sends a password reset email to the given email address.
  *
- * @param {string} email - User email.
- * @returns {Function} Redux thunk.
+ * @param email - User email.
+ * @returns Redux thunk.
  */
 export const resetUserPassword = (email: string): AppThunk => {
   return async (dispatch) => {
@@ -466,8 +468,8 @@ export const resetUserPassword = (email: string): AppThunk => {
  * Changes the current user name.
  * Updates a user's profile data.
  *
- * @param {string} name - User name.
- * @returns {Function} Redux thunk.
+ * @param name - User name.
+ * @returns Redux thunk.
  */
 export const changeUserName = (name: string): AppThunk => {
   return async (dispatch) => {
@@ -500,8 +502,8 @@ export const changeUserName = (name: string): AppThunk => {
  * Fetches the current user data.
  * Creates a listener for the current user data.
  *
- * @param {string} uid - User ID.
- * @returns {Function} Redux thunk.
+ * @param uid - User ID.
+ * @returns Redux thunk.
  */
 export const getUserData = (uid: string): AppThunk => {
   return async (dispatch) => {

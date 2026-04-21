@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type ComponentProps } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ComponentProps,
+  type ReactNode,
+} from "react";
 import { motion, type HTMLMotionProps } from "framer-motion";
 
 import classes from "./Input.module.scss";
@@ -16,7 +22,7 @@ import type { OverrideFields } from "../../../../shared/types/general";
 type InputProps = OverrideFields<
   HTMLMotionProps<"input"> & ComponentProps<"input">,
   {
-    label?: string;
+    label?: string | ReactNode;
     validation?: ValidationTypes;
     showError?: boolean;
     fitContent?: boolean;
@@ -84,7 +90,7 @@ const Input = ({
   }, [showError]);
 
   useEffect(() => {
-    if (validation && value) {
+    if (validation) {
       const { errorMessage } = validateInput(validation, value + "");
 
       setInputErrorMessage(errorMessage);
@@ -129,7 +135,7 @@ const Input = ({
             onChange(e, isValid, errorMessage);
             setInputErrorMessage(errorMessage);
           } else {
-            onChange(e, null);
+            onChange(e, true);
           }
         }}
         onClick={onClick}

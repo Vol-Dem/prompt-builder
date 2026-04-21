@@ -106,7 +106,7 @@ const Textarea = ({
             onChange(e, isValid, errorMessage);
             setInputErrorMessage(errorMessage);
           } else {
-            onChange(e, null);
+            onChange(e, true);
           }
         }}
         className={`${classes.textarea} ${className || ""} ${

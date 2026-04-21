@@ -63,3 +63,5 @@ export interface TagSetInputValue {
   errorMessage: string;
 }
 export type TagSetInputData = [TagSetInputName, TagSetInputValue];
+
+export type PromptType = "positive" | "negative";

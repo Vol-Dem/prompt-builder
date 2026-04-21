@@ -6,6 +6,9 @@ import url from "../../../assets/guide/url.png";
 import urlWebp from "../../../assets/guide/url.webp";
 import civShare from "../../../assets/guide/civ-share.png";
 import civShareWebp from "../../../assets/guide/civ-share.webp";
+import type { ComponentProps } from "react";
+
+type InfoPostIdProps = ComponentProps<"div">;
 
 /**
  * Content for the post ID hint.
@@ -13,7 +16,7 @@ import civShareWebp from "../../../assets/guide/civ-share.webp";
  * @component
  * @returns {JSX.Element} The post ID hint.
  */
-const InfoPostId = ({ className }) => {
+const InfoPostId = ({ className }: InfoPostIdProps) => {
   return (
     <div className={`${classes.info} ${className || ""}`}>
       <p>

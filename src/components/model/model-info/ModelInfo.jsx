@@ -14,9 +14,10 @@ import ResourceTypeLabel from "../../ui/text/ResourceTypeLabel";
  */
 const ModelInfo = ({ customData }) => {
   const model = useSelector((state) => state.model.model);
+  const nsfwMode = useSelector((state) => state.general.nsfwMode);
   const curVersion = useSelector((state) => state.model.curVersion);
   const viersionVAE = curVersion?.files?.find(
-    (file) => file.type === "VAE"
+    (file) => file.type === "VAE",
   )?.name;
   const size = customData?.size || model?.defaultCustomData?.size;
   const minWeight =
@@ -71,7 +72,7 @@ const ModelInfo = ({ customData }) => {
           {" ("}
           <LinkA
             external={true}
-            href={`https://${model?.src}/models/${model?.id}?modelVersionId=${curVersion?.id}`}
+            href={`https://${nsfwMode ? "civitai.red" : "civitai.com"}/models/${model?.id}?modelVersionId=${curVersion?.id}`}
           >
             civitai
           </LinkA>

@@ -15,25 +15,17 @@ import {
   markDuplicateTags,
 } from "../utils/promptUtils";
 import { splitTags } from "../utils/promptUtils";
-import type { Presets } from "../../shared/types/user";
+import type { Preset } from "../../shared/types/user";
 import type {
   PromptOpenState,
   PromptState,
+  PromptType,
   TextModeState,
 } from "../types/prompt.types";
 import type { AppThunk } from "./store";
 
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
-
-/**
- * @typedef {Object} PromptTag
- * @property {number} id
- * @property {string} tag
- * @property {string} weight
- * @property {number} position
- * @property {boolean} [duplicate]
- */
 
 /**
  * Prompt state.
@@ -43,18 +35,18 @@ const auth = getAuth(firebaseApp);
  * - Presets
  *
  * State:
- * @property {string} curPrompt - Current positive prompt value.
- * @property {Array<PromptTag>} curPromptArr - Current positive prompt array.
- * @property {string} curNegPrompt - Current negative prompt value.
- * @property {Array<PromptTag>} curNegPromptArr - Current negative prompt array.
- * @property {{ positive: Array<Object>, negative: Array<Object> }} presets - Presets data.
- * @property {boolean} promptIsOpen - Whether prompt is open.
- * @property {boolean} isTextMode - Whether prompt is in the text mode.
- * @property {number|null} headerHeight - Header height.
- * @property {number|null} promptBtnHeight - Open prompt button height.
- * @property {number|null} promptHeight - Prompt height.
- * @property {number|null} positivePromptHeight - Positive prompt field height.
- * @property {number|null} negativePromptHeight - Negative prompt field height.
+ * @property curPrompt - Current positive prompt value.
+ * @property curPromptArr - Current positive prompt array.
+ * @property curNegPrompt - Current negative prompt value.
+ * @property curNegPromptArr - Current negative prompt array.
+ * @property presets - Presets data.
+ * @property promptIsOpen - Whether prompt is open.
+ * @property isTextMode - Whether prompt is in the text mode.
+ * @property headerHeight - Header height.
+ * @property promptBtnHeight - Open prompt button height.
+ * @property promptHeight - Prompt height.
+ * @property positivePromptHeight - Positive prompt field height.
+ * @property negativePromptHeight - Negative prompt field height.
  */
 const promptSlice = createSlice({
   name: "prompt",
@@ -132,7 +124,6 @@ const promptSlice = createSlice({
     /**
      * Inserts tag to position and updates position field of all tags.
      * Marks duplicate tags.
-     * @param {{ item: Object, type: string, dropTargetType: string, prevPosition: number }} action.payload
      */
     addTagToPosition(state, action) {
       const { dropTargetType } = action.payload;
@@ -206,7 +197,6 @@ const promptSlice = createSlice({
     /**
      * Removes tag from prompt.
      * Updates position field of all tags.
-     * @param {{ id: number, type: string, dropTargetType: string, value: string }} action.payload
      */
     removeTag(state, action) {
       const { id, type, dropTargetType, value } = action.payload;
@@ -318,7 +308,6 @@ const promptSlice = createSlice({
     },
     /**
      * Removes multiple tags from prompt.
-     * @param {{ type: string, value: Array }} action.payload
      */
     removeAllTags(state, action) {
       const promptArr =
@@ -340,7 +329,6 @@ const promptSlice = createSlice({
     },
     /**
      * Changes weight of activation tag in prompt.
-     * @param {{ newTag: string, prevTag: string, weight: string }} action.payload
      */
     changeActivationTag(state, action) {
       const promptArr = state.curPromptArr;
@@ -458,7 +446,7 @@ const promptSlice = createSlice({
  * - Reads prompt data from session storage.
  * - Updates prompt state in Redux.
  *
- * @returns {Function} Redux thunk.
+ * @returns Redux thunk.
  */
 export const uploadPromptFromStorage = (): AppThunk => {
   return (dispatch, getState) => {
@@ -498,13 +486,13 @@ export const uploadPromptFromStorage = (): AppThunk => {
  * - Saves the presets data to Firestore.
  * - Updates presets state in Redux.
  *
- * @param {string} presetType - Preset category.
- * @param {Array<Object>} updatedPresets - Updated preset list.
- * @returns {Function} Redux thunk.
+ * @param presetType - Preset category.
+ * @param updatedPresets - Updated preset list.
+ * @returns Redux thunk.
  */
 export const updatePresets = (
-  presetType: string,
-  updatedPresets: Presets,
+  presetType: PromptType,
+  updatedPresets: Preset[],
 ): AppThunk => {
   return async (dispatch, getState) => {
     const uid = getState().auth.user.uid;
@@ -513,13 +501,9 @@ export const updatePresets = (
       const userRef = doc(firestore, "users", uid);
       const presetField = `presets.${presetType}`;
 
-      await updateDoc(
-        userRef,
-        {
-          [presetField]: updatedPresets,
-        },
-        // { merge: true },
-      );
+      await updateDoc(userRef, {
+        [presetField]: updatedPresets,
+      });
 
       dispatch(
         promptActions.setPresets({
@@ -537,7 +521,7 @@ export const updatePresets = (
  * Side effects:
  * - Fetches user presets from Firestore.
  *
- * @returns {Function} Redux thunk.
+ * @returns Redux thunk.
  */
 export const getUserPresets = (): AppThunk => {
   return async (dispatch, getState) => {

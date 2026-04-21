@@ -34,16 +34,19 @@ import {
 import {
   ERROR_MESSAGE_DB_CONNECTION,
   ERROR_MESSAGE_DEFAULT,
+  SETTINGS_COLLECTION_PREVIEW_PER_PAGE,
   SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE,
 } from "../variables/constants";
 import { getCollectionData } from "../utils/fetch/fetchCollection";
 import type {
-  AddCollectionData,
   CollectionsState,
   EditCollectionData,
 } from "../types/collections.types";
 import type { AppThunk } from "./store";
-import type { SavePostData } from "../types/upload.types";
+import type {
+  SavePostData,
+  UploadingCollectionData,
+} from "../types/upload.types";
 import type { PostSavedData } from "../types/collections.types";
 import type {
   CollectionPreviewDoc,
@@ -63,8 +66,6 @@ let lastVisiblePreview: QueryDocumentSnapshot<
   DocumentData
 > | null = null;
 
-const amountPerPage = 12;
-
 /**
  * Image collections settings state.
  *
@@ -75,19 +76,19 @@ const amountPerPage = 12;
  * - Collection categories and subcategories
  *
  * State:
- * @property {array} categories - Collection categories.
- * @property {string} activeCategory - Active collection category.
- * @property {string} activeSubcategory - Active collection subcategory.
- * @property {array} collectionPreviews - List of collection previews.
- * @property {boolean} isLastPage - Whether the last collection images page is reached.
- * @property {boolean} isLastPreviewsPage - Whether the last previews page is reached.
- * @property {boolean} imagesIsLoading - Collection images loading state.
- * @property {boolean} previewsIsLoading - Collection previews loading state.
- * @property {boolean} collectionDataIsSaving - Collection saving state (collection edit page).
- * @property {string} errorMessage - Collection images error message.
- * @property {string} previewsErrorMessage - Collection previews error message.
- * @property {{images: array, isLastPage: boolean}} collectionImages - Collection images data.
- * @property {object} collectionData - Active collection data.
+ * @property categories - Collection categories.
+ * @property activeCategory - Active collection category.
+ * @property activeSubcategory - Active collection subcategory.
+ * @property collectionPreviews - List of collection previews.
+ * @property isLastPage - Whether the last collection images page is reached.
+ * @property isLastPreviewsPage - Whether the last previews page is reached.
+ * @property imagesIsLoading - Collection images loading state.
+ * @property previewsIsLoading - Collection previews loading state.
+ * @property collectionDataIsSaving - Collection saving state (collection edit page).
+ * @property errorMessage - Collection images error message.
+ * @property previewsErrorMessage - Collection previews error message.
+ * @property collectionImages - Collection images data.
+ * @property collectionData - Active collection data.
  */
 const imagesSlice = createSlice({
   name: "images",
@@ -208,14 +209,14 @@ const imagesSlice = createSlice({
  * - Updates collection and preview data in Firestore
  * - Updates collection and images state in Redux
  *
- * @param {Object} params
- * @param {{id: string|number, name: string}} params.collectionData - Target collection.
- * @param {Array<{id: string, name: string}>} params.subcategoriesData - Selected subcategories.
- * @param {number} params.postId - Post ID.
- * @param {Array<number>} params.imageIds - IDs of images to save.
- * @param {Object|null} params.postData - Existing post data (if editing).
- * @param {Array<Object>} params.images - Image objects to add.
- * @returns {Function} Redux thunk.
+ * @param params
+ * @param params.collectionData - Target collection.
+ * @param params.subcategoriesData - Selected subcategories.
+ * @param params.postId - Post ID.
+ * @param params.imageIds - IDs of images to save.
+ * @param params.postData - Existing post data (if editing).
+ * @param params.images - Image objects to add.
+ * @returns Redux thunk.
  */
 export const savePostToCollections = ({
   collectionData,
@@ -236,9 +237,8 @@ export const savePostToCollections = ({
       const uid = getState().auth.user.uid;
       const curCollectionData = getState().images.collectionData;
 
-      const newSubcategoryIds = subcategoriesData.map(
-        (subcategory) => subcategory.id,
-      );
+      const newSubcategoryIds =
+        subcategoriesData?.map((subcategory) => subcategory.id) || [];
 
       const collectionsRef = doc(
         firestore,
@@ -327,8 +327,8 @@ export const savePostToCollections = ({
  * Side effects:
  * - Loads collection data from Firestore.
  *
- * @param {number|string} collectionId - Collection ID.
- * @returns {Function} Redux thunk.
+ * @param collectionId - Collection ID.
+ * @returns Redux thunk.
  */
 export const getCollection = (collectionId: number | string): AppThunk => {
   return async (dispatch) => {
@@ -349,11 +349,11 @@ export const getCollection = (collectionId: number | string): AppThunk => {
  * - Fetches collection previews from Firestore
  * - Optionally merges with already loaded previews
  *
- * @param {string} activeCategory - Category ID.
- * @param {string} activeSubcategory - Subcategory ID.
- * @param {boolean} loadMore - Whether to append to existing previews.
- * @param {boolean} nsfwMode - Whether to include NSFW collections.
- * @returns {Function} Redux thunk.
+ * @param activeCategory - Category ID.
+ * @param activeSubcategory - Subcategory ID.
+ * @param loadMore - Whether to append to existing previews.
+ * @param nsfwMode - Whether to include NSFW collections.
+ * @returns Redux thunk.
  */
 export const getCollectionPreviews = (
   activeCategory: string,
@@ -398,7 +398,7 @@ export const getCollectionPreviews = (
         where("nsfw", "in", nsfwFilter),
         order,
         startAfter(lastVisiblePreview),
-        limit(amountPerPage),
+        limit(SETTINGS_COLLECTION_PREVIEW_PER_PAGE),
       );
 
       const querySnapshot = await getDocs(q);
@@ -409,7 +409,8 @@ export const getCollectionPreviews = (
       });
 
       const isLast =
-        !querySnapshot.docs.length || querySnapshot.docs.length < amountPerPage;
+        !querySnapshot.docs.length ||
+        querySnapshot.docs.length < SETTINGS_COLLECTION_PREVIEW_PER_PAGE;
 
       if (!isLast) {
         lastVisiblePreview = querySnapshot.docs[querySnapshot.docs.length - 1];
@@ -444,9 +445,9 @@ export const getCollectionPreviews = (
  * - Loads collection images from Firestore
  * - Merges with already loaded images
  *
- * @param {Array<{postId: number, createdAt: number}>} posts - Collection posts.
- * @param {number|string} collectionId - Collection ID.
- * @returns {Function} Redux thunk.
+ * @param posts - Collection posts.
+ * @param collectionId - Collection ID.
+ * @returns Redux thunk.
  */
 export const getColectionImagesByIds = (
   posts: PostSavedData[],
@@ -556,13 +557,13 @@ export const getColectionImagesByIds = (
  * - Creates new category and subcategories if needed
  * - Updates Redux collection state
  *
- * @param {Object} params
- * @param {{id?: string|number, name: string}} params.collectionData - Collection data.
- * @param {{id?: string, name: string}} params.categoryData - Category data.
- * @param {Array<{id?: string, name: string}>} params.subcategoriesData - Subcategories.
- * @param {string} params.description - Collection description.
- * @param {boolean} params.nsfw - Whether the collection is NSFW.
- * @returns {Function} Redux thunk.
+ * @param params
+ * @param params.collectionData - Collection data.
+ * @param params.categoryData - Category data.
+ * @param params.subcategoriesData - Subcategories.
+ * @param params.description - Collection description.
+ * @param params.nsfw - Whether the collection is NSFW.
+ * @returns Redux thunk.
  */
 export const editCollectionData = ({
   collectionData,
@@ -590,13 +591,12 @@ export const editCollectionData = ({
           collectionData,
           categoryData,
           subcategoriesData,
-          curCollectionSabcategories: subcategoriesData
-            ?.map((sub) => sub.id)
-            .filter(Boolean),
+          curCollectionSabcategories:
+            subcategoriesData?.map((sub) => sub.id)?.filter(Boolean) || [],
         }),
       );
 
-      const newSubcategoryIds = updatedSubcategoriesData.map(
+      const newSubcategoryIds = updatedSubcategoriesData?.map(
         (subcategory) => subcategory.id,
       );
 
@@ -618,8 +618,8 @@ export const editCollectionData = ({
       const preview = {
         name: updatedCollectionData.name,
         nameArr: updatedCollectionData.name.toLowerCase().split(" "),
-        category: updatedCategoryData.id,
-        subcategories: newSubcategoryIds,
+        category: updatedCategoryData?.id || null,
+        subcategories: newSubcategoryIds || [],
         nsfw,
       };
 
@@ -654,9 +654,9 @@ export const editCollectionData = ({
  * - Removes images or posts from a collection in Firestore
  * - Updates collection and images state in Redux
  *
- * @param {Array<string>} ids - Image IDs to remove.
- * @param {{postId: number, imageIds: Array<string>}} postData - Post data.
- * @returns {Function} Redux thunk.
+ * @param ids - Image IDs to remove.
+ * @param postData - Post data.
+ * @returns Redux thunk.
  */
 export const updateCollectionPostsData = (
   ids: number[] | null,
@@ -751,8 +751,8 @@ export const updateCollectionPostsData = (
  * - Saves collection categories to Firestore
  * - Updates categories in Redux
  *
- * @param {Array<Object>} categories - Collection categories.
- * @returns {Function} Redux thunk.
+ * @param categories - Collection categories.
+ * @returns Redux thunk.
  */
 export const updateCollectionCategories = (
   categories: CollectionCategory[],
@@ -784,27 +784,30 @@ export const updateCollectionCategories = (
  * - Creates new categories, subcategories, and collections in Firestore
  * - Updates category list in Redux
  *
- * @param {Object} params
- * @param {{id?: number, name: string}} params.collectionData - Input collection data.
- * @param {{id?: string, name: string}} params.categoryData - Input category data.
- * @param {Array<{id?: string, name: string}>} params.subcategoriesData - Input subcategories data.
- * @param {Array<string>} params.curCollectionSabcategories - All collection subcategory IDs.
- * @returns {Function} Redux thunk that resolves to:
- * {
- *   collectionData: {id: number, name: string},
- *   categoryData: {id: string, name: string},
- *   subcategoriesData: Array<{id: string, name: string}>,
- *   curCollectionSabcategories: Array<string>
- * }
+ * @param params
+ * @param params.collectionData - Input collection data.
+ * @param params.categoryData - Input category data.
+ * @param params.subcategoriesData - Input subcategories data.
+ * @param params.curCollectionSabcategories - All collection subcategory IDs.
+ * @returns Redux thunk
  */
 export const addNewCollectionCategories = ({
   collectionData,
   categoryData,
   subcategoriesData,
   curCollectionSabcategories,
-}: AddCollectionData): AppThunk<Promise<AddCollectionData>> => {
+}: UploadingCollectionData): AppThunk<Promise<UploadingCollectionData>> => {
   return async (dispatch, getState) => {
     try {
+      if (!categoryData?.name) {
+        return {
+          collectionData,
+          categoryData,
+          subcategoriesData,
+          curCollectionSabcategories,
+        };
+      }
+
       const uid = getState().auth.user.uid;
       const existedCategoriesData = getState().images.categories;
       const existedCategory = existedCategoriesData.find(
@@ -841,7 +844,7 @@ export const addNewCollectionCategories = ({
       let newSubcategories: CollectionSubcategory[] = [];
       let newSubcategoryIds: string[] = [];
 
-      const subcategories = subcategoriesData.flatMap((subcategory) => {
+      const subcategories = subcategoriesData?.flatMap((subcategory) => {
         if (!subcategory.name) {
           return [];
         }
@@ -864,7 +867,7 @@ export const addNewCollectionCategories = ({
 
       const newCollectionSubcategoryIds = filterDuplicates([
         ...newSubcategoryIds,
-        ...curCollectionSabcategories,
+        ...(curCollectionSabcategories || []),
       ]);
 
       const hasNewSubcategories = subcategoriesData?.find(
@@ -1002,7 +1005,7 @@ export const addNewCollectionCategories = ({
       return {
         collectionData: { name: collectionData.name, id: collectionId },
         categoryData: { name: categoryData.name, id: categoryId },
-        subcategoriesData: subcategories,
+        subcategoriesData: subcategories || [],
         curCollectionSabcategories,
       };
     } catch (error) {
@@ -1018,9 +1021,9 @@ export const addNewCollectionCategories = ({
  * - Removes collection and its preview from Firestore
  * - Updates user category data
  *
- * @param {number|string} collectionId - Collection ID.
- * @param {string} categoryId - Category ID.
- * @returns {Function} Redux thunk.
+ * @param collectionId - Collection ID.
+ * @param categoryId - Category ID.
+ * @returns Redux thunk.
  */
 export const deleteCollection = (
   collectionId: number | string,

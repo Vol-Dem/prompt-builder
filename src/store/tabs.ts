@@ -20,12 +20,11 @@ import type { ModelCategories } from "../../shared/types/user";
 import type { ModelPreviewDoc } from "../../shared/types/firestore";
 import type { AppThunk } from "./store";
 import type { TabsModelsData, TabsState } from "../types/tabs.types";
+import { SETTINGS_MODEL_PREVIEW_PER_PAGE } from "../variables/constants";
 
 const firestore = getFirestore(firebaseApp);
 
 let lastVisible: QueryDocumentSnapshot<DocumentData, DocumentData> | "" = "";
-
-const amountPerPage = 12;
 
 /**
  * Model tabs state.
@@ -247,7 +246,7 @@ export const getModelsPreview = (
         where("nsfw", "in", nsfwFilter),
         order,
         startAfter(lastVisible),
-        limit(amountPerPage),
+        limit(SETTINGS_MODEL_PREVIEW_PER_PAGE),
       );
 
       const querySnapshot = await getDocs(q);
@@ -258,7 +257,8 @@ export const getModelsPreview = (
       });
 
       const isLast =
-        !querySnapshot.docs.length || querySnapshot.docs.length < amountPerPage;
+        !querySnapshot.docs.length ||
+        querySnapshot.docs.length < SETTINGS_MODEL_PREVIEW_PER_PAGE;
 
       if (!isLast) {
         lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];

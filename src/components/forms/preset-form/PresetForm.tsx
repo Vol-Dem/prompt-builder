@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, type SubmitEvent } from "react";
 import { motion } from "framer-motion";
 
 import classes from "./PresetForm.module.scss";
@@ -18,10 +17,21 @@ import {
   VALIDATION_TRIGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
 import {
+  AppError,
   createCategoryId,
   handleErrors,
-  throwCustomError,
+  normalizeError,
 } from "../../../utils/generalUtils";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type { PromptType } from "../../../types/prompt.types";
+
+type PresetFormProps = {
+  type: PromptType;
+  id?: string;
+  name?: string;
+  words?: string;
+  onClose: () => void;
+};
 
 /**
  * Preset form component.
@@ -40,15 +50,15 @@ import {
  *
  * @component
  *
- * @param {object} props
- * @param {('positive' | 'negative')} props.type - Defines whether the preset belongs to the positive or negative prompt.
- * @param {string} [props.id] - Preset ID for edit mode.
- * @param {string} [props.name] - Preset name.
- * @param {string} [props.words] - Comma-separated list of preset words.
- * @param {() => void} props.onClose - Callback triggered after successful submit to close the form.
- * @returns {JSX.Element} Preset management form.
+ * @param props
+ * @param props.type - Defines whether the preset belongs to the positive or negative prompt.
+ * @param props.id - Preset ID for edit mode.
+ * @param props.name - Preset name.
+ * @param props.words - Comma-separated list of preset words.
+ * @param props.onClose - Callback triggered after successful submit to close the form.
+ * @returns Preset management form.
  */
-const PresetForm = ({ type, id, name, words, onClose }) => {
+const PresetForm = ({ type, id, name, words, onClose }: PresetFormProps) => {
   const [promptType, setPromptType] = useState(type || "positive");
   const [presetName, setPresetName] = useState({
     value: name || "",
@@ -60,10 +70,10 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
   });
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const presets = useSelector((state) => state.prompt.presets);
-  const dispatch = useDispatch();
+  const presets = useAppSelector((state) => state.prompt.presets);
+  const dispatch = useAppDispatch();
 
-  const submitHandler = (e) => {
+  const submitHandler = (e: SubmitEvent) => {
     try {
       e.preventDefault();
       setErrorMessage("");
@@ -75,15 +85,16 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
       );
 
       if (nameExists && presetName.value !== name) {
-        throwCustomError(`The "${presetName.value}" preset already exists`);
+        throw new AppError(`The "${presetName.value}" preset already exists`);
       }
-
+      console.log(presetName);
+      console.log(presetWords);
       if (!presetName.isValid || !presetWords.isValid) {
-        throwCustomError(ERROR_MESSAGE_INPUT_DEF);
+        throw new AppError(ERROR_MESSAGE_INPUT_DEF);
       }
 
       if (!navigator?.onLine) {
-        throwCustomError(ERROR_MESSAGE_OFFLINE);
+        throw new AppError(ERROR_MESSAGE_OFFLINE);
       }
 
       if (!id) {
@@ -111,7 +122,8 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
       dispatch(updatePresets(promptType, updatedPresets));
       onClose();
     } catch (err) {
-      setErrorMessage(handleErrors(err));
+      const errorMessage = handleErrors(normalizeError(err));
+      setErrorMessage(errorMessage);
     }
   };
 
@@ -131,7 +143,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
             value="positive"
             checked={promptType === "positive" ? true : false}
             onChange={(e) => {
-              setPromptType(e.target.value);
+              if (e.target.value === "positive") setPromptType(e.target.value);
             }}
           />
           <label htmlFor="positive" className={classes["type-label"]}>
@@ -147,7 +159,7 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
             value="negative"
             checked={promptType === "negative" ? true : false}
             onChange={(e) => {
-              setPromptType(e.target.value);
+              if (e.target.value === "negative") setPromptType(e.target.value);
             }}
           />
           <label htmlFor="negative" className={classes["type-label"]}>
@@ -161,7 +173,10 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
           placeholder="Name"
           value={presetName.value}
           onChange={(e, isValid) => {
-            setPresetName({ value: e.target.value, isValid });
+            setPresetName({
+              value: e.target.value,
+              isValid: isValid === null ? true : isValid,
+            });
           }}
           validation={{
             required: true,
@@ -175,7 +190,10 @@ const PresetForm = ({ type, id, name, words, onClose }) => {
           placeholder="Trigger words"
           value={presetWords.value}
           onChange={(e, isValid) => {
-            setPresetWords({ value: e.target.value, isValid });
+            setPresetWords({
+              value: e.target.value,
+              isValid: isValid === null ? true : isValid,
+            });
           }}
           validation={{
             required: true,

@@ -36,7 +36,7 @@ export type Validated = {
 
 export type ExtendedOnChange<T = HTMLInputElement> = (
   e: ChangeEvent<T>,
-  isValid: boolean | null,
+  isValid: boolean,
   errorMessage?: string,
 ) => void;
 

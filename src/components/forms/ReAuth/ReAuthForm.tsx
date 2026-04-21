@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, type MouseEvent, type SubmitEvent } from "react";
 import { useEffect } from "react";
 
 import Input from "../../ui/forms/Input";
@@ -13,6 +12,7 @@ import {
   ERROR_MESSAGE_OFFLINE,
   VALIDATION_PASSWORD_MAX_LENGTH,
 } from "../../../variables/constants";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Re-authentication form component.
@@ -29,7 +29,7 @@ import {
  * - Dispatches reAuthUser.
  *
  * @component
- * @returns {JSX.Element} Re-authentication form.
+ * @returns Re-authentication form.
  */
 const ReAuthForm = () => {
   const [password, setPassword] = useState({
@@ -38,10 +38,10 @@ const ReAuthForm = () => {
   });
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
-  const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
-  const isLoading = useSelector((state) => state.auth.isLoading);
+  const errorMessageAuth = useAppSelector((state) => state.auth.errorMessage);
+  const isLoading = useAppSelector((state) => state.auth.isLoading);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     return () => {
@@ -49,7 +49,7 @@ const ReAuthForm = () => {
     };
   }, [dispatch]);
 
-  const authHandlerPass = async (e) => {
+  const authHandlerPass = async (e: SubmitEvent) => {
     e.preventDefault();
     dispatch(authActions.setErrorMessage(""));
     setShowErrorMessage(true);
@@ -65,7 +65,7 @@ const ReAuthForm = () => {
     }
   };
 
-  const authHandlerPopup = async (e) => {
+  const authHandlerPopup = async (e: MouseEvent) => {
     e.preventDefault();
     dispatch(authActions.setErrorMessage(""));
     setShowErrorMessage(true);
@@ -90,7 +90,10 @@ const ReAuthForm = () => {
             showErrorMessage && !password.isValid ? classes.invalid : ""
           }`}
           onChange={(e, isValid) => {
-            setPassword({ value: e.target.value, isValid });
+            setPassword({
+              value: e.target.value,
+              isValid: isValid === null ? true : isValid,
+            });
           }}
           validation={{
             required: true,

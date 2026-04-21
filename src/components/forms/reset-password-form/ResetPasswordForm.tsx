@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, type SubmitEvent } from "react";
 
 import classes from "./ResetPasswordForm.module.scss";
 import Input from "../../ui/forms/Input";
@@ -8,6 +7,7 @@ import { resetUserPassword } from "../../../store/auth";
 import Button from "../../ui/buttons/Button";
 import { VALIDATION_EMAIL_MAX_LENGTH } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Reset Password form component.
@@ -23,7 +23,7 @@ import SuccessMessage from "../../ui/SuccessMessage";
  * - Dispatches resetUserPassword action.
  *
  * @component
- * @returns {JSX.Element} Reset Password form.
+ * @returns Reset Password form.
  */
 const ResetPasswordForm = () => {
   const [email, setEmail] = useState({
@@ -31,12 +31,12 @@ const ResetPasswordForm = () => {
     isValid: false,
   });
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const errorMessageAuth = useSelector((state) => state.auth.errorMessage);
-  const successMessage = useSelector((state) => state.auth.successMessage);
-  const isLoading = useSelector((state) => state.auth.isLoading);
-  const dispatch = useDispatch();
+  const errorMessageAuth = useAppSelector((state) => state.auth.errorMessage);
+  const successMessage = useAppSelector((state) => state.auth.successMessage);
+  const isLoading = useAppSelector((state) => state.auth.isLoading);
+  const dispatch = useAppDispatch();
 
-  const resetPassHandler = (e) => {
+  const resetPassHandler = (e: SubmitEvent) => {
     e.preventDefault();
     setShowErrorMessage(true);
 

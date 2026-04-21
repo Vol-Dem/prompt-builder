@@ -28,7 +28,7 @@ import type { AppThunk } from "./store";
 import type { TagSet } from "../types/prompt.types";
 import { AppError, handleErrors, normalizeError } from "../utils/generalUtils";
 import type { PostInfo } from "../types/upload.types";
-import type { ModelCategories, ModelCategory } from "../../shared/types/user";
+import type { ModelCategory } from "../../shared/types/user";
 import type { PostSavedData } from "../types/collections.types";
 
 const firestore = getFirestore(firebaseApp);

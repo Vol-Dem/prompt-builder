@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
 import classes from "./SaveImageForm.module.scss";
 import Input from "../../ui/forms/Input";
@@ -16,16 +15,42 @@ import {
   VALIDATION_POST_URL_MAX_LENGTH,
   ERROR_MESSAGE_INVALID_POST_ID,
   URL_CIV_IMAGES,
+  ERROR_MESSAGE_CIV_CONNECTION,
 } from "../../../variables/constants";
 import ChooseImageForm from "../choose-image-form/ChooseImageForm";
 import { uploadActions } from "../../../store/upload";
-import BackSvg from "../../../assets/BackSvg";
-import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
+import {
+  AppError,
+  handleErrors,
+  normalizeError,
+} from "../../../utils/generalUtils";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import InfoPostId from "../../general-elements/info/InfoPostId";
 import { getPostIdFromInput } from "../../../utils/imageUtils";
 import { fixCivImagesMeta } from "../../../../shared/utils";
-// import { fixCivImagesMeta } from "../../../utils/tempUtils";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type {
+  ModelData,
+  ResourceFirestoreCollection,
+} from "../../../types/models.types";
+import type { CollectionSavedPost } from "../../../../shared/types/collection";
+import type { CollectionData } from "../../../types/collections.types";
+import type {
+  ModelSavedImages,
+  ModelSavedPostInfo,
+} from "../../../../shared/types/model";
+import type { Image } from "../../../../shared/types/image";
+import type { UploadingCollectionData } from "../../../types/upload.types";
+import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
+
+type SaveImageForm = {
+  modelData?: ModelData;
+  curVersion?: number;
+  location: ResourceFirestoreCollection;
+  collectionInfo?: CollectionData;
+  savedPosts?: CollectionSavedPost[];
+  savedModelPosts?: ModelSavedImages;
+};
 
 /**
  * Save Image form component.
@@ -67,23 +92,25 @@ const SaveImageForm = ({
   collectionInfo,
   savedPosts,
   savedModelPosts,
-}) => {
+}: SaveImageForm) => {
   const [filterDisabledInput, setFilterDisabledInput] = useState(true);
   const [imagesListIsOpen, setImagesListIsOpen] = useState(false);
-  const [images, setImages] = useState([]);
-  const [postData, setPostData] = useState({});
-  const [savedImageIds, setSavedImageIds] = useState([]);
+  const [images, setImages] = useState<Image[]>([]);
+  const [postData, setPostData] = useState<
+    CollectionSavedPost | ModelSavedPostInfo | null
+  >(null);
+  const [savedImageIds, setSavedImageIds] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [successMessage, seteSuccessMessage] = useState("");
-  const [versionIdInput, setVersionIdInput] = useState(
-    curVersion || modelData?.data?.modelVersions[0].id,
+  const [versionIdInput, setVersionIdInput] = useState<number | null>(
+    curVersion || modelData?.data?.modelVersions[0].id || null,
   );
   const [postIdInput, setPostIdInput] = useState({ value: "", isValid: false });
-  const nsfwMode = useSelector((state) => state.general.nsfwMode);
-  const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
-  const dispatch = useDispatch();
+  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const nsfwLevel = useAppSelector((state) => state.general.nsfwLevel);
+  const dispatch = useAppDispatch();
 
   const loadPostImagesHandler = async () => {
     try {
@@ -92,10 +119,10 @@ const SaveImageForm = ({
       setShowErrorMessage(true);
 
       if (!postIdInput.isValid) {
-        throwCustomError(ERROR_MESSAGE_INPUT_DEF);
+        throw new AppError(ERROR_MESSAGE_INPUT_DEF);
       }
       if (!navigator?.onLine) {
-        throwCustomError(ERROR_MESSAGE_OFFLINE);
+        throw new AppError(ERROR_MESSAGE_OFFLINE);
       }
 
       if (!postIdInput?.value) return;
@@ -105,7 +132,7 @@ const SaveImageForm = ({
       const postId = getPostIdFromInput(postIdInput.value);
 
       if (!postId) {
-        throwCustomError(ERROR_MESSAGE_INVALID_POST_ID);
+        throw new AppError(ERROR_MESSAGE_INVALID_POST_ID);
       }
 
       const imgExampleResponse = await fetch(
@@ -115,14 +142,20 @@ const SaveImageForm = ({
             : ""
         }&nsfw=${nsfwLevel}`,
       );
-      const data = await imgExampleResponse.json();
+      console.log(imgExampleResponse);
+
+      if (imgExampleResponse.status === 500) {
+        throw new AppError(ERROR_MESSAGE_CIV_CONNECTION);
+      }
+      const data = (await imgExampleResponse.json()) as { items: Image[] };
+      console.log(data);
 
       setImages(fixCivImagesMeta(data.items));
 
-      let curPostData;
-      let curImageIds;
+      let curPostData = null;
+      let curImageIds = null;
 
-      if (location === "models") {
+      if (location === "models" && savedModelPosts && versionIdInput) {
         curPostData = savedModelPosts[versionIdInput]?.find(
           (post) => post.postId === postId,
         );
@@ -135,30 +168,39 @@ const SaveImageForm = ({
 
       if (curPostData) {
         setPostData(curPostData);
-        setSavedImageIds(curImageIds);
+        setSavedImageIds(curImageIds || []);
       }
 
       if (!data?.items?.length) {
-        throwCustomError(ERROR_MESSAGE_EMPTY);
+        throw new AppError(ERROR_MESSAGE_EMPTY);
       }
 
       setImagesListIsOpen(true);
       setIsLoading(false);
     } catch (err) {
-      setErrorMessage(handleErrors(err));
+      const errorMessage = handleErrors(normalizeError(err));
+      setErrorMessage(errorMessage);
       setIsLoading(false);
     }
   };
 
-  let versionSelectOption = modelData?.data?.modelVersions?.map((version) => {
+  let versionSelectOptions = modelData?.data?.modelVersions?.map((version) => {
     return {
       name: version.name,
       value: version.id,
     };
   });
 
-  const saveExampleHandler = async (location, ids, collectionData) => {
+  const saveExampleHandler = async (
+    location: ResourceFirestoreCollection,
+    ids: number[] | null,
+    collectionData: UploadingCollectionData | null,
+  ) => {
     const postId = getPostIdFromInput(postIdInput.value);
+
+    if (!postId) {
+      throw new AppError(ERROR_MESSAGE_INVALID_POST_ID);
+    }
 
     const imagesForSaving = ids?.length
       ? images.filter((image) => ids.includes(image?.id))
@@ -166,8 +208,13 @@ const SaveImageForm = ({
 
     let curPostData;
 
-    if (location === "models" && Object.hasOwn(modelData, "savedImages")) {
-      curPostData = modelData?.savedImages[versionIdInput?.value]?.find(
+    if (
+      location === "models" &&
+      modelData &&
+      versionIdInput &&
+      Object.hasOwn(modelData, "savedImages")
+    ) {
+      curPostData = modelData?.savedImages[versionIdInput]?.find(
         (post) => post.postId === +postId,
       );
     }
@@ -179,9 +226,9 @@ const SaveImageForm = ({
     dispatch(
       uploadActions.addToQueue({
         postId: postId,
-        modelId: +modelData?.id || null,
+        modelId: modelData?.id || null,
         modelName: modelData?.name || null,
-        versionId: +versionIdInput || null,
+        versionId: versionIdInput ? +versionIdInput : null,
         nsfwMode,
         postData: curPostData || null,
         imgUrl: imagesForSaving[0].url,
@@ -201,12 +248,14 @@ const SaveImageForm = ({
     <>
       {imagesListIsOpen && (
         <button
+          type="button"
+          title="Back"
           className={classes["btn-back"]}
           onClick={() => {
             setImagesListIsOpen(false);
           }}
         >
-          <BackSvg />
+          <ArrowUturnLeftIcon />
         </button>
       )}
       <div
@@ -214,16 +263,16 @@ const SaveImageForm = ({
           imagesListIsOpen ? classes["hidden"] : ""
         }`}
       >
-        {location === "models" && (
+        {location === "models" && versionSelectOptions && (
           <Select
             label="Select version:"
             name="curVersionId"
             id="version-select"
-            selected={versionIdInput}
+            selected={versionIdInput || undefined}
             onChange={(value) => {
-              setVersionIdInput(value);
+              setVersionIdInput(+value);
             }}
-            options={versionSelectOption}
+            options={versionSelectOptions}
           />
         )}
         <Input
@@ -259,7 +308,6 @@ const SaveImageForm = ({
             <Checkbox
               id="filter"
               label="Show only images related to this model"
-              value={filterDisabledInput}
               checked={filterDisabledInput}
               className={classes["checkbox"]}
               onChange={(e) => {
@@ -283,7 +331,6 @@ const SaveImageForm = ({
       </div>
       {imagesListIsOpen && (
         <ChooseImageForm
-          postId={getPostIdFromInput(postIdInput.value)}
           type="save"
           postData={postData}
           savedImageIds={savedImageIds}
@@ -292,9 +339,6 @@ const SaveImageForm = ({
           collectionInfo={collectionInfo}
           images={images}
           onSave={saveExampleHandler}
-          onClose={() => {
-            setImagesListIsOpen(false);
-          }}
         />
       )}
     </>

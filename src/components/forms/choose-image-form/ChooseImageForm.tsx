@@ -16,25 +16,25 @@ import type {
   UploadingCollectionData,
   UploadingPostData,
 } from "../../../types/upload.types";
-import type { AddCollectionData } from "../../../types/collections.types";
 import { CheckIcon } from "@heroicons/react/24/outline";
+import type { CollectionSavedPost } from "../../../../shared/types/collection";
 
 type ChooseImageFormProps = {
   type: "del" | "save";
   location: ResourceFirestoreCollection | null;
-  collectionInfo?: AddCollectionData;
+  collectionInfo?: UploadingCollectionData;
   images: Image[];
-  modelId: number;
-  versionId: number;
-  activeImageIndex: number;
+  modelId?: number;
+  versionId?: number;
+  activeImageIndex?: number;
   onSave: (
     location: ResourceFirestoreCollection,
     ids: number[] | null,
     collectionData: UploadingCollectionData | null,
     postData?: UploadingPostData | null,
   ) => void;
-  isDeleting: boolean;
-  postData: ModelSavedPostInfo | null;
+  isDeleting?: boolean;
+  postData: ModelSavedPostInfo | CollectionSavedPost | null;
   savedImageIds: number[];
 };
 

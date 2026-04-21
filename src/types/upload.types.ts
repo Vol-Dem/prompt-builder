@@ -1,16 +1,9 @@
 import type { Image } from "../../shared/types/image";
-import type {
-  CollectionName,
-  CollectionSubcategory,
-  ModelCategory,
-} from "../../shared/types/user";
+import type { CollectionData } from "./collections.types";
 import type { ResourceFirestoreCollection } from "./models.types";
 
-export interface UploadingCollectionData {
-  collectionData: CollectionName;
-  categoryData: ModelCategory;
-  subcategoriesData: CollectionSubcategory[];
-  curCollectionSabcategories: string[];
+export interface UploadingCollectionData extends CollectionData {
+  curCollectionSabcategories?: string[];
 }
 
 export interface UploadingPostData {
@@ -33,7 +26,7 @@ export interface UploadingItem {
   imgUrl: string;
   location: ResourceFirestoreCollection;
   modelId: number | null;
-  modelName?: string;
+  modelName?: string | null;
   nsfwMode: boolean;
   postData?: UploadingPostData | null;
   postId: number;
@@ -50,7 +43,7 @@ export interface PostInfo {
   ids: number[];
   images?: Image[];
   imgUrl: string;
-  modelName?: string;
+  modelName?: string | null;
   nsfwMode: boolean;
   delete?: boolean;
   collectionData: Record<string, any> | null;

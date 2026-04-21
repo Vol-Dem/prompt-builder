@@ -18,7 +18,7 @@ import {
   ERROR_MESSAGE_INVALID_DATA,
   SETTINGS_FORCE_UPDATE_POST_DATA,
   SETTINGS_SFW_RANGE,
-  // URL_CIV_IMAGES,
+  URL_CIV_IMAGES,
 } from "../../variables/constants";
 import { fetchData, makeBatchRequest } from "./fetchUtils";
 import { AppError, filterDuplicates, normalizeError } from "../generalUtils";
@@ -26,7 +26,7 @@ import { parseModelIds } from "../modelUtils";
 import { combineImagesData, getUniqImageResources } from "../imageUtils";
 import {
   clearFileExtension,
-  // fixCivImagesMeta,
+  fixCivImagesMeta,
   transformImageData,
 } from "../../../shared/utils";
 import type {
@@ -272,19 +272,19 @@ export const updateImagePostData = async (
       );
     }
 
-    // if (!imagesData[0]?.meta?.prompt && isTester) {
-    //   const imgExampleResponse = await fetch(
-    //     `${URL_CIV_IMAGES}?postId=${postId}&nsfw=X`,
-    //   );
-    //   const data = (await imgExampleResponse.json()) as { items: Image[] };
+    if (!imagesData[0]?.meta?.prompt && isTester) {
+      const imgExampleResponse = await fetch(
+        `${URL_CIV_IMAGES}?postId=${postId}&nsfw=X`,
+      );
+      const data = (await imgExampleResponse.json()) as { items: Image[] };
 
-    //   if (data?.items?.length)
-    //     combinedImgData = combineImagesData(
-    //       imagesData,
-    //       fixCivImagesMeta(data.items),
-    //       isTester,
-    //     );
-    // }
+      if (data?.items?.length)
+        combinedImgData = combineImagesData(
+          imagesData,
+          fixCivImagesMeta(data.items),
+          isTester,
+        );
+    }
 
     // console.log(imagesData);
     // console.log(curPostData?.items);

@@ -46,19 +46,15 @@ export interface PostSavedData {
   postId: number;
 }
 
-export interface EditCollectionData {
+export interface CollectionData {
   collectionData: CollectionName;
-  categoryData: CollectionCategory;
-  subcategoriesData: CollectionSubcategory[];
-  description: string;
-  nsfw: boolean;
+  categoryData?: { id?: string | null; name?: string | null };
+  subcategoriesData?: CollectionSubcategory[];
 }
 
-export interface AddCollectionData {
-  collectionData: CollectionName;
-  categoryData: CollectionCategory;
-  subcategoriesData: CollectionSubcategory[];
-  curCollectionSabcategories: string[];
+export interface EditCollectionData extends CollectionData {
+  description: string;
+  nsfw: boolean;
 }
 
 export type SuggestedCollectionsSortType = "category" | "name";

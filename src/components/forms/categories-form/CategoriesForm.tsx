@@ -21,7 +21,6 @@ import {
   AppError,
   handleErrors,
   normalizeError,
-  throwCustomError,
 } from "../../../utils/generalUtils";
 import { updateCollectionCategories } from "../../../store/images";
 import type { ResourceFirestoreCollection } from "../../../types/models.types";
@@ -33,7 +32,7 @@ import { useAppDispatch } from "../../../store/hooks/hooks";
 
 type CategoriesFormProps = {
   modelType: ResourceFirestoreCollection;
-  activeCategory: string;
+  activeCategory: string | null;
   categories: ModelCategory[] | CollectionCategory[];
 };
 
@@ -185,11 +184,11 @@ const CategoriesForm = ({
       );
 
       if (existedName) {
-        throwCustomError(`The category "${categoryName}" already exists`);
+        throw new AppError(`The category "${categoryName}" already exists`);
       }
 
       if (!navigator?.onLine) {
-        throwCustomError(ERROR_MESSAGE_OFFLINE);
+        throw new AppError(ERROR_MESSAGE_OFFLINE);
       }
 
       const updatedCategories = categoriesToUpdate?.map((category) => {
