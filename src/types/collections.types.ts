@@ -48,8 +48,8 @@ export interface PostSavedData {
 
 export interface CollectionData {
   collectionData: CollectionName;
-  categoryData?: { id?: string | null; name?: string | null };
-  subcategoriesData?: CollectionSubcategory[];
+  categoryData: { id?: string | null; name?: string | null };
+  subcategoriesData: CollectionSubcategory[];
 }
 
 export interface EditCollectionData extends CollectionData {
@@ -58,3 +58,10 @@ export interface EditCollectionData extends CollectionData {
 }
 
 export type SuggestedCollectionsSortType = "category" | "name";
+
+export type SuggestedCollection = {
+  categoryId: string;
+  categoryName: string;
+  collectionId: number;
+  collectionName: string;
+};

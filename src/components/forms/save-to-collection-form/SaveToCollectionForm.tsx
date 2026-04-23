@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useMemo, useState, type SubmitEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
@@ -15,14 +14,17 @@ import {
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
   ERROR_MESSAGE_INPUT_DEF,
   SUCCESS_MESSAGE_SAVED,
+  SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT,
 } from "../../../variables/constants";
 import ComboSelect from "../../ui/forms/ComboSelect";
 import Fieldset from "../../ui/forms/Fieldset";
 import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
-import CrossSvg from "../../../assets/CrossSvg";
 import {
+  cloneObject,
   filterDuplicates,
+  handleErrors,
+  normalizeError,
   sortArrayBy,
   throwCustomError,
 } from "../../../utils/generalUtils";
@@ -30,18 +32,43 @@ import { addNewCollectionCategories } from "../../../store/images";
 import SuccessMessage from "../../ui/SuccessMessage";
 import { getCollectionData } from "../../../utils/fetch/fetchCollection";
 import SuggestedCollections from "./SuggestedCollections";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type { Image } from "../../../../shared/types/image";
+import type { SuggestedCollection } from "../../../types/collections.types";
+import type { SubcategoryDefInputData } from "../../../types/forms.types";
+import { FORMS_SUBCATEGORY_INPUT_DEF } from "../../../variables/structures";
+import type { SelectOption } from "../../../types/general.types";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import type { CollectionSavedPost } from "../../../../shared/types/collection";
+import type {
+  UploadingCollectionData,
+  UploadingPostData,
+} from "../../../types/upload.types";
+import type { ResourceFirestoreCollection } from "../../../types/models.types";
 
-const SUBCATEGORIES_MAX_AMOUNT = 8;
-const subCatsDefData = {
-  type: "text",
-  id: "subcat-def",
-  name: "sub",
-  placeholder: "Subcategory",
-  value: "",
-  query: "",
-  selected: { id: null, name: "" },
-  isValid: true,
-  errorMessage: "",
+type SaveToCollectionFormProps = {
+  postId: number;
+  images: Image[];
+  activeImageIndex: number;
+  onSave: (
+    location: ResourceFirestoreCollection,
+    ids: number[] | null,
+    collectionData: UploadingCollectionData | null,
+    postData?: UploadingPostData | null,
+  ) => void;
+};
+
+type CollectionNameSelected = {
+  name: string;
+  id: number | null;
+  isValid: boolean;
+  errorMessage?: string;
+};
+type MainCategorySelected = {
+  name: string;
+  id: string | null;
+  isValid: boolean;
+  errorMessage?: string;
 };
 
 /**
@@ -81,34 +108,45 @@ const subCatsDefData = {
  *        Callback forwarded to ChooseImageForm after successful submit.
  * @returns {JSX.Element} Save to Collection form.
  */
-const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
+const SaveToCollectionForm = ({
+  postId,
+  images,
+  activeImageIndex,
+  onSave,
+}: SaveToCollectionFormProps) => {
   const [chooseImageIsOpen, setChooseImageIsOpen] = useState(false);
   const [collectionInfoIsLoading, setCollectionInfoIsLoading] = useState(false);
-  const [collectionInfo, setCollectionInfo] = useState({});
-  const [savedPostData, setSavedPostData] = useState({});
+  const [collectionInfo, setCollectionInfo] =
+    useState<UploadingCollectionData | null>(null);
+  const [savedPostData, setSavedPostData] =
+    useState<CollectionSavedPost | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [mainCategoryQuery, setMainCategoryQuery] = useState("");
-  const [mainCategorySelected, setMainCategorySelected] = useState({
-    name: "",
-    id: "",
-    isValid: false,
-  });
+  const [mainCategorySelected, setMainCategorySelected] =
+    useState<MainCategorySelected>({
+      name: "",
+      id: "",
+      isValid: false,
+    });
   const [collectionNameQuery, setCollectionNameQuery] = useState("");
-  const [collectionNameSelected, setCollectionNameSelected] = useState({
-    name: "",
-    id: "",
-    isValid: false,
-  });
-  const [subCatInputs, setSubCatInputs] = useState([]);
-  const [subCategoryQuery, setSubCategoryQuery] = useState("");
+  const [collectionNameSelected, setCollectionNameSelected] =
+    useState<CollectionNameSelected>({
+      name: "",
+      id: null,
+      isValid: false,
+    });
+  const [subcategoryInputs, setSubcategoryInputs] = useState<
+    SubcategoryDefInputData[]
+  >([]);
+  const [subcategoryQuery, setSubcategoryQuery] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
-  const categories = useSelector((state) => state.images.categories);
-  const dispatch = useDispatch();
+  const categories = useAppSelector((state) => state.images.categories);
+  const dispatch = useAppDispatch();
 
   const selectCollectionFromSuggestedListHandler = (
-    suggestedCollectionData,
+    suggestedCollectionData: SuggestedCollection,
   ) => {
     setMainCategorySelected({
       name: suggestedCollectionData.categoryName,
@@ -132,7 +170,7 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
     return sortArrayBy(categoriesOptions, "name");
   }, [categories, mainCategoryQuery]);
 
-  const inputSubcatIds = subCatInputs.flatMap((subcat) => {
+  const inputSubcatIds = subcategoryInputs.flatMap((subcat) => {
     if (!subcat?.selected?.id) {
       return [];
     }
@@ -164,39 +202,64 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
   )?.subcategories;
 
   const subCategoryOptions =
-    sortArrayBy(
-      subcategories?.filter((subcategory) =>
-        subcategory.name
-          .toLowerCase()
-          .includes(subCategoryQuery.trim().toLowerCase()),
-      ),
-      "name",
-    ) || [];
+    (subcategories &&
+      sortArrayBy(
+        subcategories.filter((subcategory) =>
+          subcategory.name
+            .toLowerCase()
+            .includes(subcategoryQuery.trim().toLowerCase()),
+        ),
+        "name",
+      )) ||
+    [];
 
-  const selectMainCategoryHandler = (value, isValid, errorMessage) => {
-    setMainCategorySelected({ ...value, isValid, errorMessage });
+  const selectMainCategoryHandler = (
+    value: SelectOption<string> | null,
+    isValid: boolean | null,
+    errorMessage?: string,
+  ) => {
+    if (!value) return;
+
+    setMainCategorySelected({
+      ...value,
+      isValid: isValid === null ? true : isValid,
+      errorMessage: errorMessage || "",
+    });
     setCollectionNameSelected({
       name: "",
-      id: "",
+      id: null,
       isValid: false,
     });
-    setSubCatInputs([
-      { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
-    ]);
+    setSubcategoryInputs([cloneObject(FORMS_SUBCATEGORY_INPUT_DEF)]);
   };
 
-  const selectCollectionNameHandler = (value, isValid, errorMessage) => {
-    setCollectionNameSelected({ ...value, isValid, errorMessage });
+  const selectCollectionNameHandler = (
+    value: SelectOption<number> | null,
+    isValid: boolean | null,
+    errorMessage?: string,
+  ) => {
+    if (!value) return;
+
+    setCollectionNameSelected({
+      ...value,
+      isValid: isValid === null ? true : isValid,
+      errorMessage: errorMessage || "",
+    });
   };
 
   useEffect(() => {
-    setSubCatInputs([
-      { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
-    ]);
+    setSubcategoryInputs([cloneObject(FORMS_SUBCATEGORY_INPUT_DEF)]);
   }, []);
 
-  const subCatSelectHandler = (value, isValid, errorMessage, id) => {
-    setSubCatInputs((prevState) => {
+  const subCatSelectHandler = (
+    value: SelectOption<string> | null,
+    isValid: boolean | null,
+    errorMessage?: string,
+    id?: string,
+  ) => {
+    if (!value) return;
+
+    setSubcategoryInputs((prevState) => {
       const newState = [...prevState];
 
       const curIndex = newState.findIndex((imageId) => {
@@ -206,19 +269,20 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
       if (curIndex < 0) return prevState;
 
       newState[curIndex].selected = value;
-      newState[curIndex].isValid = isValid;
-      newState[curIndex].errorMessage = errorMessage;
+      newState[curIndex].isValid = isValid === null ? true : isValid;
+      newState[curIndex].errorMessage = errorMessage || "";
 
       return newState;
     });
   };
 
   const addSubHandler = () => {
-    if (subCatInputs.length >= SUBCATEGORIES_MAX_AMOUNT) return;
-    const newFields = [...subCatInputs];
+    if (subcategoryInputs.length >= SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT)
+      return;
+    const newFields = [...subcategoryInputs];
     newFields.push({
       type: "text",
-      id: Date.now(),
+      id: Date.now() + "",
       name: "sub",
       placeholder: "Subcategory",
       value: "",
@@ -228,21 +292,21 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
       errorMessage: "",
     });
 
-    setSubCatInputs(newFields);
+    setSubcategoryInputs(newFields);
   };
 
-  const deleteSubcategoryInputHandler = (index) => {
-    setSubCatInputs((prevState) => {
+  const deleteSubcategoryInputHandler = (index: number) => {
+    setSubcategoryInputs((prevState) => {
       return prevState.toSpliced(index, 1);
     });
   };
 
-  const subCatHtml = subCatInputs.map((sub, i) => {
+  const subCatHtml = subcategoryInputs.map((sub, i) => {
     return (
       <motion.div
         layout
         key={sub.id}
-        initial={i ? ANIMATIONS_FM_SLIDEOUT_INITIAL : null}
+        initial={i ? ANIMATIONS_FM_SLIDEOUT_INITIAL : false}
         animate={ANIMATIONS_FM_SLIDEOUT}
         exit={ANIMATIONS_FM_FADEOUT_EXIT}
         className={classes["subcategory"]}
@@ -250,8 +314,8 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
         <ComboSelect
           id={sub.id}
           optionsData={subCategoryOptions || []}
-          query={subCategoryQuery}
-          setQuery={setSubCategoryQuery}
+          query={subcategoryQuery}
+          setQuery={setSubcategoryQuery}
           setSelected={subCatSelectHandler}
           selected={{ ...sub.selected }}
           placeholder="Subcategory"
@@ -267,19 +331,19 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
             className={classes["input__btn-del"]}
             onClick={deleteSubcategoryInputHandler.bind(null, i)}
           >
-            <CrossSvg />
+            <XMarkIcon />
           </ButtonTertiary>
         )}
       </motion.div>
     );
   });
 
-  const submitHandler = async (e) => {
+  const submitHandler = async (e: SubmitEvent) => {
     try {
       e.preventDefault();
       setErrorMessage("");
       setSuccessMessage("");
-      const subcategoriesIsInvalid = !!subCatInputs.find(
+      const subcategoriesIsInvalid = !!subcategoryInputs.find(
         (subcategory) => !subcategory.isValid,
       );
       if (
@@ -291,23 +355,20 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
       }
       setCollectionInfoIsLoading(true);
 
-      let curCollectionSabcategories;
-      let postData;
+      let curCollectionSabcategories: string[] = [];
+      let postData: CollectionSavedPost | null = null;
 
       if (mainCategorySelected?.id && collectionNameSelected?.id) {
         const collectionData = await getCollectionData(
           collectionNameSelected.id,
         );
-        postData = collectionData?.posts?.find(
-          (post) => post.postId === postId,
-        );
+        postData =
+          collectionData?.posts?.find((post) => post.postId === postId) || null;
 
         curCollectionSabcategories = collectionData.subcategories;
-      } else {
-        curCollectionSabcategories = [];
       }
 
-      const inputSubcatsData = subCatInputs.flatMap((subcat) => {
+      const inputSubcatsData = subcategoryInputs.flatMap((subcat) => {
         if (!subcat?.selected?.name) {
           return [];
         }
@@ -350,7 +411,8 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
 
       setSuccessMessage(SUCCESS_MESSAGE_SAVED);
     } catch (err) {
-      setErrorMessage(err.errorMessage);
+      const errorMessage = handleErrors(normalizeError(err));
+      setErrorMessage(errorMessage);
       setShowErrorMessage(true);
     } finally {
       setCollectionInfoIsLoading(false);
@@ -385,7 +447,8 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
               />
               <Fieldset legend="Subcategories">
                 <AnimatePresence>{subCatHtml}</AnimatePresence>
-                {subCatInputs?.length < SUBCATEGORIES_MAX_AMOUNT && (
+                {subcategoryInputs?.length <
+                  SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT && (
                   <ButttonSecondary
                     type="button"
                     id="sub"
@@ -451,12 +514,11 @@ const SaveToCollectionForm = ({ postId, images, activeImageIndex, onSave }) => {
 
       {chooseImageIsOpen && (
         <ChooseImageForm
-          postId={postId}
           type="save"
           location="collections"
           collectionInfo={collectionInfo}
           postData={savedPostData}
-          savedImageIds={savedPostData.imageIds}
+          savedImageIds={savedPostData?.imageIds || null}
           images={images}
           activeImageIndex={activeImageIndex}
           onSave={onSave}

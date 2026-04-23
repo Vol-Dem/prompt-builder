@@ -196,7 +196,7 @@ const Collection = ({ title }: CollectionProps) => {
                     subcategoriesData:
                       activeCategoryData?.subcategories?.filter((subcategory) =>
                         collectionData?.subcategories.includes(subcategory.id),
-                      ),
+                      ) || [],
                   }}
                 />
               </Modal>

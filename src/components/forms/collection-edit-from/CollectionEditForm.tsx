@@ -54,7 +54,7 @@ type CollectionEditFormProps = {
 
 type SelectedInput = {
   name: string;
-  id: string | number | null;
+  id: string | null;
   isValid: boolean;
   errorMessage?: string;
 };
@@ -64,7 +64,7 @@ type SubcategoryInput = {
   id: string | number;
   name: string;
   placeholder: string;
-  selected: SelectOption | null;
+  selected: SelectOption<string> | null;
   isValid: boolean;
   errorMessage: string;
 };
@@ -140,13 +140,17 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
   );
 
   const selectMainCategoryHandler = (
-    value: SelectOption | null,
-    isValid?: boolean,
+    value: SelectOption<string> | null,
+    isValid: boolean | null,
     errorMessage?: string,
   ) => {
     if (!value) return;
 
-    setMainCategorySelected({ ...value, isValid: !!isValid, errorMessage });
+    setMainCategorySelected({
+      ...value,
+      isValid: isValid === null ? true : isValid,
+      errorMessage,
+    });
     setSubCatInputs([
       { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
     ]);
@@ -222,8 +226,8 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
   }, [collectionData, categories]);
 
   const subCatSelectHandler = (
-    value: SelectOption | null,
-    isValid?: boolean,
+    value: SelectOption<string> | null,
+    isValid: boolean | null,
     errorMessage?: string,
     id?: string,
   ) => {
@@ -237,7 +241,7 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
       if (curIndex < 0) return prevState;
 
       newState[curIndex].selected = value;
-      newState[curIndex].isValid = !!isValid;
+      newState[curIndex].isValid = isValid === null ? true : isValid;
       newState[curIndex].errorMessage = errorMessage || "";
 
       return newState;

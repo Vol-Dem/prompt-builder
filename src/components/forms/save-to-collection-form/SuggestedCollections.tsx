@@ -3,21 +3,17 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import { filterDuplicates, sortArrayBy } from "../../../utils/generalUtils";
 import classes from "./SuggestedCollections.module.scss";
 import { ArrowsUpDownIcon } from "@heroicons/react/24/outline";
-import type { SuggestedCollectionsSortType } from "../../../types/collections.types";
+import type {
+  SuggestedCollection,
+  SuggestedCollectionsSortType,
+} from "../../../types/collections.types";
 import { generalActions } from "../../../store/general";
 
 type SuggestedCollectionsProps = {
   images: Image[];
-  selectedCategoryId: string;
-  selectedCollectionId: number;
+  selectedCategoryId: string | null;
+  selectedCollectionId: number | null;
   onSelect: (suggestedCollectionData: SuggestedCollection) => void;
-};
-
-type SuggestedCollection = {
-  categoryId: string;
-  categoryName: string;
-  collectionId: number;
-  collectionName: string;
 };
 
 const SUGGESTED_FILTER_LIST = ["in", "and", "or", "for", "on"];

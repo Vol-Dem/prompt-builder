@@ -7,18 +7,19 @@ import classes from "./ComboSelect.module.scss";
 import useIntersection from "../../../hooks/use-intersection";
 import type { SelectOption } from "../../../types/general.types";
 
-type ComboSelectOptionsProps = ComponentProps<"input"> & {
-  query: string;
-  selected: SelectOption | null;
-  optionsData: SelectOption[];
-};
+type ComboSelectOptionsProps<T extends number | string> =
+  ComponentProps<"input"> & {
+    query: string;
+    selected: SelectOption<T> | null;
+    optionsData: SelectOption<T>[];
+  };
 
-const ComboSelectOptions = ({
+const ComboSelectOptions = <T extends number | string>({
   id,
   query,
   selected,
   optionsData,
-}: ComboSelectOptionsProps) => {
+}: ComboSelectOptionsProps<T>) => {
   const [visibleOptionsIndex, setVisibleOptionsIndex] = useState(0);
   const intersectionElementRef = useRef<HTMLDivElement>(null);
   const intersectionRootRef = useRef<HTMLDivElement>(null);

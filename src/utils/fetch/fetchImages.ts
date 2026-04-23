@@ -280,7 +280,7 @@ export const updateImagePostData = async (
 
       if (data?.items?.length)
         combinedImgData = combineImagesData(
-          imagesData,
+          combinedImgData,
           fixCivImagesMeta(data.items),
           isTester,
         );

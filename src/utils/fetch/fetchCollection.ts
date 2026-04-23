@@ -1,3 +1,4 @@
+import type { CollectionDoc } from "../../../shared/types/firestore";
 import { fetchUserDataFromFirestore } from "./fetchUtils";
 
 /**
@@ -5,6 +6,11 @@ import { fetchUserDataFromFirestore } from "./fetchUtils";
  * @param {number | string} collectionId - The ID of the collection
  * @returns {Promise<Object>} A promise that resolves with the collection data
  */
-export const getCollectionData = async (collectionId: number | string) => {
-  return await fetchUserDataFromFirestore("collections", collectionId + "");
+export const getCollectionData = async (
+  collectionId: number | string,
+): Promise<CollectionDoc> => {
+  return (await fetchUserDataFromFirestore(
+    "collections",
+    collectionId + "",
+  )) as CollectionDoc;
 };

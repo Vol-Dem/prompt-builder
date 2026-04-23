@@ -479,3 +479,7 @@ export const normalizeError = (error: unknown): AppError => {
   // Totally unknown
   return new AppError(ERROR_MESSAGE_DEFAULT, undefined, error, false);
 };
+
+export const cloneObject = <T>(obj: T): T => {
+  return structuredClone(obj);
+};

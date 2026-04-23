@@ -1,10 +1,24 @@
+import type { OverrideFields } from "../../shared/types/general";
 import type { Image } from "../../shared/types/image";
 import type { CollectionData } from "./collections.types";
 import type { ResourceFirestoreCollection } from "./models.types";
 
-export interface UploadingCollectionData extends CollectionData {
-  curCollectionSabcategories?: string[];
-}
+// export interface  UploadingCollectionData extends CollectionData {
+//   curCollectionSabcategories?: string[];
+// }
+
+export type UploadingCollectionData = OverrideFields<
+  CollectionData,
+  {
+    collectionData: {
+      id: number | null;
+      name: string;
+      subcategories?: string[];
+    };
+    subcategoriesData: { id: string | null; name: string }[];
+    curCollectionSabcategories?: string[];
+  }
+>;
 
 export interface UploadingPostData {
   imagesId?: number[];

@@ -22,7 +22,7 @@ import type { CollectionSavedPost } from "../../../../shared/types/collection";
 type ChooseImageFormProps = {
   type: "del" | "save";
   location: ResourceFirestoreCollection | null;
-  collectionInfo?: UploadingCollectionData;
+  collectionInfo?: UploadingCollectionData | null;
   images: Image[];
   modelId?: number;
   versionId?: number;
@@ -35,7 +35,7 @@ type ChooseImageFormProps = {
   ) => void;
   isDeleting?: boolean;
   postData: ModelSavedPostInfo | CollectionSavedPost | null;
-  savedImageIds: number[];
+  savedImageIds: number[] | null;
 };
 
 type VersionStatusInputData = {

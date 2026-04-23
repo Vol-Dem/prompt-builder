@@ -15,17 +15,17 @@ import type {
 } from "../../../types/general.types";
 import ComboSelectOptions from "./ComboSelectOptions";
 
-type ComboSelectProps = ComponentProps<"input"> & {
-  optionsData: SelectOption[];
+type ComboSelectProps<T extends number | string> = ComponentProps<"input"> & {
+  optionsData: SelectOption<T>[];
   query: string;
   setQuery: (value: string) => void;
   setSelected: (
-    value: SelectOption | null,
-    isValid?: boolean,
+    value: SelectOption<T> | null,
+    isValid: boolean | null,
     error?: string,
     id?: string,
   ) => void;
-  selected: SelectOption | null;
+  selected: SelectOption<T> | null;
   loading?: boolean;
   validation: ValidationTypes;
   error?: string;
@@ -59,25 +59,25 @@ type ComboSelectProps = ComponentProps<"input"> & {
  *
  * @component
  *
- * @param {Object} props
- * @param {string} props.id - Field identifier.
- * @param {Array<{ id: string | number, name: string }>} props.optionsData - List of selectable options.
- * @param {string} props.query - Current search query.
- * @param {(value: string, isUserInput?: boolean, error?: string, id?: string) => void} props.setQuery - Updates the search query.
- * @param {(value: Object, isValid?: boolean, error?: string, id?: string) => void} props.setSelected - Callback triggered when an option is selected or created.
- * @param {{ id: string | number, name: string } | null} props.selected - Currently selected option.
- * @param {string} props.placeholder - Input placeholder.
- * @param {boolean} props.loading - Whether options are loading.
- * @param {boolean} props.disabled - Whether the field is disabled.
- * @param {Object} [props.validation] - Validation rules passed to `validateInput`.
- * @param {string} [props.error] - External error message.
- * @param {boolean} props.showError - Whether to display validation error.
- * @param {(e: React.FocusEvent) => void} [props.onBlur] - Blur event handler.
- * @param {string} [props.label] - Optional field label.
+ * @param props
+ * @param props.id - Field identifier.
+ * @param props.optionsData - List of selectable options.
+ * @param props.query - Current search query.
+ * @param props.setQuery - Updates the search query.
+ * @param props.setSelected - Callback triggered when an option is selected or created.
+ * @param props.selected - Currently selected option.
+ * @param props.placeholder - Input placeholder.
+ * @param props.loading - Whether options are loading.
+ * @param props.disabled - Whether the field is disabled.
+ * @param props.validation - Validation rules passed to `validateInput`.
+ * @param props.error - External error message.
+ * @param props.showError - Whether to display validation error.
+ * @param props.onBlur - Blur event handler.
+ * @param props.label - Optional field label.
  *
  * @returns {JSX.Element} ComboSelect input.
  */
-const ComboSelect = ({
+const ComboSelect = <T extends number | string>({
   id,
   optionsData,
   query,
@@ -92,7 +92,7 @@ const ComboSelect = ({
   showError,
   onBlur,
   label,
-}: ComboSelectProps) => {
+}: ComboSelectProps<T>) => {
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
@@ -131,7 +131,7 @@ const ComboSelect = ({
             setSelected(value, isValid, errorMessage, id);
             setInputErrorMessage(errorMessage);
           } else {
-            setSelected(value);
+            setSelected(value, null);
           }
         }}
         onClose={() => setQuery("")}
@@ -153,7 +153,7 @@ const ComboSelect = ({
                     ? classes["select--error"]
                     : ""
                 }`}
-                displayValue={(options: SelectOption) => options?.name}
+                displayValue={(options: SelectOption<T>) => options?.name}
                 onChange={(event) => {
                   setQuery(event.target.value);
                 }}

@@ -40,4 +40,11 @@ export type ExtendedOnChange<T = HTMLInputElement> = (
   errorMessage?: string,
 ) => void;
 
-export type SelectOption = { id: string | number | null; name: string };
+// export type SelectOption<T = number | string> = {
+//   id: T | null;
+//   name: string;
+// };
+export type SelectOption<T extends number | string> = {
+  id: T | null;
+  name: string;
+};

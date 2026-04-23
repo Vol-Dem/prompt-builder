@@ -590,7 +590,7 @@ export const editCollectionData = ({
         addNewCollectionCategories({
           collectionData,
           categoryData,
-          subcategoriesData,
+          subcategoriesData: subcategoriesData || [],
           curCollectionSabcategories:
             subcategoriesData?.map((sub) => sub.id)?.filter(Boolean) || [],
         }),

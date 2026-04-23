@@ -142,13 +142,11 @@ const SaveImageForm = ({
             : ""
         }&nsfw=${nsfwLevel}`,
       );
-      console.log(imgExampleResponse);
 
       if (imgExampleResponse.status === 500) {
         throw new AppError(ERROR_MESSAGE_CIV_CONNECTION);
       }
       const data = (await imgExampleResponse.json()) as { items: Image[] };
-      console.log(data);
 
       setImages(fixCivImagesMeta(data.items));
 
