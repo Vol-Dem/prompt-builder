@@ -36,7 +36,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import type { Image } from "../../../../shared/types/image";
 import type { SuggestedCollection } from "../../../types/collections.types";
 import type { SubcategoryDefInputData } from "../../../types/forms.types";
-import { FORMS_SUBCATEGORY_INPUT_DEF } from "../../../variables/structures";
+import { FORMS_DEF_SUBCATEGORY_INPUT } from "../../../variables/structures";
 import type { SelectOption } from "../../../types/general.types";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { CollectionSavedPost } from "../../../../shared/types/collection";
@@ -230,7 +230,7 @@ const SaveToCollectionForm = ({
       id: null,
       isValid: false,
     });
-    setSubcategoryInputs([cloneObject(FORMS_SUBCATEGORY_INPUT_DEF)]);
+    setSubcategoryInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
   };
 
   const selectCollectionNameHandler = (
@@ -248,7 +248,7 @@ const SaveToCollectionForm = ({
   };
 
   useEffect(() => {
-    setSubcategoryInputs([cloneObject(FORMS_SUBCATEGORY_INPUT_DEF)]);
+    setSubcategoryInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
   }, []);
 
   const subCatSelectHandler = (

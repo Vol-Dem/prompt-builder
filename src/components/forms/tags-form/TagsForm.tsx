@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type SubmitEvent } from "react";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
-import { useDispatch, useSelector } from "react-redux";
 
 import firebaseApp from "../../../firebase-config";
 import classes from "./TagsForm.module.scss";
@@ -16,14 +15,32 @@ import {
   ERROR_MESSAGE_OFFLINE,
   SUCCESS_MESSAGE_UPLOADED,
   VALIDATION_TRIGER_WORDS_MAX_LENGTH,
-  DEFAULT_DATA_TAGSETS_INPUT,
 } from "../../../variables/constants";
 import Spinner from "../../ui/Spinner";
 import { modelActions } from "../../../store/model";
-import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
-import { createTagSetsInputData } from "../../../utils/promptUtils";
+import {
+  AppError,
+  getFormData,
+  handleErrors,
+  normalizeError,
+} from "../../../utils/generalUtils";
+import { createTagSetsInputData, splitTags } from "../../../utils/promptUtils";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type {
+  ModelVersionCustomData,
+  UserModelDefaultCustomData,
+} from "../../../../shared/types/model";
+import { FORMS_DEF_TAGS_INPUT } from "../../../variables/structures";
+import type { TagSetInputData } from "../../../types/prompt.types";
 
 const firestore = getFirestore(firebaseApp);
+
+type TagsFormProps = {
+  versionData: ModelVersionCustomData;
+  defaultData: UserModelDefaultCustomData;
+  modelId: number;
+  onClose: () => void;
+};
 
 /**
  * Tags form component.
@@ -41,14 +58,19 @@ const firestore = getFirestore(firebaseApp);
  *
  * @component
  *
- * @param {object} props
- * @param {string} props.modelId - Model ID.
- * @param {object} props.versionData - Version tags data.
- * @param {object} props.defaultData - Default tags data.
- * @param {() => void} props.onClose - Callback triggered after successful submit to close the form.
- * @returns {JSX.Element} Tags management form.
+ * @param props
+ * @param props.modelId - Model ID.
+ * @param props.versionData - Version tags data.
+ * @param props.defaultData - Default tags data.
+ * @param props.onClose - Callback triggered after successful submit to close the form.
+ * @returns Tags management form.
  */
-const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
+const TagsForm = ({
+  versionData,
+  defaultData,
+  modelId,
+  onClose,
+}: TagsFormProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -66,34 +88,43 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
     value: "",
     isValid: true,
   });
-  const [tagSetsInputs, setTagSetsInputs] = useState([]);
+  const [tagSetsInputs, setTagSetsInputs] = useState<TagSetInputData[]>([]);
 
-  const uid = useSelector((state) => state.auth.user.uid);
-  const model = useSelector((state) => state.model.model);
-  const dispatch = useDispatch();
+  const uid = useAppSelector((state) => state.auth.user.uid);
+  const model = useAppSelector((state) => state.model.model);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (versionData?.mainTag) {
       setMainTagInput({ value: versionData?.mainTag || "", isValid: true });
     }
 
-    if (
-      !!versionData?.trainedWords?.length ||
-      !!defaultData?.trainedWords?.length
-    ) {
-      setTrigerInput(
-        versionData?.trainedWords
-          ? { value: versionData?.trainedWords?.join(", "), isValid: true }
-          : { value: defaultData.trainedWords?.join(", "), isValid: true },
-      );
+    if (!!defaultData?.trainedWords?.length) {
+      setTrigerInput({
+        value: defaultData?.trainedWords?.join(", "),
+        isValid: true,
+      });
+    }
+
+    if (!!versionData?.trainedWords?.length) {
+      setTrigerInput({
+        value: versionData?.trainedWords?.join(", "),
+        isValid: true,
+      });
     }
 
     if (versionData?.helperTags) {
-      setHelperTagsInput({ value: versionData?.helperTags, isValid: true });
+      setHelperTagsInput({
+        value: versionData?.helperTags.join(", "),
+        isValid: true,
+      });
     }
 
     if (versionData?.negativeTags) {
-      setNegativeTagsInput({ value: versionData?.negativeTags, isValid: true });
+      setNegativeTagsInput({
+        value: versionData?.negativeTags.join(", "),
+        isValid: true,
+      });
     }
   }, [versionData, defaultData]);
 
@@ -101,14 +132,13 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
     if (!versionData) return;
 
     setTagSetsInputs(
-      createTagSetsInputData(
-        versionData?.tagSetsData,
-        DEFAULT_DATA_TAGSETS_INPUT,
-      ),
+      createTagSetsInputData(versionData?.tagSetsData, [
+        structuredClone(FORMS_DEF_TAGS_INPUT),
+      ]),
     );
   }, [versionData]);
 
-  const saveVersionHandler = async (e) => {
+  const saveVersionHandler = async (e: SubmitEvent) => {
     try {
       e.preventDefault();
       setErrorMessage("");
@@ -125,36 +155,20 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
         !negativeTagsInput.isValid ||
         tagsetsIsNotValid
       ) {
-        throwCustomError(ERROR_MESSAGE_INPUT_DEF);
+        throw new AppError(ERROR_MESSAGE_INPUT_DEF);
       }
       if (!navigator?.onLine) {
-        throwCustomError(ERROR_MESSAGE_OFFLINE);
+        throw new AppError(ERROR_MESSAGE_OFFLINE);
       }
 
       setIsSaving(true);
 
-      const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
+      const formData = getFormData(e.target);
 
-      const formdata = new FormData(e.target);
-      const mainTag = formdata.get("main-tag").trim();
-      const trainedWords = formdata
-        .get("triger")
-        .trim()
-        .split(splitRegEx)
-        .filter(Boolean)
-        .map((tag) => tag.trim());
-      const helperTags = formdata
-        .get("helper-tags")
-        .trim()
-        .split(splitRegEx)
-        .filter(Boolean)
-        .map((tag) => tag.trim());
-      const negativeTags = formdata
-        .get("negative-tags")
-        .trim()
-        .split(splitRegEx)
-        .filter(Boolean)
-        .map((tag) => tag.trim());
+      const mainTag = formData["main-tag"];
+      const trainedWords = splitTags(formData.triger);
+      const helperTags = splitTags(formData["helper-tags"]);
+      const negativeTags = splitTags(formData["negative-tags"]);
 
       const updatedVersionData = {
         ...versionData,
@@ -175,23 +189,15 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
 
       const versionPath = `modelVersionsCustomData.${versionData.versionId}`;
 
-      await updateDoc(
-        modelsRef,
-        {
-          [versionPath]: updatedVersionData,
-        },
-        { merge: true },
-      );
-      await updateDoc(
-        modelsPrevRef,
-        {
-          [versionPath]: updatedVersionData,
-        },
-        { merge: true },
-      );
+      await updateDoc(modelsRef, {
+        [versionPath]: updatedVersionData,
+      });
+      await updateDoc(modelsPrevRef, {
+        [versionPath]: updatedVersionData,
+      });
 
       const updatedCustomData = {
-        ...model.modelVersionsCustomData,
+        ...model?.modelVersionsCustomData,
         [versionData.versionId]: updatedVersionData,
       };
 
@@ -204,7 +210,8 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
       setIsSaving(false);
       onClose();
     } catch (err) {
-      setErrorMessage(handleErrors(err));
+      const errorMeessage = handleErrors(normalizeError(err));
+      setErrorMessage(errorMeessage);
       setIsSaving(false);
     }
   };
@@ -233,8 +240,7 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
               label="Trigger words"
               id="triger"
               name="triger"
-              type="text"
-              rows="4"
+              rows={4}
               placeholder="Triger word"
               value={trigerInput.value}
               onChange={(e, isValid) => {
@@ -249,7 +255,7 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
               label="Helper words"
               id="helper-tags"
               name="helper-tags"
-              rows="4"
+              rows={4}
               placeholder="Helper words"
               value={helperTagsInput.value}
               onChange={(e, isValid) => {
@@ -264,7 +270,7 @@ const TagsForm = ({ versionData, defaultData, modelId, onClose }) => {
               label="Negative words"
               id="negative-tags"
               name="negative-tags"
-              rows="4"
+              rows={4}
               placeholder="Negative words"
               value={negativeTagsInput.value}
               onChange={(e, isValid) => {

@@ -483,3 +483,13 @@ export const normalizeError = (error: unknown): AppError => {
 export const cloneObject = <T>(obj: T): T => {
   return structuredClone(obj);
 };
+
+export const getFormData = (
+  target: HTMLFormElement,
+): Record<string, string> => {
+  const formData = new FormData(target);
+  const trimedFormData = [...formData].map((entry) => {
+    return [entry[0], (entry[1] as string).trim()];
+  });
+  return Object.fromEntries(trimedFormData);
+};

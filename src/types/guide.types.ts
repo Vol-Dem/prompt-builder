@@ -24,7 +24,7 @@ export interface SwitchStepPayload {
 
 export interface SetStepPayload {
   type: GuideType;
-  value: number;
+  value: number | null;
 }
 
 export interface SetGuideIsActivePayload {

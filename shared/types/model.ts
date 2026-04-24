@@ -112,10 +112,15 @@ export interface ModelVersion {
 
 export interface UserModelDefaultCustomData {
   description?: string;
+  fileName?: string;
+  name?: string;
+  type?: string;
+  mainTag?: string;
   weight?: number;
   minWeight?: number;
   maxWeight?: number;
   size?: number;
+  trainedWords?: string[];
   helperTags?: string[];
   negativeTags?: string[];
   tagSetsData?: TagSet[];

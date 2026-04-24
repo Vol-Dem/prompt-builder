@@ -34,6 +34,7 @@ import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import CrossSvg from "../../../assets/CrossSvg";
 import { createTagSetsInputData } from "../../../utils/promptUtils";
 import { clearFileExtension } from "../../../../shared/utils";
+import { FORMS_DEF_TAGS_INPUT } from "../../../variables/structures";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -218,10 +219,7 @@ const VersionForm = ({
 
   useEffect(() => {
     setTagSetsInputs(
-      createTagSetsInputData(
-        versionData?.tagSetsData,
-        DEFAULT_DATA_TAGSETS_INPUT,
-      ),
+      createTagSetsInputData(versionData?.tagSetsData, FORMS_DEF_TAGS_INPUT),
     );
   }, [versionData]);
 

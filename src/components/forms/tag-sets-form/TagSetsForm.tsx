@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState, type SubmitEvent } from "react";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
-import { useDispatch, useSelector } from "react-redux";
 
 import firebaseApp from "../../../firebase-config";
 import classes from "./TagSetsForm.module.scss";
@@ -13,16 +12,26 @@ import {
   GUIDE_STEP_MODEL_TAGS_EDIT_FROM,
   ERROR_MESSAGE_OFFLINE,
   SUCCESS_MESSAGE_UPLOADED,
+  ERROR_MESSAGE_DEFAULT,
 } from "../../../variables/constants";
 import Spinner from "../../ui/Spinner";
 import { modelActions } from "../../../store/model";
 import ModelTagsFormGuide from "../../general-elements/guide/model/ModelTagsEditGuide";
 import { guideActions } from "../../../store/guide";
-import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
+import {
+  AppError,
+  handleErrors,
+  normalizeError,
+} from "../../../utils/generalUtils";
 import TagSetsInputFieldset from "../../ui/forms/TagSetsInputFieldset";
 import { createTagSetsInputData } from "../../../utils/promptUtils";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type { TagSetInputData } from "../../../types/prompt.types";
+import { FORMS_DEF_TAGS_INPUT } from "../../../variables/structures";
 
 const firestore = getFirestore(firebaseApp);
+
+type TagSetsFormProps = { modelId: number; onClose: () => void };
 
 /**
  * Tag sets form component.
@@ -40,48 +49,26 @@ const firestore = getFirestore(firebaseApp);
  *
  * @component
  *
- * @param {object} props
- * @param {number} props.modelId - Model ID.
- * @param {() => void} props.onClose - Callback triggered after successful submit to close the form.
- * @returns {JSX.Element} Tag sets management form.
+ * @param props
+ * @param props.modelId - Model ID.
+ * @param props.onClose - Callback triggered after successful submit to close the form.
+ * @returns Tag sets management form.
  */
-const TagSetsForm = ({ modelId, onClose }) => {
+const TagSetsForm = ({ modelId, onClose }: TagSetsFormProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  const [tagSetsInputs, setTagSetsInputs] = useState([]);
+  const [tagSetsInputs, setTagSetsInputs] = useState<TagSetInputData[]>([]);
 
-  const uid = useSelector((state) => state.auth.user.uid);
-  const model = useSelector((state) => state.model.model);
-  const curVersion = useSelector((state) => state.model.curVersion);
-  const versionData = model.modelVersionsCustomData[curVersion.id];
-  const guideActive = useSelector((state) => state.guide.model.active);
-  const guideStep = useSelector((state) => state.guide.model.step);
-  const dispatch = useDispatch();
-
-  const defTags = useMemo(
-    () => [
-      [
-        {
-          type: "text",
-          id: "set-name-def",
-          name: "set-name",
-          placeholder: "Set name",
-          value: "",
-          isValid: true,
-        },
-        {
-          id: "set-value-def",
-          name: "set-value",
-          placeholder: "Triger words",
-          value: "",
-          isValid: true,
-        },
-      ],
-    ],
-    [],
-  );
+  const uid = useAppSelector((state) => state.auth.user.uid);
+  const model = useAppSelector((state) => state.model.model);
+  const curVersion = useAppSelector((state) => state.model.curVersion);
+  const versionData =
+    curVersion && model?.modelVersionsCustomData[curVersion?.id];
+  const guideActive = useAppSelector((state) => state.guide.model.active);
+  const guideStep = useAppSelector((state) => state.guide.model.step);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (guideActive && guideStep === GUIDE_STEP_MODEL_TAGS_EDIT) {
@@ -97,10 +84,14 @@ const TagSetsForm = ({ modelId, onClose }) => {
   useEffect(() => {
     if (!versionData) return;
 
-    setTagSetsInputs(createTagSetsInputData(versionData?.tagSetsData, defTags));
-  }, [versionData, defTags]);
+    setTagSetsInputs(
+      createTagSetsInputData(versionData.tagSetsData, [
+        structuredClone(FORMS_DEF_TAGS_INPUT),
+      ]),
+    );
+  }, [versionData]);
 
-  const saveVersionHandler = async (e) => {
+  const saveVersionHandler = async (e: SubmitEvent) => {
     try {
       e.preventDefault();
       setErrorMessage("");
@@ -111,10 +102,15 @@ const TagSetsForm = ({ modelId, onClose }) => {
       );
 
       if (tagsetsIsNotValid) {
-        throwCustomError(ERROR_MESSAGE_INPUT_DEF);
+        throw new AppError(ERROR_MESSAGE_INPUT_DEF);
       }
+
       if (!navigator?.onLine) {
-        throwCustomError(ERROR_MESSAGE_OFFLINE);
+        throw new AppError(ERROR_MESSAGE_OFFLINE);
+      }
+
+      if (!versionData) {
+        throw new AppError(ERROR_MESSAGE_DEFAULT);
       }
 
       setIsSaving(true);
@@ -133,7 +129,7 @@ const TagSetsForm = ({ modelId, onClose }) => {
       } else {
         tagSetsData = tagSetsInputData.map((tagSet, i) => {
           return {
-            ...versionData.tagSetsData[i],
+            ...versionData.tagSetsData![i],
             ...tagSet,
           };
         });
@@ -148,13 +144,9 @@ const TagSetsForm = ({ modelId, onClose }) => {
 
       const versionPath = `modelVersionsCustomData.${versionData.versionId}`;
 
-      await updateDoc(
-        modelsRef,
-        {
-          [versionPath]: updatedVersionData,
-        },
-        { merge: true },
-      );
+      await updateDoc(modelsRef, {
+        [versionPath]: updatedVersionData,
+      });
 
       const updatedCustomData = {
         ...model.modelVersionsCustomData,
@@ -170,7 +162,8 @@ const TagSetsForm = ({ modelId, onClose }) => {
       setIsSaving(false);
       onClose();
     } catch (err) {
-      setErrorMessage(handleErrors(err));
+      const errorMessage = handleErrors(normalizeError(err));
+      setErrorMessage(errorMessage);
       setIsSaving(false);
     }
   };

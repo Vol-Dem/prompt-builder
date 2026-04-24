@@ -110,7 +110,7 @@ export const createPromptItem = (
  * @returns {Array} tagsets input data
  */
 export const createTagSetsInputData = (
-  tagSetsData: TagSet[],
+  tagSetsData: TagSet[] | undefined,
   defTagSetData: TagSetInputData[],
 ): TagSetInputData[] => {
   let tagSets: TagSetInputData[];
@@ -141,6 +141,7 @@ export const createTagSetsInputData = (
       ];
     });
   }
+
   return tagSets;
 };
 

@@ -44,6 +44,7 @@ import EditDefaultGuide from "../../general-elements/guide/edit/EditDefaultGuide
 import { createTagSetsInputData } from "../../../utils/promptUtils";
 import { parseModelIds } from "../../../utils/modelUtils";
 import { saveModelData } from "../../../utils/fetch/fetchModel";
+import { FORMS_DEF_TAGS_INPUT } from "../../../variables/structures";
 
 const SUBCATEGORIES_MAX_AMOUNT = 8;
 const TAGSETS_MAX_AMOUNT = 20;
@@ -261,7 +262,7 @@ const UpdateModelForm = ({
       setTagSetsInputs(
         createTagSetsInputData(
           modelData?.defaultCustomData?.tagSetsData,
-          DEFAULT_DATA_TAGSETS_INPUT,
+          FORMS_DEF_TAGS_INPUT,
         ),
       );
     }

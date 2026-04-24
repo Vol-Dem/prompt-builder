@@ -51,7 +51,7 @@ export interface TagSetInputName {
   placeholder: string;
   value: string;
   isValid: boolean | null;
-  errorMessage: string;
+  errorMessage?: string;
 }
 export interface TagSetInputValue {
   type: string;
@@ -60,7 +60,7 @@ export interface TagSetInputValue {
   placeholder: string;
   value: string;
   isValid: boolean | null;
-  errorMessage: string;
+  errorMessage?: string;
 }
 export type TagSetInputData = [TagSetInputName, TagSetInputValue];
 
