@@ -1,7 +1,7 @@
-import type { SubcategoryDefInputData } from "../types/forms.types";
+import type { SubcategoryInput } from "../types/forms.types";
 import type { TagSetInputData } from "../types/prompt.types";
 
-export const FORMS_DEF_SUBCATEGORY_INPUT: SubcategoryDefInputData = {
+export const FORMS_DEF_SUBCATEGORY_INPUT: SubcategoryInput = {
   type: "text",
   id: "subcat-def",
   name: "sub",

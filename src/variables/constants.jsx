@@ -89,6 +89,7 @@ export const SETTINGS_LOAD_MORE_MARGIN_SMALL = 200;
 export const SETTINGS_SCROLL_TOP = 600;
 export const SETTINGS_UPLOADING_COMPLETED_AMOUNT = 10;
 export const SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT = 8;
+export const SETTINGS_FORMS_TAGSETS_MAX_AMOUNT = 80;
 export const SETTINGS_NSFW_VALUES_DATA = [
   { name: "PG", value: "None", nsfwLevelIndex: 0 },
   { name: "PG-13", value: "Soft", nsfwLevelIndex: 1 },

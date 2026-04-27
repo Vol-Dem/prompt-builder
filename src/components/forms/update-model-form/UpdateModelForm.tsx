@@ -1,5 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type SubmitEvent,
+} from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -12,7 +17,12 @@ import Checkbox from "../../ui/forms/Checkbox";
 import Select from "../../ui/forms/Select";
 import Fieldset from "../../ui/forms/Fieldset";
 import FieldCategory from "../../ui/forms/FieldCategory";
-import { handleErrors, throwCustomError } from "../../../utils/generalUtils";
+import {
+  AppError,
+  cloneObject,
+  handleErrors,
+  normalizeError,
+} from "../../../utils/generalUtils";
 import Spinner from "../../ui/Spinner";
 import ComboSelect from "../../ui/forms/ComboSelect";
 import {
@@ -29,35 +39,44 @@ import {
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
   ANIMATIONS_FM_SLIDEOUT,
   ANIMATIONS_FM_FADEOUT_EXIT,
-  DEFAULT_DATA_TAGSETS_INPUT,
   SETTINGS_MODEL_TYPE_UNKNOWN,
   SETTINGS_MODEL_TYPE_DEF,
   ERROR_MESSAGE_INVALID_MODEL_ID,
+  SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT,
+  SETTINGS_FORMS_TAGSETS_MAX_AMOUNT,
 } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { tabActions } from "../../../store/tabs";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
-import CrossSvg from "../../../assets/CrossSvg";
 import { modelActions } from "../../../store/model";
 import EditDefaultGuide from "../../general-elements/guide/edit/EditDefaultGuide";
 import { createTagSetsInputData } from "../../../utils/promptUtils";
 import { parseModelIds } from "../../../utils/modelUtils";
 import { saveModelData } from "../../../utils/fetch/fetchModel";
-import { FORMS_DEF_TAGS_INPUT } from "../../../variables/structures";
+import {
+  FORMS_DEF_SUBCATEGORY_INPUT,
+  FORMS_DEF_TAGS_INPUT,
+} from "../../../variables/structures";
+import type { ModelData } from "../../../types/models.types";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type { SelectOption } from "../../../types/general.types";
+import type {
+  SelectInput,
+  SubcategoryInput,
+  VersionStatusInput,
+} from "../../../types/forms.types";
+import type { TagSetInputData } from "../../../types/prompt.types";
+import type { ModelPreviewDoc } from "../../../../shared/types/firestore";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
-const SUBCATEGORIES_MAX_AMOUNT = 8;
-const TAGSETS_MAX_AMOUNT = 20;
-const subCatsDefData = {
-  type: "text",
-  id: "subcat-def",
-  name: "sub",
-  placeholder: "Subcategory",
-  value: "",
-  query: "",
-  selected: { id: null, name: "" },
-  isValid: false,
-  errorMessage: "This field is required",
+type UpdateModelFormProps = {
+  modelData?: ModelData;
+  newModelId?: number;
+  newModelVersionId?: number;
+  newModelType?: string | null;
+  onSave?: (preview: ModelPreviewDoc) => void;
+  className?: string;
 };
 
 /**
@@ -92,14 +111,14 @@ const subCatsDefData = {
  *
  * @component
  *
- * @param {object} props
- * @param {object} [props.modelData] - Existing model data for edit mode.
- * @param {number} [props.newModelId] - Model ID when creating from resource list.
- * @param {number} [props.newModelVersionId] - Model version ID when creating from resource list.
- * @param {(previewData: any) => void} [props.onSave] - Callback triggered after successful save to update resource preview.
- * @param {string | null} [props.newModelType] - Model type when creating from resource list.
- * @param {string} [props.className] - Optional CSS class name.
- * @returns {JSX.Element} Model edit form.
+ * @param props
+ * @param props.modelData - Existing model data for edit mode.
+ * @param props.newModelId - Model ID when creating from resource list.
+ * @param props.newModelVersionId - Model version ID when creating from resource list.
+ * @param props.onSave - Callback triggered after successful save to update resource preview.
+ * @param props.newModelType - Model type when creating from resource list.
+ * @param props.className - Optional CSS class name.
+ * @returns Model edit form.
  */
 const UpdateModelForm = ({
   modelData,
@@ -108,7 +127,7 @@ const UpdateModelForm = ({
   newModelType,
   onSave,
   className,
-}) => {
+}: UpdateModelFormProps) => {
   const [modelIsSaving, setModelIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -120,7 +139,7 @@ const UpdateModelForm = ({
     value: "civitai.com",
     isValid: true,
   };
-  const [nsfwInput, setNsfwInput] = useState(modelData?.nsfw);
+  const [nsfwInput, setNsfwInput] = useState(modelData?.nsfw || false);
   const [titleInput, setTitleInput] = useState({
     value: modelData?.name || "",
     isValid: true,
@@ -136,29 +155,33 @@ const UpdateModelForm = ({
     value: (modelData?.id || newModelId || "") + "",
     isValid: modelData?.id || newModelId ? true : false,
   });
-  const [versionsDownloadStatus, setVersionsDownloadStatus] = useState([]);
+  const [versionsDownloadStatus, setVersionsDownloadStatus] = useState<
+    VersionStatusInput[]
+  >([]);
   const [hashtagsInput, setHashtagsInput] = useState({
     value: modelData?.hashtags?.filter(Boolean)?.length
       ? modelData?.hashtags.join(", ")
       : modelData?.data?.tags.join(", ") || "",
     isValid: true,
   });
-  const [subCatInputs, setSubCatInputs] = useState([]);
-  const [tagSetsInputs, setTagSetsInputs] = useState([]);
-  const [savedModel, setSavedModel] = useState(null);
+  const [subCatInputs, setSubCatInputs] = useState<SubcategoryInput[]>([]);
+  const [tagSetsInputs, setTagSetsInputs] = useState<TagSetInputData[]>([]);
+  const [savedModel, setSavedModel] = useState<number | null>(null);
   const [mainCategoryQuery, setMainCategoryQuery] = useState("");
-  const [mainCategorySelected, setMainCategorySelected] = useState({
+  const [mainCategorySelected, setMainCategorySelected] = useState<
+    SelectInput<string>
+  >({
     name: modelData?.main || "",
     id: modelData?.main || "",
     isValid: !!modelData?.main,
   });
   const [subCategoryQuery, setSubCategoryQuery] = useState("");
-  const categories = useSelector((state) => state.tabs.categoriesData);
-  const curBaseModels = useSelector((state) => state.tabs.baseModels);
-  const guideStep = useSelector((state) => state.guide.edit.step);
-  const guideIsActive = useSelector((state) => state.guide.active);
-  const curModel = useSelector((state) => state.model.model);
-  const dispatch = useDispatch();
+  const categories = useAppSelector((state) => state.tabs.categoriesData);
+  const curBaseModels = useAppSelector((state) => state.tabs.baseModels);
+  const guideStep = useAppSelector((state) => state.guide.edit.step);
+  const guideIsActive = useAppSelector((state) => state.guide.active);
+  const curModel = useAppSelector((state) => state.model.model);
+  const dispatch = useAppDispatch();
   const hasModelTypeInputField =
     categories && Object.hasOwn(categories, modelTypeInput);
 
@@ -182,18 +205,24 @@ const UpdateModelForm = ({
         )
     : [];
 
-  const selectMainCategoryHandler = (value, isValid, errorMessage) => {
-    setMainCategorySelected({ ...value, isValid, errorMessage });
-    setSubCatInputs([
-      { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
-    ]);
+  const selectMainCategoryHandler = (
+    value: SelectOption<string> | null,
+    isValid: boolean | null,
+    errorMessage?: string,
+  ) => {
+    if (!value) return;
+
+    setMainCategorySelected({
+      ...value,
+      isValid: isValid === null ? true : isValid,
+      errorMessage,
+    });
+    setSubCatInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
   };
 
   useEffect(() => {
     if (!modelData) {
-      setSubCatInputs([
-        { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
-      ]);
+      setSubCatInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
 
       if (newModelType) {
         const existedModelType = MODEL_TYPES.find((type) =>
@@ -212,14 +241,20 @@ const UpdateModelForm = ({
       const versionStatusInputData = Object.values(
         modelData?.modelVersionsCustomData,
       )
-        ?.sort((a, b) => a?.index - b?.index)
+        ?.sort((a, b) => {
+          if (a?.index && b?.index) {
+            return a?.index - b?.index;
+          }
+
+          return 0;
+        })
         .map((version) => {
           return {
             type: "checkbox",
             id: version.versionId + "in",
-            name: version.versionName,
-            label: version.name,
-            value: version.downloadStatus,
+            name: version.versionName || "",
+            label: version.name || "",
+            value: !!version.downloadStatus,
           };
         });
 
@@ -237,8 +272,8 @@ const UpdateModelForm = ({
         return {
           type: "text",
           id: `subcat-${i}`,
-          name: subCatsDefData.name,
-          placeholder: subCatsDefData.placeholder,
+          name: FORMS_DEF_SUBCATEGORY_INPUT.name,
+          placeholder: FORMS_DEF_SUBCATEGORY_INPUT.placeholder,
           value: subData?.name || subId || "",
           query: subData?.name || subId || "",
           selected: { id: subData.id, name: subData.name },
@@ -260,23 +295,22 @@ const UpdateModelForm = ({
       });
 
       setTagSetsInputs(
-        createTagSetsInputData(
-          modelData?.defaultCustomData?.tagSetsData,
-          FORMS_DEF_TAGS_INPUT,
-        ),
+        createTagSetsInputData(modelData?.defaultCustomData?.tagSetsData, [
+          structuredClone(FORMS_DEF_TAGS_INPUT),
+        ]),
       );
     }
   }, [modelData, categories, newModelType]);
 
-  const submitFormHandler = async (e) => {
+  const submitFormHandler = async (e: SubmitEvent) => {
     e.preventDefault();
     setErrorMessage("");
     setSuccessMessage("");
     setShowErrorMessage(true);
     setModelIsSaving(true);
 
-    let modelId;
-    let modelVersionId;
+    let modelId: number | null = null;
+    let modelVersionId: number | null = null;
 
     try {
       const tagsetsIsNotValid = !!tagSetsInputs.find(
@@ -295,30 +329,28 @@ const UpdateModelForm = ({
         !hashtagsInput.isValid;
 
       if (
-        subCatInputs.length > SUBCATEGORIES_MAX_AMOUNT ||
-        tagSetsInputs.length > TAGSETS_MAX_AMOUNT ||
+        subCatInputs.length > SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT ||
+        tagSetsInputs.length > SETTINGS_FORMS_TAGSETS_MAX_AMOUNT ||
         mainInputsIsNotValid ||
         (!!modelData && baseInputsIsNotValid)
       ) {
-        throwCustomError(ERROR_MESSAGE_INPUT_DEF);
+        throw new AppError(ERROR_MESSAGE_INPUT_DEF);
       }
       if (!navigator?.onLine) {
-        throwCustomError(ERROR_MESSAGE_OFFLINE);
+        throw new AppError(ERROR_MESSAGE_OFFLINE);
       }
 
-      const formdata = new FormData(e.target);
-      const modelType = modelTypeInput;
-
       [modelId, modelVersionId] = parseModelIds(idInput.value);
+
+      if (!modelId) {
+        throw new AppError(ERROR_MESSAGE_INVALID_MODEL_ID);
+      }
 
       if (newModelVersionId) {
         modelVersionId = newModelVersionId;
       }
 
-      if (!modelId) {
-        throwCustomError(ERROR_MESSAGE_INVALID_MODEL_ID);
-      }
-
+      const modelType = modelTypeInput;
       const modelName = titleInput.value.trim();
       const main = mainCategorySelected.name;
       const hashtags = hashtagsInput.value
@@ -327,10 +359,7 @@ const UpdateModelForm = ({
         .filter(Boolean);
       const sub = [
         ...new Set(subCatInputs.map((el) => el?.selected?.name?.trim())),
-      ].filter(Boolean);
-      const mainTag = formdata.get("main-tag")?.trim() || "";
-      const size = formdata.get("size")?.trim() || "";
-      const fileName = formdata.get("file-name")?.trim() || "";
+      ].filter((el) => el !== undefined);
 
       const newModelData = {
         modelId,
@@ -341,9 +370,6 @@ const UpdateModelForm = ({
         main,
         sub,
         hashtags,
-        mainTag,
-        fileName,
-        size,
         versionsDownloadStatus,
         nsfw: nsfwInput,
       };
@@ -366,10 +392,12 @@ const UpdateModelForm = ({
           value: newModelId ? newModelId + "" : "",
           isValid: false,
         });
-        setSubCatInputs([
-          { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
-        ]);
-        setMainCategorySelected({});
+        setSubCatInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
+        setMainCategorySelected({
+          name: "",
+          id: "",
+          isValid: false,
+        });
       }
 
       setSavedModel(modelId);
@@ -377,20 +405,21 @@ const UpdateModelForm = ({
       setShowErrorMessage(false);
       setModelIsSaving(false);
     } catch (err) {
-      if (err.message === ERROR_MESSAGE_EXISTS) {
+      const errorMessage = handleErrors(normalizeError(err));
+      if (errorMessage === ERROR_MESSAGE_EXISTS) {
         setSavedModel(modelId);
       }
-      setErrorMessage(handleErrors(err));
+      setErrorMessage(errorMessage);
       setModelIsSaving(false);
     }
   };
 
   const addSubHandler = () => {
-    if (subCatInputs.length >= SUBCATEGORIES_MAX_AMOUNT) return;
+    if (subCatInputs.length >= SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT) return;
     const newFields = [...subCatInputs];
     newFields.push({
       type: "text",
-      id: Date.now(),
+      id: Date.now() + "",
       name: "sub",
       placeholder: "Subcategory",
       value: "",
@@ -403,7 +432,12 @@ const UpdateModelForm = ({
     setSubCatInputs(newFields);
   };
 
-  const subCatSelectHandler = (value, isValid, errorMessage, id) => {
+  const subCatSelectHandler = (
+    value: SelectOption<string> | null,
+    isValid: boolean | null,
+    errorMessage?: string,
+    id?: string,
+  ) => {
     setSubCatInputs((prevState) => {
       const newState = [...prevState];
 
@@ -414,14 +448,14 @@ const UpdateModelForm = ({
       if (curIndex < 0) return prevState;
 
       newState[curIndex].selected = value;
-      newState[curIndex].isValid = isValid;
-      newState[curIndex].errorMessage = errorMessage;
+      newState[curIndex].isValid = isValid === null ? true : isValid;
+      newState[curIndex].errorMessage = errorMessage || "";
 
       return newState;
     });
   };
 
-  const deleteSubcategoryInputHandler = (index) => {
+  const deleteSubcategoryInputHandler = (index: number) => {
     setSubCatInputs((prevState) => {
       return prevState.toSpliced(index, 1);
     });
@@ -432,7 +466,7 @@ const UpdateModelForm = ({
       <motion.div
         layout
         key={sub.id}
-        initial={i ? ANIMATIONS_FM_SLIDEOUT_INITIAL : null}
+        initial={i ? ANIMATIONS_FM_SLIDEOUT_INITIAL : false}
         animate={ANIMATIONS_FM_SLIDEOUT}
         exit={ANIMATIONS_FM_FADEOUT_EXIT}
         className={classes["subcategory"]}
@@ -443,7 +477,7 @@ const UpdateModelForm = ({
           query={subCategoryQuery}
           setQuery={setSubCategoryQuery}
           setSelected={subCatSelectHandler}
-          selected={{ ...sub.selected }}
+          selected={sub.selected ? { ...sub.selected } : null}
           placeholder="Subcategory"
           validation={{
             required: true,
@@ -457,14 +491,14 @@ const UpdateModelForm = ({
             className={classes["input__btn-del"]}
             onClick={deleteSubcategoryInputHandler.bind(null, i)}
           >
-            <CrossSvg />
+            <XMarkIcon />
           </ButtonTertiary>
         )}
       </motion.div>
     );
   });
 
-  const versionStatusChangeHandler = (e) => {
+  const versionStatusChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setVersionsDownloadStatus((prevState) => {
       const newState = [...prevState];
       const curIndex = newState.findIndex(
@@ -525,7 +559,7 @@ const UpdateModelForm = ({
             label="Description"
             id="description"
             name="description"
-            rows="5"
+            rows={5}
             placeholder="Description"
             value={descriptionInput.value}
             onChange={(e, isValid) => {
@@ -540,7 +574,7 @@ const UpdateModelForm = ({
             label="Hashtags"
             id="hashtags"
             name="hashtags"
-            rows="2"
+            rows={2}
             placeholder="Hashtags"
             value={hashtagsInput.value}
             onChange={(e, isValid) => {
@@ -586,10 +620,12 @@ const UpdateModelForm = ({
             onChange={(value) => {
               setModelTypeInput(value);
               setMainCategoryQuery("");
-              setMainCategorySelected({});
-              setSubCatInputs([
-                { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
-              ]);
+              setMainCategorySelected({
+                name: "",
+                id: "",
+                isValid: false,
+              });
+              setSubCatInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
             }}
             options={typeSelectOption}
           />
@@ -606,7 +642,7 @@ const UpdateModelForm = ({
               onChange={(e, isValid) => {
                 setIdInput({ value: e.target.value, isValid });
               }}
-              readOnly={!!modelData || newModelId}
+              readOnly={!!modelData || !!newModelId}
               validation={{
                 required: true,
                 maxLength: VALIDATION_TITLE_MAX_LENGTH,
@@ -632,7 +668,7 @@ const UpdateModelForm = ({
         </FieldCategory>
         <Fieldset legend="Subcategories">
           <AnimatePresence>{subCatHtml}</AnimatePresence>
-          {subCatInputs?.length < SUBCATEGORIES_MAX_AMOUNT && (
+          {subCatInputs?.length < SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT && (
             <ButttonSecondary
               type="button"
               id="sub"
@@ -664,7 +700,7 @@ const UpdateModelForm = ({
                   to={`/models/${savedModel}`}
                   className={classes.link}
                   onClick={() => {
-                    if (savedModel !== curModel.id) {
+                    if (savedModel !== curModel?.id) {
                       dispatch(modelActions.resetModelData());
                     }
                   }}

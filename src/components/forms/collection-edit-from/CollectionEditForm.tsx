@@ -14,10 +14,12 @@ import {
   ERROR_MESSAGE_INPUT_DEF,
   VALIDATION_DESCRIPTION_MAX_LENGTH,
   SUCCESS_MESSAGE_SAVED,
+  SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT,
 } from "../../../variables/constants";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import {
   AppError,
+  cloneObject,
   filterDuplicates,
   handleErrors,
   normalizeError,
@@ -36,37 +38,11 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import type { SelectOption } from "../../../types/general.types";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { CollectionSubcategory } from "../../../../shared/types/user";
-
-const SUBCATEGORIES_MAX_AMOUNT = 8;
-const subCatsDefData = {
-  type: "text",
-  id: "subcat-def",
-  name: "sub",
-  placeholder: "Subcategory",
-  selected: { id: null, name: "" },
-  isValid: true,
-  errorMessage: "",
-};
+import type { SelectInput, SubcategoryInput } from "../../../types/forms.types";
+import { FORMS_DEF_SUBCATEGORY_INPUT } from "../../../variables/structures";
 
 type CollectionEditFormProps = {
   collectionData: CollectionDoc;
-};
-
-type SelectedInput = {
-  name: string;
-  id: string | null;
-  isValid: boolean;
-  errorMessage?: string;
-};
-
-type SubcategoryInput = {
-  type: string;
-  id: string | number;
-  name: string;
-  placeholder: string;
-  selected: SelectOption<string> | null;
-  isValid: boolean;
-  errorMessage: string;
 };
 
 /**
@@ -95,17 +71,20 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [mainCategoryQuery, setMainCategoryQuery] = useState("");
-  const [mainCategorySelected, setMainCategorySelected] =
-    useState<SelectedInput>({
-      name: "",
-      id: "",
-      isValid: false,
-    });
+  const [mainCategorySelected, setMainCategorySelected] = useState<
+    SelectInput<string>
+  >({
+    name: "",
+    id: "",
+    isValid: false,
+  });
   const [collectionNameInput, setCollectionNameInput] = useState({
     value: "",
     isValid: true,
   });
-  const [subCatInputs, setSubCatInputs] = useState<SubcategoryInput[]>([]);
+  const [subCatInputs, setSubCatInputs] = useState<SubcategoryInput<string>[]>(
+    [],
+  );
   const [subCategoryQuery, setSubCategoryQuery] = useState("");
   const [descriptionInput, setDescriptionInput] = useState({
     value: "",
@@ -151,15 +130,11 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
       isValid: isValid === null ? true : isValid,
       errorMessage,
     });
-    setSubCatInputs([
-      { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
-    ]);
+    setSubCatInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
   };
 
   useEffect(() => {
-    setSubCatInputs([
-      { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
-    ]);
+    setSubCatInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
   }, []);
 
   useEffect(() => {
@@ -217,9 +192,7 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
         },
       );
     } else {
-      subcategoriesInputData = [
-        { ...subCatsDefData, selected: { ...subCatsDefData.selected } },
-      ];
+      subcategoriesInputData = [cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)];
     }
 
     if (subcategoriesInputData?.length) setSubCatInputs(subcategoriesInputData);
@@ -249,11 +222,11 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
   };
 
   const addSubHandler = () => {
-    if (subCatInputs.length >= SUBCATEGORIES_MAX_AMOUNT) return;
+    if (subCatInputs.length >= SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT) return;
     const newFields = [...subCatInputs];
     newFields.push({
       type: "text",
-      id: Date.now(),
+      id: Date.now() + "",
       name: "sub",
       placeholder: "Subcategory",
       // value: "",
@@ -432,7 +405,7 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
           />
           <Fieldset legend="Subcategories">
             <AnimatePresence>{subCatHtml}</AnimatePresence>
-            {subCatInputs?.length < SUBCATEGORIES_MAX_AMOUNT && (
+            {subCatInputs?.length < SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT && (
               <ButttonSecondary
                 type="button"
                 id="sub"

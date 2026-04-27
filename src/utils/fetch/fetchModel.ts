@@ -52,6 +52,7 @@ import type {
   ModelCategories,
   ModelCategory,
 } from "../../../shared/types/user";
+import type { VersionStatusInput } from "../../types/forms.types";
 
 const firestore = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp);
@@ -325,28 +326,20 @@ export const updateUserCustomModelData = async (
   );
 };
 
-interface ModelFormVersionsDownloadStatus {
-  id: string;
-  label: string;
-  name: string;
-  type: string;
-  value: boolean;
-}
-
 interface ModelFormData {
   categories: ModelCategories;
-  fileName: string;
+  fileName?: string;
   hashtags: string[];
   main: string;
-  mainTag: string;
+  mainTag?: string;
   modelId: number;
   modelName: string;
   modelType: string;
   modelVersionId: number | null;
   nsfw: boolean;
-  size: number;
+  size?: number;
   sub: string[];
-  versionsDownloadStatus: ModelFormVersionsDownloadStatus[];
+  versionsDownloadStatus: VersionStatusInput[];
 }
 
 /**
@@ -361,7 +354,7 @@ export const saveModelData = async (
   newModelData: ModelFormData,
   categories: ModelCategories,
   curBaseModels: string[],
-  modelData: ModelData,
+  modelData?: ModelData,
 ): Promise<{ preview: ModelPreviewDoc; baseModels: string[] | null }> => {
   try {
     let data: CivitaiModelDoc;
@@ -699,7 +692,7 @@ export const saveModelData = async (
         sub: subIds,
         name: newModelData.modelName || data.name,
         hashtags: newModelData.hashtags,
-        mainTag: newModelData.mainTag,
+        mainTag: newModelData.mainTag || "",
         nsfw: newModelData.nsfw || false,
         src: "civitai.com",
         modelVersionsCustomData,
@@ -750,13 +743,13 @@ export const saveModelData = async (
         nsfwLevel: data?.nsfwLevel || "",
         baseModel: modelVersions[0].baseModel,
         baseModels: [...baseModels],
-        mainTag: newModelData.mainTag,
-        fileName: newModelData.fileName,
+        mainTag: newModelData.mainTag || "",
+        fileName: newModelData.fileName || "",
         latestFileName: fileNames?.length ? fileNames[0] : "",
         hashes,
         fileNames,
         customFileNames,
-        size: newModelData.size,
+        size: newModelData.size || null,
         authorTags: newModelData.hashtags?.length
           ? newModelData.hashtags
           : data.tags,

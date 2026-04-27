@@ -79,7 +79,7 @@ const guideSlice = createSlice({
       state[action.payload.type].active = action.payload.value;
     },
     setGuideStep(state, action: PayloadAction<SetStepPayload>) {
-      state[action.payload.type].step = action.payload.value;
+      state[action.payload.type].step = action.payload.value || 0;
     },
     /**
      * Replaces the entire guide state with persisted user data.

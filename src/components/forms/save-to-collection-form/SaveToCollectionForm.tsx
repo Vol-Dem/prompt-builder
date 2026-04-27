@@ -35,7 +35,7 @@ import SuggestedCollections from "./SuggestedCollections";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import type { Image } from "../../../../shared/types/image";
 import type { SuggestedCollection } from "../../../types/collections.types";
-import type { SubcategoryDefInputData } from "../../../types/forms.types";
+import type { SubcategoryInput } from "../../../types/forms.types";
 import { FORMS_DEF_SUBCATEGORY_INPUT } from "../../../variables/structures";
 import type { SelectOption } from "../../../types/general.types";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -137,7 +137,7 @@ const SaveToCollectionForm = ({
       isValid: false,
     });
   const [subcategoryInputs, setSubcategoryInputs] = useState<
-    SubcategoryDefInputData[]
+    SubcategoryInput[]
   >([]);
   const [subcategoryQuery, setSubcategoryQuery] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -317,7 +317,9 @@ const SaveToCollectionForm = ({
           query={subcategoryQuery}
           setQuery={setSubcategoryQuery}
           setSelected={subCatSelectHandler}
-          selected={{ ...sub.selected }}
+          selected={
+            sub.selected?.id ? { ...sub.selected } : { id: null, name: "" }
+          }
           placeholder="Subcategory"
           validation={{
             required: false,
