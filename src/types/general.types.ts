@@ -48,3 +48,5 @@ export type SelectOption<T extends number | string> = {
   id: T | null;
   name: string;
 };
+
+export type AboutNavigationItem = { id: string; name: string };

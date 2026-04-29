@@ -1,9 +1,22 @@
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import {
+  useState,
+  type ComponentProps,
+  type MouseEvent,
+  type ReactNode,
+  type TouchEvent,
+} from "react";
 
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import classes from "./LeftSidebar.module.scss";
+
+type LeftSidebar = ComponentProps<"div"> & {
+  isOpen: boolean;
+  onClose: (url?: string) => void;
+  onOpen: () => void;
+  btnContent: ReactNode;
+};
 
 /**
  * Application left sidebar with touch swipe support.
@@ -14,15 +27,15 @@ import classes from "./LeftSidebar.module.scss";
  *
  * @component
  *
- * @param {object} props
- * @param {boolean} props.isOpen - Whether the sidebar is currently open.
- * @param {() => void} props.onClose - Callback to close the sidebar.
- * @param {() => void} props.onOpen - Callback to open the sidebar.
- * @param {string} [props.className] - Optional CSS class for custom styling.
- * @param {React.ReactNode} [props.btnContent] - Optional custom content for the open button.
- * @param {React.ReactNode} props.children - Sidebar content.
+ * @param props
+ * @param props.isOpen - Whether the sidebar is currently open.
+ * @param props.onClose - Callback to close the sidebar.
+ * @param props.onOpen - Callback to open the sidebar.
+ * @param props.className - Optional CSS class for custom styling.
+ * @param props.btnContent - Optional custom content for the open button.
+ * @param props.children - Sidebar content.
  *
- * @returns {JSX.Element} The animated left sidebar container.
+ * @returns The animated left sidebar container.
  */
 const LeftSidebar = ({
   isOpen,
@@ -31,9 +44,9 @@ const LeftSidebar = ({
   className,
   btnContent = <Bars3Icon />,
   children,
-}) => {
-  const [cursorInitialX, setCursorInitialX] = useState(null);
-  const [cursorCurX, setCursorCurX] = useState(null);
+}: LeftSidebar) => {
+  const [cursorInitialX, setCursorInitialX] = useState<number | null>(null);
+  const [cursorCurX, setCursorCurX] = useState<number | null>(null);
 
   const sidebarStateHandler = () => {
     if (isOpen) {
@@ -47,14 +60,28 @@ const LeftSidebar = ({
     onClose();
   };
 
-  const moveElement = (e) => {
-    const clientX = Math.round(e.clientX || e.touches[0].clientX);
-    setCursorCurX(clientX);
+  const moveElement = (e: MouseEvent | TouchEvent) => {
+    let clientX: number;
+
+    if ("touches" in e) {
+      clientX = e.touches[0].clientX;
+    } else {
+      clientX = e.clientX;
+    }
+
+    setCursorCurX(Math.round(clientX));
   };
 
-  const mouseDownHandler = (e) => {
-    const clientX = Math.round(e.clientX || e.touches[0].clientX);
-    setCursorInitialX(clientX);
+  const mouseDownHandler = (e: MouseEvent | TouchEvent) => {
+    let clientX: number;
+
+    if ("touches" in e) {
+      clientX = e.touches[0].clientX;
+    } else {
+      clientX = e.clientX;
+    }
+
+    setCursorInitialX(Math.round(clientX));
   };
 
   // Close sidebar when user swipes left by more than 40px

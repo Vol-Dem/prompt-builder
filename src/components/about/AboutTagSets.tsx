@@ -28,7 +28,7 @@ import tagSets4Webp from "../../assets/about/12-tag-sets-4.webp";
  * Content for the About page "Tag Sets" section.
  *
  * @component
- * @returns {JSX.Element} The "Tag Sets" section content.
+ * @return The "Tag Sets" section content.
  */
 const AboutTagSets = () => {
   return (

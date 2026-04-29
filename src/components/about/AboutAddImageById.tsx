@@ -13,7 +13,7 @@ import civShareWebm from "../../assets/guide/civ-share.webp";
  * Content for the About page "Add image by post ID" section.
  *
  * @component
- * @returns {JSX.Element} The "Add image by post ID" section content.
+ * @returns The "Add image by post ID" section content.
  */
 const AboutAddImageById = () => {
   return (

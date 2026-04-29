@@ -6,6 +6,9 @@ import {
 } from "../../../variables/constants";
 import classes from "./AboutContentWrap.module.scss";
 import AboutNavBtnContainer from "./AboutNavBtnContainer";
+import type { ComponentProps } from "react";
+
+type AboutContentWrapProps = ComponentProps<"div">;
 
 /**
  * Content wrapper for the About section.
@@ -18,7 +21,7 @@ import AboutNavBtnContainer from "./AboutNavBtnContainer";
  * @param {React.ReactNode} props.children - Nested About section content.
  * @returns {JSX.Element} The About section content with navigation buttons.
  */
-const AboutContentWrap = ({ children }) => {
+const AboutContentWrap = ({ children }: AboutContentWrapProps) => {
   return (
     <motion.div
       initial={ANIMATIONS_FM_FADEIN_INITIAL}

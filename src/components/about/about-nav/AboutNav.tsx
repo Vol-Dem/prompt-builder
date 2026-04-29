@@ -17,7 +17,7 @@ import AboutNavItem from "./about-nav-item/AboutNavItem";
  *
  * @component
  *
- * @returns {JSX.Element} The About navigation sidebar with section links.
+ * @returns The About navigation sidebar with section links.
  */
 const AboutNav = () => {
   const [navIsOpen, setNavIsOpen] = useState(false);
@@ -36,7 +36,7 @@ const AboutNav = () => {
     setNavIsOpen(true);
   };
 
-  const closeNavHandler = (url) => {
+  const closeNavHandler = (url?: string) => {
     const curPageUrl = location.pathname.split("/").slice(-1)[0];
 
     //If navigating to a different page, resets the scroll position to the top.
