@@ -85,9 +85,7 @@ const TagSetsForm = ({ modelId, onClose }: TagSetsFormProps) => {
     if (!versionData) return;
 
     setTagSetsInputs(
-      createTagSetsInputData(versionData.tagSetsData, [
-        structuredClone(FORMS_DEF_TAGS_INPUT),
-      ]),
+      createTagSetsInputData(versionData.tagSetsData, FORMS_DEF_TAGS_INPUT),
     );
   }, [versionData]);
 

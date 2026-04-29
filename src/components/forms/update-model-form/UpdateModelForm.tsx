@@ -295,9 +295,10 @@ const UpdateModelForm = ({
       });
 
       setTagSetsInputs(
-        createTagSetsInputData(modelData?.defaultCustomData?.tagSetsData, [
-          structuredClone(FORMS_DEF_TAGS_INPUT),
-        ]),
+        createTagSetsInputData(
+          modelData?.defaultCustomData?.tagSetsData,
+          FORMS_DEF_TAGS_INPUT,
+        ),
       );
     }
   }, [modelData, categories, newModelType]);

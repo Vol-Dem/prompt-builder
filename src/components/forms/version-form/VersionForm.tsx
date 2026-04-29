@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent, type SubmitEvent } from "react";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
-import { useSelector } from "react-redux";
 
 import classes from "./VersionForm.module.scss";
 import firebaseApp from "../../../firebase-config";
@@ -11,8 +10,8 @@ import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
 import Fieldset from "../../ui/forms/Fieldset";
 import FieldCategory from "../../ui/forms/FieldCategory";
 import {
-  // clearFileExtension,
   handleErrors,
+  normalizeError,
   throwCustomError,
 } from "../../../utils/generalUtils";
 import ErrorMessage from "../../ui/ErrorMessage";
@@ -26,17 +25,31 @@ import {
   SUCCESS_MESSAGE_UPLOADED,
   VALIDATION_TITLE_MAX_LENGTH,
   VALIDATION_TRIGER_WORDS_MAX_LENGTH,
-  DEFAULT_DATA_TAGSETS_INPUT,
 } from "../../../variables/constants";
 import InputNumber from "../../ui/forms/InputNumber";
 import Spinner from "../../ui/Spinner";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
-import CrossSvg from "../../../assets/CrossSvg";
-import { createTagSetsInputData } from "../../../utils/promptUtils";
+import { createTagSetsInputData, splitTags } from "../../../utils/promptUtils";
 import { clearFileExtension } from "../../../../shared/utils";
 import { FORMS_DEF_TAGS_INPUT } from "../../../variables/structures";
+import type {
+  ModelVersion,
+  ModelVersionCustomData,
+  UserModelDefaultCustomData,
+} from "../../../../shared/types/model";
+import { useAppSelector } from "../../../store/hooks/hooks";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import type { TagSetInputData } from "../../../types/prompt.types";
 
 const firestore = getFirestore(firebaseApp);
+
+type VersionFormProps = {
+  versionData?: ModelVersionCustomData | UserModelDefaultCustomData;
+  defaultData?: UserModelDefaultCustomData | ModelVersion;
+  modelId: number;
+  modelType: string;
+  isDefault: boolean;
+};
 
 /**
  * Model Version edit form component.
@@ -81,7 +94,7 @@ const VersionForm = ({
   modelId,
   modelType,
   isDefault,
-}) => {
+}: VersionFormProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -99,7 +112,7 @@ const VersionForm = ({
     isValid: true,
   });
   const [trigerInput, setTrigerInput] = useState({
-    value: [],
+    value: "",
     isValid: true,
   });
   const [fileNameInput, setFileNameInput] = useState({
@@ -123,11 +136,11 @@ const VersionForm = ({
     isValid: true,
   });
   const [helperTagsInput, setHelperTagsInput] = useState({
-    value: [],
+    value: "",
     isValid: true,
   });
   const [negativeTagsInput, setNegativeTagsInput] = useState({
-    value: [],
+    value: "",
     isValid: true,
   });
   const [vaeInput, setVaeInput] = useState({
@@ -162,9 +175,9 @@ const VersionForm = ({
     value: "",
     isValid: true,
   });
-  const [tagSetsInputs, setTagSetsInputs] = useState([]);
-  const uid = useSelector((state) => state.auth.user.uid);
-  const model = useSelector((state) => state.model.model);
+  const [tagSetsInputs, setTagSetsInputs] = useState<TagSetInputData[]>([]);
+  const uid = useAppSelector((state) => state.auth.user.uid);
+  const model = useAppSelector((state) => state.model.model);
 
   useEffect(() => {
     setErrorMessage("");
@@ -182,17 +195,32 @@ const VersionForm = ({
       value:
         versionData?.trainedWords?.join(", ") ||
         defaultData?.trainedWords?.join(", ") ||
-        [],
+        "",
       isValid: true,
     });
     setFileNameInput({ value: versionData?.fileName || "", isValid: true });
-    setWeightInput({ value: versionData?.weight || "", isValid: true });
-    setMinWeightInput({ value: versionData?.minWeight || "", isValid: true });
-    setMaxWeightInput({ value: versionData?.maxWeight || "", isValid: true });
-    setSizeInput({ value: versionData?.size || "", isValid: true });
-    setHelperTagsInput({ value: versionData?.helperTags || [], isValid: true });
+    setWeightInput({
+      value: versionData?.weight ? versionData.weight + "" : "",
+      isValid: true,
+    });
+    setMinWeightInput({
+      value: versionData?.minWeight ? versionData.minWeight + "" : "",
+      isValid: true,
+    });
+    setMaxWeightInput({
+      value: versionData?.maxWeight ? versionData.maxWeight + "" : "",
+      isValid: true,
+    });
+    setSizeInput({
+      value: versionData?.size ? versionData.size + "" : "",
+      isValid: true,
+    });
+    setHelperTagsInput({
+      value: versionData?.helperTags?.join(", ") || "",
+      isValid: true,
+    });
     setNegativeTagsInput({
-      value: versionData?.negativeTags || [],
+      value: versionData?.negativeTags?.join(", ") || "",
       isValid: true,
     });
     setVaeInput({ value: versionData?.vae || "", isValid: true });
@@ -223,7 +251,7 @@ const VersionForm = ({
     );
   }, [versionData]);
 
-  const saveVersionHandler = async (e) => {
+  const saveVersionHandler = async (e: SubmitEvent) => {
     try {
       e.preventDefault();
       setErrorMessage("");
@@ -269,66 +297,47 @@ const VersionForm = ({
 
       setIsSaving(true);
 
-      const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
-
-      const formdata = new FormData(e.target);
-      const mainTag = formdata.get("main-tag").trim();
+      const mainTag = mainTagInput.value.trim();
       const name = titleInput?.value?.trim();
       const description = descriptionInput?.value?.trim();
-      const weight = +formdata.get("weight").trim();
+      const weight = +weightInput.value.trim();
       const minWeight = +minWeightInput?.value;
       const maxWeight = +maxWeightInput?.value;
-      const size = formdata.get("size").trim();
-      const fileName = formdata.get("file-name").trim();
-      const tagSetsValues = formdata.getAll("set-value");
-      const sampler = formdata.get("sampler")?.trim().toLowerCase() || "";
-      const cfgScale = formdata.get("cfgScale")?.trim().toLowerCase() || "";
-      const hiresUpscaler =
-        formdata.get("hiresUpscaler")?.trim().toLowerCase() || "";
-      const hiresUpscaleBy =
-        formdata.get("hiresUpscaleBy")?.trim().toLowerCase() || "";
+      const size = sizetInput.value.trim();
+      const fileName = fileNameInput.value.trim();
+      const tagSetsValues = tagSetsInputs.map((set) => set[1].value);
+      const sampler = samplerInput.value.trim().toLowerCase() || "";
+      const cfgScale = cfgScaleInput.value.trim().toLowerCase() || "";
+      const hiresUpscaler = hiresUpscalerInput.value.trim().toLowerCase() || "";
+      const hiresUpscaleBy = hiresUpscaleInput.value.trim().toLowerCase() || "";
       const hiresUpscaleSteps =
-        formdata.get("hiresUpscaleSteps")?.trim().toLowerCase() || "";
+        hiresUpscaleStepsInput.value.trim().toLowerCase() || "";
       const denoisingStrength =
-        formdata.get("denoisingStrength")?.trim().toLowerCase() || "";
-      const vae = formdata.get("vae")?.trim().toLowerCase() || "";
-      const steps = formdata.get("steps")?.trim() || "";
-      const trainedWords = formdata
-        .get("triger")
-        .trim()
-        .split(splitRegEx)
-        .filter(Boolean)
-        .map((tag) => tag.trim());
-      const tagSetNames = formdata.getAll("set-name");
+        denoisingStrengthtInput.value.trim().toLowerCase() || "";
+      const vae = vaeInput.value.trim().toLowerCase() || "";
+      const steps = stepsInput.value.trim() || "";
+      const trainedWords = splitTags(trigerInput.value);
+      const tagSetNames = tagSetsInputs.map((set) => set[0].value);
       const tagSetsInputData = tagSetNames.flatMap((setName, i) => {
         if (!setName && !tagSetsValues[i]) return [];
         return [{ name: setName, value: tagSetsValues[i] }];
       });
 
       let tagSetsData;
+
       if (!versionData?.tagSetsData?.length) {
         tagSetsData = tagSetsInputData;
       } else {
         tagSetsData = tagSetsInputData.map((tagSet, i) => {
           return {
-            ...versionData.tagSetsData[i],
+            ...(versionData?.tagSetsData && versionData.tagSetsData[i]),
             ...tagSet,
           };
         });
       }
 
-      const helperTags = formdata
-        .get("helper-tags")
-        .trim()
-        .split(splitRegEx)
-        .filter(Boolean)
-        .map((tag) => tag.trim());
-      const negativeTags = formdata
-        .get("negative-tags")
-        .trim()
-        .split(splitRegEx)
-        .filter(Boolean)
-        .map((tag) => tag.trim());
+      const helperTags = splitTags(helperTagsInput.value);
+      const negativeTags = splitTags(negativeTagsInput.value);
 
       const updatedVersionData = {
         ...versionData,
@@ -355,11 +364,12 @@ const VersionForm = ({
           vae,
         }),
       };
+      const versionId = isDefault ? "def" : versionData?.versionId;
 
-      const versionId = isDefault ? "def" : versionData.versionId;
+      if (!versionId) return;
 
       const allUpdatedVersions = {
-        ...model.modelVersionsCustomData,
+        ...model?.modelVersionsCustomData,
         [versionId]: updatedVersionData,
       };
 
@@ -375,7 +385,9 @@ const VersionForm = ({
 
       const customFileNames = Object.values(allUpdatedVersions)
         ?.map((version) => {
-          return clearFileExtension(version?.fileName)?.toLowerCase();
+          return version?.fileName
+            ? clearFileExtension(version?.fileName)?.toLowerCase()
+            : "";
         })
         .filter(Boolean);
 
@@ -390,27 +402,20 @@ const VersionForm = ({
 
       const versionPath = isDefault
         ? "defaultCustomData"
-        : `modelVersionsCustomData.${versionData.versionId}`;
-      await updateDoc(
-        modelsRef,
-        {
-          [versionPath]: updatedVersionData,
-        },
-        { merge: true },
-      );
-      await updateDoc(
-        modelsPrevRef,
-        {
-          [versionPath]: updatedVersionData,
-          mainTags: mainTags,
-          customFileNames: customFileNames,
-        },
-        { merge: true },
-      );
+        : `modelVersionsCustomData.${versionData?.versionId}`;
+      await updateDoc(modelsRef, {
+        [versionPath]: updatedVersionData,
+      });
+      await updateDoc(modelsPrevRef, {
+        [versionPath]: updatedVersionData,
+        mainTags: mainTags,
+        customFileNames: customFileNames,
+      });
       seteSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
       setIsSaving(false);
     } catch (err) {
-      setErrorMessage(handleErrors(err));
+      const errorMessage = handleErrors(normalizeError(err));
+      setErrorMessage(errorMessage);
       setIsSaving(false);
     }
   };
@@ -439,7 +444,10 @@ const VersionForm = ({
     setTagSetsInputs(newFields);
   };
 
-  const tagSetsHandler = (e, isValid) => {
+  const tagSetsHandler = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    isValid: boolean,
+  ) => {
     setTagSetsInputs((prevState) => {
       const newState = [...prevState];
       const curSetNameIndex = newState.findIndex((imageId) => {
@@ -462,59 +470,64 @@ const VersionForm = ({
     });
   };
 
-  const deleteTagsetInputHandler = (index) => {
+  const deleteTagsetInputHandler = (index: number) => {
     setTagSetsInputs((prevState) => {
       return prevState.toSpliced(index, 1);
     });
   };
 
-  const tagSetsHtml = tagSetsInputs.map((tagSet, i) => {
-    return (
-      <div key={tagSet[0].id} className={classes["tagset"]}>
-        <div className={classes["tagset__header"]}>
-          <span className={classes["tagset__title"]}>{`Tagset ${i + 1}`}</span>{" "}
-          {i !== 0 && (
-            <ButtonTertiary
-              type="button"
-              className={classes["input__btn-del"]}
-              onClick={deleteTagsetInputHandler.bind(null, i)}
-            >
-              <CrossSvg />
-            </ButtonTertiary>
-          )}
+  const tagSetsHtml =
+    !!tagSetsInputs.length &&
+    tagSetsInputs.map((tagSet, i) => {
+      return (
+        <div key={tagSet[0].id} className={classes["tagset"]}>
+          <div className={classes["tagset__header"]}>
+            <span
+              className={classes["tagset__title"]}
+            >{`Tagset ${i + 1}`}</span>{" "}
+            {i !== 0 && (
+              <ButtonTertiary
+                type="button"
+                className={classes["input__btn-del"]}
+                onClick={deleteTagsetInputHandler.bind(null, i)}
+              >
+                <XMarkIcon />
+              </ButtonTertiary>
+            )}
+          </div>
+          <Input
+            id={tagSet[0].id}
+            name={tagSet[0].name}
+            type={tagSet[0].type}
+            placeholder={tagSet[0].placeholder}
+            onChange={tagSetsHandler}
+            value={tagSet[0].value}
+            showError={showErrorMessage}
+            validation={{
+              maxLength: VALIDATION_NAME_MAX_LENGTH,
+            }}
+          />
+          <Textarea
+            id={tagSet[1].id}
+            name={tagSet[1].name}
+            rows={5}
+            placeholder={tagSet[1].placeholder}
+            onChange={tagSetsHandler}
+            value={tagSet[1].value}
+            showError={showErrorMessage}
+            validation={{
+              maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+            }}
+          ></Textarea>
         </div>
-        <Input
-          id={tagSet[0].id}
-          name={tagSet[0].name}
-          type={tagSet[0].type}
-          placeholder={tagSet[0].placeholder}
-          onChange={tagSetsHandler}
-          value={tagSet[0].value}
-          showError={showErrorMessage}
-          validation={{
-            maxLength: VALIDATION_NAME_MAX_LENGTH,
-          }}
-        />
-        <Textarea
-          id={tagSet[1].id}
-          name={tagSet[1].name}
-          rows="5"
-          placeholder={tagSet[1].placeholder}
-          onChange={tagSetsHandler}
-          value={tagSet[1].value}
-          showError={showErrorMessage}
-          validation={{
-            maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
-          }}
-        ></Textarea>
-      </div>
-    );
-  });
+      );
+    });
 
   return (
     <form onSubmit={saveVersionHandler} className={classes["form"]}>
       <div className={classes.subtitle}>
-        Version ID: {isDefault ? "Default" : versionData?.id || defaultData?.id}
+        Version ID:{" "}
+        {isDefault ? "Default" : versionData?.versionId || defaultData?.id}
       </div>
       {!isDefault && (
         <>
@@ -538,7 +551,7 @@ const VersionForm = ({
             label="Version description"
             id="description"
             name="description"
-            rows="5"
+            rows={5}
             placeholder="Version description"
             value={descriptionInput.value}
             onChange={(e, isValid) => {
@@ -573,7 +586,6 @@ const VersionForm = ({
             label="Trigger words"
             id="triger"
             name="triger"
-            type="text"
             placeholder="Trigger words"
             value={trigerInput.value}
             onChange={(e, isValid) => {
@@ -588,7 +600,7 @@ const VersionForm = ({
             label="Helper words"
             id="helper-tags"
             name="helper-tags"
-            rows="5"
+            rows={5}
             placeholder="Helper words"
             value={helperTagsInput.value}
             onChange={(e, isValid) => {
@@ -603,7 +615,7 @@ const VersionForm = ({
             label="Negative words"
             id="negative-tags"
             name="negative-tags"
-            rows="5"
+            rows={5}
             placeholder="Negative words"
             value={negativeTagsInput.value}
             onChange={(e, isValid) => {
@@ -653,7 +665,10 @@ const VersionForm = ({
                 placeholder="Min"
                 value={minWeightInput.value}
                 onChange={(value, isValid) => {
-                  setMinWeightInput({ value, isValid });
+                  setMinWeightInput({
+                    value,
+                    isValid: isValid === null ? true : isValid,
+                  });
                 }}
                 validation={{
                   number: true,
@@ -669,7 +684,10 @@ const VersionForm = ({
                 placeholder="Max"
                 value={maxWeightInput.value}
                 onChange={(value, isValid) => {
-                  setMaxWeightInput({ value, isValid });
+                  setMaxWeightInput({
+                    value,
+                    isValid: isValid === null ? true : isValid,
+                  });
                 }}
                 validation={{
                   number: true,
@@ -685,7 +703,10 @@ const VersionForm = ({
                 placeholder="Recomended"
                 value={weightInput.value}
                 onChange={(value, isValid) => {
-                  setWeightInput({ value, isValid });
+                  setWeightInput({
+                    value,
+                    isValid: isValid === null ? true : isValid,
+                  });
                 }}
                 validation={{
                   number: true,

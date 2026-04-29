@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent, type SubmitEvent } from "react";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
-import { useSelector } from "react-redux";
 
 import Button from "../../ui/buttons/Button";
 import FieldCategory from "../../ui/forms/FieldCategory";
@@ -15,9 +14,21 @@ import {
   SUCCESS_MESSAGE_UPLOADED,
 } from "../../../variables/constants";
 import Spinner from "../../ui/Spinner";
-import { handleErrors } from "../../../utils/generalUtils";
+import { handleErrors, normalizeError } from "../../../utils/generalUtils";
+import type { ModelData } from "../../../types/models.types";
+import { useAppSelector } from "../../../store/hooks/hooks";
 
 const firestore = getFirestore(firebaseApp);
+
+type VersionStatusFormProps = { modelData: ModelData };
+
+type StatusCheckbox = {
+  type: string;
+  id: string;
+  name: string;
+  label: string;
+  value: boolean;
+};
 
 /**
  * Version status form component.
@@ -36,34 +47,41 @@ const firestore = getFirestore(firebaseApp);
  * @param {object} props.modelData - Model data.
  * @returns {JSX.Element} Version status form.
  */
-const VersionStatusForm = ({ modelData }) => {
+const VersionStatusForm = ({ modelData }: VersionStatusFormProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, seteErrorMessage] = useState("");
   const [successMessage, seteSuccessMessage] = useState("");
-  const [versionsDownloadStatus, setVersionsDownloadStatus] = useState([]);
+  const [versionsDownloadStatus, setVersionsDownloadStatus] = useState<
+    StatusCheckbox[]
+  >([]);
 
-  const uid = useSelector((state) => state.auth.user.uid);
+  const uid = useAppSelector((state) => state.auth.user.uid);
 
   useEffect(() => {
     if (!modelData) return;
     const versionStatusInputData = Object.values(
       modelData?.modelVersionsCustomData,
     )
-      ?.sort((a, b) => a?.index - b?.index)
+      ?.sort((a, b) => {
+        if (a?.index && b?.index) {
+          return a?.index - b?.index;
+        }
+        return 0;
+      })
       .map((version) => {
         return {
           type: "checkbox",
           id: version.versionId + "in",
-          name: version.versionName,
-          label: version.name,
-          value: version.downloadStatus,
+          name: version.versionName || "",
+          label: version.name || "",
+          value: !!version.downloadStatus,
         };
       });
 
     setVersionsDownloadStatus(versionStatusInputData || []);
   }, [modelData]);
 
-  const saveModelHandler = async (e) => {
+  const saveModelHandler = async (e: SubmitEvent) => {
     try {
       e.preventDefault();
       setIsSaving(true);
@@ -83,18 +101,19 @@ const VersionStatusForm = ({ modelData }) => {
         };
       });
 
-      const activePreviewId = modelData.data.modelVersions.find((version) => {
+      const activePreviewId = modelData.data?.modelVersions.find((version) => {
         return updatedVersionData[version.id]?.downloadStatus === true;
       })?.id;
       const activePreviewImg =
         (activePreviewId &&
-          modelData.data.modelVersions
+          modelData.data &&
+          modelData.data?.modelVersions
             ?.find((version) => version.id === activePreviewId)
-            .images?.filter((img) => img.type === "image")[0]?.url) ||
+            ?.images?.filter((img) => img.type === "image")[0]?.url) ||
         "";
 
       const previewImgDefault =
-        modelData.data.modelVersions[0].images?.filter(
+        modelData.data?.modelVersions[0].images?.filter(
           (img) => img.type === "image",
         )[0]?.url || "";
 
@@ -115,31 +134,24 @@ const VersionStatusForm = ({ modelData }) => {
         modelData.id + "",
       );
 
-      await updateDoc(
-        modelsRef,
-        {
-          modelVersionsCustomData: updatedVersionData,
-        },
-        { merge: true },
-      );
+      await updateDoc(modelsRef, {
+        modelVersionsCustomData: updatedVersionData,
+      });
 
-      await updateDoc(
-        modelsPrevRef,
-        {
-          imgUrl: previewImg,
-          modelVersionsCustomData: updatedVersionData,
-        },
-        { merge: true },
-      );
+      await updateDoc(modelsPrevRef, {
+        imgUrl: previewImg,
+        modelVersionsCustomData: updatedVersionData,
+      });
       seteSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
       setIsSaving(false);
     } catch (err) {
-      seteErrorMessage(handleErrors(err));
+      const errorMessage = handleErrors(normalizeError(err));
+      seteErrorMessage(errorMessage);
       setIsSaving(false);
     }
   };
 
-  const versionStatusChangeHandler = (e) => {
+  const versionStatusChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setVersionsDownloadStatus((prevState) => {
       const newState = [...prevState];
       const curIndex = newState.findIndex(

@@ -395,7 +395,10 @@ export const saveModelData = async (
         })) as HttpsCallableResult<UpdateModelResponse>;
 
         if ("error" in uploadResponse.data) {
-          throw new AppError(uploadResponse.data.error);
+          if (uploadResponse.data.error.startsWith("No model")) {
+            throw new AppError(uploadResponse.data.error);
+          }
+          throw new Error(uploadResponse.data.error);
         }
 
         const responseCiv = await fetch(

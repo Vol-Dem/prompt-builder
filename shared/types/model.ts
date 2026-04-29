@@ -111,6 +111,8 @@ export interface ModelVersion {
 }
 
 export interface UserModelDefaultCustomData {
+  versionId: number;
+  id?: number;
   description?: string;
   fileName?: string;
   name?: string;
@@ -124,6 +126,14 @@ export interface UserModelDefaultCustomData {
   helperTags?: string[];
   negativeTags?: string[];
   tagSetsData?: TagSet[];
+  vae?: string;
+  denoisingStrength?: string;
+  hiresUpscaleBy?: string;
+  hiresUpscaler?: string;
+  cfgScale?: string;
+  sampler?: string;
+  steps?: string;
+  hiresUpscaleSteps?: string;
 }
 
 export interface ModelVersionCustomData {
@@ -148,6 +158,14 @@ export interface ModelVersionCustomData {
   description?: string;
   negativeTags?: string[];
   tagSetsData?: TagSet[];
+  vae?: string;
+  denoisingStrength?: string;
+  hiresUpscaleBy?: string;
+  hiresUpscaler?: string;
+  cfgScale?: string;
+  sampler?: string;
+  steps?: string;
+  hiresUpscaleSteps?: string;
 }
 
 export interface ModelVersionsCustomData {

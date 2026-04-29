@@ -111,12 +111,12 @@ export const createPromptItem = (
  */
 export const createTagSetsInputData = (
   tagSetsData: TagSet[] | undefined,
-  defTagSetData: TagSetInputData[],
+  defTagSetData: TagSetInputData,
 ): TagSetInputData[] => {
   let tagSets: TagSetInputData[];
 
   if (!tagSetsData?.length) {
-    tagSets = structuredClone(defTagSetData);
+    tagSets = [structuredClone(defTagSetData)];
   } else {
     tagSets = tagSetsData.map((tagSet, i) => {
       return [

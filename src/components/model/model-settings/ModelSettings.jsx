@@ -88,7 +88,7 @@ const ModelSettings = () => {
         : model.modelVersionsCustomData[curTab];
 
     const defData =
-      curTab === DEFAULT_VERSION_ID
+      curTab === DEFAULT_VERSION_ID && model.defaultCustomData
         ? model.defaultCustomData
         : model.data?.modelVersions?.find((version) => version.id === +curTab);
 
@@ -321,7 +321,7 @@ const ModelSettings = () => {
             <VersionStatusForm modelData={model} />
           </motion.div>
         )}
-        {curVersionData && (
+        {(curVersionData || curTab === DEFAULT_VERSION_ID) && (
           <motion.div
             key={curTab}
             initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
