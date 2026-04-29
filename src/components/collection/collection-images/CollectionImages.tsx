@@ -1,5 +1,4 @@
 import { memo, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 
 import classes from "./CollectionImages.module.scss";
@@ -12,10 +11,15 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   SETTINGS_LOAD_MORE_MARGIN_SMALL,
 } from "../../../variables/constants";
-import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
-import FolderSvg from "../../../assets/FolderSvg";
 import useIntersection from "../../../hooks/use-intersection";
 import { getColectionImagesByIds } from "../../../store/images";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import { handleErrors, normalizeError } from "../../../utils/generalUtils";
+import {
+  ExclamationCircleIcon,
+  FolderPlusIcon,
+} from "@heroicons/react/24/outline";
+import type { CollectionSavedPost } from "../../../../shared/types/collection";
 
 /**
  * Displays all images belonging to the active collection with infinite scroll support.
@@ -40,19 +44,19 @@ const CollectionImages = memo(() => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [imagesIsLoading, setImagesIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const savedImagesData = useSelector(
+  const savedImagesData = useAppSelector(
     (state) => state.images.collectionData,
-  )?.posts?.toSorted((a, b) => b.createdAt - a.createdAt);
-  const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
-  const collectionData = useSelector((state) => state.images.collectionData);
-  const collectionImages = useSelector(
+  )?.posts?.toSorted((a, b) => +b.createdAt - +a.createdAt);
+  const nsfwLevel = useAppSelector((state) => state.general.nsfwLevel);
+  const collectionData = useAppSelector((state) => state.images.collectionData);
+  const collectionImages = useAppSelector(
     (state) => state.images.collectionImages,
   );
   const imageData = collectionImages?.images;
   const isLastPage = !!collectionImages?.isLastPage;
   const endPageRef = useRef(null);
   const isOnline = useOnlineStatus();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Primary trigger with rootMargin to preload next page early
   const intersectingSmall = useIntersection(
@@ -70,13 +74,17 @@ const CollectionImages = memo(() => {
   }, [intersecting, intersectingSmall, nsfwLevel]);
 
   useEffect(() => {
-    const getImagesFromFirestore = async (posts, collectionId) => {
+    const getImagesFromFirestore = async (
+      posts: CollectionSavedPost[],
+      collectionId: number,
+    ) => {
       try {
         setImagesIsLoading(true);
 
         await dispatch(getColectionImagesByIds(posts, collectionId));
       } catch (err) {
-        setErrorMessage(err);
+        const errorMessage = handleErrors(normalizeError(err));
+        setErrorMessage(errorMessage);
       } finally {
         setIsIntersecting(false);
         setImagesIsLoading(false);
@@ -89,9 +97,10 @@ const CollectionImages = memo(() => {
       !errorMessage &&
       isOnline &&
       !imagesIsLoading &&
+      collectionData &&
       savedImagesData?.length
     ) {
-      getImagesFromFirestore(savedImagesData, collectionData?.id);
+      getImagesFromFirestore(savedImagesData, collectionData.id);
     }
   }, [
     isIntersecting,
@@ -104,26 +113,28 @@ const CollectionImages = memo(() => {
     dispatch,
   ]);
 
-  const postsHtml = imageData.flatMap((item, i) => {
-    const postData = collectionData.posts.find(
-      (post) => post.postId === item[0].postId,
-    );
+  const postsHtml =
+    collectionData &&
+    imageData.flatMap((item, i) => {
+      const postData = collectionData?.posts.find(
+        (post) => post.postId === item[0].postId,
+      );
 
-    return (
-      <Carousel
-        key={i}
-        versionId={null}
-        imagesData={item}
-        visibleImgAmount={1}
-        saved={true}
-        postId={item[0].postId}
-        showInView={true}
-        location="collections"
-        locationId={collectionData.id}
-        curPostData={postData}
-      />
-    );
-  });
+      return (
+        <Carousel
+          key={i}
+          versionId={null}
+          imagesData={item}
+          visibleImgAmount={1}
+          saved={true}
+          postId={item[0].postId}
+          showInView={true}
+          location="collections"
+          locationId={collectionData?.id}
+          curPostData={postData}
+        />
+      );
+    });
 
   return (
     <>
@@ -136,11 +147,11 @@ const CollectionImages = memo(() => {
           animate={ANIMATIONS_FM_SLIDEIN}
           className={classes["notification"]}
         >
-          <ExclamationCircleSvg className={classes["notification__svg"]} />
+          <ExclamationCircleIcon className={classes["notification__svg"]} />
           <span>No images found.</span>
           <span>
             Click{" "}
-            <FolderSvg
+            <FolderPlusIcon
               className={`${classes["svg"]} ${classes["svg--medium"]}`}
             />{" "}
             at the top left corner of the image or use "Add image by ID" button

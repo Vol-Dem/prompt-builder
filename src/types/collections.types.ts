@@ -40,7 +40,7 @@ export interface CollectionsState {
 }
 
 export interface PostSavedData {
-  createdAt?: number;
+  createdAt?: number | string;
   imageIds?: number[];
   imagesId?: number[];
   postId: number;

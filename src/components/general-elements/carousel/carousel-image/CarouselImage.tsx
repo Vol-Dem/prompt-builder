@@ -35,7 +35,7 @@ type CarouselImageProps = {
   imageData: Image;
   imageWidth?: number;
   location: ResourceFirestoreCollection;
-  locationId: number;
+  locationId: number | null;
   onClick: (position: number | null) => void;
   onOpen: () => void;
   onDelete: () => void;
@@ -151,6 +151,8 @@ const CarouselImage = ({
   };
 
   const setPreviwImgHandler = (nsfw: boolean) => {
+    if (!locationId) return;
+
     dispatch(setPreviewImg(imgSrc, nsfw, location, locationId, imageData.type));
     setMenuIsOpen(false);
   };

@@ -1,5 +1,3 @@
-import { useSelector } from "react-redux";
-
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import Spinner from "../../ui/Spinner";
 import classes from "./CollectionList.module.scss";
@@ -7,6 +5,7 @@ import ErrorMessage from "../../ui/ErrorMessage";
 import { ERROR_MESSAGE_OFFLINE } from "../../../variables/constants";
 import NotificationMessage from "../../ui/NotificationMessage";
 import PreviewCard from "../../general-elements/preview-card/PreviewCard";
+import { useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Displays a list of collections
@@ -17,12 +16,12 @@ import PreviewCard from "../../general-elements/preview-card/PreviewCard";
  * @returns {JSX.Element} List of collections.
  */
 const CollectionList = () => {
-  const collectionPreviews = useSelector(
-    (state) => state.images.collectionPreviews
+  const collectionPreviews = useAppSelector(
+    (state) => state.images.collectionPreviews,
   );
-  const isLoading = useSelector((state) => state.images.previewsIsLoading);
-  const errorMessage = useSelector(
-    (state) => state.images.previewsErrorMessage
+  const isLoading = useAppSelector((state) => state.images.previewsIsLoading);
+  const errorMessage = useAppSelector(
+    (state) => state.images.previewsErrorMessage,
   );
   const isOnline = useOnlineStatus();
 

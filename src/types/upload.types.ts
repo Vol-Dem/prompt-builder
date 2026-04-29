@@ -39,19 +39,19 @@ export interface UploadingItem {
   images?: Image[];
   imgUrl: string;
   location: ResourceFirestoreCollection;
-  modelId: number | null;
+  modelId?: number | null;
   modelName?: string | null;
   nsfwMode: boolean;
   postData?: UploadingPostData | null;
   postId: number;
-  versionId: number | null;
+  versionId?: number | null;
   delete?: boolean;
 }
 
 export interface PostInfo {
   postId: number;
-  modelId: number | null;
-  versionId: number | null;
+  modelId?: number | null;
+  versionId?: number | null;
   location: ResourceFirestoreCollection;
   existedAmount?: number | null;
   ids: number[];

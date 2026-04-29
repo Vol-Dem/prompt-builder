@@ -24,8 +24,8 @@ type ChooseImageFormProps = {
   location: ResourceFirestoreCollection | null;
   collectionInfo?: UploadingCollectionData | null;
   images: Image[];
-  modelId?: number;
-  versionId?: number;
+  modelId?: number | null;
+  versionId?: number | null;
   activeImageIndex?: number;
   onSave: (
     location: ResourceFirestoreCollection,
@@ -69,18 +69,18 @@ type VersionStatusInputData = {
  * - Dispatches image save/delete actions.
  *
  * @component
- * @param {object} props
- * @param {('save' | 'del')} props.type - Defines whether images are being saved or deleted.
- * @param {('models' | 'collections')} props.location - Target entity type for saving/deleting images.
- * @param {object} props.collectionInfo - Target collection data (used when location is "collections").
- * @param {Array} props.images - List of post images.
- * @param {string} props.modelId - Target model ID (used when location is "models").
- * @param {number} props.activeImageIndex - Index of the image active when the form was opened.
- * @param {(location: string, imageIds: number[], collectionData: object, postData: object) => void} props.onSave - Callback triggered with selected image IDs on submit.
- * @param {boolean} props.isDeleting - Indicates whether delete operation is in progress.
- * @param {any} props.postData - Source post data.
- * @param {Array<number>} props.savedImageIds - IDs of images already saved.
- * @returns {JSX.Element} Choose Image form.
+ * @param props
+ * @param props.type - Defines whether images are being saved or deleted.
+ * @param props.location - Target entity type for saving/deleting images.
+ * @param props.collectionInfo - Target collection data (used when location is "collections").
+ * @param props.images - List of post images.
+ * @param props.modelId - Target model ID (used when location is "models").
+ * @param props.activeImageIndex - Index of the image active when the form was opened.
+ * @param props.onSave - Callback triggered with selected image IDs on submit.
+ * @param props.isDeleting - Indicates whether delete operation is in progress.
+ * @param props.postData - Source post data.
+ * @param props.savedImageIds - IDs of images already saved.
+ * @returns Choose Image form.
  */
 const ChooseImageForm = memo(
   ({

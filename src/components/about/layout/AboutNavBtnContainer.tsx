@@ -11,14 +11,14 @@ import { ABOUT_NAV_DATA } from "../../../variables/constants";
  *
  * @component
  *
- * @returns {JSX.Element} The About navigation buttons.
+ * @returns The About navigation buttons.
  */
 const AboutNavBtnContainer = () => {
   const location = useLocation();
   const curPageUrl = location.pathname.split("/").slice(-1)[0];
   const curLocationDataIndex = Math.max(
     ABOUT_NAV_DATA.findIndex((nav) => nav.url === curPageUrl),
-    0
+    0,
   );
   const btnLeftData = ABOUT_NAV_DATA[curLocationDataIndex - 1];
   const btnRightData = ABOUT_NAV_DATA[curLocationDataIndex + 1];

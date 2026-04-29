@@ -17,9 +17,9 @@ type AboutContentWrapProps = ComponentProps<"div">;
  *
  * @component
  *
- * @param {object} props
- * @param {React.ReactNode} props.children - Nested About section content.
- * @returns {JSX.Element} The About section content with navigation buttons.
+ * @param props
+ * @param props.children - Nested About section content.
+ * @returns The About section content with navigation buttons.
  */
 const AboutContentWrap = ({ children }: AboutContentWrapProps) => {
   return (

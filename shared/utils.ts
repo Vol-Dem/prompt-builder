@@ -219,7 +219,7 @@ export const transformImageData = (imageData: Image): Image => {
 
   const newImageData = {
     id: imageData.id,
-    ...(imageData?.postId && { postId: imageData.postId }),
+    postId: imageData.postId,
     url: imageData?.url || "",
     createdAt: imageData.createdAt,
     nsfw: imageData?.nsfw || false,

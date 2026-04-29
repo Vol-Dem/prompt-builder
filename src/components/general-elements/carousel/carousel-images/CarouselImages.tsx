@@ -15,13 +15,13 @@ type CarouselImagesProps = OverrideFields<
     images: Image[];
     visibleImages: number[];
     caruselIsVisible?: boolean;
-    versionId: number;
+    versionId: number | null;
     saved: boolean;
     active: boolean;
     side: boolean;
     imageWidth?: number;
     location: ResourceFirestoreCollection;
-    locationId: number;
+    locationId: number | null;
     translate: number;
     transitionDur: number;
     onClick: (position: number | null) => void;
@@ -44,25 +44,25 @@ type CarouselImagesProps = OverrideFields<
  *
  * @component
  *
- * @param {object} props
- * @param {Array<number>} props.visibleImages - Indexes of currently visible images.
- * @param {boolean} props.caruselIsVisible - Whether carousel is currently in viewport.
- * @param {number} props.translate - Current translateX value.
- * @param {number} props.transitionDur - Slide transition duration.
- * @param {Array<object>} props.images - List of post images.
- * @param {number} [props.visibleAmount] - Number of visible images.
- * @param {boolean} props.active - Whether carousel is open.
- * @param {boolean} props.saved - Whether images were loaded from application DB.
- * @param {boolean} props.side - Whether carousel is opened from sidebar.
- * @param {number} props.versionId - Model version ID.
- * @param {number} props.imageWidth - Requested image width.
- * @param {'models' | 'collections'} props.location - Firestore collection name.
- * @param {number} props.locationId - Firestore document ID.
- * @param {(position: number) => void} props.onClick - Callback when image clicked.
- * @param {() => void} props.onOpen - Callback when image opened.
- * @param {(ids: number[], postId: number) => void} props.onDelete - Callback on delete.
+ * @param props
+ * @param props.visibleImages - Indexes of currently visible images.
+ * @param props.caruselIsVisible - Whether carousel is currently in viewport.
+ * @param props.translate - Current translateX value.
+ * @param props.transitionDur - Slide transition duration.
+ * @param props.images - List of post images.
+ * @param props.visibleAmount - Number of visible images.
+ * @param props.active - Whether carousel is open.
+ * @param props.saved - Whether images were loaded from application DB.
+ * @param props.side - Whether carousel is opened from sidebar.
+ * @param props.versionId - Model version ID.
+ * @param props.imageWidth - Requested image width.
+ * @param props.location - Firestore collection name.
+ * @param props.locationId - Firestore document ID.
+ * @param props.onClick - Callback when image clicked.
+ * @param props.onOpen - Callback when image opened.
+ * @param props.onDelete - Callback on delete.
  *
- * @returns {JSX.Element} Carousel images container.
+ * @returns Carousel images container.
  */
 const CarouselImages = ({
   visibleAmount,

@@ -93,7 +93,7 @@ export interface Image {
   meta: ImageMeta;
   nsfw: boolean | string;
   nsfwLevel: string | number;
-  postId?: number;
+  postId: number;
   type?: SrcType;
   url: string;
   username?: string;

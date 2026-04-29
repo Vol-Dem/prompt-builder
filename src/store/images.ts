@@ -529,7 +529,7 @@ export const getColectionImagesByIds = (
             (post) => post.postId === b[0].postId,
           );
           if (curPostDataB?.createdAt && curPostDataA?.createdAt) {
-            return curPostDataB.createdAt - curPostDataA.createdAt;
+            return +curPostDataB.createdAt - +curPostDataA.createdAt;
           }
           return 0;
         })

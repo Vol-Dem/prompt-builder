@@ -28,11 +28,11 @@ export interface ActiveCarousel {
   existedImgsAmount?: number | null;
   images: Image[];
   location: ResourceFirestoreCollection;
-  locationId: number;
-  modelId: number;
+  locationId: number | null;
+  modelId: number | null;
   postId: number;
   saved: boolean;
-  versionId: number;
+  versionId: number | null;
   visibleImgAmount?: number | null;
   side?: boolean;
 }

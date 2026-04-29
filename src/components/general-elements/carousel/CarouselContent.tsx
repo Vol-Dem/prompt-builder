@@ -49,18 +49,18 @@ export type CarouselContentProps = {
   visibleImgAmount: number;
   postId: number;
   onDelete?: (ids: number[] | null, postId: number) => void;
-  modelId: number;
-  versionId: number;
-  existedImgsAmount: number | null;
-  activeImgNum: number;
+  modelId?: number | null;
+  versionId: number | null;
+  existedImgsAmount?: number | null;
+  activeImgNum?: number;
   saved: boolean;
-  active: boolean;
-  onActiveNumChange: (activeImage: number) => void;
-  side: boolean;
+  active?: boolean;
+  onActiveNumChange?: (activeImage: number) => void;
+  side?: boolean;
   imageHeight?: number;
   imageWidth?: number;
   location: ResourceFirestoreCollection;
-  locationId: number;
+  locationId: number | null;
   curPostData?: PostSavedData;
 };
 
@@ -180,7 +180,11 @@ const CarouselContent = ({
 
   let postData = null;
 
-  if (savedImages?.data && !!Object.keys(savedImages?.data)?.length) {
+  if (
+    savedImages?.data &&
+    !!Object.keys(savedImages?.data)?.length &&
+    versionId
+  ) {
     postData =
       savedImages.data[versionId]?.find((post) => post.postId === postId) ||
       null;
@@ -233,7 +237,7 @@ const CarouselContent = ({
         images: imagesData,
         visibleImgAmount,
         postId,
-        modelId,
+        modelId: modelId || null,
         saved,
         versionId,
         existedImgsAmount,
@@ -554,8 +558,8 @@ const CarouselContent = ({
         versionId={versionId}
         onClick={openCarouselHandler}
         saved={saved}
-        active={active}
-        side={side}
+        active={!!active}
+        side={!!side}
         imageWidth={imageWidth}
         location={location}
         locationId={locationId}
@@ -598,7 +602,7 @@ const CarouselContent = ({
         images={imagesData}
         saved={saved}
         postId={postId}
-        existedImgsAmount={existedImgsAmount}
+        existedImgsAmount={existedImgsAmount || null}
         onSave={saveExampleHandler}
         onOpenForm={setImageFormState}
         postData={postData}
@@ -619,7 +623,7 @@ const CarouselContent = ({
             type={imagesData[currImgNum]?.type}
             onClose={() => {
               setFullViewIsOpen(false);
-              onActiveNumChange(currImgNum);
+              if (onActiveNumChange) onActiveNumChange(currImgNum);
             }}
             nextSlide={slideNextHandler}
             prevSlide={slidePrevHandler}
