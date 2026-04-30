@@ -8,6 +8,7 @@ import {
 } from "../../../../variables/constants";
 import GuideActionMessage from "../GuideActionMessage";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import type { GuideStep } from "../../../../types/guide.types";
 
 /**
  * Model tags form guide.
@@ -16,11 +17,11 @@ import useGuideStep from "../../../../hooks/use-guide-step";
  *
  * @component
  *
- * @returns {JSX.Element} Model tags form guide element.
+ * @returns Model tags form guide element.
  */
 const ModelTagsFormGuide = () => {
   const guideType = "model";
-  const guideSteps = useMemo(() => {
+  const guideSteps = useMemo<GuideStep[]>(() => {
     return [
       {
         step: GUIDE_STEP_MODEL_TAGS_EDIT_FROM,
@@ -31,6 +32,7 @@ const ModelTagsFormGuide = () => {
       {
         step: GUIDE_STEP_MODEL_TAGS_CLOSE,
         arrowPosition: 3,
+         next: false,
         text: (
           <>
             <GuideActionMessage>Close the editing window</GuideActionMessage>

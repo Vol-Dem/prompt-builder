@@ -1,5 +1,6 @@
 import type {
   CivitaiModelDoc,
+  CollectionPreviewDoc,
   ModelPreview,
   ModelPreviewDoc,
   UserModelDoc,
@@ -176,35 +177,43 @@ export const createModelPreviewData = (
 
 /**
  * Creates object with sidebar preview data
- * @param {number} versionId - version ID
- * @param {ModelPreviewDoc} previewData - current preview data
- * @param {ModelVersionCustomData} curVersionData - current custom version data
- * @returns {SidebarPreviewData} preview data
+ * @param versionId - version ID
+ * @param previewData - current preview data
+ * @param curVersionData - current custom version data
+ * @returns preview data
  */
 export const createSidebarPreviewData = (
-  versionId: number,
-  previewData: ModelPreviewDoc,
-  curVersionData: ModelVersionCustomData,
+  versionId: number | null,
+  previewData: ModelPreview | CollectionPreviewDoc | ModelPreviewDoc,
+  curVersionData?: ModelVersionCustomData,
 ): SidebarPreviewData => {
+  if ("src" in previewData) {
+    return {
+      id: previewData.id,
+      activeVersionId: versionId || null,
+      title: previewData?.title || previewData?.name,
+      versionName: previewData?.versionName || curVersionData?.name || "",
+      imgUrl: previewData?.customPreviewImgUrl || previewData?.imgUrl,
+      imgUrlNsfw: previewData?.nsfwPreviewImgUrl,
+      type: previewData?.modelType,
+      baseModel: curVersionData?.baseModel || previewData?.baseModel,
+      mainTag:
+        curVersionData?.mainTag ||
+        previewData?.mainTag ||
+        curVersionData?.defActTag,
+      weight: curVersionData?.weight || previewData?.weight || null,
+      minWeight: curVersionData?.minWeight || previewData?.minWeight || null,
+      maxWeight: curVersionData?.maxWeight || previewData?.maxWeight || null,
+      tags: curVersionData?.trainedWords || previewData?.tags || null,
+    };
+  }
+
   return {
-    ...previewData,
-    activeVersionId: versionId || null,
-    title: previewData?.name || previewData?.title,
-    versionName: previewData?.versionName || curVersionData?.name,
-    imgUrl: previewData?.customPreviewImgUrl || previewData?.imgUrl,
-    type: previewData?.type || previewData?.modelType,
-    baseModel: curVersionData?.baseModel || previewData?.baseModel,
-    mainTag:
-      curVersionData?.mainTag ||
-      previewData?.mainTag ||
-      curVersionData?.defActTag,
-    weight: curVersionData?.weight || previewData?.weight || null,
-    minWeight: curVersionData?.minWeight || previewData?.minWeight || null,
-    maxWeight: curVersionData?.maxWeight || previewData?.maxWeight || null,
-    size: curVersionData?.size || previewData?.size,
-    tags: curVersionData?.trainedWords || previewData?.tags || null,
-    helperTags: curVersionData?.helperTags || previewData?.helperTags,
-    updatedAt: previewData?.updatedAt,
+    id: previewData.id,
+    title: previewData?.name,
+    imgUrl: previewData?.customPreviewImgUrl,
+    imgUrlNsfw: previewData?.nsfwPreviewImgUrl,
+    type: previewData?.type,
   };
 };
 

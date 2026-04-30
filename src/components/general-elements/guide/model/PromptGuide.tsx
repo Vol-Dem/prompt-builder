@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
 
 import classes from "./PromptGuide.module.scss";
 import GuideMessage from "../GuideMessage";
@@ -15,6 +14,8 @@ import {
 import GuideActionMessage from "../GuideActionMessage";
 import CopySvg from "../../../../assets/CopySvg";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import { useAppSelector } from "../../../../store/hooks/hooks";
+import type { GuideStep } from "../../../../types/guide.types";
 
 /**
  * Prompt guide.
@@ -24,14 +25,14 @@ import useGuideStep from "../../../../hooks/use-guide-step";
  *
  * @component
  *
- * @returns {JSX.Element} Prompt guide element.
+ * @returns Prompt guide element.
  */
 const PromptGuide = () => {
   const guideType = "model";
-  const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
-  const isTextMode = useSelector((state) => state.prompt.isTextMode);
+  const promptIsOpen = useAppSelector((state) => state.prompt.promptIsOpen);
+  const isTextMode = useAppSelector((state) => state.prompt.isTextMode);
 
-  const guideSteps = useMemo(() => {
+  const guideSteps = useMemo<GuideStep[]>(() => {
     return [
       {
         step: GUIDE_STEP_PROMPT_VIEW,
@@ -98,9 +99,10 @@ const PromptGuide = () => {
     ];
   }, []);
 
-  const openPromptData = {
+  const openPromptData: GuideStep = {
     step: "default",
     arrowPosition: 2,
+    next: false,
     text: (
       <>
         <GuideActionMessage>Open prompt panel</GuideActionMessage> to continue
@@ -108,9 +110,10 @@ const PromptGuide = () => {
     ),
   };
 
-  const changePromptMode = {
+  const changePromptMode: GuideStep = {
     step: "mode",
     arrowPosition: 8,
+    next: false,
     text: (
       <>
         <GuideActionMessage>Change to "Tags" mode</GuideActionMessage> to
@@ -123,7 +126,7 @@ const PromptGuide = () => {
 
   if (!step) return null;
 
-  let renderIndex = index;
+  let renderIndex: string | number | null = index;
   let renderStep = step;
 
   if (!promptIsOpen) {
@@ -138,7 +141,7 @@ const PromptGuide = () => {
     <GuideMessage
       type={guideType}
       className={`${classes[`guide__content--${renderIndex}`]} ${classes["z-index"]}`}
-      step={renderStep.renderStep}
+      step={renderStep.step}
       arrowPosition={renderStep.arrowPosition}
       next={renderStep.next}
     >

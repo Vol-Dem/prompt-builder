@@ -5,6 +5,7 @@ import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_MODEL_TAGS_EDIT } from "../../../../variables/constants";
 import EditSvg from "../../../../assets/EditSvg";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import type { GuideStep } from "../../../../types/guide.types";
 
 /**
  * Model tags guide.
@@ -13,11 +14,11 @@ import useGuideStep from "../../../../hooks/use-guide-step";
  *
  * @component
  *
- * @returns {JSX.Element} Model tags guide element.
+ * @returns Model tags guide element.
  */
 const ModelTagsGuide = () => {
   const guideType = "model";
-  const guideSteps = useMemo(() => {
+  const guideSteps = useMemo<GuideStep[]>(() => {
     return [
       {
         step: GUIDE_STEP_MODEL_TAGS_EDIT,

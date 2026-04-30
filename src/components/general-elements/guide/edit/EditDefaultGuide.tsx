@@ -4,6 +4,7 @@ import classes from "./EditDefaultGuide.module.scss";
 import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_EDIT_DEFAULT } from "../../../../variables/constants";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import type { GuideStep } from "../../../../types/guide.types";
 
 /**
  * Edit default guide.
@@ -12,11 +13,11 @@ import useGuideStep from "../../../../hooks/use-guide-step";
  *
  * @component
  *
- * @returns {JSX.Element} Edit default guide element.
+ * @returns Edit default guide element.
  */
 const EditDefaultGuide = () => {
   const guideType = "edit";
-  const guideSteps = useMemo(() => {
+  const guideSteps = useMemo<GuideStep[]>(() => {
     return [
       {
         step: GUIDE_STEP_EDIT_DEFAULT,

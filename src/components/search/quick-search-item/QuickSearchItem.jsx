@@ -81,6 +81,7 @@ const QuickSearchItem = ({ modelPreveiw }) => {
         </div>
       </NavLink>
       <ButtonSquareAdd
+        resourceType="model"
         previewData={modelPreveiw}
         className={classes["search__add"]}
       />

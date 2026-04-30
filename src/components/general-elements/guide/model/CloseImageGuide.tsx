@@ -1,31 +1,32 @@
 import { useMemo } from "react";
 
-import classes from "./OpenModelGuide.module.scss";
+import classes from "./CloseImageGuide.module.scss";
 import GuideMessage from "../GuideMessage";
-import { GUIDE_STEP_OPEN_MODEL } from "../../../../variables/constants";
+import { GUIDE_STEP_CLOSE_IMAGE } from "../../../../variables/constants";
 import GuideActionMessage from "../GuideActionMessage";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import type { GuideStep } from "../../../../types/guide.types";
 
 /**
- * Open model guide.
+ * Close image guide.
  *
- * Renders tutorial messages for the open model.
+ * Renders tutorial messages for the close image.
  *
  * @component
  *
- * @returns {JSX.Element} Open model guide element.
+ * @returns Close image guide element.
  */
-const OpenModelGuide = () => {
-  const guideType = "home";
-  const guideSteps = useMemo(() => {
+const CloseImageGuide = () => {
+  const guideType = "model";
+  const guideSteps = useMemo<GuideStep[]>(() => {
     return [
       {
-        step: GUIDE_STEP_OPEN_MODEL,
-        arrowPosition: 7,
+        step: GUIDE_STEP_CLOSE_IMAGE,
+        arrowPosition: 3,
+        next: false,
         text: (
           <>
-            <GuideActionMessage>Click on the title or image</GuideActionMessage>{" "}
-            to go to the model page.
+            <GuideActionMessage>Close image</GuideActionMessage> to continue
           </>
         ),
       },
@@ -49,4 +50,4 @@ const OpenModelGuide = () => {
   );
 };
 
-export default OpenModelGuide;
+export default CloseImageGuide;

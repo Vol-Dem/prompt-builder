@@ -54,9 +54,10 @@ const ImageResourcesItemButton = ({
   if (resource?.preview && version) {
     resorceButtonHtml = (
       <ButtonAdd
+        resourceType="model"
         previewData={{
           ...resource.preview,
-          versionName: resource?.versionName || versionName,
+          versionName: resource?.versionName || versionName || null,
           versionId: resource?.versionId || null,
         }}
         versionId={version}

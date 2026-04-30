@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 
 import classes from "./GeneratedImagesGuide.module.scss";
-import FolderSvg from "../../../../assets/FolderSvg";
 import GuideMessage from "../GuideMessage";
 import {
   GUIDE_STEP_GENERATED_IMAGES,
@@ -9,8 +8,9 @@ import {
   GUIDE_STEP_SAVE_IMAGE,
   GUIDE_STEP_SAVED_TAB,
 } from "../../../../variables/constants";
-import DotsSvg from "../../../../assets/DotsSvg";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import type { GuideStep } from "../../../../types/guide.types";
+import { EllipsisHorizontalIcon, FolderArrowDownIcon } from "@heroicons/react/24/outline";
 
 /**
  * Generated images guide.
@@ -23,9 +23,9 @@ import useGuideStep from "../../../../hooks/use-guide-step";
  */
 const GeneratedImagesGuide = () => {
   const guideType = "model";
-  const guideSteps = useMemo(() => {
+  const guideSteps = useMemo<GuideStep[]>(() => {
     const downloadImage = (
-      <FolderSvg className={`${classes["svg"]} ${classes["svg--medium"]}`} />
+      <FolderArrowDownIcon className={`${classes["svg"]} ${classes["svg--medium"]}`} />
     );
 
     return [
@@ -45,7 +45,7 @@ const GeneratedImagesGuide = () => {
         next: true,
         text: (
           <>
-            In the image menu <DotsSvg className={classes.svg} /> you can set it
+            In the image menu <EllipsisHorizontalIcon className={classes.svg} /> you can set it
             as a preview for the model or tag sets
           </>
         ),

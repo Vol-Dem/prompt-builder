@@ -1,8 +1,6 @@
 import { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
 import classes from "./CarouselGuide.module.scss";
-import PlusSvg from "../../../../assets/PlusSvg";
 import GuideMessage from "../GuideMessage";
 import { guideActions } from "../../../../store/guide";
 import {
@@ -13,6 +11,9 @@ import {
 import GuideActionMessage from "../GuideActionMessage";
 import SettingsSvg from "../../../../assets/SettingsSvg";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import type { GuideStep } from "../../../../types/guide.types";
 
 /**
  * Carousel guide.
@@ -26,13 +27,13 @@ import useGuideStep from "../../../../hooks/use-guide-step";
  */
 const CarouselGuide = () => {
   const guideType = "model";
-  const usedImages = useSelector((state) => state.used.images);
-  const dispatch = useDispatch();
+  const usedImages = useAppSelector((state) => state.used.images);
+  const dispatch = useAppDispatch();
 
-  const guideSteps = useMemo(() => {
+  const guideSteps = useMemo<GuideStep[]>(() => {
     const plusImage = (
       <span className={classes["btn-container"]}>
-        <PlusSvg />
+        <PlusIcon />
       </span>
     );
 
@@ -40,6 +41,7 @@ const CarouselGuide = () => {
       {
         step: GUIDE_STEP_ADD_IMAGE_TO_SIDEPANEL,
         arrowPosition: 6,
+        next: false,
         text: (
           <>
             <GuideActionMessage> Click {plusImage}</GuideActionMessage> to add
@@ -50,6 +52,7 @@ const CarouselGuide = () => {
       {
         step: GUIDE_STEP_OPEN_IMAGE,
         arrowPosition: 6,
+        next: false,
         text: (
           <>
             <GuideActionMessage> Click on the image</GuideActionMessage> to see
@@ -60,6 +63,7 @@ const CarouselGuide = () => {
       {
         step: GUIDE_STEP_MODEL_EDIT,
         arrowPosition: 3,
+        next: false,
         text: (
           <>
             <GuideActionMessage>

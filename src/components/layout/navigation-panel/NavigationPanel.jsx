@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowUturnLeftIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
 
 import Button from "../../ui/buttons/Button";
 import classes from "./NavigationPanel.module.scss";
@@ -29,7 +29,7 @@ const NavigationPanel = ({ onBack, children }) => {
       </Button>
       <div className={classes.categories}>{children}</div>
       <Link className={`${classes["btn-edit"]}`} to="edit">
-        <SettingsSvg />
+        <Cog6ToothIcon />
         Edit
       </Link>
     </div>

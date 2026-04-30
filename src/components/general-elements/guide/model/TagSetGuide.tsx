@@ -6,10 +6,11 @@ import {
   GUIDE_STEP_MODEL_ADD_TAGSET,
   GUIDE_STEP_MODEL_TAGSET,
 } from "../../../../variables/constants";
-import DotsSvg from "../../../../assets/DotsSvg";
 import GuideActionMessage from "../GuideActionMessage";
 import ContentComment from "../ContentComment";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import type { GuideStep } from "../../../../types/guide.types";
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 
 /**
  * Tag sets guide.
@@ -18,11 +19,11 @@ import useGuideStep from "../../../../hooks/use-guide-step";
  *
  * @component
  *
- * @returns {JSX.Element} Tag sets guide element.
+ * @returns Tag sets guide element.
  */
 const TagSetGuide = () => {
   const guideType = "model";
-  const guideSteps = useMemo(() => {
+  const guideSteps = useMemo<GuideStep[]>(() => {
     return [
       {
         step: GUIDE_STEP_MODEL_ADD_TAGSET,
@@ -48,7 +49,7 @@ const TagSetGuide = () => {
         text: (
           <>
             Added tag sets are displayed here. You can set a preview using{" "}
-            <DotsSvg className={classes.svg} /> on the image
+            <EllipsisHorizontalIcon className={classes.svg} /> on the image
           </>
         ),
       },

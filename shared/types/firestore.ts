@@ -125,15 +125,18 @@ export interface ModelPreview {
   id: number;
   main: string;
   sub: string[];
-  versionId: number;
+  versionId?: number | null;
   imgUrl: string;
+  customPreviewImgUrl?: string;
+  nsfwPreviewImgUrl?: string;
   size: number | null;
   src: string;
   modelType: string;
-  tags: string[];
+  tags?: string[] | null;
   mainTag?: string;
   title?: string;
-  versionName?: string;
+  name?: string;
+  versionName?: string | null;
   weight?: number | null;
   minWeight?: number | null;
   maxWeight?: number | null;
@@ -155,6 +158,7 @@ export interface ModelPreviewDoc {
   versionId?: number;
   imgType: string;
   imgUrl: string;
+  nsfwPreviewImgUrl?: string;
   latestFileName: string;
   main: string;
   mainTag?: string;
@@ -199,6 +203,9 @@ export interface CollectionPreviewDoc {
   name: string;
   nameArr: string[];
   nsfw: boolean;
+  customPreviewImgUrl?: string;
+  nsfwPreviewImgUrl?: string;
+  type?: string;
   subcategories: string[];
 }
 

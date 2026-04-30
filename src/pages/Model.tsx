@@ -160,7 +160,12 @@ const Model = ({ title }: ModelPageProps) => {
             <h1 className={classes.title}>
               {model?.name || model?.data?.name}
             </h1>
-            <ButtonSquareAdd previewData={modelPreview} />
+            {modelPreview && (
+              <ButtonSquareAdd
+                resourceType="model"
+                previewData={modelPreview}
+              />
+            )}
             {guideIsActive && <AddModelToSidePanelGuide />}
           </div>
           <ModelVersionsList

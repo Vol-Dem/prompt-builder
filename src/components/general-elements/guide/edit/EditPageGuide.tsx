@@ -8,6 +8,7 @@ import {
   GUIDE_STEP_EDIT_VERSIONS_SWITCH,
 } from "../../../../variables/constants";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import type { GuideStep } from "../../../../types/guide.types";
 
 /**
  * Edit page guide.
@@ -20,7 +21,7 @@ import useGuideStep from "../../../../hooks/use-guide-step";
  */
 const EditPageGuide = () => {
   const guideType = "edit";
-  const guideSteps = useMemo(() => {
+  const guideSteps = useMemo<GuideStep[]>(() => {
     return [
       {
         step: GUIDE_STEP_EDIT_UPD_DEL,

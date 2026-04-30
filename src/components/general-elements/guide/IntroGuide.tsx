@@ -1,9 +1,8 @@
-import { useDispatch, useSelector } from "react-redux";
-
 import classes from "./IntroGuide.module.scss";
 import Button from "../../ui/buttons/Button";
 import { guideActions } from "../../../store/guide";
 import GuideActionMessage from "./GuideActionMessage";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Guide intro component.
@@ -15,9 +14,9 @@ import GuideActionMessage from "./GuideActionMessage";
  * @returns {JSX.Element} Guide intro element.
  */
 const IntroGuide = () => {
-  const guideIsActive = useSelector((state) => state.guide.active);
-  const introDisabled = useSelector((state) => state.guide.introDisabled);
-  const dispatch = useDispatch();
+  const guideIsActive = useAppSelector((state) => state.guide.active);
+  const introDisabled = useAppSelector((state) => state.guide.introDisabled);
+  const dispatch = useAppDispatch();
 
   return (
     <>

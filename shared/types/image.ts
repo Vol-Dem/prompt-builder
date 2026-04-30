@@ -88,7 +88,7 @@ export interface ImageMeta {
 export interface Image {
   browsingLevel?: number;
   createdAt: string;
-  hash?: string;
+  hash: string;
   id: number;
   meta: ImageMeta;
   nsfw: boolean | string;

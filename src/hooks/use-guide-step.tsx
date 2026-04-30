@@ -12,12 +12,9 @@ import useGuideIndex from "./use-guide-index";
 /**
  * Resolves the currently active guide step.
  *
- * @param {'home' | 'model' | 'edit'} guideType
- * @param {GuideStepConfig[]} steps - Guide steps data
- * @returns {{
- *   index: number,
- *   config: GuideStepConfig
- * } | null}
+ * @param guideType
+ * @param steps - Guide steps data
+ * @returns
  */
 const useGuideStep = (guideType: GuideType, steps: GuideStep[]) => {
   const index = useGuideIndex(guideType, steps);

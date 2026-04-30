@@ -274,9 +274,9 @@ const CarouselImage = ({
             </AnimatePresence>
           </div>
           <ButtonAdd
-            className={classes["btn-add"]}
+            resourceType="image"
             previewData={imageData}
-            type="image"
+            className={classes["btn-add"]}
           />
         </>
       )}

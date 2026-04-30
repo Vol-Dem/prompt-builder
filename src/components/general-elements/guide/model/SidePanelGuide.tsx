@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
 
 import classes from "./SidePanelGuide.module.scss";
 import GuideMessage from "../GuideMessage";
@@ -9,6 +8,8 @@ import {
 } from "../../../../variables/constants";
 import ContentComment from "../ContentComment";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import { useAppSelector } from "../../../../store/hooks/hooks";
+import type { GuideStep } from "../../../../types/guide.types";
 
 /**
  * Side panel guide.
@@ -21,9 +22,9 @@ import useGuideStep from "../../../../hooks/use-guide-step";
  */
 const SidePanelGuide = () => {
   const guideType = "model";
-  const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
+  const panelIsOpen = useAppSelector((state) => state.used.panelIsOpen);
 
-  const guideSteps = useMemo(() => {
+  const guideSteps = useMemo<GuideStep[]>(() => {
     return [
       {
         step: GUIDE_STEP_SIDEPANEL,

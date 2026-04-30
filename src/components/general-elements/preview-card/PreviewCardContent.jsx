@@ -32,10 +32,8 @@ const PreviewCardContent = ({ previewData, fullView, animate }) => {
   const isMobile = useSelector((state) => state.general.isMobile);
   const imgRef = useRef();
   const imageSrc = isNsfwMode
-    ? previewData.nsfwPreviewImgUrl ||
-      previewData.customPreviewImgUrl ||
-      previewData.imgUrl
-    : previewData.customPreviewImgUrl || previewData.imgUrl;
+    ? previewData.nsfwPreviewImgUrl || previewData.customPreviewImgUrl
+    : previewData.customPreviewImgUrl;
   const imageType = isNsfwMode
     ? previewData?.nsfwPreviewImgType || previewData.imgType
     : previewData?.customPreviewImgType || previewData.imgType;
@@ -63,6 +61,7 @@ const PreviewCardContent = ({ previewData, fullView, animate }) => {
     >
       <div className={classes["image-container"]}>
         <ButtonSquareAdd
+          resourceType={previewData?.type}
           previewData={previewData}
           className={classes["btn-add"]}
         />

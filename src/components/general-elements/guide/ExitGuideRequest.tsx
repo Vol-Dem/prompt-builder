@@ -1,6 +1,12 @@
+import type { ComponentProps } from "react";
 import Button from "../../ui/buttons/Button";
 import Modal from "../../ui/Modal";
 import classes from "./ExitGuideRequest.module.scss";
+
+type ExitGuideRequestProps = ComponentProps<"div"> & {
+  onSubmit: () => void;
+  onClose: () => void;
+};
 
 /**
  * Exit guide request component.
@@ -9,14 +15,18 @@ import classes from "./ExitGuideRequest.module.scss";
  *
  * @component
  *
- * @param {object} props
- * @param {() => void} onClose - Callback to close the request.
- * @param {() => void} onSubmit - Callback to close the tutorial.
- * @param {string} className - Optional class name.
+ * @param props
+ * @param onClose - Callback to close the request.
+ * @param onSubmit - Callback to close the tutorial.
+ * @param className - Optional class name.
  *
- * @returns {JSX.Element} Exit guide request element.
+ * @returns Exit guide request element.
  */
-const ExitGuideRequest = ({ onSubmit, onClose, children }) => {
+const ExitGuideRequest = ({
+  onSubmit,
+  onClose,
+  children,
+}: ExitGuideRequestProps) => {
   return (
     <Modal onClose={onClose}>
       <div className={classes["exit-request"]}>

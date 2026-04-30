@@ -66,7 +66,7 @@ const CarouselImageList = ({ images }: CarouselImageListProps) => {
         <ButtonAdd
           className={classes["btn-add"]}
           previewData={image}
-          type="image"
+          resourceType="image"
         />
       </li>
     );

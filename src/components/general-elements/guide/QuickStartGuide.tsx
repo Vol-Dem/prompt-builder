@@ -1,14 +1,21 @@
 import { createPortal } from "react-dom";
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
 
 import classes from "./QuickStartGuide.module.scss";
 import LinkA from "../../ui/LinkA";
 import TextButtonCreate from "../../ui/text/text-buttons/TextButtonCreate";
-import ArrowRightSvg from "../../../assets/ArrowRight";
-import ArrowUp from "../../../assets/ArrowUp";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
-import CopiedSvg from "../../../assets/CopiedSvg";
-import CopySvg from "../../../assets/CopySvg";
+import {
+  ChevronRightIcon,
+  ChevronUpIcon,
+  DocumentCheckIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
+
+type QuickStartGuideProps = ComponentProps<"div"> & {
+  stage: number;
+  onClose: () => void;
+};
 
 /**
  * Guide component.
@@ -24,7 +31,11 @@ import CopySvg from "../../../assets/CopySvg";
  *
  * @returns {JSX.Element} Guide element.
  */
-const QuickStartGuide = ({ stage, onClose, className }) => {
+const QuickStartGuide = ({
+  stage,
+  onClose,
+  className,
+}: QuickStartGuideProps) => {
   const [copied, setCopied] = useState(false);
 
   const copyHandler = () => {
@@ -59,7 +70,7 @@ const QuickStartGuide = ({ stage, onClose, className }) => {
                 <p className={classes["guide__content__text"]}>
                   Click "New Resource" to add your first model
                 </p>
-                <ArrowUp className={classes["guide__arrow-up"]} />
+                <ChevronUpIcon className={classes["guide__arrow-up"]} />
               </div>
             )}
 
@@ -69,7 +80,7 @@ const QuickStartGuide = ({ stage, onClose, className }) => {
                   <p className={classes["guide__content__text"]}>
                     Select the model type
                   </p>
-                  <ArrowRightSvg />
+                  <ChevronRightIcon />
                 </li>
                 <li className={classes["guide__content__item"]}>
                   <p className={classes["guide__content__text"]}>
@@ -87,13 +98,13 @@ const QuickStartGuide = ({ stage, onClose, className }) => {
                         onClick={copyHandler}
                         title="Copy"
                       >
-                        727427 {!copied && <CopySvg />}
-                        {copied && <CopiedSvg />}
+                        727427 {!copied && <XMarkIcon />}
+                        {copied && <DocumentCheckIcon />}
                       </ButtonTertiary>
                     </span>
                   </p>
 
-                  <ArrowRightSvg />
+                  <ChevronRightIcon />
                 </li>
                 <li className={classes["guide__content__item"]}>
                   <p className={classes["guide__content__text"]}>
@@ -103,7 +114,7 @@ const QuickStartGuide = ({ stage, onClose, className }) => {
                     <br />
                   </p>
 
-                  <ArrowRightSvg />
+                  <ChevronRightIcon />
                 </li>
                 <li className={classes["guide__content__item"]}>
                   <p className={classes["guide__content__text"]}>
@@ -115,7 +126,7 @@ const QuickStartGuide = ({ stage, onClose, className }) => {
                     </span>
                   </p>
 
-                  <ArrowRightSvg />
+                  <ChevronRightIcon />
                 </li>
               </ul>
             )}

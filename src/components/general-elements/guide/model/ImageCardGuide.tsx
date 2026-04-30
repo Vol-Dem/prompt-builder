@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
 
 import classes from "./ImageCardGuide.module.scss";
 import GuideMessage from "../GuideMessage";
@@ -11,6 +10,8 @@ import {
 import ContentComment from "../ContentComment";
 import GuideActionMessage from "../GuideActionMessage";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import { useAppSelector } from "../../../../store/hooks/hooks";
+import type { GuideStep } from "../../../../types/guide.types";
 
 /**
  * Image card guide.
@@ -19,14 +20,14 @@ import useGuideStep from "../../../../hooks/use-guide-step";
  *
  * @component
  *
- * @returns {JSX.Element} Image card guide element.
+ * @returns Image card guide element.
  */
 const ImageCardGuide = () => {
   const guideType = "model";
   const expectedTagsAmount = 2;
-  const prompt = useSelector((state) => state.prompt.curPromptArr);
+  const prompt = useAppSelector((state) => state.prompt.curPromptArr);
 
-  const guideSteps = useMemo(() => {
+  const guideSteps = useMemo<GuideStep[]>(() => {
     let actionText =
       "Add at least few tags to the prompt by clicking them to continue";
 

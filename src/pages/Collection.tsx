@@ -162,7 +162,7 @@ const Collection = ({ title }: CollectionProps) => {
             {collectionPreview && (
               <ButtonSquareAdd
                 previewData={collectionPreview}
-                type="collection"
+                resourceType="collection"
               />
             )}
           </div>

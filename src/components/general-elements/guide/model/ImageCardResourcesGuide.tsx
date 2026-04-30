@@ -1,11 +1,11 @@
 import { useMemo } from "react";
-import { FolderArrowDownIcon } from "@heroicons/react/24/outline";
+import { FolderArrowDownIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 import classes from "./ImageCardResourcesGuide.module.scss";
-import PlusSvg from "../../../../assets/PlusSvg";
 import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_IMAGE_RESOURCES } from "../../../../variables/constants";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import type { GuideStep } from "../../../../types/guide.types";
 
 /**
  * Image card resources guide.
@@ -14,14 +14,14 @@ import useGuideStep from "../../../../hooks/use-guide-step";
  *
  * @component
  *
- * @returns {JSX.Element} Image card resources guide element.
+ * @returns Image card resources guide element.
  */
 const ImageCardResourcesGuide = () => {
   const guideType = "model";
-  const guideSteps = useMemo(() => {
+  const guideSteps = useMemo<GuideStep[]>(() => {
     const plusImage = (
       <span className={classes["btn-container"]}>
-        <PlusSvg />
+        <PlusIcon />
       </span>
     );
     const folderImage = (

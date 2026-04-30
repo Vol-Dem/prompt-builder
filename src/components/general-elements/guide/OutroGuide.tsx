@@ -1,10 +1,10 @@
-import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 import classes from "./OutroGuide.module.scss";
 import Button from "../../ui/buttons/Button";
 import { guideActions } from "../../../store/guide";
 import GuideActionMessage from "./GuideActionMessage";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Guide outro component.
@@ -16,8 +16,8 @@ import GuideActionMessage from "./GuideActionMessage";
  * @returns {JSX.Element} Guide outro element.
  */
 const OutroGuide = () => {
-  const outroIsActive = useSelector((state) => state.guide.outroIsActive);
-  const dispatch = useDispatch();
+  const outroIsActive = useAppSelector((state) => state.guide.outroIsActive);
+  const dispatch = useAppDispatch();
 
   return (
     <>

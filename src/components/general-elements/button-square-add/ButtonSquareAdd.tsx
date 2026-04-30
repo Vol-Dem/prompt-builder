@@ -1,4 +1,3 @@
-import { useDispatch, useSelector } from "react-redux";
 import { CheckIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 import classes from "./ButtonSquareAdd.module.scss";
@@ -12,6 +11,19 @@ import { SETTINGS_REF_IMAGE_AMOUNT } from "../../../variables/constants";
 import ButtonSquare from "../../ui/buttons/ButtonSquare";
 import { getUrlId } from "../../../utils/imageUtils";
 import { createSidebarPreviewData } from "../../../utils/modelUtils";
+import type { ComponentProps } from "react";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type { Image } from "../../../../shared/types/image";
+import type {
+  CollectionPreviewDoc,
+  ModelPreview,
+} from "../../../../shared/types/firestore";
+
+type ButtonAddProps = ComponentProps<"button"> & {
+  resourceType: "image" | "model" | "collection";
+  previewData: Image | ModelPreview | CollectionPreviewDoc;
+  versionId?: number;
+};
 
 /**
  * Sidebar toggle button component.
@@ -27,61 +39,81 @@ import { createSidebarPreviewData } from "../../../utils/modelUtils";
  *
  * @component
  *
- * @param {object} props
- * @param {object | null} props.previewData - Preview data for the model, collection, or image.
- * @param {('image' | 'model' | 'collection')} [props.type] - Type of sidebar item.
- * @param {number} [props.versionId] - Model version ID (used when type is "model").
- * @param {string} [props.className] - Optional CSS class name.
- * @returns {JSX.Element} Sidebar toggle button.
+ * @param props
+ * @param props.previewData - Preview data for the model, collection, or image.
+ * @param props.type - Type of sidebar item.
+ * @param props.versionId - Model version ID (used when type is "model").
+ * @param props.className - Optional CSS class name.
+ * @returns Sidebar toggle button.
  */
-const ButtonAdd = ({ type, previewData, versionId, className, ...props }) => {
-  const modelsInPanel = useSelector((state) => state.used.models);
-  const imagesInPanel = useSelector((state) => state.used.images);
+const ButtonAdd = ({
+  resourceType,
+  previewData,
+  versionId,
+  className,
+  ...props
+}: ButtonAddProps) => {
+  const modelsInPanel = useAppSelector((state) => state.used.models);
+  const imagesInPanel = useAppSelector((state) => state.used.images);
+  const dispatch = useAppDispatch();
+
+  let uniqUrlPart = null;
 
   //Parce uniq ID from video url (to have a unique value due to another Civitai bug with the same hash for all videos in a post)
-  const uniqUrlPart = getUrlId(previewData?.url);
+  if (previewData && "url" in previewData) {
+    uniqUrlPart = getUrlId(previewData?.url);
+  }
 
   const isInPanel =
-    type === "image"
+    resourceType === "image"
       ? imagesInPanel?.find((image) => {
-          if (previewData?.type === "video") {
+          if (
+            previewData &&
+            "type" in previewData &&
+            previewData.type === "video"
+          ) {
             return uniqUrlPart && image.url.includes(uniqUrlPart);
           }
-          return image?.hash === previewData?.hash;
+          return (
+            previewData &&
+            "hash" in previewData &&
+            image?.hash === previewData?.hash
+          );
         })
       : modelsInPanel?.find((model) => model?.id === previewData?.id);
 
-  const dispatch = useDispatch();
-
   const addToSidePanelHandler = () => {
-    if (
-      !isInPanel &&
-      type === "image" &&
-      imagesInPanel?.length < SETTINGS_REF_IMAGE_AMOUNT
-    ) {
-      dispatch(addImageToPanel(previewData, previewData?.url));
-      return;
-    } else if (isInPanel && type === "image") {
-      dispatch(removeImageFromPanel(previewData.hash, previewData?.url));
+    if ("url" in previewData) {
+      if (
+        !isInPanel &&
+        resourceType === "image" &&
+        imagesInPanel?.length < SETTINGS_REF_IMAGE_AMOUNT
+      ) {
+        dispatch(addImageToPanel(previewData, previewData?.url));
+      } else if (isInPanel && resourceType === "image") {
+        dispatch(removeImageFromPanel(previewData.hash, previewData?.url));
+      }
+
       return;
     }
 
-    if (!isInPanel && type !== "image" && previewData) {
+    if (!isInPanel && resourceType !== "image") {
       let curVersionData =
+        "modelVersionsCustomData" in previewData &&
         previewData?.modelVersionsCustomData &&
         Object.values(previewData.modelVersionsCustomData)
           .filter((data) => data.downloadStatus)
           .toSorted((a, b) => b.versionId - a.versionId)[0];
 
       const sidePanelData = createSidebarPreviewData(
-        versionId,
+        versionId || null,
         previewData,
         curVersionData,
       );
 
       dispatch(addModelToPanel(sidePanelData));
     } else {
-      dispatch(removeModelFromPanel(previewData?.id));
+      dispatch(removeModelFromPanel(previewData.id));
     }
   };
 
@@ -94,7 +126,7 @@ const ButtonAdd = ({ type, previewData, versionId, className, ...props }) => {
       disabled={
         imagesInPanel?.length >= SETTINGS_REF_IMAGE_AMOUNT &&
         !isInPanel &&
-        type === "image"
+        resourceType === "image"
       }
       onClick={addToSidePanelHandler}
       title="Add to sidebar"

@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export interface GuideState {
   active: boolean;
   introDisabled: boolean;
@@ -32,6 +34,11 @@ export interface SetGuideIsActivePayload {
   value: boolean;
 }
 
+export type GuideArrowPossition = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+
 export interface GuideStep {
-  step: number;
+  step: number | string | null;
+  arrowPosition?: GuideArrowPossition;
+  next?: boolean;
+  text?: ReactNode;
 }

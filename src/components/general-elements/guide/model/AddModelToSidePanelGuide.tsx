@@ -1,13 +1,14 @@
 import { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
 import classes from "./AddModelToSidePanelGuide.module.scss";
-import PlusSvg from "../../../../assets/PlusSvg";
 import GuideMessage from "../GuideMessage";
 import { guideActions } from "../../../../store/guide";
 import { GUIDE_STEP_ADD_MODEL_TO_SIDEPANEL } from "../../../../variables/constants";
 import GuideActionMessage from "../GuideActionMessage";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import type { GuideStep } from "../../../../types/guide.types";
 
 /**
  * Add model to side panel guide.
@@ -21,13 +22,13 @@ import useGuideStep from "../../../../hooks/use-guide-step";
  */
 const AddModelToSidePanelGuide = () => {
   const guideType = "model";
-  const sidebarModels = useSelector((state) => state.used.models);
-  const dispatch = useDispatch();
+  const sidebarModels = useAppSelector((state) => state.used.models);
+  const dispatch = useAppDispatch();
 
-  const guideSteps = useMemo(() => {
+  const guideSteps = useMemo<GuideStep[]>(() => {
     const plusImage = (
       <span className={classes["btn-container"]}>
-        <PlusSvg />
+        <PlusIcon />
       </span>
     );
 
@@ -35,6 +36,7 @@ const AddModelToSidePanelGuide = () => {
       {
         step: GUIDE_STEP_ADD_MODEL_TO_SIDEPANEL,
         arrowPosition: 4,
+        next:false,
         text: (
           <>
             <GuideActionMessage>Click </GuideActionMessage> {plusImage} to add

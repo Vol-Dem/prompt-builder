@@ -5,6 +5,7 @@ import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_MODEL_TAGS_ADD_TAGSET } from "../../../../variables/constants";
 import GuideActionMessage from "../GuideActionMessage";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import type { GuideStep } from "../../../../types/guide.types";
 
 /**
  * Add tag set guide.
@@ -17,11 +18,12 @@ import useGuideStep from "../../../../hooks/use-guide-step";
  */
 const AddTagSetGuide = () => {
   const guideType = "model";
-  const guideSteps = useMemo(() => {
+  const guideSteps = useMemo<GuideStep[]>(() => {
     return [
       {
         step: GUIDE_STEP_MODEL_TAGS_ADD_TAGSET,
         arrowPosition: 7,
+        next: false,
         text: (
           <>
             Here you can create custom trigger word sets. Try to{" "}

@@ -1,4 +1,6 @@
+import type { ComponentProps } from "react";
 import classes from "./ContentComment.module.scss";
+type ContentCommentProps = ComponentProps<"span">;
 
 /**
  * Content comment container.
@@ -13,7 +15,7 @@ import classes from "./ContentComment.module.scss";
  *
  * @returns {JSX.Element} Content comment element.
  */
-const ContentComment = ({ children, className }) => {
+const ContentComment = ({ children, className }: ContentCommentProps) => {
   return (
     <span className={`${classes.comment} ${className || ""}`}>{children}</span>
   );

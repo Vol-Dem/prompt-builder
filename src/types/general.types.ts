@@ -1,5 +1,4 @@
 import type { ChangeEvent } from "react";
-import type { ModelPreviewDoc } from "../../shared/types/firestore";
 import type { SuggestedCollectionsSortType } from "./collections.types";
 
 export interface GeneralState {
@@ -13,9 +12,26 @@ export interface GeneralState {
   suggestedCollectionsSortBy: SuggestedCollectionsSortType;
 }
 
-export interface SidebarPreviewData extends ModelPreviewDoc {
-  activeVersionId: number | null;
+export interface SidebarPreviewData {
+  id: number;
+  versionId?: number | null;
+  activeVersionId?: number | null;
+  type?: string;
+  title?: string;
+  versionName?: string;
+  imgUrl?: string;
+  imgUrlNsfw?: string;
+  mainTag?: string;
+  baseModel?: string;
+  weight?: number | null;
+  minWeight?: number | null;
+  maxWeight?: number | null;
+  tags?: string[] | null;
 }
+// export interface SidebarPreviewData extends ModelPreview {
+//   activeVersionId: number | null;
+//   type: string;
+// }
 
 export type ValidationTypes = {
   email?: boolean;
@@ -50,3 +66,5 @@ export type SelectOption<T extends number | string> = {
 };
 
 export type AboutNavigationItem = { id: string; name: string };
+
+export type AutoScrollTo = "start" | "center" | "end" | "nearest";

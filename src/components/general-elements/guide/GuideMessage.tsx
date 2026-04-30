@@ -1,9 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+} from "react";
 import { motion } from "framer-motion";
 
 import classes from "./GuideMessage.module.scss";
-import ArrowRightSvg from "../../../assets/ArrowRight";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import { guideActions } from "../../../store/guide";
 import ExitGuideRequest from "./ExitGuideRequest";
@@ -11,7 +15,22 @@ import {
   GUIDE_LAST_STEP,
   GUIDE_LAST_STEP_TYPE,
 } from "../../../variables/constants";
-import CrossSvg from "../../../assets/CrossSvg";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import { ChevronRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import type {
+  GuideArrowPossition,
+  GuideType,
+} from "../../../types/guide.types";
+import type { AutoScrollTo } from "../../../types/general.types";
+
+type GuideMessageProps = ComponentProps<"div"> & {
+  type: GuideType;
+  step: number | string | null;
+  next?: boolean;
+  arrowPosition?: GuideArrowPossition;
+  autoScroll?: boolean;
+  autoScrollTo?: AutoScrollTo;
+};
 
 /**
  * Guide message component.
@@ -63,11 +82,11 @@ const GuideMessage = ({
   autoScrollTo = "center",
   className,
   children,
-}) => {
+}: GuideMessageProps) => {
   const [exitRequestIsOpen, setExitRequestIsOpen] = useState(false);
-  const dispatch = useDispatch();
-  const guideMessageRef = useRef(null);
-  const guideState = useSelector((state) => state.guide);
+  const guideState = useAppSelector((state) => state.guide);
+  const guideMessageRef = useRef<HTMLDivElement>(null);
+  const dispatch = useAppDispatch();
   const lastStep = type === GUIDE_LAST_STEP_TYPE && step === GUIDE_LAST_STEP;
   const curGuideIsActive = useMemo(() => {
     if (type && guideState && Object.hasOwn(guideState, type)) {
@@ -131,7 +150,7 @@ const GuideMessage = ({
                     }`}
                     disabled={!next}
                   >
-                    <span>Next step</span> <ArrowRightSvg />
+                    <span>Next step</span> <ChevronRightIcon />
                   </ButtonTertiary>
                 )}
                 {lastStep && (
@@ -143,7 +162,7 @@ const GuideMessage = ({
                     onClick={finishHandler}
                     title="Finish"
                   >
-                    <span>Finish tutorial</span> <ArrowRightSvg />
+                    <span>Finish tutorial</span> <ChevronRightIcon />
                   </ButtonTertiary>
                 )}
               </div>
@@ -154,10 +173,11 @@ const GuideMessage = ({
               }`}
             ></div>
             <button
+              title="Exit guide"
               className={classes["guide__close"]}
               onClick={openExitRequestHandler}
             >
-              <CrossSvg />
+              <XMarkIcon />
             </button>
           </div>
 

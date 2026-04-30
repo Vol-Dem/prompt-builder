@@ -223,7 +223,7 @@ export const transformImageData = (imageData: Image): Image => {
     url: imageData?.url || "",
     createdAt: imageData.createdAt,
     nsfw: imageData?.nsfw || false,
-    ...(imageData?.hash && { hash: imageData.hash }),
+    hash: imageData.hash || "",
     ...(imageData?.browsingLevel && {
       browsingLevel: imageData.browsingLevel,
     }),

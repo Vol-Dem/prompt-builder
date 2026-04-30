@@ -3,8 +3,9 @@ import { useMemo } from "react";
 import classes from "./ImageCardCarouselGuide.module.scss";
 import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_SWITCH_IMAGE } from "../../../../variables/constants";
-import ArrowRightSvg from "../../../../assets/ArrowRight";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import type { GuideStep } from "../../../../types/guide.types";
+import { ChevronRightIcon } from "@heroicons/react/24/outline";
 
 /**
  * Image card carousel guide.
@@ -13,11 +14,11 @@ import useGuideStep from "../../../../hooks/use-guide-step";
  *
  * @component
  *
- * @returns {JSX.Element} Image card carousel guide element.
+ * @returns Image card carousel guide element.
  */
 const ImageCardCarouselGuide = () => {
   const guideType = "model";
-  const guideSteps = useMemo(() => {
+  const guideSteps = useMemo<GuideStep[]>(() => {
     return [
       {
         step: GUIDE_STEP_SWITCH_IMAGE,
@@ -25,7 +26,7 @@ const ImageCardCarouselGuide = () => {
         next: true,
         text: (
           <>
-            Click <ArrowRightSvg className={classes.svg} /> to view the next
+            Click <ChevronRightIcon className={classes.svg} /> to view the next
             image
           </>
         ),

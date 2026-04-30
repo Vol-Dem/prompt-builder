@@ -51,5 +51,5 @@ export interface SearchState {
 }
 
 export interface SearchResultCollection extends CollectionPreviewDoc {
-  type: "collection";
+  type: string;
 }

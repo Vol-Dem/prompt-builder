@@ -5,6 +5,7 @@ import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_OPEN_CATEGORY } from "../../../../variables/constants";
 import GuideAction from "../GuideActionMessage";
 import useGuideStep from "../../../../hooks/use-guide-step";
+import type { GuideStep } from "../../../../types/guide.types";
 
 /**
  * Open category guide.
@@ -13,15 +14,16 @@ import useGuideStep from "../../../../hooks/use-guide-step";
  *
  * @component
  *
- * @returns {JSX.Element} Open category guide element.
+ * @returns Open category guide element.
  */
 const OpenCategoryGuide = () => {
   const guideType = "home";
-  const guideSteps = useMemo(() => {
+  const guideSteps = useMemo<GuideStep[]>(() => {
     return [
       {
         step: GUIDE_STEP_OPEN_CATEGORY,
         arrowPosition: 8,
+        next: false,
         text: (
           <>
             Your model will now be displayed here.{" "}
