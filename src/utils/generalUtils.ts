@@ -324,7 +324,7 @@ export const smoothScroll = (hashId: string | number): void => {
  */
 export const updateSearchParams = (
   prevParams: URLSearchParams,
-  newEntry: URLSearchParams,
+  newEntry: Record<string, string>,
 ): URLSearchParams => {
   return new URLSearchParams({
     ...Object.fromEntries(prevParams.entries()),

@@ -24,7 +24,7 @@ import menu from "../../../assets/guide/menu.png";
  * Content for the default version editing hint.
  *
  * @component
- * @returns {JSX.Element} The default version editing hint.
+ * @returns The default version editing hint.
  */
 const InfoGeneratedImages = () => {
   return (

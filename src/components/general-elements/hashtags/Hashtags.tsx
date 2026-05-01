@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import {
@@ -10,6 +9,9 @@ import {
 import classes from "./Hashtags.module.scss";
 import { liveSearch, searchActions } from "../../../store/search";
 import { updateSearchParams } from "../../../utils/generalUtils";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+
+type HashtagsProps = { hashtags: string[] };
 
 /**
  * Hashtags component.
@@ -21,15 +23,15 @@ import { updateSearchParams } from "../../../utils/generalUtils";
  *
  * @component
  *
- * @param {object} props
- * @param {Array<string>} props.hashtags - List of hashtags.
+ * @param props
+ * @param props.hashtags - List of hashtags.
  *
- * @returns {JSX.Element} Hashtags element.
+ * @returnsHashtags element.
  */
-const Hashtags = ({ hashtags }) => {
+const Hashtags = ({ hashtags }: HashtagsProps) => {
   const [showAllHashtags, setShowAllHashtags] = useState(false);
-  const nsfwMode = useSelector((state) => state.general.nsfwMode);
-  const dispatch = useDispatch();
+  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const setSearchParams = useSearchParams()[1];
 
@@ -37,7 +39,10 @@ const Hashtags = ({ hashtags }) => {
     ? hashtags
     : hashtags?.slice(0, SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT);
 
-  const submitSearchHandler = (e) => {
+  const submitSearchHandler = (e: MouseEvent<HTMLElement>) => {
+    if (!(e.target instanceof HTMLElement)) return;
+    if (!e.target.dataset.value) return;
+
     e.preventDefault();
     dispatch(searchActions.resetSearchData());
     dispatch(searchActions.resetSearchFilter());
@@ -47,24 +52,27 @@ const Hashtags = ({ hashtags }) => {
       searchActions.setSearchFilter({
         type: "hashtag",
         value: true,
-      })
+      }),
     );
-    dispatch(searchActions.setSearchQuery(e.target.dataset.value));
+
+    const query = e.target.dataset.value;
+
+    dispatch(searchActions.setSearchQuery(query));
     setSearchParams((prevParams) => {
       return updateSearchParams(prevParams, {
-        searchQuery: e.target.dataset.value,
+        searchQuery: query,
         hashtag: "true",
       });
     });
     dispatch(
       liveSearch(
-        e.target.dataset.value,
+        query,
         nsfwMode,
         SETTINGS_SEARCH_RESULT_PER_PAGE,
         false,
         false,
-        true
-      )
+        true,
+      ),
     );
   };
 

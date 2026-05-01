@@ -1,6 +1,5 @@
 import { useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 
 import classes from "./PreviewCardContent.module.scss";
@@ -10,6 +9,18 @@ import { SETTINGS_IMAGE_PREVIEW_WIDTH_BIG } from "../../../variables/constants";
 import ResourceTypeLabel from "../../ui/text/ResourceTypeLabel";
 import PreviewCardExpanded from "./preview-card-expanded/PreviewCardExpanded";
 import PreviewCardShort from "./preview-card-short/PreviewCardShort";
+import { useAppSelector } from "../../../store/hooks/hooks";
+import type {
+  CollectionPreviewDoc,
+  ModelPreviewDoc,
+} from "../../../../shared/types/firestore";
+import type { ModelVersionCustomData } from "../../../../shared/types/model";
+
+type PreviewCardContentProps = {
+  previewData: ModelPreviewDoc | CollectionPreviewDoc;
+  fullView?: boolean;
+  animate?: boolean;
+};
 
 /**
  * Animated preview card component.
@@ -20,48 +31,66 @@ import PreviewCardShort from "./preview-card-short/PreviewCardShort";
  *
  * @component
  *
- * @param {object} props
- * @param {object} props.previewData - Data used to render the preview card.
- * @param {boolean} props.fullView - Whether to display the expanded card layout.
- * @param {string} [props.animate] - Whether card will have Framer Motion layout ID for shared layout animations.
+ * @param props
+ * @param props.previewData - Data used to render the preview card.
+ * @param props.fullView - Whether to display the expanded card layout.
+ * @param props.animate - Whether card will have Framer Motion layout ID for shared layout animations.
  *
  * @returns {JSX.Element} The animated preview card component.
  */
-const PreviewCardContent = ({ previewData, fullView, animate }) => {
-  const isNsfwMode = useSelector((state) => state.general.nsfwMode);
-  const isMobile = useSelector((state) => state.general.isMobile);
-  const imgRef = useRef();
-  const imageSrc = isNsfwMode
-    ? previewData.nsfwPreviewImgUrl || previewData.customPreviewImgUrl
-    : previewData.customPreviewImgUrl;
+const PreviewCardContent = ({
+  previewData,
+  fullView,
+  animate,
+}: PreviewCardContentProps) => {
+  const isNsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const isMobile = useAppSelector((state) => state.general.isMobile);
+  const imgRef = useRef<HTMLImageElement>(null);
+  let imageSrc;
+
+  if (isNsfwMode) {
+    imageSrc =
+      previewData.nsfwPreviewImgUrl ||
+      previewData.customPreviewImgUrl ||
+      ("imgUrl" in previewData && previewData.imgUrl) ||
+      "";
+  } else {
+    imageSrc =
+      previewData.customPreviewImgUrl ||
+      ("imgUrl" in previewData && previewData.imgUrl) ||
+      "";
+  }
+
   const imageType = isNsfwMode
     ? previewData?.nsfwPreviewImgType || previewData.imgType
     : previewData?.customPreviewImgType || previewData.imgType;
 
-  const currVersion = useMemo(() => {
+  const currVersion = useMemo<ModelVersionCustomData | null>(() => {
     return (
-      previewData?.modelVersionsCustomData &&
-      Object.values(previewData.modelVersionsCustomData)
-        .filter((data) => data.downloadStatus)
-        .toSorted((a, b) => b.versionId - a.versionId)[0]
+      ("modelVersionsCustomData" in previewData &&
+        previewData?.modelVersionsCustomData &&
+        Object.values(previewData.modelVersionsCustomData)
+          .filter((data) => data.downloadStatus)
+          .toSorted((a, b) => b.versionId - a.versionId)[0]) ||
+      null
     );
   }, [previewData]);
 
   return (
     <motion.div
-      layoutId={animate && !isMobile ? previewData.id : Math.random()}
+      layoutId={animate && !isMobile ? previewData.id + "" : Math.random() + ""}
       whileHover={{ borderColor: "rgba(255, 255, 255, 0.6)" }}
       transition={{
         layout: { duration: 0 },
       }}
-      id={previewData.id}
+      id={previewData.id + ""}
       className={`${classes.card} ${fullView ? classes["card__full"] : ""} ${
         animate ? classes["card--motion"] : ""
       }`}
     >
       <div className={classes["image-container"]}>
         <ButtonSquareAdd
-          resourceType={previewData?.type}
+          resourceType={previewData?.type || "model"}
           previewData={previewData}
           className={classes["btn-add"]}
         />
@@ -72,14 +101,16 @@ const PreviewCardContent = ({ previewData, fullView, animate }) => {
               : `/models/${previewData.id}`
           }
         >
-          <ResourceTypeLabel
-            type={previewData.type}
-            className={`${classes["type-position"]} ${
-              fullView ? classes.hidden : ""
-            }`}
-          >
-            {previewData.type}
-          </ResourceTypeLabel>
+          {previewData.type && (
+            <ResourceTypeLabel
+              type={previewData.type}
+              className={`${classes["type-position"]} ${
+                fullView ? classes.hidden : ""
+              }`}
+            >
+              {previewData.type}
+            </ResourceTypeLabel>
+          )}
           <Image
             ref={imgRef}
             src={imageSrc}

@@ -1,4 +1,3 @@
-import { useDispatch, useSelector } from "react-redux";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
@@ -7,6 +6,7 @@ import { switchNsfwMode } from "../../../store/general";
 import classes from "./NsfwSwitch.module.scss";
 import DropDownList from "../../ui/DropDownList";
 import NsfwSwitchSettings from "./nsfw-switch-settings/NsfwSwitchSettings";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * NSFW mode switch component.
@@ -27,8 +27,8 @@ import NsfwSwitchSettings from "./nsfw-switch-settings/NsfwSwitchSettings";
  */
 const NsfwSwitch = () => {
   const [settingsIsOpen, setSettingsIsOpen] = useState(false);
-  const isNsfwMode = useSelector((state) => state.general.nsfwMode);
-  const dispatch = useDispatch();
+  const isNsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const dispatch = useAppDispatch();
 
   const nsfwSwitchHandler = () => {
     dispatch(switchNsfwMode(!isNsfwMode));

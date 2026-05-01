@@ -182,6 +182,8 @@ export interface ModelPreviewDoc {
   minWeight?: number | null;
   maxWeight?: number | null;
   helperTags?: string[];
+  customPreviewImgType?: string;
+  nsfwPreviewImgType?: string;
 }
 
 export interface CollectionDoc {
@@ -205,6 +207,9 @@ export interface CollectionPreviewDoc {
   nsfw: boolean;
   customPreviewImgUrl?: string;
   nsfwPreviewImgUrl?: string;
+  customPreviewImgType?: string;
+  nsfwPreviewImgType?: string;
+  imgType?: string;
   type?: string;
   subcategories: string[];
 }

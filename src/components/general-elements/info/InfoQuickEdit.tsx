@@ -6,7 +6,7 @@ import classes from "./InfoQuickEdit.module.scss";
  * Content for the quick edit hint.
  *
  * @component
- * @returns {JSX.Element} The quick edit hint.
+ * @returns The quick edit hint.
  */
 const InfoQuickEdit = () => {
   return (

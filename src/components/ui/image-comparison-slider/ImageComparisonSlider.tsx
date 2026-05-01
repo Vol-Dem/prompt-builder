@@ -6,9 +6,9 @@ import classes from "./ImageComparisonSlider.module.scss";
 type ImageComparisonSliderProps = {
   srcLeft: string;
   srcRight: string;
-  imgWidth: number | string;
-  imgHeight: number | string;
-  className: string;
+  imgWidth?: number | string;
+  imgHeight?: number | string;
+  className?: string;
 };
 
 /**

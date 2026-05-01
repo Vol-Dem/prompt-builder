@@ -16,7 +16,7 @@ export interface SidebarPreviewData {
   id: number;
   versionId?: number | null;
   activeVersionId?: number | null;
-  type?: string;
+  type: string;
   title?: string;
   versionName?: string;
   imgUrl?: string;

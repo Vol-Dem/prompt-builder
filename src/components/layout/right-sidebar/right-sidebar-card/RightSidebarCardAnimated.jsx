@@ -36,7 +36,7 @@ const RightSidebarCardAnimated = ({ model, fullView }) => {
   return (
     <div style={{ position: "relative" }}>
       <RightSidebarCard
-        layoutId={model.id}
+        layoutId={model.id + ""}
         previewData={model}
         fullView={fullView}
       />

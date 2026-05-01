@@ -1,7 +1,15 @@
-import { useSelector } from "react-redux";
-
 import PreviewCardContent from "./PreviewCardContent";
 import AddToPanelAnimContainer from "../../ui/animation/AddToPanelAnimContainer";
+import type {
+  CollectionPreviewDoc,
+  ModelPreviewDoc,
+} from "../../../../shared/types/firestore";
+
+type PreviewCardProps = {
+  item: ModelPreviewDoc | CollectionPreviewDoc;
+  fullView?: boolean;
+  animate?: boolean;
+};
 
 /**
  * Wrapper component used to stabilize Framer Motion shared layout animations
@@ -29,17 +37,17 @@ import AddToPanelAnimContainer from "../../ui/animation/AddToPanelAnimContainer"
  *
  * @component
  *
- * @param {object} props
- * @param {object} props.item - Card data used to render the preview card.
- * @param {boolean} [props.fullView] - Whether to render the expanded card layout.
- * @param {boolean} [props.animate=true] - Whether animation is enabled.
+ * @param props
+ * @param props.item - Card data used to render the preview card.
+ * @param props.fullView - Whether to render the expanded card layout.
+ * @param props.animate - Whether animation is enabled.
  *
- * @returns {JSX.Element} Wrapper that renders animated and static sidebar cards.
+ * @returns Wrapper that renders animated and static sidebar cards.
  */
-const PreviewCard = ({ item, fullView, animate = true }) => {
-  const usedModelss = useSelector((state) => state.used.models);
+const PreviewCard = ({ item, fullView, animate = true }: PreviewCardProps) => {
+  // const usedModelss = useAppSelector((state) => state.used.models);
   //For the animation of adding a model to the sidebar to work correctly
-  const isInPanel = !!usedModelss.find((card) => card.id === item.id);
+  // const isInPanel = !!usedModelss.find((card) => card.id === item.id);
 
   return (
     <AddToPanelAnimContainer>
@@ -49,7 +57,7 @@ const PreviewCard = ({ item, fullView, animate = true }) => {
           animate={true}
           previewData={item}
           fullView={fullView}
-          added={isInPanel}
+          // added={isInPanel}
         />
       )}
     </AddToPanelAnimContainer>

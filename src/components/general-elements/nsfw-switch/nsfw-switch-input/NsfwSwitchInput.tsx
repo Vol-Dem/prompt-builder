@@ -1,4 +1,7 @@
+import type { ComponentProps } from "react";
 import classes from "./NsfwSwitchInput.module.scss";
+
+type NsfwSwitchInputProps = ComponentProps<"input">;
 
 const NsfwSwitchInput = ({
   id,
@@ -8,7 +11,7 @@ const NsfwSwitchInput = ({
   className,
   children,
   ...props
-}) => {
+}: NsfwSwitchInputProps) => {
   return (
     <div>
       <input

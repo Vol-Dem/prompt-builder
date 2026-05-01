@@ -1,6 +1,6 @@
-import Image from "../../image/Image";
-import NotificationMessage from "../../NotificationMessage";
-import TextHighlight from "../../text/TextHighlight";
+import Image from "../../ui/image/Image";
+import NotificationMessage from "../../ui/NotificationMessage";
+import TextHighlight from "../../ui/text/TextHighlight";
 import classes from "./InfoEditDefault.module.scss";
 import versions from "../../../../assets/guide/versions.jpg";
 

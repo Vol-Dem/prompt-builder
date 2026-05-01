@@ -11,7 +11,7 @@ import preset from "../../../assets/guide/preset.jpg";
  * Content for the presets hint.
  *
  * @component
- * @returns {JSX.Element} The presets hint.
+ * @returns The presets hint.
  */
 const InfoPresets = () => {
   return (

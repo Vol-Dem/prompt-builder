@@ -242,7 +242,7 @@ export const liveSearch = (
   loadMore: boolean = false,
   quickSerch: boolean = false,
   isHashtag: boolean = false,
-  filter: SearchFilter,
+  filter?: SearchFilter,
 ): AppThunk => {
   return async (dispatch, getState) => {
     try {

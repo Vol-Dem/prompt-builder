@@ -4,10 +4,10 @@ import Tag from "../tag/Tag";
 import classes from "./ActivationTag.module.scss";
 import { promptActions } from "../../../store/prompt";
 import { getTagWeight, splitTags } from "../../../utils/promptUtils";
-import type { ModelPreview } from "../../../../shared/types/firestore";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type { SidebarPreviewData } from "../../../types/general.types";
 
-type ActivationTagProps = { tag: string; modelData: ModelPreview };
+type ActivationTagProps = { tag: string; modelData: SidebarPreviewData };
 
 /**
  * Enhanced Tag component that allows adjusting tag weight inside the prompt.

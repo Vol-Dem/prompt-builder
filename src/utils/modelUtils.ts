@@ -185,7 +185,7 @@ export const createModelPreviewData = (
 export const createSidebarPreviewData = (
   versionId: number | null,
   previewData: ModelPreview | CollectionPreviewDoc | ModelPreviewDoc,
-  curVersionData?: ModelVersionCustomData,
+  curVersionData?: ModelVersionCustomData | null,
 ): SidebarPreviewData => {
   if ("src" in previewData) {
     return {
@@ -213,7 +213,7 @@ export const createSidebarPreviewData = (
     title: previewData?.name,
     imgUrl: previewData?.customPreviewImgUrl,
     imgUrlNsfw: previewData?.nsfwPreviewImgUrl,
-    type: previewData?.type,
+    type: previewData?.type || "",
   };
 };
 

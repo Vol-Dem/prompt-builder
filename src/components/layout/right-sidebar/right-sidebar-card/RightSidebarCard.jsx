@@ -35,10 +35,8 @@ const RightSidebarCard = memo(({ previewData, fullView, layoutId }) => {
   const isNsfwMode = useSelector((state) => state.general.nsfwMode);
   const dispatch = useDispatch();
   const imageSrc = isNsfwMode
-    ? previewData.nsfwPreviewImgUrl ||
-      previewData.customPreviewImgUrl ||
-      previewData.imgUrl
-    : previewData.customPreviewImgUrl || previewData.imgUrl;
+    ? previewData.imgUrlNsfw || previewData.imgUrl
+    : previewData.imgUrl;
 
   useEffect(() => {
     setTimeout(() => {

@@ -24,7 +24,7 @@ import dnd from "../../../assets/guide/dnd.png";
  * Content for the prompt hint.
  *
  * @component
- * @returns {JSX.Element} The prompt hint.
+ * @returns The prompt hint.
  */
 const InfoPrompt = () => {
   return (
@@ -110,7 +110,8 @@ const InfoPrompt = () => {
         <p>
           {" "}
           <TextHighlight>Paste your prompt</TextHighlight> in Text Mode and then{" "}
-          <TextHighlight>switch to Tag Mode</TextHighlight> for easier editing.{" "}
+          <TextHighlight>switch to Tag Mode</TextHighlight> for easier
+          editing.{" "}
         </p>
         <ImageComparisonSlider
           className={classes.comparison}

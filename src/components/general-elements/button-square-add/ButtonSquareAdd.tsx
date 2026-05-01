@@ -20,7 +20,7 @@ import type {
 } from "../../../../shared/types/firestore";
 
 type ButtonAddProps = ComponentProps<"button"> & {
-  resourceType: "image" | "model" | "collection";
+  resourceType: string;
   previewData: Image | ModelPreview | CollectionPreviewDoc;
   versionId?: number;
 };
@@ -41,7 +41,7 @@ type ButtonAddProps = ComponentProps<"button"> & {
  *
  * @param props
  * @param props.previewData - Preview data for the model, collection, or image.
- * @param props.type - Type of sidebar item.
+ * @param props.resourceType - Type of sidebar item.
  * @param props.versionId - Model version ID (used when type is "model").
  * @param props.className - Optional CSS class name.
  * @returns Sidebar toggle button.

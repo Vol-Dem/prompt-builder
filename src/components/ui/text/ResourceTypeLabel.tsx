@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 import classes from "./ResourceTypeLabel.module.scss";
 
 type ResourceTypeLabelProps = ComponentProps<"div"> & {
-  type: "model" | "collection";
+  type?: string;
 };
 
 /**

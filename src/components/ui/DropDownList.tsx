@@ -10,7 +10,7 @@ import type { ComponentProps } from "react";
 type DropDownListProps = ComponentProps<"div"> &
   HTMLMotionProps<"div"> & {
     onClose: () => void;
-    title: string;
+    title?: string;
   };
 
 /**

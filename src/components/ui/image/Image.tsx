@@ -17,7 +17,7 @@ type ImageProps = ComponentProps<"img"> & {
   imgType?: "image" | "video";
   preloader?: boolean;
   imageWidth?: number;
-  src: string;
+  src?: string;
   onClick?: (e: React.MouseEvent<HTMLElement>) => void;
 };
 
@@ -174,7 +174,7 @@ const Image = ({
         {!srcSet && imageHtml}
       </div>
       <AnimatePresence>
-        {fullViewIsOpen && (
+        {fullViewIsOpen && src && (
           <ImageFullView
             src={src}
             onClose={() => {

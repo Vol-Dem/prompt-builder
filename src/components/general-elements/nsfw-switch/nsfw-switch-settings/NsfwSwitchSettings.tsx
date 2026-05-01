@@ -1,8 +1,8 @@
-import { useDispatch, useSelector } from "react-redux";
-
 import classes from "./NsfwSwitchSettings.module.scss";
 import { setNsfwValues } from "../../../../store/general";
 import NsfwSwitchInput from "../nsfw-switch-input/NsfwSwitchInput";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
+import type { ChangeEvent } from "react";
 
 /**
  * NSFW switch settings dropdown.
@@ -27,17 +27,18 @@ import NsfwSwitchInput from "../nsfw-switch-input/NsfwSwitchInput";
  * - Dispatches `setNsfwValues` action.
  *
  * @component
- * @returns {JSX.Element} NSFW settings dropdown.
+ * @returns NSFW settings dropdown.
  */
 const NsfwSwitchSettings = () => {
-  const sfwValue = useSelector((state) => state.general.sfwValue);
-  const nsfwValue = useSelector((state) => state.general.nsfwValue);
-  const dispatch = useDispatch();
+  const sfwValue = useAppSelector((state) => state.general.sfwValue);
+  const nsfwValue = useAppSelector((state) => state.general.nsfwValue);
+  const dispatch = useAppDispatch();
 
-  const sfwInputHandler = (e) => {
+  const sfwInputHandler = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch(setNsfwValues(e.target.value, nsfwValue));
   };
-  const nsfwInputHandler = (e) => {
+
+  const nsfwInputHandler = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch(setNsfwValues(sfwValue, e.target.value));
   };
 
@@ -45,12 +46,13 @@ const NsfwSwitchSettings = () => {
     <form className={classes["mode__form"]}>
       <>
         <div>SFW:</div>
-        <fieldset onChange={sfwInputHandler} className={classes["mode__field"]}>
+        <fieldset className={classes["mode__field"]}>
           <NsfwSwitchInput
             id="sfw-1"
             name="sfw"
             value="None"
             defaultChecked={sfwValue === "None"}
+            onChange={sfwInputHandler}
           >
             PG
           </NsfwSwitchInput>
@@ -59,6 +61,7 @@ const NsfwSwitchSettings = () => {
             name="sfw"
             value="Soft"
             defaultChecked={sfwValue === "Soft"}
+            onChange={sfwInputHandler}
           >
             PG-13
           </NsfwSwitchInput>
@@ -67,15 +70,13 @@ const NsfwSwitchSettings = () => {
 
       <>
         <div>NSFW:</div>
-        <fieldset
-          onChange={nsfwInputHandler}
-          className={classes["mode__field"]}
-        >
+        <fieldset className={classes["mode__field"]}>
           <NsfwSwitchInput
             id="nsfw-1"
             name="nsfw"
             value="Soft"
             defaultChecked={nsfwValue === "Soft"}
+            onChange={nsfwInputHandler}
           >
             PG-13
           </NsfwSwitchInput>
@@ -84,6 +85,7 @@ const NsfwSwitchSettings = () => {
             name="nsfw"
             value="Mature"
             defaultChecked={nsfwValue === "Mature"}
+            onChange={nsfwInputHandler}
           >
             R
           </NsfwSwitchInput>
@@ -92,6 +94,7 @@ const NsfwSwitchSettings = () => {
             name="nsfw"
             value="X"
             defaultChecked={nsfwValue === "X"}
+            onChange={nsfwInputHandler}
           >
             XXX
           </NsfwSwitchInput>
