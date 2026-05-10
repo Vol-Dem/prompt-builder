@@ -100,13 +100,13 @@ type MainCategorySelected = {
  * - Forwards resolved collection data to ChooseImageForm.
  *
  * @component
- * @param {object} props
- * @param {number} props.postId - Source post ID.
- * @param {Array<object>} props.images - List of post images.
- * @param {number} props.activeImageIndex - Index of the image active when the form was opened.
- * @param {any} props.onSave
+ * @param props
+ * @param props.postId - Source post ID.
+ * @param props.images - List of post images.
+ * @param props.activeImageIndex - Index of the image active when the form was opened.
+ * @param props.onSave
  *        Callback forwarded to ChooseImageForm after successful submit.
- * @returns {JSX.Element} Save to Collection form.
+ * @returns Save to Collection form.
  */
 const SaveToCollectionForm = ({
   postId,
@@ -317,9 +317,7 @@ const SaveToCollectionForm = ({
           query={subcategoryQuery}
           setQuery={setSubcategoryQuery}
           setSelected={subCatSelectHandler}
-          selected={
-            sub.selected?.id ? { ...sub.selected } : { id: null, name: "" }
-          }
+          selected={sub.selected ? { ...sub.selected } : { id: null, name: "" }}
           placeholder="Subcategory"
           validation={{
             required: false,

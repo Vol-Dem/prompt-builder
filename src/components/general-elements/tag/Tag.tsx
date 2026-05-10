@@ -1,10 +1,18 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState, type ComponentProps } from "react";
 
 import { promptActions } from "../../../store/prompt";
 import classes from "./Tag.module.scss";
 import { addModelToPanel } from "../../../store/usedModels";
 import { splitTags } from "../../../utils/promptUtils";
+import type { PromptType } from "../../../types/prompt.types";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type { SidebarPreviewData } from "../../../types/general.types";
+
+type TagProps = ComponentProps<"div"> & {
+  tag: string;
+  promptType: PromptType;
+  modelData?: SidebarPreviewData;
+};
 
 /**
  * Interactive tag used to build a prompt.
@@ -15,19 +23,19 @@ import { splitTags } from "../../../utils/promptUtils";
  *
  * @component
  *
- * @param {object} props
- * @param {string} props.tag - Tag label displayed to the user.
- * @param {'positive' | 'negative'} props.promptType - Type of prompt this tag belongs to.
- * @param {object} [props.modelData] - Optional model data added to the sidebar when the tag is selected.
- * @param {React.Ref<HTMLElement>} [props.ref] - Optional ref to the tag element (React 19 ref-as-prop).
+ * @param props
+ * @param props.tag - Tag label displayed to the user.
+ * @param props.promptType - Type of prompt this tag belongs to.
+ * @param props.modelData - Optional model data added to the sidebar when the tag is selected.
+ * @param props.ref - Optional ref to the tag element.
  *
- * @returns {JSX.Element} The interactive tag element.
+ * @returns The interactive tag element.
  */
-const Tag = ({ tag, promptType, modelData, ref }) => {
+const Tag = ({ tag, promptType, modelData, ref }: TagProps) => {
   const [isInPrompt, setIsInPrompt] = useState(false);
-  const dispatch = useDispatch();
-  const curPromt = useSelector((state) => state.prompt.curPrompt);
-  const curNegPromt = useSelector((state) => state.prompt.curNegPrompt);
+  const curPromt = useAppSelector((state) => state.prompt.curPrompt);
+  const curNegPromt = useAppSelector((state) => state.prompt.curNegPrompt);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     let isActive = false;
@@ -50,7 +58,7 @@ const Tag = ({ tag, promptType, modelData, ref }) => {
         promptActions.addTagToPrompt({
           type: promptType,
           value: tag,
-        })
+        }),
       );
       if (modelData) {
         dispatch(addModelToPanel(modelData));
@@ -60,7 +68,7 @@ const Tag = ({ tag, promptType, modelData, ref }) => {
         promptActions.removeTag({
           type: promptType,
           value: tag,
-        })
+        }),
       );
     }
   };
