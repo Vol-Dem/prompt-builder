@@ -4,7 +4,7 @@ import classes from "./Maintenance.module.scss";
  * Content for the Maintenance page.
  *
  * @component
- * @returns {JSX.Element} The Maintenance page content.
+ * @returns The Maintenance page content.
  */
 const Maintenance = () => {
   return (

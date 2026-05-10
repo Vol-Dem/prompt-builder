@@ -68,3 +68,7 @@ export type SelectOption<T extends number | string> = {
 export type AboutNavigationItem = { id: string; name: string };
 
 export type AutoScrollTo = "start" | "center" | "end" | "nearest";
+
+export type CSSVariables = React.CSSProperties & {
+  [key: `--${string}`]: string | number;
+};

@@ -7,7 +7,7 @@ import LinkA from "../../ui/LinkA";
  * Application footer element.
  *
  * @component
- * @returns {JSX.Element} The application footer element
+ * @returns The application footer element
  */
 const Footer = () => {
   return (

@@ -9,10 +9,11 @@ import Button from "./buttons/Button";
 import Card from "./Card";
 import classes from "./Notification.module.scss";
 import type { ComponentProps } from "react";
+import type { NotificationType } from "../../types/notification.types";
 
 type NotificationProps = ComponentProps<"div"> & {
-  type: "notification" | "warning";
-  title: string;
+  type: NotificationType;
+  title?: string;
   onClick: () => void;
 };
 

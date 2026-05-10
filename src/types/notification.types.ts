@@ -1,6 +1,8 @@
+export type NotificationType = "notification" | "warning";
+
 export interface NotificationData {
   id: string;
-  type: string;
+  type: NotificationType;
   title: string;
   text: string;
   read?: boolean;

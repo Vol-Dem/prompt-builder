@@ -1,5 +1,4 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 
 import classes from "./UserNavigation.module.scss";
@@ -8,6 +7,7 @@ import { authActions } from "../../../store/auth";
 import { tabActions } from "../../../store/tabs";
 import { imagesActions } from "../../../store/images";
 import { modelActions } from "../../../store/model";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Application user navigation bar.
@@ -21,12 +21,12 @@ import { modelActions } from "../../../store/model";
  * @returns {JSX.Element} The user navigation bar element.
  */
 const UserNavigation = () => {
-  const email = useSelector((state) => state.auth.user.email);
+  const email = useAppSelector((state) => state.auth.user.email);
   const userName =
-    useSelector((state) => state.auth.user.userName) || email.split("@")[0];
+    useAppSelector((state) => state.auth.user.userName) || email?.split("@")[0];
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const logout = () => {
     dispatch(authActions.logout());
@@ -36,7 +36,7 @@ const UserNavigation = () => {
   const resetTabsHandler = () => {
     dispatch(tabActions.resetActiveTabs());
     dispatch(imagesActions.resetCollectionListState());
-    dispatch(modelActions.setActiveCarouselData({}));
+    dispatch(modelActions.setActiveCarouselData(null));
   };
 
   return (

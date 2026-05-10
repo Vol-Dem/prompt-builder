@@ -1,5 +1,4 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
 import { Suspense, useRef } from "react";
 import { AnimatePresence } from "framer-motion";
 
@@ -27,6 +26,7 @@ import LayoutContentWrap from "./LayoutContentWrap";
 import Notifications from "../notifications/Notifications";
 import RightSidebar from "../right-sidebar/RightSidebar";
 import logo from "../../../assets/logo-730.webp";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Main application layout container.
@@ -39,15 +39,17 @@ import logo from "../../../assets/logo-730.webp";
  *
  * @component
  *
- * @returns {JSX.Element} The full application layout wrapper.
+ * @returns The full application layout wrapper.
  */
 const Layout = () => {
-  const isAuth = useSelector((state) => state.auth.isLoggedIn);
-  const emailVerified = useSelector((state) => state.auth.user.emailVerified);
-  const authIsOpen = useSelector((state) => state.auth.authFormIsOpen);
-  const headerRef = useRef(null);
-  const maintenance = useSelector((state) => state.notification.maintenance);
-  const dispatch = useDispatch();
+  const isAuth = useAppSelector((state) => state.auth.isLoggedIn);
+  const emailVerified = useAppSelector(
+    (state) => state.auth.user.emailVerified,
+  );
+  const authIsOpen = useAppSelector((state) => state.auth.authFormIsOpen);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const maintenance = useAppSelector((state) => state.notification.maintenance);
+  const dispatch = useAppDispatch();
 
   // Opens the authentication modal
   const openAuth = () => {
@@ -102,7 +104,7 @@ const Layout = () => {
           </AnimatePresence>
         </Header>
 
-        <LayoutContentWrap headerRef={headerRef}>
+        <LayoutContentWrap offsetHeight={headerRef.current?.offsetHeight}>
           {!maintenance && (
             <Suspense fallback={<Spinner />}>
               <Outlet />

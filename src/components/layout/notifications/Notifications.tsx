@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 import classes from "./Notifications.module.scss";
 import Notification from "../../ui/Notification";
@@ -10,6 +9,12 @@ import {
   uploadLocalStorage,
   uploadStorage,
 } from "../../../utils/generalUtils";
+import { useAppSelector } from "../../../store/hooks/hooks";
+import type { NotificationData } from "../../../types/notification.types";
+
+type CookiesType = { accepted: boolean };
+
+type NotificationMessages = { messages: NotificationData[] };
 
 /**
  * Application notifications.
@@ -19,25 +24,29 @@ import {
  *
  * @component
  *
- * @returns {JSX.Element} The application notifications.
+ * @returns The application notifications.
  */
 const Notifications = () => {
   const [cookificationIsOpen, setCookificationIsOpen] = useState(false);
-  const [activeNotification, setActiveNotification] = useState({});
-  const [allNotification, setAllNotification] = useState([]);
-  const isAuth = useSelector((state) => state.auth.isLoggedIn);
-  const notifications = useSelector(
+  const [activeNotification, setActiveNotification] =
+    useState<NotificationData | null>(null);
+  const [allNotification, setAllNotification] = useState<NotificationData[]>(
+    [],
+  );
+  const isAuth = useAppSelector((state) => state.auth.isLoggedIn);
+  const notifications = useAppSelector(
     (state) => state.notification.notifications,
   );
 
   useEffect(() => {
     if (!isAuth) {
-      const cookies = uploadStorage(`cookies`);
+      const cookies = uploadStorage<CookiesType>(`cookies`);
       if (!cookies?.accepted) {
         setCookificationIsOpen(true);
       }
     } else {
-      const notificationAcceptanceState = uploadLocalStorage(`notifications`);
+      const notificationAcceptanceState =
+        uploadLocalStorage<NotificationMessages>(`notifications`);
       const updatedNotifications = notifications.map((message) => {
         const notice = notificationAcceptanceState?.messages?.find(
           (userNotice) => userNotice.id === message.id,
@@ -51,7 +60,7 @@ const Notifications = () => {
         (message) => !message.read,
       );
       setAllNotification(updatedNotifications);
-      setActiveNotification(notification);
+      setActiveNotification(notification || null);
     }
   }, [notifications, isAuth]);
 
@@ -59,12 +68,12 @@ const Notifications = () => {
     const noticeInfo = allNotification.map((message) => {
       return {
         ...message,
-        read: activeNotification.id === message.id ? true : message.read,
+        read: activeNotification?.id === message.id ? true : message.read,
       };
     });
     saveToLocalStorage(`notifications`, { messages: noticeInfo });
     setAllNotification(noticeInfo);
-    setActiveNotification({});
+    setActiveNotification(null);
   };
 
   const closeCookificationHandler = () => {

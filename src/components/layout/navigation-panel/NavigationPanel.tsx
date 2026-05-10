@@ -3,7 +3,11 @@ import { ArrowUturnLeftIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
 
 import Button from "../../ui/buttons/Button";
 import classes from "./NavigationPanel.module.scss";
-import SettingsSvg from "../../../assets/SettingsSvg";
+import type { ComponentProps } from "react";
+
+type NavigationPanelProps = ComponentProps<"div"> & {
+  onBack: () => void;
+};
 
 /**
  * Application inner page navigation for models and collections.
@@ -13,14 +17,14 @@ import SettingsSvg from "../../../assets/SettingsSvg";
  *
  * @component
  *
- * @param {object} props
- * @param {() => void} props.onBack - Callback triggered when the Back button is clicked.
- * @param {React.ReactNode} props.children - Navigation content (links to the current
+ * @param props
+ * @param props.onBack - Callback triggered when the Back button is clicked.
+ * @param props.children - Navigation content (links to the current
  * model or collection categories and subcategories).
  *
- * @returns {JSX.Element} The navigation panel element.
+ * @returns The navigation panel element.
  */
-const NavigationPanel = ({ onBack, children }) => {
+const NavigationPanel = ({ onBack, children }: NavigationPanelProps) => {
   return (
     <div className={classes["panel"]}>
       <Button className={classes["btn-back"]} onClick={onBack}>

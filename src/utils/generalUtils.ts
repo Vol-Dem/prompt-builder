@@ -400,7 +400,7 @@ export const saveToLocalStorage = <T>(key: string, data: T): void => {
   localStorage.setItem(key, JSON.stringify(data));
 };
 
-export const uploadLocalStorage = (key: string) => {
+export const uploadLocalStorage = <T>(key: string): T | null => {
   const storageData = localStorage?.getItem(key);
   return storageData ? JSON.parse(storageData) : null;
 };

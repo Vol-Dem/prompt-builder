@@ -1,10 +1,10 @@
 import { NavLink } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 
 import classes from "./MainNavigation.module.scss";
 import { tabActions } from "../../../store/tabs";
 import { imagesActions } from "../../../store/images";
 import { modelActions } from "../../../store/model";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Application main navigation bar.
@@ -15,16 +15,16 @@ import { modelActions } from "../../../store/model";
  *
  * @component
  *
- * @returns {JSX.Element} The main navigation element.
+ * @returns The main navigation element.
  */
 function MainNavigation() {
-  const isAuth = useSelector((state) => state.auth.isLoggedIn);
-  const dispatch = useDispatch();
+  const isAuth = useAppSelector((state) => state.auth.isLoggedIn);
+  const dispatch = useAppDispatch();
 
   const resetTabsHandler = () => {
     dispatch(tabActions.resetActiveTabs());
     dispatch(imagesActions.resetCollectionListState());
-    dispatch(modelActions.setActiveCarouselData({}));
+    dispatch(modelActions.setActiveCarouselData(null));
   };
 
   return (

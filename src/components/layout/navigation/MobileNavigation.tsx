@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { createPortal } from "react-dom";
 
 import { tabActions } from "../../../store/tabs";
 import classes from "./MobileNavigation.module.scss";
 import { imagesActions } from "../../../store/images";
 import { modelActions } from "../../../store/model";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Application main navigation bar for mobile devices.
@@ -17,28 +17,28 @@ import { modelActions } from "../../../store/model";
  *
  * @component
  *
- * @returns {JSX.Element} The main navigation element for mobile devices.
+ * @returns The main navigation element for mobile devices.
  */
 const MobileNavigation = () => {
   const [navIsOpen, setNavIsOpen] = useState(false);
-  const isAuth = useSelector((state) => state.auth.isLoggedIn);
-  const dispatch = useDispatch();
+  const isAuth = useAppSelector((state) => state.auth.isLoggedIn);
+  const dispatch = useAppDispatch();
 
   const resetTabsHandler = () => {
     dispatch(tabActions.resetActiveTabs());
     dispatch(imagesActions.resetCollectionListState());
-    dispatch(modelActions.setActiveCarouselData({}));
+    dispatch(modelActions.setActiveCarouselData(null));
   };
 
   useEffect(() => {
     if (navIsOpen) {
       document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = null;
+      document.body.style.overflow = "initial";
     }
 
     return () => {
-      document.body.style.overflow = null;
+      document.body.style.overflow = "initial";
     };
   }, [navIsOpen]);
 
@@ -91,7 +91,7 @@ const MobileNavigation = () => {
             </ul>
           </nav>
         </div>,
-        document.body
+        document.body,
       )}
     </>
   );
