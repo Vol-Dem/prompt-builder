@@ -38,10 +38,10 @@ type SetTagSetPreviewProps = { src: string };
  *
  * @component
  *
- * @param {object} props
- * @param {string} props.src - Source URL of the currently active image used for preview assignment.
+ * @param props
+ * @param props.src - Source URL of the currently active image used for preview assignment.
  *
- * @returns {JSX.Element} Set tagset preview.
+ * @returns Set tagset preview.
  */
 const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
   const [tagSetsFormIsOpen, setTagSetsFormIsOpen] = useState(false);

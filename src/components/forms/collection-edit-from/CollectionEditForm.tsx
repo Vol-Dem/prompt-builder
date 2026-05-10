@@ -63,9 +63,9 @@ type CollectionEditFormProps = {
  *
  * @component
  *
- * @param {object} props
- * @param {object} props.collectionData - Collection data structure.
- * @returns {JSX.Element} Collection edit form.
+ * @param props
+ * @param props.collectionData - Collection data structure.
+ * @returns Collection edit form.
  */
 const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
   const [errorMessage, setErrorMessage] = useState("");

@@ -24,12 +24,12 @@ type QuickStartGuideProps = ComponentProps<"div"> & {
  *
  * @component
  *
- * @param {Object} props
- * @param {number} props.stage - Current guide stage.
- * @param {() => void} props.onClose - Close callback.
- * @param {string} [props.className] - Optional classname.
+ * @param props
+ * @param props.stage - Current guide stage.
+ * @param props.onClose - Close callback.
+ * @param props.className - Optional classname.
  *
- * @returns {JSX.Element} Guide element.
+ * @returns Guide element.
  */
 const QuickStartGuide = ({
   stage,

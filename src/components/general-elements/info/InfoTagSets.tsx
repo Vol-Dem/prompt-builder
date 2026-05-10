@@ -14,7 +14,7 @@ import tsprev from "../../../assets/guide/tsprev.jpg";
  * Content for the tag sets hint.
  *
  * @component
- * @returns {JSX.Element} The tag sets hint.
+ * @returns The tag sets hint.
  */
 const InfoTagsets = () => {
   return (

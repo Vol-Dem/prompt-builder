@@ -57,10 +57,10 @@ interface ModelEditProps {
  *
  * @component
  *
- * @param {Object} props
- * @param {string} props.title - Fallback page title used before model data is loaded.
+ * @param props
+ * @param props.title - Fallback page title used before model data is loaded.
  *
- * @returns {JSX.Element} Model edit page.
+ * @returns Model edit page.
  */
 const ModelEdit = ({ title }: ModelEditProps) => {
   const [isLoading, setIsLoading] = useState(false);

@@ -26,7 +26,7 @@ import nsfwWebp from "../../assets/about/16-nsfw.webp";
  * Content for the About page "Top Panel" section.
  *
  * @component
- * @returns {JSX.Element} The "Top Panel" section content.
+ * @returns The "Top Panel" section content.
  */
 const AboutTopPanel = () => {
   return (

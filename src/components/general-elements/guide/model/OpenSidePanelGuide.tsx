@@ -19,7 +19,7 @@ import type { GuideStep } from "../../../../types/guide.types";
  *
  * @component
  *
- * @returns {JSX.Element} Open side pane guide element.
+ * @returns Open side pane guide element.
  */
 const OpenSidePanelGuide = () => {
   const guideType = "model";

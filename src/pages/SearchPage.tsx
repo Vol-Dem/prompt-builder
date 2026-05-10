@@ -42,10 +42,10 @@ interface SearchPageProps {
  *
  * Infinite scrolling continues while ANY of them is false.
  *
- * @param {object} props
- * @param {string} props.title - Page title.
+ * @param props
+ * @param props.title - Page title.
  *
- * @returns {JSX.Element} Search page.
+ * @returns Search page.
  */
 const SearchPage = ({ title }: SearchPageProps) => {
   const [initial, setInitial] = useState(true);

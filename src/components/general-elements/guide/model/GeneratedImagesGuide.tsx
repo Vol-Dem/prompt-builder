@@ -10,7 +10,10 @@ import {
 } from "../../../../variables/constants";
 import useGuideStep from "../../../../hooks/use-guide-step";
 import type { GuideStep } from "../../../../types/guide.types";
-import { EllipsisHorizontalIcon, FolderArrowDownIcon } from "@heroicons/react/24/outline";
+import {
+  EllipsisHorizontalIcon,
+  FolderArrowDownIcon,
+} from "@heroicons/react/24/outline";
 
 /**
  * Generated images guide.
@@ -19,13 +22,15 @@ import { EllipsisHorizontalIcon, FolderArrowDownIcon } from "@heroicons/react/24
  *
  * @component
  *
- * @returns {JSX.Element} Generated images guide element.
+ * @returns Generated images guide element.
  */
 const GeneratedImagesGuide = () => {
   const guideType = "model";
   const guideSteps = useMemo<GuideStep[]>(() => {
     const downloadImage = (
-      <FolderArrowDownIcon className={`${classes["svg"]} ${classes["svg--medium"]}`} />
+      <FolderArrowDownIcon
+        className={`${classes["svg"]} ${classes["svg--medium"]}`}
+      />
     );
 
     return [
@@ -45,8 +50,8 @@ const GeneratedImagesGuide = () => {
         next: true,
         text: (
           <>
-            In the image menu <EllipsisHorizontalIcon className={classes.svg} /> you can set it
-            as a preview for the model or tag sets
+            In the image menu <EllipsisHorizontalIcon className={classes.svg} />{" "}
+            you can set it as a preview for the model or tag sets
           </>
         ),
       },

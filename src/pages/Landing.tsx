@@ -42,7 +42,7 @@ const carouselImages = [
  * Landing page.
  *
  * @component
- * @returns {JSX.Element} The Landing page content.
+ * @returns The Landing page content.
  */
 const Landing = () => {
   const [showVideo, setShowVideo] = useState(false);

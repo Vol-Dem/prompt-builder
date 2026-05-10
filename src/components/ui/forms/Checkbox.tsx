@@ -7,13 +7,13 @@ type CheckboxProps = ComponentProps<"input"> & { label: string | ReactNode };
  * Presentational wrapper for checkbox inputs.
  * Binds <label> to <input> and applies app-specific styles.
  *
- * @param {string} id - Input id used for label binding.
- * @param {string} label - Text label shown next to checkbox.
- * @param {string} [className] - Optional custom class.
- * @param {boolean} [disabled] - Disables the checkbox and applies disabled styles.
- * @param {object} props - Native input props passed to <input>.
+ * @param props - Native input props passed to <input>.
+ * @param props.id - Input id used for label binding.
+ * @param props.label - Text label shown next to checkbox.
+ * @param props.className - Optional custom class.
+ * @param props.disabled - Disables the checkbox and applies disabled styles.
  *
- * @returns {JSX.Element} Checkbox input.
+ * @returns Checkbox input.
  */
 const Checkbox = ({
   id,

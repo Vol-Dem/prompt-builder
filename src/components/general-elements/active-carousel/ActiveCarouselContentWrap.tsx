@@ -10,7 +10,7 @@ type ActiveCarouselContentWrapProps = ComponentProps<"div">;
  * Disables animation when header is fixed to prevents animation glitches.
  *
  * @component
- * @returns {JSX.Element} Active carousel animation container.
+ * @returns Active carousel animation container.
  */
 const ActiveCarouselContentWrap = ({
   className,

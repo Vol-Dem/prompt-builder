@@ -38,7 +38,7 @@ import type { CollectionSavedPost } from "../../../../shared/types/collection";
  *
  * @component
  *
- * @returns {JSX.Element} List of collection images with infinite scroll behavior.
+ * @returns List of collection images with infinite scroll behavior.
  */
 const CollectionImages = memo(() => {
   const [isIntersecting, setIsIntersecting] = useState(false);

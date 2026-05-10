@@ -23,7 +23,7 @@ import type { GuideStep } from "../../../../types/guide.types";
  *
  * @component
  *
- * @returns {JSX.Element} Carousel guide element.
+ * @returns Carousel guide element.
  */
 const CarouselGuide = () => {
   const guideType = "model";

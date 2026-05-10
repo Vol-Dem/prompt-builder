@@ -31,24 +31,24 @@ type InputNumberProps = OverrideFields<
 /**
  * Numeric input with increment/decrement controls and validation.
  * @param props
- * @param {string} props.id - Input id.
- * @param {string} props.type - Input type (number, text).
- * @param {string} props.name - Input name.
- * @param {string} [props.label] - Optional label text.
- * @param {object} [props.input] - Native input props.
- * @param {string} [props.className] - Optional custom class.
- * @param {function} [props.onBlur] - Blur handler.
- * @param {function} props.onChange - Change handler (e, isValid?, errorMessage?).
- * @param {function} [props.onClick] - Click handler.
- * @param {function} [props.onFocus] - Focus handler.
- * @param {string} [props.error] - External error message.
- * @param {boolean} [props.autoFocus] - Autofocus input.
- * @param {string|number} props.value - Controlled value.
- * @param {string} [props.placeholder] - Placeholder text.
- * @param {object} [props.validation] - Validation rules.
- * @param {boolean} [props.showError] - Force show errors.
- * @param {number} [props.step=1] - Step size for increment/decrement.
- * @returns {JSX.Element} Rendered numeric input component.
+ * @param props.id - Input id.
+ * @param props.type - Input type (number, text).
+ * @param props.name - Input name.
+ * @param props.label - Optional label text.
+ * @param props.input - Native input props.
+ * @param props.className - Optional custom class.
+ * @param props.onBlur - Blur handler.
+ * @param props.onChange - Change handler (e, isValid?, errorMessage?).
+ * @param props.onClick - Click handler.
+ * @param props.onFocus - Focus handler.
+ * @param props.error - External error message.
+ * @param props.autoFocus - Autofocus input.
+ * @param props.value - Controlled value.
+ * @param props.placeholder - Placeholder text.
+ * @param props.validation - Validation rules.
+ * @param props.showError - Force show errors.
+ * @param props.step - Step size for increment/decrement.
+ * @returns Rendered numeric input component.
  */
 const InputNumber = ({
   id,

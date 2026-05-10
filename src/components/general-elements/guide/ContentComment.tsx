@@ -9,11 +9,11 @@ type ContentCommentProps = ComponentProps<"span">;
  *
  * @component
  *
- * @param {object} props
- * @param {string} [props.className] - Optional class name.
- * @param {React.ReactNode} props.children - Content.
+ * @param props
+ * @param props.className - Optional class name.
+ * @param props.children - Content.
  *
- * @returns {JSX.Element} Content comment element.
+ * @returns Content comment element.
  */
 const ContentComment = ({ children, className }: ContentCommentProps) => {
   return (

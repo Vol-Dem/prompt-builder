@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 
 import {
   filterDuplicates,
@@ -20,13 +27,25 @@ interface CivitaiFetchResult {
   metadata: { nextCursor: string; nextPage: string };
 }
 
+interface useFetchCivitaiReturn {
+  fetchCivitai: (
+    setIsIntersecting?: ((isIntersecting: boolean) => void) | undefined,
+  ) => Promise<void>;
+  fetchedData: any[];
+  isFetching: boolean;
+  isLastPage: boolean;
+  errorMessage: string;
+  setFetchedData: Dispatch<SetStateAction<any[]>>;
+  setErrorMessage: Dispatch<SetStateAction<string>>;
+}
+
 /**
  * Fetches data from a given Civitai URL and manages the Civitai cursor-based pagination system
- * @param {String} url - The URL to fetch
+ * @param url - The URL to fetch
  * @returns The state object containing the fetch function, fetched data, fetching state, last page state, error message,
  * and functions to update fetched data and the error message
  */
-const useFetchCivitai = (url: string) => {
+const useFetchCivitai = (url: string): useFetchCivitaiReturn => {
   const [isFetching, setIsFetching] = useState(false);
   const [isLastPage, setIsLastPage] = useState(false);
   const [fetchedData, setFetchedData] = useState<any[]>([]);

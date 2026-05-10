@@ -16,11 +16,12 @@ type DropDownListProps = ComponentProps<"div"> &
 /**
  * Animated dropdown container with header and close button.
  *
- * @param {React.ReactNode} children - Dropdown content.
- * @param {string} [className] - Optional custom class.
- * @param {function} onClose - Called when dropdown is closed.
- * @param {string} title - Dropdown title.
- * @returns {JSX.Element} Rendered dropdown list.
+ * @param props
+ * @param props.children - Dropdown content.
+ * @param props.className - Optional custom class.
+ * @param props.onClose - Called when dropdown is closed.
+ * @param props.title - Dropdown title.
+ * @returns Rendered dropdown list.
  */
 const DropDownList = ({
   children,

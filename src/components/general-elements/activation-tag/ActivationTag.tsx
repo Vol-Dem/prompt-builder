@@ -18,11 +18,11 @@ type ActivationTagProps = { tag: string; modelData: SidebarPreviewData };
  *
  * @component
  *
- * @param {object} props
- * @param {string} props.tag - Initial tag value including weight suffix.
- * @param {object} props.modelData - Model data passed to the Tag and added to the sidebar on interaction.
+ * @param props
+ * @param props.tag - Initial tag value including weight suffix.
+ * @param props.modelData - Model data passed to the Tag and added to the sidebar on interaction.
  *
- * @returns {JSX.Element} Activation tag with weight controls.
+ * @returns Activation tag with weight controls.
  */
 const ActivationTag = ({ tag, modelData }: ActivationTagProps) => {
   const [tagWeight, setTagWeight] = useState(1);

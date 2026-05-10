@@ -5,9 +5,9 @@ import type {
 
 /**
  * Searches for subcategories
- * @param {string} query - Search query
- * @param {array} categories - Categories search data
- * @returns {array} Search result
+ * @param query - Search query
+ * @param categories - Categories search data
+ * @returns Search result
  */
 export const subcategoriesSearch = (
   query: string,

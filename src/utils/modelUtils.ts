@@ -16,8 +16,8 @@ import { AppError } from "./generalUtils";
 
 /**
  * Parse model an version IDs from string (ID, URL, AIR)
- * @param {string} value - string value
- * @returns {array} an array with the model ID as the first element and the version ID as the second one
+ * @param value - string value
+ * @returns an array with the model ID as the first element and the version ID as the second one
  */
 export const parseModelIds = (value: string): (number | null)[] => {
   if (Number.isFinite(+value)) {
@@ -56,8 +56,8 @@ export const parseModelIds = (value: string): (number | null)[] => {
 
 /**
  * Sort model versions by index and removes one that was not updated by current user.
- * @param {ModelData} model - model data
- * @returns {ModelVersionCivitai[]} - sorted and filtered model versions
+ * @param model - model data
+ * @returns - sorted and filtered model versions
  */
 export const sortModelVersions = (
   model: ModelData,
@@ -81,10 +81,10 @@ export const sortModelVersions = (
 
 /**
  * Get initial current version ID
- * @param {object} model - model data
- * @param {array} modelVersions - model versions
- * @param {string} versionIdParam - search param ID
- * @returns {number} version ID
+ * @param model - model data
+ * @param modelVersions - model versions
+ * @param versionIdParam - search param ID
+ * @returns version ID
  */
 export const getCurrentVersionId = (
   model: ModelData,
@@ -112,9 +112,9 @@ export const getCurrentVersionId = (
 
 /**
  * Compare old and new model data and returns new model versions
- * @param {CivitaiModelDoc} newModelData - new model data
- * @param {UserModelDoc | ModelData} oldModelData - old user model data
- * @returns {array} new model versions
+ * @param newModelData - new model data
+ * @param oldModelData - old user model data
+ * @returns new model versions
  */
 export const filterNewModelVersions = (
   newModelData: CivitaiModelDoc,
@@ -132,10 +132,10 @@ export const filterNewModelVersions = (
 
 /**
  * Creates object with preview data
- * @param {object} model - model data
- * @param {object} curVersion - current version data
- * @param {object} curCustomVersionData - current custom version data
- * @returns {object} preview data
+ * @param model - model data
+ * @param curVersion - current version data
+ * @param curCustomVersionData - current custom version data
+ * @returns preview data
  */
 export const createModelPreviewData = (
   model: ModelData | null,
@@ -219,8 +219,8 @@ export const createSidebarPreviewData = (
 
 /**
  * Parse model type from string
- * @param {string} value - string value
- * @returns {string} model type
+ * @param value - string value
+ * @returns model type
  */
 export const parseMoelType = (value: string): string | null => {
   return (
@@ -236,8 +236,8 @@ export const parseMoelType = (value: string): string | null => {
  * Selects the initial version data:
  * - Selects by version ID search parameter if corresponding version data is present
  * - Selects the latest saved version if the version ID search parameter is missing.
- * @param {object} model - model data
- * @param {string} versionIdParam - version ID search parameter
+ * @param model - model data
+ * @param ersionIdParam - version ID search parameter
  * @returns version data
  */
 export const getInitialVersionData = (

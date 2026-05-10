@@ -26,7 +26,7 @@ import generalSettings3Webp from "../../assets/about/11-versions-settings-3.webp
  * Content for the About page "Model Settings" section.
  *
  * @component
- * @returns {JSX.Element} The "Model Settings" section content.
+ * @returns The "Model Settings" section content.
  */
 const AboutModelSettings = () => {
   return (

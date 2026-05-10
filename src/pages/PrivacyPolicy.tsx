@@ -16,10 +16,10 @@ interface PrivacyPolicyProps {
  *
  * @component
  *
- * @param {object} props
- * @param {string} props.title - Page title.
+ * @param props
+ * @param props.title - Page title.
  *
- * @returns {JSX.Element} Privacy policy page.
+ * @returns Privacy policy page.
  */
 const PrivacyPolicy = ({ title }: PrivacyPolicyProps) => {
   useEffect(() => {

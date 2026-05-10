@@ -8,7 +8,7 @@ import versions from "../../../../assets/guide/versions.jpg";
  * Content for the default version editing hint.
  *
  * @component
- * @returns {JSX.Element} The default version editing hint.
+ * @returns The default version editing hint.
  */
 const InfoEditDefault = () => {
   return (

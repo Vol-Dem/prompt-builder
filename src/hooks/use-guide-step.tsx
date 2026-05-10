@@ -1,6 +1,11 @@
 import type { GuideStep, GuideType } from "../types/guide.types";
 import useGuideIndex from "./use-guide-index";
 
+interface useGuideStepReturns {
+  index: number | null;
+  step: GuideStep | null;
+}
+
 /**
  * @typedef {Object} GuideStepConfig
  * @property {number} step - Redux guide step constant.
@@ -16,7 +21,10 @@ import useGuideIndex from "./use-guide-index";
  * @param steps - Guide steps data
  * @returns
  */
-const useGuideStep = (guideType: GuideType, steps: GuideStep[]) => {
+const useGuideStep = (
+  guideType: GuideType,
+  steps: GuideStep[],
+): useGuideStepReturns => {
   const index = useGuideIndex(guideType, steps);
   return {
     index,

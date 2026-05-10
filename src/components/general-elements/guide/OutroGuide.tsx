@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
  *
  * @component
  *
- * @returns {JSX.Element} Guide outro element.
+ * @returns Guide outro element.
  */
 const OutroGuide = () => {
   const outroIsActive = useAppSelector((state) => state.guide.outroIsActive);

@@ -31,11 +31,11 @@ type CarouselProps = ComponentProps<"div"> &
  *
  * @component
  *
- * @param {object} props
- * @param {boolean} [props.showInView=false] - If true, renders carousel content only when it is close to the viewport.
- * @param {number} [props.imageHeight=SETTINGS_CAROUSEL_IMAGE_HEIGHT] - Height of carousel images.
- * @param {number} [props.imageWidth=SETTINGS_CAROUSEL_IMAGE_WIDTH] - Width of carousel images.
- * @param {number} [props.visibleImgAmount] - Number of images visible at the same time.
+ * @param props
+ * @param props.showInView - If true, renders carousel content only when it is close to the viewport.
+ * @param props.imageHeight- Height of carousel images.
+ * @param props.imageWidth - Width of carousel images.
+ * @param props.visibleImgAmount - Number of images visible at the same time.
  *
  * @returns {JSX.Element} Carousel wrapper element.
  */

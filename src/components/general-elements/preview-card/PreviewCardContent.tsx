@@ -36,7 +36,7 @@ type PreviewCardContentProps = {
  * @param props.fullView - Whether to display the expanded card layout.
  * @param props.animate - Whether card will have Framer Motion layout ID for shared layout animations.
  *
- * @returns {JSX.Element} The animated preview card component.
+ * @returns The animated preview card component.
  */
 const PreviewCardContent = ({
   previewData,

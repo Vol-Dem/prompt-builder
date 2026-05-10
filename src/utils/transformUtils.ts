@@ -13,8 +13,8 @@ import type { CivitaiModelDoc, ModelDoc } from "../../shared/types/firestore";
 
 /**
  * Creates a model object
- * @param {object} modelData - model data
- * @returns {object} model object
+ * @param modelData - model data
+ * @returns model object
  */
 export const transformModelData = (modelData: CivitaiModelDoc): ModelDoc => {
   const newModelData = {
@@ -28,8 +28,8 @@ export const transformModelData = (modelData: CivitaiModelDoc): ModelDoc => {
 
 /**
  * Creates a model version object
- * @param {object} versionData - version data
- * @returns {object} model version object
+ * @param versionData - version data
+ * @returns model version object
  */
 export const transformModelVersionData = (
   versionData: ModelVersionCivitai[],
@@ -64,8 +64,8 @@ export const transformModelVersionData = (
 
 /**
  * Creates a files object
- * @param {object} fileData - files data
- * @returns {object} files object
+ * @param fileData - files data
+ * @returns files object
  */
 export const transformFilesData = (
   fileData: VersionFileCivitai,

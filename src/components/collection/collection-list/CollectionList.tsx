@@ -13,7 +13,7 @@ import { useAppSelector } from "../../../store/hooks/hooks";
  *
  * @component
  *
- * @returns {JSX.Element} List of collections.
+ * @returns List of collections.
  */
 const CollectionList = () => {
   const collectionPreviews = useAppSelector(

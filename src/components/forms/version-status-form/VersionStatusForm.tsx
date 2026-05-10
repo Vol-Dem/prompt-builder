@@ -43,9 +43,9 @@ type StatusCheckbox = {
  *
  * @component
  *
- * @param {object} props
- * @param {object} props.modelData - Model data.
- * @returns {JSX.Element} Version status form.
+ * @param props
+ * @param props.modelData - Model data.
+ * @returns Version status form.
  */
 const VersionStatusForm = ({ modelData }: VersionStatusFormProps) => {
   const [isSaving, setIsSaving] = useState(false);

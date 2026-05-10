@@ -14,7 +14,7 @@ import type { GuideStep } from "../../../../types/guide.types";
  *
  * @component
  *
- * @returns {JSX.Element} Add tag set guide element.
+ * @returns Add tag set guide element.
  */
 const AddTagSetGuide = () => {
   const guideType = "model";

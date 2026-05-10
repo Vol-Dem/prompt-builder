@@ -7,10 +7,10 @@ type FieldCategoryProps = ComponentProps<"div">;
  * Presentational wrapper for field category.
  * Displays field content with title.
  *
- * @param {string} title - Field title.
- * @param {React.ReactNode} children - Field content.
- * @param {string} [className] - Optional custom class.
- * @param {object} props - Native props passed to field.
+ * @param props - Native props passed to field.
+ * @param props.title - Field title.
+ * @param props.children - Field content.
+ * @param props.className - Optional custom class.
  *
  * @returns {JSX.Element} Fieldset.
  */

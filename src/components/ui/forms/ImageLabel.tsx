@@ -15,12 +15,12 @@ type ImageLabelProps = ComponentProps<"label"> & {
  * Displays a clickable image preview used as a label
  * for selecting an image in a form.
  * @param props
- * @param {string} props.htmlFor - Input id used for label binding.
- * @param {object} props.imageData - Image metadata and state.
- * @param {'del' | 'save'} props.type - Form mode for styling.
- * @param {string} [props.className] - Optional custom class.
+ * @param props.htmlFor - Input id used for label binding.
+ * @param props.imageData - Image metadata and state.
+ * @param props.type - Form mode for styling.
+ * @param props.className - Optional custom class.
  *
- * @returns {JSX.Element} Image label.
+ * @returns Image label.
  */
 const ImageLabel = ({
   htmlFor,

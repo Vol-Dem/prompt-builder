@@ -43,22 +43,22 @@ type ImageProps = ComponentProps<"img"> & {
  *
  * @component
  *
- * @param {Object} props
- * @param {string | number} props.id - Image DOM id / identifier.
- * @param {boolean} props.fullView - Whether to enable fullscreen viewer on click.
- * @param {string} props.src - Base image or video source URL.
- * @param {string} [props.srcSet] - Optional responsive source set.
- * @param {string} [props.type='image/webp'] - MIME type for <source>.
- * @param {string} [props.alt] - Image alt text.
- * @param {number} [props.imageWidth=SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM] - Requested preview width.
- * @param {number} props.width - Rendered image width.
- * @param {number} props.height - Rendered image height.
- * @param {string} [props.className] - Optional wrapper class.
- * @param {('image' | 'video')} [props.imgType='image'] - Media type (shows play icon if "video").
- * @param {boolean} [props.preloader=true] - Whether to display loading animation.
- * @param {(e: React.MouseEvent) => void} [props.onClick] - Optional click callback.
+ * @param props
+ * @param props.id - Image DOM id / identifier.
+ * @param props.fullView - Whether to enable fullscreen viewer on click.
+ * @param props.src - Base image or video source URL.
+ * @param props.srcSet - Optional responsive source set.
+ * @param props.type - MIME type for <source>.
+ * @param props.alt - Image alt text.
+ * @param props.imageWidth - Requested preview width.
+ * @param props.width - Rendered image width.
+ * @param props.height - Rendered image height.
+ * @param props.className - Optional wrapper class.
+ * @param props.imgType - Media type (shows play icon if "video").
+ * @param props.preloader - Whether to display loading animation.
+ * @param props.onClick - Optional click callback.
  *
- * @returns {JSX.Element} Media preview.
+ * @returns Media preview.
  */
 const Image = ({
   id,

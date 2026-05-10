@@ -12,14 +12,14 @@ type LinkAProps = ComponentProps<"a"> & {
 /**
  * Anchor link with support for external targets and smooth scrolling.
  *
- * @param {string} props.href - Link URL or hash target.
- * @param {string} [props.className] - Optional custom class.
- * @param {boolean} [props.external] - Opens link in new tab.
- * @param {function} [props.onClick] - Optional click handler.
- * @param {boolean} [props.smoothScroll] - Enables smooth scroll for hash links.
- * @param {React.ReactNode} props.children - Link content.
- * @param {object} props - Native anchor attributes.
- * @returns {JSX.Element} Rendered link component.
+ * @param props.href - Link URL or hash target.
+ * @param props.className - Optional custom class.
+ * @param props.external - Opens link in new tab.
+ * @param props.onClick - Optional click handler.
+ * @param props.smoothScroll - Enables smooth scroll for hash links.
+ * @param props.children - Link content.
+ * @param props - Native anchor attributes.
+ * @returns Rendered link component.
  */
 const LinkA = ({
   href,

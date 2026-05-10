@@ -7,14 +7,14 @@ type Axis = "X" | "Y";
 /**
  * Adds a touch event to the provided element and changes the open state on slide.
  * Accepts reference to the element, configuration parameters, function to triger on state chage and initial state.
- * @param {React.MutableRefObject} ref -  The reference to the element
- * @param {('X'|'Y')} axis - Slide axis
- * @param {boolean} forward - Slide direction
- * @param {number} thresholdOpen - Distance in pixels to change open state to true
- * @param {number} thresholdClose - Distance in pixels to change open state to false
- * @param {Function} stateChangeCallback - A function wrapped in a React useCallback hook to be triggered when state changes
- * @param {boolean} initialState - Initial state
- * @returns {boolean} Current state
+ * @param ref -  The reference to the element
+ * @param axis - Slide axis
+ * @param forward - Slide direction
+ * @param thresholdOpen - Distance in pixels to change open state to true
+ * @param thresholdClose - Distance in pixels to change open state to false
+ * @param stateChangeCallback - A function wrapped in a React useCallback hook to be triggered when state changes
+ * @param initialState - Initial state
+ * @returns Current state
  */
 const useTouchOpenState = (
   ref: RefObject<HTMLElement>,
@@ -24,7 +24,7 @@ const useTouchOpenState = (
   thresholdClose: number = 40,
   stateChangeCallback: (state: boolean) => void,
   initialState: boolean = false,
-) => {
+): boolean => {
   const [cursorInitialPoint, setCursorInitialPoint] = useState<number | null>(
     null,
   );

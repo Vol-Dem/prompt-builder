@@ -56,10 +56,10 @@ interface ModelPageProps {
  *
  * @component
  *
- * @param {Object} props
- * @param {string} props.title - Fallback page title used before model data is loaded.
+ * @param props
+ * @param props.title - Fallback page title used before model data is loaded.
  *
- * @returns {JSX.Element} Model page.
+ * @returns Model page.
  */
 const Model = ({ title }: ModelPageProps) => {
   const [isLoading, setIsLoading] = useState(false);

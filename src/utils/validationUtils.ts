@@ -11,9 +11,9 @@ import { parseModelIds } from "./modelUtils";
 
 /**
  * Validates input data
- * @param {({email: boolean, password: boolean, required: boolean, number: boolean, maxLength: number, minLength: number, modelId: boolean})} validTypes - An object with validation types as keys (email, password, required, number, minLength, maxLength, modelId) and their configurations as values.
- * @param {string} value - The value to validate
- * @returns {({inputValue: string, isValid: boolean, errorMessage: string})} The state object containing the provided value, validation state, and error message.
+ * @param validTypes - An object with validation types as keys (email, password, required, number, minLength, maxLength, modelId) and their configurations as values.
+ * @param value - The value to validate
+ * @returns The state object containing the provided value, validation state, and error message.
  * Structure: {inputValue: string, isValid: boolean, errorMessage: string}
  */
 export const validateInput = (
@@ -126,8 +126,8 @@ const isEmail = (value: string): boolean => {
 
 /**
  * Checks if the provided value has both uppercase and lowercase characters
- * @param {string} value - Provided value
- * @returns {boolean} True if the value contains both uppercase and lowercase characters, otherwise false
+ * @param value - Provided value
+ * @returns True if the value contains both uppercase and lowercase characters, otherwise false
  */
 const hasLettersCombination = (value: string): boolean => {
   const upper = /[A-Z]/.test(value);
@@ -138,8 +138,8 @@ const hasLettersCombination = (value: string): boolean => {
 
 /**
  * Checks if the provided value contains numbers
- * @param {string} value - Provided value
- * @returns {boolean} True if the value contains numbers, otherwise false
+ * @param value - Provided value
+ * @returns True if the value contains numbers, otherwise false
  */
 const hasNumbers = (value: string): boolean => {
   const numbers = /[0-9]/.test(value);
@@ -148,8 +148,8 @@ const hasNumbers = (value: string): boolean => {
 
 /**
  * Checks if the provided value contains special characters
- * @param {string} value - Provided value
- * @returns {boolean} True if the value contains special characters, otherwise false
+ * @param value - Provided value
+ * @returns True if the value contains special characters, otherwise false
  */
 const hasSpecialCharacters = (value: string): boolean => {
   return VALIDATION_PASSWORD_SPECIAL_CHARACTERS.test(value);
@@ -157,8 +157,8 @@ const hasSpecialCharacters = (value: string): boolean => {
 
 /**
  * Checks if the provided value is not empty
- * @param {string} value - Provided value
- * @returns {boolean} True if the value is not empty, otherwise false
+ * @param value - Provided value
+ * @returns True if the value is not empty, otherwise false
  */
 const isNotEmpty = (value: string): boolean => {
   return value.trim() !== "";
@@ -166,8 +166,8 @@ const isNotEmpty = (value: string): boolean => {
 
 /**
  * Checks if the provided value is a number
- * @param {string} value - Provided value
- * @returns {boolean} True if the value is a number, otherwise false
+ * @param value - Provided value
+ * @returns True if the value is a number, otherwise false
  */
 export const isNumber = (value: unknown): value is number => {
   return typeof value === "number" && Number.isFinite(value);
@@ -175,9 +175,9 @@ export const isNumber = (value: unknown): value is number => {
 
 /**
  * Checks if the provided value is not shorter than the provided minimum length
- * @param {string} value - Provided value
- * @param {string} minLength - Provided minimum length
- * @returns {boolean} True if the value meets the minimum length, otherwise false
+ * @param value - Provided value
+ * @param minLength - Provided minimum length
+ * @returns True if the value meets the minimum length, otherwise false
  */
 const hasMinLength = (value: string, minLength: number): boolean => {
   return value.length >= minLength;
@@ -205,8 +205,8 @@ const lessThenMaxLength = (value: string, maxLength: number): boolean => {
 
 /**
  * Checks if the provided value is a model ID
- * @param {string} value - Provided value
- * @returns {boolean} True if the value is a valid model ID, otherwise false
+ * @param value - Provided value
+ * @returns True if the value is a valid model ID, otherwise false
  */
 const isModelId = (value: string): boolean => {
   const [modelId] = parseModelIds(value);

@@ -39,10 +39,10 @@ interface CollectionProps {
  *
  * @component
  *
- * @param {Object} props
- * @param {string} props.title - Fallback page title used before collection data is loaded.
+ * @param props
+ * @param props.title - Fallback page title used before collection data is loaded.
  *
- * @returns {JSX.Element} Collection page.
+ * @returns Collection page.
  */
 const Collection = ({ title }: CollectionProps) => {
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);

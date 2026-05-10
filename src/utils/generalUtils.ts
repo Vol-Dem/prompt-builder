@@ -24,8 +24,8 @@ type ClientCoords = {
 
 /**
  * Adds a promise that resolves after the specified delay
- * @param {number} delay - The delay in ms
- * @returns {Promise<string>} The promise that resolves after the specified delay
+ * @param delay - The delay in ms
+ * @returns The promise that resolves after the specified delay
  */
 export const addDelayPromise = (delay: number): Promise<string> => {
   return new Promise((resolve) => {
@@ -50,7 +50,7 @@ export const addDelayPromise = (delay: number): Promise<string> => {
 
 /**
  * Freezes scroll
- * @param {number} scrollTop - The distance to the top
+ * @param scrollTop - The distance to the top
  */
 export const disableScrollHandler = (scrollTop: number): void => {
   window.scrollTo(0, scrollTop);
@@ -68,8 +68,8 @@ export const throwCustomError = (message: string): never => {
 
 /**
  * Handles caught errors and returns a custom or default error message
- * @param {object} err - The error object
- * @returns {string} - The custom or default error message
+ * @param err - The error object
+ * @returns - The custom or default error message
  */
 export const handleErrors = (err: AppError): string => {
   let errorMessage = ERROR_MESSAGE_DEFAULT;
@@ -90,7 +90,7 @@ export const handleErrors = (err: AppError): string => {
 
 /**
  * Checks if the current user's device is mobile
- * @returns {boolean} True if the device is mobile, otherwise false
+ * @returns True if the device is mobile, otherwise false
  */
 export const checkIsMobile = (): boolean => {
   return REGEX_MOBAL.test(navigator.userAgent);
@@ -108,9 +108,9 @@ export const disableAnimationsOnMobile = (): void => {
 
 /**
  * Checks if the provided value is within the current allowed NSFW range
- * @param {string} curNsfwLevel - The current active NSFW level
- * @param {string} curNsfwvalue - The current NSFW value to check
- * @returns {boolean} True if the value is within range, otherwise false
+ * @param curNsfwLevel - The current active NSFW level
+ * @param curNsfwvalue - The current NSFW value to check
+ * @returns True if the value is within range, otherwise false
  */
 export const checkIsInCurrentNsfwRange = (
   curNsfwLevel: string,
@@ -133,9 +133,9 @@ export const checkIsInCurrentNsfwRange = (
 
 /**
  * Filters duplicate values from an array of objects by an object field
- * @param {array} arr - The array of objects
- * @param {string} field - The object field
- * @returns {array} The filtered array
+ * @param arr - The array of objects
+ * @param field - The object field
+ * @returns The filtered array
  */
 // export function filterDuplicates<T>(arr: T[]): T[];
 
@@ -163,9 +163,9 @@ export const filterDuplicates = <T, K extends keyof T>(
 
 /**
  * Creates a category ID from the category name
- * @param {string} id - The category name
- * @param {object} categoriesData - The existing categories data
- * @returns {string | null} The created ID
+ * @param id - The category name
+ * @param categoriesData - The existing categories data
+ * @returns The created ID
  */
 export const createCategoryId = (
   id: string,
@@ -204,8 +204,8 @@ export const createCategoryId = (
 
 /**
  * Generates a collection ID
- * @param {array} collectionCategories - The existing collection data
- * @returns {number} The collection ID
+ * @param collectionCategories - The existing collection data
+ * @returns The collection ID
  */
 export const createCollectionId = (
   collectionCategories: CollectionCategory[],
@@ -225,10 +225,10 @@ export const createCollectionId = (
  * Universal sort function.
  * Sorts an array by object field when the field is specified.
  * Sorts by value when the field is not specified.
- * @param {array} arr - The array to sort
- * @param {string} field - The object field to sort by
- * @param {('asc'|'desc')} direction - The sort direction ("asc" or "desc")
- * @returns {array} The new sorted array of objects
+ * @param arr - The array to sort
+ * @param field - The object field to sort by
+ * @param direction - The sort direction ("asc" or "desc")
+ * @returns The new sorted array of objects
  */
 export const sortArrayBy = <T, K extends keyof T>(
   arr: T[],
@@ -257,8 +257,8 @@ export const sortArrayBy = <T, K extends keyof T>(
 
 /**
  * Sorts an object by keys
- * @param {object} obj - The object to sort
- * @returns {boolean} The new sorted object
+ * @param obj - The object to sort
+ * @returns The new sorted object
  */
 export const sortObjectByKeys = <T extends Record<string, any>>(obj: T): T => {
   return Object.keys(obj)
@@ -271,9 +271,9 @@ export const sortObjectByKeys = <T extends Record<string, any>>(obj: T): T => {
 
 /**
  * Checks arrays for equality
- * @param {array} arr1 - The first array
- * @param {array} arr2 - The second array
- * @returns {boolean} True if the arrays are equal, otherwise false
+ * @param arr1 - The first array
+ * @param arr2 - The second array
+ * @returns True if the arrays are equal, otherwise false
  */
 export const checkArraysIsEqual = <T, K>(arr1: T[], arr2: K[]): boolean => {
   return JSON.stringify(arr1?.toSorted()) === JSON.stringify(arr2?.toSorted());
@@ -281,9 +281,9 @@ export const checkArraysIsEqual = <T, K>(arr1: T[], arr2: K[]): boolean => {
 
 /**
  * Checks objects for equality
- * @param {object} obj1 - The first object
- * @param {object} obj2 - The second object
- * @returns {boolean} True if the objects are equal, otherwise false
+ * @param obj1 - The first object
+ * @param obj2 - The second object
+ * @returns True if the objects are equal, otherwise false
  */
 export const checkObjectsIsEqual = (
   obj1: Record<string, any>,
@@ -297,7 +297,7 @@ export const checkObjectsIsEqual = (
 
 /**
  * Enables smooth scroling
- * @param {string | number} hashId - The element ID
+ * @param hashId - The element ID
  * @returns
  */
 export const smoothScroll = (hashId: string | number): void => {
@@ -318,9 +318,9 @@ export const smoothScroll = (hashId: string | number): void => {
 
 /**
  *  Adds a new entry to the URL search params
- * @param {URLSearchParams} prevParams - The previous params
- * @param {URLSearchParams} newEntry  - The new search params entry
- * @returns {URLSearchParams} The updated URL search params
+ * @param prevParams - The previous params
+ * @param newEntry  - The new search params entry
+ * @returns The updated URL search params
  */
 export const updateSearchParams = (
   prevParams: URLSearchParams,
@@ -334,8 +334,8 @@ export const updateSearchParams = (
 
 /**
  * Parses the intersection field value and converts it to a suitable form
- * @param {number | string} value - The margin value
- * @returns {string} The intersection margin value in a suitable form
+ * @param value - The margin value
+ * @returns The intersection margin value in a suitable form
  */
 export const parseIntersectionMargin = (value: number | string): string => {
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -357,8 +357,8 @@ export const parseIntersectionMargin = (value: number | string): string => {
 
 /**
  *
- * @param {Event} e - event
- * @returns {{clientX: number, clientY: number}}
+ * @param e - event
+ * @returns
  */
 export const getClientCoord = (e: MouseEvent | TouchEvent): ClientCoords => {
   if ("touches" in e) {

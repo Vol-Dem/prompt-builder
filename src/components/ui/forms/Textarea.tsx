@@ -23,22 +23,22 @@ type TextareaProps = OverrideFields<
 /**
  * Controlled textarea with validation and animated error display.
  *
- * @param {string} props.id - Textarea id.
- * @param {string} props.name - Textarea name.
- * @param {string} [props.label] - Optional label text.
- * @param {object} [props.textarea] - Native textarea props.
- * @param {string} [props.className] - Optional custom class.
- * @param {function} props.onChange - Change handler (e, isValid?, errorMessage?).
- * @param {function} [props.onBlur] - Blur handler.
- * @param {string} [props.error] - External error message.
- * @param {number} [props.cols] - Column count.
- * @param {number} [props.rows=5] - Row count.
- * @param {string} props.value - Controlled value.
- * @param {string} [props.placeholder] - Placeholder text.
- * @param {object} [props.validation] - Validation rules.
- * @param {boolean} [props.showError] - Force show errors.
- * @param {object} props - Native textarea props.
- * @returns {JSX.Element} Rendered textarea component.
+ * @param props.id - Textarea id.
+ * @param props.name - Textarea name.
+ * @param props.label - Optional label text.
+ * @param props.textarea - Native textarea props.
+ * @param props.className - Optional custom class.
+ * @param props.onChange - Change handler (e, isValid?, errorMessage?).
+ * @param props.onBlur - Blur handler.
+ * @param props.error - External error message.
+ * @param props.cols - Column count.
+ * @param props.rows - Row count.
+ * @param props.value - Controlled value.
+ * @param props.placeholder - Placeholder text.
+ * @param props.validation - Validation rules.
+ * @param props.showError - Force show errors.
+ * @param props - Native textarea props.
+ * @returns Rendered textarea component.
  */
 const Textarea = ({
   id,

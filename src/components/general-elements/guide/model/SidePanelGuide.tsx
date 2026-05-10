@@ -18,7 +18,7 @@ import type { GuideStep } from "../../../../types/guide.types";
  *
  * @component
  *
- * @returns {JSX.Element} Side panel guide element.
+ * @returns Side panel guide element.
  */
 const SidePanelGuide = () => {
   const guideType = "model";

@@ -80,13 +80,13 @@ type VersionFormProps = {
  *
  * @component
  *
- * @param {object} props
- * @param {object} props.versionData - User-modified model version fields.
- * @param {object} props.defaultData - Model-level default version fields.
- * @param {number} props.modelId - Model ID.
- * @param {('checkpoint' | 'lora' | string)} props.modelType - Model type.
- * @param {boolean} props.isDefault - Enables model-wide default editing mode.
- * @returns {JSX.Element} Model Version edit form.
+ * @param props
+ * @param props.versionData - User-modified model version fields.
+ * @param props.defaultData - Model-level default version fields.
+ * @param props.modelId - Model ID.
+ * @param props.modelType - Model type.
+ * @param props.isDefault - Enables model-wide default editing mode.
+ * @returns Model Version edit form.
  */
 const VersionForm = ({
   versionData,

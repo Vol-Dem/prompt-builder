@@ -41,10 +41,10 @@ interface CollectionEditProps {
  *
  * @component
  *
- * @param {Object} props
- * @param {string} props.title - Fallback page title used before collection data is loaded.
+ * @param props
+ * @param props.title - Fallback page title used before collection data is loaded.
  *
- * @returns {JSX.Element} Collection edit page.
+ * @returns Collection edit page.
  */
 const CollectionEdit = ({ title }: CollectionEditProps) => {
   const [isLoading, setIsLoading] = useState(false);

@@ -61,8 +61,8 @@ const updateModel = httpsCallable(functions, "updateModelCallDev");
 
 /**
  * Fetch model data from Civitai
- * @param {number | string} modelId - The model ID
- * @returns {object} The model data
+ * @param modelId - The model ID
+ * @returns The model data
  */
 export const getModelData = async (modelId: number) => {
   try {
@@ -95,8 +95,8 @@ export const getModelData = async (modelId: number) => {
 
 /**
  * Deletes custom user model data, preview, and saved model images
- * @param {string} uid - The user ID
- * @param {object} model - The model data
+ * @param uid - The user ID
+ * @param model - The model data
  */
 export const deleteModelDoc = async (uid: string, model: UserModelDoc) => {
   if (model?.savedImages) {
@@ -130,8 +130,8 @@ export const deleteModelDoc = async (uid: string, model: UserModelDoc) => {
 
 /**
  * Fetches model data from Civitai
- * @param {number | string} id - The model ID
- * @returns {object} The model data
+ * @param id - The model ID
+ * @returns The model data
  */
 export const fetchModelFromCivitai = async (id: number | string) => {
   const responseCiv = await fetch(`https://civitai.com/api/v1/models/${id}`);
@@ -146,8 +146,8 @@ export const fetchModelFromCivitai = async (id: number | string) => {
 
 /**
  * Fetches user custom model data and default model data
- * @param {number | string} modelId - The model ID
- * @returns {object} User custom model data with default model data
+ * @param modelId - The model ID
+ * @returns User custom model data with default model data
  */
 export const fetchModelData = async (
   modelId: number | string,
@@ -173,8 +173,8 @@ export const fetchModelData = async (
 
 /**
  * Checks for updates and fetches new model data with updated model versions
- * @param {number | string} modelId - The model ID
- * @returns {object} The updated model data
+ * @param modelId - The model ID
+ * @returns The updated model data
  */
 export const fetchModelUpdates = async (
   modelId: number | string,
@@ -193,10 +193,10 @@ export const fetchModelUpdates = async (
 
 /**
  * Updates existing custom data, creates custom data for new model versions, and updates the list of existing base models if a new one is found
- * @param {object} newModelData - The updated model data
- * @param {array} newVersions - The new model versions
- * @param {object} model - The old model data
- * @param {array} curBaseModels - The list of currently existing base models
+ * @param newModelData - The updated model data
+ * @param newVersions - The new model versions
+ * @param model - The old model data
+ * @param curBaseModels - The list of currently existing base models
  */
 export const updateUserCustomModelData = async (
   newModelData: CivitaiModelDoc,
@@ -344,11 +344,11 @@ interface ModelFormData {
 
 /**
  * Saves model data to database
- * @param  newModelData - The new model data
- * @param  categories - Existed user categories
+ * @param newModelData - The new model data
+ * @param categories - Existed user categories
  * @param curBaseModels - Existed user base models
  * @param modelData - Existed model data
- * @returns {{preview: object, baseModels: array}} The model's preview data and updated user's base models
+ * @returns The model's preview data and updated user's base models
  */
 export const saveModelData = async (
   newModelData: ModelFormData,

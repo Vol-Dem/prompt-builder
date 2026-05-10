@@ -28,9 +28,9 @@ type CarouselImageListProps = { images: ImageType[] };
  *
  * @component
  *
- * @param {object} props
- * @param {Array<object>} props.images - List of post images.
- * @returns {JSX.Element} Carousel image list.
+ * @param props
+ * @param props.images - List of post images.
+ * @returns Carousel image list.
  */
 const CarouselImageList = ({ images }: CarouselImageListProps) => {
   const activeCarouselData = useAppSelector(

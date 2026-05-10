@@ -14,7 +14,7 @@ type InfoPostIdProps = ComponentProps<"div">;
  * Content for the post ID hint.
  *
  * @component
- * @returns {JSX.Element} The post ID hint.
+ * @returns The post ID hint.
  */
 const InfoPostId = ({ className }: InfoPostIdProps) => {
   return (

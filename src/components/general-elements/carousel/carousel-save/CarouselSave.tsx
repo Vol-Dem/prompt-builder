@@ -57,17 +57,17 @@ type CarouselSaveProps = {
  *
  * @component
  *
- * @param {object} props
- * @param {Array<object>} props.images - List of post images.
- * @param {boolean} props.saved - Whether the images were loaded from the application database.
- * @param {number} props.postId - Post ID.
- * @param {object} props.curPostData - Metadata of the current post.
- * @param {({ type: string, location: string, isOpen: boolean }) => void} props.onOpenForm
+ * @param props
+ * @param props.images - List of post images.
+ * @param props.saved - Whether the images were loaded from the application database.
+ * @param props.postId - Post ID.
+ * @param props.curPostData - Metadata of the current post.
+ * @param props.onOpenForm
  *   Callback to open the appropriate save form.
- * @param {(type: string, location: string, isOpen: boolean, postData:Object) => void} props.onSave
+ * @param props.onSave
  *   Callback triggered when a single image is saved directly to the model.
  *
- * @returns {JSX.Element} Carousel save buttons.
+ * @returns Carousel save buttons.
  */
 const CarouselSave = ({
   images,

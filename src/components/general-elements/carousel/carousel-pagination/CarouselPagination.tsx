@@ -15,12 +15,12 @@ type CarouselPaginationProps = {
  *
  * @component
  *
- * @param {object} props
- * @param {Array<object>} props.images - List of post images.
- * @param {(position: number) => void} props.onClick - Callback when pagination clicked.
- * @param {number} props.visibleImgAmount - Number of images visible at the same time.
- * @param {Array<number>} props.visibleImages - Indexes of currently visible images.
- * @returns {JSX.Element} Carousel pagination.
+ * @param props
+ * @param props.images - List of post images.
+ * @param props.onClick - Callback when pagination clicked.
+ * @param props.visibleImgAmount - Number of images visible at the same time.
+ * @param props.visibleImages - Indexes of currently visible images.
+ * @returns Carousel pagination.
  */
 const CarouselPagination = ({
   images,

@@ -76,14 +76,14 @@ type SaveImageForm = {
  * - Fetches post images from the Civitai API.
  *
  * @component
- * @param {object} props
- * @param {object} [props.modelData] - Current model data (used when location is "models").
- * @param {number} [props.curVersion] - Currently selected model version ID.
- * @param {('models' | 'collections')} props.location - Target entity type for saving images.
- * @param {object} [props.collectionInfo] - Target collection data (used when location is "collections").
- * @param {Array<Object>} [props.savedPosts] - IDs of images already saved to the collection.
- * @param {object} [props.savedModelPosts] - Map of version IDs to saved image IDs for models.
- * @returns {JSX.Element} Save Image form.
+ * @param props
+ * @param props.modelData - Current model data (used when location is "models").
+ * @param props.curVersion - Currently selected model version ID.
+ * @param props.location - Target entity type for saving images.
+ * @param props.collectionInfo - Target collection data (used when location is "collections").
+ * @param props.savedPosts - IDs of images already saved to the collection.
+ * @param props.savedModelPosts - Map of version IDs to saved image IDs for models.
+ * @returns Save Image form.
  */
 const SaveImageForm = ({
   modelData,

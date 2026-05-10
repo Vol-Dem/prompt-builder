@@ -18,22 +18,22 @@ type VideoProps = ComponentProps<"video"> & { loading?: "lazy" };
  *
  * @component
  *
- * @param {Object} props
- * @param {boolean} [props.playsInline] - Indicating that the video is to be played "inline"h.
- * @param {boolean} [props.autoPlay] - Whether the video automatically begins to play when comes into view.
- * @param {boolean} [props.disablePictureInPicture] - If you want to disable the Picture-In-Picture mode.
- * @param {'none'|'metadata'|'auto'} [props.preload='none'] - What content is loaded before the video is played.
- * @param {boolean} [props.muted] - The default audio mute setting.
- * @param {string} [props.poster] - A URL for an image to be shown while the video is downloading.
- * @param {string} [props.className] - Optional class name.
- * @param {number} [props.controls] - Whether to offer controls to allow the user to control video playback.
- * @param {number} props.width - Rendered video width.
- * @param {number} props.height - Rendered video height.
- * @param {boolean} props.loop - Loop.
- * @param {'lazy'|null} [props.loading] - Whether to use lazy loading for poster.
- * @param {React.ReactNode} props.children - source element.
+ * @param props
+ * @param props.playsInline - Indicating that the video is to be played "inline"h.
+ * @param props.autoPlay - Whether the video automatically begins to play when comes into view.
+ * @param props.disablePictureInPicture - If you want to disable the Picture-In-Picture mode.
+ * @param props.preload - What content is loaded before the video is played.
+ * @param props.muted - The default audio mute setting.
+ * @param props.poster - A URL for an image to be shown while the video is downloading.
+ * @param props.className - Optional class name.
+ * @param props.controls - Whether to offer controls to allow the user to control video playback.
+ * @param props.width - Rendered video width.
+ * @param props.height - Rendered video height.
+ * @param props.loop - Loop.
+ * @param props.loading - Whether to use lazy loading for poster.
+ * @param props.children - source element.
  *
- * @returns {JSX.Element} Video element.
+ * @returns Video element.
  */
 const Video = ({
   playsInline,

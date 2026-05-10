@@ -23,7 +23,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
  * - Dispatches `switchNsfwMode` action.
  *
  * @component
- * @returns {JSX.Element} NSFW mode switch with settings dropdown.
+ * @returns NSFW mode switch with settings dropdown.
  */
 const NsfwSwitch = () => {
   const [settingsIsOpen, setSettingsIsOpen] = useState(false);

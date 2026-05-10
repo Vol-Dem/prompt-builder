@@ -61,17 +61,17 @@ type GuideMessageProps = ComponentProps<"div"> & {
  *
  * @component
  *
- * @param {object} props
- * @param {('home' | 'model' | 'edit')} props.type - Tutorial type.
- * @param {number} props.step - Current guide step index.
- * @param {boolean} props.next - Whether the "Next step" button is enabled.
- * @param {number} props.arrowPosition - Index of predefined arrow position (0–8).
- * @param {boolean} [props.autoScroll=true] - Whether the message should auto-scroll into view.
- * @param {('start' | 'center' | 'end' | 'nearest')} [props.autoScrollTo="center"] - Vertical alignment when auto-scrolling.
- * @param {string} props.className - Positioning class name.
- * @param {React.ReactNode} props.children - Guide message content.
+ * @param props
+ * @param props.type - Tutorial type.
+ * @param props.step - Current guide step index.
+ * @param props.next - Whether the "Next step" button is enabled.
+ * @param props.arrowPosition - Index of predefined arrow position (0–8).
+ * @param props.autoScroll - Whether the message should auto-scroll into view.
+ * @param props.autoScrollTo - Vertical alignment when auto-scrolling.
+ * @param props.className - Positioning class name.
+ * @param props.children - Guide message content.
  *
- * @returns {JSX.Element} Guide message element.
+ * @returns Guide message element.
  */
 const GuideMessage = ({
   type,

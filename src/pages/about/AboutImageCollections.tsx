@@ -37,7 +37,7 @@ import collectionsPrevWebm from "../../assets/about/20-collections-prev.webp";
  * Content for the About page "Image collections" section.
  *
  * @component
- * @returns {JSX.Element} The "Image collections" section content.
+ * @returns The "Image collections" section content.
  */
 const AboutImageCollections = () => {
   return (

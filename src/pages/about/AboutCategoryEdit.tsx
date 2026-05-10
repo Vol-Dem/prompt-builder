@@ -17,7 +17,7 @@ import categoryEdit2Webm from "../../assets/about/19-category-edit-2.webp";
  * Content for the About page "Category edit" section.
  *
  * @component
- * @returns {JSX.Element} The "Category edit" section content.
+ * @returns The "Category edit" section content.
  */
 const AboutCategoryEdit = () => {
   return (

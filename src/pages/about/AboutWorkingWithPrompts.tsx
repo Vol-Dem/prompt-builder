@@ -46,7 +46,7 @@ import presetWebp from "../../assets/guide/preset.webp";
  * Content for the About page "Working with Prompts" section.
  *
  * @component
- * @returns {JSX.Element} The "Working with Prompts" section content.
+ * @returns The "Working with Prompts" section content.
  */
 const AboutWorkingWithPrompts = () => {
   return (

@@ -19,11 +19,12 @@ type NotificationProps = ComponentProps<"div"> & {
 /**
  * Floating notification popup rendered via portal.
  *
- * @param {"notification"|"warning"} [type="notification"] - Notification type.
- * @param {string} [title] - Optional title.
- * @param {function} onClick - Called when user confirms.
- * @param {React.ReactNode} children - Notification message.
- * @returns {JSX.Element} Rendered notification.
+ * @param props
+ * @param props.type - Notification type.
+ * @param props.title - Optional title.
+ * @param props.onClick - Called when user confirms.
+ * @param props.children - Notification message.
+ * @returns Rendered notification.
  */
 const Notification = ({
   type = "notification",

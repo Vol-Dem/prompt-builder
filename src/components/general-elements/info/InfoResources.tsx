@@ -15,7 +15,7 @@ import TextButton from "../../ui/text/text-buttons/TextButton";
  * Content for the resources hint.
  *
  * @component
- * @returns {JSX.Element} The resources hint.
+ * @returns The resources hint.
  */
 const InfoResources = () => {
   return (

@@ -46,10 +46,10 @@ interface CollectionsProps {
  *
  * @component
  *
- * @param {object} props
- * @param {string} props.title - Page title.
+ * @param props
+ * @param props.title - Page title.
  *
- * @returns {JSX.Element} Collections page.
+ * @returns Collections page.
  */
 const Collections = ({ title }: CollectionsProps) => {
   const [isIntersecting, setIsIntersecting] = useState(false);

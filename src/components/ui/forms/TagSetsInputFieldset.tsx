@@ -30,11 +30,12 @@ type TagSetsInputFieldsetProps = {
  *
  * Allows adding, editing and removing tag name/value pairs.
  *
- * @param {Array<Array<object>>} tagSetsInputs - Current tag set fields.
- * @param {function} setTagSetsInputs - State setter for tag sets.
- * @param {boolean} showErrorMessage - Forces validation messages.
- * @param {boolean} isSaving - Disables controls while saving.
- * @returns {JSX.Element} Rendered tag sets fieldset.
+ * @param props
+ * @param props.tagSetsInputs - Current tag set fields.
+ * @param props.setTagSetsInputs - State setter for tag sets.
+ * @param props.showErrorMessage - Forces validation messages.
+ * @param props.isSaving - Disables controls while saving.
+ * @returns Rendered tag sets fieldset.
  */
 const TagSetsInputFieldset = ({
   tagSetsInputs,

@@ -12,9 +12,9 @@ type AddToPanelAnimContainerProps = HTMLMotionProps<"div">;
  *
  * Used for animated mounting/unmounting of panel content.
  *
- * @param {React.ReactNode} children - Wrapped content.
- * @param {object} props - Motion div props.
- * @returns {JSX.Element} Animated container.
+ * @param props - Motion div props.
+ * @param props.children - Wrapped content.
+ * @returns Animated container.
  */
 const AddToPanelAnimContainer = ({
   children,

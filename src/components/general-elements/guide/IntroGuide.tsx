@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
  *
  * @component
  *
- * @returns {JSX.Element} Guide intro element.
+ * @returns Guide intro element.
  */
 const IntroGuide = () => {
   const guideIsActive = useAppSelector((state) => state.guide.active);

@@ -37,7 +37,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
  * - Resets active carousel state on close.
  *
  * @component
- * @returns {JSX.Element} Active carousel popup.
+ * @returns Active carousel popup.
  */
 const ActiveCarousel = () => {
   const [activeImageNumber, setActiveImageNumber] = useState<number | null>(

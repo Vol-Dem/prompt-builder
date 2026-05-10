@@ -73,24 +73,24 @@ type CarouselImageProps = {
  *
  * @component
  *
- * @param {object} props
- * @param {string} props.id - Image ID.
- * @param {string} props.src - Base image source URL.
- * @param {string} props.alt - Image alt text.
- * @param {boolean} props.nsfw - Whether the image is marked as NSFW.
- * @param {number} props.postId - Parent post ID.
- * @param {number} props.position - Image index inside the carousel.
- * @param {boolean} props.active - Whether the carousel is currently open.
- * @param {boolean} props.saved - Whether images were loaded from the application database.
- * @param {boolean} props.side - Whether the carousel is opened from the sidebar.
- * @param {object} props.imageData - Full image metadata object.
- * @param {number} props.versionId - Model version ID associated with the image.
- * @param {number} props.imageWidth - Requested carousel image width.
- * @param {'models' | 'collections'} props.location - Firestore collection name where images belong.
- * @param {number} props.locationId - Firestore document ID of the current model or collection.
- * @param {(position: number) => void} props.onClick - Callback triggered when the image is clicked.
- * @param {() => void} props.onOpen - Callback triggered when the image is opened.
- * @param {(ids: number[], postId: number) => void} props.onDelete - Callback triggered when images are deleted.
+ * @param props
+ * @param props.id - Image ID.
+ * @param props.src - Base image source URL.
+ * @param props.alt - Image alt text.
+ * @param props.nsfw - Whether the image is marked as NSFW.
+ * @param props.postId - Parent post ID.
+ * @param props.position - Image index inside the carousel.
+ * @param props.active - Whether the carousel is currently open.
+ * @param props.saved - Whether images were loaded from the application database.
+ * @param props.side - Whether the carousel is opened from the sidebar.
+ * @param props.imageData - Full image metadata object.
+ * @param props.versionId - Model version ID associated with the image.
+ * @param props.imageWidth - Requested carousel image width.
+ * @param props.location - Firestore collection name where images belong.
+ * @param props.locationId - Firestore document ID of the current model or collection.
+ * @param props.onClick - Callback triggered when the image is clicked.
+ * @param props.onOpen - Callback triggered when the image is opened.
+ * @param props.onDelete - Callback triggered when images are deleted.
  *
  * @returns {JSX.Element} Carousel image.
  */

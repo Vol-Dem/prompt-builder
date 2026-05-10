@@ -44,7 +44,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
  * - Clears auth error/success messages on unmount.
  *
  * @component
- * @returns {JSX.Element} Authentication form.
+ * @returns Authentication form.
  */
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);

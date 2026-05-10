@@ -10,11 +10,12 @@ type FieldsetProps = HTMLMotionProps<"fieldset"> &
  * Presentational wrapper for fieldset.
  * Displays fieldset content with legend.
  *
- * @param {string} legend - Field legend.
- * @param {React.ReactNode} children - Field content.
- * @param {string} [className] - Optional custom class.
+ * @param props
+ * @param props.legend - Field legend.
+ * @param props.children - Field content.
+ * @param props.className - Optional custom class.
  *
- * @returns {JSX.Element} Fieldset.
+ * @returns Fieldset.
  */
 const Fieldset = ({ legend, className, children }: FieldsetProps) => {
   return (

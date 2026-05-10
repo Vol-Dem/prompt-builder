@@ -23,7 +23,7 @@ import addedModelsWebp from "../../assets/about/5-added-models.webp";
  * Content for the About page "Start: Adding Models" section.
  *
  * @component
- * @returns {JSX.Element} The "Start: Adding Models" section content.
+ * @returns The "Start: Adding Models" section content.
  */
 const AboutStartAddingModels = () => {
   return (

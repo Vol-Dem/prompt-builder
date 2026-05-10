@@ -17,12 +17,13 @@ type DeleteRequestProps = {
  *
  * Displays a message, error state, or loading spinner.
  *
- * @param {string} message - Confirmation message.
- * @param {function} onSubmit - Called when user confirms delete.
- * @param {function} onClose - Called when modal is closed.
- * @param {boolean} isDeleting - Indicates delete is in progress.
- * @param {string} [errorMessage] - Error message from delete request.
- * @returns {JSX.Element} Rendered delete confirmation modal.
+ * @param props
+ * @param props.message - Confirmation message.
+ * @param props.onSubmit - Called when user confirms delete.
+ * @param props.onClose - Called when modal is closed.
+ * @param props.isDeleting - Indicates delete is in progress.
+ * @param props.errorMessage - Error message from delete request.
+ * @returns Rendered delete confirmation modal.
  */
 const DeleteRequest = ({
   message,

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
  * Checks the current online status
  * @returns True if online, otherwise false
  */
-export function useOnlineStatus() {
+export function useOnlineStatus(): boolean {
   const [isOnline, setIsOnline] = useState(navigator?.onLine);
   useEffect(() => {
     function handleOnline() {

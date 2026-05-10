@@ -4,8 +4,8 @@ import { useAppSelector } from "../store/hooks/hooks";
 
 /**
  * Calculates the current guide index for a given guide type
- * @param {string} guideType - The guide type
- * @param {Array} guideSteps - The array of guide steps
+ * @param guideType - The guide type
+ * @param guideSteps - The array of guide steps
  * @returns The current guide index
  */
 const useGuideIndex = (guideType: GuideType, guideSteps: GuideStep[]) => {

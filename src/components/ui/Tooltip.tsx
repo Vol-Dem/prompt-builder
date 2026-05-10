@@ -16,11 +16,12 @@ type TooltipProps = OverrideFields<
  *
  * Calculates viewport collisions and adjusts direction.
  *
- * @param {ReactNode} children - Trigger element.
- * @param {ReactNode} content - Tooltip content.
- * @param {string} [className] - Optional custom class.
- * @param {"left"|"right"} [defSide="right"] - Preferred opening side.
- * @returns {JSX.Element} Rendered tooltip.
+ * @param props
+ * @param props.children - Trigger element.
+ * @param props.content - Tooltip content.
+ * @param props.className - Optional custom class.
+ * @param props.defSide - Preferred opening side.
+ * @returns Rendered tooltip.
  */
 const Tooltip = ({
   children,

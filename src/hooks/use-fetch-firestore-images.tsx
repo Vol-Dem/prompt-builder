@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import {
   collection,
   getDocs,
@@ -25,6 +31,15 @@ import type { Image, SavedPostDoc } from "../../shared/types/image";
 
 const firestore = getFirestore(firebaseApp);
 
+interface useFetchFirestoreImagesReturn {
+  fetchedData: Image[][];
+  fetchFirestoreData: () => Promise<void>;
+  setFetchedData: Dispatch<SetStateAction<Image[][]>>;
+  isFetching: boolean;
+  isLastPage: boolean;
+  errorMessage: string;
+}
+
 /**
  * Fetches and paginates saved Firestore images for a specific model version.
  * Applies NSFW filtering, deduplication, and client-side sorting.
@@ -35,12 +50,12 @@ const firestore = getFirestore(firebaseApp);
  * - Filters only images saved by the user
  * - Applies current NSFW visibility rules
  *
- * @param {string} curImagesModelVersionId - Firestore model version ID used to filter images.
+ * @param curImagesModelVersionId - Firestore model version ID used to filter images.
  *
  * @returns {{
- *   fetchedData: Array<Array<Object>>,
+ *   fetchedData: Image[][],
  *   fetchFirestoreData: () => Promise<void>,
- *   setFetchedData: React.Dispatch<React.SetStateAction<Array<Array<Object>>>>,
+ *   setFetchedData: React.Dispatch<SetStateAction<Image[][]>>,
  *   isFetching: boolean,
  *   isLastPage: boolean,
  *   errorMessage: string
@@ -54,7 +69,9 @@ const firestore = getFirestore(firebaseApp);
  *   isLastPage
  * } = useFetchFirestoreImages(modelVersionId);
  */
-const useFetchFirestoreImages = (curImagesModelVersionId: number) => {
+const useFetchFirestoreImages = (
+  curImagesModelVersionId: number,
+): useFetchFirestoreImagesReturn => {
   const [isFetching, setIsFetching] = useState(false);
   const [isLastPage, setIsLastPage] = useState(false);
   const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot | {}>(

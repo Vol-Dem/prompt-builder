@@ -27,7 +27,7 @@ import sidebar2Webp from "../../assets/about/18-sidebar-2.webp";
  * Content for the About page "Sidebar" section.
  *
  * @component
- * @returns {JSX.Element} The "Sidebar" section content.
+ * @returns The "Sidebar" section content.
  */
 const AboutSidebar = () => {
   return (

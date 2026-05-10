@@ -16,10 +16,10 @@ interface ToSProps {
  *
  * @component
  *
- * @param {object} props
- * @param {string} props.title - Page title.
+ * @param props
+ * @param props.title - Page title.
  *
- * @returns {JSX.Element} Terms of Service page.
+ * @returns Terms of Service page.
  */
 const ToS = ({ title }: ToSProps) => {
   useEffect(() => {

@@ -24,7 +24,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
  * - Opens and closes the authentication modal via Redux.
  *
  * @component
- * @returns {JSX.Element} Error page layout.
+ * @returns Error page layout.
  */
 const ErrorPage = () => {
   const isAuth = useAppSelector((state) => state.auth.isLoggedIn);

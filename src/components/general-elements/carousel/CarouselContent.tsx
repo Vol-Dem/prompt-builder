@@ -106,26 +106,26 @@ type CarouselImageDementions = {
  *
  * @component
  *
- * @param {object} props
- * @param {any} props.imagesData - List of post images.
- * @param {number} [props.visibleImgAmount] - Number of images visible at the same time. If omitted, calculated automatically.
- * @param {number} props.postId - Post ID.
- * @param {(ids: number[], postId: number) => void} props.onDelete - Callback triggered when images are deleted.
- * @param {number} [props.modelId] - Model ID.
- * @param {number} [props.versionId] - Model version ID.
- * @param {number} [props.existedImgsAmount] - Number of images already saved for the current model.
- * @param {boolean} props.saved - Whether the images were loaded from the application database.
- * @param {number} props.activeImgNum - Index of the currently active carousel image.
- * @param {boolean} props.active - Whether the carousel is currently open.
- * @param {(curImgIndex: number) => void} props.onActiveNumChange - Callback triggered when the active image changes.
- * @param {boolean} props.side - Whether the carousel is opened from the sidebar.
- * @param {number} props.imageHeight - Carousel image height.
- * @param {number} props.imageWidth - Carousel image width.
- * @param {'models' | 'collections'} props.location - Firestore collection name where images belong.
- * @param {number} props.locationId - Firestore document ID of the current model or collection.
- * @param {object} props.curPostData - Metadata of the current post.
+ * @param props
+ * @param props.imagesData - List of post images.
+ * @param props.visibleImgAmount - Number of images visible at the same time. If omitted, calculated automatically.
+ * @param props.postId - Post ID.
+ * @param props.onDelete - Callback triggered when images are deleted.
+ * @param props.modelId - Model ID.
+ * @param props.versionId - Model version ID.
+ * @param props.existedImgsAmount - Number of images already saved for the current model.
+ * @param props.saved - Whether the images were loaded from the application database.
+ * @param props.activeImgNum - Index of the currently active carousel image.
+ * @param props.active - Whether the carousel is currently open.
+ * @param props.onActiveNumChange - Callback triggered when the active image changes.
+ * @param props.side - Whether the carousel is opened from the sidebar.
+ * @param props.imageHeight - Carousel image height.
+ * @param props.imageWidth - Carousel image width.
+ * @param props.location - Firestore collection name where images belong.
+ * @param props.locationId - Firestore document ID of the current model or collection.
+ * @param props.curPostData - Metadata of the current post.
  *
- * @returns {JSX.Element} Carousel content.
+ * @returns Carousel content.
  */
 const CarouselContent = ({
   imagesData,

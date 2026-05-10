@@ -68,11 +68,11 @@ type CategoryInput = {
  *
  * @component
  *
- * @param {object} props
- * @param {('models' | 'collections')} props.modelType - Defines whether categories belong to models or collections.
- * @param {string | null} [props.activeCategory] - Active parent category name to operate on its subcategories.
- * @param {Array} props.categories - Categories data structure.
- * @returns {JSX.Element} Categories management form.
+ * @param props
+ * @param props.modelType - Defines whether categories belong to models or collections.
+ * @param props.activeCategory - Active parent category name to operate on its subcategories.
+ * @param props.categories - Categories data structure.
+ * @returns Categories management form.
  */
 const CategoriesForm = ({
   modelType,

@@ -64,7 +64,7 @@ import imgExamplesResources4Webp from "../../assets/about/14-img-examples-resour
  * Content for the About page "Model Page" section.
  *
  * @component
- * @returns {JSX.Element} The "Model Page" section content.
+ * @returns The "Model Page" section content.
  */
 const AboutModelPage = () => {
   return (

@@ -12,8 +12,8 @@ import {
 
 /**
  * Convert prompt to array of tags
- * @param {String} prompt - current prompt
- * @returns {Array} array of tags
+ * @param prompt - current prompt
+ * @returns array of tags
  */
 export const splitTags = (prompt: string): string[] => {
   const promptWithFixedBreak = fixBreakInPrompt(prompt);
@@ -25,8 +25,8 @@ export const splitTags = (prompt: string): string[] => {
 /**
  * Adds a duplicateId field with an ID to tags that have duplicates
  * Exceptions: "BREAK", "<BREAK>"
- * @param {Tag} tagsArr
- * @returns {Tag} array of tags with marked duplicates
+ * @param tagsArr
+ * @returns array of tags with marked duplicates
  */
 export const markDuplicateTags = (tagsArr: Tag[]): Tag[] => {
   const duplicates: Tag[] = [];
@@ -59,8 +59,8 @@ export const markDuplicateTags = (tagsArr: Tag[]): Tag[] => {
 
 /**
  * Parce tag weight from tag
- * @param {string} tag - tag
- * @returns {number} tag weight
+ * @param tag - tag
+ * @returns tag weight
  */
 export const getTagWeight = (tag: string): number => {
   let regex = /\(|<[^)|>]*\)|>/i;
@@ -85,10 +85,10 @@ export const getTagWeight = (tag: string): number => {
 
 /**
  * Create prompt item object
- * @param {string} tag - tag
- * @param {number} id  - id
- * @param {number} position - position
- * @returns {PromptItem} prompt item object
+ * @param tag - tag
+ * @param id  - id
+ * @param position - position
+ * @returns prompt item object
  */
 export const createPromptItem = (
   tag: string,
@@ -105,9 +105,9 @@ export const createPromptItem = (
 
 /**
  * Creates tagsets input data
- * @param {Array} tagSetsData - current tagset data
- * @param {Array} defTagSetData - default tagset input data
- * @returns {Array} tagsets input data
+ * @param tagSetsData - current tagset data
+ * @param defTagSetData - default tagset input data
+ * @returns tagsets input data
  */
 export const createTagSetsInputData = (
   tagSetsData: TagSet[] | undefined,
@@ -147,8 +147,8 @@ export const createTagSetsInputData = (
 
 /**
  * Adds "," after all "BREAK" in promt for proper structure
- * @param {String} prompt - prompt
- * @returns {String} promt for proper structure
+ * @param prompt - prompt
+ * @returns promt for proper structure
  */
 export const fixBreakInPrompt = (prompt: string): string => {
   const fixedPromt = prompt
@@ -160,8 +160,8 @@ export const fixBreakInPrompt = (prompt: string): string => {
 
 /**
  * Calculates and changes the position of an element to a new one.
- * @param {Object} param0 - object with {item, type, dropTargetType, prevPosition, curPromptArr}
- * @returns {Object} tag with updated position
+ * @param param0 - object with {item, type, dropTargetType, prevPosition, curPromptArr}
+ * @returns tag with updated position
  */
 export const moveElementToPosition = ({
   item,
@@ -217,9 +217,9 @@ export const moveElementToPosition = ({
 
 /**
  * Updates the tag weight
- * @param {string} newTag - Current tag
- * @param {number} newWeight - New tag weight
- * @returns {String} Tag with updated weight
+ * @param newTag - Current tag
+ * @param newWeight - New tag weight
+ * @returns Tag with updated weight
  */
 export const changeTagWeight = (newTag: string, newWeight: number): string => {
   const isActivationTag = REGEX_ACTIVATION_TAG.test(newTag);
@@ -248,10 +248,10 @@ export const changeTagWeight = (newTag: string, newWeight: number): string => {
 
 /**
  * Calculates the new position of the tag
- * @param {number} position - Current tag position
- * @param {number} dropTargetPosition - Drop target position
- * @param {boolean} dropTargetLeft - Whether to drop element on the left side
- * @returns {number | null} New tag position
+ * @param position - Current tag position
+ * @param dropTargetPosition - Drop target position
+ * @param dropTargetLeft - Whether to drop element on the left side
+ * @returns New tag position
  */
 export const getNewTagPosition = (
   position: number,

@@ -16,12 +16,12 @@ type ImageComparisonSliderProps = {
  *
  * Allows dragging to reveal left image over right image.
  * @param props
- * @param {string} props.srcLeft - Left image URL.
- * @param {string} props.srcRight - Right image URL.
- * @param {number} [props.imgWidth] - Image width.
- * @param {number} [props.imgHeight] - Image height.
- * @param {string} [props.className] - Optional custom class.
- * @returns {JSX.Element} Rendered comparison slider.
+ * @param props.srcLeft - Left image URL.
+ * @param props.srcRight - Right image URL.
+ * @param props.imgWidth - Image width.
+ * @param props.imgHeight - Image height.
+ * @param props.className - Optional custom class.
+ * @returns Rendered comparison slider.
  */
 const ImageComparisonSlider = ({
   srcLeft,

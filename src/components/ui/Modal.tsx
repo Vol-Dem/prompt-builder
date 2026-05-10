@@ -21,13 +21,13 @@ type ModalProps = ComponentProps<"div"> & {
  *
  * Disables page scroll while open.
  *
- * @param {Object} props
- * @param {string} [props.disableClass] - Optional class for modal root.
- * @param {()=>void} props.onClose - Called when backdrop or close button is clicked.
- * @param {string} [props.className] - Optional class for modal content.
- * @param {string} [props.title] - Optional modal title.
- * @param {React.ReactNode} props.children - Modal content.
- * @returns {JSX.Element} Rendered modal.
+ * @param props
+ * @param props.disableClass - Optional class for modal root.
+ * @param props.onClose - Called when backdrop or close button is clicked.
+ * @param props.className - Optional class for modal content.
+ * @param props.title - Optional modal title.
+ * @param props.children - Modal content.
+ * @returns Rendered modal.
  */
 const Modal = ({
   disableClass,

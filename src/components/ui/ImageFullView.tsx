@@ -36,16 +36,16 @@ type ImageFullViewProps = HTMLMotionProps<"img"> & {
  *
  * @component
  *
- * @param {Object} props
- * @param {string} props.src - Base image or video source URL.
- * @param {string} [props.alt] - Image alt text.
- * @param {('image' | 'video')} [props.type] - Media type.
- * @param {boolean} [props.controls] - Whether navigation controls are enabled.
- * @param {() => void} [props.nextSlide] - Callback for next media item.
- * @param {() => void} [props.prevSlide] - Callback for previous media item.
- * @param {(e: React.MouseEvent) => void} props.onClose - Callback triggered to close the viewer.
+ * @param props
+ * @param props.src - Base image or video source URL.
+ * @param props.alt - Image alt text.
+ * @param props.type - Media type.
+ * @param props.controls - Whether navigation controls are enabled.
+ * @param props.nextSlide - Callback for next media item.
+ * @param props.prevSlide - Callback for previous media item.
+ * @param props.onClose - Callback triggered to close the viewer.
  *
- * @returns {JSX.Element} Fullscreen media viewer.
+ * @returns Fullscreen media viewer.
  */
 const ImageFullView = ({
   src,

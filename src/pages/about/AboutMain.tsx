@@ -20,7 +20,7 @@ import kofiLogoDark from "../../assets/kofi_bg_tag_dark.webp";
  * Content for the About page "About" section.
  *
  * @component
- * @returns {JSX.Element} The "About" section content.
+ * @returns The "About" section content.
  */
 const AboutMain = () => {
   return (

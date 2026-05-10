@@ -41,10 +41,10 @@ interface ModelsProps {
  *
  * @component
  *
- * @param {object} props
- * @param {string} props.title - Page title.
+ * @param props
+ * @param props.title - Page title.
  *
- * @returns {JSX.Element} Models page.
+ * @returns Models page.
  */
 const Models = ({ title }: ModelsProps) => {
   const [guideIsOpen, setGuideIsOpen] = useState(true);

@@ -17,7 +17,7 @@ import type { GuideStep } from "../../../../types/guide.types";
  *
  * @component
  *
- * @returns {JSX.Element} Edit page guide element.
+ * @returns Edit page guide element.
  */
 const EditPageGuide = () => {
   const guideType = "edit";

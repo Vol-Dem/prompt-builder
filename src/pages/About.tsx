@@ -25,10 +25,10 @@ interface AboutProps {
  *
  * @component
  *
- * @param {Object} props
- * @param {string} props.title - Page title.
+ * @param props
+ * @param props.title - Page title.
  *
- * @returns {JSX.Element} About page layout.
+ * @returns About page layout.
  */
 const About = ({ title }: AboutProps) => {
   useEffect(() => {

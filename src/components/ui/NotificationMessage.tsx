@@ -13,10 +13,10 @@ type NotificationMessageProps = ComponentProps<"div"> & {
 /**
  * Inline notification message block.
  * @param props
- * @param {React.ReactNode} props.children - Message content.
- * @param {"notification"|"warning"} [props.type] - Icon style.
- * @param {string} [props.className] - Optional custom class.
- * @returns {JSX.Element} Rendered notification message.
+ * @param props.children - Message content.
+ * @param props.type - Icon style.
+ * @param props.className - Optional custom class.
+ * @returns Rendered notification message.
  */
 const NotificationMessage = ({
   children,
