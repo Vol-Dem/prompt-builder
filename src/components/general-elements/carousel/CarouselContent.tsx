@@ -59,8 +59,8 @@ export type CarouselContentProps = {
   side?: boolean;
   imageHeight?: number;
   imageWidth?: number;
-  location: ResourceFirestoreCollection;
-  locationId: number | null;
+  location?: ResourceFirestoreCollection;
+  locationId?: number | null;
   curPostData?: PostSavedData;
 };
 

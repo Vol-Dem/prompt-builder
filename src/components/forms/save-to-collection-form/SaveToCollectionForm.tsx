@@ -47,10 +47,10 @@ import type {
 import type { ResourceFirestoreCollection } from "../../../types/models.types";
 
 type SaveToCollectionFormProps = {
-  postId: number;
-  images: Image[];
-  activeImageIndex: number;
-  onSave: (
+  postId?: number;
+  images?: Image[];
+  activeImageIndex?: number;
+  onSave?: (
     location: ResourceFirestoreCollection,
     ids: number[] | null,
     collectionData: UploadingCollectionData | null,
@@ -503,16 +503,18 @@ const SaveToCollectionForm = ({
               )}
             </Button>
           </form>
-          <SuggestedCollections
-            images={images}
-            selectedCategoryId={mainCategorySelected.id}
-            selectedCollectionId={collectionNameSelected.id}
-            onSelect={selectCollectionFromSuggestedListHandler}
-          />
+          {images && (
+            <SuggestedCollections
+              images={images}
+              selectedCategoryId={mainCategorySelected.id}
+              selectedCollectionId={collectionNameSelected.id}
+              onSelect={selectCollectionFromSuggestedListHandler}
+            />
+          )}
         </div>
       )}
 
-      {chooseImageIsOpen && (
+      {chooseImageIsOpen && images && onSave && (
         <ChooseImageForm
           type="save"
           location="collections"

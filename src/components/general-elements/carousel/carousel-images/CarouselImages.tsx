@@ -20,8 +20,8 @@ type CarouselImagesProps = OverrideFields<
     active: boolean;
     side: boolean;
     imageWidth?: number;
-    location: ResourceFirestoreCollection;
-    locationId: number | null;
+    location?: ResourceFirestoreCollection;
+    locationId?: number | null;
     translate: number;
     transitionDur: number;
     onClick: (position: number | null) => void;

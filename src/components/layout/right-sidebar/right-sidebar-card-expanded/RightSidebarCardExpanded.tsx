@@ -4,8 +4,11 @@ import ActivationTag from "../../../general-elements/activation-tag/ActivationTa
 import TagList from "../../../general-elements/tag-list/TagList";
 import Arrow from "../../../ui/Arrow";
 import classes from "./RightSidebarCardExpanded.module.scss";
+import type { SidebarPreviewData } from "../../../../types/general.types";
 
 const taglistItemHeight = 68;
+
+type RightSidebarCardExpandedProps = { previewData: SidebarPreviewData };
 
 /**
  * Animated right sidebar card component.
@@ -15,17 +18,19 @@ const taglistItemHeight = 68;
  *
  * @component
  *
- * @param {object} props
- * @param {object} props.previewData - Data used to render the preview card.
+ * @param props
+ * @param props.previewData - Data used to render the preview card.
  *
- * @returns {JSX.Element} The expanded content of the right sidebar card component.
+ * @returns The expanded content of the right sidebar card component.
  */
-const RightSidebarCardExpanded = ({ previewData }) => {
+const RightSidebarCardExpanded = ({
+  previewData,
+}: RightSidebarCardExpandedProps) => {
   const [tagsIsOpen, setTagsIsOpen] = useState(false);
-  const [tagsHeight, setTagsHeight] = useState(null);
-  const [taglistHeight, setTaglistHeight] = useState(null);
-  const tagsRef = useRef();
-  const tagsListRef = useRef();
+  const [tagsHeight, setTagsHeight] = useState<number | null>(null);
+  const [taglistHeight, setTaglistHeight] = useState<number | null>(null);
+  const tagsRef = useRef<HTMLDivElement>(null);
+  const tagsListRef = useRef<HTMLDivElement>(null);
 
   const openTagsHandler = () => {
     setTagsIsOpen((prev) => {
@@ -60,11 +65,7 @@ const RightSidebarCardExpanded = ({ previewData }) => {
       )}
       {!!previewData?.mainTag && (
         <div className={classes["main-tag"]}>
-          <ActivationTag
-            tag={previewData.mainTag}
-            modelData={previewData}
-            strength={previewData.weight}
-          />
+          <ActivationTag tag={previewData.mainTag} modelData={previewData} />
         </div>
       )}
 
@@ -80,7 +81,9 @@ const RightSidebarCardExpanded = ({ previewData }) => {
               <div
                 ref={tagsRef}
                 className={`${classes["tags__list"]} ${
-                  taglistHeight > taglistItemHeight ? classes.shadow : ""
+                  taglistHeight && taglistHeight > taglistItemHeight
+                    ? classes.shadow
+                    : ""
                 }`}
               >
                 <TagList
@@ -92,8 +95,10 @@ const RightSidebarCardExpanded = ({ previewData }) => {
                 />
               </div>
             </div>
-            {taglistHeight > taglistItemHeight && (
+            {taglistHeight && taglistHeight > taglistItemHeight && (
               <button
+                type="button"
+                title={tagsIsOpen ? "Close" : "Open"}
                 className={`${classes["tags__btn"]} ${
                   !tagsIsOpen ? classes["tags__btn--shadow"] : ""
                 }`}

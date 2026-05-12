@@ -11,7 +11,7 @@ import kofiDarkLogo from "../../../../assets/kofi_bg_tag_dark.webp";
  * Right sidebar footer element.
  *
  * @component
- * @returns {JSX.Element} The right sidebar footer element
+ * @returns The right sidebar footer element
  */
 const RightSidebarFooter = () => {
   const [showSupport, setShowSupport] = useState(false);
@@ -20,7 +20,9 @@ const RightSidebarFooter = () => {
     setShowSupport((prevState) => !prevState);
   };
 
-  const closeSupportHandler = useCallback((e) => {
+  const closeSupportHandler = useCallback((e: PointerEvent) => {
+    if (!(e.target instanceof HTMLElement)) return;
+
     if (!e.target.closest(`.${classes["support__contact"]}`)) {
       setShowSupport(false);
     }
@@ -45,14 +47,13 @@ const RightSidebarFooter = () => {
         <a
           href="https://www.patreon.com/aidetools"
           target="_blank"
-          rel="noreferrer nofollow"
+          rel="noreferrer nofollow noopener"
         >
           <img
             width={520}
             height={108}
             loading="lazy"
             src={patreonWhiteLogo}
-            border="0"
             alt="Patreon"
             title="Patreon"
             className={classes["support__icon"]}
@@ -61,7 +62,7 @@ const RightSidebarFooter = () => {
         <a
           href="https://ko-fi.com/J3J31052RE"
           target="_blank"
-          rel="noreferrer nofollow"
+          rel="noreferrer nofollow noopener"
           title="Ko-Fi"
         >
           <img
@@ -69,7 +70,6 @@ const RightSidebarFooter = () => {
             height={129}
             loading="lazy"
             src={kofiDarkLogo}
-            border="0"
             alt="Ko-Fi"
             className={classes["support__icon"]}
           />
@@ -77,7 +77,7 @@ const RightSidebarFooter = () => {
         <a
           href="https://discord.gg/KXkmnZm9c"
           target="_blank"
-          rel="noreferrer nofollow"
+          rel="noreferrer nofollow noopener"
           title="Discord"
         >
           <img
@@ -85,7 +85,6 @@ const RightSidebarFooter = () => {
             height={400}
             loading="lazy"
             src={discordIcon}
-            border="0"
             alt="Discord"
             className={classes["support__icon"]}
           />
@@ -115,7 +114,7 @@ const RightSidebarFooter = () => {
               <a
                 href="https://discord.gg/ES2JbdMk"
                 target="_blank"
-                rel="noreferrer nofollow"
+                rel="noreferrer nofollow noopener"
                 title="Discord"
                 className={classes["support__discord-join"]}
               >

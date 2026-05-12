@@ -1,5 +1,4 @@
 import { Bars2Icon, Bars4Icon, TrashIcon } from "@heroicons/react/24/outline";
-import { useDispatch, useSelector } from "react-redux";
 
 import classes from "./RightSidebarHeader.module.scss";
 import SidePanelGuide from "../../../general-elements/guide/model/SidePanelGuide";
@@ -11,6 +10,7 @@ import {
   switchSidePanelfullView,
   usedModelsActions,
 } from "../../../../store/usedModels";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
 
 /**
  * Right sidebar header with panel controls.
@@ -28,11 +28,11 @@ import {
  * production UI.
  *
  * @component
- * @returns {JSX.Element} The right sidebar header with panel controls.
+ * @returns The right sidebar header with panel controls.
  */
 const RightSidebarHeader = () => {
-  const fullCardView = useSelector((state) => state.used.fullCardView);
-  const dispatch = useDispatch();
+  const fullCardView = useAppSelector((state) => state.used.fullCardView);
+  const dispatch = useAppDispatch();
 
   const clearPanelHandler = () => {
     dispatch(usedModelsActions.clearPanel());

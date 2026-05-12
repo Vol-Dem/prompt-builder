@@ -1,9 +1,11 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import { useDispatch, useSelector } from "react-redux";
-import { forwardRef } from "react";
+import { type ComponentProps } from "react";
 
 import classes from "./RightSidebarBtnOpen.module.scss";
 import { usedModelsActions } from "../../../../store/usedModels";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
+
+type RightSidebarBtnOpenProps = ComponentProps<"button">;
 
 /**
  * Displays a button to open the right sidebar.
@@ -11,11 +13,11 @@ import { usedModelsActions } from "../../../../store/usedModels";
  *
  * @component
  *
- * @returns {JSX.Element} The right sidebar open button.
+ * @returns The right sidebar open button.
  */
-const RightSidebarBtnOpen = forwardRef((props, ref) => {
-  const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
-  const dispatch = useDispatch();
+const RightSidebarBtnOpen = ({ ref }: RightSidebarBtnOpenProps) => {
+  const panelIsOpen = useAppSelector((state) => state.used.panelIsOpen);
+  const dispatch = useAppDispatch();
 
   const openPanelHandler = () => {
     dispatch(usedModelsActions.panelState(!panelIsOpen));
@@ -33,6 +35,6 @@ const RightSidebarBtnOpen = forwardRef((props, ref) => {
       {panelIsOpen && <ChevronRightIcon />}
     </button>
   );
-});
+};
 
 export default RightSidebarBtnOpen;

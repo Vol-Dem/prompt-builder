@@ -1,4 +1,10 @@
+import type { SidebarPreviewData } from "../../../../types/general.types";
 import RightSidebarCard from "./RightSidebarCard";
+
+type RightSidebarCardAnimatedProps = {
+  model: SidebarPreviewData;
+  fullView: boolean;
+};
 
 /**
  * Wrapper component used to stabilize Framer Motion shared layout animations
@@ -26,13 +32,16 @@ import RightSidebarCard from "./RightSidebarCard";
  *
  * @component
  *
- * @param {object} props
- * @param {object} props.model - Model data used to render the preview card.
- * @param {boolean} props.fullView - Whether to render the expanded card layout.
+ * @param props
+ * @param props.model - Model data used to render the preview card.
+ * @param props.fullView - Whether to render the expanded card layout.
  *
- * @returns {JSX.Element} Wrapper that renders animated and static sidebar cards.
+ * @returns Wrapper that renders animated and static sidebar cards.
  */
-const RightSidebarCardAnimated = ({ model, fullView }) => {
+const RightSidebarCardAnimated = ({
+  model,
+  fullView,
+}: RightSidebarCardAnimatedProps) => {
   return (
     <div style={{ position: "relative" }}>
       <RightSidebarCard

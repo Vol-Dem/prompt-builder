@@ -32,13 +32,13 @@ const MobileNavigation = () => {
 
   useEffect(() => {
     if (navIsOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflowY = "hidden";
     } else {
-      document.body.style.overflow = "initial";
+      document.body.style.overflowY = "scroll";
     }
 
     return () => {
-      document.body.style.overflow = "initial";
+      document.body.style.overflowY = "scroll";
     };
   }, [navIsOpen]);
 

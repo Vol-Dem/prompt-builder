@@ -1,10 +1,8 @@
-import { useDispatch, useSelector } from "react-redux";
 import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import classes from "./RightSidebar.module.scss";
 import { usedModelsActions } from "../../../store/usedModels";
-import PlusSvg from "../../../assets/PlusSvg";
 import OpenSidePanelGuide from "../../general-elements/guide/model/OpenSidePanelGuide";
 import ReferenceImageList from "./reference-image-list/ReferenceImageList";
 import RightSidebarFooter from "./right-sidebar-footer/RightSidebarFooter";
@@ -12,6 +10,8 @@ import RightSidebarHeader from "./right-sidebar-header/RightSidebarHeader";
 import RightSidebarBtnOpen from "./right-sidebar-btn-open/RightSidebarBtnOpen";
 import useTouchOpenState from "../../../hooks/use-touch-open-state";
 import RightSidebarCardAnimated from "./right-sidebar-card/RightSidebarCardAnimated";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 // Distance in pixels to change open state to true
 const slideDistanceToOpen = 10;
@@ -34,23 +34,23 @@ const defBtnOffsetWidth = 20;
  *
  * @component
  *
- * @returns {JSX.Element} The animated right sidebar component.
+ * @returns The animated right sidebar component.
  */
 const RightSidebar = memo(() => {
-  const usedModels = useSelector((state) => state.used.models);
-  const usedImages = useSelector((state) => state.used.images);
-  const panelIsOpen = useSelector((state) => state.used.panelIsOpen);
-  const fullCardView = useSelector((state) => state.used.fullCardView);
-  const sidePanelRef = useRef({ offsetWidth: 0 });
-  const openPanelBtnRef = useRef({ offsetWidth: defBtnOffsetWidth });
-  const panelContainerRef = useRef(null);
-  const dispatch = useDispatch();
+  const usedModels = useAppSelector((state) => state.used.models);
+  const usedImages = useAppSelector((state) => state.used.images);
+  const panelIsOpen = useAppSelector((state) => state.used.panelIsOpen);
+  const fullCardView = useAppSelector((state) => state.used.fullCardView);
+  const sidePanelRef = useRef<HTMLDivElement>(null);
+  const openPanelBtnRef = useRef<HTMLButtonElement>(null);
+  const panelContainerRef = useRef<HTMLDivElement>(null);
+  const dispatch = useAppDispatch();
 
   const changeSidePanelStateOnTouch = useCallback(
-    (state) => {
+    (state: boolean) => {
       dispatch(usedModelsActions.panelState(state));
     },
-    [dispatch]
+    [dispatch],
   );
 
   // Adds a touch event to the sidebar and changes the panelIsOpen state on slide.
@@ -61,15 +61,16 @@ const RightSidebar = memo(() => {
     slideDistanceToOpen,
     slideDistanceToClose,
     changeSidePanelStateOnTouch,
-    panelIsOpen
+    panelIsOpen,
   );
 
   useEffect(() => {
     if (sidePanelRef?.current && openPanelBtnRef?.current) {
+      const sidepanelWidth = sidePanelRef.current.offsetWidth || 0;
+      const openPanelBtnWidth =
+        openPanelBtnRef.current.offsetWidth || defBtnOffsetWidth;
       dispatch(
-        usedModelsActions.setSidePanelWidth(
-          sidePanelRef.current.offsetWidth + openPanelBtnRef.current.offsetWidth
-        )
+        usedModelsActions.setSidePanelWidth(sidepanelWidth + openPanelBtnWidth),
       );
     }
   }, [panelIsOpen, dispatch]);
@@ -94,9 +95,9 @@ const RightSidebar = memo(() => {
       }`}
       animate={{
         width: panelIsOpen
-          ? sidePanelRef?.current?.offsetWidth +
-            openPanelBtnRef?.current?.offsetWidth
-          : openPanelBtnRef?.current?.offsetWidth,
+          ? (sidePanelRef?.current?.offsetWidth || 0) +
+            (openPanelBtnRef?.current?.offsetWidth || defBtnOffsetWidth)
+          : openPanelBtnRef?.current?.offsetWidth || defBtnOffsetWidth,
       }}
     >
       <>
@@ -120,7 +121,7 @@ const RightSidebar = memo(() => {
               <div className={classes["model-cards__tip"]}>
                 Press{" "}
                 <span className={classes.plus}>
-                  <PlusSvg />
+                  <PlusIcon />
                 </span>{" "}
                 to add model or image to side panel
               </div>

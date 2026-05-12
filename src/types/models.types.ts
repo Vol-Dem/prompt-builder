@@ -24,15 +24,15 @@ export interface ModelSavedImagesData {
 }
 
 export interface ActiveCarousel {
-  currImgNum: number | null;
+  currImgNum?: number | null;
   existedImgsAmount?: number | null;
   images: Image[];
-  location: ResourceFirestoreCollection;
-  locationId: number | null;
-  modelId: number | null;
+  location?: ResourceFirestoreCollection;
+  locationId?: number | null;
+  modelId?: number | null;
   postId: number;
   saved: boolean;
-  versionId: number | null;
+  versionId?: number | null;
   visibleImgAmount?: number | null;
   side?: boolean;
 }

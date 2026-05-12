@@ -1,4 +1,3 @@
-import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 
 import classes from "./ReferenceImageList.module.scss";
@@ -9,35 +8,45 @@ import {
   SETTINGS_REF_IMAGE_ROW_LENGTH,
 } from "../../../../variables/constants";
 import Image from "../../../ui/image/Image";
-import CrossSvg from "../../../../assets/CrossSvg";
-import ImageSvg from "../../../../assets/ImageSvg";
 import { modelActions } from "../../../../store/model";
 import {
   removeImageFromPanel,
   usedModelsActions,
 } from "../../../../store/usedModels";
 import { clearFileExtension } from "../../../../../shared/utils";
-// import { clearFileExtension } from "../../../../utils/generalUtils";
-clearFileExtension;
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
+import { PhotoIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import type { Image as ImageType } from "../../../../../shared/types/image";
+import type { MouseEvent } from "react";
+
+type ReferenceImageListProps = {
+  usedImages: ImageType[];
+};
+
 /**
  * Displays a list of reference images with the option to open or remove them from the list.
  * Blurs nsfw images if they are not in active nsfw range
  *
  * @component
  *
- * @param {object} props
- * @param {array} props.usedImages - Array of sidebar images.
+ * @param props
+ * @param props.usedImages - Array of sidebar images.
  *
- * @returns {JSX.Element} The list of reference images.
+ * @returns The list of reference images.
  */
-const ReferenceImageList = ({ usedImages }) => {
-  const nsfwMode = useSelector((state) => state.general.nsfwMode);
-  const sfwValue = useSelector((state) => state.general.sfwValue);
-  const dispatch = useDispatch();
+const ReferenceImageList = ({ usedImages }: ReferenceImageListProps) => {
+  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const sfwValue = useAppSelector((state) => state.general.sfwValue);
+  const dispatch = useAppDispatch();
 
-  const openImageHandler = (e) => {
-    const id = e.target.closest(`.${classes["ref-images__item"]}`).dataset.id;
-    const image = usedImages.find((image) => image.id === +id);
+  const openImageHandler = (e: MouseEvent<HTMLElement>) => {
+    if (!(e.target instanceof HTMLElement)) return;
+
+    const id = (
+      e?.target?.closest(`.${classes["ref-images__item"]}`) as HTMLElement
+    )?.dataset?.id;
+
+    const image = usedImages.find((image) => id && image.id === +id);
 
     if (image) {
       dispatch(
@@ -54,7 +63,7 @@ const ReferenceImageList = ({ usedImages }) => {
     }
   };
 
-  const removeImageHandler = (hash, url) => {
+  const removeImageHandler = (hash: string, url: string) => {
     dispatch(removeImageFromPanel(hash, url));
   };
 
@@ -63,7 +72,7 @@ const ReferenceImageList = ({ usedImages }) => {
   );
 
   const imageList = numberOfRows
-    ? [...Array(numberOfRows).keys()].map((row, indexRow) => {
+    ? [...Array(numberOfRows).keys()].map((_, indexRow) => {
         return (
           <motion.ul
             layout
@@ -85,8 +94,9 @@ const ReferenceImageList = ({ usedImages }) => {
                     : true;
                 if (usedImages[i]?.hash) {
                   const uniqUrlPart =
-                    clearFileExtension(usedImages[i]?.url?.split("/").pop()) ||
-                    i;
+                    clearFileExtension(
+                      usedImages[i]?.url?.split("/").pop() || "",
+                    ) || i;
                   const key =
                     usedImages[i].type === "video"
                       ? uniqUrlPart
@@ -121,7 +131,7 @@ const ReferenceImageList = ({ usedImages }) => {
                           )
                         }
                       >
-                        <CrossSvg />
+                        <XMarkIcon />
                       </span>
                     </motion.li>
                   );
@@ -131,7 +141,7 @@ const ReferenceImageList = ({ usedImages }) => {
                       key={`s${i}`}
                       className={classes["ref-images__item--def"]}
                     >
-                      <ImageSvg />
+                      <PhotoIcon />
                     </li>
                   );
                 }

@@ -74,7 +74,7 @@ const ActiveCarousel = () => {
     };
 
     if (activeCarouselData?.images?.length) {
-      setActiveImageNumber(activeCarouselData.currImgNum);
+      setActiveImageNumber(activeCarouselData.currImgNum || null);
 
       window.addEventListener("scroll", disableScrollHandler);
     } else {
@@ -140,7 +140,7 @@ const ActiveCarousel = () => {
                     <>
                       <Carousel
                         imagesData={activeCarouselData?.images}
-                        versionId={activeCarouselData?.versionId}
+                        versionId={activeCarouselData?.versionId || null}
                         existedImgsAmount={
                           existedExample?.imagesId?.length || null
                         }

@@ -17,7 +17,7 @@ type Axis = "X" | "Y";
  * @returns Current state
  */
 const useTouchOpenState = (
-  ref: RefObject<HTMLElement>,
+  ref: RefObject<HTMLElement | null>,
   axis: Axis = "X",
   forward: boolean = true,
   thresholdOpen: number = 10,

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence } from "framer-motion";
 import { DocumentArrowDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useLocation } from "react-router-dom";
@@ -11,6 +10,7 @@ import Button from "../../../ui/buttons/Button";
 import UpdateModelForm from "../../../forms/update-model-form/UpdateModelForm";
 import SaveToCollectionForm from "../../../forms/save-to-collection-form/SaveToCollectionForm";
 import ErrorMessage from "../../../ui/ErrorMessage";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
 
 /**
  * Right sidebar form controller.
@@ -25,31 +25,24 @@ import ErrorMessage from "../../../ui/ErrorMessage";
  * The button is disabled while user data is loading.
  *
  * @component
- * @returns {JSX.Element} Right sidebar model/collection form controller.
+ * @returns Right sidebar model/collection form controller.
  */
 const RightSidebarForm = () => {
   const [resourceType, setResourceType] = useState("model");
-  const isAuth = useSelector((state) => state.auth.isLoggedIn);
-  const formIsOpen = useSelector((state) => state.used.formIsOpen);
-  const userDataIsLoading = useSelector(
+  const isAuth = useAppSelector((state) => state.auth.isLoggedIn);
+  const formIsOpen = useAppSelector((state) => state.used.formIsOpen);
+  const userDataIsLoading = useAppSelector(
     (state) => state.auth.userDataIsLoading,
   );
-  const userDataLoadError = useSelector(
+  const userDataLoadError = useAppSelector(
     (state) => state.auth.userDataLoadError,
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
-
-  const resourceTypeHandler = (e) => {
-    const type = e.target.dataset.value;
-    if (type) {
-      setResourceType(type);
-    }
-  };
 
   const openFormHandler = () => {
     if (!isAuth) {
-      dispatch(authActions.openAuthForm(true));
+      dispatch(authActions.openAuthForm());
     } else {
       setResourceType("model");
       dispatch(usedModelsActions.setFormIsOpen(!formIsOpen));
@@ -73,8 +66,7 @@ const RightSidebarForm = () => {
                   ? classes["options__type-btn--active"]
                   : ""
               }`}
-              onClick={resourceTypeHandler}
-              data-value="model"
+              onClick={() => setResourceType("model")}
             >
               Model
             </button>
@@ -84,8 +76,7 @@ const RightSidebarForm = () => {
                   ? classes["options__type-btn--active"]
                   : ""
               }`}
-              onClick={resourceTypeHandler}
-              data-value="collection"
+              onClick={() => setResourceType("collection")}
             >
               Collection
             </button>
@@ -116,10 +107,8 @@ const RightSidebarForm = () => {
       <AnimatePresence>
         {formIsOpen && isAuth && (
           <div className={classes.forms}>
-            {resourceType === "model" && <UpdateModelForm id="side-form" />}
-            {resourceType === "collection" && (
-              <SaveToCollectionForm id="side-form" />
-            )}
+            {resourceType === "model" && <UpdateModelForm />}
+            {resourceType === "collection" && <SaveToCollectionForm />}
           </div>
         )}
       </AnimatePresence>
