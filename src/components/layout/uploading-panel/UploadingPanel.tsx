@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence } from "framer-motion";
 
 import classes from "./UploadingPanel.module.scss";
@@ -9,6 +8,7 @@ import UploadingItem from "./uploading-item/UploadingItem";
 import UploadingRejected from "./uploading-rejected/UploadingRejected";
 import UploadingCompleted from "./uploading-completed/UploadingCompleted";
 import UploadingButton from "./uploading-button/UploadingButton";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Uploading panel controller.
@@ -29,12 +29,12 @@ import UploadingButton from "./uploading-button/UploadingButton";
  */
 const UploadingPanel = () => {
   const [uploadingListIsOpen, setUploadingLIstIsOpen] = useState(false);
-  const uid = useSelector((state) => state.auth.user.uid);
-  const queue = useSelector((state) => state.upload.queue);
-  const curPostId = useSelector((state) => state.upload.curPostId);
-  const dispatch = useDispatch();
+  const uid = useAppSelector((state) => state.auth.user.uid);
+  const queue = useAppSelector((state) => state.upload.queue);
+  const curPostId = useAppSelector((state) => state.upload.curPostId);
+  const dispatch = useAppDispatch();
 
-  const beforeUnloadHandler = useCallback((e) => {
+  const beforeUnloadHandler = useCallback((e: BeforeUnloadEvent) => {
     e.preventDefault();
     setUploadingLIstIsOpen(true);
 
@@ -46,19 +46,16 @@ const UploadingPanel = () => {
     setUploadingLIstIsOpen(false);
   };
 
-  const closeMenuHandler = useCallback((e) => {
+  const closeMenuHandler = useCallback((e: PointerEvent) => {
+    if (!(e.target instanceof HTMLElement)) return;
+
     if (!e.target.closest(`.${classes.uploading}`)) {
       setUploadingLIstIsOpen(false);
     }
   }, []);
 
   useEffect(() => {
-    if (
-      uid &&
-      !!queue.length &&
-      !curPostId &&
-      curPostId !== queue[0].curPostId
-    ) {
+    if (uid && !!queue.length && !curPostId && curPostId !== queue[0].postId) {
       dispatch(savePost(queue[0]));
     }
   }, [dispatch, uid, queue, curPostId]);

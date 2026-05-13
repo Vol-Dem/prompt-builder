@@ -4,18 +4,15 @@
 .form {
   min-width: 24rem;
   animation: show 0.3s ease-in forwards;
+  width: 100%;
 }
 
 .container {
   display: flex;
-  // grid-template-columns: 1fr 1fr;
-  // flex-direction: column;
   gap: 2rem;
-  // max-height: 85vh;
 }
 
 .fields {
-  //   max-height: 25rem;
   overflow-y: scroll;
   overflow-x: hidden;
   padding: 1rem 0;
@@ -68,23 +65,11 @@
 }
 
 .image {
-  // min-width: 10rem;
-  // height: 14rem;
   cursor: pointer;
   transition: all 0.3s ease;
 
-  // &__img {
-  //   min-width: 10rem;
-  //   height: 14rem;
-  // }
-
   & img {
     position: relative;
-    // min-width: 10rem;
-    // height: 14rem;
-  }
-
-  &:hover {
   }
 
   &--active {
@@ -171,24 +156,18 @@
 
 .submit {
   display: flex;
-  // position: sticky;
-  // bottom: 0;
-  // height: 3.2rem;
   justify-content: center;
   align-items: center;
   font-size: 1.6rem;
   min-height: 3.4rem;
   width: 100%;
   margin-top: 0.4rem;
-  // width: 12rem;
-  // align-self: flex-end;
 }
 
 .status {
   display: flex;
   gap: 1rem;
   align-items: center;
-  // justify-content: space-between;
 
   &__message {
     width: 100%;

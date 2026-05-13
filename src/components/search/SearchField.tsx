@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import {
+  useState,
+  type ChangeEvent,
+  type ComponentProps,
+  type SubmitEvent,
+} from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
@@ -9,6 +13,9 @@ import classes from "./SearchField.module.scss";
 import { updateSearchParams } from "../../utils/generalUtils";
 import QuickSearch from "./quick-search/QuickSearch";
 import { SETTINGS_SEARCH_MIN_QUERY_LENGTH } from "../../variables/constants";
+import { useAppDispatch, useAppSelector } from "../../store/hooks/hooks";
+
+type SearchFieldProps = ComponentProps<"div">;
 
 /**
  * Global search input displayed in the app header.
@@ -23,15 +30,15 @@ import { SETTINGS_SEARCH_MIN_QUERY_LENGTH } from "../../variables/constants";
  * @component
  * @returns {JSX.Element} Search field.
  */
-const SearchField = ({ className }) => {
+const SearchField = ({ className }: SearchFieldProps) => {
   const [searchResultIsOpen, setSearchResultIsOpen] = useState(false);
-  const searchInput = useSelector((state) => state.search.searchQuery);
+  const searchInput = useAppSelector((state) => state.search.searchQuery);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const setSearchParams = useSearchParams()[1];
 
-  const searchInputHandler = (e) => {
+  const searchInputHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const searchInputValue = e.target.value;
     setSearchResultIsOpen(true);
     dispatch(searchActions.setSearchQuery(searchInputValue));
@@ -50,7 +57,7 @@ const SearchField = ({ className }) => {
     }
   };
 
-  const submitSearchHandler = (e) => {
+  const submitSearchHandler = (e: SubmitEvent) => {
     e.preventDefault();
     dispatch(searchActions.resetSearchData());
     if (location.pathname !== "/search") {

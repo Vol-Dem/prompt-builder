@@ -1,22 +1,21 @@
-import { useDispatch, useSelector } from "react-redux";
-
 import classes from "./UploadingCompleted.module.scss";
 import UploadingItem from "../uploading-item/UploadingItem";
 import ButtonTertiary from "../../../ui/buttons/ButtonTertiary";
 import { uploadActions } from "../../../../store/upload";
 import UploadingList from "../uploading-list/UploadingList";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
 
 /**
  * Renders a list of successfully uploaded images with a button to clear the list.
  *
  * @component
  *
- * @returns {JSX.Element} The list of uploaded images.
+ * @returns The list of uploaded images.
  */
 const UploadingCompleted = () => {
-  const completed = useSelector((state) => state.upload.completed);
-  const curPostId = useSelector((state) => state.upload.curPostId);
-  const dispatch = useDispatch();
+  const completed = useAppSelector((state) => state.upload.completed);
+  const curPostId = useAppSelector((state) => state.upload.curPostId);
+  const dispatch = useAppDispatch();
 
   const completedItems = completed.map((item, i) => {
     return (

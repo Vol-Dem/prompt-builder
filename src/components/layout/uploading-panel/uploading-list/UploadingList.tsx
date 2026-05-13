@@ -1,4 +1,14 @@
+import type { ComponentProps, ReactNode } from "react";
 import classes from "./UploadingList.module.scss";
+import type { OverrideFields } from "../../../../../shared/types/general";
+
+type UploadingListProps = OverrideFields<
+  ComponentProps<"div">,
+  {
+    title: ReactNode;
+    buttons: ReactNode;
+  }
+>;
 
 /**
  * Uploading list container.
@@ -8,14 +18,14 @@ import classes from "./UploadingList.module.scss";
  *
  * @component
  *
- * @param {object} props
- * @param {string} props.title - Dropdown title displayed in the header.
- * @param {React.ReactNode} [props.buttons] - Optional control buttons rendered in the header.
- * @param {React.ReactNode} props.children - Uploading list content.
+ * @param props
+ * @param props.title - Dropdown title displayed in the header.
+ * @param props.buttons - Optional control buttons rendered in the header.
+ * @param props.children - Uploading list content.
  *
- * @returns {JSX.Element} The uploading list container element.
+ * @returns The uploading list container element.
  */
-const UploadingList = ({ children, title, buttons }) => {
+const UploadingList = ({ children, title, buttons }: UploadingListProps) => {
   return (
     <>
       <div className={classes["panel"]}>

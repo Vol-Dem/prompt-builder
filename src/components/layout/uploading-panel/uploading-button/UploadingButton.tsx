@@ -1,7 +1,9 @@
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
-import { useSelector } from "react-redux";
 
 import classes from "./UploadingButton.module.scss";
+import { useAppSelector } from "../../../../store/hooks/hooks";
+
+type UploadingButtonProps = { isOpen?: boolean; onClick: () => void };
 
 /**
  * Uploading panel toggle button.
@@ -11,16 +13,18 @@ import classes from "./UploadingButton.module.scss";
  *
  * @component
  *
- * @param {object} props
- * @param {boolean} props.isOpen - Whether the uploading list dropdown is currently open.
- * @param {() => void} props.onClick - Callback invoked to toggle the uploading list.
+ * @param props
+ * @param props.isOpen - Whether the uploading list dropdown is currently open.
+ * @param props.onClick - Callback invoked to toggle the uploading list.
  *
- * @returns {JSX.Element} The uploading panel toggle button.
+ * @returns The uploading panel toggle button.
  */
-const UploadingButton = ({ isOpen, onClick }) => {
-  const queue = useSelector((state) => state.upload.queue);
-  const rejected = useSelector((state) => state.upload.rejected);
-  const completedAmount = useSelector((state) => state.upload.completedAmount);
+const UploadingButton = ({ isOpen, onClick }: UploadingButtonProps) => {
+  const queue = useAppSelector((state) => state.upload.queue);
+  const rejected = useAppSelector((state) => state.upload.rejected);
+  const completedAmount = useAppSelector(
+    (state) => state.upload.completedAmount,
+  );
 
   return (
     <button
