@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 
 import classes from "./CategoriesSearch.module.scss";
@@ -7,6 +6,8 @@ import { useOnlineStatus } from "../../../hooks/use-online-status";
 import { subcategoriesSearch } from "../../../utils/searchUtils";
 import CategoriesSearchItem from "../categories-search-item/CategoriesSearchItem";
 import { SETTINGS_SEARCH_MIN_QUERY_LENGTH } from "../../../variables/constants";
+import { useAppSelector } from "../../../store/hooks/hooks";
+import type { CategorySearchItem } from "../../../types/search.types";
 
 /**
  * CategoriesSearch
@@ -23,15 +24,17 @@ import { SETTINGS_SEARCH_MIN_QUERY_LENGTH } from "../../../variables/constants";
  * - Clears results when offline.
  *
  * @component
- * @returns {JSX.Element} Subcategory quick search result list.
+ * @returns Subcategory quick search result list.
  */
 const CategoriesSearch = () => {
-  const [subcategoriesSearchResult, setSubcategoriesSearchResult] = useState(
-    [],
+  const [subcategoriesSearchResult, setSubcategoriesSearchResult] = useState<
+    CategorySearchItem[]
+  >([]);
+  const searchInput = useAppSelector((state) => state.search.searchQuery);
+  const categories = useAppSelector((state) => state.tabs.categoriesData);
+  const collectionCategories = useAppSelector(
+    (state) => state.images.categories,
   );
-  const searchInput = useSelector((state) => state.search.searchQuery);
-  const categories = useSelector((state) => state.tabs.categoriesData);
-  const collectionCategories = useSelector((state) => state.images.categories);
   const location = useLocation();
   const isOnline = useOnlineStatus();
 

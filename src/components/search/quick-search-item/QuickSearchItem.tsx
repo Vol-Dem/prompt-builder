@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 
 import classes from "./QuickSearchItem.module.scss";
 import {
@@ -12,6 +11,15 @@ import { searchActions } from "../../../store/search";
 import { modelActions } from "../../../store/model";
 import Image from "../../ui/image/Image";
 import ButtonSquareAdd from "../../general-elements/button-square-add/ButtonSquareAdd";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type {
+  CollectionPreviewDoc,
+  ModelPreviewDoc,
+} from "../../../../shared/types/firestore";
+
+type QuickSearchItemProps = {
+  modelPreveiw: ModelPreviewDoc | CollectionPreviewDoc;
+};
 
 /**
  * Quick search item card.
@@ -22,14 +30,22 @@ import ButtonSquareAdd from "../../general-elements/button-square-add/ButtonSqua
  *
  * @component
  *
- * @param {object} props
- * @param {object} props.modelPreveiw - Data used to render the preview card.
+ * @param props
+ * @param props.modelPreveiw - Data used to render the preview card.
  *
- * @returns {JSX.Element} The quick search item card.
+ * @returns The quick search item card.
  */
-const QuickSearchItem = ({ modelPreveiw }) => {
-  const nsfwMode = useSelector((state) => state.general.nsfwMode);
-  const dispatch = useDispatch();
+const QuickSearchItem = ({ modelPreveiw }: QuickSearchItemProps) => {
+  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const dispatch = useAppDispatch();
+
+  let imgUrl = nsfwMode
+    ? modelPreveiw.nsfwPreviewImgUrl || modelPreveiw.customPreviewImgUrl
+    : modelPreveiw.customPreviewImgUrl;
+
+  if (!imgUrl && "imgUrl" in modelPreveiw) {
+    imgUrl = modelPreveiw.imgUrl;
+  }
 
   return (
     <motion.li
@@ -48,20 +64,22 @@ const QuickSearchItem = ({ modelPreveiw }) => {
         className={classes["search__link"]}
         onClick={() => {
           dispatch(searchActions.setSearchQuery(""));
-          dispatch(searchActions.setSearchResult([]));
-          dispatch(modelActions.setActiveCarouselData({}));
+          dispatch(
+            searchActions.setSearchResult({
+              query: "",
+              result: [],
+              nsfw: false,
+              hashtag: false,
+              filter: null,
+            }),
+          );
+          dispatch(modelActions.setActiveCarouselData(null));
         }}
       >
         <>
           <Image
             className={classes["img-container"]}
-            src={
-              nsfwMode
-                ? modelPreveiw.nsfwPreviewImgUrl ||
-                  modelPreveiw.customPreviewImgUrl ||
-                  modelPreveiw.imgUrl
-                : modelPreveiw.customPreviewImgUrl || modelPreveiw.imgUrl
-            }
+            src={imgUrl}
             imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL}
           />
         </>
@@ -72,7 +90,7 @@ const QuickSearchItem = ({ modelPreveiw }) => {
                 ? "Embedding"
                 : modelPreveiw.type}
             </span>
-            {modelPreveiw.baseModel && (
+            {"baseModel" in modelPreveiw && modelPreveiw.baseModel && (
               <span className={classes.models}>{modelPreveiw.baseModel}</span>
             )}
           </div>

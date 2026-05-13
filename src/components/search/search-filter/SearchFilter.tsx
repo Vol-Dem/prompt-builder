@@ -1,5 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
@@ -8,7 +7,25 @@ import classes from "./SearchFilter.module.scss";
 import { searchActions } from "../../../store/search";
 import { MODEL_TYPES } from "../../../variables/constants";
 import { updateSearchParams } from "../../../utils/generalUtils";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
+type mMdelTypeCheckboxStatusInput = {
+  type: string;
+  id: string;
+  name: string;
+  label: string;
+  value: boolean;
+  disabled?: boolean;
+};
+
+type BaseModelCheckboxStatusInput = {
+  type: string;
+  id: string;
+  name: string;
+  label: string;
+  value: boolean;
+  disabled?: boolean;
+};
 /**
  * SearchFilter
  *
@@ -35,7 +52,7 @@ import { updateSearchParams } from "../../../utils/generalUtils";
  *
  * @component
  *
- * @returns {JSX.Element} Search filter sidebar.
+ * @returns Search filter sidebar.
  */
 const SearchFilter = () => {
   const [initial, setInitial] = useState(true);
@@ -44,8 +61,12 @@ const SearchFilter = () => {
   const [maxBaseModelsAllowed, setMaxBaseModelsAllowed] = useState(3);
   const [modelTypesChecked, setModelTypesChecked] = useState(0);
   const [baseModelsChecked, setBaseModelsChecked] = useState(0);
-  const [modelTypeCheckboxStatus, setModelTypeCheckboxStatus] = useState([]);
-  const [baseModelCheckboxStatus, setBaseModelCheckboxStatus] = useState([]);
+  const [modelTypeCheckboxStatus, setModelTypeCheckboxStatus] = useState<
+    mMdelTypeCheckboxStatusInput[]
+  >([]);
+  const [baseModelCheckboxStatus, setBaseModelCheckboxStatus] = useState<
+    BaseModelCheckboxStatusInput[]
+  >([]);
   const [hashtagCheckboxStatus, setHashtagCheckboxStatus] = useState({
     type: "checkbox",
     id: "hashtag",
@@ -53,9 +74,9 @@ const SearchFilter = () => {
     label: "#hashtag",
     value: false,
   });
-  const baseModels = useSelector((state) => state.tabs.baseModels);
-  const categories = useSelector((state) => state.tabs.categoriesData);
-  const dispatch = useDispatch();
+  const baseModels = useAppSelector((state) => state.tabs.baseModels);
+  const categories = useAppSelector((state) => state.tabs.categoriesData);
+  const dispatch = useAppDispatch();
   const searchFilter = useMemo(() => {
     const modelType = searchParams.get("modelType");
     const baseModel = searchParams.get("baseModel");
@@ -70,12 +91,12 @@ const SearchFilter = () => {
   useEffect(() => {
     if (!MODEL_TYPES || !initial) return;
     const modelTypes = Object.keys(categories)
-      .map((categoryId) => {
+      .flatMap((categoryId) => {
         const modelTypeInfo = MODEL_TYPES.find(
           (modelType) => modelType.value === categoryId,
         );
 
-        return modelTypeInfo;
+        return modelTypeInfo || [];
       })
       .sort((a, b) => a.position - b.position)
       .map((type) => {
@@ -118,6 +139,8 @@ const SearchFilter = () => {
     setHashtagCheckboxStatus((prevState) => {
       return { ...prevState, value: !!searchFilter.hashtag };
     });
+    setModelTypesChecked(searchFilter.modelType.length);
+    setBaseModelsChecked(searchFilter.baseModel.length);
     setInitial(false);
   }, [baseModels, categories, searchFilter.hashtag, searchFilter, initial]);
 
@@ -159,7 +182,7 @@ const SearchFilter = () => {
     hashtagCheckboxStatus,
   ]);
 
-  const typeChangeHandler = (e) => {
+  const typeChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setModelTypeCheckboxStatus((prevState) => {
       const newState = [...prevState];
       const curIndex = newState.findIndex((type) => type.id === e.target.id);
@@ -178,14 +201,16 @@ const SearchFilter = () => {
       );
 
       setSearchParams((prevParams) => {
-        return updateSearchParams(prevParams, { modelType: modelTypes });
+        return updateSearchParams(prevParams, {
+          modelType: modelTypes.toString(),
+        });
       });
 
       return newState;
     });
   };
 
-  const baseModelsChangeHandler = (e) => {
+  const baseModelsChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setBaseModelCheckboxStatus((prevState) => {
       const newState = [...prevState];
       const curIndex = newState.findIndex((type) => type.id === e.target.id);
@@ -207,14 +232,16 @@ const SearchFilter = () => {
       );
 
       setSearchParams((prevParams) => {
-        return updateSearchParams(prevParams, { baseModel: baseModelsData });
+        return updateSearchParams(prevParams, {
+          baseModel: baseModelsData.toString(),
+        });
       });
 
       return newState;
     });
   };
 
-  const hashtagChangeHandler = (e) => {
+  const hashtagChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setHashtagCheckboxStatus((prevState) => {
       return {
         ...prevState,
@@ -229,7 +256,7 @@ const SearchFilter = () => {
     );
 
     setSearchParams((prevParams) => {
-      return updateSearchParams(prevParams, { hashtag: e.target.checked });
+      return updateSearchParams(prevParams, { hashtag: e.target.checked + "" });
     });
   };
 
@@ -251,7 +278,7 @@ const SearchFilter = () => {
     setBaseModelsChecked(0);
     dispatch(searchActions.resetSearchFilter());
     setSearchParams((prevParams) => {
-      return { searchQuery: prevParams.get("searchQuery") };
+      return { searchQuery: prevParams.get("searchQuery") || "" };
     });
   };
 

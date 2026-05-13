@@ -1,8 +1,7 @@
-import { useSelector } from "react-redux";
-
 import QuickSearchItem from "../quick-search-item/QuickSearchItem";
 import classes from "./QuickSearchResultList.module.scss";
 import { SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE } from "../../../variables/constants";
+import { useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * QuickSearchResultList
@@ -23,10 +22,12 @@ import { SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE } from "../../../variables/consta
  * - Enables the "Show more" UX pattern.
  *
  * @component
- * @returns {JSX.Element} Quick search result list.
+ * @returns Quick search result list.
  */
 const QuickSearchResultList = () => {
-  const searchResult = useSelector((state) => state.search.quickSearchResult);
+  const searchResult = useAppSelector(
+    (state) => state.search.quickSearchResult,
+  );
 
   const searchResultHtml = searchResult?.result
     ?.slice(0, SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE)

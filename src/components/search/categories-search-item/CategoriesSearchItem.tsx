@@ -1,4 +1,3 @@
-import { useDispatch } from "react-redux";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
@@ -11,6 +10,10 @@ import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../../variables/constants";
+import { useAppDispatch } from "../../../store/hooks/hooks";
+import type { CategorySearchItem } from "../../../types/search.types";
+
+type CategoriesSearchItemProps = { result: CategorySearchItem };
 
 /**
  * CategoriesSearchItem
@@ -27,13 +30,13 @@ import {
  * - Clears the active search state after navigation.
  *
  * @component
- * @param {object} props
- * @param {object} props.result - Subcategory search result data.
+ * @param props
+ * @param props.result - Subcategory search result data.
  *
- * @returns {JSX.Element} Subcategory search item.
+ * @returns Subcategory search item.
  */
-const CategoriesSearchItem = ({ result }) => {
-  const dispatch = useDispatch();
+const CategoriesSearchItem = ({ result }: CategoriesSearchItemProps) => {
+  const dispatch = useAppDispatch();
 
   return (
     <motion.li
@@ -55,7 +58,15 @@ const CategoriesSearchItem = ({ result }) => {
             dispatch(tabActions.setCurrentCategory(result.id));
           }
           dispatch(searchActions.setSearchQuery(""));
-          dispatch(searchActions.setSearchResult([]));
+          dispatch(
+            searchActions.setSearchResult({
+              query: "",
+              result: [],
+              nsfw: false,
+              hashtag: false,
+              filter: null,
+            }),
+          );
         }}
       >
         {result.name}
@@ -74,8 +85,16 @@ const CategoriesSearchItem = ({ result }) => {
             dispatch(tabActions.setCurrentSubcategory(result.subId));
           }
           dispatch(searchActions.setSearchQuery(""));
-          dispatch(searchActions.setSearchResult([]));
-          dispatch(modelActions.setActiveCarouselData({}));
+          dispatch(
+            searchActions.setSearchResult({
+              query: "",
+              result: [],
+              nsfw: false,
+              hashtag: false,
+              filter: null,
+            }),
+          );
+          dispatch(modelActions.setActiveCarouselData(null));
         }}
       >
         {result.subName}

@@ -1,7 +1,6 @@
-import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type MouseEvent, type SubmitEvent } from "react";
 
 import {
   ANIMATIONS_FM_ZOOM_IN,
@@ -18,8 +17,14 @@ import CategoriesSearch from "../categories-search/CategoriesSearch";
 import ErrorMessage from "../../ui/ErrorMessage";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import QuickSearchResultList from "../quick-search-list/QuickSearchResultList";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 const searchTimeoutMs = 1000;
+
+type QuickSearchProps = {
+  onSubmit: (e: SubmitEvent | MouseEvent<HTMLButtonElement>) => void;
+  onOpen: (status: boolean) => void;
+};
 
 /**
  * Lightweight live-search dropdown shown outside the Search page.
@@ -40,18 +45,20 @@ const searchTimeoutMs = 1000;
  * a reliable "hasNextPage" flag).
  *
  * @component
- * @returns {JSX.Element} Live-search dropdown.
+ * @returns Live-search dropdown.
  */
-const QuickSearch = ({ onSubmit, onOpen }) => {
-  const searchIsLoading = useSelector((state) => state.search.isLoading);
-  const errorMessage = useSelector((state) => state.search.errorMessage);
-  const nsfwMode = useSelector((state) => state.general.nsfwMode);
-  const searchResult = useSelector((state) => state.search.quickSearchResult);
-  const searchInput = useSelector((state) => state.search.searchQuery);
+const QuickSearch = ({ onSubmit, onOpen }: QuickSearchProps) => {
+  const searchIsLoading = useAppSelector((state) => state.search.isLoading);
+  const errorMessage = useAppSelector((state) => state.search.errorMessage);
+  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const searchResult = useAppSelector(
+    (state) => state.search.quickSearchResult,
+  );
+  const searchInput = useAppSelector((state) => state.search.searchQuery);
   const isOnline = useOnlineStatus();
   const location = useLocation();
-  const dispatch = useDispatch();
-  const timeoutRef = useRef(null);
+  const dispatch = useAppDispatch();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   useEffect(() => {
     let curQuery = searchInput.trim();
@@ -102,6 +109,7 @@ const QuickSearch = ({ onSubmit, onOpen }) => {
     >
       <div className={classes["search__settings"]}>
         <button
+          title="Close"
           className={classes["search__btn-close"]}
           onClick={() => {
             dispatch(searchActions.setSearchQuery(""));
@@ -116,7 +124,7 @@ const QuickSearch = ({ onSubmit, onOpen }) => {
         <QuickSearchResultList />
         {searchResult.result.length > SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE && (
           <ButtonTertiary
-            type="button"
+            type="submit"
             className={classes["btn-more"]}
             onClick={onSubmit}
           >

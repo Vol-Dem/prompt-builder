@@ -2,6 +2,7 @@ import {
   useState,
   type ChangeEvent,
   type ComponentProps,
+  type MouseEvent,
   type SubmitEvent,
 } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -57,7 +58,9 @@ const SearchField = ({ className }: SearchFieldProps) => {
     }
   };
 
-  const submitSearchHandler = (e: SubmitEvent) => {
+  const submitSearchHandler = (
+    e: SubmitEvent | MouseEvent<HTMLButtonElement>,
+  ) => {
     e.preventDefault();
     dispatch(searchActions.resetSearchData());
     if (location.pathname !== "/search") {
