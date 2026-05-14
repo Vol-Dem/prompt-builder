@@ -132,6 +132,7 @@ export interface ModelPreview {
   size: number | null;
   src: string;
   modelType: string;
+  type: string;
   tags?: string[] | null;
   mainTag?: string;
   title?: string;

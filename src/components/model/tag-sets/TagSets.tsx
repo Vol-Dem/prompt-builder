@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
 
 import classes from "./TagSets.module.scss";
@@ -12,6 +11,7 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   GUIDE_STEP_MODEL_TAGSET,
   SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
+  SETTINGS_MODEL_VISIBLE_TAGSETS_AMOUNT,
 } from "../../../variables/constants";
 import { guideActions } from "../../../store/guide";
 import Modal from "../../ui/Modal";
@@ -19,8 +19,14 @@ import TagSetsForm from "../../forms/tag-sets-form/TagSetsForm";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import InfoTagsets from "../../general-elements/info/InfoTagSets";
 import NotificationMessage from "../../ui/NotificationMessage";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type { TagSet } from "../../../types/prompt.types";
+import { splitTags } from "../../../utils/promptUtils";
 
-const defVisibleTags = 2;
+type TagSetsProps = {
+  customData?: TagSet[];
+  defaultData?: TagSet[];
+};
 
 /**
  * Model tag sets component.
@@ -36,27 +42,27 @@ const defVisibleTags = 2;
  *
  * @component
  *
- * @param {object} props
- * @param {Object[]} [props.customData] - User-defined tag sets for the current version.
- * @param {Object[]} [props.defaultData] - Default tag sets shared across versions.
+ * @param props
+ * @param props.customData - User-defined tag sets for the current version.
+ * @param props.defaultData - Default tag sets shared across versions.
  *
- * @returns {JSX.Element} Model tag sets panel.
+ * @returns Model tag sets panel.
  */
-const TagSets = ({ customData, defaultData }) => {
+const TagSets = ({ customData, defaultData }: TagSetsProps) => {
   const [tagSetsIsOpen, setTagSetsIsOpen] = useState(false);
   const [tagSetsFormIsOpen, setTagSetsFormIsOpen] = useState(false);
   const [tagsetItemHeight, setTagsetItemHeight] = useState(500);
   const [tagsetListHeight, setTagsetListHeight] = useState(500);
-  const model = useSelector((state) => state.model.model);
-  const isNsfwMode = useSelector((state) => state.general.nsfwMode);
-  const guideActive = useSelector((state) => state.guide.model.active);
-  const guideStep = useSelector((state) => state.guide.model.step);
-  const tagSetItemRef = useRef();
-  const tagSetListRef = useRef();
-  const dispatch = useDispatch();
+  const model = useAppSelector((state) => state.model.model);
+  const isNsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const guideActive = useAppSelector((state) => state.guide.model.active);
+  const guideStep = useAppSelector((state) => state.guide.model.step);
+  const tagSetItemRef = useRef<HTMLLIElement>(null);
+  const tagSetListRef = useRef<HTMLUListElement>(null);
+  const dispatch = useAppDispatch();
 
   const tagSets = useMemo(() => {
-    let tagSetsData = [];
+    let tagSetsData: TagSet[] = [];
 
     const defaultDataWithDefMark = defaultData?.map((tagSet) => {
       return {
@@ -84,21 +90,18 @@ const TagSets = ({ customData, defaultData }) => {
 
   useEffect(() => {
     if (!tagSets?.length) return;
+
     const itemHeight = tagSetItemRef?.current?.offsetHeight;
     const listHeight = tagSetListRef?.current?.offsetHeight;
-    setTagsetItemHeight(itemHeight);
-    setTagsetListHeight(listHeight);
+
+    if (itemHeight) setTagsetItemHeight(itemHeight);
+    if (listHeight) setTagsetListHeight(listHeight);
   }, [
     tagSetItemRef?.current?.offsetHeight,
     tagSetListRef?.current?.offsetHeight,
     customData,
     tagSets,
   ]);
-
-  const splitTags = (arr) => {
-    const splitRegEx = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
-    return arr.split(splitRegEx).flatMap((tag) => tag.trim() || []);
-  };
 
   const tagSetsHtml = tagSets?.map((tagSet, i) => (
     <motion.li
@@ -121,7 +124,7 @@ const TagSets = ({ customData, defaultData }) => {
       {
         <TagList
           name={tagSet.name}
-          coment={tagSet?.default && "Default"}
+          coment={tagSet?.default ? "Default" : ""}
           tags={splitTags(tagSet.value)}
           promptType="positive"
           className={classes["tag-sets__tags"]}
@@ -187,7 +190,7 @@ const TagSets = ({ customData, defaultData }) => {
         <Button
           type="button"
           className={`${classes["tag-sets__btn"]} ${
-            tagSets.length <= defVisibleTags
+            tagSets.length <= SETTINGS_MODEL_VISIBLE_TAGSETS_AMOUNT
               ? classes["tag-sets__btn--hidden"]
               : ""
           }`}
@@ -198,7 +201,7 @@ const TagSets = ({ customData, defaultData }) => {
       )}
       <TagSetGuide />
       <AnimatePresence>
-        {tagSetsFormIsOpen && (
+        {tagSetsFormIsOpen && model && (
           <Modal onClose={closeTagSetsForm}>
             <TagSetsForm modelId={model.id} onClose={closeTagSetsForm} />
           </Modal>

@@ -37,7 +37,7 @@ const firestore = getFirestore(firebaseApp);
 
 type TagsFormProps = {
   versionData: ModelVersionCustomData;
-  defaultData: UserModelDefaultCustomData;
+  defaultData?: UserModelDefaultCustomData;
   modelId: number;
   onClose: () => void;
 };

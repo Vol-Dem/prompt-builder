@@ -46,7 +46,7 @@ import {
 
 export type CarouselContentProps = {
   imagesData: Image[];
-  visibleImgAmount: number;
+  visibleImgAmount?: number;
   postId: number;
   onDelete?: (ids: number[] | null, postId: number) => void;
   modelId?: number | null;
@@ -129,7 +129,7 @@ type CarouselImageDementions = {
  */
 const CarouselContent = ({
   imagesData,
-  visibleImgAmount,
+  visibleImgAmount = 0,
   postId,
   onDelete,
   modelId,

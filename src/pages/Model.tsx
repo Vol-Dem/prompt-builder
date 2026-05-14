@@ -178,10 +178,12 @@ const Model = ({ title }: ModelPageProps) => {
           {!!hashtags?.length && <Hashtags hashtags={hashtags} />}
           <div className={classes["info-container"]}>
             <ModelInfo customData={curCustomVersionData} />
-            <ModelTags
-              customData={curCustomVersionData}
-              modelPreview={modelPreview}
-            />
+            {modelPreview && curCustomVersionData && (
+              <ModelTags
+                customData={curCustomVersionData}
+                modelPreview={modelPreview}
+              />
+            )}
           </div>
           <TagSets
             customData={curCustomVersionData?.tagSetsData}

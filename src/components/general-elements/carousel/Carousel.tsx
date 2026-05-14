@@ -14,7 +14,7 @@ type CarouselProps = ComponentProps<"div"> &
     showInView?: boolean;
     imageHeight?: number;
     imageWidth?: number;
-    visibleImgAmount: number;
+    visibleImgAmount?: number;
   };
 
 /**
@@ -37,7 +37,7 @@ type CarouselProps = ComponentProps<"div"> &
  * @param props.imageWidth - Width of carousel images.
  * @param props.visibleImgAmount - Number of images visible at the same time.
  *
- * @returns {JSX.Element} Carousel wrapper element.
+ * @returns Carousel wrapper element.
  */
 const Carousel = ({
   showInView = false,

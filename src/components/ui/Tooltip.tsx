@@ -7,7 +7,7 @@ type TooltipProps = OverrideFields<
   ComponentProps<"div">,
   {
     content: string | ReactNode;
-    defSide: "right" | "left";
+    defSide?: "right" | "left";
   }
 >;
 

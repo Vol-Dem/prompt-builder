@@ -44,8 +44,8 @@ import type { TagSetInputData } from "../../../types/prompt.types";
 const firestore = getFirestore(firebaseApp);
 
 type VersionFormProps = {
-  versionData?: ModelVersionCustomData | UserModelDefaultCustomData;
-  defaultData?: UserModelDefaultCustomData | ModelVersion;
+  versionData?: ModelVersionCustomData | UserModelDefaultCustomData | null;
+  defaultData?: UserModelDefaultCustomData | ModelVersion | null;
   modelId: number;
   modelType: string;
   isDefault: boolean;

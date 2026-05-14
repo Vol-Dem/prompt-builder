@@ -1,8 +1,10 @@
-import { useSelector } from "react-redux";
-
 import classes from "./ModelInfo.module.scss";
 import LinkA from "../../ui/LinkA";
 import ResourceTypeLabel from "../../ui/text/ResourceTypeLabel";
+import type { ModelVersionCustomData } from "../../../../shared/types/model";
+import { useAppSelector } from "../../../store/hooks/hooks";
+
+type ModelInfoProps = { customData?: ModelVersionCustomData | null };
 
 /**
  * Content for the model info section.
@@ -10,12 +12,12 @@ import ResourceTypeLabel from "../../ui/text/ResourceTypeLabel";
  * Displays model information with link to Civitai.
  *
  * @component
- * @returns {JSX.Element} The model info content.
+ * @returns The model info content.
  */
-const ModelInfo = ({ customData }) => {
-  const model = useSelector((state) => state.model.model);
-  const nsfwMode = useSelector((state) => state.general.nsfwMode);
-  const curVersion = useSelector((state) => state.model.curVersion);
+const ModelInfo = ({ customData }: ModelInfoProps) => {
+  const model = useAppSelector((state) => state.model.model);
+  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const curVersion = useAppSelector((state) => state.model.curVersion);
   const viersionVAE = curVersion?.files?.find(
     (file) => file.type === "VAE",
   )?.name;
@@ -87,12 +89,6 @@ const ModelInfo = ({ customData }) => {
       {viersionVAE && (
         <div>
           <span className={classes["info__name"]}>VAE:</span> {viersionVAE}
-        </div>
-      )}
-      {model?.clipSkip && (
-        <div>
-          <span className={classes["info__name"]}>Clip Skip:</span>{" "}
-          {model?.clipSkip}
         </div>
       )}
     </div>

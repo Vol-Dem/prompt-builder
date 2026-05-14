@@ -29,7 +29,7 @@ type SearchFieldProps = ComponentProps<"div">;
  * - Clears the query when leaving the Search page.
  *
  * @component
- * @returns {JSX.Element} Search field.
+ * @returns Search field.
  */
 const SearchField = ({ className }: SearchFieldProps) => {
   const [searchResultIsOpen, setSearchResultIsOpen] = useState(false);

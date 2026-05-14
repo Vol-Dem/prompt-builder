@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 
 import NavigationPanel from "../../layout/navigation-panel/NavigationPanel";
 import { tabActions } from "../../../store/tabs";
 import classes from "./ModelNavigationPanel.module.scss";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Application inner navigation for model page.
@@ -13,26 +13,28 @@ import classes from "./ModelNavigationPanel.module.scss";
  *
  * @component
  *
- * @returns {JSX.Element} The model navigation panel element.
+ * @returns The model navigation panel element.
  */
 const ModelNavigationPanel = () => {
-  const model = useSelector((state) => state.model.model);
-  const categories = useSelector((state) => state.tabs.categoriesData);
+  const model = useAppSelector((state) => state.model.model);
+  const categories = useAppSelector((state) => state.tabs.categoriesData);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   let mainCategoryName = "Category";
 
-  if (model.id) {
-    mainCategoryName = categories[model?.modelType]?.find(
-      (category) => category.id === model?.main
+  if (model?.id) {
+    const mainCatName = categories[model?.modelType]?.find(
+      (category) => category.id === model?.main,
     )?.name;
+
+    if (mainCatName) mainCategoryName = mainCatName;
   }
 
   const subCatsHtml = model?.sub?.flatMap((sub, i) => {
     const subcategoryName = categories[model?.modelType]
       ?.find((category) => category.id === model?.main)
-      ?.subcategories.find((subcategory) => subcategory.id === sub)?.name;
+      ?.subcategories?.find((subcategory) => subcategory.id === sub)?.name;
 
     if (!subcategoryName) {
       return [];
@@ -65,8 +67,10 @@ const ModelNavigationPanel = () => {
         to="/"
         className={classes["link"]}
         onClick={() => {
-          dispatch(tabActions.setCurrentTab(model.modelType));
-          dispatch(tabActions.setCurrentCategory(model.main));
+          if (model) {
+            dispatch(tabActions.setCurrentTab(model.modelType));
+            dispatch(tabActions.setCurrentCategory(model.main));
+          }
         }}
       >
         {mainCategoryName || model?.main}

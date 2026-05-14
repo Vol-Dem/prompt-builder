@@ -1,15 +1,14 @@
-import { useSelector } from "react-redux";
-
 import classes from "./ModelVersionDescription.module.scss";
+import { useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Content for the model version description section.
  *
  * @component
- * @returns {JSX.Element} The "Version description" section content.
+ * @returns The "Version description" section content.
  */
 const ModelVersionDescription = () => {
-  const curVersion = useSelector((state) => state.model.curVersion);
+  const curVersion = useAppSelector((state) => state.model.curVersion);
 
   return (
     <>

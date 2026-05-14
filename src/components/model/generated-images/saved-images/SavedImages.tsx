@@ -1,5 +1,4 @@
 import { memo, useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 
 import classes from "./SavedImages.module.scss";
@@ -12,10 +11,15 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   SETTINGS_LOAD_MORE_MARGIN,
 } from "../../../../variables/constants";
-import ExclamationCircleSvg from "../../../../assets/ExclamationCircleSvg";
-import FolderSvg from "../../../../assets/FolderSvg";
 import useIntersection from "../../../../hooks/use-intersection";
 import useFetchFirestoreImages from "../../../../hooks/use-fetch-firestore-images";
+import { useAppSelector } from "../../../../store/hooks/hooks";
+import {
+  ExclamationCircleIcon,
+  FolderArrowDownIcon,
+} from "@heroicons/react/24/outline";
+
+type SavedImagesProps = { versionId: number };
 
 /**
  * Displays all saved images belonging to the active model version with infinite scroll support.
@@ -36,11 +40,10 @@ import useFetchFirestoreImages from "../../../../hooks/use-fetch-firestore-image
  *
  * @returns {JSX.Element} List of model images with infinite scroll behavior.
  */
-const SavedImages = memo(({ versionId }) => {
-  const model = useSelector((state) => state.model.model);
-  const savedImagesData = useSelector((state) => state.model.savedImages);
-  const curVersion = useSelector((state) => state.model.curVersion);
-  const endPageRef = useRef(null);
+const SavedImages = memo(({ versionId }: SavedImagesProps) => {
+  const model = useAppSelector((state) => state.model.model);
+  const savedImagesData = useAppSelector((state) => state.model.savedImages);
+  const endPageRef = useRef<HTMLDivElement>(null);
   const isIntersecting = useIntersection(
     endPageRef,
     false,
@@ -56,7 +59,7 @@ const SavedImages = memo(({ versionId }) => {
     errorMessage,
   } = useFetchFirestoreImages(versionId);
 
-  const deleteImageHandler = (ids, postId) => {
+  const deleteImageHandler = (ids: number[] | null, postId: number) => {
     setImageData((prevState) => {
       const updatedImages = [...prevState];
       const updatedPostIndex = updatedImages.findIndex(
@@ -107,11 +110,11 @@ const SavedImages = memo(({ versionId }) => {
         imagesData={item}
         postId={item[0].postId}
         visibleImgAmount={1}
-        modelId={model.id}
+        modelId={model?.id}
         saved={true}
         showInView={true}
         location="models"
-        locationId={model.id}
+        locationId={model?.id}
         curPostData={postData}
         onDelete={deleteImageHandler}
       />
@@ -129,11 +132,11 @@ const SavedImages = memo(({ versionId }) => {
           animate={ANIMATIONS_FM_SLIDEIN}
           className={classes["notification"]}
         >
-          <ExclamationCircleSvg className={classes["notification__svg"]} />
+          <ExclamationCircleIcon className={classes["notification__svg"]} />
           <span>No images found.</span>
           <span>
             Click{" "}
-            <FolderSvg
+            <FolderArrowDownIcon
               className={`${classes["svg"]} ${classes["svg--medium"]}`}
             />{" "}
             at the top left corner of the image or use "Add image by ID" button

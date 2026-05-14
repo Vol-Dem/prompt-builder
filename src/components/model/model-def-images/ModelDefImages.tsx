@@ -1,6 +1,5 @@
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { PhotoIcon } from "@heroicons/react/24/outline";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 
@@ -15,7 +14,9 @@ import {
 } from "../../../variables/constants";
 import { filterNsfwImages } from "../../../utils/imageUtils";
 import { getVersionImagesFromCiv } from "../../../utils/fetch/fetchImages";
-import { handleErrors } from "../../../utils/generalUtils";
+import { handleErrors, normalizeError } from "../../../utils/generalUtils";
+import { useAppSelector } from "../../../store/hooks/hooks";
+import type { Image } from "../../../../shared/types/image";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -26,19 +27,21 @@ const firestore = getFirestore(firebaseApp);
  *
  * @component
  *
- * @returns {JSX.Element} Model default images component.
+ * @returns Model default images component.
  */
 const ModelDefImages = () => {
-  const [curVersionImages, setCurVersionImages] = useState([]);
+  const [curVersionImages, setCurVersionImages] = useState<Image[]>([]);
   const [curVersionImagesIsLoading, setCurVersionImagesIsLoading] =
     useState(false);
-  const uid = useSelector((state) => state.auth.user.uid);
-  const model = useSelector((state) => state.model.model);
-  const curVersion = useSelector((state) => state.model.curVersion);
-  const nsfwLevel = useSelector((state) => state.general.nsfwLevel);
-  const guideModelIsActive = useSelector((state) => state.guide.model.active);
-  const guideIsActive = useSelector((state) => state.guide.active);
-  const guideStep = useSelector((state) => state.guide.model.step);
+  const uid = useAppSelector((state) => state.auth.user.uid);
+  const model = useAppSelector((state) => state.model.model);
+  const curVersion = useAppSelector((state) => state.model.curVersion);
+  const nsfwLevel = useAppSelector((state) => state.general.nsfwLevel);
+  const guideModelIsActive = useAppSelector(
+    (state) => state.guide.model.active,
+  );
+  const guideIsActive = useAppSelector((state) => state.guide.active);
+  const guideStep = useAppSelector((state) => state.guide.model.step);
   const filteredModelImages = filterNsfwImages(curVersionImages, nsfwLevel);
 
   //Resets curVersionImages when the current version changes
@@ -60,43 +63,45 @@ const ModelDefImages = () => {
 
         const defImagesSnap = await getDoc(modelDefImagesRef);
 
-        let curImages;
+        let curImages: Image[] | null = null;
 
         const defImagesWithoutPrompt = model?.data?.modelVersions.find(
           (version) => version?.id === curVersion?.id,
         )?.images;
 
         if (defImagesSnap.exists()) {
-          const versionImages = defImagesSnap.data()?.items;
+          const versionImages = defImagesSnap.data()?.items as Image[];
           if (!versionImages?.length) {
-            curImages = defImagesWithoutPrompt;
+            curImages = defImagesWithoutPrompt || null;
           } else {
             curImages = !SETTINGS_SHOW_ALL_DEF_IMAGES
               ? versionImages
-              : defImagesWithoutPrompt.map((image) => {
+              : defImagesWithoutPrompt?.map((image) => {
                   const imgWithPrompt = versionImages.find(
                     (imageWithPrompt) => imageWithPrompt.hash === image.hash,
                   );
 
                   return imgWithPrompt || image;
-                });
+                }) || null;
           }
         } else {
           ///LOAD DEFAULT IMAGES FROM MODEL
-          curImages = await getVersionImagesFromCiv(
-            model.id,
-            model?.data?.creator?.username,
-            curVersion,
-          );
+          if (model && model?.data?.creator?.username && curVersion) {
+            curImages = await getVersionImagesFromCiv(
+              model.id,
+              model?.data?.creator?.username,
+              curVersion,
+            );
+          }
         }
 
         if (!curImages?.length) {
-          curImages = defImagesWithoutPrompt;
+          curImages = defImagesWithoutPrompt || null;
         }
 
         if (curImages?.length) setCurVersionImages(curImages);
       } catch (err) {
-        handleErrors(err);
+        handleErrors(normalizeError(err));
       } finally {
         setCurVersionImagesIsLoading(false);
       }
@@ -127,12 +132,12 @@ const ModelDefImages = () => {
           <Carousel
             key={nsfwLevel}
             imagesData={filteredModelImages}
-            versionId={curVersion?.id}
+            versionId={curVersion?.id || null}
             saved={false}
-            modelId={model.id}
+            modelId={model?.id}
             postId={filteredModelImages[0].postId}
             location="models"
-            locationId={model.id}
+            locationId={model?.id}
           />
         )}
         {!filteredModelImages?.length && !curVersionImagesIsLoading && (

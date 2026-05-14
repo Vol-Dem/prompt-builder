@@ -18,7 +18,7 @@ export interface SidebarPreviewData {
   activeVersionId?: number | null;
   type: string;
   title?: string;
-  versionName?: string;
+  versionName?: string | null;
   imgUrl?: string;
   imgUrlNsfw?: string;
   mainTag?: string;

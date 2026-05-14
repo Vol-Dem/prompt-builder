@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 
 import classes from "./ModelDescription.module.scss";
+import { useAppSelector } from "../../../store/hooks/hooks";
 
 const minDescriptionHeight = 300;
 
@@ -16,20 +16,21 @@ const minDescriptionHeight = 300;
  * - The HTML content is assumed to be sanitized or trusted at the data source level.
  *
  * @component
- * @returns {JSX.Element} Model description content.
+ * @returns Model description content.
  */
 const ModelDescription = () => {
-  const [descHeight, setDescHeight] = useState(null);
+  const [descHeight, setDescHeight] = useState<number | null>(null);
   const [descriptionIsOpen, setDescriptionIsOpen] = useState(false);
-  const model = useSelector((state) => state.model.model);
-  const descriptionRef = useRef();
+  const model = useAppSelector((state) => state.model.model);
+  const descriptionRef = useRef<HTMLDivElement>(null);
 
   const openDescriptionHandler = () => {
     setDescriptionIsOpen((prevState) => !prevState);
   };
 
   useEffect(() => {
-    setDescHeight(descriptionRef?.current?.offsetHeight);
+    if (descriptionRef?.current)
+      setDescHeight(descriptionRef.current.offsetHeight);
   }, [descriptionRef?.current?.offsetHeight]);
 
   return (
@@ -38,25 +39,34 @@ const ModelDescription = () => {
         className={`${classes.description} ${
           descriptionIsOpen ? classes["description--open"] : ""
         } ${
-          descHeight > minDescriptionHeight && !descriptionIsOpen && descHeight
+          descHeight &&
+          descHeight > minDescriptionHeight &&
+          !descriptionIsOpen &&
+          descHeight
             ? classes["description--hidden"]
             : ""
         }`}
         style={{
           maxHeight: `${
-            descriptionIsOpen ? descHeight + 100 : minDescriptionHeight
+            descriptionIsOpen && descHeight
+              ? descHeight + 100
+              : minDescriptionHeight
           }px`,
         }}
       >
-        <div
-          ref={descriptionRef}
-          dangerouslySetInnerHTML={{
-            __html:
-              model?.defaultCustomData?.description || model?.data?.description,
-          }}
-        />
+        {model?.defaultCustomData?.description ||
+          (model?.data?.description && (
+            <div
+              ref={descriptionRef}
+              dangerouslySetInnerHTML={{
+                __html:
+                  model?.defaultCustomData?.description ||
+                  model?.data?.description,
+              }}
+            />
+          ))}
       </div>
-      {descHeight > minDescriptionHeight && (
+      {descHeight && descHeight > minDescriptionHeight && (
         <span
           className={classes["description__btn-show"]}
           onClick={openDescriptionHandler}

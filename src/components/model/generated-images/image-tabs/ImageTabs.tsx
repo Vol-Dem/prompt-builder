@@ -1,17 +1,22 @@
 import classes from "./ImageTabs.module.scss";
 
+type ImageTabsProps = {
+  curTab: string;
+  onClick: (tab: "saved" | "all") => void;
+};
+
 /**
  * Displays buttons that allow to change current tab
  *
  * @component
  *
- * @param {object} props
- * @param {number} props.curTab - Current tab.
- * @param {(tab: ('saved' | 'all'))=>} props.onClick - Callback when tab clicked.
+ * @param props
+ * @param props.curTab - Current tab.
+ * @param props.onClick - Callback when tab clicked.
  *
- * @returns {JSX.Element} Image tabs component.
+ * @returns Image tabs component.
  */
-const ImageTabs = ({ curTab, onClick }) => {
+const ImageTabs = ({ curTab, onClick }: ImageTabsProps) => {
   return (
     <div className={classes["mode-switch"]}>
       <span

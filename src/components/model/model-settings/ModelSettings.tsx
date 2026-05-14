@@ -1,5 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUturnLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
@@ -19,6 +18,7 @@ import {
   ERROR_MESSAGE_OFFLINE,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   ANIMATIONS_FM_SLIDEIN,
+  ERROR_MESSAGE_INVALID_DATA,
 } from "../../../variables/constants";
 import { modelActions } from "../../../store/model";
 import { tabActions } from "../../../store/tabs";
@@ -31,7 +31,12 @@ import {
   fetchModelUpdates,
   updateUserCustomModelData,
 } from "../../../utils/fetch/fetchModel";
-import { handleErrors } from "../../../utils/generalUtils";
+import {
+  AppError,
+  handleErrors,
+  normalizeError,
+} from "../../../utils/generalUtils";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Model settings.
@@ -68,13 +73,13 @@ const ModelSettings = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, seteSuccessMessage] = useState("");
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
-  const model = useSelector((state) => state.model.model);
-  const uid = useSelector((state) => state.auth.user.uid);
-  const curBaseModels = useSelector((state) => state.tabs.baseModels);
-  const guideHomeState = useSelector((state) => state.guide.edit);
-  const guideIsActive = useSelector((state) => state.guide.active);
+  const model = useAppSelector((state) => state.model.model);
+  const uid = useAppSelector((state) => state.auth.user.uid);
+  const curBaseModels = useAppSelector((state) => state.tabs.baseModels);
+  const guideHomeState = useAppSelector((state) => state.guide.edit);
+  const guideIsActive = useAppSelector((state) => state.guide.active);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const DEFAULT_VERSION_ID = "def-ver";
 
@@ -98,7 +103,9 @@ const ModelSettings = () => {
     }
   }
 
-  const switchTabHandler = (e) => {
+  const switchTabHandler = (e: MouseEvent<HTMLElement>) => {
+    if (!(e.target instanceof HTMLElement)) return;
+
     setCurTab(e.target.id);
     setMobileMenuIsOpen(false);
   };
@@ -110,10 +117,19 @@ const ModelSettings = () => {
       seteSuccessMessage("");
 
       if (!navigator.onLine) {
-        throw new Error(ERROR_MESSAGE_OFFLINE);
+        throw new AppError(ERROR_MESSAGE_OFFLINE);
+      }
+
+      if (!model) {
+        throw new AppError(ERROR_MESSAGE_INVALID_DATA);
       }
 
       const newModelData = await fetchModelUpdates(model.id);
+
+      if (!newModelData) {
+        throw new AppError(ERROR_MESSAGE_INVALID_DATA);
+      }
+
       const newVersions = filterNewModelVersions(newModelData, model);
 
       if (!newVersions?.length) {
@@ -137,7 +153,8 @@ const ModelSettings = () => {
       seteSuccessMessage("Updated");
       setIsLoading(false);
     } catch (err) {
-      setErrorMessage(handleErrors(err));
+      const errorMessage = handleErrors(normalizeError(err));
+      setErrorMessage(errorMessage);
       setIsLoading(false);
     }
   };
@@ -153,22 +170,33 @@ const ModelSettings = () => {
   const deleteModelHandler = async () => {
     try {
       setIsDeleting(true);
+
+      if (!model) {
+        throw new AppError(ERROR_MESSAGE_DEFAULT);
+      }
+
       await deleteModelDoc(uid, model);
-      setIsDeleting(false);
       dispatch(modelActions.resetModelData());
       dispatch(tabActions.resetModelsData());
       dispatch(tabActions.resetActiveTabs());
       navigate("/");
     } catch (err) {
-      console.error(err.message);
-      setErrorMessage(ERROR_MESSAGE_DEFAULT);
+      const errorMessage = handleErrors(normalizeError(err));
+      setErrorMessage(errorMessage);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   const modelVersionsHtml =
     model?.id &&
     Object.values(model?.modelVersionsCustomData)
-      ?.sort((a, b) => a?.index - b?.index)
+      ?.sort((a, b) => {
+        if (a?.index && b?.index) {
+          return a?.index - b?.index;
+        }
+        return 0;
+      })
       .flatMap((version, i) => {
         if (!version.downloadStatus) {
           return [];
@@ -179,7 +207,7 @@ const ModelSettings = () => {
             initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
             animate={ANIMATIONS_FM_SLIDEIN}
             exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
-            id={version.versionId}
+            id={version.versionId + ""}
             data-version={i}
             onClick={switchTabHandler}
             className={`${classes["menu-item"]} ${
@@ -202,7 +230,7 @@ const ModelSettings = () => {
   };
 
   const backHandler = () => {
-    navigate(`/models/${model.id}`);
+    if (model) navigate(`/models/${model.id}`);
   };
 
   return (
@@ -312,7 +340,7 @@ const ModelSettings = () => {
             {guideIsActive && guideHomeState?.active && <EditPageGuide />}
           </motion.div>
         )}
-        {curTab === "versions" && (
+        {curTab === "versions" && model && (
           <motion.div
             initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
             animate={ANIMATIONS_FM_SLIDEIN}
@@ -321,7 +349,7 @@ const ModelSettings = () => {
             <VersionStatusForm modelData={model} />
           </motion.div>
         )}
-        {(curVersionData || curTab === DEFAULT_VERSION_ID) && (
+        {(curVersionData || curTab === DEFAULT_VERSION_ID) && model && (
           <motion.div
             key={curTab}
             initial={ANIMATIONS_FM_SLIDEIN_INITIAL}

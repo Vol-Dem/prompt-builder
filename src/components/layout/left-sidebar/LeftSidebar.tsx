@@ -15,7 +15,7 @@ type LeftSidebar = ComponentProps<"div"> & {
   isOpen: boolean;
   onClose: (url?: string) => void;
   onOpen: () => void;
-  btnContent: ReactNode;
+  btnContent?: ReactNode;
 };
 
 /**

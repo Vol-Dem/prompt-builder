@@ -1,4 +1,4 @@
-import { useEffect, type ComponentProps } from "react";
+import { useEffect, type ComponentProps, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -9,12 +9,16 @@ import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
 } from "../../variables/constants";
+import type { OverrideFields } from "../../../shared/types/general";
 
-type ModalProps = ComponentProps<"div"> & {
-  disableClass?: string;
-  title?: string;
-  onClose: () => void;
-};
+type ModalProps = OverrideFields<
+  ComponentProps<"div">,
+  {
+    disableClass?: string;
+    title?: ReactNode;
+    onClose: () => void;
+  }
+>;
 
 /**
  * Portal-based modal with animated backdrop and content.

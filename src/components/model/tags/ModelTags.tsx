@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import { AnimatePresence } from "framer-motion";
 
 import classes from "./ModelTags.module.scss";
@@ -7,12 +6,22 @@ import TagList from "../../general-elements/tag-list/TagList";
 import ActivationTag from "../../general-elements/activation-tag/ActivationTag";
 import Modal from "../../ui/Modal";
 import TagsForm from "../../forms/tags-form/TagsForm";
-import EditSvg from "../../../assets/EditSvg";
 import Tooltip from "../../ui/Tooltip";
 import ModelTagsGuide from "../../general-elements/guide/model/ModelTagsGuide";
-import ExclamationCircleSvg from "../../../assets/ExclamationCircleSvg";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import InfoQuickEdit from "../../general-elements/info/InfoQuickEdit";
+import { useAppSelector } from "../../../store/hooks/hooks";
+import {
+  ExclamationCircleIcon,
+  PencilSquareIcon,
+} from "@heroicons/react/24/outline";
+import type { ModelVersionCustomData } from "../../../../shared/types/model";
+import type { ModelPreview } from "../../../../shared/types/firestore";
+
+type ModelTagsProps = {
+  customData: ModelVersionCustomData;
+  modelPreview: ModelPreview;
+};
 
 /**
  * Model tags panel.
@@ -29,16 +38,16 @@ import InfoQuickEdit from "../../general-elements/info/InfoQuickEdit";
  *
  * @component
  *
- * @param {Object} props
- * @param {Object | null} props.customData - User-specific model data.
- * @param {Object | null} props.modelPreview - Default model preview data.
+ * @param props
+ * @param props.customData - User-specific model data.
+ * @param props.modelPreview - Default model preview data.
  *
- * @returns {JSX.Element} Model tags panel.
+ * @returns Model tags panel.
  */
-const ModelTags = ({ customData, modelPreview }) => {
+const ModelTags = ({ customData, modelPreview }: ModelTagsProps) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const model = useSelector((state) => state.model.model);
-  const curVersion = useSelector((state) => state.model.curVersion);
+  const model = useAppSelector((state) => state.model.model);
+  const curVersion = useAppSelector((state) => state.model.curVersion);
 
   const openEditHandler = () => {
     setModalIsOpen(true);
@@ -47,6 +56,9 @@ const ModelTags = ({ customData, modelPreview }) => {
   const closeTagsFormHabdler = () => {
     setModalIsOpen(false);
   };
+
+  const activationTag =
+    customData?.mainTag || model?.mainTag || customData?.defActTag;
 
   return (
     <>
@@ -60,17 +72,15 @@ const ModelTags = ({ customData, modelPreview }) => {
               <div className={classes["activation-tag"]}>
                 <div className={classes["tags__subtitle"]}>Activation tag:</div>
                 <div className={classes["activation-tag__container"]}>
-                  <ActivationTag
-                    tag={
-                      customData?.mainTag ||
-                      model?.mainTag ||
-                      customData?.defActTag
-                    }
-                    modelData={modelPreview}
-                    strength={
-                      customData?.weight || model.defaultCustomData?.weight
-                    }
-                  />
+                  {activationTag && (
+                    <ActivationTag
+                      tag={activationTag}
+                      modelData={modelPreview}
+                      // strength={
+                      //   customData?.weight || model.defaultCustomData?.weight
+                      // }
+                    />
+                  )}
                   {(!customData?.mainTag ||
                     !model?.mainTag ||
                     customData?.defActTag) && (
@@ -90,7 +100,7 @@ const ModelTags = ({ customData, modelPreview }) => {
                       }
                     >
                       <div className={classes.tooltip}>
-                        <ExclamationCircleSvg />
+                        <ExclamationCircleIcon />
                       </div>
                     </Tooltip>
                   )}
@@ -103,7 +113,7 @@ const ModelTags = ({ customData, modelPreview }) => {
               onClick={openEditHandler}
             >
               <span className={classes["tags__btn-edit-name"]}>Edit...</span>
-              <EditSvg />
+              <PencilSquareIcon />
             </button>
           </div>
           {(!!curVersion?.trainedWords?.length ||
@@ -114,7 +124,7 @@ const ModelTags = ({ customData, modelPreview }) => {
                 tags={
                   customData?.trainedWords?.length
                     ? customData?.trainedWords
-                    : curVersion?.trainedWords
+                    : curVersion?.trainedWords || []
                 }
                 promptType="positive"
                 className={classes["tags__field"]}
@@ -127,14 +137,14 @@ const ModelTags = ({ customData, modelPreview }) => {
               <TagList
                 name="Helper words"
                 coment={
-                  !customData?.helperTags &&
-                  model?.defaultCustomData.helperTags &&
-                  "Default"
+                  !customData?.helperTags && model?.defaultCustomData.helperTags
+                    ? "Default"
+                    : ""
                 }
                 tags={
                   customData?.helperTags?.length
                     ? customData?.helperTags
-                    : model?.defaultCustomData?.helperTags
+                    : model?.defaultCustomData?.helperTags || []
                 }
                 promptType="positive"
                 className={classes["tags__field"]}
@@ -148,13 +158,14 @@ const ModelTags = ({ customData, modelPreview }) => {
                 name="Negative words"
                 coment={
                   !customData?.negativeTags &&
-                  model?.defaultCustomData.negativeTags &&
-                  "Default"
+                  model?.defaultCustomData.negativeTags
+                    ? "Default"
+                    : ""
                 }
                 tags={
                   customData?.negativeTags?.length
                     ? customData?.negativeTags
-                    : model?.defaultCustomData?.negativeTags
+                    : model?.defaultCustomData?.negativeTags || []
                 }
                 promptType="negative"
                 className={classes["tags__field"]}
@@ -163,7 +174,7 @@ const ModelTags = ({ customData, modelPreview }) => {
           )}
         </div>
         <AnimatePresence>
-          {modalIsOpen && (
+          {modalIsOpen && model && (
             <Modal
               title={
                 <>

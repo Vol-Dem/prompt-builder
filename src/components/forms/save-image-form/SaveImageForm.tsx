@@ -44,8 +44,8 @@ import type { UploadingCollectionData } from "../../../types/upload.types";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 
 type SaveImageForm = {
-  modelData?: ModelData;
-  curVersion?: number;
+  modelData?: ModelData | null;
+  curVersion?: number | null;
   location: ResourceFirestoreCollection;
   collectionInfo?: CollectionData;
   savedPosts?: CollectionSavedPost[];

@@ -1,5 +1,4 @@
-import { memo, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { memo, useEffect, useState, type MouseEvent } from "react";
 import { AnimatePresence } from "framer-motion";
 
 import classes from "./GeneratedImages.module.scss";
@@ -19,6 +18,7 @@ import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import InfoGeneratedImages from "../../general-elements/info/InfoGeneratedImages";
 import ModelVersionsList from "../model-versions-list/ModelVersionsList";
 import ImageTabs from "./image-tabs/ImageTabs";
+import { useAppSelector } from "../../../store/hooks/hooks";
 
 const imageSortValue = "Newest";
 /**
@@ -39,27 +39,30 @@ const imageSortValue = "Newest";
  */
 const GeneratedImages = memo(() => {
   const [curTab, setCurTab] = useState("all");
-  const [curVersionId, setCurVersionId] = useState(null);
+  const [curVersionId, setCurVersionId] = useState<number | null>(null);
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
-  const curVersion = useSelector((state) => state.model.curVersion);
-  const model = useSelector((state) => state.model.model);
-  const savedImagesData = useSelector((state) => state.model.savedImages);
+  const curVersion = useAppSelector((state) => state.model.curVersion);
+  const model = useAppSelector((state) => state.model.model);
+  const savedImagesData = useAppSelector((state) => state.model.savedImages);
   const savedImages =
     model?.id && model.id === savedImagesData?.modelId
       ? savedImagesData.data
       : null;
-  const guideIsActive = useSelector((state) => state.guide.active);
-  const guideStep = useSelector((state) => state.guide.model.step);
+  const guideIsActive = useAppSelector((state) => state.guide.active);
+  const guideStep = useAppSelector((state) => state.guide.model.step);
   const isOnline = useOnlineStatus();
 
   let versionsCustomData =
     model?.modelVersionsCustomData &&
-    Object.values(model?.modelVersionsCustomData)?.sort(
-      (a, b) => a?.index - b?.index,
-    );
+    Object.values(model?.modelVersionsCustomData)?.sort((a, b) => {
+      if (a?.index !== undefined && b?.index !== undefined) {
+        return a.index - b.index;
+      }
+      return 0;
+    });
 
   if (curTab === "saved") {
-    versionsCustomData = versionsCustomData.filter((version) => {
+    versionsCustomData = versionsCustomData?.filter((version) => {
       const isSaved =
         savedImages &&
         Object.keys(savedImages).includes(`${version.versionId}`);
@@ -71,24 +74,33 @@ const GeneratedImages = memo(() => {
     if (curVersion?.id) setCurVersionId(curVersion.id);
   }, [curVersion]);
 
-  const openVersionHandler = (e) => {
+  const openVersionHandler = (e: MouseEvent<HTMLElement>) => {
+    if (!(e.target instanceof HTMLElement)) return;
     if (+e.target.id === curVersionId) return;
+
     setCurVersionId(+e.target.id);
   };
 
-  const switchCurTab = (tab) => {
+  const switchCurTab = (tab: string) => {
     if (curTab === tab) return;
     setCurTab(tab);
     if (
       tab !== "all" &&
       savedImages &&
+      curVersionId &&
       !Object.hasOwn(savedImages, curVersionId)
     ) {
-      const latesVersionId = Object.values(model.modelVersionsCustomData)
-        .sort((a, b) => a?.index - b?.index)
-        .find((version) =>
-          Object.hasOwn(savedImages, version.versionId),
-        )?.versionId;
+      const latesVersionId =
+        model &&
+        Object.values(model.modelVersionsCustomData)
+          .sort((a, b) => {
+            if (a?.index !== undefined && b?.index !== undefined) {
+              return a.index - b.index;
+            }
+            return 0;
+          })
+          .find((version) => Object.hasOwn(savedImages, version.versionId))
+          ?.versionId;
       if (latesVersionId) {
         setCurVersionId(latesVersionId);
       }
@@ -110,12 +122,14 @@ const GeneratedImages = memo(() => {
           <InfoGeneratedImages />
         </ButtonInfo>
       </div>
-      <ModelVersionsList
-        onClick={openVersionHandler}
-        itemComponent="span"
-        versionsCustomData={versionsCustomData}
-        curVersionId={curVersionId}
-      />
+      {versionsCustomData && (
+        <ModelVersionsList
+          onClick={openVersionHandler}
+          itemComponent="span"
+          versionsCustomData={versionsCustomData}
+          curVersionId={curVersionId}
+        />
+      )}
       <div
         className={`${classes["images-container"]} ${
           guideIsActive && guideStep === GUIDE_STEP_GENERATED_IMAGES
@@ -125,14 +139,16 @@ const GeneratedImages = memo(() => {
       >
         <GeneratedImagesGuide />
         <div className={classes.images}>
-          {curTab === "all" && (
+          {curTab === "all" && model && curVersionId && (
             <ExternalImages
               modelId={model.id}
               versionId={curVersionId}
               sortBy={imageSortValue}
             />
           )}
-          {curTab === "saved" && <SavedImages versionId={curVersionId} />}
+          {curTab === "saved" && curVersionId && (
+            <SavedImages versionId={curVersionId} />
+          )}
         </div>
       </div>
       {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
@@ -148,7 +164,7 @@ const GeneratedImages = memo(() => {
               modelData={model}
               curVersion={curVersionId}
               location="models"
-              savedModelPosts={savedImagesData.data}
+              savedModelPosts={savedImagesData?.data}
             />
           </Modal>
         )}
