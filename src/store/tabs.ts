@@ -15,12 +15,17 @@ import {
 } from "firebase/firestore";
 
 import firebaseApp from "../firebase-config";
-import { handleErrors, normalizeError } from "../utils/generalUtils";
+import {
+  cloneObject,
+  handleErrors,
+  normalizeError,
+} from "../utils/generalUtils";
 import type { ModelCategories } from "../../shared/types/user";
 import type { ModelPreviewDoc } from "../../shared/types/firestore";
 import type { AppThunk } from "./store";
 import type { TabsModelsData, TabsState } from "../types/tabs.types";
 import { SETTINGS_MODEL_PREVIEW_PER_PAGE } from "../variables/constants";
+import { TABS_INITIAL_MODELS_DATA } from "../variables/structures";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -55,13 +60,7 @@ const tabsSlice = createSlice({
     currSubcategory: "",
     categoriesData: {},
     errorMessage: "",
-    modelsData: {
-      tab: "",
-      category: "",
-      subcategory: "",
-      nsfw: false,
-      previews: [],
-    },
+    modelsData: cloneObject(TABS_INITIAL_MODELS_DATA),
     previewFullView: false,
     baseModels: [],
     sortBy: "createdAt",
@@ -76,13 +75,7 @@ const tabsSlice = createSlice({
     setCurrentTab(state, action: PayloadAction<string>) {
       state.currSubcategory = "";
       state.currCategory = "";
-      state.modelsData = {
-        tab: "",
-        category: "",
-        subcategory: "",
-        nsfw: false,
-        previews: [],
-      };
+      state.modelsData = cloneObject(TABS_INITIAL_MODELS_DATA);
       state.currTab = action.payload;
     },
     /**
@@ -90,26 +83,14 @@ const tabsSlice = createSlice({
      */
     setCurrentCategory(state, action: PayloadAction<string>) {
       state.currSubcategory = "";
-      state.modelsData = {
-        tab: "",
-        category: "",
-        subcategory: "",
-        nsfw: false,
-        previews: [],
-      };
+      state.modelsData = cloneObject(TABS_INITIAL_MODELS_DATA);
       state.currCategory = action.payload;
     },
     /**
      * Sets current subcatgory and resets model previews, last page and last visible state.
      */
     setCurrentSubcategory(state, action: PayloadAction<string>) {
-      state.modelsData = {
-        tab: "",
-        category: "",
-        subcategory: "",
-        nsfw: false,
-        previews: [],
-      };
+      state.modelsData = cloneObject(TABS_INITIAL_MODELS_DATA);
       state.isLastPage = false;
       state.currSubcategory = action.payload;
     },
@@ -137,13 +118,7 @@ const tabsSlice = createSlice({
       state.modelsData = action.payload;
     },
     resetModelsData(state) {
-      state.modelsData = {
-        tab: "",
-        category: "",
-        subcategory: "",
-        nsfw: false,
-        previews: [],
-      };
+      state.modelsData = cloneObject(TABS_INITIAL_MODELS_DATA);
       state.isLastPage = false;
     },
     setIsLoading(state, action: PayloadAction<boolean>) {

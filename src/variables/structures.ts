@@ -31,3 +31,11 @@ export const FORMS_DEF_TAGS_INPUT: TagSetInputData = [
     isValid: true,
   },
 ];
+
+export const TABS_INITIAL_MODELS_DATA = {
+  tab: "",
+  category: "",
+  subcategory: "",
+  nsfw: false,
+  previews: [],
+};

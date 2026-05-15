@@ -1,5 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { AnimatePresence } from "framer-motion";
 
 import Subcategories from "../subcategories/Subcategories";
@@ -12,6 +11,7 @@ import CategoryList from "../../ui/lists/CategoryList";
 import ButtonCategoryAll from "../../ui/buttons/ButtonCategoryAll";
 import CategoryListItem from "../../ui/lists/CategoryListItem";
 import NotificationMessage from "../../ui/NotificationMessage";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Categories.
@@ -26,23 +26,27 @@ import NotificationMessage from "../../ui/NotificationMessage";
  *
  * @component
  *
- * @returns {JSX.Element} Categories component.
+ * @returns Categories component.
  */
 const Categories = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
-  const activeCategory = useSelector((state) => state.tabs.currCategory);
-  const activeTab = useSelector((state) => state.tabs.currTab);
-  const categories = useSelector((state) => state.tabs.categoriesData);
-  const nsfwMode = useSelector((state) => state.general.nsfwMode);
-  const guideHomeState = useSelector((state) => state.guide.home);
-  const userDataIsLoading = useSelector(
+  const activeCategory = useAppSelector((state) => state.tabs.currCategory);
+  const activeTab = useAppSelector((state) => state.tabs.currTab);
+  const categories = useAppSelector((state) => state.tabs.categoriesData);
+  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const guideHomeState = useAppSelector((state) => state.guide.home);
+  const userDataIsLoading = useAppSelector(
     (state) => state.auth.userDataIsLoading,
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  console.log(activeTab);
+  const categorySwitchHandler = (e: MouseEvent<HTMLElement>) => {
+    if (!(e.target instanceof HTMLElement)) return;
+    if (activeCategory === e.target.dataset.value || !e.target.dataset.value)
+      return;
 
-  const categorySwitchHandler = (e) => {
-    if (activeCategory === e.target.dataset.value) return;
     dispatch(tabActions.setCurrentCategory(e.target.dataset.value));
+
     if (e.target.dataset.value === "all") {
       dispatch(
         getModelsPreview(
@@ -101,7 +105,7 @@ const Categories = () => {
       <>
         {!!catHtml?.length && (
           <CategoryList
-            activeCategory={activeCategory}
+            // activeCategory={activeCategory}
             onClick={categorySwitchHandler}
             className={classes["category__list"]}
             onEdit={editCategoriesHandler}
@@ -120,8 +124,8 @@ const Categories = () => {
       )}
       {activeCategory && activeTab && categories && (
         <Subcategories
-          subcategories={categories[activeTab][activeCategory]}
-          activeCategory={activeCategory}
+        // subcategories={categories[activeTab][activeCategory]}
+        // activeCategory={activeCategory}
         />
       )}
       <AnimatePresence>

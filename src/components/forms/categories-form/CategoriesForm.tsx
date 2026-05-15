@@ -23,7 +23,6 @@ import {
   normalizeError,
 } from "../../../utils/generalUtils";
 import { updateCollectionCategories } from "../../../store/images";
-import type { ResourceFirestoreCollection } from "../../../types/models.types";
 import type {
   CollectionCategory,
   ModelCategory,
@@ -31,8 +30,8 @@ import type {
 import { useAppDispatch } from "../../../store/hooks/hooks";
 
 type CategoriesFormProps = {
-  modelType: ResourceFirestoreCollection;
-  activeCategory: string | null;
+  modelType: string;
+  activeCategory?: string | null;
   categories: ModelCategory[] | CollectionCategory[];
 };
 

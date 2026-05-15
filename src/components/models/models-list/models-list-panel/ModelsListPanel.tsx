@@ -1,4 +1,3 @@
-import { useDispatch, useSelector } from "react-redux";
 import { Bars2Icon, Bars4Icon } from "@heroicons/react/24/outline";
 
 import classes from "./ModelsListPanel.module.scss";
@@ -9,6 +8,9 @@ import {
   tabActions,
 } from "../../../../store/tabs";
 import ButtonTertiary from "../../../ui/buttons/ButtonTertiary";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
+import { cloneObject } from "../../../../utils/generalUtils";
+import { TABS_INITIAL_MODELS_DATA } from "../../../../variables/structures";
 
 const sortTypes = [
   { name: "Newest", value: "createdAt" },
@@ -17,15 +19,17 @@ const sortTypes = [
 const baseModelsDef = [{ name: "-", value: "-" }];
 
 const ModelsListPanel = () => {
-  const activeTab = useSelector((state) => state.tabs.currTab);
-  const activeCategory = useSelector((state) => state.tabs.currCategory);
-  const activeSubcategory = useSelector((state) => state.tabs.currSubcategory);
-  const nsfwMode = useSelector((state) => state.general.nsfwMode);
-  const sortBy = useSelector((state) => state.tabs.sortBy);
-  const baseModel = useSelector((state) => state.tabs.baseModel);
-  const baseModels = useSelector((state) => state.tabs.baseModels);
-  const previewFullView = useSelector((state) => state.tabs.previewFullView);
-  const dispatch = useDispatch();
+  const activeTab = useAppSelector((state) => state.tabs.currTab);
+  const activeCategory = useAppSelector((state) => state.tabs.currCategory);
+  const activeSubcategory = useAppSelector(
+    (state) => state.tabs.currSubcategory,
+  );
+  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const sortBy = useAppSelector((state) => state.tabs.sortBy);
+  const baseModel = useAppSelector((state) => state.tabs.baseModel);
+  const baseModels = useAppSelector((state) => state.tabs.baseModels);
+  const previewFullView = useAppSelector((state) => state.tabs.previewFullView);
+  const dispatch = useAppDispatch();
 
   const baseModelsData = !baseModels?.length
     ? baseModelsDef
@@ -52,7 +56,9 @@ const ModelsListPanel = () => {
         selected={sortBy}
         onChange={(value) => {
           dispatch(tabActions.setSortBy(value));
-          dispatch(tabActions.setModelsData([]));
+          dispatch(
+            tabActions.setModelsData(cloneObject(TABS_INITIAL_MODELS_DATA)),
+          );
           dispatch(
             getModelsPreview(
               activeTab,
@@ -72,7 +78,9 @@ const ModelsListPanel = () => {
         selected={baseModel}
         onChange={(value) => {
           dispatch(tabActions.setBaseModel(value));
-          dispatch(tabActions.setModelsData([]));
+          dispatch(
+            tabActions.setModelsData(cloneObject(TABS_INITIAL_MODELS_DATA)),
+          );
           dispatch(
             getModelsPreview(
               activeTab,

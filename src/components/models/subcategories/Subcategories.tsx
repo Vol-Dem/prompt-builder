@@ -1,5 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { AnimatePresence } from "framer-motion";
 
 import classes from "./Subcategories.module.scss";
@@ -10,6 +9,7 @@ import OpenCategoryGuide from "../../general-elements/guide/home/OpenCategoryGui
 import SubcategoryList from "../../ui/lists/SubcategoryList";
 import ButtonCategoryAll from "../../ui/buttons/ButtonCategoryAll";
 import CategoryListItem from "../../ui/lists/CategoryListItem";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Subcategories.
@@ -24,20 +24,25 @@ import CategoryListItem from "../../ui/lists/CategoryListItem";
  *
  * @component
  *
- * @returns {JSX.Element} Subcategories components.
+ * @returns Subcategories components.
  */
 const Subcategories = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
-  const activeSubcategory = useSelector((state) => state.tabs.currSubcategory);
-  const activeCategory = useSelector((state) => state.tabs.currCategory);
-  const activeTab = useSelector((state) => state.tabs.currTab);
-  const categories = useSelector((state) => state.tabs.categoriesData);
-  const guideHomeState = useSelector((state) => state.guide.home);
+  const activeSubcategory = useAppSelector(
+    (state) => state.tabs.currSubcategory,
+  );
+  const activeCategory = useAppSelector((state) => state.tabs.currCategory);
+  const activeTab = useAppSelector((state) => state.tabs.currTab);
+  const categories = useAppSelector((state) => state.tabs.categoriesData);
+  const guideHomeState = useAppSelector((state) => state.guide.home);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const categorySwitchHandler = (e) => {
-    if (activeSubcategory === e.target.dataset.value) return;
+  const categorySwitchHandler = (e: MouseEvent<HTMLElement>) => {
+    if (!(e.target instanceof HTMLElement)) return;
+    if (activeSubcategory === e.target.dataset.value || !e.target.dataset.value)
+      return;
+
     dispatch(tabActions.setCurrentSubcategory(e.target.dataset.value));
     dispatch(tabActions.resetModelsData());
   };

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
 import classes from "./ModelsList.module.scss";
 import { getModelsPreview } from "../../../store/tabs";
@@ -17,6 +16,7 @@ import { guideActions } from "../../../store/guide";
 import useIntersection from "../../../hooks/use-intersection";
 import PreviewCard from "../../general-elements/preview-card/PreviewCard";
 import ModelsListPanel from "./models-list-panel/ModelsListPanel";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Displays a list of model previews with infinite scrolling support.
@@ -33,19 +33,21 @@ import ModelsListPanel from "./models-list-panel/ModelsListPanel";
  */
 const ModelsList = () => {
   const [isIntersecting, setIsIntersecting] = useState(false);
-  const modelsData = useSelector((state) => state.tabs.modelsData);
-  const isLoading = useSelector((state) => state.tabs.isLoading);
-  const isLastPage = useSelector((state) => state.tabs.isLastPage);
-  const activeTab = useSelector((state) => state.tabs.currTab);
-  const activeCategory = useSelector((state) => state.tabs.currCategory);
-  const activeSubcategory = useSelector((state) => state.tabs.currSubcategory);
-  const errorMessage = useSelector((state) => state.tabs.errorMessage);
-  const previewFullView = useSelector((state) => state.tabs.previewFullView);
-  const nsfwMode = useSelector((state) => state.general.nsfwMode);
-  const guideState = useSelector((state) => state.guide.home);
+  const modelsData = useAppSelector((state) => state.tabs.modelsData);
+  const isLoading = useAppSelector((state) => state.tabs.isLoading);
+  const isLastPage = useAppSelector((state) => state.tabs.isLastPage);
+  const activeTab = useAppSelector((state) => state.tabs.currTab);
+  const activeCategory = useAppSelector((state) => state.tabs.currCategory);
+  const activeSubcategory = useAppSelector(
+    (state) => state.tabs.currSubcategory,
+  );
+  const errorMessage = useAppSelector((state) => state.tabs.errorMessage);
+  const previewFullView = useAppSelector((state) => state.tabs.previewFullView);
+  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const guideState = useAppSelector((state) => state.guide.home);
   const endPageRef = useRef(null);
   const isOnline = useOnlineStatus();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const intersecting = useIntersection(endPageRef, false, 0);
   const intersectingSmall = useIntersection(
     endPageRef,

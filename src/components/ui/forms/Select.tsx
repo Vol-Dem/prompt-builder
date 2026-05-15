@@ -22,7 +22,7 @@ type SelectOption = { name: string; value: string | number };
 type SelectProps = OverrideFields<
   ComponentProps<"input">,
   {
-    label: string;
+    label?: string;
     selected?: string | number;
     options: SelectOption[];
     onChange: (value: string) => void;
