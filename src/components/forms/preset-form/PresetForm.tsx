@@ -26,7 +26,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import type { PromptType } from "../../../types/prompt.types";
 
 type PresetFormProps = {
-  type: PromptType;
+  type?: PromptType;
   id?: string;
   name?: string;
   words?: string;

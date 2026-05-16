@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence } from "framer-motion";
 
 import Button from "../../ui/buttons/Button";
@@ -7,10 +6,17 @@ import classes from "./Presets.module.scss";
 import { updatePresets } from "../../../store/prompt";
 import PresetForm from "../../forms/preset-form/PresetForm";
 import DeleteRequest from "../../ui/DeleteRequest";
-import BackSvg from "../../../assets/BackSvg";
 import PresetsList from "./presets-list/PresetsList";
 import PresetsBlock from "./presets-block/PresetsBlock";
 import NotificationMessage from "../../ui/NotificationMessage";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type { PromptType } from "../../../types/prompt.types";
+import type { Preset } from "../../../../shared/types/user";
+import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
+
+type PresetsProps = { onClose: () => void };
+
+type PresetData = Preset & { type: PromptType };
 
 /**
  * Presets popup.
@@ -30,20 +36,22 @@ import NotificationMessage from "../../ui/NotificationMessage";
  *
  * @component
  *
- * @param {Object} props
- * @param {() => void} props.onClose - Callback triggered to close the presets modal.
+ * @param props
+ * @param props.onClose - Callback triggered to close the presets modal.
  *
- * @returns {JSX.Element} Presets popup.
+ * @returns Presets popup.
  */
-const Presets = ({ onClose }) => {
+const Presets = ({ onClose }: PresetsProps) => {
   const [formIsOpen, setFormIsOpen] = useState(false);
-  const [presetData, setPresetData] = useState({});
-  const [presetToDel, setPresetToDel] = useState({});
+  const [presetData, setPresetData] = useState<PresetData | null>(null);
+  const [presetToDel, setPresetToDel] = useState<PresetData | null>(null);
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
-  const presets = useSelector((state) => state.prompt.presets);
-  const dispatch = useDispatch();
+  const presets = useAppSelector((state) => state.prompt.presets);
+  const dispatch = useAppDispatch();
 
   const deleteHandler = () => {
+    if (!presetToDel) return;
+
     const updatedPresets = presets[presetToDel?.type].filter(
       (preset) => preset.id !== presetToDel.id,
     );
@@ -52,26 +60,24 @@ const Presets = ({ onClose }) => {
     setDeleteRequestIsOpen(false);
   };
 
-  const changePresetHandler = ({ type, id }) => {
-    const curPreset = presets[type].find((preset) => preset.id === id);
+  const changePresetHandler = (type: PromptType, preset: Preset) => {
     setPresetData({
       type,
-      id: curPreset.id,
-      name: curPreset.name,
-      words: curPreset.words,
+      ...preset,
     });
     setFormIsOpen(true);
   };
 
-  const openDeleteReqeustHandler = ({ type, id }) => {
-    const presetName = presets[type].find((preset) => preset.id === id).name;
-
-    setPresetToDel({ id, type, name: presetName });
+  const openDeleteReqeustHandler = (type: PromptType, preset: Preset) => {
+    setPresetToDel({
+      type,
+      ...preset,
+    });
     setDeleteRequestIsOpen(true);
   };
 
   const closeDeleteReqeustHandler = () => {
-    setPresetToDel({});
+    setPresetToDel(null);
     setDeleteRequestIsOpen(false);
   };
 
@@ -82,7 +88,7 @@ const Presets = ({ onClose }) => {
           <Button
             className={classes["btn-from"]}
             onClick={() => {
-              setPresetData({});
+              setPresetData(null);
               setFormIsOpen((prevState) => !prevState);
             }}
           >
@@ -125,12 +131,13 @@ const Presets = ({ onClose }) => {
       {formIsOpen && (
         <>
           <button
+            title="Back"
             className={classes["btn-back"]}
             onClick={() => {
               setFormIsOpen(false);
             }}
           >
-            <BackSvg />
+            <ArrowUturnLeftIcon />
           </button>
           <PresetForm
             type={presetData?.type}
@@ -139,13 +146,13 @@ const Presets = ({ onClose }) => {
             words={presetData?.words}
             onClose={() => {
               setFormIsOpen(false);
-              setPresetData({});
+              setPresetData(null);
             }}
           />
         </>
       )}
       <AnimatePresence>
-        {deleteRequestIsOpen && (
+        {deleteRequestIsOpen && presetToDel && (
           <DeleteRequest
             message={`Are you sure you want to delete "${presetToDel.name}" preset? This action can't
         be undone`}

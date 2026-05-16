@@ -6,6 +6,8 @@ import {
 
 import classes from "./PromptButtonCopy.module.scss";
 
+type PromptButtonCopyProps = { promptData: string };
+
 /**
  * Prompt copy button.
  *
@@ -18,14 +20,14 @@ import classes from "./PromptButtonCopy.module.scss";
  *
  * @component
  *
- * @param {Object} props
- * @param {string} props.promptData - Current prompt string to copy.
+ * @param props
+ * @param props.promptData - Current prompt string to copy.
  *
- * @returns {JSX.Element} Copy prompt button.
+ * @returns Copy prompt button.
  */
-const PromptButtonCopy = ({ promptData }) => {
+const PromptButtonCopy = ({ promptData }: PromptButtonCopyProps) => {
   const [copied, setCopied] = useState(false);
-  const timeoutCopiedRef = useRef(null);
+  const timeoutCopiedRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const copyToClipboardHandler = () => {
     if (timeoutCopiedRef.current) {

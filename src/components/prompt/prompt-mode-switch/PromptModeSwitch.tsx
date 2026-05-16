@@ -1,7 +1,7 @@
-import { useDispatch, useSelector } from "react-redux";
-
 import classes from "./PromptModeSwitch.module.scss";
 import { promptActions } from "../../../store/prompt";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import type { MouseEvent } from "react";
 
 /**
  * Prompt mode switch.
@@ -12,13 +12,15 @@ import { promptActions } from "../../../store/prompt";
  * - Switches prompt UI mode in Redux.
  *
  * @component
- * @returns {JSX.Element} Prompt mode switch.
+ * @returns Prompt mode switch.
  */
 const PromptModeSwitch = () => {
-  const promptTextMode = useSelector((state) => state.prompt.isTextMode);
-  const dispatch = useDispatch();
+  const promptTextMode = useAppSelector((state) => state.prompt.isTextMode);
+  const dispatch = useAppDispatch();
 
-  const textModeHandler = (e) => {
+  const textModeHandler = (e: MouseEvent<HTMLElement>) => {
+    if (!(e.target instanceof HTMLElement)) return;
+
     const isTextMode = e.target.dataset.type === "text";
     dispatch(promptActions.setTextMode(isTextMode));
   };

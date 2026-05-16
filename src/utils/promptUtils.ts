@@ -257,12 +257,14 @@ export const getNewTagPosition = (
   position: number,
   dropTargetPosition: number,
   dropTargetLeft: boolean,
+  sameField: boolean,
 ): number => {
   let newPosition: number | null = null;
 
   if (
     (dropTargetLeft && position >= dropTargetPosition) ||
-    (!dropTargetLeft && position < dropTargetPosition)
+    (!dropTargetLeft && position < dropTargetPosition && sameField) ||
+    (dropTargetLeft && position < dropTargetPosition && !sameField)
   ) {
     newPosition = dropTargetPosition;
   } else if (
@@ -271,9 +273,12 @@ export const getNewTagPosition = (
     dropTargetPosition > 0
   ) {
     newPosition = dropTargetPosition - 1;
-  } else if (!dropTargetLeft && position >= dropTargetPosition) {
+  } else if (
+    (!dropTargetLeft && position >= dropTargetPosition) ||
+    (!dropTargetLeft && position <= dropTargetPosition && !sameField)
+  ) {
     newPosition = dropTargetPosition + 1;
   }
 
-  return newPosition || position;
+  return newPosition ?? position;
 };

@@ -1,5 +1,4 @@
 import { PlusIcon } from "@heroicons/react/24/outline";
-import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
@@ -14,6 +13,7 @@ import InfoPresets from "../../general-elements/info/InfoPresets";
 import Presets from "../presets/Presets";
 import PromptModeSwitch from "../prompt-mode-switch/PromptModeSwitch";
 import PromptClear from "../prompt-clear/PromptClear";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
  * Prompt panel controls.
@@ -32,16 +32,16 @@ import PromptClear from "../prompt-clear/PromptClear";
  * - Dispatches prompt mutations.
  *
  * @component
- * @returns {JSX.Element} Prompt settings panel.
+ * @returns Prompt settings panel.
  */
 const PromptSettings = () => {
   const [presetsIsOpen, setPresetsIsOpen] = useState(false);
-  const isAuth = useSelector((state) => state.auth.isLoggedIn);
-  const dispatch = useDispatch();
+  const isAuth = useAppSelector((state) => state.auth.isLoggedIn);
+  const dispatch = useAppDispatch();
 
   const openPresetsHandler = () => {
     if (!isAuth) {
-      dispatch(authActions.openAuthForm(true));
+      dispatch(authActions.openAuthForm());
     } else {
       setPresetsIsOpen(true);
     }

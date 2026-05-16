@@ -1,6 +1,14 @@
+import type { ComponentProps } from "react";
 import classes from "./TagsTextareaPlaceholder.module.scss";
 
-const TagsTextareaPlaceholder = ({ aditional, children }) => {
+type TagsTextareaPlaceholderProps = ComponentProps<"li"> & {
+  aditional?: boolean;
+};
+
+const TagsTextareaPlaceholder = ({
+  aditional,
+  children,
+}: TagsTextareaPlaceholderProps) => {
   return (
     <li
       className={`${classes.placeholder} ${

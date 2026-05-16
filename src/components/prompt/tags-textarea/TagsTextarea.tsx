@@ -1,5 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type DragEvent } from "react";
 import { AnimatePresence } from "framer-motion";
 
 import classes from "./TagsTextarea.module.scss";
@@ -7,6 +6,14 @@ import { promptActions } from "../../../store/prompt";
 import TagsTextareaItem from "./tags-textarea-item/TagsTextareaItem";
 import { getNewTagPosition } from "../../../utils/promptUtils";
 import TagsTextareaPlaceholder from "./tags-textarea-placeholder/TagsTextareaPlaceholder";
+import type { PromptItem, PromptType } from "../../../types/prompt.types";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+
+type TagsTextareaProps = {
+  promptType: PromptType;
+  placeholder: string;
+  aditionalPlacegholder?: string;
+};
 
 /**
  * Tag-based prompt editor.
@@ -24,19 +31,25 @@ import TagsTextareaPlaceholder from "./tags-textarea-placeholder/TagsTextareaPla
  *
  * @component
  *
- * @param {Object} props
- * @param {'positive' | 'negative'} props.promptType - Prompt channel this field belongs to.
- * @param {string} props.placeholder - Main placeholder shown when no tags exist.
- * @param {string} props.aditionalPlacegholder - Secondary helper placeholder.
+ * @param props
+ * @param props.promptType - Prompt channel this field belongs to.
+ * @param props.placeholder - Main placeholder shown when no tags exist.
+ * @param props.aditionalPlacegholder - Secondary helper placeholder.
  *
- * @returns {JSX.Element} Tag-based prompt editor.
+ * @returns Tag-based prompt editor.
  */
-const TagsTextarea = ({ promptType, placeholder, aditionalPlacegholder }) => {
-  const [curPrompt, setCurrentPrompt] = useState([]);
-  const curPosPromptArr = useSelector((state) => state.prompt.curPromptArr);
-  const curNegPromptArr = useSelector((state) => state.prompt.curNegPromptArr);
-  const dispatch = useDispatch();
-  const fieldRef = useRef(null);
+const TagsTextarea = ({
+  promptType,
+  placeholder,
+  aditionalPlacegholder,
+}: TagsTextareaProps) => {
+  const [curPrompt, setCurrentPrompt] = useState<PromptItem[]>([]);
+  const curPosPromptArr = useAppSelector((state) => state.prompt.curPromptArr);
+  const curNegPromptArr = useAppSelector(
+    (state) => state.prompt.curNegPromptArr,
+  );
+  const dispatch = useAppDispatch();
+  const fieldRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     const promptArr =
@@ -63,9 +76,14 @@ const TagsTextarea = ({ promptType, placeholder, aditionalPlacegholder }) => {
     });
   };
 
-  const dragOverHandler = (e, id, isLeftSide) => {
+  const dragOverHandler = (
+    e: DragEvent,
+    id?: number,
+    isLeftSide?: boolean | null,
+  ) => {
     e.preventDefault();
-    const curTargetData = curPrompt.find((tagItem) => +tagItem.id === +id);
+    const curTargetData =
+      id !== undefined && curPrompt.find((tagItem) => +tagItem.id === +id);
 
     if (!curTargetData || curTargetData?.dropLeft === isLeftSide) return;
 
@@ -93,19 +111,21 @@ const TagsTextarea = ({ promptType, placeholder, aditionalPlacegholder }) => {
     });
   };
 
-  const dropHandler = (e) => {
+  const dropHandler = (e: DragEvent<HTMLElement>) => {
+    if (!(e.target instanceof Element)) return;
+
     const tagData = e.dataTransfer.getData("text/plain");
 
     if (!tagData.trim()) return;
 
     const { id, tag, position, type } = JSON.parse(tagData);
-    const targetTagContainer = e.target.closest(`[data-item]`);
+    const targetTagContainer = e.target.closest(`[data-item]`) as HTMLElement;
 
     if (!targetTagContainer) {
-      const fieldType = e.target.closest(`[data-type]`)?.dataset?.type;
+      const fieldType = (e.target.closest(`[data-type]`) as HTMLElement)
+        ?.dataset?.type;
 
       if (!fieldType) return;
-
       dispatch(
         promptActions.removeTag({ id, type, dropTargetType: fieldType }),
       );
@@ -114,6 +134,8 @@ const TagsTextarea = ({ promptType, placeholder, aditionalPlacegholder }) => {
       );
       return;
     }
+
+    if (!targetTagContainer.dataset.item) return;
 
     const { id: dropTargetId, type: dropTargetType } = JSON.parse(
       targetTagContainer.dataset.item,
@@ -125,19 +147,20 @@ const TagsTextarea = ({ promptType, placeholder, aditionalPlacegholder }) => {
       id !== dropTargetId
     ) {
       const { position: dropTargetPosition, dropLeft: dropTargetLeft } =
-        curPrompt.find((tagItem) => +tagItem.id === dropTargetId);
+        curPrompt.find((tagItem) => +tagItem.id === dropTargetId)!;
 
-      if (dropTargetLeft === null) return;
+      if (dropTargetLeft === null || dropTargetLeft === undefined) return;
 
+      const sameField = type === dropTargetType;
       const newPosition = getNewTagPosition(
         position,
         dropTargetPosition,
         dropTargetLeft,
+        sameField,
       );
 
       // //Abort when droped on the same position
-      if (type === dropTargetType && position === newPosition) return;
-
+      if (sameField && position === newPosition) return;
       dispatch(promptActions.removeTag({ id, type, dropTargetType }));
       dispatch(
         promptActions.addTagToPosition({
@@ -154,7 +177,7 @@ const TagsTextarea = ({ promptType, placeholder, aditionalPlacegholder }) => {
     }
   };
 
-  const openEditHandler = (id) => {
+  const openEditHandler = (id: number) => {
     setCurrentPrompt((prevState) => {
       return prevState.map((item) => {
         if (item.id === id) {
@@ -171,7 +194,7 @@ const TagsTextarea = ({ promptType, placeholder, aditionalPlacegholder }) => {
         key={item.id}
         item={item}
         promptType={promptType}
-        containerWidth={fieldRef.current.offsetWidth}
+        containerWidth={fieldRef.current?.offsetWidth}
         onEdit={openEditHandler}
         onDragOver={dragOverHandler}
         onDragLeave={dragLeaveHandler}
@@ -180,22 +203,12 @@ const TagsTextarea = ({ promptType, placeholder, aditionalPlacegholder }) => {
     );
   });
 
-  const promptResizeHandler = () => {
-    dispatch(
-      promptActions.setPromptHeight({
-        type: promptType,
-        value: fieldRef.current.offsetHeight,
-      }),
-    );
-  };
-
   return (
     <ul
       ref={fieldRef}
       onDragOver={dragOverHandler}
       onDragLeave={dragLeaveHandler}
       onDrop={dropHandler}
-      onResize={promptResizeHandler}
       data-type={promptType}
       className={`${classes.field} ${
         promptType === "positive"

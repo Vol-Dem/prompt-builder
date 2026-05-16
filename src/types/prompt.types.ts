@@ -5,6 +5,9 @@ export interface PromptItem {
   position: number;
   tag: string;
   weight: number;
+  dropLeft?: boolean | null;
+  duplicateId?: number | null;
+  edit?: boolean;
 }
 
 export interface PromptState {

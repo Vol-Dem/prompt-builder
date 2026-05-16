@@ -1,11 +1,18 @@
 import { CheckIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, type MouseEvent, type SubmitEvent } from "react";
 
 import Input from "../../../ui/forms/Input";
 import classes from "./TagsTextareaItemEdit.module.scss";
 import { promptActions } from "../../../../store/prompt";
 import { changeTagWeight } from "../../../../utils/promptUtils";
+import type { PromptItem, PromptType } from "../../../../types/prompt.types";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
+
+type TagsTextareaItemEditProps = {
+  item: PromptItem;
+  inputWidth: number | null;
+  promptType: PromptType;
+};
 
 /**
  * Inline tag editor.
@@ -19,34 +26,41 @@ import { changeTagWeight } from "../../../../utils/promptUtils";
  *
  * @component
  *
- * @param {Object} props
- * @param {'positive' | 'negative'} props.promptType - Prompt channel this tag belongs to.
- * @param {Object} props.item - Current tag data being edited.
- * @param {number} props.inputWidth - Calculated width for the input field.
+ * @param props
+ * @param props.promptType - Prompt channel this tag belongs to.
+ * @param props.item - Current tag data being edited.
+ * @param props.inputWidth - Calculated width for the input field.
  *
- * @returns {JSX.Element} Tag edit controls.
+ * @returns Tag edit controls.
  */
-const TagsTextareaItemEdit = ({ item, inputWidth, promptType }) => {
+const TagsTextareaItemEdit = ({
+  item,
+  inputWidth,
+  promptType,
+}: TagsTextareaItemEditProps) => {
   const [editTagInput, setEditTagInput] = useState({ value: item.tag });
   const [editWeightInput, setEditWeightInput] = useState({
     value: item?.weight || 1,
   });
-  const curPosPromptArr = useSelector((state) => state.prompt.curPromptArr);
-  const curNegPromptArr = useSelector((state) => state.prompt.curNegPromptArr);
-  const dispatch = useDispatch();
+  const curPosPromptArr = useAppSelector((state) => state.prompt.curPromptArr);
+  const curNegPromptArr = useAppSelector(
+    (state) => state.prompt.curNegPromptArr,
+  );
+  const dispatch = useAppDispatch();
 
-  const changeWeightHandler = (e) => {
+  const changeWeightHandler = (e: MouseEvent<HTMLElement>) => {
+    if (!(e.target instanceof HTMLElement)) return;
+
+    const isPlus = e.target.dataset.type === "+";
+
     setEditWeightInput((prevState) => {
-      const strenghth =
-        e.target.dataset.type === "+"
-          ? prevState.value + 0.1
-          : prevState.value - 0.1;
+      const strenghth = isPlus ? prevState.value + 0.1 : prevState.value - 0.1;
 
       return { value: +strenghth.toFixed(1) };
     });
   };
 
-  const submitEditHandler = (e) => {
+  const submitEditHandler = (e: SubmitEvent) => {
     e.preventDefault();
 
     const newTag = editTagInput.value;
@@ -102,7 +116,7 @@ const TagsTextareaItemEdit = ({ item, inputWidth, promptType }) => {
         value={editWeightInput.value}
         autoComplete="off"
         onChange={(e) => {
-          setEditWeightInput({ value: e.target.value });
+          setEditWeightInput({ value: +e.target.value });
         }}
         className={classes["tag__weight"]}
       />
@@ -133,6 +147,7 @@ const TagsTextareaItemEdit = ({ item, inputWidth, promptType }) => {
         </button>
       </div>
       <button
+        title="Submit"
         type="submit"
         className={`${classes.btn} ${classes["btn--submit"]}`}
       >

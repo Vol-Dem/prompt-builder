@@ -1,14 +1,31 @@
 import { motion } from "framer-motion";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type DragEvent,
+  type MouseEvent,
+} from "react";
 
 import { SETTINGS_PROMPT_BREAK_ALIASES } from "../../../../variables/constants";
 import classes from "./TagsTextareaItem.module.scss";
 import { promptActions } from "../../../../store/prompt";
 import TagsTextareaItemEdit from "../tags-textarea-item-edit/TagsTextareaItemEdit";
+import type { PromptItem, PromptType } from "../../../../types/prompt.types";
+import { useAppDispatch } from "../../../../store/hooks/hooks";
 
 const inputControlsWidth = 165;
+
+type TagsTextareaItemProps = {
+  item: PromptItem;
+  promptType: PromptType;
+  containerWidth?: number;
+  onEdit: (id: number) => void;
+  onDragOver: (e: DragEvent, id: number, isLeftSide: boolean | null) => void;
+  onDragLeave: () => void;
+  onDragEnd: () => void;
+};
 
 /**
  * Interactive prompt tag.
@@ -23,32 +40,32 @@ const inputControlsWidth = 165;
  *
  * @component
  *
- * @param {Object} props
- * @param {'positive' | 'negative'} props.promptType - Prompt channel this tag belongs to.
- * @param {Object} props.item - Tag model from Redux (id, tag, position, weight, etc).
- * @param {number} props.containerWidth - Width of the parent container in pixels.
- * @param {(id: number) => void} props.onEdit - Activates edit mode for the given tag.
- * @param {(e: DragEvent, id: number, isLeftSide: boolean) => void} props.onDragOver - Reports drag position relative to this tag.
- * @param {() => void} props.onDragLeave - Clears drop indicators.
- * @param {() => void} props.onDragEnd - Resets drag state after drop.
+ * @param props
+ * @param props.promptType - Prompt channel this tag belongs to.
+ * @param props.item - Tag model from Redux (id, tag, position, weight, etc).
+ * @param props.containerWidth - Width of the parent container in pixels.
+ * @param props.onEdit - Activates edit mode for the given tag.
+ * @param props.onDragOver - Reports drag position relative to this tag.
+ * @param props.onDragLeave - Clears drop indicators.
+ * @param props.onDragEnd - Resets drag state after drop.
  *
- * @returns {JSX.Element} Tag UI element.
+ * @returns Tag UI element.
  */
 const TagsTextareaItem = ({
   item,
   promptType,
-  containerWidth,
+  containerWidth = 80,
   onEdit,
   onDragOver,
   onDragLeave,
   onDragEnd,
-}) => {
+}: TagsTextareaItemProps) => {
   const [isDragged, setIsDragged] = useState(false);
-  const [inputWidth, setInputWidth] = useState(null);
-  const lastTagRef = useRef(null);
+  const [inputWidth, setInputWidth] = useState<number | null>(null);
+  const lastTagRef = useRef<HTMLSpanElement>(null);
   // Check if current tag is special "BREAK" tag.
   const isBreak = SETTINGS_PROMPT_BREAK_ALIASES.includes(item.tag.trim());
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (lastTagRef.current)
@@ -57,7 +74,9 @@ const TagsTextareaItem = ({
       });
   }, [lastTagRef]);
 
-  const startEditHandler = (e) => {
+  const startEditHandler = (e: MouseEvent<HTMLSpanElement>) => {
+    if (!(e.target instanceof HTMLElement)) return;
+
     const tagWidth = e.target.offsetWidth;
     const maxInputWidth = Math.round(containerWidth - inputControlsWidth);
     const newInputWidth = tagWidth < maxInputWidth ? tagWidth : maxInputWidth;
@@ -67,7 +86,7 @@ const TagsTextareaItem = ({
     onEdit(item.id);
   };
 
-  const removeTagHandler = (value) => {
+  const removeTagHandler = (value: string) => {
     dispatch(
       promptActions.removeTag({
         ...JSON.parse(value),
@@ -76,7 +95,7 @@ const TagsTextareaItem = ({
     );
   };
 
-  const dragStartHandler = (e) => {
+  const dragStartHandler = (e: DragEvent<HTMLDivElement>) => {
     setIsDragged(true);
 
     e.dataTransfer.setData(
@@ -86,9 +105,15 @@ const TagsTextareaItem = ({
     e.dataTransfer.effectAllowed = "move";
   };
 
-  const onDragOverHandler = (e) => {
+  const onDragOverHandler = (e: DragEvent<HTMLSpanElement>) => {
     e.preventDefault();
-    const targetTagContainer = e.target.closest(`.${classes["tag-container"]}`);
+
+    if (!(e.target instanceof Element)) return;
+
+    const targetTagContainer = e.target.closest(
+      `.${classes["tag-container"]}`,
+    ) as HTMLElement;
+
     if (!targetTagContainer) return;
 
     const targetContainerWidth = targetTagContainer.offsetWidth;
@@ -152,6 +177,7 @@ const TagsTextareaItem = ({
                   {item.tag.trim()}
                 </span>
                 <button
+                  title="Close"
                   type="button"
                   className={classes.btn}
                   onClick={() => removeTagHandler(JSON.stringify(item))}

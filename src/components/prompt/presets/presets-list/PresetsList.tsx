@@ -1,4 +1,3 @@
-import { useDispatch } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
 
 import {
@@ -10,6 +9,17 @@ import ButtonTertiary from "../../../ui/buttons/ButtonTertiary";
 import classes from "./PresetsList.module.scss";
 import { promptActions } from "../../../../store/prompt";
 import { splitTags } from "../../../../utils/promptUtils";
+import type { PromptType } from "../../../../types/prompt.types";
+import type { Preset } from "../../../../../shared/types/user";
+import { useAppDispatch } from "../../../../store/hooks/hooks";
+
+type PresetsListProps = {
+  presets: Preset[];
+  type: PromptType;
+  onClose: () => void;
+  onEdit: (type: PromptType, preset: Preset) => void;
+  onDelete: (type: PromptType, preset: Preset) => void;
+};
 
 /**
  * Presets list.
@@ -25,20 +35,29 @@ import { splitTags } from "../../../../utils/promptUtils";
  *
  * @component
  *
- * @param {Object} props
- * @param {Array} props.presets - List of user presets.
- * @param {'positive' | 'negative'} props.type - Prompt channel this list controls.
- * @param {() => void} props.onClose - Callback triggered to close presets modal.
- * @param {(data: { type: string, id: string }) => void} props.onEdit - Callback triggered to open the preset form.
- * @param {(data: { type: string, id: string }) => void} props.onDelete - Callback triggered to open delete confirmation.
+ * @param props
+ * @param props.presets - List of user presets.
+ * @param props.type - Prompt channel this list controls.
+ * @param props.onClose - Callback triggered to close presets modal.
+ * @param props.onEdit - Callback triggered to open the preset form.
+ * @param props.onDelete - Callback triggered to open delete confirmation.
  *
- * @returns {JSX.Element} Presets list.
+ * @returns Presets list.
  */
-const PresetsList = ({ presets, type, onClose, onEdit, onDelete }) => {
-  const dispatch = useDispatch();
+const PresetsList = ({
+  presets,
+  type,
+  onClose,
+  onEdit,
+  onDelete,
+}: PresetsListProps) => {
+  const dispatch = useAppDispatch();
 
-  const applyPreset = (id) => {
-    const words = presets.find((preset) => preset.id === id).words;
+  const applyPreset = (id: string) => {
+    const words = presets.find((preset) => preset.id === id)?.words;
+
+    if (!words) return;
+
     dispatch(
       promptActions.addAllTagsToPrompt({
         type: type,
@@ -65,12 +84,12 @@ const PresetsList = ({ presets, type, onClose, onEdit, onDelete }) => {
           {preset.name}
         </span>
         <div className={classes["preset__btns-container"]}>
-          <ButtonTertiary onClick={() => onEdit({ type, id: preset.id })}>
+          <ButtonTertiary onClick={() => onEdit(type, preset)}>
             Change
           </ButtonTertiary>
           <ButtonTertiary
             className={classes["btn-del"]}
-            onClick={() => onDelete({ type, id: preset.id })}
+            onClick={() => onDelete(type, preset)}
           >
             Delete
           </ButtonTertiary>

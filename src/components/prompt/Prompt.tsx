@@ -1,13 +1,12 @@
-import { useDispatch, useSelector } from "react-redux";
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useRef, type ChangeEvent } from "react";
 
 import classes from "./Prompt.module.scss";
 import { promptActions } from "../../store/prompt";
-import ArrowDownSvg from "../../assets/ArrowDownSvg";
-import ArrowUp from "../../assets/ArrowUp";
 import PromptGuide from "../general-elements/guide/model/PromptGuide";
 import PromptSettings from "./prompt-settings/PromptSettings";
 import PromptField from "./prompt-field/PromptField";
+import { useAppDispatch, useAppSelector } from "../../store/hooks/hooks";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 
 const positiveMinHeight = 100;
 const negativeMinHeight = 60;
@@ -30,42 +29,49 @@ const negativeMaxHeight = 180;
  * - This component only coordinates and forwards events.
  *
  * @component
- * @returns {JSX.Element} Prompt panel.
+ * @returns Prompt panel.
  */
 const Prompt = memo(() => {
-  const curPrompt = useSelector((state) => state.prompt.curPrompt);
-  const curNegPrompt = useSelector((state) => state.prompt.curNegPrompt);
-  const promptIsOpen = useSelector((state) => state.prompt.promptIsOpen);
-  const dispatch = useDispatch();
-  const showPromptBtnRef = useRef(null);
-  const promptContainerRef = useRef(null);
+  const curPrompt = useAppSelector((state) => state.prompt.curPrompt);
+  const curNegPrompt = useAppSelector((state) => state.prompt.curNegPrompt);
+  const promptIsOpen = useAppSelector((state) => state.prompt.promptIsOpen);
+  const dispatch = useAppDispatch();
+  const showPromptBtnRef = useRef<HTMLButtonElement>(null);
+  const promptContainerRef = useRef<HTMLDivElement>(null);
   const positiveMaxHeight = document.body.offsetHeight - 300;
 
   useEffect(() => {
-    dispatch(
-      promptActions.setPromptHeight(promptContainerRef.current.offsetHeight),
-    );
-    dispatch(
-      promptActions.setPromptBtnHeight(showPromptBtnRef.current.offsetHeight),
-    );
+    if (promptContainerRef.current) {
+      dispatch(
+        promptActions.setPromptHeight(promptContainerRef.current.offsetHeight),
+      );
+    }
+
+    if (showPromptBtnRef.current) {
+      dispatch(
+        promptActions.setPromptBtnHeight(showPromptBtnRef.current.offsetHeight),
+      );
+    }
   }, [promptContainerRef?.current?.offsetHeight, promptIsOpen, dispatch]);
 
   const openPromptHandler = () => {
     dispatch(promptActions.setPromptIsOpen(!promptIsOpen));
   };
 
-  const positivePromptHandler = (e) => {
+  const positivePromptHandler = (e: ChangeEvent<HTMLTextAreaElement>) => {
     dispatch(promptActions.setCurrentPrompt(e.target.value));
   };
 
-  const negativePromptHandler = (e) => {
+  const negativePromptHandler = (e: ChangeEvent<HTMLTextAreaElement>) => {
     dispatch(promptActions.setCurrentNegPrompt(e.target.value));
   };
 
   const promptResizeHandler = () => {
-    dispatch(
-      promptActions.setPromptHeight(promptContainerRef.current.offsetHeight),
-    );
+    if (promptContainerRef.current) {
+      dispatch(
+        promptActions.setPromptHeight(promptContainerRef.current.offsetHeight),
+      );
+    }
   };
 
   return (
@@ -113,12 +119,12 @@ const Prompt = memo(() => {
         >
           {promptIsOpen ? (
             <>
-              <ArrowUp />
+              <ChevronUpIcon />
               Hide prompt
             </>
           ) : (
             <>
-              <ArrowDownSvg />
+              <ChevronDownIcon />
               Show prompt
             </>
           )}

@@ -39,7 +39,7 @@ const Categories = () => {
     (state) => state.auth.userDataIsLoading,
   );
   const dispatch = useAppDispatch();
-  console.log(activeTab);
+
   const categorySwitchHandler = (e: MouseEvent<HTMLElement>) => {
     if (!(e.target instanceof HTMLElement)) return;
     if (activeCategory === e.target.dataset.value || !e.target.dataset.value)
