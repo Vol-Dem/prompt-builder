@@ -161,6 +161,23 @@ export const filterDuplicates = <T, K extends keyof T>(
   return [...new Set(arr)];
 };
 
+export const mergeByField = <T, K extends keyof T>(arr: T[], field: K): T[] => {
+  if (!Array.isArray(arr) || !arr.length) return arr;
+
+  const values = arr.reduce<Record<string, T>>((prev, curr, i) => {
+    const fieldString: string = curr[field] ? curr[field] + "" : i + "field";
+
+    const upd = {
+      ...prev,
+      [fieldString]: { ...prev[fieldString], ...curr },
+    };
+
+    return upd;
+  }, {});
+
+  return Object.values(values);
+};
+
 /**
  * Creates a category ID from the category name
  * @param id - The category name

@@ -21,7 +21,7 @@ import {
   URL_CIV_IMAGES,
 } from "../../variables/constants";
 import { fetchData, makeBatchRequest } from "./fetchUtils";
-import { AppError, filterDuplicates, normalizeError } from "../generalUtils";
+import { AppError, mergeByField, normalizeError } from "../generalUtils";
 import { parseModelIds } from "../modelUtils";
 import { combineImagesData, getUniqImageResources } from "../imageUtils";
 import {
@@ -103,14 +103,20 @@ export const getImageInfo = async (
 
       updatedImgResources = [...updatedImgResources, ...updatedHashRes];
     }
-    const resourcesFilteredById = filterDuplicates(
+    const resourcesFilteredById = mergeByField(
       updatedImgResources,
       "modelVersionId",
     );
-    const resourcesFilteredByName = filterDuplicates(
-      resourcesFilteredById,
-      "name",
-    );
+    const resourcesFilteredByName = mergeByField(resourcesFilteredById, "name");
+
+    // const resourcesFilteredById = filterDuplicates(
+    //   updatedImgResources,
+    //   "modelVersionId",
+    // );
+    // const resourcesFilteredByName = filterDuplicates(
+    //   resourcesFilteredById,
+    //   "name",
+    // );
 
     return await fetchResourcesInfoFromDB(image, resourcesFilteredByName);
   } catch (error) {

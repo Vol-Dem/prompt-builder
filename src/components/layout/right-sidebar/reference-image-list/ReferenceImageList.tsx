@@ -40,7 +40,7 @@ const ReferenceImageList = ({ usedImages }: ReferenceImageListProps) => {
   const dispatch = useAppDispatch();
 
   const openImageHandler = (e: MouseEvent<HTMLElement>) => {
-    if (!(e.target instanceof HTMLElement)) return;
+    if (!(e.target instanceof Element)) return;
 
     const id = (
       e?.target?.closest(`.${classes["ref-images__item"]}`) as HTMLElement

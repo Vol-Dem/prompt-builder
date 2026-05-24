@@ -54,17 +54,18 @@ const ModelDescription = () => {
           }px`,
         }}
       >
-        {model?.defaultCustomData?.description ||
-          (model?.data?.description && (
-            <div
-              ref={descriptionRef}
-              dangerouslySetInnerHTML={{
-                __html:
-                  model?.defaultCustomData?.description ||
-                  model?.data?.description,
-              }}
-            />
-          ))}
+        {(model?.defaultCustomData?.description ||
+          model?.data?.description) && (
+          <div
+            ref={descriptionRef}
+            dangerouslySetInnerHTML={{
+              __html:
+                model?.defaultCustomData?.description ||
+                model?.data?.description ||
+                "",
+            }}
+          />
+        )}
       </div>
       {descHeight && descHeight > minDescriptionHeight && (
         <span

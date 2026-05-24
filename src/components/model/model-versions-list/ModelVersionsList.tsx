@@ -120,7 +120,7 @@ const ModelVersionsList = ({
           {modelVersionsHtml}
         </ul>
       </div>
-      {listHeight && itemHeight && listHeight > itemHeight && (
+      {!!listHeight && !!itemHeight && listHeight > itemHeight && (
         <ButtonTertiary
           onClick={showAllVersionsHandler}
           className={classes["btn-all"]}
