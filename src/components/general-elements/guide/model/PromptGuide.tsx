@@ -12,10 +12,10 @@ import {
   GUIDE_STEP_PROMPT_VIEW,
 } from "../../../../variables/constants";
 import GuideActionMessage from "../GuideActionMessage";
-import CopySvg from "../../../../assets/CopySvg";
 import useGuideStep from "../../../../hooks/use-guide-step";
 import { useAppSelector } from "../../../../store/hooks/hooks";
 import type { GuideStep } from "../../../../types/guide.types";
+import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 
 /**
  * Prompt guide.
@@ -91,8 +91,8 @@ const PromptGuide = () => {
         next: true,
         text: (
           <>
-            Button <CopySvg className={classes.svg} /> allows you to copy the
-            current prompt
+            Button <DocumentDuplicateIcon className={classes.svg} /> allows you
+            to copy the current prompt
           </>
         ),
       },

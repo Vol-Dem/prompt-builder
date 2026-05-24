@@ -9,10 +9,9 @@ import {
   GUIDE_STEP_OPEN_IMAGE,
 } from "../../../../variables/constants";
 import GuideActionMessage from "../GuideActionMessage";
-import SettingsSvg from "../../../../assets/SettingsSvg";
 import useGuideStep from "../../../../hooks/use-guide-step";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { Cog6ToothIcon, PlusIcon } from "@heroicons/react/24/outline";
 import type { GuideStep } from "../../../../types/guide.types";
 
 /**
@@ -67,7 +66,7 @@ const CarouselGuide = () => {
         text: (
           <>
             <GuideActionMessage>
-              Click <SettingsSvg className={classes.svg} />
+              Click <Cog6ToothIcon className={classes.svg} />
             </GuideActionMessage>{" "}
             to open the model settings
           </>

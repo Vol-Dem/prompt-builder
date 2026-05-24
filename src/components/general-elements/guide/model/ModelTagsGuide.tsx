@@ -3,9 +3,9 @@ import { useMemo } from "react";
 import classes from "./ModelTagsGuide.module.scss";
 import GuideMessage from "../GuideMessage";
 import { GUIDE_STEP_MODEL_TAGS_EDIT } from "../../../../variables/constants";
-import EditSvg from "../../../../assets/EditSvg";
 import useGuideStep from "../../../../hooks/use-guide-step";
 import type { GuideStep } from "../../../../types/guide.types";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 /**
  * Model tags guide.
@@ -26,8 +26,8 @@ const ModelTagsGuide = () => {
         next: true,
         text: (
           <>
-            You can click <EditSvg className={classes.svg} /> to edit the
-            version trigger words and activation tag
+            You can click <PencilSquareIcon className={classes.svg} /> to edit
+            the version trigger words and activation tag
           </>
         ),
       },
