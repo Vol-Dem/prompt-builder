@@ -10,9 +10,9 @@ import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
 import Fieldset from "../../ui/forms/Fieldset";
 import FieldCategory from "../../ui/forms/FieldCategory";
 import {
+  AppError,
   handleErrors,
   normalizeError,
-  throwCustomError,
 } from "../../../utils/generalUtils";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
@@ -289,10 +289,10 @@ const VersionForm = ({
         baseInputsIsNotValid ||
         (modelType === "checkpoint" && aditionalInputsIsNotValid)
       ) {
-        throwCustomError(ERROR_MESSAGE_INPUT_DEF);
+        throw new AppError(ERROR_MESSAGE_INPUT_DEF);
       }
       if (!navigator?.onLine) {
-        throwCustomError(ERROR_MESSAGE_OFFLINE);
+        throw new AppError(ERROR_MESSAGE_OFFLINE);
       }
 
       setIsSaving(true);

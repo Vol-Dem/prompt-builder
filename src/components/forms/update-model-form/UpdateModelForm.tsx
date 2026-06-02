@@ -242,8 +242,8 @@ const UpdateModelForm = ({
         modelData?.modelVersionsCustomData,
       )
         ?.sort((a, b) => {
-          if (a?.index && b?.index) {
-            return a?.index - b?.index;
+          if (typeof a.index === "number" && typeof b.index === "number") {
+            return a.index - b.index;
           }
 
           return 0;

@@ -8,9 +8,9 @@ import {
 } from "react";
 
 import {
+  AppError,
   filterDuplicates,
   normalizeError,
-  throwCustomError,
 } from "../utils/generalUtils";
 import {
   ERROR_MESSAGE_CIV_CONNECTION,
@@ -94,7 +94,7 @@ const useFetchCivitai = (url: string): useFetchCivitaiReturn => {
         const data = (await imgExampleResponse.json()) as CivitaiFetchResult;
 
         if (!data?.items) {
-          throwCustomError(ERROR_MESSAGE_INVALID_DATA);
+          throw new AppError(ERROR_MESSAGE_INVALID_DATA);
         }
 
         let dataUniq = data?.items;

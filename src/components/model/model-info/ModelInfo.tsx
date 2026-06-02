@@ -3,6 +3,7 @@ import LinkA from "../../ui/LinkA";
 import ResourceTypeLabel from "../../ui/text/ResourceTypeLabel";
 import type { ModelVersionCustomData } from "../../../../shared/types/model";
 import { useAppSelector } from "../../../store/hooks/hooks";
+import { URL_CIV_DEF, URL_CIV_RED } from "../../../variables/constants";
 
 type ModelInfoProps = { customData?: ModelVersionCustomData | null };
 
@@ -74,7 +75,7 @@ const ModelInfo = ({ customData }: ModelInfoProps) => {
           {" ("}
           <LinkA
             external={true}
-            href={`https://${nsfwMode ? "civitai.red" : "civitai.com"}/models/${model?.id}?modelVersionId=${curVersion?.id}`}
+            href={`${!nsfwMode ? URL_CIV_DEF : URL_CIV_RED}/models/${model?.id}?modelVersionId=${curVersion?.id}`}
           >
             civitai
           </LinkA>

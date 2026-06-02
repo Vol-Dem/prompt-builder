@@ -3,6 +3,8 @@ import LinkA from "../../../../ui/LinkA";
 import ImageInfoItem from "../image-info-item/ImageInfoItem";
 import ImageSeed from "../image-seed/ImageSeed";
 import type { Image } from "../../../../../../shared/types/image";
+import { useAppSelector } from "../../../../../store/hooks/hooks";
+import { URL_CIV_DEF, URL_CIV_RED } from "../../../../../variables/constants";
 
 type ImageInfoProps = { imageData: Image };
 
@@ -18,6 +20,7 @@ type ImageInfoProps = { imageData: Image };
  * @returns {JSX.Element} Image info.
  */
 const ImageInfo = ({ imageData }: ImageInfoProps) => {
+  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
   return (
     <>
       <ul className={classes["config-block"]}>
@@ -60,7 +63,7 @@ const ImageInfo = ({ imageData }: ImageInfoProps) => {
           <ImageInfoItem name="Image source">
             <LinkA
               external={true}
-              href={`https://civitai.com/images/${imageData.id}`}
+              href={`${!nsfwMode ? URL_CIV_DEF : URL_CIV_RED}/images/${imageData.id}`}
             >
               civitai
             </LinkA>

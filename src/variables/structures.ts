@@ -9,7 +9,7 @@ export const FORMS_DEF_SUBCATEGORY_INPUT: SubcategoryInput = {
   value: "",
   query: "",
   selected: { id: null, name: "" },
-  isValid: true,
+  isValid: false,
   errorMessage: "",
 };
 

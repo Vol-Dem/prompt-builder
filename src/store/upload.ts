@@ -1,9 +1,9 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 import {
+  AppError,
   filterDuplicates,
   normalizeError,
-  throwCustomError,
 } from "../utils/generalUtils";
 import { modelActions } from "./model";
 import { savePostToCollections } from "./images";
@@ -138,7 +138,7 @@ export const savePost = (postInfo: UploadingItem): AppThunk => {
         postData,
       } = postInfo;
       if (!postId) {
-        throwCustomError(ERROR_MESSAGE_INVALID_POST_ID);
+        throw new AppError(ERROR_MESSAGE_INVALID_POST_ID);
       }
 
       dispatch(uploadActions.setIsUploading(true));

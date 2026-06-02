@@ -116,6 +116,8 @@ export const SETTINGS_FORCE_HIDDEN_PROMPT_FETCH = true; // force overwriting of 
 // ];
 
 //URLS
+export const URL_CIV_DEF = "https://civitai.coms";
+export const URL_CIV_RED = "https://civitai.red";
 export const URL_CIV_MODELS = "https://civitai.com/api/v1/models/";
 export const URL_CIV_IMAGES = "https://civitai.com/api/v1/images";
 export const URL_CF_UPLOAD_MODEL =

@@ -29,7 +29,6 @@ import {
   filterDuplicates,
   handleErrors,
   normalizeError,
-  throwCustomError,
 } from "../utils/generalUtils";
 import {
   ERROR_MESSAGE_DB_CONNECTION,
@@ -229,7 +228,7 @@ export const savePostToCollections = ({
   return async (dispatch, getState) => {
     try {
       if (!postId) {
-        throwCustomError("Invalid post ID");
+        throw new AppError("Invalid post ID");
       }
 
       const batch = writeBatch(firestore);
@@ -828,7 +827,7 @@ export const addNewCollectionCategories = ({
         const userData = userDataDoc.data() as UserDoc;
         latestCategories = userData?.imageCategories || [];
       } else {
-        throwCustomError(ERROR_MESSAGE_DB_CONNECTION);
+        throw new AppError(ERROR_MESSAGE_DB_CONNECTION);
       }
 
       const curCategoryData = latestCategories?.find(

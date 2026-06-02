@@ -21,12 +21,12 @@ import Fieldset from "../../ui/forms/Fieldset";
 import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import {
+  AppError,
   cloneObject,
   filterDuplicates,
   handleErrors,
   normalizeError,
   sortArrayBy,
-  throwCustomError,
 } from "../../../utils/generalUtils";
 import { addNewCollectionCategories } from "../../../store/images";
 import SuccessMessage from "../../ui/SuccessMessage";
@@ -230,7 +230,9 @@ const SaveToCollectionForm = ({
       id: null,
       isValid: false,
     });
-    setSubcategoryInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
+    setSubcategoryInputs([
+      cloneObject({ ...FORMS_DEF_SUBCATEGORY_INPUT, isValid: true }),
+    ]);
   };
 
   const selectCollectionNameHandler = (
@@ -248,7 +250,9 @@ const SaveToCollectionForm = ({
   };
 
   useEffect(() => {
-    setSubcategoryInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
+    setSubcategoryInputs([
+      cloneObject({ ...FORMS_DEF_SUBCATEGORY_INPUT, isValid: true }),
+    ]);
   }, []);
 
   const subCatSelectHandler = (
@@ -351,7 +355,7 @@ const SaveToCollectionForm = ({
         !mainCategorySelected.isValid ||
         subcategoriesIsInvalid
       ) {
-        throwCustomError(ERROR_MESSAGE_INPUT_DEF);
+        throw new AppError(ERROR_MESSAGE_INPUT_DEF);
       }
       setCollectionInfoIsLoading(true);
 
