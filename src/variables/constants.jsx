@@ -73,7 +73,7 @@ export const SETTINGS_IMAGE_PREVIEW_WIDTH_BIG = 450;
 export const SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE = 16;
 export const SETTINGS_IMAGES_NUMBER_PER_REQUEST = 100;
 export const SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE = 12;
-export const SETTINGS_SEARCH_RESULT_PER_PAGE = 10;
+export const SETTINGS_SEARCH_RESULT_PER_PAGE = 40;
 export const SETTINGS_SEARCH_MIN_QUERY_LENGTH = 3;
 export const SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE = 4;
 export const SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT = 5;
@@ -116,10 +116,12 @@ export const SETTINGS_FORCE_HIDDEN_PROMPT_FETCH = true; // force overwriting of 
 // ];
 
 //URLS
-export const URL_CIV_DEF = "https://civitai.coms";
+export const URL_CIV_DEF = "https://civitai.com";
 export const URL_CIV_RED = "https://civitai.red";
-export const URL_CIV_MODELS = "https://civitai.com/api/v1/models/";
-export const URL_CIV_IMAGES = "https://civitai.com/api/v1/images";
+export const URL_CIV_API = "https://civitai.com/api/v1";
+export const URL_CIV_MODELS = `${URL_CIV_API}/models`;
+export const URL_CIV_IMAGES = `${URL_CIV_API}/images`;
+export const URL_CIV_ENUMS = `${URL_CIV_API}/enums`;
 export const URL_CF_UPLOAD_MODEL =
   "https://uploadmodel-o43alvcema-uc.a.run.app";
 export const URL_CF_UPDATE_MODEL =

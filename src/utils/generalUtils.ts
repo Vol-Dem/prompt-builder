@@ -510,3 +510,18 @@ export const getFormData = (
   });
   return Object.fromEntries(trimedFormData);
 };
+
+/**
+ * Fix for Civitai bug where comma separated parameter values ​​would cause an error.
+ * @param params - parameter values
+ * @param paramName - parameter name
+ * @returns
+ */
+export const createParamString = (
+  params: string[],
+  paramName: string,
+): string => {
+  return params.reduce((acc, baseModel) => {
+    return acc + `&${paramName}=${baseModel}`;
+  }, "");
+};

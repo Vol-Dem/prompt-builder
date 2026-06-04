@@ -19,13 +19,13 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 type SelectOption = { name: string; value: string | number };
 
-type SelectProps = OverrideFields<
+type SelectProps<T extends SelectOption> = OverrideFields<
   ComponentProps<"input">,
   {
     label?: string;
     selected?: string | number;
-    options: SelectOption[];
-    onChange: (value: string) => void;
+    options: T[];
+    onChange: (value: T["value"]) => void;
   }
 >;
 
@@ -41,7 +41,7 @@ type SelectProps = OverrideFields<
  * @param props.selected - Selected value.
  * @returns  Rendered select component.
  */
-const Select = ({
+const Select = <T extends SelectOption>({
   id = "select",
   options,
   onChange,
@@ -49,7 +49,7 @@ const Select = ({
   label,
   selected,
   ...props
-}: SelectProps) => {
+}: SelectProps<T>) => {
   const [selectIsOpen, setSelectIsOpen] = useState(false);
   const [selectedFieldName, setSelectedFieldName] = useState(selected);
   const [selectedFieldValue, setSelectedFieldValue] = useState(selected);

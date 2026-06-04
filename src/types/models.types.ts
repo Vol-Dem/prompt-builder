@@ -13,6 +13,7 @@ import type { PostInfo } from "./upload.types";
 
 export interface ModelData extends UserModelDoc {
   data?: CivitaiModelDoc;
+  type?: string;
 }
 
 export type ResourceFirestoreCollection = "models" | "collections";

@@ -83,7 +83,7 @@ const ExternalImages = memo(
       errorMessage,
       fetchCivitai,
       setErrorMessage,
-    } = useFetchCivitai(url);
+    } = useFetchCivitai(url, true);
 
     const imagesSortedByPost = useMemo(() => {
       let images = fixCivImagesMeta(fetchedImages);

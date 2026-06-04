@@ -67,7 +67,7 @@ const updateModel = httpsCallable(functions, "updateModelCall");
 export const getModelData = async (modelId: number) => {
   try {
     const model = (await fetchData(
-      `https://civitai.com/api/v1/models/${modelId}`,
+      `${URL_CIV_MODELS}/${modelId}`,
     )) as CivitaiModelDoc;
 
     // Clears empty keys and excessive data (too much weight for Firestore) from image metadata
@@ -134,7 +134,7 @@ export const deleteModelDoc = async (uid: string, model: UserModelDoc) => {
  * @returns The model data
  */
 export const fetchModelFromCivitai = async (id: number | string) => {
-  const responseCiv = await fetch(`https://civitai.com/api/v1/models/${id}`);
+  const responseCiv = await fetch(`${URL_CIV_MODELS}/${id}`);
   const responseData = await responseCiv.json();
 
   if (!responseCiv?.ok) {
@@ -402,7 +402,7 @@ export const saveModelData = async (
         }
 
         const responseCiv = await fetch(
-          `${URL_CIV_MODELS}${newModelData.modelId}`,
+          `${URL_CIV_MODELS}/${newModelData.modelId}`,
         );
 
         data = (await responseCiv.json()) as CivitaiModelDoc;

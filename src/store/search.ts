@@ -31,6 +31,7 @@ import type {
   SearchResult,
   SearchResultCollection,
   SearchResultData,
+  SearchSrcType,
   SearchState,
 } from "../types/search.types";
 
@@ -61,15 +62,17 @@ const searchSlice = createSlice({
   name: "search",
   initialState: {
     searchQuery: "",
+    src: "aitools",
     searchResult: {
       query: "",
+      src: null,
       result: [],
       nsfw: false,
       hashtag: false,
       filter: null,
     },
-    quickSearchResult: { query: "", result: [], nsfw: false },
-    searchFilter: { modelType: [], baseModel: [], hashtag: false },
+    quickSearchResult: { query: "", src: null, result: [], nsfw: false },
+    searchFilter: { src: null, modelType: [], baseModel: [], hashtag: false },
     isLoading: false,
     errorMessage: "",
     isLastPage: false,
@@ -80,6 +83,9 @@ const searchSlice = createSlice({
     setSearchQuery(state, action: PayloadAction<string>) {
       state.searchQuery = action.payload;
     },
+    setSearchSrc(state, action: PayloadAction<SearchSrcType>) {
+      state.src = action.payload;
+    },
     setSearchResult(state, action: PayloadAction<SearchResultData>) {
       state.searchResult = action.payload;
     },
@@ -89,6 +95,7 @@ const searchSlice = createSlice({
     clearSearchResult(state) {
       state.searchResult = {
         query: "",
+        src: null,
         result: [],
         nsfw: false,
         hashtag: false,
@@ -117,11 +124,17 @@ const searchSlice = createSlice({
       state.searchFilter[action.payload.type] = action.payload.value;
     },
     resetSearchFilter(state) {
-      state.searchFilter = { modelType: [], baseModel: [], hashtag: false };
+      state.searchFilter = {
+        src: null,
+        modelType: [],
+        baseModel: [],
+        hashtag: false,
+      };
     },
     resetSearchData(state) {
       state.searchResult = {
         query: "",
+        src: null,
         result: [],
         nsfw: false,
         hashtag: false,
@@ -133,7 +146,12 @@ const searchSlice = createSlice({
       state.isLastSubPage = false;
     },
     resetQuickSearchData(state) {
-      state.quickSearchResult = { query: "", result: [], nsfw: false };
+      state.quickSearchResult = {
+        query: "",
+        src: null,
+        result: [],
+        nsfw: false,
+      };
       state.errorMessage = "";
     },
     resetAllLastPageStatus(state) {
@@ -477,12 +495,14 @@ export const liveSearch = (
             query: searchString,
             nsfw,
             result: finalResult,
+            src: "aitools",
           }),
         );
       } else {
         dispatch(
           searchActions.setSearchResult({
             query: searchString,
+            src: "aitools",
             nsfw,
             result: finalResult,
             hashtag,
@@ -490,6 +510,281 @@ export const liveSearch = (
               modelType: [],
               baseModel: [],
               hashtag: hashtag,
+              src: null,
+            },
+          }),
+        );
+        dispatch(searchActions.setIsLastPage(isLast));
+        dispatch(searchActions.setIsLastCollectionsPage(isLastCollection));
+        dispatch(searchActions.setIsLastSubPage(isLastSub));
+      }
+    } catch (error) {
+      const errorMessage = handleErrors(normalizeError(error));
+      dispatch(searchActions.setErrorMessage(errorMessage));
+    } finally {
+      dispatch(searchActions.setSearchIsLoading(false));
+    }
+  };
+};
+
+export const civitaiSearch = (
+  searchString: string,
+  nsfw: boolean,
+  limitAmount: number = 5,
+  loadMore: boolean = false,
+  quickSerch: boolean = false,
+  isHashtag: boolean = false,
+  filter?: SearchFilter,
+): AppThunk => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(searchActions.setSearchIsLoading(true));
+      const hashtag = isHashtag || !!filter?.hashtag;
+      const isLastPage = getState().search.isLastPage;
+      const isLastCollectionsPage = getState().search.isLastCollectionsPage;
+      const isLastSubPage = getState().search.isLastSubPage;
+      const searchResult = getState().search.searchResult;
+
+      if (isLastPage && isLastSubPage && isLastCollectionsPage) return;
+      if (!searchString) return;
+
+      if (!loadMore) {
+        lastVisible = "";
+        lastVisibleCollection = "";
+        lastVisibleSub = "";
+        dispatch(searchActions.clearSearchResult());
+      }
+
+      dispatch(searchActions.setSearchIsLoading(true));
+      const uid = getState().auth.user.uid;
+      const modelPreviewRef = collection(firestore, "users", uid, `preview`);
+      const collectionPreviewRef = collection(
+        firestore,
+        "users",
+        uid,
+        `collectionPreviews`,
+      );
+
+      const nsfwFilter = !nsfw ? [false] : [true, false];
+
+      const onlyCollections =
+        filter?.modelType.length === 1 &&
+        filter?.modelType.includes("collection");
+
+      const optionalWhere = [];
+
+      if (filter?.modelType?.length && !onlyCollections) {
+        optionalWhere.push(where("modelType", "in", filter.modelType));
+      }
+      if (filter?.baseModel?.length && !onlyCollections) {
+        optionalWhere.push(where("baseModel", "in", filter.baseModel));
+      }
+
+      const modelQueryByNameRule = createNameQuery(
+        searchString,
+        nsfwFilter,
+        optionalWhere,
+      );
+      const collectionQueryByNameRule = createNameQuery(
+        searchString,
+        nsfwFilter,
+      );
+
+      const queryModelsByName = query(
+        modelPreviewRef,
+        modelQueryByNameRule,
+        orderBy("name", "asc"),
+        startAfter(lastVisible),
+        limit(limitAmount),
+      );
+
+      const queryCollectionsByName = query(
+        collectionPreviewRef,
+        collectionQueryByNameRule,
+        orderBy("name", "asc"),
+        startAfter(lastVisibleCollection),
+        limit(limitAmount),
+      );
+
+      let queryRuleSub: QueryCompositeFilterConstraint;
+
+      const hashlessSearchString =
+        searchString.trim()[0] === "#" ? searchString.slice(1) : searchString;
+
+      if (hashtag) {
+        queryRuleSub = and(
+          ...optionalWhere,
+          where("authorTags", "array-contains-any", [
+            searchString,
+            searchString.toLowerCase(),
+            hashlessSearchString,
+          ]),
+          where("nsfw", "in", nsfwFilter),
+        );
+      } else {
+        queryRuleSub = or(
+          and(
+            ...optionalWhere,
+            where("fileNames", "array-contains-any", [
+              clearFileExtension(searchString).toLowerCase(),
+            ]),
+            where("nsfw", "in", nsfwFilter),
+          ),
+          and(
+            ...optionalWhere,
+            where("customFileNames", "array-contains-any", [
+              clearFileExtension(searchString).toLowerCase(),
+            ]),
+            where("nsfw", "in", nsfwFilter),
+          ),
+          and(
+            ...optionalWhere,
+            where("mainTags", "array-contains-any", [
+              clearFileExtension(searchString).toLowerCase(),
+            ]),
+            where("nsfw", "in", nsfwFilter),
+          ),
+          and(
+            ...optionalWhere,
+            where("versionIds", "array-contains-any", [+searchString]),
+            where("nsfw", "in", nsfwFilter),
+          ),
+          and(
+            ...optionalWhere,
+            where("authorTags", "array-contains-any", [
+              searchString,
+              searchString.toLowerCase(),
+              hashlessSearchString,
+            ]),
+            where("nsfw", "in", nsfwFilter),
+          ),
+        );
+      }
+
+      const querySub = query(
+        modelPreviewRef,
+        queryRuleSub,
+        orderBy("name", "asc"),
+        startAfter(lastVisibleSub),
+        limit(limitAmount),
+      );
+
+      let modelsDataName: ModelPreviewDoc[] = [];
+      let collectionsDataNames: SearchResultCollection[] = [];
+      let querySnapshot: QuerySnapshot<DocumentData, DocumentData> | null =
+        null;
+      let queryCollectionsSnapshot: QuerySnapshot<
+        DocumentData,
+        DocumentData
+      > | null = null;
+
+      if (!isLastPage && !hashtag && !onlyCollections) {
+        querySnapshot = await getDocs(queryModelsByName);
+        modelsDataName = querySnapshot.docs.map((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          return doc.data() as ModelPreviewDoc;
+        });
+      }
+
+      const includeColections =
+        !hashtag &&
+        !filter?.baseModel?.length &&
+        (!filter?.modelType?.length ||
+          filter?.modelType?.includes("collection"));
+      if (!isLastCollectionsPage && includeColections) {
+        queryCollectionsSnapshot = await getDocs(queryCollectionsByName);
+        collectionsDataNames = queryCollectionsSnapshot.docs.map((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          return {
+            type: "collection",
+            ...(doc.data() as CollectionPreviewDoc),
+          };
+        });
+      }
+
+      let modelsDataSub: ModelPreviewDoc[] = [];
+      let querySnapshotSub: QuerySnapshot<DocumentData, DocumentData> | null =
+        null;
+
+      const isLast =
+        !querySnapshot?.docs?.length ||
+        querySnapshot?.docs?.length < limitAmount;
+      const isLastCollection =
+        !queryCollectionsSnapshot?.docs?.length ||
+        (queryCollectionsSnapshot?.docs?.length < limitAmount &&
+          includeColections);
+
+      if ((isLast || hashtag) && !isLastSubPage && !onlyCollections) {
+        querySnapshotSub = await getDocs(querySub);
+        modelsDataSub = querySnapshotSub.docs.map((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          return doc.data() as ModelPreviewDoc;
+        });
+      }
+
+      const isLastSub =
+        isLast &&
+        (!querySnapshotSub?.docs?.length ||
+          querySnapshotSub?.docs?.length < limitAmount);
+
+      if (!isLast && querySnapshot) {
+        lastVisible = querySnapshot?.docs[querySnapshot.docs.length - 1];
+      }
+      if (!isLastCollection && includeColections && queryCollectionsSnapshot) {
+        lastVisibleCollection =
+          queryCollectionsSnapshot.docs[
+            queryCollectionsSnapshot.docs.length - 1
+          ];
+      }
+      if (isLast && !isLastSub && querySnapshotSub) {
+        lastVisibleSub =
+          querySnapshotSub.docs[querySnapshotSub.docs.length - 1];
+      }
+
+      const newModelsSearchResults = [...modelsDataName, ...modelsDataSub];
+      const newModelsIds = newModelsSearchResults.map(({ id }) => id);
+      const ids = searchResult?.result?.map(({ id }) => id);
+      const filteredNewResult = newModelsSearchResults.filter(
+        ({ id }, index) => !newModelsIds.includes(id, index + 1),
+      );
+      const filteredResult = filteredNewResult.filter(
+        ({ id }) => !ids?.includes(id),
+      );
+
+      let finalResult: SearchResult = [];
+
+      if (loadMore) {
+        finalResult = [...searchResult.result, ...filteredResult];
+      } else {
+        finalResult = filteredNewResult;
+      }
+
+      if (collectionsDataNames?.length) {
+        finalResult = [...finalResult, ...collectionsDataNames];
+      }
+
+      if (quickSerch) {
+        dispatch(
+          searchActions.setQuickSearchResult({
+            query: searchString,
+            nsfw,
+            result: finalResult,
+            src: "aitools",
+          }),
+        );
+      } else {
+        dispatch(
+          searchActions.setSearchResult({
+            query: searchString,
+            src: "aitools",
+            nsfw,
+            result: finalResult,
+            hashtag,
+            filter: filter || {
+              modelType: [],
+              baseModel: [],
+              hashtag: hashtag,
+              src: null,
             },
           }),
         );

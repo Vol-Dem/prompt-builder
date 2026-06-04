@@ -13,7 +13,7 @@ import { PhotoIcon } from "@heroicons/react/24/outline";
 
 type ImageProps = ComponentProps<"img"> & {
   fullView?: boolean;
-  type?: string;
+  type?: string | null;
   imgType?: "image" | "video";
   preloader?: boolean;
   imageWidth?: number;
@@ -167,7 +167,7 @@ const Image = ({
         )}{" "}
         {srcSet && (
           <picture>
-            <source srcSet={srcSet} type={type} />
+            <source srcSet={srcSet} type={type || "image/webp"} />
             {imageHtml}
           </picture>
         )}

@@ -108,6 +108,7 @@ export interface ModelVersion {
   nsfwLevel: number | null;
   trainedWords: string[];
   modelId?: number;
+  publishedAt?: string;
 }
 
 export interface UserModelDefaultCustomData {

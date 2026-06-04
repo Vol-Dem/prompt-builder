@@ -45,7 +45,10 @@ interface useFetchCivitaiReturn {
  * @returns The state object containing the fetch function, fetched data, fetching state, last page state, error message,
  * and functions to update fetched data and the error message
  */
-const useFetchCivitai = (url: string): useFetchCivitaiReturn => {
+const useFetchCivitai = (
+  url: string,
+  addToStart = false,
+): useFetchCivitaiReturn => {
   const [isFetching, setIsFetching] = useState(false);
   const [isLastPage, setIsLastPage] = useState(false);
   const [fetchedData, setFetchedData] = useState<any[]>([]);
@@ -78,9 +81,7 @@ const useFetchCivitai = (url: string): useFetchCivitaiReturn => {
 
       try {
         setIsFetching(true);
-        if (abortControlerRef.current) {
-          abortControlerRef.current.abort();
-        }
+
         const newAbortControler = new AbortController();
         abortControlerRef.current = newAbortControler;
 
@@ -105,7 +106,9 @@ const useFetchCivitai = (url: string): useFetchCivitaiReturn => {
         // }
 
         setFetchedData((prevState) => {
-          const newExampleImages = [...dataUniq, ...prevState];
+          const newExampleImages = addToStart
+            ? [...dataUniq, ...prevState]
+            : [...prevState, ...dataUniq];
 
           // Remove dublicate images (Civitai bug)
           return FILTER_CIV_DUPLICATES
@@ -123,8 +126,11 @@ const useFetchCivitai = (url: string): useFetchCivitaiReturn => {
         if (setIsIntersecting) setIsIntersecting(false);
       } catch (error) {
         const err = normalizeError(error);
-        console.log(error);
-        if (err?.name !== "AbortError") {
+
+        if (
+          typeof err.original === "string" &&
+          !err?.original?.includes("AbortError")
+        ) {
           setErrorMessage(ERROR_MESSAGE_CIV_CONNECTION);
         }
       } finally {

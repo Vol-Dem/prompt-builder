@@ -12,12 +12,13 @@ import PreviewCardShort from "./preview-card-short/PreviewCardShort";
 import { useAppSelector } from "../../../store/hooks/hooks";
 import type {
   CollectionPreviewDoc,
+  ModelPreview,
   ModelPreviewDoc,
 } from "../../../../shared/types/firestore";
 import type { ModelVersionCustomData } from "../../../../shared/types/model";
 
 type PreviewCardContentProps = {
-  previewData: ModelPreviewDoc | CollectionPreviewDoc;
+  previewData: ModelPreviewDoc | CollectionPreviewDoc | ModelPreview;
   fullView?: boolean;
   animate?: boolean;
 };
@@ -61,9 +62,13 @@ const PreviewCardContent = ({
       "";
   }
 
-  const imageType = isNsfwMode
-    ? previewData?.nsfwPreviewImgType || previewData.imgType
-    : previewData?.customPreviewImgType || previewData.imgType;
+  let imageType = null;
+
+  if ("imgType" in previewData) {
+    imageType = isNsfwMode
+      ? previewData?.nsfwPreviewImgType || previewData.imgType
+      : previewData?.customPreviewImgType || previewData.imgType;
+  }
 
   const currVersion = useMemo<ModelVersionCustomData | null>(() => {
     return (

@@ -3,8 +3,11 @@ import { doc, getFirestore, updateDoc } from "firebase/firestore";
 
 import firebaseApp from "../firebase-config";
 import type { AppThunk } from "./store";
-import type { GeneralState } from "../types/general.types";
+import type { CivitaiEnums, GeneralState } from "../types/general.types";
 import type { SuggestedCollectionsSortType } from "../types/collections.types";
+import { fetchData } from "../utils/fetch/fetchUtils";
+import { URL_CIV_ENUMS } from "../variables/constants";
+import { normalizeError } from "../utils/generalUtils";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -37,10 +40,14 @@ const generalSlice = createSlice({
     nsfwValue: "X",
     activeAboutSectionId: "",
     suggestedCollectionsSortBy: "name",
+    civitaiEnums: null,
   } as GeneralState,
   reducers: {
     setIsMobile(state, action: PayloadAction<boolean>) {
       state.isMobile = action.payload;
+    },
+    setCivitaiEnums(state, action: PayloadAction<CivitaiEnums>) {
+      state.civitaiEnums = action.payload;
     },
     setHeaderIsFixed(state, action: PayloadAction<boolean>) {
       state.headerIsFixed = action.payload;
@@ -139,6 +146,17 @@ export const setNsfwValues = (sfw: string, nsfw: string): AppThunk => {
       sfwValue: sfw,
       nsfwValue: nsfw,
     });
+  };
+};
+
+export const fetchCivitaiEnums = (): AppThunk => {
+  return async (dispatch) => {
+    try {
+      const civEnums = await fetchData<CivitaiEnums>(URL_CIV_ENUMS);
+      dispatch(generalActions.setCivitaiEnums(civEnums));
+    } catch (err) {
+      throw normalizeError(err);
+    }
   };
 };
 

@@ -20,6 +20,7 @@ export type SearchResult = (ModelPreviewDoc | CollectionPreviewDoc)[];
 
 export interface SearchResultData {
   query: string;
+  src: SearchSrcType | null;
   result: SearchResult;
   nsfw: boolean;
   hashtag: boolean;
@@ -28,11 +29,13 @@ export interface SearchResultData {
 
 export interface QuickSearchResult {
   query: string;
+  src: SearchSrcType | null;
   result: SearchResult;
   nsfw: boolean;
 }
 
 export interface SearchFilter {
+  src: SearchSrcType | null;
   modelType: string[];
   baseModel: string[];
   hashtag: boolean;
@@ -40,6 +43,7 @@ export interface SearchFilter {
 
 export interface SearchState {
   searchQuery: string;
+  src: SearchSrcType;
   searchResult: SearchResultData;
   quickSearchResult: QuickSearchResult;
   searchFilter: SearchFilter;
@@ -53,3 +57,5 @@ export interface SearchState {
 export interface SearchResultCollection extends CollectionPreviewDoc {
   type: string;
 }
+
+export type SearchSrcType = "aitools" | "civitai";

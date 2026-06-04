@@ -10,6 +10,7 @@ export interface GeneralState {
   nsfwValue: string;
   activeAboutSectionId: string;
   suggestedCollectionsSortBy: SuggestedCollectionsSortType;
+  civitaiEnums: CivitaiEnums | null;
 }
 
 export interface SidebarPreviewData {
@@ -72,3 +73,11 @@ export type AutoScrollTo = "start" | "center" | "end" | "nearest";
 export type CSSVariables = React.CSSProperties & {
   [key: `--${string}`]: string | number;
 };
+
+export interface CivitaiEnums {
+  ModelType: string[];
+  ModelFileType: string[];
+  BaseModel: string[];
+  ActiveBaseModel: string[];
+  BaseModelType: string[];
+}

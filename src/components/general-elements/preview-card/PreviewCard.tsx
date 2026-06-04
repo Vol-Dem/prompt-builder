@@ -2,11 +2,12 @@ import PreviewCardContent from "./PreviewCardContent";
 import AddToPanelAnimContainer from "../../ui/animation/AddToPanelAnimContainer";
 import type {
   CollectionPreviewDoc,
+  ModelPreview,
   ModelPreviewDoc,
 } from "../../../../shared/types/firestore";
 
 type PreviewCardProps = {
-  item: ModelPreviewDoc | CollectionPreviewDoc;
+  item: ModelPreviewDoc | CollectionPreviewDoc | ModelPreview;
   fullView?: boolean;
   animate?: boolean;
 };

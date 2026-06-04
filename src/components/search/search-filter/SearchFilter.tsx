@@ -8,8 +8,11 @@ import { searchActions } from "../../../store/search";
 import { MODEL_TYPES } from "../../../variables/constants";
 import { updateSearchParams } from "../../../utils/generalUtils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import { fetchCivitaiEnums } from "../../../store/general";
+import { ENUMS_CIVITAI } from "../../../variables/enums";
+import type { SearchSrcType } from "../../../types/search.types";
 
-type mMdelTypeCheckboxStatusInput = {
+type ModelTypeCheckboxStatusInput = {
   type: string;
   id: string;
   name: string;
@@ -26,6 +29,9 @@ type BaseModelCheckboxStatusInput = {
   value: boolean;
   disabled?: boolean;
 };
+
+type ModelTypeInputData = { name: string; value: string };
+
 /**
  * SearchFilter
  *
@@ -62,7 +68,7 @@ const SearchFilter = () => {
   const [modelTypesChecked, setModelTypesChecked] = useState(0);
   const [baseModelsChecked, setBaseModelsChecked] = useState(0);
   const [modelTypeCheckboxStatus, setModelTypeCheckboxStatus] = useState<
-    mMdelTypeCheckboxStatusInput[]
+    ModelTypeCheckboxStatusInput[]
   >([]);
   const [baseModelCheckboxStatus, setBaseModelCheckboxStatus] = useState<
     BaseModelCheckboxStatusInput[]
@@ -74,9 +80,11 @@ const SearchFilter = () => {
     label: "#hashtag",
     value: false,
   });
-  const baseModels = useAppSelector((state) => state.tabs.baseModels);
+  const userBaseModels = useAppSelector((state) => state.tabs.baseModels);
   const categories = useAppSelector((state) => state.tabs.categoriesData);
+  const searchSrc = useAppSelector((state) => state.search.src);
   const dispatch = useAppDispatch();
+  const searchParamSrc = searchParams.get("searchSrc") as SearchSrcType;
   const searchFilter = useMemo(() => {
     const modelType = searchParams.get("modelType");
     const baseModel = searchParams.get("baseModel");
@@ -85,44 +93,87 @@ const SearchFilter = () => {
       modelType: modelType?.split(",").filter(Boolean) || [],
       baseModel: baseModel?.split(",").filter(Boolean) || [],
       hashtag,
+      searchSrc,
     };
-  }, [searchParams]);
+  }, [searchParams, searchParamSrc]);
 
   useEffect(() => {
-    if (!MODEL_TYPES || !initial) return;
-    const modelTypes = Object.keys(categories)
-      .flatMap((categoryId) => {
-        const modelTypeInfo = MODEL_TYPES.find(
-          (modelType) => modelType.value === categoryId,
-        );
-
-        return modelTypeInfo || [];
-      })
-      .sort((a, b) => a.position - b.position)
-      .map((type) => {
-        return {
-          type: "checkbox",
-          id: type.value,
-          name: type.value,
-          label: type.name,
-          value: searchFilter.modelType.includes(type.value),
-          disabled: false,
-        };
+    setSearchParams((prevParams) => {
+      return updateSearchParams(prevParams, {
+        searchSrc: searchSrc,
       });
+    });
+  }, [searchSrc]);
 
-    setModelTypeCheckboxStatus([
-      {
+  useEffect(() => {
+    if (searchParamSrc && initial) {
+      dispatch(searchActions.setSearchSrc(searchParamSrc));
+    }
+
+    setInitial(false);
+  }, [searchSrc, initial]);
+
+  const createModelTypesInputData = (
+    modelTypes: ModelTypeInputData[],
+  ): ModelTypeCheckboxStatusInput[] => {
+    const modelTypeInputs = modelTypes.map((type) => {
+      return {
         type: "checkbox",
-        id: "collection",
-        name: "collection",
-        label: "Image collection",
-        value: searchFilter.modelType.includes("collection"),
+        id: type.value,
+        name: type.value,
+        label: type.name,
+        value: searchFilter.modelType.includes(type.value),
         disabled: false,
-      },
-      ...modelTypes,
-    ]);
+      };
+    });
 
-    if (!baseModels.length) return;
+    if (searchSrc === "aitools") {
+      return [
+        {
+          type: "checkbox",
+          id: "collection",
+          name: "collection",
+          label: "Image collection",
+          value: searchFilter.modelType.includes("collection"),
+          disabled: false,
+        },
+        ...modelTypeInputs,
+      ];
+    }
+
+    return modelTypeInputs;
+  };
+
+  useEffect(() => {
+    // if (!MODEL_TYPES || !initial) return;
+
+    let modelTypes: ModelTypeInputData[] = [];
+
+    if (searchSrc === "civitai") {
+      modelTypes = ENUMS_CIVITAI.ModelType.map((type) => {
+        return { name: type, value: type };
+      });
+    }
+
+    if (searchSrc === "aitools") {
+      modelTypes = Object.keys(categories)
+        .flatMap((categoryId) => {
+          const modelTypeInfo = MODEL_TYPES.find(
+            (modelType) => modelType.value === categoryId,
+          );
+
+          return modelTypeInfo || [];
+        })
+        .sort((a, b) => a.position - b.position);
+    }
+
+    const modelTypesInputData = createModelTypesInputData(modelTypes);
+    setModelTypeCheckboxStatus(modelTypesInputData);
+
+    if (!userBaseModels.length) return;
+
+    let baseModels =
+      searchSrc === "aitools" ? userBaseModels : ENUMS_CIVITAI.BaseModel;
 
     const baseModelsData = baseModels.map((baseModel) => {
       return {
@@ -141,10 +192,18 @@ const SearchFilter = () => {
     });
     setModelTypesChecked(searchFilter.modelType.length);
     setBaseModelsChecked(searchFilter.baseModel.length);
-    setInitial(false);
-  }, [baseModels, categories, searchFilter.hashtag, searchFilter, initial]);
+    // setInitial(false);
+  }, [
+    userBaseModels,
+    categories,
+    searchFilter.hashtag,
+    searchFilter,
+    // initial,
+    searchSrc,
+  ]);
 
   useEffect(() => {
+    if (searchSrc === "civitai") return;
     setMaxBaseModelsAllowed(modelTypesChecked > 1 ? 1 : 3);
     setMaxModelTypesAllowed(baseModelsChecked > 1 ? 1 : 3);
 
@@ -323,7 +382,7 @@ const SearchFilter = () => {
         </ButtonTertiary>
       </div>
       <div className={classes.filter}>
-        {!!modelTypesHtml?.length && (
+        {!!modelTypesHtml?.length && searchSrc === "aitools" && (
           <div>
             <Checkbox
               id={hashtagCheckboxStatus.id}
@@ -338,15 +397,17 @@ const SearchFilter = () => {
           <div>
             <div className={classes["filter__name"]}>
               Type{" "}
-              <span
-                className={`${classes["filter__checked"]} ${
-                  modelTypesChecked === maxModelTypesAllowed
-                    ? classes["filter__limit"]
-                    : ""
-                }`}
-              >
-                ({modelTypesChecked} / {maxModelTypesAllowed})
-              </span>
+              {searchSrc === "aitools" && (
+                <span
+                  className={`${classes["filter__checked"]} ${
+                    modelTypesChecked === maxModelTypesAllowed
+                      ? classes["filter__limit"]
+                      : ""
+                  }`}
+                >
+                  ({modelTypesChecked} / {maxModelTypesAllowed})
+                </span>
+              )}
             </div>
             <ul className={classes["filter__field"]}>{modelTypesHtml}</ul>
           </div>
@@ -355,15 +416,17 @@ const SearchFilter = () => {
           <div>
             <div className={classes["filter__name"]}>
               Base model{" "}
-              <span
-                className={`${classes["filter__checked"]} ${
-                  baseModelsChecked === maxBaseModelsAllowed
-                    ? classes["filter__limit"]
-                    : ""
-                }`}
-              >
-                ({baseModelsChecked} / {maxBaseModelsAllowed})
-              </span>
+              {searchSrc === "aitools" && (
+                <span
+                  className={`${classes["filter__checked"]} ${
+                    baseModelsChecked === maxBaseModelsAllowed
+                      ? classes["filter__limit"]
+                      : ""
+                  }`}
+                >
+                  ({baseModelsChecked} / {maxBaseModelsAllowed})
+                </span>
+              )}
             </div>
             <ul className={classes["filter__field"]}>{baseModelsHtml}</ul>
           </div>

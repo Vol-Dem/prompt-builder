@@ -140,7 +140,7 @@ export const filterNewModelVersions = (
 export const createModelPreviewData = (
   model: ModelData | null,
   curVersion: ModelVersionCivitai | ModelVersion | null,
-  curCustomVersionData: ModelVersionCustomData | null,
+  curCustomVersionData?: ModelVersionCustomData | null,
 ): ModelPreview | null => {
   if (!model?.id || !curVersion?.id) return null;
 
@@ -156,9 +156,9 @@ export const createModelPreviewData = (
       curCustomVersionData?.versionName ||
       curVersion.name,
     imgUrl: curVersion?.images ? curVersion?.images[0]?.url : "",
-    modelType: model?.data?.type || "",
+    modelType: model?.data?.type || model.type || "",
     baseModel: curVersion?.baseModel,
-    type: model?.data?.type || model?.modelType,
+    type: model?.data?.type || model?.modelType || model.type || "",
     mainTag:
       curCustomVersionData?.mainTag ||
       model?.mainTag ||
@@ -172,7 +172,7 @@ export const createModelPreviewData = (
     tags: curCustomVersionData?.trainedWords || curVersion?.trainedWords,
     helperTags:
       curCustomVersionData?.helperTags || model?.defaultCustomData?.helperTags,
-    updatedAt: model?.updatedAt,
+    updatedAt: model?.updatedAt || curVersion?.publishedAt || "",
   };
 };
 

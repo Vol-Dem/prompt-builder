@@ -15,8 +15,12 @@ import { updateSearchParams } from "../../utils/generalUtils";
 import QuickSearch from "./quick-search/QuickSearch";
 import { SETTINGS_SEARCH_MIN_QUERY_LENGTH } from "../../variables/constants";
 import { useAppDispatch, useAppSelector } from "../../store/hooks/hooks";
+import Select from "../ui/forms/Select";
+import type { SearchSrcType } from "../../types/search.types";
 
 type SearchFieldProps = ComponentProps<"div">;
+
+type searchSrcSelectValue = { name: string; value: SearchSrcType };
 
 /**
  * Global search input displayed in the app header.
@@ -34,6 +38,7 @@ type SearchFieldProps = ComponentProps<"div">;
 const SearchField = ({ className }: SearchFieldProps) => {
   const [searchResultIsOpen, setSearchResultIsOpen] = useState(false);
   const searchInput = useAppSelector((state) => state.search.searchQuery);
+  const searchSrc = useAppSelector((state) => state.search.src);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const location = useLocation();
@@ -74,6 +79,17 @@ const SearchField = ({ className }: SearchFieldProps) => {
     }
   };
 
+  const searchSrcOptions: searchSrcSelectValue[] = [
+    { name: "AITOOLS", value: "aitools" },
+    { name: "Civitai", value: "civitai" },
+  ];
+
+  const searchSrcHandler = (value: SearchSrcType) => {
+    dispatch(searchActions.resetSearchData());
+    dispatch(searchActions.resetSearchFilter());
+    dispatch(searchActions.setSearchSrc(value));
+  };
+
   return (
     <>
       <span className={classes["btn-search"]} onClick={openMobileSearch}>
@@ -88,6 +104,11 @@ const SearchField = ({ className }: SearchFieldProps) => {
           onSubmit={submitSearchHandler}
           className={classes["search__field"]}
         >
+          <Select
+            options={searchSrcOptions}
+            selected={searchSrc}
+            onChange={searchSrcHandler}
+          />
           <input
             type="search"
             name="search"

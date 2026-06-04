@@ -1,12 +1,13 @@
 import classes from "./PreviewCardShort.module.scss";
 import type {
   CollectionPreviewDoc,
+  ModelPreview,
   ModelPreviewDoc,
 } from "../../../../../shared/types/firestore";
 import { useAppSelector } from "../../../../store/hooks/hooks";
 
 type PreviewCardShortProps = {
-  previewData: ModelPreviewDoc | CollectionPreviewDoc;
+  previewData: ModelPreviewDoc | CollectionPreviewDoc | ModelPreview;
 };
 
 /**
@@ -30,19 +31,21 @@ const PreviewCardShort = ({ previewData }: PreviewCardShortProps) => {
 
   return (
     <div className={classes["content"]}>
-      {"baseModels" in previewData && (
-        <ul className={classes["models"]}>
-          {previewData?.baseModels?.map((model, i) => (
+      <ul className={classes["models"]}>
+        {"baseModels" in previewData ? (
+          previewData?.baseModels?.map((model, i) => (
             <li key={i} className={classes["models__item"]}>
               {model}
             </li>
-          )) || (
-            <li className={classes["models__item"]}>
-              {previewData?.baseModel || imageCategoryData?.name}
-            </li>
-          )}
-        </ul>
-      )}
+          ))
+        ) : (
+          <li className={classes["models__item"]}>
+            {"baseModel" in previewData
+              ? previewData?.baseModel
+              : imageCategoryData?.name}
+          </li>
+        )}
+      </ul>
       <h4
         className={classes.title}
         title={

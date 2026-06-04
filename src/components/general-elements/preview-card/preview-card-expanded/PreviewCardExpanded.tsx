@@ -6,13 +6,14 @@ import ResourceTypeLabel from "../../../ui/text/ResourceTypeLabel";
 import ActivationTag from "../../activation-tag/ActivationTag";
 import type {
   CollectionPreviewDoc,
+  ModelPreview,
   ModelPreviewDoc,
 } from "../../../../../shared/types/firestore";
 import type { ModelVersionCustomData } from "../../../../../shared/types/model";
 import { createSidebarPreviewData } from "../../../../utils/modelUtils";
 
 type PreviewCardExpandedProps = {
-  previewData: ModelPreviewDoc | CollectionPreviewDoc;
+  previewData: ModelPreviewDoc | CollectionPreviewDoc | ModelPreview;
   currVersion: ModelVersionCustomData | null;
   onClick?: () => void;
 };

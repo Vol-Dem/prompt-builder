@@ -148,7 +148,7 @@ export interface ModelPreview {
 export interface ModelPreviewDoc {
   authorTags: string[];
   baseModel: string;
-  baseModels: string[];
+  baseModels?: string[];
   createdAt: number;
   creator: Creator;
   customFileNames?: string[];
