@@ -65,6 +65,7 @@ const CategoriesSearchItem = ({ result }: CategoriesSearchItemProps) => {
               nsfw: false,
               hashtag: false,
               filter: null,
+              src: "aitools",
             }),
           );
         }}
@@ -92,6 +93,7 @@ const CategoriesSearchItem = ({ result }: CategoriesSearchItemProps) => {
               nsfw: false,
               hashtag: false,
               filter: null,
+              src: "aitools",
             }),
           );
           dispatch(modelActions.setActiveCarouselData(null));

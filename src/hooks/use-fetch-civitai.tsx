@@ -10,22 +10,14 @@ import {
 import {
   AppError,
   filterDuplicates,
+  handleErrors,
   normalizeError,
 } from "../utils/generalUtils";
 import {
   ERROR_MESSAGE_CIV_CONNECTION,
-  ERROR_MESSAGE_INVALID_DATA,
   FILTER_CIV_DUPLICATES,
 } from "../variables/constants";
-
-interface CivitaiFetchResultItem {
-  id: number;
-}
-
-interface CivitaiFetchResult {
-  items: CivitaiFetchResultItem[];
-  metadata: { nextCursor: string; nextPage: string };
-}
+import type { CivitaiFetchResult } from "../../shared/types/api";
 
 interface useFetchCivitaiReturn {
   fetchCivitai: (
@@ -77,6 +69,7 @@ const useFetchCivitai = (
   const fetchCivitai = useCallback(
     async (setIsIntersecting?: (isIntersecting: boolean) => void) => {
       if (!url) return;
+      if (errorMessage) return;
       if (nextCursor && currCursor === nextCursor) return;
 
       try {
@@ -95,9 +88,8 @@ const useFetchCivitai = (
         const data = (await imgExampleResponse.json()) as CivitaiFetchResult;
 
         if (!data?.items) {
-          throw new AppError(ERROR_MESSAGE_INVALID_DATA);
+          throw new AppError(ERROR_MESSAGE_CIV_CONNECTION);
         }
-
         let dataUniq = data?.items;
 
         // Remove dublicate images (Civitai bug)
@@ -129,15 +121,17 @@ const useFetchCivitai = (
 
         if (
           typeof err.original === "string" &&
-          !err?.original?.includes("AbortError")
-        ) {
-          setErrorMessage(ERROR_MESSAGE_CIV_CONNECTION);
-        }
+          err?.original?.includes("AbortError")
+        )
+          return;
+
+        handleErrors(err);
+        setErrorMessage(ERROR_MESSAGE_CIV_CONNECTION);
       } finally {
         setIsFetching(false);
       }
     },
-    [nextCursor, url, currCursor],
+    [nextCursor, url, currCursor, errorMessage],
   );
 
   return {

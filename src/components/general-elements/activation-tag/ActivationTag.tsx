@@ -7,7 +7,7 @@ import { getTagWeight, splitTags } from "../../../utils/promptUtils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import type { SidebarPreviewData } from "../../../types/general.types";
 
-type ActivationTagProps = { tag: string; modelData: SidebarPreviewData };
+type ActivationTagProps = { tag: string; modelData?: SidebarPreviewData };
 
 /**
  * Enhanced Tag component that allows adjusting tag weight inside the prompt.

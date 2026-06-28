@@ -3,6 +3,7 @@ import {
   type ChangeEvent,
   type ComponentProps,
   type MouseEvent,
+  type ReactNode,
   type SubmitEvent,
 } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -13,14 +14,19 @@ import { searchActions } from "../../store/search";
 import classes from "./SearchField.module.scss";
 import { updateSearchParams } from "../../utils/generalUtils";
 import QuickSearch from "./quick-search/QuickSearch";
-import { SETTINGS_SEARCH_MIN_QUERY_LENGTH } from "../../variables/constants";
+import {
+  SETTINGS_SEARCH_CIVITAI,
+  SETTINGS_SEARCH_MIN_QUERY_LENGTH,
+} from "../../variables/constants";
 import { useAppDispatch, useAppSelector } from "../../store/hooks/hooks";
 import Select from "../ui/forms/Select";
 import type { SearchSrcType } from "../../types/search.types";
+import logo from "../../assets/logo192.png";
+import logoCiv from "../../assets/logo-civ-80.png";
 
 type SearchFieldProps = ComponentProps<"div">;
 
-type searchSrcSelectValue = { name: string; value: SearchSrcType };
+type SearchSrcSelectValue = { name: ReactNode; value: SearchSrcType };
 
 /**
  * Global search input displayed in the app header.
@@ -79,15 +85,27 @@ const SearchField = ({ className }: SearchFieldProps) => {
     }
   };
 
-  const searchSrcOptions: searchSrcSelectValue[] = [
-    { name: "AITOOLS", value: "aitools" },
-    { name: "Civitai", value: "civitai" },
+  const aiToolsLogo = (
+    <span className={classes["select-logo"]}>
+      <img src={logo} alt="AITOOLS" />
+    </span>
+  );
+  const civitaiLogo = (
+    <span className={classes["select-logo"]}>
+      <img src={logoCiv} alt="AITOOLS" />
+    </span>
+  );
+
+  const searchSrcOptions: SearchSrcSelectValue[] = [
+    { name: aiToolsLogo, value: "aitools" },
+    { name: civitaiLogo, value: "civitai" },
   ];
 
-  const searchSrcHandler = (value: SearchSrcType) => {
+  const searchSrcHandler = (value: SearchSrcType | null) => {
     dispatch(searchActions.resetSearchData());
     dispatch(searchActions.resetSearchFilter());
-    dispatch(searchActions.setSearchSrc(value));
+
+    if (value) dispatch(searchActions.setSearchSrc(value));
   };
 
   return (
@@ -104,18 +122,21 @@ const SearchField = ({ className }: SearchFieldProps) => {
           onSubmit={submitSearchHandler}
           className={classes["search__field"]}
         >
-          <Select
-            options={searchSrcOptions}
-            selected={searchSrc}
-            onChange={searchSrcHandler}
-          />
+          {SETTINGS_SEARCH_CIVITAI && (
+            <Select
+              className={classes["select"]}
+              options={searchSrcOptions}
+              selected={searchSrc}
+              onChange={searchSrcHandler}
+            />
+          )}
           <input
             type="search"
             name="search"
             onChange={searchInputHandler}
             value={searchInput}
             placeholder="Search"
-            className={classes["search__input"]}
+            className={`${classes["search__input"]} ${SETTINGS_SEARCH_CIVITAI ? classes["search__input--civ"] : ""}`}
             onFocus={() => {
               setSearchResultIsOpen(true);
             }}
@@ -132,6 +153,7 @@ const SearchField = ({ className }: SearchFieldProps) => {
         <AnimatePresence>
           {searchInput?.length >= SETTINGS_SEARCH_MIN_QUERY_LENGTH &&
             searchResultIsOpen &&
+            searchSrc !== "civitai" &&
             location.pathname !== "/search" && (
               <QuickSearch
                 onSubmit={submitSearchHandler}

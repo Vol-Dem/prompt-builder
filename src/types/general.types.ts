@@ -11,6 +11,7 @@ export interface GeneralState {
   activeAboutSectionId: string;
   suggestedCollectionsSortBy: SuggestedCollectionsSortType;
   civitaiEnums: CivitaiEnums | null;
+  promptPanelHeight: number | null;
 }
 
 export interface SidebarPreviewData {

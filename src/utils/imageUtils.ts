@@ -249,6 +249,14 @@ export const getUniqImageResources = (
   return filterDuplicates(allImageResources, "modelVersionId");
 };
 
+/**
+ * Compares image data and updates image metadata and model version IDs if new data is found.
+ *
+ * @param newImageData - new image data
+ * @param oldImageData - old image data
+ * @param isTester - whether the user is a tester
+ * @returns aray of unique image resources
+ */
 export const combineImagesData = (
   newImageData: Image[],
   oldImageData: Image[],
@@ -281,6 +289,18 @@ export const combineImagesData = (
           data = {
             ...data,
             meta: { ...item?.meta, ...curData.meta },
+          };
+        }
+
+        if (
+          curData &&
+          !!item?.meta?.prompt &&
+          !curData?.meta?.prompt &&
+          isTester
+        ) {
+          data = {
+            ...data,
+            meta: { ...curData.meta, ...item?.meta },
           };
         }
 

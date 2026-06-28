@@ -17,9 +17,11 @@ import {
 } from "@heroicons/react/24/outline";
 import type { ModelVersionCustomData } from "../../../../shared/types/model";
 import type { ModelPreview } from "../../../../shared/types/firestore";
+import ModelTooltip from "../model-tooltip/ModelTooltip";
+import { createDefaultActivationTag } from "../../../utils/modelUtils";
 
 type ModelTagsProps = {
-  customData: ModelVersionCustomData;
+  customData?: ModelVersionCustomData | null;
   modelPreview: ModelPreview;
 };
 
@@ -57,8 +59,12 @@ const ModelTags = ({ customData, modelPreview }: ModelTagsProps) => {
     setModalIsOpen(false);
   };
 
-  const activationTag =
+  let activationTag: string | null | undefined =
     customData?.mainTag || model?.mainTag || customData?.defActTag;
+
+  if (!activationTag && curVersion && model?.type === "LORA") {
+    activationTag = createDefaultActivationTag(curVersion);
+  }
 
   return (
     <>
@@ -66,9 +72,7 @@ const ModelTags = ({ customData, modelPreview }: ModelTagsProps) => {
         <div className={classes["tags__container"]}>
           <ModelTagsGuide />
           <div className={classes["tags__param"]}>
-            {(customData?.mainTag ||
-              model?.mainTag ||
-              customData?.defActTag) && (
+            {activationTag && (
               <div className={classes["activation-tag"]}>
                 <div className={classes["tags__subtitle"]}>Activation tag:</div>
                 <div className={classes["activation-tag__container"]}>
@@ -111,9 +115,17 @@ const ModelTags = ({ customData, modelPreview }: ModelTagsProps) => {
               type="button"
               className={classes["tags__btn-edit"]}
               onClick={openEditHandler}
+              disabled={!model?.modelVersionsCustomData}
             >
-              <span className={classes["tags__btn-edit-name"]}>Edit...</span>
-              <PencilSquareIcon />
+              <Tooltip
+                className={classes["tags__btn-edit-tooltip"]}
+                content={
+                  !model?.modelVersionsCustomData ? <ModelTooltip /> : ""
+                }
+              >
+                <span className={classes["tags__btn-edit-name"]}>Edit...</span>
+                <PencilSquareIcon />
+              </Tooltip>
             </button>
           </div>
           {(!!curVersion?.trainedWords?.length ||
@@ -131,50 +143,55 @@ const ModelTags = ({ customData, modelPreview }: ModelTagsProps) => {
               />
             </>
           )}
-          {(!!model?.defaultCustomData?.helperTags?.length ||
-            !!customData?.helperTags?.length) && (
+          {model?.defaultCustomData && (
             <>
-              <TagList
-                name="Helper words"
-                coment={
-                  !customData?.helperTags && model?.defaultCustomData.helperTags
-                    ? "Default"
-                    : ""
-                }
-                tags={
-                  customData?.helperTags?.length
-                    ? customData?.helperTags
-                    : model?.defaultCustomData?.helperTags || []
-                }
-                promptType="positive"
-                className={classes["tags__field"]}
-              />
-            </>
-          )}
-          {(!!model?.defaultCustomData?.negativeTags?.length ||
-            !!customData?.negativeTags?.length) && (
-            <>
-              <TagList
-                name="Negative words"
-                coment={
-                  !customData?.negativeTags &&
-                  model?.defaultCustomData.negativeTags
-                    ? "Default"
-                    : ""
-                }
-                tags={
-                  customData?.negativeTags?.length
-                    ? customData?.negativeTags
-                    : model?.defaultCustomData?.negativeTags || []
-                }
-                promptType="negative"
-                className={classes["tags__field"]}
-              />
+              {(!!model?.defaultCustomData?.helperTags?.length ||
+                !!customData?.helperTags?.length) && (
+                <>
+                  <TagList
+                    name="Helper words"
+                    coment={
+                      !customData?.helperTags &&
+                      model?.defaultCustomData.helperTags
+                        ? "Default"
+                        : ""
+                    }
+                    tags={
+                      customData?.helperTags?.length
+                        ? customData?.helperTags
+                        : model?.defaultCustomData?.helperTags || []
+                    }
+                    promptType="positive"
+                    className={classes["tags__field"]}
+                  />
+                </>
+              )}
+              {(!!model?.defaultCustomData?.negativeTags?.length ||
+                !!customData?.negativeTags?.length) && (
+                <>
+                  <TagList
+                    name="Negative words"
+                    coment={
+                      !customData?.negativeTags &&
+                      model?.defaultCustomData.negativeTags
+                        ? "Default"
+                        : ""
+                    }
+                    tags={
+                      customData?.negativeTags?.length
+                        ? customData?.negativeTags
+                        : model?.defaultCustomData?.negativeTags || []
+                    }
+                    promptType="negative"
+                    className={classes["tags__field"]}
+                  />
+                </>
+              )}
             </>
           )}
         </div>
         <AnimatePresence>
-          {modalIsOpen && model && (
+          {modalIsOpen && model && customData && (
             <Modal
               title={
                 <>

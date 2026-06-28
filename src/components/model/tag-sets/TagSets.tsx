@@ -22,6 +22,8 @@ import NotificationMessage from "../../ui/NotificationMessage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import type { TagSet } from "../../../types/prompt.types";
 import { splitTags } from "../../../utils/promptUtils";
+import Tooltip from "../../ui/Tooltip";
+import ModelTooltip from "../model-tooltip/ModelTooltip";
 
 type TagSetsProps = {
   customData?: TagSet[];
@@ -155,7 +157,17 @@ const TagSets = ({ customData, defaultData }: TagSetsProps) => {
           </ButtonInfo>
         </div>
 
-        <Button onClick={openTagSetsForm}>Add tag set</Button>
+        <Button
+          onClick={openTagSetsForm}
+          disabled={!model?.modelVersionsCustomData}
+        >
+          <Tooltip
+            className={classes["tags__btn-edit-tooltip"]}
+            content={!model?.modelVersionsCustomData ? <ModelTooltip /> : ""}
+          >
+            Add tag set
+          </Tooltip>
+        </Button>
       </div>
       {!tagSets?.length && (
         <NotificationMessage>

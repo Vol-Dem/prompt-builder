@@ -57,7 +57,11 @@
     cursor: pointer;
     transition: all 0.3s;
 
-    &:hover {
+    &:disabled {
+      color: var.$color-text-gray;
+    }
+
+    &:not(:disabled):hover {
       color: var.$color-text-white;
     }
 
@@ -73,6 +77,13 @@
 
   &__btn-edit-name {
     display: block;
+  }
+
+  &__btn-edit-tooltip {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    gap: 0.6rem;
   }
 
   &__container {

@@ -86,7 +86,7 @@ const ModelSettings = () => {
   let curVersionData = null;
   let curVersionDefData = null;
 
-  if (model?.id) {
+  if (model?.id && model.modelVersionsCustomData) {
     const customData =
       curTab === DEFAULT_VERSION_ID
         ? model.defaultCustomData
@@ -189,7 +189,7 @@ const ModelSettings = () => {
   };
 
   const modelVersionsHtml =
-    model?.id &&
+    model?.modelVersionsCustomData &&
     Object.values(model?.modelVersionsCustomData)
       ?.sort((a, b) => {
         if (a?.index && b?.index) {

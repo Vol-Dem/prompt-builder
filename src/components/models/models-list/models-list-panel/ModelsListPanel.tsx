@@ -16,7 +16,6 @@ const sortTypes = [
   { name: "Newest", value: "createdAt" },
   { name: "Name", value: "name" },
 ];
-const baseModelsDef = [{ name: "-", value: "-" }];
 
 const ModelsListPanel = () => {
   const activeTab = useAppSelector((state) => state.tabs.currTab);
@@ -26,19 +25,13 @@ const ModelsListPanel = () => {
   );
   const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
   const sortBy = useAppSelector((state) => state.tabs.sortBy);
-  const baseModel = useAppSelector((state) => state.tabs.baseModel);
   const baseModels = useAppSelector((state) => state.tabs.baseModels);
   const previewFullView = useAppSelector((state) => state.tabs.previewFullView);
   const dispatch = useAppDispatch();
 
-  const baseModelsData = !baseModels?.length
-    ? baseModelsDef
-    : [
-        ...baseModelsDef,
-        ...baseModels.map((model) => {
-          return { name: model, value: model };
-        }),
-      ];
+  const baseModelsData = baseModels.map((model) => {
+    return { name: model, value: model };
+  });
 
   const sortSelectOption = sortTypes.map((version) => {
     return {
@@ -55,6 +48,8 @@ const ModelsListPanel = () => {
         name="sort"
         selected={sortBy}
         onChange={(value) => {
+          if (!value) return;
+
           dispatch(tabActions.setSortBy(value));
           dispatch(
             tabActions.setModelsData(cloneObject(TABS_INITIAL_MODELS_DATA)),
@@ -75,9 +70,8 @@ const ModelsListPanel = () => {
       <Select
         id="model"
         name="model"
-        selected={baseModel}
         onChange={(value) => {
-          dispatch(tabActions.setBaseModel(value));
+          dispatch(tabActions.setBaseModel(value || ""));
           dispatch(
             tabActions.setModelsData(cloneObject(TABS_INITIAL_MODELS_DATA)),
           );

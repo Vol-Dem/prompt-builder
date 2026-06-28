@@ -102,22 +102,27 @@ export interface ModelDoc {
 }
 
 export interface UserModelDoc {
-  createdAt: number | string;
-  defaultCustomData: UserModelDefaultCustomData;
+  createdAt?: number | string;
+  defaultCustomData?: UserModelDefaultCustomData;
   hashtags: string[];
   id: number;
-  main: string;
-  mainTag: string;
+  main?: string;
+  mainTag?: string;
   modelType: string;
-  modelVersionsCustomData: ModelVersionsCustomData;
+  modelVersionsCustomData?: ModelVersionsCustomData;
   name: string;
   nsfw: boolean;
-  savedImages: ModelSavedImages;
-  src: string;
-  sub: string[];
-  updatedAt: string;
-  versionIds: string[];
+  savedImages?: ModelSavedImages;
+  src?: string;
+  sub?: string[];
+  updatedAt?: string;
+  versionIds?: number[];
   downloadedAt?: string;
+  type?: string;
+  creator?: Creator;
+  nsfwLevel?: number;
+  tags?: string[];
+  description?: string | null;
 }
 
 export interface ModelPreview {

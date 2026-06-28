@@ -12,6 +12,8 @@ import ImageResourcesItemVersion from "./image-resources-item-version/ImageResou
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
+  URL_CIV_DEF,
+  URL_CIV_RED,
 } from "../../../../../variables/constants";
 import { modelActions } from "../../../../../store/model";
 import {
@@ -72,6 +74,7 @@ const ImageResourcesItem = ({
 }: ImageResourcesItemProps) => {
   const [fromIsOpen, setFormIsOpen] = useState(false);
   const modelId = useAppSelector((state) => state.model.model?.id);
+  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
   const dispatch = useAppDispatch();
 
   const openFormHandler = () => {
@@ -100,11 +103,10 @@ const ImageResourcesItem = ({
   return (
     <>
       <motion.li
-        // Temporarily disabled due to framer-motion animation bug
-        // variants={{
-        //   hidden: { opacity: 0, y: 30 },
-        //   visible: { opacity: 1, y: 0 },
-        // }}
+        variants={{
+          hidden: { opacity: 0, y: 30 },
+          visible: { opacity: 1, y: 0 },
+        }}
         initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
         animate={ANIMATIONS_FM_SLIDEIN}
         className={classes["resource"]}
@@ -133,7 +135,7 @@ const ImageResourcesItem = ({
             {!civConnectionError && (
               <LinkA
                 external={true}
-                href={`https://civitai.com/models/${resource?.modelId}${
+                href={`${nsfwMode ? URL_CIV_RED : URL_CIV_DEF}/models/${resource?.modelId}${
                   resource?.versionId
                     ? `?modelVersionId=${resource?.versionId}`
                     : ""

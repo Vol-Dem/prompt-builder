@@ -1,5 +1,6 @@
 import type {
   CollectionPreviewDoc,
+  ModelPreview,
   ModelPreviewDoc,
 } from "../../shared/types/firestore";
 import type { ModelCategory } from "../../shared/types/user";
@@ -16,7 +17,11 @@ export interface CategorySearchItem {
   subName: string;
 }
 
-export type SearchResult = (ModelPreviewDoc | CollectionPreviewDoc)[];
+export type SearchResult = (
+  | ModelPreviewDoc
+  | CollectionPreviewDoc
+  | ModelPreview
+)[];
 
 export interface SearchResultData {
   query: string;
@@ -39,6 +44,7 @@ export interface SearchFilter {
   modelType: string[];
   baseModel: string[];
   hashtag: boolean;
+  sort?: string | null;
 }
 
 export interface SearchState {

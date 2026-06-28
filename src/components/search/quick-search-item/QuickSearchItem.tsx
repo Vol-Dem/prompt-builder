@@ -14,11 +14,12 @@ import ButtonSquareAdd from "../../general-elements/button-square-add/ButtonSqua
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import type {
   CollectionPreviewDoc,
+  ModelPreview,
   ModelPreviewDoc,
 } from "../../../../shared/types/firestore";
 
 type QuickSearchItemProps = {
-  modelPreveiw: ModelPreviewDoc | CollectionPreviewDoc;
+  modelPreveiw: ModelPreviewDoc | CollectionPreviewDoc | ModelPreview;
 };
 
 /**
@@ -71,6 +72,7 @@ const QuickSearchItem = ({ modelPreveiw }: QuickSearchItemProps) => {
               nsfw: false,
               hashtag: false,
               filter: null,
+              src: "aitools",
             }),
           );
           dispatch(modelActions.setActiveCarouselData(null));

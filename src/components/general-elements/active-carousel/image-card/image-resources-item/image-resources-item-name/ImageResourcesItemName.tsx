@@ -32,29 +32,33 @@ const ImageResourcesItemName = ({
   onClick,
 }: ImageResourcesItemNameProps) => {
   const resourceName =
+    resource.preview?.name ||
     resource?.name ||
     resource?.modelVersionName ||
     resource?.modelVersionId ||
     resource?.hash;
 
+  const modelId = resource.preview?.id || resource?.modelId;
+  const versionId = version || resource.modelVersionId || resource.versionId;
+
   return (
     <>
-      {resource?.preview && (
+      {modelId && (
         <>
           <Link
-            to={`/models/${resource?.preview?.id}${
-              version ? `?versionId=${version}` : ""
+            to={`/models/${modelId}${
+              versionId ? `?versionId=${versionId}` : ""
             }`}
             state={{ versionId: version }}
             className={`${classes["link"]} ${classes["name"]}`}
             onClick={onClick}
             data-id={resource?.preview?.id}
           >
-            {resource.preview.name}
+            {resourceName}
           </Link>
         </>
       )}
-      {!resource?.preview && !versionName && (
+      {!resource?.preview && !versionName && !modelId && (
         <div
           className={classes["name"]}
           title={resource?.name || resource?.modelVersionId + "" || ""}

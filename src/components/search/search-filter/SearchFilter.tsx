@@ -8,9 +8,9 @@ import { searchActions } from "../../../store/search";
 import { MODEL_TYPES } from "../../../variables/constants";
 import { updateSearchParams } from "../../../utils/generalUtils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
-import { fetchCivitaiEnums } from "../../../store/general";
 import { ENUMS_CIVITAI } from "../../../variables/enums";
 import type { SearchSrcType } from "../../../types/search.types";
+import Select from "../../ui/forms/Select";
 
 type ModelTypeCheckboxStatusInput = {
   type: string;
@@ -31,6 +31,12 @@ type BaseModelCheckboxStatusInput = {
 };
 
 type ModelTypeInputData = { name: string; value: string };
+
+const sortOptions = [
+  { name: "Newest", value: "Newest" },
+  { name: "Highest Rated", value: "Highest Rated" },
+  { name: "Most Downloaded", value: "Most Downloaded" },
+];
 
 /**
  * SearchFilter
@@ -62,6 +68,7 @@ type ModelTypeInputData = { name: string; value: string };
  */
 const SearchFilter = () => {
   const [initial, setInitial] = useState(true);
+  const [sortBy, setSortBy] = useState(sortOptions[0].value);
   const [searchParams, setSearchParams] = useSearchParams();
   const [maxModelTypesAllowed, setMaxModelTypesAllowed] = useState(3);
   const [maxBaseModelsAllowed, setMaxBaseModelsAllowed] = useState(3);
@@ -88,21 +95,25 @@ const SearchFilter = () => {
   const searchFilter = useMemo(() => {
     const modelType = searchParams.get("modelType");
     const baseModel = searchParams.get("baseModel");
-    const hashtag = !!searchParams.get("hashtag");
+    const sort = searchParams.get("sort");
+    const hashtag = searchParams.get("hashtag") === "true";
     return {
       modelType: modelType?.split(",").filter(Boolean) || [],
       baseModel: baseModel?.split(",").filter(Boolean) || [],
       hashtag,
       searchSrc,
+      sort,
     };
   }, [searchParams, searchParamSrc]);
 
   useEffect(() => {
-    setSearchParams((prevParams) => {
-      return updateSearchParams(prevParams, {
-        searchSrc: searchSrc,
+    if (searchParamSrc !== searchSrc)
+      setSearchParams((prevParams) => {
+        return {
+          searchSrc: searchSrc,
+          searchQuery: prevParams.get("searchQuery") || "",
+        };
       });
-    });
   }, [searchSrc]);
 
   useEffect(() => {
@@ -190,6 +201,11 @@ const SearchFilter = () => {
     setHashtagCheckboxStatus((prevState) => {
       return { ...prevState, value: !!searchFilter.hashtag };
     });
+
+    if (searchFilter.sort) {
+      setSortBy(searchFilter.sort);
+    }
+
     setModelTypesChecked(searchFilter.modelType.length);
     setBaseModelsChecked(searchFilter.baseModel.length);
     // setInitial(false);
@@ -270,34 +286,36 @@ const SearchFilter = () => {
   };
 
   const baseModelsChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setBaseModelCheckboxStatus((prevState) => {
-      const newState = [...prevState];
-      const curIndex = newState.findIndex((type) => type.id === e.target.id);
+    const newBaseModelsCheckboxStatus = [...baseModelCheckboxStatus];
+    const curIndex = newBaseModelsCheckboxStatus.findIndex(
+      (type) => type.id === e.target.id,
+    );
 
-      newState[curIndex].value = e.target.checked;
+    newBaseModelsCheckboxStatus[curIndex].value = e.target.checked;
 
-      const checked = newState.filter((item) => item.value).length;
-      setBaseModelsChecked(checked);
+    const checked = newBaseModelsCheckboxStatus.filter(
+      (item) => item.value,
+    ).length;
+    setBaseModelsChecked(checked);
 
-      const baseModelsData = newState
-        .filter((type) => type.value)
-        .map((type) => type.id);
+    const baseModelsData = newBaseModelsCheckboxStatus
+      .filter((type) => type.value)
+      .map((type) => type.id);
 
-      dispatch(
-        searchActions.setSearchFilter({
-          type: "baseModel",
-          value: baseModelsData,
-        }),
-      );
+    dispatch(
+      searchActions.setSearchFilter({
+        type: "baseModel",
+        value: baseModelsData,
+      }),
+    );
 
-      setSearchParams((prevParams) => {
-        return updateSearchParams(prevParams, {
-          baseModel: baseModelsData.toString(),
-        });
+    setSearchParams((prevParams) => {
+      return updateSearchParams(prevParams, {
+        baseModel: baseModelsData.toString(),
       });
-
-      return newState;
     });
+
+    setBaseModelCheckboxStatus(newBaseModelsCheckboxStatus);
   };
 
   const hashtagChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -320,6 +338,7 @@ const SearchFilter = () => {
   };
 
   const resetFilterHandler = () => {
+    setSortBy(sortOptions[0].value);
     setModelTypeCheckboxStatus((prevState) => {
       return prevState.map((item) => {
         return { ...item, value: false };
@@ -371,6 +390,22 @@ const SearchFilter = () => {
     );
   });
 
+  const searchSrcHandler = (value: string | null) => {
+    if (!value) return;
+
+    setSortBy(value);
+    dispatch(
+      searchActions.setSearchFilter({
+        type: "sort",
+        value: value,
+      }),
+    );
+
+    setSearchParams((prevParams) => {
+      return updateSearchParams(prevParams, { sort: value });
+    });
+  };
+
   return (
     <>
       <div>
@@ -382,7 +417,14 @@ const SearchFilter = () => {
         </ButtonTertiary>
       </div>
       <div className={classes.filter}>
-        {!!modelTypesHtml?.length && searchSrc === "aitools" && (
+        {searchSrc === "civitai" && (
+          <Select
+            options={sortOptions}
+            selected={sortBy}
+            onChange={searchSrcHandler}
+          />
+        )}
+        {!!modelTypesHtml?.length && (
           <div>
             <Checkbox
               id={hashtagCheckboxStatus.id}

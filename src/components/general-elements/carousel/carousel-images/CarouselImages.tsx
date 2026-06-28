@@ -19,6 +19,7 @@ type CarouselImagesProps = OverrideFields<
     saved: boolean;
     active: boolean;
     side: boolean;
+    menu?: boolean;
     imageWidth?: number;
     location?: ResourceFirestoreCollection;
     locationId?: number | null;
@@ -81,6 +82,7 @@ const CarouselImages = ({
   onOpen,
   onDelete,
   ref,
+  menu,
 }: CarouselImagesProps) => {
   const sfwValue = useAppSelector((state) => state.general.sfwValue);
   let imagesHtml: ReactNode[] = [];
@@ -113,6 +115,7 @@ const CarouselImages = ({
           imageWidth={imageWidth}
           location={location}
           locationId={locationId}
+          menu={menu}
         />
       );
     });

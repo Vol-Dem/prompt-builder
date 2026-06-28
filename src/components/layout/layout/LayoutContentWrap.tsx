@@ -1,5 +1,6 @@
-import { useMemo, useRef, type ComponentProps } from "react";
-import { useAppSelector } from "../../../store/hooks/hooks";
+import { useEffect, useMemo, useRef, type ComponentProps } from "react";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import { generalActions } from "../../../store/general";
 
 type LayoutContentWrapProps = ComponentProps<"main"> & {
   offsetHeight?: number | null;
@@ -31,6 +32,7 @@ const LayoutContentWrap = ({
   const promptHeight = useAppSelector((state) => state.prompt.promptHeight);
   const headerIsFixed = useAppSelector((state) => state.general.headerIsFixed);
   const mainRef = useRef<HTMLDivElement>(null);
+  const dispatch = useAppDispatch();
 
   const paddingMain = useMemo(() => {
     if (headerIsFixed && offsetHeight && promptHeight && promptBtnHeight) {
@@ -47,6 +49,10 @@ const LayoutContentWrap = ({
     promptIsOpen,
     promptBtnHeight,
   ]);
+
+  useEffect(() => {
+    if (paddingMain) dispatch(generalActions.setPromptPanelHeight(paddingMain));
+  }, [paddingMain]);
 
   return (
     <main ref={mainRef} style={{ paddingTop: paddingMain }}>

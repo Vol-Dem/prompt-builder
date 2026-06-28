@@ -3,13 +3,14 @@ import {
   useEffect,
   useRef,
   useState,
-  type ChangeEvent,
+  // type ChangeEvent,
   type ComponentProps,
+  type ReactNode,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import classes from "./Select.module.scss";
-import Input from "./Input";
+// import Input from "./Input";
 import {
   ANIMATIONS_FM_ZOOM_IN,
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
@@ -17,7 +18,7 @@ import {
 import type { OverrideFields } from "../../../../shared/types/general";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
-type SelectOption = { name: string; value: string | number };
+type SelectOption = { name: ReactNode; value: string | number };
 
 type SelectProps<T extends SelectOption> = OverrideFields<
   ComponentProps<"input">,
@@ -25,9 +26,11 @@ type SelectProps<T extends SelectOption> = OverrideFields<
     label?: string;
     selected?: string | number;
     options: T[];
-    onChange: (value: T["value"]) => void;
+    onChange: (value: T["value"] | null) => void;
   }
 >;
+
+// const defOption = { name: "-", value: null };
 
 /**
  * Custom animated select dropdown with radio options.
@@ -51,19 +54,19 @@ const Select = <T extends SelectOption>({
   ...props
 }: SelectProps<T>) => {
   const [selectIsOpen, setSelectIsOpen] = useState(false);
-  const [selectedFieldName, setSelectedFieldName] = useState(selected);
-  const [selectedFieldValue, setSelectedFieldValue] = useState(selected);
+  // const [selectedFieldName, setSelectedFieldName] =
+  //   useState<ReactNode>(selected);
+  // const [selectedFieldValue, setSelectedFieldValue] = useState(selected);
+  const [selectedValue, setSelectedValue] = useState<T | null>(null);
   const [optionsFieldHeight, setOptionsFieldHeight] = useState(15);
   const visibleOptionsAmount = 5;
   const labeldRef = useRef<HTMLLabelElement>(null);
   const inputRef = useRef<HTMLDivElement>(null);
 
+  // const optionsData = selected ? options : [defOption, ...options];
+
   const closeSelectHandler = useCallback((e: PointerEvent) => {
-    if (
-      !(e.target as HTMLElement)?.classList.contains(
-        classes["select__input-field"],
-      )
-    )
+    if (!(e.target as HTMLElement)?.closest(`.${classes["select"]}`))
       setSelectIsOpen(false);
   }, []);
 
@@ -87,9 +90,10 @@ const Select = <T extends SelectOption>({
     const merginBottom = parseFloat(labelStyle.marginBottom);
     const selectHeight =
       labeldRef.current.clientHeight + merginTop + merginBottom;
+    const optionsAmount = selected ? options.length : options.length + 1;
     const fieldHeight =
-      options.length <= visibleOptionsAmount
-        ? options.length * selectHeight
+      optionsAmount <= visibleOptionsAmount
+        ? optionsAmount * selectHeight
         : visibleOptionsAmount * selectHeight;
     setOptionsFieldHeight(fieldHeight);
   }, [visibleOptionsAmount, selectIsOpen, options, selected]);
@@ -101,19 +105,20 @@ const Select = <T extends SelectOption>({
       );
 
       if (selectedData) {
-        setSelectedFieldName(selectedData.name);
-        setSelectedFieldValue(selectedData.value);
+        // setSelectedFieldName(selectedData.name);
+        // setSelectedFieldValue(selectedData.value);
+        setSelectedValue(selectedData);
       }
     }
   }, [options, selected]);
 
-  const onSelectValueChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedValue = (e.target as HTMLElement).dataset.name;
-    if (selectedValue) {
-      setSelectedFieldName(selectedValue);
-      onChange(e.target.value);
-      setSelectIsOpen(false);
-    }
+  const onSelectValueChange = (value: T | null) => {
+    // const selectedName = (e.target as HTMLElement).dataset.name;
+    // if (selectedValue) {
+    setSelectedValue(value);
+    onChange(value?.value || null);
+    setSelectIsOpen(false);
+    // }
   };
 
   const onShowSelect = () => {
@@ -130,8 +135,8 @@ const Select = <T extends SelectOption>({
           name="option"
           value={item.value}
           data-name={item.name}
-          onChange={onSelectValueChange}
-          checked={item.value === selectedFieldValue}
+          onChange={() => onSelectValueChange(item)}
+          checked={item.value === selectedValue?.value}
           {...props}
         />
         <label
@@ -154,25 +159,29 @@ const Select = <T extends SelectOption>({
           {label}
         </label>
       )}
-      <div className={classes["container"]}>
-        <ChevronDownIcon
-          className={`${classes["select__arrow"]} ${
-            selectIsOpen ? classes["select__arrow--open"] : ""
-          }`}
-        />
+      <div className={`${classes["container"]} `}>
         <div
           onClick={onShowSelect}
           className={`${classes["select"]} ${className || ""}`}
         >
+          <ChevronDownIcon
+            className={`${classes["select__arrow"]} ${
+              selectIsOpen ? classes["select__arrow--open"] : ""
+            }`}
+          />
           <div className={classes["select__input"]}>
-            <Input
+            {/* <Input
               id={id}
               className={classes["select__input-field"]}
               type="text"
               placeholder="-"
-              value={selectedFieldName}
+              value={selectedValue?.value + ""}
               readOnly
-            />
+              // label={selectedValue?.name}
+            /> */}
+            <span className={classes["select__input-field"]}>
+              {selectedValue?.name || "-"}
+            </span>
           </div>
           <AnimatePresence>
             {!!selectIsOpen && (
@@ -197,7 +206,33 @@ const Select = <T extends SelectOption>({
                       : {}
                   }
                 >
-                  {selectOptions}
+                  {[
+                    !selected && (
+                      <div key="def" className={classes["select__item"]}>
+                        <input
+                          className={classes["select__radio"]}
+                          type="radio"
+                          id={`select-def`}
+                          name="option"
+                          value={""}
+                          data-name={"-"}
+                          onChange={() => onSelectValueChange(null)}
+                          checked={selectedValue?.value === null}
+                          {...props}
+                        />
+                        <label
+                          ref={labeldRef}
+                          className={classes["select__label"]}
+                          htmlFor={`select-def`}
+                        >
+                          <div className={classes["select__title"]}>
+                            <span>-</span>
+                          </div>
+                        </label>
+                      </div>
+                    ),
+                    ...selectOptions,
+                  ]}
                 </div>
               </motion.div>
             )}

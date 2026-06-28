@@ -78,7 +78,7 @@ const Model = ({ title }: ModelPageProps) => {
     : model?.data?.tags;
 
   const curCustomVersionData = useMemo(() => {
-    if (model?.id && curVersion?.id) {
+    if (model?.id && curVersion?.id && model?.modelVersionsCustomData) {
       return model?.modelVersionsCustomData[curVersion.id];
     }
     return null;
@@ -128,7 +128,7 @@ const Model = ({ title }: ModelPageProps) => {
   }, [modelId, isAuth, dispatch, title]);
 
   useEffect(() => {
-    if (!!model?.modelVersionsCustomData && model.id !== curVersion?.modelId) {
+    if (model?.id && model.id !== curVersion?.modelId) {
       // Selects the initial version data
       const curVersionData = getInitialVersionData(model, versionIdParam);
 
@@ -173,12 +173,13 @@ const Model = ({ title }: ModelPageProps) => {
             itemComponent={Link}
             versionsCustomData={model?.modelVersionsCustomData}
             curVersionId={curVersion?.id}
+            modelVersions={model.data?.modelVersions}
           />
           <ModelDefImages />
           {!!hashtags?.length && <Hashtags hashtags={hashtags} />}
           <div className={classes["info-container"]}>
             <ModelInfo customData={curCustomVersionData} />
-            {modelPreview && curCustomVersionData && (
+            {modelPreview && (
               <ModelTags
                 customData={curCustomVersionData}
                 modelPreview={modelPreview}

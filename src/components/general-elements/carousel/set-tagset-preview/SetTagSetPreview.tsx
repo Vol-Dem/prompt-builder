@@ -59,7 +59,8 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
   useEffect(() => {
     if (
       curVersion &&
-      model?.modelVersionsCustomData[curVersion.id]?.tagSetsData?.length
+      model?.modelVersionsCustomData &&
+      model.modelVersionsCustomData[curVersion.id]?.tagSetsData?.length
     ) {
       setCurTagSetVersionId(`${curVersion.id}`);
     }
@@ -67,9 +68,12 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
 
   const setTagSetPreviwImgHandler = (id: number, isNsfw: boolean) => {
     let curtagSet;
-    if (curTagSetVersionId === "tsv-def") {
+
+    // if (!model?.modelVersionsCustomData || !model?.defaultCustomData) return;
+
+    if (curTagSetVersionId === "tsv-def" && model?.defaultCustomData) {
       curtagSet = model?.defaultCustomData.tagSetsData;
-    } else {
+    } else if (model?.modelVersionsCustomData) {
       curtagSet =
         model?.modelVersionsCustomData[curTagSetVersionId].tagSetsData;
     }

@@ -117,6 +117,7 @@ const SavedImages = memo(({ versionId }: SavedImagesProps) => {
         locationId={model?.id}
         curPostData={postData}
         onDelete={deleteImageHandler}
+        menu={true}
       />
     );
   });

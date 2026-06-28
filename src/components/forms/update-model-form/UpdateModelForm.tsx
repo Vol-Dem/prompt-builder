@@ -3,6 +3,7 @@ import {
   useMemo,
   useState,
   type ChangeEvent,
+  type ReactElement,
   type SubmitEvent,
 } from "react";
 import { Link } from "react-router-dom";
@@ -73,7 +74,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 type UpdateModelFormProps = {
   modelData?: ModelData;
   newModelId?: number;
-  newModelVersionId?: number;
+  newModelVersionId?: number | null;
   newModelType?: string | null;
   onSave?: (preview: ModelPreviewDoc) => void;
   className?: string;
@@ -238,29 +239,29 @@ const UpdateModelForm = ({
     }
 
     if (modelData) {
-      const versionStatusInputData = Object.values(
-        modelData?.modelVersionsCustomData,
-      )
-        ?.sort((a, b) => {
-          if (typeof a.index === "number" && typeof b.index === "number") {
-            return a.index - b.index;
-          }
+      const versionStatusInputData =
+        modelData?.modelVersionsCustomData &&
+        Object.values(modelData?.modelVersionsCustomData)
+          ?.sort((a, b) => {
+            if (typeof a.index === "number" && typeof b.index === "number") {
+              return a.index - b.index;
+            }
 
-          return 0;
-        })
-        .map((version) => {
-          return {
-            type: "checkbox",
-            id: version.versionId + "in",
-            name: version.versionName || "",
-            label: version.name || "",
-            value: !!version.downloadStatus,
-          };
-        });
+            return 0;
+          })
+          .map((version) => {
+            return {
+              type: "checkbox",
+              id: version.versionId + "in",
+              name: version.versionName || "",
+              label: version.name || "",
+              value: !!version.downloadStatus,
+            };
+          });
 
       setVersionsDownloadStatus(versionStatusInputData || []);
 
-      const subCats = modelData.sub.flatMap((subId, i) => {
+      const subCats = modelData.sub?.flatMap((subId, i) => {
         const subData = categories[modelData.modelType]
           ?.find((category) => category.id === modelData.main)
           ?.subcategories?.find((sucategory) => sucategory.id === subId);
@@ -282,7 +283,7 @@ const UpdateModelForm = ({
         };
       });
 
-      setSubCatInputs(subCats);
+      if (subCats) setSubCatInputs(subCats);
 
       const mainCategoryName = categories[modelData?.modelType]?.find(
         (category) => category.id === modelData?.main,
@@ -290,7 +291,7 @@ const UpdateModelForm = ({
 
       setMainCategorySelected({
         name: mainCategoryName || "",
-        id: mainCategoryName ? modelData?.main : "",
+        id: mainCategoryName && modelData?.main ? modelData?.main : "",
         isValid: mainCategoryName ? true : false,
       });
 
@@ -375,7 +376,11 @@ const UpdateModelForm = ({
         nsfw: nsfwInput,
       };
 
-      const { preview, baseModels } = await saveModelData(
+      const {
+        preview,
+        baseModels,
+        modelData: userModelData,
+      } = await saveModelData(
         newModelData,
         categories,
         curBaseModels,
@@ -401,6 +406,9 @@ const UpdateModelForm = ({
         });
       }
 
+      if (curModel?.id && modelId === curModel?.id) {
+        dispatch(modelActions.updateModelDataField(userModelData));
+      }
       setSavedModel(modelId);
       setSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
       setShowErrorMessage(false);
@@ -533,6 +541,16 @@ const UpdateModelForm = ({
     };
   });
 
+  let submitButton: ReactElement | null = (
+    <Button type="submit" disabled={modelIsSaving} className={classes.submit}>
+      {!modelIsSaving ? "Save" : <Spinner size="small" />}
+    </Button>
+  );
+
+  if (savedModel && !!newModelId) {
+    submitButton = null;
+  }
+
   return (
     <form
       onSubmit={submitFormHandler}
@@ -619,6 +637,8 @@ const UpdateModelForm = ({
             id="type"
             selected={modelTypeInput}
             onChange={(value) => {
+              if (!value) return;
+
               setModelTypeInput(value);
               setMainCategoryQuery("");
               setMainCategorySelected({
@@ -694,31 +714,34 @@ const UpdateModelForm = ({
                 {successMessage}
               </SuccessMessage>
             )}
-            {savedModel && !modelData && (
-              <>
-                {"-"}
-                <Link
-                  to={`/models/${savedModel}`}
-                  className={classes.link}
-                  onClick={() => {
-                    if (savedModel !== curModel?.id) {
-                      dispatch(modelActions.resetModelData());
-                    }
-                  }}
-                >
-                  Show model
-                </Link>
-              </>
-            )}
+            {savedModel &&
+              !modelData &&
+              (newModelId !== curModel?.id || !newModelId) && (
+                <>
+                  {"-"}
+                  <Link
+                    to={`/models/${savedModel}`}
+                    className={classes.link}
+                    onClick={() => {
+                      if (savedModel !== curModel?.id) {
+                        dispatch(modelActions.resetModelData());
+                      }
+                    }}
+                  >
+                    Show model
+                  </Link>
+                </>
+              )}
           </div>
         )}
-        <Button
+        {/* <Button
           type="submit"
           disabled={modelIsSaving}
           className={classes.submit}
         >
           {!modelIsSaving ? "Save" : <Spinner size="small" />}
-        </Button>
+        </Button> */}
+        {submitButton}
       </div>
     </form>
   );

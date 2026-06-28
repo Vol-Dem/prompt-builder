@@ -132,6 +132,7 @@ const CollectionImages = memo(() => {
           location="collections"
           locationId={collectionData?.id}
           curPostData={postData}
+          menu={true}
         />
       );
     });

@@ -32,6 +32,7 @@ type CarouselImageProps = {
   saved: boolean;
   active: boolean;
   side: boolean;
+  menu?: boolean;
   imageData: Image;
   imageWidth?: number;
   location?: ResourceFirestoreCollection;
@@ -110,6 +111,7 @@ const CarouselImage = ({
   onClick,
   onOpen,
   onDelete,
+  menu,
 }: CarouselImageProps) => {
   const [imgIsLoading, setImgIsLoading] = useState(false);
   const [imgIsLoaded, setImgIsLoaded] = useState(false);
@@ -228,6 +230,7 @@ const CarouselImage = ({
               className={classes["menu-btn"]}
               onClick={openMenuHandler}
               title="Image settings"
+              disabled={!menu}
             >
               <EllipsisHorizontalIcon />
             </ButttonTertiary>

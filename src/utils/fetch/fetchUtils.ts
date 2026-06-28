@@ -86,13 +86,14 @@ export const fetchData = async <T>(
  */
 export const fetchDataFromFirestore = async <T>(
   ...docPath: [string, ...string[]]
-): Promise<T> => {
+): Promise<T | null> => {
   try {
     const dataDoc = doc(firestore, ...docPath);
     const docSnap = await getDoc(dataDoc);
 
     if (!docSnap.exists()) {
-      throw new AppError("Can't find document");
+      // throw new AppError("Can't find document");
+      return null;
     }
 
     return docSnap.data() as T;

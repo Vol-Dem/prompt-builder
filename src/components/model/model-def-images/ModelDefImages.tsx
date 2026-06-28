@@ -133,11 +133,12 @@ const ModelDefImages = () => {
             key={nsfwLevel}
             imagesData={filteredModelImages}
             versionId={curVersion?.id || null}
-            saved={false}
+            saved={!model?.modelVersionsCustomData}
             modelId={model?.id}
             postId={filteredModelImages[0].postId}
             location="models"
             locationId={model?.id}
+            menu={!!model?.modelVersionsCustomData}
           />
         )}
         {!filteredModelImages?.length && !curVersionImagesIsLoading && (

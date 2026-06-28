@@ -1,6 +1,7 @@
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
+  XCircleIcon,
 } from "@heroicons/react/24/outline";
 
 import Tooltip from "../../../../../ui/Tooltip";
@@ -31,27 +32,35 @@ const ImageResourcesItemVersion = ({
   versionName,
   versionIsSaved,
 }: ImageResourcesItemVersionProps) => {
+  let tooltip = "Version downloaded";
+  let icon = (
+    <CheckCircleIcon
+      className={`${classes["version-svg"]} ${classes["version-svg--saved"]}`}
+    />
+  );
+
+  if (!versionIsSaved) {
+    tooltip = "Version not downloaded";
+    icon = <ExclamationCircleIcon className={classes["version-svg"]} />;
+  }
+
+  if (!resource?.preview) {
+    tooltip = "Model not downloaded";
+    icon = (
+      <XCircleIcon
+        className={`${classes["version-svg"]} ${classes["version-svg--not-saved"]}`}
+      />
+    );
+  }
+
   return (
     <Tooltip
       className={classes["tooltip--align-left"]}
       defSide="left"
-      content={
-        <div className={classes["version-tooltip"]}>
-          {`${
-            versionIsSaved ? "Version downloaded" : "Version not downloaded"
-          }`}
-        </div>
-      }
+      content={<div className={classes["version-tooltip"]}>{tooltip}</div>}
     >
       <div className={classes["version"]}>
-        {!versionIsSaved && !!resource?.preview && (
-          <ExclamationCircleIcon className={classes["version-svg"]} />
-        )}
-        {versionIsSaved && (
-          <CheckCircleIcon
-            className={`${classes["version-svg"]} ${classes["version-svg--saved"]}`}
-          />
-        )}{" "}
+        {icon}
         <span className={classes["version-name"]}>
           {versionName || resource?.versionName}
         </span>

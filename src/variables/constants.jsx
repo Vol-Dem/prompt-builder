@@ -74,7 +74,7 @@ export const SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE = 16;
 export const SETTINGS_IMAGES_NUMBER_PER_REQUEST = 100;
 export const SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE = 12;
 export const SETTINGS_SEARCH_RESULT_PER_PAGE = 40;
-export const SETTINGS_SEARCH_MIN_QUERY_LENGTH = 3;
+export const SETTINGS_SEARCH_MIN_QUERY_LENGTH = 1;
 export const SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE = 4;
 export const SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT = 5;
 export const SETTINGS_MODEL_VISIBLE_TAGSETS_AMOUNT = 2;
@@ -105,6 +105,7 @@ export const SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV = false;
 export const SETTINGS_SHOW_ALL_DEF_IMAGES = true;
 export const SETTINGS_FORCE_UPDATE_POST_DATA = true; // force overwriting of post data
 export const SETTINGS_FORCE_HIDDEN_PROMPT_FETCH = true; // force overwriting of post data
+export const SETTINGS_SEARCH_CIVITAI = true;
 // export const SETTINGS_SUPPORTED_FILE_EXTENSIONS = [
 //   "safetensors",
 //   "pt",

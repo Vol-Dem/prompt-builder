@@ -157,6 +157,7 @@ const ActiveCarousel = () => {
                           activeCarouselData?.locationId ||
                           activeCarouselData?.modelId
                         }
+                        menu={activeCarouselData?.menu}
                       />
                       <ImageCardCarouselGuide />
                     </>

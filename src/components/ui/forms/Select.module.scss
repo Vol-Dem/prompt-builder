@@ -4,10 +4,24 @@
   position: relative;
   background-color: var.$color-input-bg;
   border-radius: 10px;
+  width: 100%;
 }
 
 .select {
   position: relative;
+  font-size: 1.5rem;
+  border-radius: 10px 0 0 10px;
+  border-radius: 10px;
+  padding: 0.3rem;
+  width: 100%;
+  min-width: 16rem;
+  padding-left: 1rem;
+  padding-right: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var.$box-shadow-inset;
+  color: var.$color-text-white;
+  color: var.$color-text-gray;
+
   &__arrow {
     display: block;
     position: absolute;
@@ -22,6 +36,7 @@
     // clip-path: polygon(0 25%, 50% 60%, 100% 25%, 100% 40%, 50% 80%, 0 40%);
     transition: all 0.3s;
     cursor: pointer;
+    z-index: 5;
 
     &--open {
       transform-origin: 50% 25%;
@@ -31,12 +46,27 @@
 
   &__input {
     position: relative;
+    // width: 100%;
+    // cursor: pointer;
   }
 
   &__input-field {
-    padding-left: 1.2rem;
+    // display: flex;
+    // padding-left: 1.2rem;
     background-color: transparent;
     cursor: pointer;
+
+    // font-size: 1.5rem;
+    // border-radius: 10px 0 0 10px;
+    // border-radius: 10px;
+    // padding: 0.3rem;
+    // width: 100%;
+    // padding-left: 1rem;
+    // padding-right: 2rem;
+    // border: 1px solid rgba(255, 255, 255, 0.3);
+    // box-shadow: var.$box-shadow-inset;
+    // color: var.$color-text-white;
+    // color: var.$color-text-gray;
   }
 
   &__icon {
@@ -74,7 +104,7 @@
     transition: all 0.3s;
     display: flex;
     gap: 1rem;
-    padding: 0.4rem 0.8rem;
+    padding: 0.4rem 0.5rem;
     margin: 0.2rem 1rem;
     border-radius: 10px;
     transition: all 0.3s ease;
@@ -99,15 +129,14 @@
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 0 0 1rem 1rem;
     // transition: all 0.3s;
-    z-index: 6;
-
     // width: var(--input-width);
     background-color: var.$color-input-bg;
     border-radius: 10px;
     margin-top: 0.4rem;
-    z-index: 30;
+    z-index: 70;
     box-shadow: var.$box-shadow;
     border: 1px solid rgba(var.$color-gray, 0.3);
+    left: 0;
     @include var.custom-scroll;
 
     &--hide {
@@ -123,27 +152,7 @@
       // gap: 0.4rem;
       height: 100%;
       overflow-y: scroll;
-      @include var.custom-scroll // &::-webkit-scrollbar {
-        //   width: 8px; /* width of the entire scrollbar */
-        //   border-radius: 1rem;
-        //   opacity: 0;
-        // }
-        // &::-webkit-scrollbar-track {
-        //   background: #443d62; /* color of the tracking area */
-        //   border-radius: 1rem;
-        //   opacity: 0;
-        // }
-        // &::-webkit-scrollbar-thumb {
-        //   background-color: #ababab; /* color of the scroll thumb */
-        //   border-radius: 20px; /* roundness of the scroll thumb */
-        //   opacity: 0;
-        //   //   border: 3px solid #ababab; /* creates padding around scroll thumb */
-        //   &:hover {
-        //     background-color: #818181; /* color of the scroll thumb */
-        //     opacity: 0;
-        //   }
-        // }
-;
+      @include var.custom-scroll; // } //   } //     opacity: 0; //     background-color: #818181; /* color of the scroll thumb */ //   &:hover { //   //   border: 3px solid #ababab; /* creates padding around scroll thumb */ //   opacity: 0; //   border-radius: 20px; /* roundness of the scroll thumb */ //   background-color: #ababab; /* color of the scroll thumb */ // &::-webkit-scrollbar-thumb { // } //   opacity: 0; //   border-radius: 1rem; //   background: #443d62; /* color of the tracking area */ // &::-webkit-scrollbar-track { // } //   opacity: 0; //   border-radius: 1rem; //   width: 8px; /* width of the entire scrollbar */ // &::-webkit-scrollbar {
     }
   }
 

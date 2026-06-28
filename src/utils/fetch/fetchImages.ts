@@ -360,7 +360,7 @@ export const getVersionImagesFromCiv = async (
 ): Promise<Image[] | null> => {
   try {
     const versionImagesRequest = await fetch(
-      `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${username}&nsfw=X&limit=200&sort=Oldest`,
+      `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${username}&nsfw=X&limit=200&sort=Oldest&withMeta=true`,
     );
     const versionImages = (await versionImagesRequest.json()) as {
       items: Image[];

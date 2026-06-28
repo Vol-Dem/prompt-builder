@@ -74,18 +74,20 @@ const Tooltip = ({
       onMouseEnter={setTranslateHandler}
     >
       {children}
-      <div
-        ref={contentRef}
-        className={classes["tooltip-content"]}
-        style={{
-          transform: `translate(${translateX}%, ${translateY}%)`,
-          top: `${translateY < 0 ? 0 : 100}%`,
-          right: `${translateX > 0 ? 0 : 100}%`,
-          borderRadius: borderRadius,
-        }}
-      >
-        {content}
-      </div>
+      {content && (
+        <div
+          ref={contentRef}
+          className={classes["tooltip-content"]}
+          style={{
+            transform: `translate(${translateX}%, ${translateY}%)`,
+            top: `${translateY < 0 ? 0 : 100}%`,
+            right: `${translateX > 0 ? 0 : 100}%`,
+            borderRadius: borderRadius,
+          }}
+        >
+          {content}
+        </div>
+      )}
     </div>
   );
 };

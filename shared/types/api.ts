@@ -16,3 +16,12 @@ export interface UpdateModelError {
 }
 
 export type UpdateModelResponse = UpdateModelSuccess | UpdateModelError;
+
+export interface CivitaiFetchResultItem {
+  id: number;
+}
+
+export interface CivitaiFetchResult<T = CivitaiFetchResultItem> {
+  items: T[];
+  metadata: { nextCursor: string; nextPage: string };
+}

@@ -1,3 +1,4 @@
+import type { ModelCategories } from "../../shared/types/user";
 import type { SelectOption } from "./general.types";
 
 export type SubcategoryInput<T extends string | number = string> = {
@@ -26,3 +27,19 @@ export type VersionStatusInput = {
   label: string;
   value: boolean;
 };
+
+export interface ModelFormData {
+  categories: ModelCategories;
+  fileName?: string;
+  hashtags: string[];
+  main: string;
+  mainTag?: string;
+  modelId: number;
+  modelName: string;
+  modelType: string;
+  modelVersionId: number | null;
+  nsfw: boolean;
+  size?: number;
+  sub: string[];
+  versionsDownloadStatus: VersionStatusInput[];
+}

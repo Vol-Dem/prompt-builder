@@ -292,7 +292,7 @@ export const setTagSetPreviewImg = (
           defaultCustomData: updatedDefaultCustomData,
         }),
       );
-    } else {
+    } else if (model?.modelVersionsCustomData) {
       const updatedVersionsCustomData = {
         ...model?.modelVersionsCustomData,
         [versionId]: {
@@ -372,7 +372,7 @@ export const deleteModel = (): AppThunk => {
     const uid = getState().auth.user.uid;
     const model = getState().model.model;
 
-    if (model) {
+    if (model?.savedImages) {
       Object.values(model.savedImages).forEach(async (versionData) => {
         const postsData = versionData.map((post) => {
           return {

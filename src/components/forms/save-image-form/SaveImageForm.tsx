@@ -140,7 +140,7 @@ const SaveImageForm = ({
           filterDisabledInput && modelData?.id
             ? `&modelId=${modelData?.id}`
             : ""
-        }&nsfw=${nsfwLevel}`,
+        }&nsfw=${nsfwLevel}&withMeta=true`,
       );
 
       if (imgExampleResponse.status === 500) {
@@ -210,6 +210,7 @@ const SaveImageForm = ({
       location === "models" &&
       modelData &&
       versionIdInput &&
+      modelData?.savedImages &&
       Object.hasOwn(modelData, "savedImages")
     ) {
       curPostData = modelData?.savedImages[versionIdInput]?.find(
@@ -268,6 +269,8 @@ const SaveImageForm = ({
             id="version-select"
             selected={versionIdInput || undefined}
             onChange={(value) => {
+              if (!value) return;
+
               setVersionIdInput(+value);
             }}
             options={versionSelectOptions}

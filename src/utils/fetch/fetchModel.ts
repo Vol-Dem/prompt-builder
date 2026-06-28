@@ -22,7 +22,6 @@ import {
   ERROR_MESSAGE_INVALID_DATA,
   ERROR_MESSAGE_MODEL_UPDATE,
   SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
-  SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV,
   URL_CIV_MODELS,
 } from "../../variables/constants";
 import {
@@ -52,7 +51,7 @@ import type {
   ModelCategories,
   ModelCategory,
 } from "../../../shared/types/user";
-import type { VersionStatusInput } from "../../types/forms.types";
+import type { ModelFormData } from "../../types/forms.types";
 
 const firestore = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp);
@@ -159,13 +158,29 @@ export const fetchModelData = async (
 
   let defModelData: CivitaiModelDoc;
 
-  if (SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV) {
+  if (!customModelData) {
     defModelData = await fetchModelFromCivitai(modelId);
   } else {
     defModelData = (await fetchDataFromFirestore(
       "models",
       modelId + "",
     )) as CivitaiModelDoc;
+  }
+
+  if (defModelData && !customModelData) {
+    return {
+      data: defModelData,
+      // ...defModelData,
+      id: defModelData.id,
+      type: defModelData.type,
+      modelType: defModelData.type,
+      creator: defModelData.creator,
+      name: defModelData.name,
+      nsfw: defModelData.nsfw,
+      nsfwLevel: defModelData.nsfwLevel,
+      hashtags: defModelData.tags,
+      description: defModelData.description,
+    };
   }
 
   return { ...customModelData, data: defModelData };
@@ -231,15 +246,17 @@ export const updateUserCustomModelData = async (
   });
   const modelVersionsCustomData = { ...newVersionsCustomData };
 
-  Object.values(model?.modelVersionsCustomData).forEach((customVersion) => {
-    modelVersionsCustomData[customVersion.versionId] = {
-      ...customVersion,
-      index:
-        newModelData?.modelVersions?.find(
-          (version) => version.id === customVersion.versionId,
-        )?.index || 0,
-    };
-  });
+  if (model?.modelVersionsCustomData) {
+    Object.values(model?.modelVersionsCustomData).forEach((customVersion) => {
+      modelVersionsCustomData[customVersion.versionId] = {
+        ...customVersion,
+        index:
+          newModelData?.modelVersions?.find(
+            (version) => version.id === customVersion.versionId,
+          )?.index || 0,
+      };
+    });
+  }
 
   const fileNames = newModelData.modelVersions?.flatMap((version) => {
     if (Object.hasOwn(version, "files") && version?.files) {
@@ -296,51 +313,23 @@ export const updateUserCustomModelData = async (
   const userRef = doc(firestore, "users", uid);
 
   if (newBaseModel) {
-    await updateDoc(
-      userRef,
-      {
-        baseModels: arrayUnion(...baseModels),
-      },
-      // { merge: true },
-    );
+    await updateDoc(userRef, {
+      baseModels: arrayUnion(...baseModels),
+    });
   }
 
-  await updateDoc(
-    modelsRef,
-    {
-      modelVersionsCustomData: modelVersionsCustomData,
-    },
-    // { merge: true },
-  );
-  await updateDoc(
-    modelsPrevRef,
-    {
-      modelVersionsCustomData: modelVersionsCustomData,
-      fileNames,
-      hashes,
-      versionIds,
-      tags: newModelData.tags,
-      baseModels: arrayUnion(...baseModels),
-    },
-    // { merge: true },
-  );
+  await updateDoc(modelsRef, {
+    modelVersionsCustomData: modelVersionsCustomData,
+  });
+  await updateDoc(modelsPrevRef, {
+    modelVersionsCustomData: modelVersionsCustomData,
+    fileNames,
+    hashes,
+    versionIds,
+    tags: newModelData.tags,
+    baseModels: arrayUnion(...baseModels),
+  });
 };
-
-interface ModelFormData {
-  categories: ModelCategories;
-  fileName?: string;
-  hashtags: string[];
-  main: string;
-  mainTag?: string;
-  modelId: number;
-  modelName: string;
-  modelType: string;
-  modelVersionId: number | null;
-  nsfw: boolean;
-  size?: number;
-  sub: string[];
-  versionsDownloadStatus: VersionStatusInput[];
-}
 
 /**
  * Saves model data to database
@@ -355,7 +344,11 @@ export const saveModelData = async (
   categories: ModelCategories,
   curBaseModels: string[],
   modelData?: ModelData,
-): Promise<{ preview: ModelPreviewDoc; baseModels: string[] | null }> => {
+): Promise<{
+  preview: ModelPreviewDoc;
+  modelData: UserModelDoc;
+  baseModels: string[] | null;
+}> => {
   try {
     let data: CivitaiModelDoc;
     let modelVersions = [];
@@ -409,10 +402,12 @@ export const saveModelData = async (
         modelVersions = data?.modelVersions;
       } else {
         data = modelData.data;
-        modelVersions = data?.modelVersions.filter((version) =>
-          Object.keys(modelData?.modelVersionsCustomData).includes(
-            `${version.id}`,
-          ),
+        modelVersions = data?.modelVersions.filter(
+          (version) =>
+            modelData?.modelVersionsCustomData &&
+            Object.keys(modelData?.modelVersionsCustomData).includes(
+              `${version.id}`,
+            ),
         );
       }
 
@@ -775,7 +770,11 @@ export const saveModelData = async (
         updatedBaseModels = [...new Set([...baseModels, ...curBaseModels])];
       }
 
-      return { preview: loraPrevData, baseModels: updatedBaseModels };
+      return {
+        preview: loraPrevData,
+        modelData: modelInfo,
+        baseModels: updatedBaseModels,
+      };
     }
   } catch (error) {
     console.log(error);

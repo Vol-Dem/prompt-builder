@@ -28,6 +28,9 @@ const firestore = getFirestore(firebaseApp);
  * @property {string} sfwValue - Stored SFW filter value.
  * @property {string} nsfwValue - Stored NSFW filter value.
  * @property {string} activeAboutSectionId - Current About section id.
+ * @property {suggestedCollectionsSortBy} suggestedCollectionsSortBy - Field to sort suggested collections.
+ * @property {CivitaiEnums | null} civitaiEnums - Civitai enums.
+ * @property {string | null} promptPanelHeight - Current height of the prompt panel.
  */
 const generalSlice = createSlice({
   name: "general",
@@ -41,10 +44,14 @@ const generalSlice = createSlice({
     activeAboutSectionId: "",
     suggestedCollectionsSortBy: "name",
     civitaiEnums: null,
+    promptPanelHeight: null,
   } as GeneralState,
   reducers: {
     setIsMobile(state, action: PayloadAction<boolean>) {
       state.isMobile = action.payload;
+    },
+    setPromptPanelHeight(state, action: PayloadAction<number>) {
+      state.promptPanelHeight = action.payload;
     },
     setCivitaiEnums(state, action: PayloadAction<CivitaiEnums>) {
       state.civitaiEnums = action.payload;

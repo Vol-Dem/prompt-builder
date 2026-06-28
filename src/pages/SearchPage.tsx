@@ -3,16 +3,15 @@ import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 import { useSearchParams } from "react-router-dom";
 
 import classes from "./SearchPage.module.scss";
-import { liveSearch, searchActions } from "../store/search";
+import { civitaiSearch, liveSearch, searchActions } from "../store/search";
 import { useOnlineStatus } from "../hooks/use-online-status";
 import useIntersection from "../hooks/use-intersection";
-import { checkObjectsIsEqual, createParamString } from "../utils/generalUtils";
+import { checkObjectsIsEqual } from "../utils/generalUtils";
 import {
   ERROR_MESSAGE_OFFLINE,
   SETTINGS_LOAD_MORE_MARGIN_SMALL,
   SETTINGS_SEARCH_MIN_QUERY_LENGTH,
   SETTINGS_SEARCH_RESULT_PER_PAGE,
-  URL_CIV_MODELS,
 } from "../variables/constants";
 import PreviewCard from "../components/general-elements/preview-card/PreviewCard";
 import Spinner from "../components/ui/Spinner";
@@ -21,9 +20,6 @@ import LeftSidebar from "../components/layout/left-sidebar/LeftSidebar";
 import NotificationMessage from "../components/ui/NotificationMessage";
 import SearchFilter from "../components/search/search-filter/SearchFilter";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
-import useFetchCivitai from "../hooks/use-fetch-civitai";
-import { createModelPreviewData } from "../utils/modelUtils";
-import type { SearchFilter as SearchFilterType } from "../types/search.types";
 import Button from "../components/ui/buttons/Button";
 
 interface SearchPageProps {
@@ -80,41 +76,20 @@ const SearchPage = ({ title }: SearchPageProps) => {
     `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`,
   );
   const searchQueryParam = searchParams.get("searchQuery");
+
   const searchFilter = useMemo(() => {
     const modelType = searchParams.get("modelType");
     const baseModel = searchParams.get("baseModel");
+    const sort = searchParams.get("sort");
     const hashtag = searchParams.get("hashtag") === "true";
     return {
       modelType: modelType?.split(",").filter(Boolean) || [],
       baseModel: baseModel?.split(",").filter(Boolean) || [],
       hashtag,
       src: searchSrc,
+      sort,
     };
   }, [searchParams, searchSrc]);
-
-  const createCivitaiSearchUrl = (searchFilter: SearchFilterType) => {
-    // const baseModels = searchFilter.baseModel?.length
-    //   ? `&baseModels=${searchFilter.baseModel}`
-    //   : "";
-    const baseModels = searchFilter.baseModel?.length
-      ? createParamString(searchFilter.baseModel, "baseModels")
-      : "";
-    const modelType = searchFilter.modelType?.length
-      ? createParamString(searchFilter.modelType, "types")
-      : "";
-
-    return `${URL_CIV_MODELS}?query=${searchQueryParam}&limit=${SETTINGS_SEARCH_RESULT_PER_PAGE}${baseModels}${modelType}&sort=Newest`;
-  };
-  const url = createCivitaiSearchUrl(searchFilter);
-  const {
-    fetchedData: fetchedModels,
-    isFetching: modelsIsLoading,
-    // setFetchedData: setFetchedModels,
-    isLastPage: isLastCivPage,
-    errorMessage: civErrorMessage,
-    fetchCivitai,
-    setErrorMessage: setCivErrorMessage,
-  } = useFetchCivitai(url);
 
   const queryStringIsChanged = searchResult?.query !== searchQueryParam;
   const filterIsChanged =
@@ -125,7 +100,11 @@ const SearchPage = ({ title }: SearchPageProps) => {
     queryStringIsChanged || filterIsChanged || searchResult.nsfw !== nsfwMode;
   const loadMore = !searchParamsIsChanged && !!searchResult?.result?.length;
 
-  const isNotLastPage = !isLastPage || !isLastSubPage || !isLastCollectionsPage;
+  let isNotLastPage = !isLastPage || !isLastSubPage || !isLastCollectionsPage;
+
+  if (searchSrc === "civitai") {
+    isNotLastPage = !isLastPage;
+  }
 
   if (filterIsChanged) {
     window.scroll(0, 0);
@@ -150,39 +129,17 @@ const SearchPage = ({ title }: SearchPageProps) => {
     }
   }, [dispatch, initial, searchQueryParam]);
 
-  useEffect(() => {
-    if (fetchTimeoutRef.current) {
-      clearTimeout(fetchTimeoutRef.current);
-    }
-
-    if (
-      searchSrc === "civitai" &&
-      !isLastCivPage &&
-      (isIntersecting ||
-        fetchedModels?.length < SETTINGS_SEARCH_RESULT_PER_PAGE) &&
-      isOnline &&
-      searchQueryParam &&
-      searchQueryParam?.length >= SETTINGS_SEARCH_MIN_QUERY_LENGTH &&
-      !modelsIsLoading
-    ) {
-      fetchCivitai(setIsIntersecting);
-    }
-  }, [
-    isOnline,
-    isIntersecting,
-    nsfwMode,
-    searchQueryParam,
-    searchParamsIsChanged,
-    isLastCivPage,
-    modelsIsLoading,
-    searchSrc,
-    fetchCivitai,
-    fetchedModels,
-  ]);
-
   const retryImageLoadingHandler = () => {
-    setCivErrorMessage("");
-    fetchCivitai(setIsIntersecting);
+    dispatch(searchActions.setErrorMessage(""));
+    dispatch(
+      civitaiSearch(
+        searchQueryParam,
+        nsfwMode,
+        true,
+        searchFilter.hashtag,
+        searchFilter,
+      ),
+    );
   };
 
   useEffect(() => {
@@ -191,23 +148,20 @@ const SearchPage = ({ title }: SearchPageProps) => {
     }
 
     if (
-      searchSrc === "aitools" &&
       ((isNotLastPage && isIntersecting) || searchParamsIsChanged) &&
       isOnline &&
       searchQueryParam &&
       searchQueryParam?.length >= SETTINGS_SEARCH_MIN_QUERY_LENGTH &&
-      !searchIsLoading
+      !searchIsLoading &&
+      !errorMessage
     ) {
       if (searchParamsIsChanged) {
         dispatch(searchActions.resetAllLastPageStatus());
       }
-      // if (searchSrc === "civitai") {
-      //   fetchCivitai(setIsIntersecting);
-      // }
-      if (searchSrc === "aitools")
-        fetchTimeoutRef.current = setTimeout(() => {
-          setIsIntersecting(false);
 
+      fetchTimeoutRef.current = setTimeout(() => {
+        setIsIntersecting(false);
+        if (searchSrc === "aitools")
           dispatch(
             liveSearch(
               searchQueryParam,
@@ -219,7 +173,19 @@ const SearchPage = ({ title }: SearchPageProps) => {
               searchFilter,
             ),
           );
-        }, 1000);
+        if (searchSrc === "civitai")
+          dispatch(
+            civitaiSearch(
+              searchQueryParam,
+              nsfwMode,
+              // SETTINGS_SEARCH_RESULT_PER_PAGE,
+              loadMore,
+              // false,
+              searchFilter.hashtag,
+              searchFilter,
+            ),
+          );
+      }, 1000);
     }
 
     document.title = searchQueryParam
@@ -238,6 +204,7 @@ const SearchPage = ({ title }: SearchPageProps) => {
     searchIsLoading,
     title,
     searchSrc,
+    errorMessage,
   ]);
 
   const openSidebarHandler = () => {
@@ -248,38 +215,24 @@ const SearchPage = ({ title }: SearchPageProps) => {
     setSidebarIsOpen(false);
   };
 
-  const res =
-    searchSrc === "aitools"
-      ? searchResult.result
-      : fetchedModels.flatMap(
-          (model) =>
-            createModelPreviewData(model, model.modelVersions[0]) || [],
-        );
-
-  const searchResultHtml = res?.map((item) => {
+  const searchResultHtml = searchResult.result?.map((item) => {
     return <PreviewCard key={item.id} item={item} />;
   });
 
   let notificationMessage;
 
   if (
-    searchResult?.query &&
+    searchQueryParam &&
     !searchResultHtml?.length &&
-    !fetchedModels.length
+    !isNotLastPage &&
+    !searchIsLoading
   ) {
-    notificationMessage = `No results for "${searchQuery}" found. Try to change your search
+    notificationMessage = `No search results found for "${searchQuery}". Try to change your search
               filter`;
-  } else if (
-    !searchQuery &&
-    !searchResult?.query &&
-    !searchResultHtml?.length &&
-    !fetchedModels.length
-  ) {
+  } else if (!searchQuery && !searchQueryParam && !searchResultHtml?.length) {
     notificationMessage =
       "Enter your query in the search field to start searching";
   }
-
-  const errorMessageHtml = errorMessage || civErrorMessage;
 
   return (
     <div className={classes["container"]}>
@@ -292,16 +245,18 @@ const SearchPage = ({ title }: SearchPageProps) => {
         <SearchFilter />
       </LeftSidebar>
       <div>
-        {!!res?.length && (
+        {!!searchResult.result?.length && (
           <>
-            <div className={classes["text"]}>
-              Search result for "{searchResult.query}"
-            </div>
+            {searchQueryParam && (
+              <div className={classes["text"]}>
+                Search result for "{searchQueryParam}"
+              </div>
+            )}
             <ul className={classes["result-list"]}>{searchResultHtml}</ul>
           </>
         )}
-        {!searchIsLoading && !modelsIsLoading && errorMessageHtml && (
-          <ErrorMessage>{errorMessageHtml}</ErrorMessage>
+        {!searchIsLoading && errorMessage && (
+          <ErrorMessage>{errorMessage}</ErrorMessage>
         )}
         <div ref={endPageRef}></div>
         <div className={classes.panel}>
@@ -310,22 +265,24 @@ const SearchPage = ({ title }: SearchPageProps) => {
               {notificationMessage}
             </NotificationMessage>
           )}
-          {(searchIsLoading || modelsIsLoading) && <Spinner />}
+          {searchIsLoading && <Spinner />}
           {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
 
-          {!modelsIsLoading && !isLastCivPage && !civErrorMessage && (
-            <div>
-              <Button
-                className={classes["btn-more"]}
-                onClick={() => {
-                  fetchCivitai();
-                }}
-              >
-                Load more
-              </Button>
-            </div>
-          )}
-          {!modelsIsLoading && civErrorMessage && (
+          {!searchIsLoading &&
+            !isLastPage &&
+            !errorMessage &&
+            searchQueryParam &&
+            searchSrc === "civitai" && (
+              <div>
+                <Button
+                  className={classes["btn-more"]}
+                  onClick={retryImageLoadingHandler}
+                >
+                  Load more
+                </Button>
+              </div>
+            )}
+          {!searchIsLoading && errorMessage && searchSrc === "civitai" && (
             <Button
               className={classes["btn-more"]}
               onClick={retryImageLoadingHandler}

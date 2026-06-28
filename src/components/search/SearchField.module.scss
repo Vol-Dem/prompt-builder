@@ -23,6 +23,10 @@
     box-shadow: var.$box-shadow-inset;
     color: var.$color-text-white;
 
+    &--civ {
+      border-radius: 0;
+    }
+
     &:focus-visible {
       outline: none;
       border: 1px solid rgba(255, 255, 255, 0.5);
@@ -242,6 +246,16 @@
     width: 2rem;
     height: 2rem;
   }
+}
+
+.select {
+  min-width: 5.6rem !important;
+  border-radius: 1rem 0 0 1rem !important;
+}
+
+.select-logo {
+  display: flex;
+  height: 2rem;
 }
 
 @media (max-width: 820px) {

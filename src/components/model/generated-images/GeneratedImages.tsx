@@ -19,6 +19,8 @@ import InfoGeneratedImages from "../../general-elements/info/InfoGeneratedImages
 import ModelVersionsList from "../model-versions-list/ModelVersionsList";
 import ImageTabs from "./image-tabs/ImageTabs";
 import { useAppSelector } from "../../../store/hooks/hooks";
+import Tooltip from "../../ui/Tooltip";
+import ModelTooltip from "../model-tooltip/ModelTooltip";
 
 const imageSortValue = "Newest";
 /**
@@ -92,6 +94,7 @@ const GeneratedImages = memo(() => {
     ) {
       const latesVersionId =
         model &&
+        model.modelVersionsCustomData &&
         Object.values(model.modelVersionsCustomData)
           .sort((a, b) => {
             if (a?.index !== undefined && b?.index !== undefined) {
@@ -114,22 +117,34 @@ const GeneratedImages = memo(() => {
   return (
     <div className={classes.container}>
       <div className={classes["controls"]}>
-        <ImageTabs curTab={curTab} onClick={switchCurTab} />
-        <Button className={classes["button-add"]} onClick={addImgByIdHandler}>
-          Add Image by ID
+        <ImageTabs
+          curTab={curTab}
+          onClick={switchCurTab}
+          saved={!!model?.modelVersionsCustomData}
+        />
+        <Button
+          className={classes["button-add"]}
+          onClick={addImgByIdHandler}
+          disabled={!model?.modelVersionsCustomData}
+        >
+          <Tooltip
+            className={classes["tags__btn-edit-tooltip"]}
+            content={!model?.modelVersionsCustomData ? <ModelTooltip /> : ""}
+          >
+            Add Image by ID
+          </Tooltip>
         </Button>
         <ButtonInfo>
           <InfoGeneratedImages />
         </ButtonInfo>
       </div>
-      {versionsCustomData && (
-        <ModelVersionsList
-          onClick={openVersionHandler}
-          itemComponent="span"
-          versionsCustomData={versionsCustomData}
-          curVersionId={curVersionId}
-        />
-      )}
+      <ModelVersionsList
+        onClick={openVersionHandler}
+        itemComponent="span"
+        versionsCustomData={versionsCustomData}
+        curVersionId={curVersionId}
+        modelVersions={model?.data?.modelVersions}
+      />
       <div
         className={`${classes["images-container"]} ${
           guideIsActive && guideStep === GUIDE_STEP_GENERATED_IMAGES
@@ -144,6 +159,7 @@ const GeneratedImages = memo(() => {
               modelId={model.id}
               versionId={curVersionId}
               sortBy={imageSortValue}
+              modelIsSaved={!!model.modelVersionsCustomData}
             />
           )}
           {curTab === "saved" && curVersionId && (

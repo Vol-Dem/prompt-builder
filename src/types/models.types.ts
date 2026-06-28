@@ -36,6 +36,7 @@ export interface ActiveCarousel {
   versionId?: number | null;
   visibleImgAmount?: number | null;
   side?: boolean;
+  menu?: boolean;
 }
 
 export interface ModelsState {

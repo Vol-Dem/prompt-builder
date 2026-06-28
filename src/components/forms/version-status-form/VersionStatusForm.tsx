@@ -59,24 +59,24 @@ const VersionStatusForm = ({ modelData }: VersionStatusFormProps) => {
 
   useEffect(() => {
     if (!modelData) return;
-    const versionStatusInputData = Object.values(
-      modelData?.modelVersionsCustomData,
-    )
-      ?.sort((a, b) => {
-        if (a?.index && b?.index) {
-          return a?.index - b?.index;
-        }
-        return 0;
-      })
-      .map((version) => {
-        return {
-          type: "checkbox",
-          id: version.versionId + "in",
-          name: version.versionName || "",
-          label: version.name || "",
-          value: !!version.downloadStatus,
-        };
-      });
+    const versionStatusInputData =
+      modelData?.modelVersionsCustomData &&
+      Object.values(modelData.modelVersionsCustomData)
+        ?.sort((a, b) => {
+          if (a?.index && b?.index) {
+            return a?.index - b?.index;
+          }
+          return 0;
+        })
+        .map((version) => {
+          return {
+            type: "checkbox",
+            id: version.versionId + "in",
+            name: version.versionName || "",
+            label: version.name || "",
+            value: !!version.downloadStatus,
+          };
+        });
 
     setVersionsDownloadStatus(versionStatusInputData || []);
   }, [modelData]);

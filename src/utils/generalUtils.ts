@@ -513,6 +513,7 @@ export const getFormData = (
 
 /**
  * Fix for Civitai bug where comma separated parameter values ​​would cause an error.
+ *
  * @param params - parameter values
  * @param paramName - parameter name
  * @returns

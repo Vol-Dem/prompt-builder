@@ -10,6 +10,7 @@ import type {
   ModelVersionCivitai,
   ModelVersionCustomData,
 } from "../../shared/types/model";
+import { clearFileExtension } from "../../shared/utils";
 import type { SidebarPreviewData } from "../types/general.types";
 import type { ModelData } from "../types/models.types";
 import { AppError } from "./generalUtils";
@@ -66,8 +67,10 @@ export const sortModelVersions = (
     return null;
   }
   return model?.data?.modelVersions
-    .filter((version) =>
-      Object.keys(model?.modelVersionsCustomData).includes(`${version.id}`),
+    .filter(
+      (version) =>
+        model?.modelVersionsCustomData &&
+        Object.keys(model?.modelVersionsCustomData).includes(`${version.id}`),
     )
     .sort((a, b) => a?.index - b?.index)
     .map((version) => {
@@ -122,6 +125,7 @@ export const filterNewModelVersions = (
 ): ModelVersionCivitai[] => {
   const newVersions = newModelData?.modelVersions?.filter(
     (version) =>
+      oldModelData?.modelVersionsCustomData &&
       !Object.values(oldModelData?.modelVersionsCustomData)?.some(
         (oldVersions) => version?.id === oldVersions?.versionId,
       ),
@@ -138,7 +142,7 @@ export const filterNewModelVersions = (
  * @returns preview data
  */
 export const createModelPreviewData = (
-  model: ModelData | null,
+  model: ModelData | CivitaiModelDoc | null,
   curVersion: ModelVersionCivitai | ModelVersion | null,
   curCustomVersionData?: ModelVersionCustomData | null,
 ): ModelPreview | null => {
@@ -147,32 +151,48 @@ export const createModelPreviewData = (
   return {
     id: model.id,
     versionId: curVersion.id,
-    src: model.src,
-    main: model.main,
-    sub: model.sub,
-    title: model.name || model.data?.name,
+    src: "src" in model && model.src ? model.src : "",
+    main: ("main" in model && model.main) || "",
+    sub: ("sub" in model && model.sub) || [],
+    title: model.name || ("data" in model ? model?.data?.name : ""),
     versionName:
       curCustomVersionData?.name ||
       curCustomVersionData?.versionName ||
       curVersion.name,
     imgUrl: curVersion?.images ? curVersion?.images[0]?.url : "",
-    modelType: model?.data?.type || model.type || "",
+    modelType: ("data" in model ? model?.data?.type : model.type) || "",
     baseModel: curVersion?.baseModel,
-    type: model?.data?.type || model?.modelType || model.type || "",
+    type:
+      ("data" in model && model?.data?.type) ||
+      ("modelType" in model && model?.modelType) ||
+      model.type ||
+      "",
     mainTag:
       curCustomVersionData?.mainTag ||
-      model?.mainTag ||
+      ("mainTag" in model && model?.mainTag) ||
       curCustomVersionData?.defActTag,
-    weight: curCustomVersionData?.weight || model?.defaultCustomData?.weight,
+    weight:
+      curCustomVersionData?.weight ||
+      ("defaultCustomData" in model && model?.defaultCustomData?.weight) ||
+      null,
     minWeight:
-      curCustomVersionData?.minWeight || model?.defaultCustomData?.minWeight,
+      curCustomVersionData?.minWeight ||
+      ("defaultCustomData" in model && model?.defaultCustomData?.minWeight) ||
+      null,
     maxWeight:
-      curCustomVersionData?.maxWeight || model?.defaultCustomData?.maxWeight,
-    size: curCustomVersionData?.size || model?.defaultCustomData?.size || null,
+      curCustomVersionData?.maxWeight ||
+      ("defaultCustomData" in model && model?.defaultCustomData?.maxWeight) ||
+      null,
+    size:
+      curCustomVersionData?.size ||
+      ("defaultCustomData" in model && model?.defaultCustomData?.size) ||
+      null,
     tags: curCustomVersionData?.trainedWords || curVersion?.trainedWords,
     helperTags:
-      curCustomVersionData?.helperTags || model?.defaultCustomData?.helperTags,
-    updatedAt: model?.updatedAt || curVersion?.publishedAt || "",
+      curCustomVersionData?.helperTags ||
+      ("defaultCustomData" in model && model?.defaultCustomData?.helperTags) ||
+      [],
+    updatedAt: model?.updatedAt + "" || curVersion?.publishedAt || "",
   };
 };
 
@@ -245,7 +265,10 @@ export const getInitialVersionData = (
   model: ModelData,
   versionIdParam: string | null,
 ): ModelVersionCivitai | null => {
-  const modelVersions = sortModelVersions(model);
+  const modelVersions = model?.modelVersionsCustomData
+    ? sortModelVersions(model)
+    : model.data?.modelVersions;
+
   if (!modelVersions) {
     return null;
   }
@@ -261,4 +284,24 @@ export const getInitialVersionData = (
   const curVersionData = selectedVersionData || modelVersions[0];
 
   return curVersionData;
+};
+
+/**
+ * Creates a default activation tag for LORA models.
+ *
+ * @param version - model version data
+ * @returns activation tag
+ */
+export const createDefaultActivationTag = (
+  version: ModelVersionCivitai | ModelVersion,
+): string | null => {
+  let fileName;
+
+  if (Object.hasOwn(version, "files") && version?.files) {
+    fileName = clearFileExtension(
+      version.files.find((file) => file?.primary)?.name || "",
+    ).toLowerCase();
+  }
+
+  return fileName ? `<lora:${fileName}:1>` : null;
 };

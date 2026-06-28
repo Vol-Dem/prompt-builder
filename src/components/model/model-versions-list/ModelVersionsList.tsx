@@ -10,6 +10,7 @@ import classes from "./ModelVersionsList.module.scss";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import ModelVersionsItem from "../model-versions-item/ModelVersionsItem";
 import type {
+  ModelVersion,
   ModelVersionCustomData,
   ModelVersionsCustomData,
 } from "../../../../shared/types/model";
@@ -17,8 +18,9 @@ import type {
 type ModelVersionsListProps = {
   onClick: (e: MouseEvent<HTMLElement>) => void;
   itemComponent: ElementType;
-  versionsCustomData: ModelVersionsCustomData | ModelVersionCustomData[];
+  versionsCustomData?: ModelVersionsCustomData | ModelVersionCustomData[];
   curVersionId: number | null;
+  modelVersions?: ModelVersion[];
 };
 
 /**
@@ -55,6 +57,7 @@ const ModelVersionsList = ({
   itemComponent,
   versionsCustomData,
   curVersionId,
+  modelVersions,
 }: ModelVersionsListProps) => {
   const [showAllVersions, setShowAllVersions] = useState(false);
   const [listHeight, setListHeight] = useState<number | null>(null);
@@ -71,32 +74,37 @@ const ModelVersionsList = ({
     setShowAllVersions(false);
   }, [versionsCustomData]);
 
-  const modelVersionsHtml =
-    versionsCustomData &&
-    Object.values(versionsCustomData)
-      ?.sort((a, b) => {
-        if (a?.index !== undefined && b?.index !== undefined) {
-          return a.index - b.index;
-        }
-        return 0;
-      })
-      .map((version, i) => {
-        return (
-          <ModelVersionsItem
-            key={version.versionId}
-            liRef={i === 0 ? versionsItemRef : undefined}
-            to={`?versionId=${version.versionId}`}
-            id={version.versionId + ""}
-            data-version={i}
-            onClick={onClick}
-            active={curVersionId === version.versionId}
-            saved={!!version?.downloadStatus}
-            component={itemComponent}
-          >
-            {version.name}
-          </ModelVersionsItem>
-        );
-      });
+  const versionsData = versionsCustomData
+    ? Object.values(versionsCustomData)
+    : modelVersions;
+
+  const modelVersionsHtml = versionsData
+    ?.toSorted((a, b) => {
+      if (typeof a.index === "number" && typeof b.index === "number") {
+        return a.index - b.index;
+      }
+      return 0;
+    })
+    .map((version, i) => {
+      const versionId = "versionId" in version ? version.versionId : version.id;
+      return (
+        <ModelVersionsItem
+          key={versionId}
+          liRef={i === 0 ? versionsItemRef : undefined}
+          to={`?versionId=${versionId}`}
+          id={versionId + ""}
+          data-version={i}
+          onClick={onClick}
+          active={curVersionId === versionId}
+          saved={
+            "downloadStatus" in version ? !!version?.downloadStatus : false
+          }
+          component={itemComponent}
+        >
+          {version.name}
+        </ModelVersionsItem>
+      );
+    });
 
   const showAllVersionsHandler = () => {
     setShowAllVersions((prevState) => !prevState);

@@ -17,11 +17,12 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
  */
 const ModelNavigationPanel = () => {
   const model = useAppSelector((state) => state.model.model);
+  const curVersion = useAppSelector((state) => state.model.curVersion);
   const categories = useAppSelector((state) => state.tabs.categoriesData);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  let mainCategoryName = "Category";
+  let mainCategoryName = null;
 
   if (model?.id) {
     const mainCatName = categories[model?.modelType]?.find(
@@ -46,9 +47,11 @@ const ModelNavigationPanel = () => {
           to="/"
           className={classes["link"]}
           onClick={() => {
-            dispatch(tabActions.setCurrentTab(model.modelType));
-            dispatch(tabActions.setCurrentCategory(model.main));
-            dispatch(tabActions.setCurrentSubcategory(sub));
+            if (model?.main) {
+              dispatch(tabActions.setCurrentTab(model.modelType));
+              dispatch(tabActions.setCurrentCategory(model.main));
+              dispatch(tabActions.setCurrentSubcategory(sub));
+            }
           }}
         >
           {subcategoryName}
@@ -62,19 +65,26 @@ const ModelNavigationPanel = () => {
   };
 
   return (
-    <NavigationPanel onBack={backHandler}>
-      <Link
-        to="/"
-        className={classes["link"]}
-        onClick={() => {
-          if (model) {
-            dispatch(tabActions.setCurrentTab(model.modelType));
-            dispatch(tabActions.setCurrentCategory(model.main));
-          }
-        }}
-      >
-        {mainCategoryName || model?.main}
-      </Link>
+    <NavigationPanel
+      onBack={backHandler}
+      saved={!!model?.modelVersionsCustomData}
+      modelData={model}
+      versionId={curVersion?.id}
+    >
+      {(mainCategoryName || model?.main) && (
+        <Link
+          to="/"
+          className={classes["link"]}
+          onClick={() => {
+            if (model?.main) {
+              dispatch(tabActions.setCurrentTab(model.modelType));
+              dispatch(tabActions.setCurrentCategory(model.main));
+            }
+          }}
+        >
+          {mainCategoryName || model?.main}
+        </Link>
+      )}
       <ul className={classes["subcategories"]}>{subCatsHtml}</ul>
     </NavigationPanel>
   );

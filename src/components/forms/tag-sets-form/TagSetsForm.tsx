@@ -65,7 +65,9 @@ const TagSetsForm = ({ modelId, onClose }: TagSetsFormProps) => {
   const model = useAppSelector((state) => state.model.model);
   const curVersion = useAppSelector((state) => state.model.curVersion);
   const versionData =
-    curVersion && model?.modelVersionsCustomData[curVersion?.id];
+    curVersion &&
+    model?.modelVersionsCustomData &&
+    model?.modelVersionsCustomData[curVersion?.id];
   const guideActive = useAppSelector((state) => state.guide.model.active);
   const guideStep = useAppSelector((state) => state.guide.model.step);
   const dispatch = useAppDispatch();

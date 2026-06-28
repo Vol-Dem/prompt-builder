@@ -62,6 +62,7 @@ export type CarouselContentProps = {
   location?: ResourceFirestoreCollection;
   locationId?: number | null;
   curPostData?: PostSavedData;
+  menu?: boolean;
 };
 
 export type CarouselImageFormState = {
@@ -145,6 +146,7 @@ const CarouselContent = ({
   location,
   locationId,
   curPostData,
+  menu,
 }: CarouselContentProps) => {
   const [visibleAmount, setVisibleAmount] = useState(visibleImgAmount || 0);
   const [initial, setInitial] = useState(true);
@@ -244,6 +246,7 @@ const CarouselContent = ({
         currImgNum: currImgNum,
         location,
         locationId,
+        menu,
       }),
     );
   };
@@ -567,6 +570,7 @@ const CarouselContent = ({
         translate={translate}
         transitionDur={curTransitionDur}
         onOpen={openFullViewHandler}
+        menu={menu}
       />
       {imagesData?.length > curVisibleAmount && (
         <>

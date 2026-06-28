@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { DocumentArrowDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CloudArrowDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useLocation } from "react-router-dom";
 
 import classes from "./RightSidebarForm.module.scss";
@@ -92,7 +92,7 @@ const RightSidebarForm = () => {
         >
           {!formIsOpen ? (
             <>
-              <DocumentArrowDownIcon />
+              <CloudArrowDownIcon />
               New resource
             </>
           ) : (

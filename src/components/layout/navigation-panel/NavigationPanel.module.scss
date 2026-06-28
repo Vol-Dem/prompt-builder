@@ -64,6 +64,18 @@
   & svg {
     width: 2rem;
   }
+
+  &--green {
+    background-color: var.$color-green;
+    position: fixed;
+    top: 7.4rem;
+    z-index: 20;
+
+    &:hover {
+      color: var.$color-text-white;
+      background-color: color.adjust(var.$color-green, $lightness: -10%);
+    }
+  }
 }
 
 @media (max-width: 1000px) {
