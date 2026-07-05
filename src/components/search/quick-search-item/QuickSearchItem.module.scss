@@ -58,13 +58,11 @@
 }
 
 .type {
+  display: inline-flex;
+}
+
+.type.type--small {
   font-size: 1rem;
-  color: var.$color-text-white;
-  background-color: rgba(var.$color-primary, 0.8);
-  padding: 0.4rem 0.8rem;
-  border-radius: 1rem;
-  text-transform: uppercase;
-  align-self: self-start;
 }
 
 .models {

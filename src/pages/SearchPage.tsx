@@ -102,6 +102,11 @@ const SearchPage = ({ title }: SearchPageProps) => {
 
   let isNotLastPage = !isLastPage || !isLastSubPage || !isLastCollectionsPage;
 
+  //Fix for a Civitai bug where the number of results per query could be less than the limit.
+  const lessThanLimit =
+    searchResult.result.length < SETTINGS_SEARCH_RESULT_PER_PAGE &&
+    isNotLastPage;
+
   if (searchSrc === "civitai") {
     isNotLastPage = !isLastPage;
   }
@@ -135,7 +140,9 @@ const SearchPage = ({ title }: SearchPageProps) => {
       civitaiSearch(
         searchQueryParam,
         nsfwMode,
+        SETTINGS_SEARCH_RESULT_PER_PAGE,
         true,
+        false,
         searchFilter.hashtag,
         searchFilter,
       ),
@@ -148,7 +155,9 @@ const SearchPage = ({ title }: SearchPageProps) => {
     }
 
     if (
-      ((isNotLastPage && isIntersecting) || searchParamsIsChanged) &&
+      ((isNotLastPage && isIntersecting) ||
+        searchParamsIsChanged ||
+        lessThanLimit) &&
       isOnline &&
       searchQueryParam &&
       searchQueryParam?.length >= SETTINGS_SEARCH_MIN_QUERY_LENGTH &&
@@ -178,9 +187,9 @@ const SearchPage = ({ title }: SearchPageProps) => {
             civitaiSearch(
               searchQueryParam,
               nsfwMode,
-              // SETTINGS_SEARCH_RESULT_PER_PAGE,
+              SETTINGS_SEARCH_RESULT_PER_PAGE,
               loadMore,
-              // false,
+              false,
               searchFilter.hashtag,
               searchFilter,
             ),
@@ -205,6 +214,7 @@ const SearchPage = ({ title }: SearchPageProps) => {
     title,
     searchSrc,
     errorMessage,
+    lessThanLimit,
   ]);
 
   const openSidebarHandler = () => {

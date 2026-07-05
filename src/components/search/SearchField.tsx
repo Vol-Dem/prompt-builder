@@ -104,6 +104,7 @@ const SearchField = ({ className }: SearchFieldProps) => {
   const searchSrcHandler = (value: SearchSrcType | null) => {
     dispatch(searchActions.resetSearchData());
     dispatch(searchActions.resetSearchFilter());
+    dispatch(searchActions.setSearchQuery(""));
 
     if (value) dispatch(searchActions.setSearchSrc(value));
   };
@@ -153,7 +154,7 @@ const SearchField = ({ className }: SearchFieldProps) => {
         <AnimatePresence>
           {searchInput?.length >= SETTINGS_SEARCH_MIN_QUERY_LENGTH &&
             searchResultIsOpen &&
-            searchSrc !== "civitai" &&
+            // searchSrc !== "civitai" &&
             location.pathname !== "/search" && (
               <QuickSearch
                 onSubmit={submitSearchHandler}

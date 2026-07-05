@@ -34,8 +34,13 @@ type ModelTypeInputData = { name: string; value: string };
 
 const sortOptions = [
   { name: "Newest", value: "Newest" },
+  { name: "Relevancy", value: "Relevancy" },
   { name: "Highest Rated", value: "Highest Rated" },
   { name: "Most Downloaded", value: "Most Downloaded" },
+  { name: "Most Liked", value: "Most Liked" },
+  { name: "Most Discussed", value: "Most Discussed" },
+  { name: "Most Collected", value: "Most Collected" },
+  { name: "Most Buzz", value: "Most Buzz" },
 ];
 
 /**
@@ -90,6 +95,7 @@ const SearchFilter = () => {
   const userBaseModels = useAppSelector((state) => state.tabs.baseModels);
   const categories = useAppSelector((state) => state.tabs.categoriesData);
   const searchSrc = useAppSelector((state) => state.search.src);
+  const searchQuery = useAppSelector((state) => state.search.searchQuery);
   const dispatch = useAppDispatch();
   const searchParamSrc = searchParams.get("searchSrc") as SearchSrcType;
   const searchFilter = useMemo(() => {
@@ -107,11 +113,14 @@ const SearchFilter = () => {
   }, [searchParams, searchParamSrc]);
 
   useEffect(() => {
+    console.log(searchParamSrc);
+    console.log(searchSrc);
     if (searchParamSrc !== searchSrc)
-      setSearchParams((prevParams) => {
+      setSearchParams(() => {
         return {
           searchSrc: searchSrc,
-          searchQuery: prevParams.get("searchQuery") || "",
+          ...(searchSrc === "civitai" && { sort: sortOptions[0].value || "" }),
+          ...(searchQuery && { searchQuery: searchQuery || "" }),
         };
       });
   }, [searchSrc]);
@@ -258,30 +267,32 @@ const SearchFilter = () => {
   ]);
 
   const typeChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const newModelTypeCheckboxStatus = [...modelTypeCheckboxStatus];
     setModelTypeCheckboxStatus((prevState) => {
       const newState = [...prevState];
       const curIndex = newState.findIndex((type) => type.id === e.target.id);
-
       newState[curIndex].value = e.target.checked;
 
-      const checked = newState.filter((item) => item.value).length;
-      setModelTypesChecked(checked);
-
-      const modelTypes = newState
-        .filter((type) => type.value)
-        .map((type) => type.id);
-
-      dispatch(
-        searchActions.setSearchFilter({ type: "modelType", value: modelTypes }),
-      );
-
-      setSearchParams((prevParams) => {
-        return updateSearchParams(prevParams, {
-          modelType: modelTypes.toString(),
-        });
-      });
-
       return newState;
+    });
+
+    const checked = newModelTypeCheckboxStatus.filter(
+      (item) => item.value,
+    ).length;
+    setModelTypesChecked(checked);
+
+    const modelTypes = newModelTypeCheckboxStatus
+      .filter((type) => type.value)
+      .map((type) => type.id);
+
+    dispatch(
+      searchActions.setSearchFilter({ type: "modelType", value: modelTypes }),
+    );
+
+    setSearchParams((prevParams) => {
+      return updateSearchParams(prevParams, {
+        modelType: modelTypes.toString(),
+      });
     });
   };
 

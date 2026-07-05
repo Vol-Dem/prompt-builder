@@ -3,10 +3,7 @@ import type {
   ModelCategorySearchData,
   SearchFilter,
 } from "../types/search.types";
-import {
-  SETTINGS_SEARCH_RESULT_PER_PAGE,
-  URL_CIV_MODELS,
-} from "../variables/constants";
+import { URL_CIV_MODELS } from "../variables/constants";
 import { createParamString } from "./generalUtils";
 
 /**
@@ -55,6 +52,7 @@ export const subcategoriesSearch = (
 export const createCivitaiSearchUrl = (
   searchQuery: string | null,
   nsfw: boolean = false,
+  limit: number,
   searchFilter?: SearchFilter,
 ): string => {
   // const baseModels = searchFilter.baseModel?.length
@@ -67,5 +65,5 @@ export const createCivitaiSearchUrl = (
     ? createParamString(searchFilter.modelType, "types")
     : "";
 
-  return `${URL_CIV_MODELS}?${!searchFilter?.hashtag ? "query" : "tag"}=${searchQuery}&limit=${SETTINGS_SEARCH_RESULT_PER_PAGE}${baseModels}${modelType}&nsfw=${nsfw}&sort=${searchFilter?.sort || "Newest"}`;
+  return `${URL_CIV_MODELS}?${!searchFilter?.hashtag ? "query" : "tag"}=${searchQuery}&limit=${limit}${baseModels}${modelType}&nsfw=${nsfw}&sort=${searchFilter?.sort || "Newest"}`;
 };

@@ -37,6 +37,7 @@ export interface QuickSearchResult {
   src: SearchSrcType | null;
   result: SearchResult;
   nsfw: boolean;
+  isLastPage: boolean;
 }
 
 export interface SearchFilter {

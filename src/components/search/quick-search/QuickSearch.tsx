@@ -11,7 +11,11 @@ import {
 } from "../../../variables/constants";
 import classes from "./QuickSearch.module.scss";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
-import { liveSearch, searchActions } from "../../../store/search";
+import {
+  civitaiSearch,
+  liveSearch,
+  searchActions,
+} from "../../../store/search";
 import Spinner from "../../ui/Spinner";
 import CategoriesSearch from "../categories-search/CategoriesSearch";
 import ErrorMessage from "../../ui/ErrorMessage";
@@ -51,6 +55,7 @@ const QuickSearch = ({ onSubmit, onOpen }: QuickSearchProps) => {
   const searchIsLoading = useAppSelector((state) => state.search.isLoading);
   const errorMessage = useAppSelector((state) => state.search.errorMessage);
   const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const searchSrc = useAppSelector((state) => state.search.src);
   const searchResult = useAppSelector(
     (state) => state.search.quickSearchResult,
   );
@@ -76,15 +81,27 @@ const QuickSearch = ({ onSubmit, onOpen }: QuickSearchProps) => {
 
       const getModelsPreview = async () => {
         dispatch(searchActions.resetAllLastPageStatus());
-        dispatch(
-          liveSearch(
-            curQuery,
-            nsfwMode,
-            SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE + 1,
-            false,
-            true,
-          ),
-        );
+        if (searchSrc === "aitools")
+          dispatch(
+            liveSearch(
+              curQuery,
+              nsfwMode,
+              SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE + 1,
+              false,
+              true,
+            ),
+          );
+
+        if (searchSrc === "civitai")
+          dispatch(
+            civitaiSearch(
+              curQuery,
+              nsfwMode,
+              SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE,
+              false,
+              true,
+            ),
+          );
       };
 
       timeoutRef.current = setTimeout(() => {
@@ -120,9 +137,9 @@ const QuickSearch = ({ onSubmit, onOpen }: QuickSearchProps) => {
         </button>
       </div>
       <div className={classes["search__result"]}>
-        <CategoriesSearch />
+        {searchSrc === "aitools" && <CategoriesSearch />}
         <QuickSearchResultList />
-        {searchResult.result.length > SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE && (
+        {!searchResult.isLastPage && (
           <ButtonTertiary
             type="submit"
             className={classes["btn-more"]}

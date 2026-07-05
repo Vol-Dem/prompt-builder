@@ -171,17 +171,18 @@ const ChooseImageForm = memo(
               <CheckIcon />
             </div>
           )}
-          <ImageLabel htmlFor={image.id + ""} imageData={image} type={type} />
-          <input
-            title={image.id + ""}
-            type="checkbox"
-            className={classes["checkbox"]}
-            id={image.id + ""}
-            name={image.name + ""}
-            checked={image.value}
-            onChange={imageStatusChangeHandler}
-            readOnly={!!image?.saved}
-          />
+          <ImageLabel imageData={image} type={type}>
+            <input
+              title={image.id + ""}
+              type="checkbox"
+              className={classes["checkbox"]}
+              id={image.id + ""}
+              name={image.name + ""}
+              checked={image.value}
+              onChange={imageStatusChangeHandler}
+              readOnly={!!image?.saved}
+            />
+          </ImageLabel>
         </li>
       );
     });

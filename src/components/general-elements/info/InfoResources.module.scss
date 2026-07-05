@@ -83,4 +83,8 @@
   &--saved {
     color: var.$color-text-green;
   }
+
+  &--not-saved {
+    color: var.$color-text-red;
+  }
 }

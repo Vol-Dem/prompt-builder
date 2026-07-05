@@ -79,7 +79,13 @@ const searchSlice = createSlice({
       hashtag: false,
       filter: null,
     },
-    quickSearchResult: { query: "", src: null, result: [], nsfw: false },
+    quickSearchResult: {
+      query: "",
+      src: null,
+      result: [],
+      nsfw: false,
+      isLastPage: true,
+    },
     searchFilter: { src: null, modelType: [], baseModel: [], hashtag: false },
     isLoading: false,
     errorMessage: "",
@@ -159,6 +165,7 @@ const searchSlice = createSlice({
         src: null,
         result: [],
         nsfw: false,
+        isLastPage: true,
       };
       state.errorMessage = "";
     },
@@ -504,6 +511,7 @@ export const liveSearch = (
             nsfw,
             result: finalResult,
             src: "aitools",
+            isLastPage: finalResult.length <= limitAmount,
           }),
         );
       } else {
@@ -552,7 +560,9 @@ export const liveSearch = (
 export const civitaiSearch = (
   searchString: string | null,
   nsfw: boolean,
+  limitAmount: number,
   loadMore: boolean = false,
+  quickSerch: boolean = false,
   isHashtag: boolean = false,
   filter?: SearchFilter,
 ): AppThunk => {
@@ -571,7 +581,12 @@ export const civitaiSearch = (
         dispatch(searchActions.clearSearchResult());
       }
 
-      const url = createCivitaiSearchUrl(searchString, nsfw, filter);
+      const url = createCivitaiSearchUrl(
+        searchString,
+        nsfw,
+        limitAmount,
+        filter,
+      );
 
       const curUrl = `${url}${nextCursor ? `&cursor=${nextCursor}` : ""}`;
 
@@ -600,25 +615,40 @@ export const civitaiSearch = (
       } else {
         dispatch(searchActions.setIsLastPage(true));
       }
-      dispatch(
-        searchActions.setSearchResult({
-          query: searchString,
-          src: "civitai",
-          nsfw,
-          result: finalResult,
-          hashtag,
-          filter: filter || {
-            modelType: [],
-            baseModel: [],
-            hashtag: hashtag,
+
+      if (quickSerch) {
+        console.log(finalResult);
+        dispatch(
+          searchActions.setQuickSearchResult({
+            query: searchString,
+            nsfw,
+            result: finalResult,
             src: "civitai",
-          },
-        }),
-      );
+            isLastPage: !data.metadata?.nextCursor,
+          }),
+        );
+      } else {
+        dispatch(
+          searchActions.setSearchResult({
+            query: searchString,
+            src: "civitai",
+            nsfw,
+            result: finalResult,
+            hashtag,
+            filter: filter || {
+              modelType: [],
+              baseModel: [],
+              hashtag: hashtag,
+              src: "civitai",
+            },
+          }),
+        );
+      }
     } catch (error) {
       const errorMessage = handleErrors(normalizeError(error));
 
-      dispatch(searchActions.setErrorMessage(errorMessage));
+      if (errorMessage)
+        dispatch(searchActions.setErrorMessage(ERROR_MESSAGE_CIV_CONNECTION));
     } finally {
       dispatch(searchActions.setSearchIsLoading(false));
     }

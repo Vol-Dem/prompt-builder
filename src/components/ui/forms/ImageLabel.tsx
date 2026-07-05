@@ -19,6 +19,7 @@ type ImageLabelProps = ComponentProps<"label"> & {
  * @param props.imageData - Image metadata and state.
  * @param props.type - Form mode for styling.
  * @param props.className - Optional custom class.
+ * @param props.children - Input element.
  *
  * @returns Image label.
  */
@@ -27,6 +28,7 @@ const ImageLabel = ({
   imageData,
   type,
   className,
+  children,
 }: ImageLabelProps) => {
   return (
     <label
@@ -39,7 +41,6 @@ const ImageLabel = ({
         } ${imageData?.saved ? classes["image--saved"] : ""} ${
           type === "del" ? classes["image--del"] : ""
         }`}
-        type="checkbox"
         imgType={imageData.data.type}
         src={imageData.data.url}
         alt={`Image ${imageData.id}`}
@@ -47,6 +48,7 @@ const ImageLabel = ({
         width={imageData.width}
         height={imageData.height}
       />
+      {children}
     </label>
   );
 };

@@ -17,6 +17,7 @@ import type {
   ModelPreview,
   ModelPreviewDoc,
 } from "../../../../shared/types/firestore";
+import ResourceTypeLabel from "../../ui/text/ResourceTypeLabel";
 
 type QuickSearchItemProps = {
   modelPreveiw: ModelPreviewDoc | CollectionPreviewDoc | ModelPreview;
@@ -87,17 +88,24 @@ const QuickSearchItem = ({ modelPreveiw }: QuickSearchItemProps) => {
         </>
         <div className={classes["card__content"]}>
           <div>
-            <span className={classes.type}>
+            <ResourceTypeLabel
+              type={modelPreveiw.type}
+              className={`${classes.type} ${classes["type--small"]}`}
+            >
               {modelPreveiw.type === "TextualInversion"
                 ? "Embedding"
                 : modelPreveiw.type}
-            </span>
+            </ResourceTypeLabel>
             {"baseModel" in modelPreveiw && modelPreveiw.baseModel && (
               <span className={classes.models}>{modelPreveiw.baseModel}</span>
             )}
           </div>
 
-          <div className={classes["search__name"]}>{modelPreveiw.name}</div>
+          <div className={classes["search__name"]}>
+            {modelPreveiw.name ||
+              ("title" in modelPreveiw && modelPreveiw.title) ||
+              ""}
+          </div>
         </div>
       </NavLink>
       <ButtonSquareAdd

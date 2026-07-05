@@ -3,6 +3,7 @@ import {
   ExclamationCircleIcon,
   FolderArrowDownIcon,
   PlusIcon,
+  XCircleIcon,
 } from "@heroicons/react/24/outline";
 
 import classes from "./InfoResources.module.scss";
@@ -63,13 +64,20 @@ const InfoResources = () => {
           <CheckCircleIcon
             className={`${classes["status"]} ${classes["status--saved"]}`}
           />{" "}
-          - Indicates that the version used as a resource is{" "}
-          <TextHighlight>marked</TextHighlight> as downloaded.
+          - Indicates that the <TextHighlight>version</TextHighlight> used as a
+          resource is <TextHighlight>marked</TextHighlight> as downloaded.
         </p>
         <p>
           <ExclamationCircleIcon className={classes["status"]} /> - Indicates
-          that the version used as a resource is{" "}
+          that the <TextHighlight>version</TextHighlight> used as a resource is{" "}
           <TextHighlight>not marked</TextHighlight> as downloaded.
+        </p>
+        <p>
+          <XCircleIcon
+            className={`${classes["status"]} ${classes["status--not-saved"]}`}
+          />{" "}
+          - Indicates that the <TextHighlight>model</TextHighlight> used as a
+          resource is <TextHighlight>not saved</TextHighlight>.
         </p>
       </NotificationMessage>
     </div>
