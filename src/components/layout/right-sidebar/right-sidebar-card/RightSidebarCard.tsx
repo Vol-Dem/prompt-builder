@@ -45,6 +45,9 @@ const RightSidebarCard = memo(
     const imageSrc = isNsfwMode
       ? previewData.imgUrlNsfw || previewData.imgUrl
       : previewData.imgUrl;
+    const imageType = isNsfwMode
+      ? previewData.imgUrlNsfwType || previewData.imgType
+      : previewData.imgType;
 
     useEffect(() => {
       setTimeout(() => {
@@ -93,6 +96,7 @@ const RightSidebarCard = memo(
             <Image
               src={imageSrc}
               alt="Preview"
+              imgType={imageType}
               imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_BIG}
               className={classes.image}
             />

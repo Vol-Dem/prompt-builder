@@ -83,7 +83,7 @@ const PreviewCardContent = ({
 
   return (
     <motion.div
-      layoutId={animate && !isMobile ? previewData.id + "" : Math.random() + ""}
+      layoutId={animate && !isMobile ? previewData.id + "" : undefined}
       whileHover={{ borderColor: "rgba(255, 255, 255, 0.6)" }}
       transition={{
         layout: { duration: 0 },

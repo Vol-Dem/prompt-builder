@@ -1,5 +1,6 @@
 import type { ChangeEvent } from "react";
 import type { SuggestedCollectionsSortType } from "./collections.types";
+import type { SrcType } from "./models.types";
 
 export interface GeneralState {
   isMobile: boolean;
@@ -22,7 +23,9 @@ export interface SidebarPreviewData {
   title?: string;
   versionName?: string | null;
   imgUrl?: string;
+  imgType?: SrcType;
   imgUrlNsfw?: string;
+  imgUrlNsfwType?: SrcType;
   mainTag?: string;
   baseModel?: string;
   weight?: number | null;

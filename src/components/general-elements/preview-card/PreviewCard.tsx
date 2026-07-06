@@ -5,6 +5,7 @@ import type {
   ModelPreview,
   ModelPreviewDoc,
 } from "../../../../shared/types/firestore";
+import { useAppSelector } from "../../../store/hooks/hooks";
 
 type PreviewCardProps = {
   item: ModelPreviewDoc | CollectionPreviewDoc | ModelPreview;
@@ -46,9 +47,8 @@ type PreviewCardProps = {
  * @returns Wrapper that renders animated and static sidebar cards.
  */
 const PreviewCard = ({ item, fullView, animate = true }: PreviewCardProps) => {
-  // const usedModelss = useAppSelector((state) => state.used.models);
-  //For the animation of adding a model to the sidebar to work correctly
-  // const isInPanel = !!usedModelss.find((card) => card.id === item.id);
+  // @ts-ignore:next-line no-unused-vars
+  const sidebarModels = useAppSelector((state) => state.used.models); //Fixes a delay in the animation of adding the first item to the sidebar in production.
 
   return (
     <AddToPanelAnimContainer>
@@ -58,7 +58,6 @@ const PreviewCard = ({ item, fullView, animate = true }: PreviewCardProps) => {
           animate={true}
           previewData={item}
           fullView={fullView}
-          // added={isInPanel}
         />
       )}
     </AddToPanelAnimContainer>

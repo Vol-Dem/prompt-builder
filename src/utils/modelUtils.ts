@@ -216,7 +216,9 @@ export const createSidebarPreviewData = (
       title: previewData?.title || previewData?.name,
       versionName: previewData?.versionName || curVersionData?.name || "",
       imgUrl: previewData?.customPreviewImgUrl || previewData?.imgUrl,
+      imgType: previewData?.customPreviewImgType || previewData?.imgType,
       imgUrlNsfw: previewData?.nsfwPreviewImgUrl,
+      imgUrlNsfwType: previewData?.nsfwPreviewImgType,
       type: previewData?.modelType,
       baseModel: curVersionData?.baseModel || previewData?.baseModel,
       mainTag:
@@ -234,7 +236,9 @@ export const createSidebarPreviewData = (
     id: previewData.id,
     title: previewData?.name,
     imgUrl: previewData?.customPreviewImgUrl,
+    imgType: previewData?.customPreviewImgType || previewData?.imgType,
     imgUrlNsfw: previewData?.nsfwPreviewImgUrl,
+    imgUrlNsfwType: previewData?.nsfwPreviewImgType,
     type: previewData?.type || "",
   };
 };
