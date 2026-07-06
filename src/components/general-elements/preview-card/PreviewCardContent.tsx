@@ -62,7 +62,7 @@ const PreviewCardContent = ({
       "";
   }
 
-  let imageType = null;
+  let imageType = undefined;
 
   if ("imgType" in previewData) {
     imageType = isNsfwMode
@@ -120,6 +120,7 @@ const PreviewCardContent = ({
             ref={imgRef}
             src={imageSrc}
             type={imageType}
+            imgType={imageType}
             alt="Preview"
             imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_BIG}
             className={classes["card__image"]}

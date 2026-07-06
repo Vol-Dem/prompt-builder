@@ -160,6 +160,7 @@ export const createModelPreviewData = (
       curCustomVersionData?.versionName ||
       curVersion.name,
     imgUrl: curVersion?.images ? curVersion?.images[0]?.url : "",
+    imgType: curVersion?.images && curVersion?.images[0]?.type,
     modelType: ("data" in model ? model?.data?.type : model.type) || "",
     baseModel: curVersion?.baseModel,
     type:

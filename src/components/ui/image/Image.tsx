@@ -3,6 +3,9 @@ import { AnimatePresence } from "framer-motion";
 
 import classes from "./Image.module.scss";
 import {
+  SETTINGS_AUTOPLAY_VIDEO,
+  SETTINGS_AUTOPLAY_VIDEO_INTERSECTION_MARGIN,
+  SETTINGS_IMAGE_INTERSECTION_MARGIN,
   SETTINGS_IMAGE_PREVIEW_WIDTH_MEDIUM,
   SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
 } from "../../../variables/constants";
@@ -10,11 +13,14 @@ import ImageFullView from "../ImageFullView";
 import ButtonPlay from "../buttons/ButtonPlay";
 import { transformSrcPreview } from "../../../utils/imageUtils";
 import { PhotoIcon } from "@heroicons/react/24/outline";
+import { useAppSelector } from "../../../store/hooks/hooks";
+import type { SrcType } from "../../../types/models.types";
+import useIntersection from "../../../hooks/use-intersection";
 
 type ImageProps = ComponentProps<"img"> & {
   fullView?: boolean;
   type?: string | null;
-  imgType?: "image" | "video";
+  imgType?: SrcType;
   preloader?: boolean;
   imageWidth?: number;
   src?: string;
@@ -82,15 +88,33 @@ const Image = ({
   const [imgIsLoading, setImgIsLoading] = useState(true);
   const [imgError, setImgError] = useState(false);
   const [imgSrc, setImgSrc] = useState("#");
+  const [videoSrc, setVideoSrc] = useState({ mp4: "#", webm: "#" });
+  const isMobile = useAppSelector((state) => state.general.isMobile);
   const imageRef = useRef<HTMLDivElement>(null);
+  const autoplayVideo = !isMobile && SETTINGS_AUTOPLAY_VIDEO;
+  const isInersectingVideo = useIntersection(
+    autoplayVideo ? imageRef : null,
+    false,
+    SETTINGS_AUTOPLAY_VIDEO_INTERSECTION_MARGIN,
+  );
+  const isInersecting = useIntersection(
+    imageRef,
+    false,
+    SETTINGS_IMAGE_INTERSECTION_MARGIN,
+  );
 
   useEffect(() => {
     if (src) {
-      const { previewSrc } = transformSrcPreview(src, imageWidth, imgType);
+      const { previewSrc, previewVideoMp4Src, previewVideoWebmSrc } =
+        transformSrcPreview(src, imageWidth, imgType);
 
       setImgError(false);
       setImgIsLoading(true);
       setImgSrc(previewSrc);
+      setVideoSrc({
+        mp4: previewVideoMp4Src || "#",
+        webm: previewVideoWebmSrc || "#",
+      });
     } else {
       setImgSrc("#");
     }
@@ -134,7 +158,7 @@ const Image = ({
       width={width}
       height={height}
       ref={ref}
-      src={imgSrc}
+      src={isInersecting ? imgSrc : "#"}
       alt={alt || `image-${id || ""}`}
       onLoad={imgLoadHandler}
       onError={imgErrorHandler}
@@ -146,6 +170,36 @@ const Image = ({
       {...props}
     />
   );
+
+  const videoHtml = (
+    <video
+      width={width}
+      height={height}
+      playsInline
+      autoPlay
+      loop
+      disablePictureInPicture
+      preload="none"
+      muted
+      poster={imgSrc}
+      onLoad={imgLoadHandler}
+      onError={imgErrorHandler}
+      className={`${classes.video} ${
+        width && height && +width - +height < 0
+          ? classes["video--portrait"]
+          : ""
+      } `}
+    >
+      <source src={videoSrc?.webm} type="video/webm" />
+      <source src={videoSrc?.mp4} type="video/mp4" />
+    </video>
+  );
+
+  let content = imageHtml;
+
+  if (imgType === "video" && autoplayVideo && isInersectingVideo) {
+    content = videoHtml;
+  }
 
   return (
     <>
@@ -168,10 +222,10 @@ const Image = ({
         {srcSet && (
           <picture>
             <source srcSet={srcSet} type={type || "image/webp"} />
-            {imageHtml}
+            {content}
           </picture>
         )}
-        {!srcSet && imageHtml}
+        {content}
       </div>
       <AnimatePresence>
         {fullViewIsOpen && src && (

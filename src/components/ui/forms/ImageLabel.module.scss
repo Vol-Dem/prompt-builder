@@ -16,7 +16,8 @@
   cursor: pointer;
   transition: all 0.3s ease;
 
-  & img {
+  & img,
+  & video {
     position: relative;
     height: 14rem;
   }

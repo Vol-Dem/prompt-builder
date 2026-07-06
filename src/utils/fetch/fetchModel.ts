@@ -734,7 +734,7 @@ export const saveModelData = async (
         name: newModelData.modelName || data.name || "",
         nameArr,
         imgUrl: previewImg || "",
-        imgType: (previewImgData && previewImgData?.type) || "",
+        imgType: (previewImgData && previewImgData?.type) || "image",
         type: data.type,
         creator: data?.creator || "",
         nsfw: newModelData.nsfw || false,

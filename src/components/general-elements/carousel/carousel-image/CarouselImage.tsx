@@ -15,6 +15,8 @@ import ButtonAdd from "../../button-square-add/ButtonSquareAdd";
 import {
   ANIMATIONS_FM_ZOOM_IN,
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
+  SETTINGS_AUTOPLAY_VIDEO,
+  SETTINGS_CAROUSEL_AUTOPLAY_VIDEO_PREVIEW,
   SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
 } from "../../../../variables/constants";
 import SetTagSetPreview from "../set-tagset-preview/SetTagSetPreview";
@@ -122,8 +124,12 @@ const CarouselImage = ({
   const [tagSetMenuIsOpen, settagSetMenuIsOpen] = useState(false);
   const curVersion = useAppSelector((state) => state.model.curVersion);
   const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const isMobile = useAppSelector((state) => state.general.isMobile);
   const dispatch = useAppDispatch();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const autoplayVideo =
+    !isMobile &&
+    (SETTINGS_CAROUSEL_AUTOPLAY_VIDEO_PREVIEW || SETTINGS_AUTOPLAY_VIDEO);
 
   useEffect(() => {
     if (src && !imgIsLoaded && !imgError) {
@@ -198,6 +204,56 @@ const CarouselImage = ({
       document.removeEventListener("click", closeMenuHandler);
     };
   }, [menuIsOpen]);
+
+  let carouselElement;
+
+  if (!imgError && imgSrc !== "#") {
+    carouselElement = (
+      <motion.img
+        className={`${classes.image} ${
+          imageData?.width - imageData?.height < 0
+            ? classes["image--portrait"]
+            : ""
+        } ${
+          imgIsLoading && !imgIsLoaded ? classes["image--hidden"] : ""
+        } ${!nsfwMode && nsfw ? classes["image--nsfw"] : ""}`}
+        draggable={false}
+        onClick={() => onClick(position)}
+        onLoad={imgLoadHandler}
+        onError={imgErrorHandler}
+        data-position={position}
+        id={id}
+        src={imgSrc}
+        alt={alt}
+      />
+    );
+  }
+
+  if (imageData.type === "video" && (active || autoplayVideo)) {
+    carouselElement = (
+      <video
+        ref={videoRef}
+        playsInline
+        autoPlay
+        loop
+        disablePictureInPicture
+        preload="none"
+        muted
+        poster={imgSrc}
+        onClick={() => onClick(position)}
+        onLoad={imgLoadHandler}
+        onError={imgErrorHandler}
+        className={`${classes.image} ${
+          imageData?.width - imageData?.height < 0
+            ? classes["image--portrait"]
+            : ""
+        } ${!nsfwMode && nsfw ? classes["image--nsfw"] : ""}`}
+      >
+        <source src={videoSrc?.webm} type="video/webm" />
+        <source src={videoSrc?.mp4} type="video/mp4" />
+      </video>
+    );
+  }
 
   return (
     <motion.div
@@ -290,26 +346,8 @@ const CarouselImage = ({
       )}
       {!imgError && imgSrc !== "#" && (
         <>
-          {(imageData.type !== "video" || !active) && (
-            <motion.img
-              className={`${classes.image} ${
-                imageData?.width - imageData?.height < 0
-                  ? classes["image--portrait"]
-                  : ""
-              } ${
-                imgIsLoading && !imgIsLoaded ? classes["image--hidden"] : ""
-              } ${!nsfwMode && nsfw ? classes["image--nsfw"] : ""}`}
-              draggable={false}
-              onClick={() => onClick(position)}
-              onLoad={imgLoadHandler}
-              onError={imgErrorHandler}
-              data-position={position}
-              id={id}
-              src={imgSrc}
-              alt={alt}
-            />
-          )}
-          {imageData.type === "video" && (
+          {carouselElement}
+          {imageData.type === "video" && !active && (
             <div
               className={classes["play-icon"]}
               onClick={() => onClick(position)}
@@ -320,27 +358,6 @@ const CarouselImage = ({
                 data-position={position}
               />
             </div>
-          )}
-          {imageData.type === "video" && active && (
-            <video
-              ref={videoRef}
-              playsInline
-              autoPlay
-              loop
-              disablePictureInPicture
-              preload="none"
-              muted
-              poster={imgSrc}
-              onClick={() => onClick(position)}
-              className={`${classes.image} ${
-                imageData?.width - imageData?.height < 0
-                  ? classes["image--portrait"]
-                  : ""
-              } ${!nsfwMode && nsfw ? classes["image--nsfw"] : ""}`}
-            >
-              <source src={videoSrc?.webm} type="video/webm" />
-              <source src={videoSrc?.mp4} type="video/mp4" />
-            </video>
           )}
         </>
       )}

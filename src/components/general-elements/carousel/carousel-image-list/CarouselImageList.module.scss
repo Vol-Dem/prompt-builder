@@ -14,7 +14,8 @@
   //   width: auto;
   font-size: 1.4rem;
 
-  & img {
+  & img,
+  & video {
     height: 26rem;
   }
 }
@@ -29,7 +30,8 @@
     border: 1px solid var.$color-text-white;
   }
 
-  & img {
+  & img,
+  & video {
     position: relative;
   }
 }

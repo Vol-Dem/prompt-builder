@@ -113,8 +113,6 @@ const SearchFilter = () => {
   }, [searchParams, searchParamSrc]);
 
   useEffect(() => {
-    console.log(searchParamSrc);
-    console.log(searchSrc);
     if (searchParamSrc !== searchSrc)
       setSearchParams(() => {
         return {

@@ -1,3 +1,4 @@
+import type { SrcType } from "../../src/types/models.types";
 import type { CollectionSavedPost } from "./collection";
 import type { Image } from "./image";
 import type {
@@ -132,8 +133,11 @@ export interface ModelPreview {
   sub: string[];
   versionId?: number | null;
   imgUrl: string;
+  imgType?: SrcType;
   customPreviewImgUrl?: string;
+  customPreviewImgType?: SrcType;
   nsfwPreviewImgUrl?: string;
+  nsfwPreviewImgType?: SrcType;
   size: number | null;
   src: string;
   modelType: string;
@@ -162,7 +166,7 @@ export interface ModelPreviewDoc {
   hashes: string[];
   id: number;
   versionId?: number;
-  imgType: string;
+  imgType: SrcType;
   imgUrl: string;
   nsfwPreviewImgUrl?: string;
   latestFileName: string;
@@ -188,8 +192,8 @@ export interface ModelPreviewDoc {
   minWeight?: number | null;
   maxWeight?: number | null;
   helperTags?: string[];
-  customPreviewImgType?: string;
-  nsfwPreviewImgType?: string;
+  customPreviewImgType?: SrcType;
+  nsfwPreviewImgType?: SrcType;
 }
 
 export interface CollectionDoc {
@@ -213,9 +217,9 @@ export interface CollectionPreviewDoc {
   nsfw: boolean;
   customPreviewImgUrl?: string;
   nsfwPreviewImgUrl?: string;
-  customPreviewImgType?: string;
-  nsfwPreviewImgType?: string;
-  imgType?: string;
+  customPreviewImgType?: SrcType;
+  nsfwPreviewImgType?: SrcType;
+  imgType?: SrcType;
   type?: string;
   subcategories: string[];
 }

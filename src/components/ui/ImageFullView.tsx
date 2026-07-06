@@ -11,9 +11,10 @@ import {
   ChevronRightIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import type { SrcType } from "../../types/models.types";
 
 type ImageFullViewProps = HTMLMotionProps<"img"> & {
-  type?: "image" | "video";
+  type?: SrcType;
   onClose?: () => void;
   nextSlide?: () => void;
   prevSlide?: () => void;
