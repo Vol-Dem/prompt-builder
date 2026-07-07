@@ -278,10 +278,19 @@ export const updateImagePostData = async (
       );
     }
 
-    if (!imagesData[0]?.meta?.prompt && isTester) {
-      const imgExampleResponse = await fetch(
-        `${URL_CIV_IMAGES}?postId=${postId}&nsfw=X`,
-      );
+    if (
+      (!imagesData[0]?.meta?.prompt ||
+        imagesData[0].type === "video" ||
+        !imagesData[0].modelVersionIds?.length) &&
+      isTester
+    ) {
+      let postUrl = `${URL_CIV_IMAGES}?postId=${postId}&nsfw=X&withMeta=true`;
+
+      if (modelId) {
+        postUrl = `${URL_CIV_IMAGES}?postId=${postId}&modelId=${modelId}&nsfw=X&withMeta=true`;
+      }
+
+      const imgExampleResponse = await fetch(postUrl);
       const data = (await imgExampleResponse.json()) as { items: Image[] };
 
       if (data?.items?.length)
