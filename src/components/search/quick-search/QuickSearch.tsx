@@ -115,7 +115,14 @@ const QuickSearch = ({ onSubmit, onOpen }: QuickSearchProps) => {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [searchInput, nsfwMode, dispatch, location?.pathname, isOnline]);
+  }, [
+    searchInput,
+    nsfwMode,
+    dispatch,
+    location?.pathname,
+    isOnline,
+    searchSrc,
+  ]);
 
   return (
     <motion.div

@@ -212,6 +212,7 @@ export const createSidebarPreviewData = (
   if ("src" in previewData) {
     return {
       id: previewData.id,
+      versionId: previewData.versionId,
       activeVersionId: versionId || null,
       title: previewData?.title || previewData?.name,
       versionName: previewData?.versionName || curVersionData?.name || "",

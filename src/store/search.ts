@@ -2,6 +2,7 @@ import { createSlice, type Draft, type PayloadAction } from "@reduxjs/toolkit";
 import {
   and,
   collection,
+  FieldPath,
   getDocs,
   getFirestore,
   limit,
@@ -77,6 +78,7 @@ const searchSlice = createSlice({
       result: [],
       nsfw: false,
       hashtag: false,
+      creator: false,
       filter: null,
     },
     quickSearchResult: {
@@ -86,7 +88,13 @@ const searchSlice = createSlice({
       nsfw: false,
       isLastPage: true,
     },
-    searchFilter: { src: null, modelType: [], baseModel: [], hashtag: false },
+    searchFilter: {
+      src: null,
+      modelType: [],
+      baseModel: [],
+      hashtag: false,
+      creator: false,
+    },
     isLoading: false,
     errorMessage: "",
     isLastPage: false,
@@ -113,6 +121,7 @@ const searchSlice = createSlice({
         result: [],
         nsfw: false,
         hashtag: false,
+        creator: false,
         filter: null,
       };
     },
@@ -143,6 +152,7 @@ const searchSlice = createSlice({
         modelType: [],
         baseModel: [],
         hashtag: false,
+        creator: false,
       };
     },
     resetSearchData(state) {
@@ -152,6 +162,7 @@ const searchSlice = createSlice({
         result: [],
         nsfw: false,
         hashtag: false,
+        creator: false,
         filter: null,
       };
       state.errorMessage = "";
@@ -281,6 +292,7 @@ export const liveSearch = (
     try {
       dispatch(searchActions.setSearchIsLoading(true));
       const hashtag = isHashtag || !!filter?.hashtag;
+      const creator = !!filter?.creator;
       const isLastPage = getState().search.isLastPage;
       const isLastCollectionsPage = getState().search.isLastCollectionsPage;
       const isLastSubPage = getState().search.isLastSubPage;
@@ -362,6 +374,13 @@ export const liveSearch = (
           ]),
           where("nsfw", "in", nsfwFilter),
         );
+      } else if (creator) {
+        const creatorUsernamePath = new FieldPath("creator", "username");
+        queryRuleSub = and(
+          ...optionalWhere,
+          where(creatorUsernamePath, "==", searchString),
+          where("nsfw", "in", nsfwFilter),
+        );
       } else {
         queryRuleSub = or(
           and(
@@ -419,7 +438,7 @@ export const liveSearch = (
         DocumentData
       > | null = null;
 
-      if (!isLastPage && !hashtag && !onlyCollections) {
+      if (!isLastPage && !hashtag && !creator && !onlyCollections) {
         querySnapshot = await getDocs(queryModelsByName);
         modelsDataName = querySnapshot.docs.map((doc) => {
           // doc.data() is never undefined for query doc snapshots
@@ -429,6 +448,7 @@ export const liveSearch = (
 
       const includeColections =
         !hashtag &&
+        !creator &&
         !filter?.baseModel?.length &&
         (!filter?.modelType?.length ||
           filter?.modelType?.includes("collection"));
@@ -455,7 +475,11 @@ export const liveSearch = (
         (queryCollectionsSnapshot?.docs?.length < limitAmount &&
           includeColections);
 
-      if ((isLast || hashtag) && !isLastSubPage && !onlyCollections) {
+      if (
+        (isLast || hashtag || creator) &&
+        !isLastSubPage &&
+        !onlyCollections
+      ) {
         querySnapshotSub = await getDocs(querySub);
         modelsDataSub = querySnapshotSub.docs.map((doc) => {
           // doc.data() is never undefined for query doc snapshots
@@ -522,10 +546,12 @@ export const liveSearch = (
             nsfw,
             result: finalResult,
             hashtag,
+            creator,
             filter: filter || {
               modelType: [],
               baseModel: [],
               hashtag: hashtag,
+              creator: creator,
               src: null,
             },
           }),
@@ -570,6 +596,7 @@ export const civitaiSearch = (
     try {
       dispatch(searchActions.setSearchIsLoading(true));
       const hashtag = isHashtag || !!filter?.hashtag;
+      const creator = !!filter?.creator;
       const isLastPage = getState().search.isLastPage;
       const searchResult = getState().search.searchResult;
 
@@ -617,7 +644,6 @@ export const civitaiSearch = (
       }
 
       if (quickSerch) {
-        console.log(finalResult);
         dispatch(
           searchActions.setQuickSearchResult({
             query: searchString,
@@ -635,10 +661,12 @@ export const civitaiSearch = (
             nsfw,
             result: finalResult,
             hashtag,
+            creator,
             filter: filter || {
               modelType: [],
               baseModel: [],
               hashtag: hashtag,
+              creator: creator,
               src: "civitai",
             },
           }),

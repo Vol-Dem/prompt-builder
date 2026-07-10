@@ -3,14 +3,12 @@ import {
   useEffect,
   useRef,
   useState,
-  // type ChangeEvent,
   type ComponentProps,
   type ReactNode,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import classes from "./Select.module.scss";
-// import Input from "./Input";
 import {
   ANIMATIONS_FM_ZOOM_IN,
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
@@ -29,8 +27,6 @@ type SelectProps<T extends SelectOption> = OverrideFields<
     onChange: (value: T["value"] | null) => void;
   }
 >;
-
-// const defOption = { name: "-", value: null };
 
 /**
  * Custom animated select dropdown with radio options.
@@ -54,16 +50,11 @@ const Select = <T extends SelectOption>({
   ...props
 }: SelectProps<T>) => {
   const [selectIsOpen, setSelectIsOpen] = useState(false);
-  // const [selectedFieldName, setSelectedFieldName] =
-  //   useState<ReactNode>(selected);
-  // const [selectedFieldValue, setSelectedFieldValue] = useState(selected);
   const [selectedValue, setSelectedValue] = useState<T | null>(null);
   const [optionsFieldHeight, setOptionsFieldHeight] = useState(15);
   const visibleOptionsAmount = 5;
   const labeldRef = useRef<HTMLLabelElement>(null);
   const inputRef = useRef<HTMLDivElement>(null);
-
-  // const optionsData = selected ? options : [defOption, ...options];
 
   const closeSelectHandler = useCallback((e: PointerEvent) => {
     if (!(e.target as HTMLElement)?.closest(`.${classes["select"]}`))
@@ -105,20 +96,15 @@ const Select = <T extends SelectOption>({
       );
 
       if (selectedData) {
-        // setSelectedFieldName(selectedData.name);
-        // setSelectedFieldValue(selectedData.value);
         setSelectedValue(selectedData);
       }
     }
   }, [options, selected]);
 
   const onSelectValueChange = (value: T | null) => {
-    // const selectedName = (e.target as HTMLElement).dataset.name;
-    // if (selectedValue) {
     setSelectedValue(value);
     onChange(value?.value || null);
     setSelectIsOpen(false);
-    // }
   };
 
   const onShowSelect = () => {
@@ -161,8 +147,8 @@ const Select = <T extends SelectOption>({
       )}
       <div className={`${classes["container"]} `}>
         <div
-          onClick={onShowSelect}
-          className={`${classes["select"]} ${className || ""}`}
+          onClick={!props.disabled ? onShowSelect : undefined}
+          className={`${classes["select"]} ${className || ""} ${props.disabled ? classes["select--disabled"] : ""}`}
         >
           <ChevronDownIcon
             className={`${classes["select__arrow"]} ${
@@ -170,15 +156,6 @@ const Select = <T extends SelectOption>({
             }`}
           />
           <div className={classes["select__input"]}>
-            {/* <Input
-              id={id}
-              className={classes["select__input-field"]}
-              type="text"
-              placeholder="-"
-              value={selectedValue?.value + ""}
-              readOnly
-              // label={selectedValue?.name}
-            /> */}
             <span className={classes["select__input-field"]}>
               {selectedValue?.name || "-"}
             </span>

@@ -65,7 +65,7 @@ const Model = ({ title }: ModelPageProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { modelId } = useParams();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const versionIdParam = searchParams.get("versionId");
   const model = useAppSelector((state) => state.model.model);
   const curVersion = useAppSelector((state) => state.model.curVersion);
@@ -127,18 +127,30 @@ const Model = ({ title }: ModelPageProps) => {
     };
   }, [modelId, isAuth, dispatch, title]);
 
+  const modelIsChanged = model && model.id !== curVersion?.modelId;
+  const versionIsChanged =
+    model && versionIdParam && curVersion?.modelId !== +versionIdParam;
+
   useEffect(() => {
-    if (model?.id && model.id !== curVersion?.modelId) {
+    if (modelIsChanged || versionIsChanged) {
       // Selects the initial version data
       const curVersionData = getInitialVersionData(model, versionIdParam);
 
       if (curVersionData && model) {
+        if (!versionIdParam) {
+          setSearchParams(() => {
+            return {
+              versionId: curVersionData.id + "",
+            };
+          });
+        }
+
         dispatch(
           modelActions.setCurVersion({ ...curVersionData, modelId: model.id }),
         );
       }
     }
-  }, [model, dispatch, curVersion?.modelId, versionIdParam]);
+  }, [model, dispatch, modelIsChanged, versionIsChanged, versionIdParam]);
 
   const openVersionHandler = (e: React.MouseEvent<HTMLElement>) => {
     const id = +(e.target as HTMLElement).id;

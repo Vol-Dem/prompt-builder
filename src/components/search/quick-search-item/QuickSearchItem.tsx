@@ -18,6 +18,7 @@ import type {
   ModelPreviewDoc,
 } from "../../../../shared/types/firestore";
 import ResourceTypeLabel from "../../ui/text/ResourceTypeLabel";
+import type { SrcType } from "../../../types/models.types";
 
 type QuickSearchItemProps = {
   modelPreveiw: ModelPreviewDoc | CollectionPreviewDoc | ModelPreview;
@@ -49,6 +50,14 @@ const QuickSearchItem = ({ modelPreveiw }: QuickSearchItemProps) => {
     imgUrl = modelPreveiw.imgUrl;
   }
 
+  let imageType: SrcType | undefined = undefined;
+
+  if ("imgType" in modelPreveiw) {
+    imageType = nsfwMode
+      ? modelPreveiw?.nsfwPreviewImgType || modelPreveiw.imgType
+      : modelPreveiw?.customPreviewImgType || modelPreveiw.imgType;
+  }
+
   return (
     <motion.li
       key={modelPreveiw.id}
@@ -72,6 +81,7 @@ const QuickSearchItem = ({ modelPreveiw }: QuickSearchItemProps) => {
               result: [],
               nsfw: false,
               hashtag: false,
+              creator: false,
               filter: null,
               src: "aitools",
             }),
@@ -83,6 +93,8 @@ const QuickSearchItem = ({ modelPreveiw }: QuickSearchItemProps) => {
           <Image
             className={classes["img-container"]}
             src={imgUrl}
+            type={imageType}
+            imgType={imageType}
             imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL}
           />
         </>

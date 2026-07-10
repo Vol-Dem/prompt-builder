@@ -16,6 +16,7 @@ import type {
   ModelPreviewDoc,
 } from "../../../../shared/types/firestore";
 import type { ModelVersionCustomData } from "../../../../shared/types/model";
+import type { SrcType } from "../../../types/models.types";
 
 type PreviewCardContentProps = {
   previewData: ModelPreviewDoc | CollectionPreviewDoc | ModelPreview;
@@ -48,6 +49,8 @@ const PreviewCardContent = ({
   const isMobile = useAppSelector((state) => state.general.isMobile);
   const imgRef = useRef<HTMLImageElement>(null);
   let imageSrc;
+  let imageType: SrcType | undefined = undefined;
+  let versionId: number | null = null;
 
   if (isNsfwMode) {
     imageSrc =
@@ -62,12 +65,16 @@ const PreviewCardContent = ({
       "";
   }
 
-  let imageType = undefined;
-
   if ("imgType" in previewData) {
     imageType = isNsfwMode
       ? previewData?.nsfwPreviewImgType || previewData.imgType
       : previewData?.customPreviewImgType || previewData.imgType;
+  }
+
+  if ("versionId" in previewData && previewData.versionId) {
+    versionId = previewData.versionId;
+  } else if ("versionIds" in previewData && previewData.versionIds.length) {
+    versionId = previewData.versionIds[0];
   }
 
   const currVersion = useMemo<ModelVersionCustomData | null>(() => {
@@ -103,7 +110,7 @@ const PreviewCardContent = ({
           to={
             previewData?.type === "collection"
               ? `/images/${previewData.id}`
-              : `/models/${previewData.id}`
+              : `/models/${previewData.id}${versionId ? `?versionId=${versionId}` : ""}`
           }
         >
           {previewData.type && (

@@ -43,7 +43,12 @@ const UploadingItem = ({
     >
       <div className={classes["uploading-list__link"]}>
         <>
-          <Image className={classes["img-container"]} src={data.imgUrl} />
+          <Image
+            className={classes["img-container"]}
+            src={data.imgUrl}
+            type={data.imgType}
+            imgType={data.imgType}
+          />
         </>
         <div className={classes["uploading-list__content"]}>
           <div className={classes["uploading-list__name"]}>

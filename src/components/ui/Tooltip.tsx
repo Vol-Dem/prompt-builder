@@ -7,7 +7,7 @@ type TooltipProps = OverrideFields<
   ComponentProps<"div">,
   {
     content: string | ReactNode;
-    defSide?: "right" | "left";
+    defSide?: "right" | "left" | "center";
   }
 >;
 
@@ -39,7 +39,7 @@ const Tooltip = ({
     if (!tooltipRef.current || !contentRef.current) return;
     const tooltipSize = tooltipRef.current.getBoundingClientRect();
     const contentSize = contentRef.current.getBoundingClientRect();
-    const positionDownRule = tooltipSize.top - contentSize.height - 50 < 0;
+    const positionDownRule = tooltipSize.top - contentSize.height - 70 < 0;
     const positionLeftRule =
       document.body.offsetWidth - tooltipSize.right - contentSize.width < 0 ||
       defSide === "left";
@@ -56,6 +56,10 @@ const Tooltip = ({
       setTranslateX(100);
     }
 
+    if (defSide === "center") {
+      setTranslateX(1);
+    }
+
     if (positionDownRule && positionLeftRule) {
       setBorderRadius("10px 0 10px 10px");
     } else if (positionDownRule && !positionLeftRule) {
@@ -64,6 +68,10 @@ const Tooltip = ({
       setBorderRadius("10px 10px 0 10px");
     } else if (!positionDownRule && !positionLeftRule) {
       setBorderRadius(" 10px 10px 10px 0");
+    }
+
+    if (defSide === "center") {
+      setBorderRadius("10px");
     }
   };
 

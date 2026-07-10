@@ -54,6 +54,9 @@ const Hashtags = ({ hashtags }: HashtagsProps) => {
         value: true,
       }),
     );
+    // setSearchParams((prevParams) => {
+    //   return updateSearchParams(prevParams, { hashtag: true + "" });
+    // });
 
     const query = e.target.dataset.value;
 
@@ -64,16 +67,16 @@ const Hashtags = ({ hashtags }: HashtagsProps) => {
         hashtag: "true",
       });
     });
-    dispatch(
-      liveSearch(
-        query,
-        nsfwMode,
-        SETTINGS_SEARCH_RESULT_PER_PAGE,
-        false,
-        false,
-        true,
-      ),
-    );
+    // dispatch(
+    //   liveSearch(
+    //     query,
+    //     nsfwMode,
+    //     SETTINGS_SEARCH_RESULT_PER_PAGE,
+    //     false,
+    //     false,
+    //     true,
+    //   ),
+    // );
   };
 
   const modelHashtagsHtml = curHashtags?.map((tag, i) => {

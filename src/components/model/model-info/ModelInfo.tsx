@@ -2,8 +2,11 @@ import classes from "./ModelInfo.module.scss";
 import LinkA from "../../ui/LinkA";
 import ResourceTypeLabel from "../../ui/text/ResourceTypeLabel";
 import type { ModelVersionCustomData } from "../../../../shared/types/model";
-import { useAppSelector } from "../../../store/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import { URL_CIV_DEF, URL_CIV_RED } from "../../../variables/constants";
+import { Link, useSearchParams } from "react-router-dom";
+import { searchActions } from "../../../store/search";
+import { updateSearchParams } from "../../../utils/generalUtils";
 
 type ModelInfoProps = { customData?: ModelVersionCustomData | null };
 
@@ -19,10 +22,13 @@ const ModelInfo = ({ customData }: ModelInfoProps) => {
   const model = useAppSelector((state) => state.model.model);
   const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
   const curVersion = useAppSelector((state) => state.model.curVersion);
+  const dispatch = useAppDispatch();
+  const setSearchParams = useSearchParams()[1];
   const viersionVAE = curVersion?.files?.find(
     (file) => file.type === "VAE",
   )?.name;
   const size = customData?.size || model?.defaultCustomData?.size;
+  const creator = model?.creator?.username || model?.data?.creator?.username;
   const minWeight =
     customData?.minWeight || model?.defaultCustomData?.minWeight || null;
   const maxWeight =
@@ -82,6 +88,33 @@ const ModelInfo = ({ customData }: ModelInfoProps) => {
           {")"}
         </div>
       </div>
+      {creator && (
+        <div>
+          <span className={classes["info__name"]}>Author:</span>{" "}
+          <Link
+            to={"/search"}
+            onClick={() => {
+              dispatch(searchActions.resetSearchData());
+              dispatch(searchActions.resetSearchFilter());
+              dispatch(
+                searchActions.setSearchFilter({
+                  type: "creator",
+                  value: true,
+                }),
+              );
+              dispatch(searchActions.setSearchQuery(creator));
+              setSearchParams((prevParams) => {
+                return updateSearchParams(prevParams, {
+                  searchQuery: creator,
+                  creator: "true",
+                });
+              });
+            }}
+          >
+            {creator}
+          </Link>
+        </div>
+      )}
       {fileName && (
         <div>
           <span className={classes["info__name"]}>File:</span> {fileName}

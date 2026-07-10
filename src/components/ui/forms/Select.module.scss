@@ -32,8 +32,6 @@
     color: var.$color-text-gray;
     height: 1.4rem;
     margin-top: 0.1rem;
-    // background-color: var.$color-text-gray;
-    // clip-path: polygon(0 25%, 50% 60%, 100% 25%, 100% 40%, 50% 80%, 0 40%);
     transition: all 0.3s;
     cursor: pointer;
     z-index: 5;
@@ -46,27 +44,11 @@
 
   &__input {
     position: relative;
-    // width: 100%;
-    // cursor: pointer;
   }
 
   &__input-field {
-    // display: flex;
-    // padding-left: 1.2rem;
     background-color: transparent;
     cursor: pointer;
-
-    // font-size: 1.5rem;
-    // border-radius: 10px 0 0 10px;
-    // border-radius: 10px;
-    // padding: 0.3rem;
-    // width: 100%;
-    // padding-left: 1rem;
-    // padding-right: 2rem;
-    // border: 1px solid rgba(255, 255, 255, 0.3);
-    // box-shadow: var.$box-shadow-inset;
-    // color: var.$color-text-white;
-    // color: var.$color-text-gray;
   }
 
   &__icon {
@@ -117,19 +99,12 @@
 
   &__field {
     position: absolute;
-    // background-color: var.$color-white;
     background-color: var.$color-input-bg;
     width: 94%;
     width: 100%;
     height: 14rem;
-    // margin-left: 3%;
-    // padding: 0 1rem 1rem;
-    // padding-left: 0.5rem;
-    // overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 0 0 1rem 1rem;
-    // transition: all 0.3s;
-    // width: var(--input-width);
     background-color: var.$color-input-bg;
     border-radius: 10px;
     margin-top: 0.4rem;
@@ -147,9 +122,6 @@
     }
 
     &-container {
-      // display: flex;
-      // flex-direction: column;
-      // gap: 0.4rem;
       height: 100%;
       overflow-y: scroll;
       @include var.custom-scroll; // } //   } //     opacity: 0; //     background-color: #818181; /* color of the scroll thumb */ //   &:hover { //   //   border: 3px solid #ababab; /* creates padding around scroll thumb */ //   opacity: 0; //   border-radius: 20px; /* roundness of the scroll thumb */ //   background-color: #ababab; /* color of the scroll thumb */ // &::-webkit-scrollbar-thumb { // } //   opacity: 0; //   border-radius: 1rem; //   background: #443d62; /* color of the tracking area */ // &::-webkit-scrollbar-track { // } //   opacity: 0; //   border-radius: 1rem; //   width: 8px; /* width of the entire scrollbar */ // &::-webkit-scrollbar {
@@ -161,7 +133,6 @@
     align-items: center;
     gap: 1.4rem;
     font-weight: 400;
-    // color: #000;
   }
 
   &__img {
@@ -177,6 +148,10 @@
   &__size {
     font-size: 1.4rem;
     font-weight: 500;
+  }
+
+  &--disabled {
+    background-color: var.$color-gray-dark;
   }
 }
 

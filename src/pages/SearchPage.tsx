@@ -82,10 +82,12 @@ const SearchPage = ({ title }: SearchPageProps) => {
     const baseModel = searchParams.get("baseModel");
     const sort = searchParams.get("sort");
     const hashtag = searchParams.get("hashtag") === "true";
+    const creator = searchParams.get("creator") === "true";
     return {
       modelType: modelType?.split(",").filter(Boolean) || [],
       baseModel: baseModel?.split(",").filter(Boolean) || [],
       hashtag,
+      creator,
       src: searchSrc,
       sort,
     };

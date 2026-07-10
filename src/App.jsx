@@ -17,6 +17,7 @@ import AboutImageCollections from "./pages/about/AboutImageCollections";
 import AboutTopPanel from "./pages/about/AboutTopPanel";
 import AboutSidebar from "./pages/about/AboutSidebar";
 import Models from "./pages/Models";
+import Author from "./pages/Author";
 
 const About = lazy(() => import("./pages/About"));
 const ToS = lazy(() => import("./pages/ToS"));
@@ -136,6 +137,23 @@ function App() {
           path: "/profile",
           element: <Profile title="Profile" />,
           errorElement: <ErrorPage />,
+        },
+        // {
+        //   path: "/author",
+        //   element: <Author title="Author" />,
+        //   errorElement: <ErrorPage />,
+        // },
+        {
+          path: "/author/:authorName",
+          id: "author-data",
+          // loader: someLoader,
+          children: [
+            {
+              index: true,
+              element: <Author title="Author" />,
+              errorElement: <ErrorPage />,
+            },
+          ],
         },
         {
           path: "/about",

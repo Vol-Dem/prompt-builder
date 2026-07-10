@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import { ENUMS_CIVITAI } from "../../../variables/enums";
 import type { SearchSrcType } from "../../../types/search.types";
 import Select from "../../ui/forms/Select";
+import Tooltip from "../../ui/Tooltip";
 
 type ModelTypeCheckboxStatusInput = {
   type: string;
@@ -33,9 +34,9 @@ type BaseModelCheckboxStatusInput = {
 type ModelTypeInputData = { name: string; value: string };
 
 const sortOptions = [
+  { name: "Highest Rated", value: "Highest Rated" },
   { name: "Newest", value: "Newest" },
   { name: "Relevancy", value: "Relevancy" },
-  { name: "Highest Rated", value: "Highest Rated" },
   { name: "Most Downloaded", value: "Most Downloaded" },
   { name: "Most Liked", value: "Most Liked" },
   { name: "Most Discussed", value: "Most Discussed" },
@@ -92,10 +93,20 @@ const SearchFilter = () => {
     label: "#hashtag",
     value: false,
   });
+  const [creatorCheckboxStatus, setCreatorCheckboxStatus] = useState({
+    type: "checkbox",
+    id: "creator",
+    name: "creator",
+    label: "Creator",
+    value: false,
+  });
   const userBaseModels = useAppSelector((state) => state.tabs.baseModels);
   const categories = useAppSelector((state) => state.tabs.categoriesData);
   const searchSrc = useAppSelector((state) => state.search.src);
   const searchQuery = useAppSelector((state) => state.search.searchQuery);
+  const hashtag = useAppSelector((state) => state.search.searchFilter.hashtag);
+  const creator = useAppSelector((state) => state.search.searchFilter.creator);
+  const tester = useAppSelector((state) => state.auth.tester);
   const dispatch = useAppDispatch();
   const searchParamSrc = searchParams.get("searchSrc") as SearchSrcType;
   const searchFilter = useMemo(() => {
@@ -103,10 +114,12 @@ const SearchFilter = () => {
     const baseModel = searchParams.get("baseModel");
     const sort = searchParams.get("sort");
     const hashtag = searchParams.get("hashtag") === "true";
+    const creator = searchParams.get("creator") === "true";
     return {
       modelType: modelType?.split(",").filter(Boolean) || [],
       baseModel: baseModel?.split(",").filter(Boolean) || [],
       hashtag,
+      creator,
       searchSrc,
       sort,
     };
@@ -117,11 +130,13 @@ const SearchFilter = () => {
       setSearchParams(() => {
         return {
           searchSrc: searchSrc,
+          hashtag: hashtag + "",
+          creator: creator + "",
           ...(searchSrc === "civitai" && { sort: sortOptions[0].value || "" }),
           ...(searchQuery && { searchQuery: searchQuery || "" }),
         };
       });
-  }, [searchSrc]);
+  }, [searchSrc, searchQuery, hashtag, creator]);
 
   useEffect(() => {
     if (searchParamSrc && initial) {
@@ -207,6 +222,9 @@ const SearchFilter = () => {
 
     setHashtagCheckboxStatus((prevState) => {
       return { ...prevState, value: !!searchFilter.hashtag };
+    });
+    setCreatorCheckboxStatus((prevState) => {
+      return { ...prevState, value: !!searchFilter.creator };
     });
 
     if (searchFilter.sort) {
@@ -340,9 +358,46 @@ const SearchFilter = () => {
         value: e.target.checked,
       }),
     );
+    dispatch(
+      searchActions.setSearchFilter({
+        type: "creator",
+        value: false,
+      }),
+    );
 
     setSearchParams((prevParams) => {
-      return updateSearchParams(prevParams, { hashtag: e.target.checked + "" });
+      return updateSearchParams(prevParams, {
+        hashtag: e.target.checked + "",
+        creator: "false",
+      });
+    });
+  };
+
+  const creatorChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    setCreatorCheckboxStatus((prevState) => {
+      return {
+        ...prevState,
+        value: e.target.checked,
+      };
+    });
+    dispatch(
+      searchActions.setSearchFilter({
+        type: "creator",
+        value: e.target.checked,
+      }),
+    );
+    dispatch(
+      searchActions.setSearchFilter({
+        type: "hashtag",
+        value: false,
+      }),
+    );
+
+    setSearchParams((prevParams) => {
+      return updateSearchParams(prevParams, {
+        creator: e.target.checked + "",
+        hashtag: "false",
+      });
     });
   };
 
@@ -359,6 +414,9 @@ const SearchFilter = () => {
       });
     });
     setHashtagCheckboxStatus((prevState) => {
+      return { ...prevState, value: false };
+    });
+    setCreatorCheckboxStatus((prevState) => {
       return { ...prevState, value: false };
     });
     setModelTypesChecked(0);
@@ -427,11 +485,17 @@ const SearchFilter = () => {
       </div>
       <div className={classes.filter}>
         {searchSrc === "civitai" && (
-          <Select
-            options={sortOptions}
-            selected={sortBy}
-            onChange={searchSrcHandler}
-          />
+          <Tooltip
+            content={!tester ? "Disabled due to a Civitai API bug" : ""}
+            defSide="center"
+          >
+            <Select
+              disabled={!tester}
+              options={sortOptions}
+              selected={sortBy}
+              onChange={searchSrcHandler}
+            />
+          </Tooltip>
         )}
         {!!modelTypesHtml?.length && (
           <div>
@@ -441,6 +505,17 @@ const SearchFilter = () => {
               checked={hashtagCheckboxStatus.value}
               label={hashtagCheckboxStatus.label}
               onChange={hashtagChangeHandler}
+            />
+          </div>
+        )}
+        {!!modelTypesHtml?.length && (
+          <div>
+            <Checkbox
+              id={creatorCheckboxStatus.id}
+              name={creatorCheckboxStatus.name}
+              checked={creatorCheckboxStatus.value}
+              label={creatorCheckboxStatus.label}
+              onChange={creatorChangeHandler}
             />
           </div>
         )}

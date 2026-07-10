@@ -29,6 +29,7 @@ export interface SearchResultData {
   result: SearchResult;
   nsfw: boolean;
   hashtag: boolean;
+  creator: boolean;
   filter: SearchFilter | null;
 }
 
@@ -45,6 +46,7 @@ export interface SearchFilter {
   modelType: string[];
   baseModel: string[];
   hashtag: boolean;
+  creator: boolean;
   sort?: string | null;
 }
 

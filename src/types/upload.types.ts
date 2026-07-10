@@ -1,7 +1,7 @@
 import type { OverrideFields } from "../../shared/types/general";
 import type { Image } from "../../shared/types/image";
 import type { CollectionData } from "./collections.types";
-import type { ResourceFirestoreCollection } from "./models.types";
+import type { ResourceFirestoreCollection, SrcType } from "./models.types";
 
 // export interface  UploadingCollectionData extends CollectionData {
 //   curCollectionSabcategories?: string[];
@@ -38,6 +38,7 @@ export interface UploadingItem {
   ids: number[];
   images?: Image[];
   imgUrl: string;
+  imgType: SrcType;
   location: ResourceFirestoreCollection;
   modelId?: number | null;
   modelName?: string | null;

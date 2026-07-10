@@ -3,8 +3,13 @@ import LinkA from "../../../../ui/LinkA";
 import ImageInfoItem from "../image-info-item/ImageInfoItem";
 import ImageSeed from "../image-seed/ImageSeed";
 import type { Image } from "../../../../../../shared/types/image";
-import { useAppSelector } from "../../../../../store/hooks/hooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "../../../../../store/hooks/hooks";
 import { URL_CIV_DEF, URL_CIV_RED } from "../../../../../variables/constants";
+import { Link } from "react-router-dom";
+import { modelActions } from "../../../../../store/model";
 
 type ImageInfoProps = { imageData: Image };
 
@@ -21,6 +26,8 @@ type ImageInfoProps = { imageData: Image };
  */
 const ImageInfo = ({ imageData }: ImageInfoProps) => {
   const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const dispatch = useAppDispatch();
+
   return (
     <>
       <ul className={classes["config-block"]}>
@@ -57,6 +64,16 @@ const ImageInfo = ({ imageData }: ImageInfoProps) => {
         {!!imageData?.meta?.clipSkip && (
           <ImageInfoItem name="Clip Skip">
             {imageData.meta.clipSkip}
+          </ImageInfoItem>
+        )}
+        {!!imageData?.username && (
+          <ImageInfoItem name="Author">
+            <Link
+              to={`/author/${imageData.username}`}
+              onClick={() => dispatch(modelActions.setActiveCarouselData(null))}
+            >
+              {imageData.username}
+            </Link>{" "}
           </ImageInfoItem>
         )}
         {!!imageData?.id && (

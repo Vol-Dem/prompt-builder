@@ -65,5 +65,15 @@ export const createCivitaiSearchUrl = (
     ? createParamString(searchFilter.modelType, "types")
     : "";
 
-  return `${URL_CIV_MODELS}?${!searchFilter?.hashtag ? "query" : "tag"}=${searchQuery}&limit=${limit}${baseModels}${modelType}&nsfw=${nsfw}&sort=${searchFilter?.sort || "Newest"}`;
+  let searchBy = "query";
+
+  if (searchFilter?.hashtag) {
+    searchBy = "tag";
+  }
+
+  if (searchFilter?.creator) {
+    searchBy = "username";
+  }
+
+  return `${URL_CIV_MODELS}?${searchBy}=${searchQuery}&limit=${limit}${baseModels}${modelType}&nsfw=${nsfw}&sort=${searchFilter?.sort || "Newest"}`;
 };

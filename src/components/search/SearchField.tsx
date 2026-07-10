@@ -103,8 +103,8 @@ const SearchField = ({ className }: SearchFieldProps) => {
 
   const searchSrcHandler = (value: SearchSrcType | null) => {
     dispatch(searchActions.resetSearchData());
-    dispatch(searchActions.resetSearchFilter());
-    dispatch(searchActions.setSearchQuery(""));
+    // dispatch(searchActions.resetSearchFilter());
+    // dispatch(searchActions.setSearchQuery(""));
 
     if (value) dispatch(searchActions.setSearchSrc(value));
   };

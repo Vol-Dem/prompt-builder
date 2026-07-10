@@ -29,8 +29,9 @@ import { useAppSelector } from "../../../../store/hooks/hooks";
 // import { fixCivImagesMeta } from "../../../../utils/tempUtils";
 
 type ExternalImagesProps = {
-  modelId: number;
-  versionId: number;
+  modelId?: number;
+  versionId?: number;
+  username?: string;
   sortBy: string;
   modelIsSaved?: boolean;
 };
@@ -57,7 +58,13 @@ type ExternalImagesProps = {
  * @returns External images component.
  */
 const ExternalImages = memo(
-  ({ modelId, versionId, sortBy, modelIsSaved }: ExternalImagesProps) => {
+  ({
+    modelId,
+    versionId,
+    username,
+    sortBy,
+    modelIsSaved,
+  }: ExternalImagesProps) => {
     const [isIntersecting, setIsIntersecting] = useState(false);
     const savedImages = useAppSelector((state) => state.model.savedImages);
     const nsfwLevel = useAppSelector((state) => state.general.nsfwLevel);
@@ -71,11 +78,20 @@ const ExternalImages = memo(
       `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`,
     );
 
-    const url = `${URL_CIV_IMAGES}?modelId=${modelId}${`&modelVersionId=${versionId}`}${
+    let url = `${URL_CIV_IMAGES}?modelId=${modelId}${`&modelVersionId=${versionId}`}${
       SETTINGS_IMAGES_NUMBER_PER_REQUEST
         ? `&limit=${SETTINGS_IMAGES_NUMBER_PER_REQUEST}`
         : ""
     }${sortBy ? `&sort=${sortBy}` : ""}${`&nsfw=${nsfwLevel}`}&withMeta=true`;
+
+    if (username) {
+      url = `${URL_CIV_IMAGES}?username=${username}${
+        SETTINGS_IMAGES_NUMBER_PER_REQUEST
+          ? `&limit=${SETTINGS_IMAGES_NUMBER_PER_REQUEST}`
+          : ""
+      }${sortBy ? `&sort=${sortBy}` : ""}${`&nsfw=${nsfwLevel}`}&withMeta=true`;
+    }
+
     const {
       fetchedData: fetchedImages,
       isFetching: imagesIsLoading,
@@ -108,8 +124,7 @@ const ExternalImages = memo(
 
     useEffect(() => {
       if (
-        modelId &&
-        versionId &&
+        ((modelId && versionId) || username) &&
         !isLastPage &&
         isIntersecting &&
         !errorMessage &&
@@ -137,6 +152,7 @@ const ExternalImages = memo(
     const imagesHtml = imagesSortedByPost.map((item, i) => {
       const existedImages =
         savedImages?.data &&
+        versionId &&
         Object.hasOwn(savedImages.data, versionId) &&
         savedImages.data[`${versionId}`]?.find(
           (img) => img?.postId === +item[0]?.postId,
@@ -155,7 +171,7 @@ const ExternalImages = memo(
           saved={modelIsSaved ? !postId : true}
           menu={modelIsSaved}
           modelId={modelId}
-          versionId={versionId}
+          versionId={versionId || null}
           showInView={true}
           location="models"
           locationId={modelId}
