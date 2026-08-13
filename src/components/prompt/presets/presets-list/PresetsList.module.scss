@@ -58,10 +58,22 @@
   }
 }
 
-.btn-del {
-  background-color: var.$color-background-red;
+.btn {
+  border-radius: 0.8rem;
 
-  &:hover {
-    background-color: color.adjust(var.$color-background-red, $lightness: 10%);
+  &--del {
+    background-color: var.$color-background-red;
+
+    &:hover {
+      background-color: color.adjust(
+        var.$color-background-red,
+        $lightness: 10%
+      );
+    }
+  }
+
+  & svg {
+    width: 1.6rem;
+    height: 1.6rem;
   }
 }

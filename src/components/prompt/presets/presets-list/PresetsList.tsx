@@ -12,6 +12,7 @@ import { splitTags } from "../../../../utils/promptUtils";
 import type { PromptType } from "../../../../types/prompt.types";
 import type { Preset } from "../../../../../shared/types/user";
 import { useAppDispatch } from "../../../../store/hooks/hooks";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 type PresetsListProps = {
   presets: Preset[];
@@ -84,14 +85,17 @@ const PresetsList = ({
           {preset.name}
         </span>
         <div className={classes["preset__btns-container"]}>
-          <ButtonTertiary onClick={() => onEdit(type, preset)}>
-            Change
+          <ButtonTertiary
+            className={classes["btn"]}
+            onClick={() => onEdit(type, preset)}
+          >
+            <PencilSquareIcon />
           </ButtonTertiary>
           <ButtonTertiary
-            className={classes["btn-del"]}
+            className={`${classes["btn"]} ${classes["btn--del"]}`}
             onClick={() => onDelete(type, preset)}
           >
-            Delete
+            <TrashIcon />
           </ButtonTertiary>
         </div>
       </motion.li>
