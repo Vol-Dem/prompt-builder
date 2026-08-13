@@ -23,11 +23,16 @@ export type SearchResult = (
   | ModelPreview
 )[];
 
+export type NsfwSearchResult = {
+  nsfwValue: boolean;
+  nsfwLevel: string | number;
+};
+
 export interface SearchResultData {
   query: string;
   src: SearchSrcType | null;
   result: SearchResult;
-  nsfw: boolean;
+  nsfw: NsfwSearchResult;
   hashtag: boolean;
   creator: boolean;
   filter: SearchFilter | null;
@@ -37,7 +42,7 @@ export interface QuickSearchResult {
   query: string;
   src: SearchSrcType | null;
   result: SearchResult;
-  nsfw: boolean;
+  nsfw: NsfwSearchResult;
   isLastPage: boolean;
 }
 

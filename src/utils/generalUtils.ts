@@ -114,10 +114,10 @@ export const disableAnimationsOnMobile = (): void => {
  */
 export const checkIsInCurrentNsfwRange = (
   curNsfwLevel: string,
-  curNsfwvalue: string | number,
+  curNsfwValue: string | number,
 ): boolean => {
-  if (typeof curNsfwvalue === "number") {
-    return curNsfwLevel === "X" ? true : curNsfwvalue <= 1;
+  if (typeof curNsfwValue === "number") {
+    return curNsfwLevel === "X" ? true : curNsfwValue <= 1;
   }
 
   const nsfwValues = SETTINGS_NSFW_VALUES_DATA.map(
@@ -128,7 +128,7 @@ export const checkIsInCurrentNsfwRange = (
   );
   const displayedValues = nsfwValues.slice(0, curNsfwLevelIndex + 1);
 
-  return displayedValues.includes(curNsfwvalue + "");
+  return displayedValues.includes(curNsfwValue + "");
 };
 
 /**

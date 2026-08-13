@@ -9,7 +9,7 @@ import {
   ChevronRightIcon,
   ChevronUpIcon,
   DocumentCheckIcon,
-  XMarkIcon,
+  DocumentDuplicateIcon,
 } from "@heroicons/react/24/outline";
 
 type QuickStartGuideProps = ComponentProps<"div"> & {
@@ -98,7 +98,7 @@ const QuickStartGuide = ({
                         onClick={copyHandler}
                         title="Copy"
                       >
-                        727427 {!copied && <XMarkIcon />}
+                        727427 {!copied && <DocumentDuplicateIcon />}
                         {copied && <DocumentCheckIcon />}
                       </ButtonTertiary>
                     </span>

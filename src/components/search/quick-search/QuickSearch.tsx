@@ -1,6 +1,12 @@
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
-import { useEffect, useRef, type MouseEvent, type SubmitEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  type MouseEvent,
+  type SubmitEvent,
+} from "react";
 
 import {
   ANIMATIONS_FM_ZOOM_IN,
@@ -55,6 +61,7 @@ const QuickSearch = ({ onSubmit, onOpen }: QuickSearchProps) => {
   const searchIsLoading = useAppSelector((state) => state.search.isLoading);
   const errorMessage = useAppSelector((state) => state.search.errorMessage);
   const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const nsfwLevel = useAppSelector((state) => state.general.nsfwLevel);
   const searchSrc = useAppSelector((state) => state.search.src);
   const searchResult = useAppSelector(
     (state) => state.search.quickSearchResult,
@@ -64,6 +71,11 @@ const QuickSearch = ({ onSubmit, onOpen }: QuickSearchProps) => {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  const nsfwData = useMemo(
+    () => ({ nsfwValue: nsfwMode, nsfwLevel }),
+    [nsfwMode, nsfwLevel],
+  );
 
   useEffect(() => {
     let curQuery = searchInput.trim();
@@ -85,7 +97,7 @@ const QuickSearch = ({ onSubmit, onOpen }: QuickSearchProps) => {
           dispatch(
             liveSearch(
               curQuery,
-              nsfwMode,
+              nsfwData,
               SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE + 1,
               false,
               true,
@@ -96,7 +108,7 @@ const QuickSearch = ({ onSubmit, onOpen }: QuickSearchProps) => {
           dispatch(
             civitaiSearch(
               curQuery,
-              nsfwMode,
+              nsfwData,
               SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE,
               false,
               true,

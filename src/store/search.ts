@@ -28,6 +28,7 @@ import type {
 import type { AppThunk } from "./store";
 import { AppError, handleErrors, normalizeError } from "../utils/generalUtils";
 import type {
+  NsfwSearchResult,
   QuickSearchResult,
   SearchFilter,
   SearchResult,
@@ -76,7 +77,7 @@ const searchSlice = createSlice({
       query: "",
       src: null,
       result: [],
-      nsfw: false,
+      nsfw: { nsfwValue: false, nsfwLevel: 0 },
       hashtag: false,
       creator: false,
       filter: null,
@@ -85,7 +86,7 @@ const searchSlice = createSlice({
       query: "",
       src: null,
       result: [],
-      nsfw: false,
+      nsfw: { nsfwValue: false, nsfwLevel: 0 },
       isLastPage: true,
     },
     searchFilter: {
@@ -119,7 +120,7 @@ const searchSlice = createSlice({
         query: "",
         src: null,
         result: [],
-        nsfw: false,
+        nsfw: { nsfwValue: false, nsfwLevel: 0 },
         hashtag: false,
         creator: false,
         filter: null,
@@ -160,7 +161,7 @@ const searchSlice = createSlice({
         query: "",
         src: null,
         result: [],
-        nsfw: false,
+        nsfw: { nsfwValue: false, nsfwLevel: 0 },
         hashtag: false,
         creator: false,
         filter: null,
@@ -175,7 +176,7 @@ const searchSlice = createSlice({
         query: "",
         src: null,
         result: [],
-        nsfw: false,
+        nsfw: { nsfwValue: false, nsfwLevel: 0 },
         isLastPage: true,
       };
       state.errorMessage = "";
@@ -281,7 +282,7 @@ const createNameQuery = (
  */
 export const liveSearch = (
   searchString: string,
-  nsfw: boolean,
+  nsfw: NsfwSearchResult,
   limitAmount: number = 5,
   loadMore: boolean = false,
   quickSerch: boolean = false,
@@ -318,7 +319,7 @@ export const liveSearch = (
         `collectionPreviews`,
       );
 
-      const nsfwFilter = !nsfw ? [false] : [true, false];
+      const nsfwFilter = !nsfw.nsfwValue ? [false] : [true, false];
 
       const onlyCollections =
         filter?.modelType.length === 1 &&
@@ -585,7 +586,7 @@ export const liveSearch = (
  */
 export const civitaiSearch = (
   searchString: string | null,
-  nsfw: boolean,
+  nsfw: NsfwSearchResult,
   limitAmount: number,
   loadMore: boolean = false,
   quickSerch: boolean = false,
@@ -594,6 +595,7 @@ export const civitaiSearch = (
 ): AppThunk => {
   return async (dispatch, getState) => {
     try {
+      const nsfwLevel = getState().general.nsfwLevel;
       dispatch(searchActions.setSearchIsLoading(true));
       const hashtag = isHashtag || !!filter?.hashtag;
       const creator = !!filter?.creator;
@@ -610,7 +612,7 @@ export const civitaiSearch = (
 
       const url = createCivitaiSearchUrl(
         searchString,
-        nsfw,
+        nsfw.nsfwValue,
         limitAmount,
         filter,
       );
@@ -624,7 +626,13 @@ export const civitaiSearch = (
       }
 
       let modelPreviews = data.items.flatMap(
-        (model) => createModelPreviewData(model, model.modelVersions[0]) || [],
+        (model) =>
+          createModelPreviewData(
+            model,
+            model.modelVersions[0],
+            null,
+            nsfwLevel,
+          ) || [],
       );
 
       let finalResult: SearchResult = [];

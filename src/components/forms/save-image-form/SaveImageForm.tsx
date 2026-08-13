@@ -231,6 +231,7 @@ const SaveImageForm = ({
         nsfwMode,
         postData: curPostData || null,
         imgUrl: imagesForSaving[0].url,
+        imgType: imagesForSaving[0].type || "image",
         ids: ids || [],
         images: imagesForSaving,
         location,

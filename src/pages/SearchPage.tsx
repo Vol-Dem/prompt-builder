@@ -64,6 +64,7 @@ const SearchPage = ({ title }: SearchPageProps) => {
   const errorMessage = useAppSelector((state) => state.search.errorMessage);
   const searchSrc = useAppSelector((state) => state.search.src);
   const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  const nsfwLevel = useAppSelector((state) => state.general.nsfwLevel);
   const isOnline = useOnlineStatus();
   const dispatch = useAppDispatch();
   const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
@@ -76,6 +77,11 @@ const SearchPage = ({ title }: SearchPageProps) => {
     `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`,
   );
   const searchQueryParam = searchParams.get("searchQuery");
+
+  const nsfwData = useMemo(
+    () => ({ nsfwValue: nsfwMode, nsfwLevel }),
+    [nsfwMode, nsfwLevel],
+  );
 
   const searchFilter = useMemo(() => {
     const modelType = searchParams.get("modelType");
@@ -99,7 +105,10 @@ const SearchPage = ({ title }: SearchPageProps) => {
     searchResult?.filter &&
     !checkObjectsIsEqual(searchFilter, searchResult?.filter);
   const searchParamsIsChanged =
-    queryStringIsChanged || filterIsChanged || searchResult.nsfw !== nsfwMode;
+    queryStringIsChanged ||
+    filterIsChanged ||
+    searchResult.nsfw.nsfwValue !== nsfwMode ||
+    searchResult.nsfw.nsfwLevel !== nsfwLevel;
   const loadMore = !searchParamsIsChanged && !!searchResult?.result?.length;
 
   let isNotLastPage = !isLastPage || !isLastSubPage || !isLastCollectionsPage;
@@ -141,7 +150,7 @@ const SearchPage = ({ title }: SearchPageProps) => {
     dispatch(
       civitaiSearch(
         searchQueryParam,
-        nsfwMode,
+        nsfwData,
         SETTINGS_SEARCH_RESULT_PER_PAGE,
         true,
         false,
@@ -176,7 +185,7 @@ const SearchPage = ({ title }: SearchPageProps) => {
           dispatch(
             liveSearch(
               searchQueryParam,
-              nsfwMode,
+              nsfwData,
               SETTINGS_SEARCH_RESULT_PER_PAGE,
               loadMore,
               false,
@@ -188,7 +197,7 @@ const SearchPage = ({ title }: SearchPageProps) => {
           dispatch(
             civitaiSearch(
               searchQueryParam,
-              nsfwMode,
+              nsfwData,
               SETTINGS_SEARCH_RESULT_PER_PAGE,
               loadMore,
               false,
@@ -207,7 +216,7 @@ const SearchPage = ({ title }: SearchPageProps) => {
     isOnline,
     isIntersecting,
     isNotLastPage,
-    nsfwMode,
+    nsfwData,
     loadMore,
     searchFilter,
     searchQueryParam,

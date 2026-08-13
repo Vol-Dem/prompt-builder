@@ -13,7 +13,7 @@ import type {
 import { clearFileExtension } from "../../shared/utils";
 import type { SidebarPreviewData } from "../types/general.types";
 import type { ModelData } from "../types/models.types";
-import { AppError } from "./generalUtils";
+import { AppError, checkIsInCurrentNsfwRange } from "./generalUtils";
 
 /**
  * Parse model an version IDs from string (ID, URL, AIR)
@@ -145,8 +145,19 @@ export const createModelPreviewData = (
   model: ModelData | CivitaiModelDoc | null,
   curVersion: ModelVersionCivitai | ModelVersion | null,
   curCustomVersionData?: ModelVersionCustomData | null,
+  curNsfwValue?: string,
 ): ModelPreview | null => {
   if (!model?.id || !curVersion?.id) return null;
+
+  let previewImage = null;
+
+  const filteredImages = curVersion?.images?.filter((image) =>
+    checkIsInCurrentNsfwRange(curNsfwValue || "None", image.nsfwLevel),
+  );
+
+  if (filteredImages?.length) {
+    previewImage = filteredImages[0];
+  }
 
   return {
     id: model.id,
@@ -159,8 +170,8 @@ export const createModelPreviewData = (
       curCustomVersionData?.name ||
       curCustomVersionData?.versionName ||
       curVersion.name,
-    imgUrl: curVersion?.images ? curVersion?.images[0]?.url : "",
-    imgType: curVersion?.images && curVersion?.images[0]?.type,
+    imgUrl: previewImage?.url || "",
+    imgType: previewImage?.type,
     modelType: ("data" in model ? model?.data?.type : model.type) || "",
     baseModel: curVersion?.baseModel,
     type:

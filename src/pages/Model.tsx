@@ -68,6 +68,7 @@ const Model = ({ title }: ModelPageProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const versionIdParam = searchParams.get("versionId");
   const model = useAppSelector((state) => state.model.model);
+  const nsfwLevel = useAppSelector((state) => state.general.nsfwLevel);
   const curVersion = useAppSelector((state) => state.model.curVersion);
   const isAuth = useAppSelector((state) => state.auth.user.uid);
   const guideHomeActive = useAppSelector((state) => state.guide.home.active);
@@ -85,7 +86,12 @@ const Model = ({ title }: ModelPageProps) => {
   }, [model, curVersion]);
 
   const modelPreview = useMemo(() => {
-    return createModelPreviewData(model, curVersion, curCustomVersionData);
+    return createModelPreviewData(
+      model,
+      curVersion,
+      curCustomVersionData,
+      nsfwLevel,
+    );
   }, [model, curVersion, curCustomVersionData]);
 
   useEffect(() => {

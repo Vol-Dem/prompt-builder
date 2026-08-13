@@ -4,12 +4,12 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import {
   SETTINGS_MODEL_VISIBLE_HASHTAGS_AMOUNT,
-  SETTINGS_SEARCH_RESULT_PER_PAGE,
+  // SETTINGS_SEARCH_RESULT_PER_PAGE,
 } from "../../../variables/constants";
 import classes from "./Hashtags.module.scss";
-import { liveSearch, searchActions } from "../../../store/search";
+import { searchActions } from "../../../store/search";
 import { updateSearchParams } from "../../../utils/generalUtils";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import { useAppDispatch } from "../../../store/hooks/hooks";
 
 type HashtagsProps = { hashtags: string[] };
 
@@ -30,7 +30,7 @@ type HashtagsProps = { hashtags: string[] };
  */
 const Hashtags = ({ hashtags }: HashtagsProps) => {
   const [showAllHashtags, setShowAllHashtags] = useState(false);
-  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
+  // const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const setSearchParams = useSearchParams()[1];

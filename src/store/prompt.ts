@@ -315,9 +315,11 @@ const promptSlice = createSlice({
           ? state.curPromptArr
           : state.curNegPromptArr;
 
-      const newPromptArr = promptArr.filter((tag) => {
-        return !action.payload.value.includes(tag.tag);
-      });
+      const newPromptArr = promptArr
+        .filter((tag) => {
+          return !action.payload.value.includes(tag.tag);
+        })
+        .map((tag, i) => ({ ...tag, position: i }));
 
       const newPromptArrDuplicates = markDuplicateTags(newPromptArr);
 

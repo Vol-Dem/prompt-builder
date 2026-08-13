@@ -58,16 +58,6 @@ const CategoriesSearchItem = ({ result }: CategoriesSearchItemProps) => {
             dispatch(tabActions.setCurrentCategory(result.id));
           }
           dispatch(searchActions.setSearchQuery(""));
-          dispatch(
-            searchActions.setSearchResult({
-              query: "",
-              result: [],
-              nsfw: false,
-              hashtag: false,
-              filter: null,
-              src: "aitools",
-            }),
-          );
         }}
       >
         {result.name}
@@ -86,16 +76,6 @@ const CategoriesSearchItem = ({ result }: CategoriesSearchItemProps) => {
             dispatch(tabActions.setCurrentSubcategory(result.subId));
           }
           dispatch(searchActions.setSearchQuery(""));
-          dispatch(
-            searchActions.setSearchResult({
-              query: "",
-              result: [],
-              nsfw: false,
-              hashtag: false,
-              filter: null,
-              src: "aitools",
-            }),
-          );
           dispatch(modelActions.setActiveCarouselData(null));
         }}
       >

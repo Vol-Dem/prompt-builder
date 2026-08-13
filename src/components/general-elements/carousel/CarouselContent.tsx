@@ -422,6 +422,7 @@ const CarouselContent = ({
       nsfwMode,
       postData: postData,
       imgUrl: imagesForSaving[0].url,
+      imgType: imagesForSaving[0].type || "image",
       ids: ids || [],
       existedAmount: existedImgsAmount,
       images: imagesForSaving,
@@ -458,6 +459,7 @@ const CarouselContent = ({
         postData: curPostData,
         delete: true,
         imgUrl: imagesData[0].url,
+        imgType: imagesData[0].type || "image",
         ids: ids || [],
         existedAmount: existedImgsAmount,
       };

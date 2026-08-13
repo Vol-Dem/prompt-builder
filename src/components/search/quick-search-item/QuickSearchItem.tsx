@@ -75,17 +75,6 @@ const QuickSearchItem = ({ modelPreveiw }: QuickSearchItemProps) => {
         className={classes["search__link"]}
         onClick={() => {
           dispatch(searchActions.setSearchQuery(""));
-          dispatch(
-            searchActions.setSearchResult({
-              query: "",
-              result: [],
-              nsfw: false,
-              hashtag: false,
-              creator: false,
-              filter: null,
-              src: "aitools",
-            }),
-          );
           dispatch(modelActions.setActiveCarouselData(null));
         }}
       >
