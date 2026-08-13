@@ -28,6 +28,12 @@ import type {
   ModelCategory,
 } from "../../../../shared/types/user";
 import { useAppDispatch } from "../../../store/hooks/hooks";
+import {
+  CheckIcon,
+  PencilSquareIcon,
+  TrashIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 
 type CategoriesFormProps = {
   modelType: string;
@@ -178,7 +184,15 @@ const CategoriesForm = ({
         throw new AppError(ERROR_MESSAGE_INPUT_DEF);
       }
 
-      const existedName = categoriesToUpdate?.find(
+      const sameName = !!categoriesToUpdate?.find(
+        (category) => category.name === categoryName && category.id === id,
+      );
+
+      if (sameName) {
+        changeNameIsActiveHandler(id);
+      }
+
+      const existedName = !!categoriesToUpdate?.find(
         (category) => category.name === categoryName,
       );
 
@@ -304,7 +318,7 @@ const CategoriesForm = ({
                 autoFocus
               />
               <ButtonTertiary type="submit" className={classes["btn"]}>
-                Submit
+                <CheckIcon />
               </ButtonTertiary>
             </>
           )}
@@ -313,7 +327,7 @@ const CategoriesForm = ({
             className={classes["btn"]}
             onClick={() => changeNameIsActiveHandler(category.id)}
           >
-            {!category.active ? "Change" : "Cancel"}
+            {!category.active ? <PencilSquareIcon /> : <XMarkIcon />}
           </ButtonTertiary>
           {!category.active && (
             <ButtonTertiary
@@ -321,7 +335,7 @@ const CategoriesForm = ({
               className={`${classes["btn"]} ${classes["btn--del"]}`}
               onClick={() => showDeleteReqeustHandler(category.id)}
             >
-              Delete
+              <TrashIcon />
             </ButtonTertiary>
           )}
         </div>
