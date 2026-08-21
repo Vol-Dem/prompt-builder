@@ -50,7 +50,6 @@ const PreviewCardContent = ({
   const imgRef = useRef<HTMLImageElement>(null);
   let imageSrc;
   let imageType: SrcType | undefined = undefined;
-  let versionId: number | null = null;
 
   if (isNsfwMode) {
     imageSrc =
@@ -69,12 +68,6 @@ const PreviewCardContent = ({
     imageType = isNsfwMode
       ? previewData?.nsfwPreviewImgType || previewData.imgType
       : previewData?.customPreviewImgType || previewData.imgType;
-  }
-
-  if ("versionId" in previewData && previewData.versionId) {
-    versionId = previewData.versionId;
-  } else if ("versionIds" in previewData && previewData.versionIds.length) {
-    versionId = previewData.versionIds[0];
   }
 
   const currVersion = useMemo<ModelVersionCustomData | null>(() => {
@@ -107,11 +100,7 @@ const PreviewCardContent = ({
           className={classes["btn-add"]}
         />
         <Link
-          to={
-            previewData?.type === "collection"
-              ? `/images/${previewData.id}`
-              : `/models/${previewData.id}${versionId ? `?versionId=${versionId}` : ""}`
-          }
+          to={`/${previewData?.type === "collection" ? "images" : "models"}/${previewData.id}`}
         >
           {previewData.type && (
             <ResourceTypeLabel
