@@ -734,13 +734,6 @@ const UpdateModelForm = ({
               )}
           </div>
         )}
-        {/* <Button
-          type="submit"
-          disabled={modelIsSaving}
-          className={classes.submit}
-        >
-          {!modelIsSaving ? "Save" : <Spinner size="small" />}
-        </Button> */}
         {submitButton}
       </div>
     </form>

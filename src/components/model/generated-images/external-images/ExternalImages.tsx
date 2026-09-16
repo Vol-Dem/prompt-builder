@@ -26,7 +26,6 @@ import {
 } from "../../../../utils/imageUtils";
 import { fixCivImagesMeta } from "../../../../../shared/utils";
 import { useAppSelector } from "../../../../store/hooks/hooks";
-// import { fixCivImagesMeta } from "../../../../utils/tempUtils";
 
 type ExternalImagesProps = {
   modelId?: number;

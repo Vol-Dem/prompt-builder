@@ -36,7 +36,7 @@ const Landing = lazy(() => import("./pages/Landing"));
  *
  * Responsibilities:
  * - Initializes authentication and device state
- * - Preloads heavy routes in development
+ * - Preloads the model page on mount
  * - Defines the full React Router structure
  * - Handles conditional landing vs. models routing
  *
@@ -62,7 +62,7 @@ function App() {
     dispatch(initAuth());
   }, [dispatch]);
 
-  //Removes delay on first navigation in dev mode
+  // Preload the model page to reduce the delay on first navigation.
   useEffect(() => {
     import("./pages/Model");
   }, []);
@@ -86,7 +86,6 @@ function App() {
         {
           path: "/models/:modelId",
           id: "model-data",
-          // loader: someLoader,
           children: [
             {
               index: true,
@@ -112,7 +111,6 @@ function App() {
             {
               path: ":collectionId",
               id: "collection-data",
-              // loader: someLoader,
               children: [
                 {
                   index: true,
@@ -138,15 +136,9 @@ function App() {
           element: <Profile title="Profile" />,
           errorElement: <ErrorPage />,
         },
-        // {
-        //   path: "/author",
-        //   element: <Author title="Author" />,
-        //   errorElement: <ErrorPage />,
-        // },
         {
           path: "/author/:authorName",
           id: "author-data",
-          // loader: someLoader,
           children: [
             {
               index: true,
