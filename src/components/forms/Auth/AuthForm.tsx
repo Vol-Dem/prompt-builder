@@ -9,7 +9,7 @@ import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { authActions, authRequest, authWithGoogle } from "../../../store/auth";
 import Button from "../../ui/buttons/Button";
-import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
+import ButtonSecondary from "../../ui/buttons/ButtonSecondary";
 import {
   MESSAGE_AGREEMENT,
   ERROR_MESSAGE_INPUT_DEF,
@@ -234,14 +234,14 @@ const AuthForm = () => {
             </ErrorMessage>
           )}
           <div className={classes["auth__controls"]}>
-            <ButttonSecondary
+            <ButtonSecondary
               type="button"
               onClick={switchSignType}
               disabled={isLoading}
               className={classes["auth__btn--switch"]}
             >
               {isLogin ? "Create Account" : "Log in"}
-            </ButttonSecondary>
+            </ButtonSecondary>
             <Button
               disabled={isLoading}
               className={classes["auth__btn--submit"]}

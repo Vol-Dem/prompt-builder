@@ -3,7 +3,7 @@ import { MotionGlobalConfig } from "framer-motion";
 import {
   ERROR_MESSAGE_CIV_CONNECTION,
   ERROR_MESSAGE_DEFAULT,
-  REGEX_MOBAL,
+  REGEX_MOBILE,
   SETTINGS_NSFW_VALUES_DATA,
 } from "../variables/constants";
 import type {
@@ -93,7 +93,7 @@ export const handleErrors = (err: AppError): string => {
  * @returns True if the device is mobile, otherwise false
  */
 export const checkIsMobile = (): boolean => {
-  return REGEX_MOBAL.test(navigator.userAgent);
+  return REGEX_MOBILE.test(navigator.userAgent);
 };
 
 /**

@@ -3,13 +3,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import classes from "./TagSetsInputFieldset.module.scss";
 import Textarea from "./Textarea";
 import Input from "./Input";
-import ButttonSecondary from "../buttons/ButtonSecondary";
+import ButtonSecondary from "../buttons/ButtonSecondary";
 import Fieldset from "./Fieldset";
 import FieldCategory from "./FieldCategory";
 import ButtonTertiary from "../buttons/ButtonTertiary";
 import {
   VALIDATION_NAME_MAX_LENGTH,
-  VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+  VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_FADEOUT_EXIT,
@@ -150,7 +150,7 @@ const TagSetsInputFieldset = ({
           value={tagSet[1].value}
           showError={showErrorMessage}
           validation={{
-            maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+            maxLength: VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
           }}
         ></Textarea>
       </motion.div>
@@ -161,14 +161,14 @@ const TagSetsInputFieldset = ({
     <FieldCategory>
       <Fieldset legend="Tag sets" className={classes.fieldset}>
         <AnimatePresence>{tagSetsHtml}</AnimatePresence>
-        <ButttonSecondary
+        <ButtonSecondary
           type="button"
           onClick={addtagSetHandler}
           disabled={isSaving}
           className={classes["btn-secondary"]}
         >
           + add new set
-        </ButttonSecondary>
+        </ButtonSecondary>
       </Fieldset>
     </FieldCategory>
   );

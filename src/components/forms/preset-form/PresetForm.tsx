@@ -14,7 +14,7 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   VALIDATION_NAME_MAX_LENGTH,
   ERROR_MESSAGE_OFFLINE,
-  VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+  VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
 import {
   AppError,
@@ -197,7 +197,7 @@ const PresetForm = ({ type, id, name, words, onClose }: PresetFormProps) => {
           }}
           validation={{
             required: true,
-            maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+            maxLength: VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
           }}
           showError={showErrorMessage}
         />

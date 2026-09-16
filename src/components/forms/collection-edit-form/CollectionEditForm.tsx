@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import ComboSelect from "../../ui/forms/ComboSelect";
 import Fieldset from "../../ui/forms/Fieldset";
 import classes from "./CollectionEditForm.module.scss";
-import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
+import ButtonSecondary from "../../ui/buttons/ButtonSecondary";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
   ANIMATIONS_FM_SLIDEOUT,
@@ -406,14 +406,14 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
           <Fieldset legend="Subcategories">
             <AnimatePresence>{subCatHtml}</AnimatePresence>
             {subCatInputs?.length < SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT && (
-              <ButttonSecondary
+              <ButtonSecondary
                 type="button"
                 id="sub"
                 onClick={addSubHandler}
                 className={classes["btn-secondary"]}
               >
                 + add subcategory
-              </ButttonSecondary>
+              </ButtonSecondary>
             )}
           </Fieldset>
         </div>

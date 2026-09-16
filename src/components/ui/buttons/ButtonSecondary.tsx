@@ -1,13 +1,13 @@
 import type { ComponentProps } from "react";
 import classes from "./ButtonSecondary.module.scss";
 
-type ButttonSecondaryProps = ComponentProps<"button">;
+type ButtonSecondaryProps = ComponentProps<"button">;
 
-const ButttonSecondary = ({
+const ButtonSecondary = ({
   children,
   className,
   ...props
-}: ButttonSecondaryProps) => {
+}: ButtonSecondaryProps) => {
   return (
     <button
       className={`${classes["btn-secondary"]} ${className || ""}`}
@@ -18,4 +18,4 @@ const ButttonSecondary = ({
   );
 };
 
-export default ButttonSecondary;
+export default ButtonSecondary;

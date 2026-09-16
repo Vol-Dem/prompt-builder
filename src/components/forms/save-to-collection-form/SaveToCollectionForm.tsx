@@ -18,7 +18,7 @@ import {
 } from "../../../variables/constants";
 import ComboSelect from "../../ui/forms/ComboSelect";
 import Fieldset from "../../ui/forms/Fieldset";
-import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
+import ButtonSecondary from "../../ui/buttons/ButtonSecondary";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import {
   AppError,
@@ -453,14 +453,14 @@ const SaveToCollectionForm = ({
                 <AnimatePresence>{subCatHtml}</AnimatePresence>
                 {subcategoryInputs?.length <
                   SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT && (
-                  <ButttonSecondary
+                  <ButtonSecondary
                     type="button"
                     id="sub"
                     onClick={addSubHandler}
                     className={classes["btn-secondary"]}
                   >
                     + add subcategory
-                  </ButttonSecondary>
+                  </ButtonSecondary>
                 )}
               </Fieldset>
               <ComboSelect

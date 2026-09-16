@@ -11,7 +11,7 @@ import {
   DEFAULT_PAGE_TITLE,
   MESSAGE_DELETE_COLLECTION,
 } from "../variables/constants";
-import CollectionEditForm from "../components/forms/collection-edit-from/CollectionEditForm";
+import CollectionEditForm from "../components/forms/collection-edit-form/CollectionEditForm";
 import Spinner from "../components/ui/Spinner";
 import ButtonDelete from "../components/ui/buttons/ButtonDelete";
 import ErrorMessage from "../components/ui/ErrorMessage";

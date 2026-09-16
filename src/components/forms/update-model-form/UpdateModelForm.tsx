@@ -13,7 +13,7 @@ import classes from "./UpdateModelForm.module.scss";
 import Input from "../../ui/forms/Input";
 import Button from "../../ui/buttons/Button";
 import Textarea from "../../ui/forms/Textarea";
-import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
+import ButtonSecondary from "../../ui/buttons/ButtonSecondary";
 import Checkbox from "../../ui/forms/Checkbox";
 import Select from "../../ui/forms/Select";
 import Fieldset from "../../ui/forms/Fieldset";
@@ -35,7 +35,7 @@ import {
   ERROR_MESSAGE_OFFLINE,
   SUCCESS_MESSAGE_UPLOADED,
   VALIDATION_TITLE_MAX_LENGTH,
-  VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+  VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
   MODEL_TYPES,
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
   ANIMATIONS_FM_SLIDEOUT,
@@ -600,7 +600,7 @@ const UpdateModelForm = ({
               setHashtagsInput({ value: e.target.value, isValid });
             }}
             validation={{
-              maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+              maxLength: VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
             }}
             showError={showErrorMessage}
           />
@@ -690,14 +690,14 @@ const UpdateModelForm = ({
         <Fieldset legend="Subcategories">
           <AnimatePresence>{subCatHtml}</AnimatePresence>
           {subCatInputs?.length < SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT && (
-            <ButttonSecondary
+            <ButtonSecondary
               type="button"
               id="sub"
               onClick={addSubHandler}
               className={classes["btn-secondary"]}
             >
               + add subcategory
-            </ButttonSecondary>
+            </ButtonSecondary>
           )}
         </Fieldset>
       </div>

@@ -135,7 +135,7 @@ export const URL_CF_UPDATE_MODEL =
 //REGEX
 export const REGEX_SPLIT_TAGS = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
 export const REGEX_ACTIVATION_TAG = /<[^>]*>/i;
-export const REGEX_MOBAL = /iPhone|iPad|iPod|Android/i;
+export const REGEX_MOBILE = /iPhone|iPad|iPod|Android/i;
 
 //VALIDATION
 export const VALIDATION_CATEGORY_NAME_MAX_LENGTH = 70;
@@ -143,7 +143,7 @@ export const VALIDATION_USERNAME_MAX_LENGTH = 100;
 export const VALIDATION_NAME_MAX_LENGTH = 300;
 export const VALIDATION_TITLE_MAX_LENGTH = 500;
 export const VALIDATION_DESCRIPTION_MAX_LENGTH = 100000;
-export const VALIDATION_TRIGER_WORDS_MAX_LENGTH = 5000;
+export const VALIDATION_TRIGGER_WORDS_MAX_LENGTH = 5000;
 export const VALIDATION_ID_MAX_LENGTH = 20;
 export const VALIDATION_POST_URL_MAX_LENGTH = 45;
 export const VALIDATION_NUMBER_MAX_LENGTH = 5;

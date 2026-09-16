@@ -6,7 +6,7 @@ import firebaseApp from "../../../firebase-config";
 import Textarea from "../../ui/forms/Textarea";
 import Button from "../../ui/buttons/Button";
 import Input from "../../ui/forms/Input";
-import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
+import ButtonSecondary from "../../ui/buttons/ButtonSecondary";
 import Fieldset from "../../ui/forms/Fieldset";
 import FieldCategory from "../../ui/forms/FieldCategory";
 import {
@@ -24,7 +24,7 @@ import {
   ERROR_MESSAGE_OFFLINE,
   SUCCESS_MESSAGE_UPLOADED,
   VALIDATION_TITLE_MAX_LENGTH,
-  VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+  VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
 import InputNumber from "../../ui/forms/InputNumber";
 import Spinner from "../../ui/Spinner";
@@ -516,7 +516,7 @@ const VersionForm = ({
             value={tagSet[1].value}
             showError={showErrorMessage}
             validation={{
-              maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+              maxLength: VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
             }}
           ></Textarea>
         </div>
@@ -577,7 +577,7 @@ const VersionForm = ({
               setMainTagInput({ value: e.target.value, isValid });
             }}
             validation={{
-              maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+              maxLength: VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
             }}
             showError={showErrorMessage}
           />
@@ -592,7 +592,7 @@ const VersionForm = ({
               setTrigerInput({ value: e.target.value, isValid });
             }}
             validation={{
-              maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+              maxLength: VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
             }}
             showError={showErrorMessage}
           />
@@ -607,7 +607,7 @@ const VersionForm = ({
               setHelperTagsInput({ value: e.target.value, isValid });
             }}
             validation={{
-              maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+              maxLength: VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
             }}
             showError={showErrorMessage}
           ></Textarea>
@@ -622,20 +622,20 @@ const VersionForm = ({
               setNegativeTagsInput({ value: e.target.value, isValid });
             }}
             validation={{
-              maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+              maxLength: VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
             }}
             showError={showErrorMessage}
           ></Textarea>
           <Fieldset legend="Tag sets">
             {tagSetsHtml}
-            <ButttonSecondary
+            <ButtonSecondary
               type="button"
               onClick={addtagSetHandler}
               disabled={isSaving}
               className={classes["btn-secondary"]}
             >
               + add new set
-            </ButttonSecondary>
+            </ButtonSecondary>
           </Fieldset>
         </FieldCategory>
         <FieldCategory title="Info">

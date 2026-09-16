@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 
 import classes from "./UserNavigation.module.scss";
-import ButttonSecondary from "../../ui/buttons/ButtonSecondary";
+import ButtonSecondary from "../../ui/buttons/ButtonSecondary";
 import { authActions } from "../../../store/auth";
 import { tabActions } from "../../../store/tabs";
 import { imagesActions } from "../../../store/images";
@@ -57,12 +57,12 @@ const UserNavigation = () => {
               </NavLink>
             </li>
           </ul>
-          <ButttonSecondary
+          <ButtonSecondary
             onClick={logout}
             className={classes["nav-btn-auth"]}
           >
             Logout
-          </ButttonSecondary>
+          </ButtonSecondary>
         </div>
       </div>
     </div>

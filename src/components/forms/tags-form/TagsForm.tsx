@@ -14,7 +14,7 @@ import {
   VALIDATION_NAME_MAX_LENGTH,
   ERROR_MESSAGE_OFFLINE,
   SUCCESS_MESSAGE_UPLOADED,
-  VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+  VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
 import Spinner from "../../ui/Spinner";
 import { modelActions } from "../../../store/model";
@@ -245,7 +245,7 @@ const TagsForm = ({
                 setTrigerInput({ value: e.target.value, isValid });
               }}
               validation={{
-                maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+                maxLength: VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
               }}
               showError={showErrorMessage}
             />
@@ -260,7 +260,7 @@ const TagsForm = ({
                 setHelperTagsInput({ value: e.target.value, isValid });
               }}
               validation={{
-                maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+                maxLength: VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
               }}
               showError={showErrorMessage}
             ></Textarea>
@@ -275,7 +275,7 @@ const TagsForm = ({
                 setNegativeTagsInput({ value: e.target.value, isValid });
               }}
               validation={{
-                maxLength: VALIDATION_TRIGER_WORDS_MAX_LENGTH,
+                maxLength: VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
               }}
               showError={showErrorMessage}
             ></Textarea>
