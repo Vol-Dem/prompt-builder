@@ -17,7 +17,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
  *
  * @returns The main navigation element.
  */
-function MainNavigation() {
+const MainNavigation = () => {
   const isAuth = useAppSelector((state) => state.auth.isLoggedIn);
   const dispatch = useAppDispatch();
 
@@ -64,6 +64,6 @@ function MainNavigation() {
       </nav>
     </>
   );
-}
+};
 
 export default MainNavigation;

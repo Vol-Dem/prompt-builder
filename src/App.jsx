@@ -51,7 +51,7 @@ const Landing = lazy(() => import("./pages/Landing"));
  *
  * @returns {JSX.Element} Root RouterProvider with all app routes.
  */
-function App() {
+const App = () => {
   const isAuth = useSelector((state) => state.auth.isLoggedIn);
   const initialAuth = useSelector((state) => state.auth.initialAuth);
   const dispatch = useDispatch();
@@ -214,6 +214,6 @@ function App() {
   ]);
 
   return <RouterProvider router={router} />;
-}
+};
 
 export default App;
