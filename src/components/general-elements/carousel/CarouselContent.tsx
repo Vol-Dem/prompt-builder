@@ -539,6 +539,13 @@ const CarouselContent = ({
     }
   };
 
+  const showNavigation = imagesData?.length > curVisibleAmount;
+  const hasMultipleImages = imagesData?.length > 1;
+  const showImageSelectionForm =
+    imageFormState?.location === "models" || imageFormState?.type === "del";
+  const showCollectionSaveForm =
+    imageFormState?.location === "collections" && imageFormState.type !== "del";
+
   return (
     <div
       className={`${classes.carousel}`}
@@ -574,7 +581,7 @@ const CarouselContent = ({
         onOpen={openFullViewHandler}
         menu={menu}
       />
-      {imagesData?.length > curVisibleAmount && (
+      {showNavigation && (
         <>
           <button
             type="button"
@@ -595,7 +602,7 @@ const CarouselContent = ({
           </button>
         </>
       )}
-      {imagesData?.length > curVisibleAmount && (
+      {showNavigation && (
         <CarouselPagination
           images={imagesData}
           // currImgIndex={currImgNum}
@@ -613,7 +620,7 @@ const CarouselContent = ({
         onOpenForm={setImageFormState}
         postData={postData}
       />
-      {imagesData?.length > 1 && (
+      {hasMultipleImages && (
         <button
           className={classes["btn-all"]}
           onClick={() => openCarouselHandler(null)}
@@ -633,7 +640,7 @@ const CarouselContent = ({
             }}
             nextSlide={slideNextHandler}
             prevSlide={slidePrevHandler}
-            controls={imagesData?.length > 1}
+            controls={hasMultipleImages}
           ></ImageFullView>
         )}
         {imageFormState?.isOpen && (
@@ -653,8 +660,7 @@ const CarouselContent = ({
               );
             }}
           >
-            {(imageFormState?.location === "models" ||
-              imageFormState.type === "del") && (
+            {showImageSelectionForm && (
               <ChooseImageForm
                 postData={postData}
                 type={imageFormState.type}
@@ -672,19 +678,18 @@ const CarouselContent = ({
                 isDeleting={isDeleting}
               />
             )}
-            {imageFormState?.location === "collections" &&
-              imageFormState.type !== "del" && (
-                <SaveToCollectionForm
-                  postId={postId}
-                  images={imagesData}
-                  activeImageIndex={currImgNum}
-                  onSave={
-                    imageFormState.type === "save"
-                      ? saveExampleHandler
-                      : deleteExampleHandler
-                  }
-                />
-              )}
+            {showCollectionSaveForm && (
+              <SaveToCollectionForm
+                postId={postId}
+                images={imagesData}
+                activeImageIndex={currImgNum}
+                onSave={
+                  imageFormState.type === "save"
+                    ? saveExampleHandler
+                    : deleteExampleHandler
+                }
+              />
+            )}
           </Modal>
         )}
       </AnimatePresence>
