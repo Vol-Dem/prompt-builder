@@ -2,12 +2,12 @@ import { useEffect, useState, type ChangeEvent, type SubmitEvent } from "react";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 
 import classes from "./VersionForm.module.scss";
+import VersionTagSetsFieldset from "./version-tag-sets-fieldset/VersionTagSetsFieldset";
+import VersionWeightFields from "./version-weight-fields/VersionWeightFields";
 import firebaseApp from "../../../firebase-config";
 import Textarea from "../../ui/forms/Textarea";
 import Button from "../../ui/buttons/Button";
 import Input from "../../ui/forms/Input";
-import ButtonSecondary from "../../ui/buttons/ButtonSecondary";
-import Fieldset from "../../ui/forms/Fieldset";
 import FieldCategory from "../../ui/forms/FieldCategory";
 import {
   AppError,
@@ -20,15 +20,12 @@ import {
   ERROR_MESSAGE_INPUT_DEF,
   VALIDATION_DESCRIPTION_MAX_LENGTH,
   VALIDATION_NAME_MAX_LENGTH,
-  VALIDATION_NUMBER_MAX_LENGTH,
   ERROR_MESSAGE_OFFLINE,
   SUCCESS_MESSAGE_UPLOADED,
   VALIDATION_TITLE_MAX_LENGTH,
   VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
-import InputNumber from "../../ui/forms/InputNumber";
 import Spinner from "../../ui/Spinner";
-import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import { createTagSetsInputData, splitTags } from "../../../utils/promptUtils";
 import { clearFileExtension } from "../../../../shared/utils";
 import { FORMS_DEF_TAGS_INPUT } from "../../../variables/structures";
@@ -38,7 +35,6 @@ import type {
   UserModelDefaultCustomData,
 } from "../../../../shared/types/model";
 import { useAppSelector } from "../../../store/hooks/hooks";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { TagSetInputData } from "../../../types/prompt.types";
 
 const firestore = getFirestore(firebaseApp);
@@ -476,53 +472,6 @@ const VersionForm = ({
     });
   };
 
-  const tagSetsHtml =
-    !!tagSetsInputs.length &&
-    tagSetsInputs.map((tagSet, i) => {
-      return (
-        <div key={tagSet[0].id} className={classes["tagset"]}>
-          <div className={classes["tagset__header"]}>
-            <span
-              className={classes["tagset__title"]}
-            >{`Tagset ${i + 1}`}</span>{" "}
-            {i !== 0 && (
-              <ButtonTertiary
-                type="button"
-                className={classes["input__btn-del"]}
-                onClick={deleteTagsetInputHandler.bind(null, i)}
-              >
-                <XMarkIcon />
-              </ButtonTertiary>
-            )}
-          </div>
-          <Input
-            id={tagSet[0].id}
-            name={tagSet[0].name}
-            type={tagSet[0].type}
-            placeholder={tagSet[0].placeholder}
-            onChange={tagSetsHandler}
-            value={tagSet[0].value}
-            showError={showErrorMessage}
-            validation={{
-              maxLength: VALIDATION_NAME_MAX_LENGTH,
-            }}
-          />
-          <Textarea
-            id={tagSet[1].id}
-            name={tagSet[1].name}
-            rows={5}
-            placeholder={tagSet[1].placeholder}
-            onChange={tagSetsHandler}
-            value={tagSet[1].value}
-            showError={showErrorMessage}
-            validation={{
-              maxLength: VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
-            }}
-          ></Textarea>
-        </div>
-      );
-    });
-
   return (
     <form onSubmit={saveVersionHandler} className={classes["form"]}>
       <div className={classes.subtitle}>
@@ -626,17 +575,14 @@ const VersionForm = ({
             }}
             showError={showErrorMessage}
           ></Textarea>
-          <Fieldset legend="Tag sets">
-            {tagSetsHtml}
-            <ButtonSecondary
-              type="button"
-              onClick={addtagSetHandler}
-              disabled={isSaving}
-              className={classes["btn-secondary"]}
-            >
-              + add new set
-            </ButtonSecondary>
-          </Fieldset>
+          <VersionTagSetsFieldset
+            tagSets={tagSetsInputs}
+            showError={showErrorMessage}
+            isSaving={isSaving}
+            onAdd={addtagSetHandler}
+            onChange={tagSetsHandler}
+            onDelete={deleteTagsetInputHandler}
+          />
         </FieldCategory>
         <FieldCategory title="Info">
           <Input
@@ -654,68 +600,30 @@ const VersionForm = ({
             }}
             showError={showErrorMessage}
           />
-          <div>
-            <span className={classes["weight__label"]}>Weight</span>
-            <div className={classes.weight}>
-              <InputNumber
-                id="minWeight"
-                name="minWeight"
-                type="number"
-                step={0.1}
-                placeholder="Min"
-                value={minWeightInput.value}
-                onChange={(value, isValid) => {
-                  setMinWeightInput({
-                    value,
-                    isValid: isValid === null ? true : isValid,
-                  });
-                }}
-                validation={{
-                  number: true,
-                  maxLength: VALIDATION_NUMBER_MAX_LENGTH,
-                }}
-                showError={showErrorMessage}
-              />
-              <InputNumber
-                id="maxWeight"
-                name="maxWeight"
-                type="number"
-                step={0.1}
-                placeholder="Max"
-                value={maxWeightInput.value}
-                onChange={(value, isValid) => {
-                  setMaxWeightInput({
-                    value,
-                    isValid: isValid === null ? true : isValid,
-                  });
-                }}
-                validation={{
-                  number: true,
-                  maxLength: VALIDATION_NUMBER_MAX_LENGTH,
-                }}
-                showError={showErrorMessage}
-              />
-              <InputNumber
-                id="weight"
-                name="weight"
-                type="number"
-                step={0.1}
-                placeholder="Recomended"
-                value={weightInput.value}
-                onChange={(value, isValid) => {
-                  setWeightInput({
-                    value,
-                    isValid: isValid === null ? true : isValid,
-                  });
-                }}
-                validation={{
-                  number: true,
-                  maxLength: VALIDATION_NUMBER_MAX_LENGTH,
-                }}
-                showError={showErrorMessage}
-              />
-            </div>
-          </div>
+          <VersionWeightFields
+            minWeight={minWeightInput.value}
+            maxWeight={maxWeightInput.value}
+            weight={weightInput.value}
+            showError={showErrorMessage}
+            onMinWeightChange={(value, isValid) => {
+              setMinWeightInput({
+                value,
+                isValid: isValid === null ? true : isValid,
+              });
+            }}
+            onMaxWeightChange={(value, isValid) => {
+              setMaxWeightInput({
+                value,
+                isValid: isValid === null ? true : isValid,
+              });
+            }}
+            onWeightChange={(value, isValid) => {
+              setWeightInput({
+                value,
+                isValid: isValid === null ? true : isValid,
+              });
+            }}
+          />
           <Input
             label="Image size"
             id="size"

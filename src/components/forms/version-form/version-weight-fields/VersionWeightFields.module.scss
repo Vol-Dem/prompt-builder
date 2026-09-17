@@ -1,0 +1,10 @@
+.weight {
+  display: flex;
+  gap: 1rem;
+
+  &__label {
+    display: inline-block;
+    font-size: 1.6rem;
+    margin: 0 0.6rem 0.4rem;
+  }
+}
