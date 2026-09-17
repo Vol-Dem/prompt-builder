@@ -58,7 +58,7 @@
 
     &:not(:checked) + label:hover {
       border: 2px solid color.adjust(var.$color-primary, $lightness: 20%);
-      box-shadow: 0 0 1rem rgba(#211657, 0.3);
+      box-shadow: 0 0 1rem rgba(var.$color-background-form-accent, 0.3);
     }
   }
 }

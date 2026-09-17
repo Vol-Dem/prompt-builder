@@ -12,7 +12,7 @@
     content: "";
     position: absolute;
     z-index: 1;
-    background: radial-gradient(rgba(0, 0, 0, 0.42) 30%, transparent 70%);
+    background: radial-gradient(rgba(var.$color-black, 0.42) 30%, transparent 70%);
     border-radius: 50%;
     top: 50%;
     left: 50%;
@@ -128,7 +128,7 @@
   width: 100%;
   height: 100%;
   opacity: 0.2;
-  background-color: #ab9db7;
+  background-color: var.$color-image-control;
   // z-index: -1;
 }
 
@@ -164,7 +164,7 @@
 
   &__item {
     display: flex;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(var.$color-white, 0.3);
     border-radius: 1rem;
     overflow: hidden;
     background-color: var.$color-background-tertiary;
@@ -226,16 +226,16 @@
     border-radius: 0.5rem;
     padding: 0.4rem;
     border: 1px solid transparent;
-    color: #8a2be2;
+    color: var.$color-violet-dark;
     transition: all 0.3s;
 
     &--active {
-      border: 1px solid #8a2be2;
-      background-color: rgb(34, 34, 34);
+      border: 1px solid var.$color-violet-dark;
+      background-color: var.$color-background-image-controls;
     }
 
     &:hover {
-      border: 1px solid #8a2be2;
+      border: 1px solid var.$color-violet-dark;
       background-color: transparent;
     }
   }
@@ -245,7 +245,7 @@
   display: flex;
   font-size: 1.4rem;
   border-radius: var.$border-radius;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(var.$color-white, 0.3);
   overflow: hidden;
 }
 .btn-mode {
@@ -257,7 +257,7 @@
   padding: 0.6rem 0.8rem;
   border: none;
   transition: all 0.3s;
-  color: #fff;
+  color: var.$color-white;
   cursor: pointer;
 
   &--active {
@@ -297,7 +297,7 @@
   }
 
   &:hover svg {
-    color: #fff;
+    color: var.$color-white;
   }
 }
 
@@ -308,7 +308,7 @@
   width: 100%;
   height: 100%;
   opacity: 0.4;
-  background-color: #ab9db7;
+  background-color: var.$color-image-control;
   z-index: -1;
   animation: loading 2s ease-in-out infinite;
 }
@@ -336,14 +336,14 @@
 
 @keyframes loading {
   0% {
-    background-color: #918b96;
+    background-color: var.$color-text-image-muted;
   }
   50% {
-    background-color: #b0b0b0;
+    background-color: var.$color-image-control-hover;
   }
 
   100% {
-    background-color: #918b96;
+    background-color: var.$color-text-image-muted;
   }
 }
 

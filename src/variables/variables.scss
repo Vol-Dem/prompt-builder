@@ -1,61 +1,16 @@
+@forward "./colors";
+@use "./colors" as *;
 @use "sass:color";
-
-//COLORS
-$color-primary: #6526a0;
-$color-secondary: #eacc48;
-$color-tertiary: #c2005e;
-$color-link: #7c82ff;
-$color-red: #ca0000;
-$color-red-dark: #822929;
-$color-black: #000;
-$color-white: #fff;
-$color-yellow: #eacc48;
-$color-violet: #7d6b9a;
-$color-violet-dark: #8a2be2;
-$color-violet-light: #e9d8f6;
-$color-aqua: #00ffff;
-$color-green: #009405;
-$color-green-soft: #49ab6c;
-$color-green-light: #149f78;
-$color-gray: #bdbdbd;
-$color-gray-light: #dedede;
-$color-gray-dark: #5c5c5c;
-$color-violet-grey: #696976;
-//background
-$color-background-primary: #262c39;
-$color-background-secondary: #1a1e27;
-$color-background-tertiary: #201f2f;
-$color-background-light: #fff;
-$color-background-dark: #263237;
-$color-background-gray: #f6f9ff;
-$color-background-violet: #302838;
-$color-background-gray-light: #fafafa;
-$color-background-red: #9b1919;
-$color-input-bg: #212b3a;
-//text
-$color-text-primary: #304750;
-$color-text-light: #ffffff;
-$color-text-orange: #ad6c12;
-$color-text-yellow: #e4c800;
-$color-text-dark: #2a1976;
-$color-text-violet: #7d6b9a;
-$color-text-violet-light: #b176e7;
-$color-text-red: #e54d4d;
-$color-text-green: #49ab6b;
-$color-text-white: #e8e8e8;
-$color-text-gray: #acacac;
-$color-text-gray-dark: #8f8f8f;
 
 //FONTS
 $font-family-primary: "Nunito", sans-serif;
 $font-family-secondary: "Nunito", sans-serif;
 
 //SHADOWS
-$drop-shadow: drop-shadow(2px 3px 5px rgba(22, 0, 0, 0.1));
-$box-shadow: 0rem 0rem 1rem rgba(0, 0, 0, 0.4);
-$box-shadow-light: 0rem 0rem 0.5rem rgba(0, 0, 0, 0.25);
-$box-shadow-dark: 0rem 0rem 1rem rgba(0, 0, 0, 0.9);
-$box-shadow-inset: inset 0rem 0rem 0.5rem rgba(0, 0, 0, 0.3);
+$box-shadow: 0rem 0rem 1rem rgba($color-black, 0.4);
+$box-shadow-light: 0rem 0rem 0.5rem rgba($color-black, 0.25);
+$box-shadow-dark: 0rem 0rem 1rem rgba($color-black, 0.9);
+$box-shadow-inset: inset 0rem 0rem 0.5rem rgba($color-black, 0.3);
 
 //BORDERS
 $border-radius: 10px;
@@ -108,12 +63,12 @@ $clip-path-arrow-down: polygon(
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: #ababab; /* color of the scroll thumb */
+    background-color: $color-scrollbar; /* color of the scroll thumb */
     border-radius: 20px; /* roundness of the scroll thumb */
     opacity: 0;
     //   border: 3px solid #ababab; /* creates padding around scroll thumb */
     &:hover {
-      background-color: #818181; /* color of the scroll thumb */
+      background-color: $color-scrollbar-hover; /* color of the scroll thumb */
       opacity: 0;
     }
   }
@@ -169,14 +124,14 @@ $clip-path-arrow-down: polygon(
     height: 100%;
     border-radius: 10px;
     transform: translate(-50%, -50%);
-    box-shadow: 0 0 15px #dfaf07;
+    box-shadow: 0 0 15px $color-guide-highlight;
     box-sizing: initial;
     z-index: -1;
-    border: 5px solid #dfaf07;
+    border: 5px solid $color-guide-highlight;
     opacity: 0.8;
   }
   &::before {
-    box-shadow: 0 0 25px #dfaf07;
+    box-shadow: 0 0 25px $color-guide-highlight;
     animation: pulse2 2s ease-in-out infinite;
   }
 }

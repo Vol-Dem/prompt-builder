@@ -8,7 +8,7 @@
   font-size: 1.6rem;
   line-height: 1.5;
   padding: 0.4rem 0.8rem;
-  border: 1px solid rgba(170, 133, 0, 0.8);
+  border: 1px solid rgba(var.$color-warning, 0.8);
   border-radius: 10px;
   margin: 0.8rem 0 0.5rem 0;
   background-color: var.$color-background-secondary;
@@ -17,7 +17,7 @@
 
   & svg {
     width: 2.6rem;
-    color: rgba(170, 133, 0, 0.8);
+    color: rgba(var.$color-warning, 0.8);
     flex-shrink: 0;
   }
 }

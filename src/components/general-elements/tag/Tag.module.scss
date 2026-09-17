@@ -4,13 +4,13 @@
   font-size: 1.4rem;
   // padding: 0.4rem;
   padding: 0.4rem 0.8rem;
-  border: 1px solid rgb(255, 255, 255, 0.2);
+  border: 1px solid rgba(var.$color-white, 0.2);
   border: 1px solid transparent;
   // outline: 1px solid #fff;
   // border-radius: 5px;
   border-radius: 1rem;
   cursor: pointer;
-  background-color: #323148;
+  background-color: var.$color-background-control;
   list-style: none;
   word-break: break-word;
   box-shadow: var.$box-shadow-light;
@@ -21,7 +21,7 @@
   &:hover {
     // background-color: #249e3e;
     // background-color: #252435;
-    border: 1px solid rgb(255, 255, 255, 0.5);
+    border: 1px solid rgba(var.$color-white, 0.5);
   }
 
   &:active {
@@ -32,7 +32,7 @@
 }
 
 .active {
-  background-color: #48313f;
+  background-color: var.$color-control-active;
   // background-color: #314840;
 }
 

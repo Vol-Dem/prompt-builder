@@ -55,7 +55,7 @@
   cursor: pointer;
   top: 0.4rem;
   right: 1rem;
-  color: #a8a8a8;
+  color: var.$color-icon;
   transition: all 0.3s;
 
   & svg {
@@ -63,7 +63,7 @@
   }
 
   &:hover {
-    color: color.adjust(#a8a8a8, $lightness: 20%);
+    color: color.adjust(var.$color-icon, $lightness: 20%);
   }
 }
 

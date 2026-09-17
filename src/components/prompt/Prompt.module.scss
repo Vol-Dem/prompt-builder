@@ -25,7 +25,7 @@
   // display: grid;
   grid-template-rows: 0fr auto;
   transition: all 0.3s;
-  color: #fff;
+  color: var.$color-white;
   width: 100%;
   // will-change: grid-template-rows;
   // padding: 0 2rem;
@@ -125,7 +125,7 @@
 
     &:focus {
       outline: none;
-      border: 1px solid #a4a4a4;
+      border: 1px solid var.$color-prompt-scrollbar;
     }
   }
 }
@@ -161,7 +161,7 @@
   font-size: 1.4rem;
   width: 18rem;
   margin: 0 4rem 0 auto;
-  background-color: #756b76;
+  background-color: var.$color-sidebar-handle;
   background-color: var.$color-primary;
   height: 2rem;
   border: none;

@@ -34,7 +34,7 @@
 
 .btn-secondary {
   font-size: 1.6rem;
-  color: #818182 !important;
+  color: var.$color-text-form-muted !important;
   text-align: right;
 }
 
@@ -65,7 +65,7 @@
 }
 .subtitle {
   font-size: 2rem;
-  border-bottom: 1px solid #949494;
+  border-bottom: 1px solid var.$color-border-section;
   padding-bottom: 1rem;
   margin: 1rem 0 2rem;
 }

@@ -10,7 +10,7 @@
 
   &__field {
     display: flex;
-    border: 1px solid #5c5c5c;
+    border: 1px solid var.$color-gray-dark;
     border-radius: 10px;
     overflow: hidden;
     justify-self: flex-start;
@@ -34,7 +34,7 @@
     justify-content: center;
     width: 6rem;
     transition: all 0.3s;
-    border-left: 1px solid #98989836;
+    border-left: 1px solid var.$color-background-switch;
     cursor: pointer;
 
     &:hover {

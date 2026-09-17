@@ -30,7 +30,7 @@
   font-size: 1.6rem;
   padding: 0.3rem 1rem;
   border-bottom: 1px solid transparent;
-  border-right: 1px solid hsla(0, 0%, 100%, 0.3);
+  border-right: 1px solid rgba(var.$color-white, 0.3);
   cursor: pointer;
   line-height: 1;
   transition: all 0.3s;
@@ -56,12 +56,12 @@
     }
 
     &.active {
-      border-color: #00ffff;
+      border-color: var.$color-aqua;
     }
   }
 
   &.active {
-    color: #00ffff;
+    color: var.$color-aqua;
   }
 }
 

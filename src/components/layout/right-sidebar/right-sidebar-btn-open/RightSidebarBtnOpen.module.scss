@@ -13,14 +13,14 @@
   margin-top: 45vh;
   border: none;
   border-radius: 1rem 0 0 1rem;
-  background-color: #756b76;
+  background-color: var.$color-sidebar-handle;
   background-color: var.$color-primary;
   color: var.$color-text-white;
   cursor: pointer;
   transition: all 0.3s;
 
   &:hover {
-    background-color: color.adjust(#756b76, $lightness: -5%);
+    background-color: color.adjust(var.$color-sidebar-handle, $lightness: -5%);
     background-color: color.adjust(var.$color-primary, $lightness: -5%);
   }
 

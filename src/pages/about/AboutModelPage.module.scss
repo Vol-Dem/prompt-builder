@@ -37,8 +37,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: #343a40;
-  color: #fefefe;
+  background-color: var.$color-background-example-control;
+  color: var.$color-text-example-control;
   padding: 0.8rem 1.2rem;
   gap: 0.4rem;
   border-radius: 20px;
@@ -68,7 +68,7 @@
 }
 
 .tag {
-  background-color: #48313f;
+  background-color: var.$color-control-active;
 }
 
 .svg {

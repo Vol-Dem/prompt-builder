@@ -27,7 +27,7 @@
       // background-color: #494953;
 
       &:hover {
-        background-color: #62626c;
+        background-color: var.$color-upload-icon;
       }
 
       &:active {
@@ -65,7 +65,7 @@
     }
 
     &--open &-content {
-      background-color: #494953;
+      background-color: var.$color-background-upload-status;
     }
   }
 

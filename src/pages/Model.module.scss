@@ -27,7 +27,7 @@
   width: 4rem;
   height: 4rem;
   border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(var.$color-white, 0.3);
   flex-shrink: 0;
   cursor: pointer;
 
@@ -81,11 +81,11 @@
 .btn-examples {
   font-size: 2.6rem;
   cursor: pointer;
-  background-color: rgb(82, 87, 87);
+  background-color: var.$color-border-image-controls;
   border-radius: 1rem;
   padding: 0.2rem 0.6rem;
   &--active {
-    color: blueviolet;
+    color: var.$color-violet-dark;
   }
 }
 
@@ -97,7 +97,7 @@
   &__item {
     width: 30rem;
     height: 30rem;
-    background-color: blueviolet;
+    background-color: var.$color-violet-dark;
   }
 }
 

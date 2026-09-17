@@ -2,24 +2,30 @@
 @use "sass:color";
 
 .btn-copy {
-  border: 1px solid #fff;
+  border: 1px solid var.$color-white;
   border-radius: 0 1rem 1rem 0;
   cursor: pointer;
-  border: 1px solid rgb(255 255 255 / 30%);
-  background-color: #323148;
+  border: 1px solid rgba(var.$color-white, 30%);
+  background-color: var.$color-background-control;
   border-radius: 0 1rem 1rem 0;
-  color: #cdcbcb;
+  color: var.$color-copy-button-border;
   cursor: pointer;
   transition: all 0.3s;
 
   &:hover {
-    background-color: color.adjust(#323148, $lightness: 5%);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    background-color: color.adjust(
+      var.$color-background-control,
+      $lightness: 5%
+    );
+    border: 1px solid rgba(var.$color-white, 0.5);
   }
 
   &:active {
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background-color: color.adjust(#323148, $lightness: -5%);
+    border: 1px solid rgba(var.$color-white, 0.3);
+    background-color: color.adjust(
+      var.$color-background-control,
+      $lightness: -5%
+    );
     box-shadow: var.$box-shadow-inset;
   }
 

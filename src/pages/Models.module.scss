@@ -10,12 +10,12 @@
 }
 
 .wrap {
-  background-color: #282c34;
+  background-color: var.$color-background-models;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: var.$color-white;
   padding: 2rem;
 }
 
@@ -50,20 +50,36 @@
   padding: 2rem 2rem;
   border-radius: 10px;
   background-color: rgba(var.$color-background-tertiary, 0.7);
-  background-color: #1f1931;
-  background: linear-gradient(to top left, #1f1931, #5a3ab2);
-  background: linear-gradient(to top left, #1f1931, #382a5f);
-  background: linear-gradient(to bottom right, #1f1931, #382a5f);
-  background: linear-gradient(to bottom right, #1f1931, #291f44);
+  background-color: var.$color-hero-shadow;
+  background: linear-gradient(
+    to top left,
+    var.$color-hero-shadow,
+    var.$color-hero-glow
+  );
+  background: linear-gradient(
+    to top left,
+    var.$color-hero-shadow,
+    var.$color-hero-glow-soft
+  );
+  background: linear-gradient(
+    to bottom right,
+    var.$color-hero-shadow,
+    var.$color-hero-glow-soft
+  );
+  background: linear-gradient(
+    to bottom right,
+    var.$color-hero-shadow,
+    var.$color-hero-shadow-soft
+  );
   background: linear-gradient(
     to bottom right,
     var.$color-background-tertiary,
-    #291f44
+    var.$color-hero-shadow-soft
   );
   background: linear-gradient(
     to bottom right,
     var.$color-background-secondary,
-    #232835
+    var.$color-background-gradient-end
   );
   box-shadow: var.$box-shadow;
   box-shadow: var.$box-shadow-inset;

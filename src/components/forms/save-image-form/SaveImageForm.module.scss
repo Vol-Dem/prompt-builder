@@ -35,11 +35,11 @@
 
 .btn-secondary {
   font-size: 1.6rem;
-  color: #818182;
+  color: var.$color-text-form-muted;
   text-align: right;
 
   &:hover {
-    color: color.adjust(#818182, $lightness: 15%);
+    color: color.adjust(var.$color-text-form-muted, $lightness: 15%);
   }
 }
 

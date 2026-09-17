@@ -1,3 +1,5 @@
+@use "../../../../variables/colors.scss" as var;
+
 .pagination {
   display: flex;
   position: absolute;
@@ -16,13 +18,13 @@
     width: 100%;
     height: 1rem;
     width: 100%;
-    background-color: #4a4a4a;
+    background-color: var.$color-pagination-border;
     opacity: 0.8;
     border-radius: 1rem;
     cursor: pointer;
 
     &--active {
-      background-color: rgba(#362ab6, 0.8);
+      background-color: rgba(var.$color-pagination-active, 0.8);
     }
   }
 }

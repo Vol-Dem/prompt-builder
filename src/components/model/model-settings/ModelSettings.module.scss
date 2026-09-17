@@ -28,7 +28,7 @@
 
 .menu-container {
   position: relative;
-  border-right: 1px solid rgba(255, 255, 255, 0.4);
+  border-right: 1px solid rgba(var.$color-white, 0.4);
 }
 
 .menu {
@@ -50,8 +50,8 @@
   transition-property: color, background-color, padding, border-radius;
 
   &--active {
-    color: blueviolet;
-    background-color: #201f2f;
+    color: var.$color-violet-dark;
+    background-color: var.$color-background-tertiary;
     padding: 0.3rem 1rem;
     border-radius: 10px;
   }

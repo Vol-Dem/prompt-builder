@@ -19,7 +19,7 @@
     height: 2.8rem;
     padding-left: 1rem;
     background-color: var.$color-input-bg;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(var.$color-white, 0.3);
     box-shadow: var.$box-shadow-inset;
     color: var.$color-text-white;
 
@@ -29,7 +29,7 @@
 
     &:focus-visible {
       outline: none;
-      border: 1px solid rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(var.$color-white, 0.5);
     }
 
     &:active,
@@ -38,7 +38,7 @@
     &:target,
     &:focus-within,
     &:focus-visible {
-      background: #323148;
+      background: var.$color-background-control;
     }
 
     &[type="search"] {
@@ -52,8 +52,8 @@
 
   &__btn {
     border-radius: 0 1rem 1rem 0;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background-color: #323148;
+    border: 1px solid rgba(var.$color-white, 0.3);
+    background-color: var.$color-background-control;
     width: 3.2rem;
     height: 2.8rem;
     padding: 0.4rem 0.6rem;
@@ -63,14 +63,20 @@
     transition: all 0.3s;
 
     &:hover {
-      background-color: color.adjust(#323148, $lightness: 5%);
+      background-color: color.adjust(
+        var.$color-background-control,
+        $lightness: 5%
+      );
       // background-color: #5f3d62;
-      border: 1px solid rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(var.$color-white, 0.5);
     }
 
     &:active {
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      background-color: color.adjust(#323148, $lightness: -5%);
+      border: 1px solid rgba(var.$color-white, 0.3);
+      background-color: color.adjust(
+        var.$color-background-control,
+        $lightness: -5%
+      );
       box-shadow: var.$box-shadow-inset;
     }
   }
@@ -107,7 +113,7 @@
     margin-left: auto;
     width: 1.4rem;
     height: 1.4rem;
-    background-color: rgb(168, 168, 168);
+    background-color: var.$color-icon;
     clip-path: polygon(
       10% 0,
       0 10%,
@@ -218,8 +224,8 @@
 
 .models {
   font-size: 1rem;
-  color: #acacac;
-  background-color: #323148;
+  color: var.$color-text-gray;
+  background-color: var.$color-background-control;
   padding: 0.4rem 0.8rem;
   border-radius: 10px;
   margin-left: 0.6rem;

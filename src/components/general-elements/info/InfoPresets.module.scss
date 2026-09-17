@@ -27,7 +27,7 @@
   cursor: default;
 
   &:hover {
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(var.$color-white, 0.15);
     // background-color: inherit;
   }
 

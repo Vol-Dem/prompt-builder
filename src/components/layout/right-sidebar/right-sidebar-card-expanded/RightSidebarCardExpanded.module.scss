@@ -46,9 +46,9 @@
     align-items: center;
     justify-content: center;
     padding: 0.2rem;
-    color: #fff;
+    color: var.$color-white;
     width: 100%;
-    background-color: #3e445e;
+    background-color: var.$color-background-sidebar-preview;
     border: none;
     border-radius: 0 0 1rem 1rem;
     cursor: pointer;
@@ -61,7 +61,11 @@
       opacity: 1;
       height: 2rem;
       width: 100%;
-      background: linear-gradient(to top, #3e445e, transparent);
+      background: linear-gradient(
+        to top,
+        var.$color-background-sidebar-preview,
+        transparent
+      );
       animation: showGradient 1s ease forwards;
     }
   }

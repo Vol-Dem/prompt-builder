@@ -14,7 +14,7 @@
   font-size: 1.4rem;
   top: 0;
   right: 0;
-  color: #818182;
+  color: var.$color-text-form-muted;
 }
 
 .fields {
@@ -52,7 +52,7 @@
 
 .btn-secondary {
   font-size: 1.6rem;
-  color: #818182 !important;
+  color: var.$color-text-form-muted !important;
   text-align: right;
 }
 

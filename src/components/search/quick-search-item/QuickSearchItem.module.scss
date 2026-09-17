@@ -67,8 +67,8 @@
 
 .models {
   font-size: 1rem;
-  color: #acacac;
-  background-color: #323148;
+  color: var.$color-text-gray;
+  background-color: var.$color-background-control;
   padding: 0.4rem 0.8rem;
   border-radius: 10px;
   margin-left: 0.6rem;

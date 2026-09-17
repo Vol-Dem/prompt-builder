@@ -61,13 +61,13 @@
     }
 
     &.active {
-      border-color: #7fffd4;
+      border-color: var.$color-category-accent;
     }
   }
 }
 
 .active {
-  color: #7fffd4;
+  color: var.$color-category-accent;
 }
 
 @media (max-width: 480px) {

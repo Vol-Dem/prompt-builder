@@ -23,7 +23,7 @@
     width: 100%;
     padding-bottom: 100%;
     border-radius: 50%;
-    background: radial-gradient(rgba(0, 0, 0, 0.2) 1%, transparent 60%);
+    background: radial-gradient(rgba(var.$color-black, 0.2) 1%, transparent 60%);
     transform: rotateX(80deg);
   }
 }

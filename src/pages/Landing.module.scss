@@ -17,20 +17,36 @@
   padding: 6rem 6rem;
   border-radius: 10px;
   background-color: rgba(var.$color-background-tertiary, 0.7);
-  background-color: #1f1931;
-  background: linear-gradient(to top left, #1f1931, #5a3ab2);
-  background: linear-gradient(to top left, #1f1931, #382a5f);
-  background: linear-gradient(to bottom right, #1f1931, #382a5f);
-  background: linear-gradient(to bottom right, #1f1931, #291f44);
+  background-color: var.$color-hero-shadow;
+  background: linear-gradient(
+    to top left,
+    var.$color-hero-shadow,
+    var.$color-hero-glow
+  );
+  background: linear-gradient(
+    to top left,
+    var.$color-hero-shadow,
+    var.$color-hero-glow-soft
+  );
+  background: linear-gradient(
+    to bottom right,
+    var.$color-hero-shadow,
+    var.$color-hero-glow-soft
+  );
+  background: linear-gradient(
+    to bottom right,
+    var.$color-hero-shadow,
+    var.$color-hero-shadow-soft
+  );
   background: linear-gradient(
     to bottom right,
     var.$color-background-tertiary,
-    #291f44
+    var.$color-hero-shadow-soft
   );
   background: linear-gradient(
     to bottom right,
     var.$color-background-secondary,
-    #232835
+    var.$color-background-gradient-end
   );
   box-shadow: var.$box-shadow;
   box-shadow: var.$box-shadow-inset;
@@ -174,13 +190,16 @@
 
 .btn-yt {
   width: 9rem;
-  background-color: rgba(255, 0, 0, 0.6);
+  background-color: rgba(var.$color-video-red, 0.6);
   padding: 1rem 2rem;
   margin-top: 1rem;
   font-size: 1.6rem;
 
   &:hover {
-    background-color: color.adjust(rgba(255, 0, 0, 0.6), $lightness: 15%);
+    background-color: color.adjust(
+      rgba(var.$color-video-red, 0.6),
+      $lightness: 15%
+    );
   }
 
   & svg {

@@ -5,7 +5,7 @@
   flex-direction: column;
   font-size: 1.6rem;
   padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(var.$color-white, 0.3);
   border-radius: 1rem;
   background-color: var.$color-background-secondary;
   box-shadow: var.$box-shadow;
@@ -23,7 +23,7 @@
   //   position: absolute;
   //   top: 0.8rem;
   //   left: 0.8rem;
-  background-color: rgba(137, 43, 226, 0.7);
+  background-color: rgba(var.$color-accent-violet, 0.7);
   padding: 0.4rem 0.8rem;
   border-radius: 1rem;
   text-transform: uppercase;
@@ -36,7 +36,7 @@
   // display: flex;
   // align-items: center;
   color: var.$color-text-gray;
-  background-color: #323148;
+  background-color: var.$color-background-control;
   padding: 0.4rem 0.8rem;
   border-radius: 10px;
   font-size: 1.4rem;

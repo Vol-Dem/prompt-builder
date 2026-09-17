@@ -3,7 +3,7 @@
 .mode-switch {
   display: flex;
   border-radius: var.$border-radius;
-  border: 1px solid rgba(255, 255, 255, 0);
+  border: 1px solid rgba(var.$color-white, 0);
 }
 
 .btn-mode {
@@ -16,11 +16,11 @@
   background-color: transparent;
   padding: 0.4rem 0.6rem;
   transition: all 0.3s;
-  color: #fff;
+  color: var.$color-white;
   cursor: pointer;
 
   &--active {
-    background-color: blueviolet;
+    background-color: var.$color-violet-dark;
   }
 
   &--left {

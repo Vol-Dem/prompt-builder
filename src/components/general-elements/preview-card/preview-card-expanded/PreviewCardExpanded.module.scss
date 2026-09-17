@@ -47,7 +47,7 @@
   &__item {
     display: inline-flex;
     color: var.$color-text-gray;
-    background-color: #323148;
+    background-color: var.$color-background-control;
     padding: 0.2rem 0.8rem;
     border-radius: 10px;
   }

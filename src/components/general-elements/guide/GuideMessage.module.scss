@@ -49,12 +49,12 @@
     position: absolute;
     transform: rotate(45deg);
     box-shadow: var.$box-shadow;
-    box-shadow: 0rem 0rem 0.5rem rgb(255 255 255 / 30%);
-    box-shadow: 0 0 10px #dfaf07;
-    border: 1px solid rgba(223, 176, 7, 0.8);
+    box-shadow: 0rem 0rem 0.5rem rgba(var.$color-white, 30%);
+    box-shadow: 0 0 10px var.$color-guide-highlight;
+    border: 1px solid rgba(var.$color-guide-border, 0.8);
     width: 2rem;
     height: 2rem;
-    background-color: #28273a;
+    background-color: var.$color-background-notification;
     z-index: -1;
 
     &--0 {
@@ -112,7 +112,7 @@
     padding: 0.4rem 0.8rem 0.6rem 0.8rem;
     font-size: 1.4rem;
     box-shadow: inset var.$box-shadow;
-    background-color: #28273a;
+    background-color: var.$color-background-notification;
     border-radius: 0 0 10px 10px;
 
     & svg {
@@ -134,12 +134,12 @@
 
     &:disabled {
       background: transparent !important;
-      color: #58555e;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var.$color-guide-close;
+      border: 1px solid rgba(var.$color-white, 0.2);
     }
 
     &:disabled:hover {
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(var.$color-white, 0.2);
     }
 
     &--next {
@@ -153,15 +153,15 @@
         height: 100%;
         border-radius: 6px;
         transform: translate(-50%, -50%);
-        box-shadow: 0 0 6px #dfaf07;
+        box-shadow: 0 0 6px var.$color-guide-highlight;
         box-sizing: initial;
       }
       &::before {
-        box-shadow: 0 0 6px #dfaf07;
+        box-shadow: 0 0 6px var.$color-guide-highlight;
         animation: pulse2 2s ease-in-out infinite;
       }
       &::after {
-        border: 1px solid #dfaf07;
+        border: 1px solid var.$color-guide-highlight;
         transform: translate(-50%, -50%);
         opacity: 0.8;
       }
@@ -170,7 +170,7 @@
 
   &__controls-btn-close {
     color: var.$color-text-gray;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(var.$color-white, 0.2);
   }
 
   &__content {
@@ -179,17 +179,17 @@
     width: 24rem;
     width: 25.7rem;
     max-width: 26rem;
-    background-color: #28273a;
+    background-color: var.$color-background-notification;
     border-radius: 10px;
-    box-shadow: 0rem 0rem 0.8rem rgb(255 255 255 / 90%);
-    box-shadow: 0 0 10px #dfaf07;
-    border: 1px solid rgba(223, 176, 7, 0.8);
+    box-shadow: 0rem 0rem 0.8rem rgba(var.$color-white, 90%);
+    box-shadow: 0 0 10px var.$color-guide-highlight;
+    border: 1px solid rgba(var.$color-guide-border, 0.8);
     transition: all 0.3s ease-in;
 
     &__text {
       font-size: 1.6rem;
       color: var.$color-text-white;
-      background-color: #28273a;
+      background-color: var.$color-background-notification;
       border-radius: 10px 10px 0 0;
       padding: 0.6rem 2.9rem 0.6rem 1.2rem;
       width: 100%;
@@ -226,7 +226,7 @@
     display: inline-block;
     width: 1.5rem;
     height: 1.5rem;
-    background-color: rgb(168, 168, 168);
+    background-color: var.$color-icon;
     clip-path: polygon(
       10% 0,
       0 10%,
@@ -259,7 +259,7 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(var.$color-white, 0.3);
   border-radius: 6px;
 
   & svg {

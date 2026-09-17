@@ -9,7 +9,7 @@
     top: 0;
     height: 100vh;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(var.$color-black, 0.3);
     z-index: 30;
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(4px);
@@ -27,7 +27,7 @@
     right: 0;
     height: 100vh;
 
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(var.$color-black, 0.3);
     z-index: 30;
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(4px);
@@ -123,7 +123,7 @@
     align-items: center;
     top: 0.6rem;
     right: 32rem;
-    color: #a8a8a8;
+    color: var.$color-icon;
     transition: all 0.3s;
 
     & svg {
@@ -131,7 +131,7 @@
     }
 
     &:hover {
-      color: color.adjust(#a8a8a8, $lightness: 20%);
+      color: color.adjust(var.$color-icon, $lightness: 20%);
     }
   }
 
@@ -139,7 +139,7 @@
     display: inline-block;
     width: 1.5rem;
     height: 1.5rem;
-    background-color: rgb(168, 168, 168);
+    background-color: var.$color-icon;
     clip-path: polygon(
       10% 0,
       0 10%,
@@ -159,10 +159,10 @@
 
 .btn-copy {
   display: inline-flex;
-  color: #b2b2b2;
+  color: var.$color-guide-close-muted;
   padding: 0.2rem 0.5rem;
   background: none;
-  border: 1px solid rgba(178, 178, 178, 0.8);
+  border: 1px solid rgba(var.$color-guide-close-muted, 0.8);
   border-radius: 0.5rem;
   white-space: nowrap;
   margin-right: 0.4rem;
@@ -170,22 +170,22 @@
   transition: all 0.3s;
 
   &:hover {
-    color: #7278f0;
-    border-color: #7278f0;
+    color: var.$color-tagset-added;
+    border-color: var.$color-tagset-added;
   }
 
   &:active {
-    color: #49ab6b;
-    border-color: #49ab6b;
+    color: var.$color-text-green;
+    border-color: var.$color-text-green;
     transform: translateY(1px);
   }
 
   &--copied {
-    color: #49ab6b;
-    border-color: #49ab6b;
+    color: var.$color-text-green;
+    border-color: var.$color-text-green;
     &:hover {
-      color: #49ab6b;
-      border-color: #49ab6b;
+      color: var.$color-text-green;
+      border-color: var.$color-text-green;
     }
   }
 

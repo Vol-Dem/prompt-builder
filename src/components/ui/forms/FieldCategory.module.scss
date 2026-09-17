@@ -1,3 +1,5 @@
+@use "../../../variables/colors.scss" as var;
+
 .field-category {
   display: flex;
   flex-direction: column;
@@ -8,6 +10,6 @@
 
 .field-title {
   font-size: 1.6rem;
-  border-bottom: 1px solid #aaaaaa;
+  border-bottom: 1px solid var.$color-text-field-heading;
   padding-bottom: 0.6rem;
 }

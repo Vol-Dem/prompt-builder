@@ -35,7 +35,7 @@
       width: 8rem;
       border-radius: 10px;
       overflow: hidden;
-      background-color: rgba(117, 107, 118, 0.2);
+      background-color: rgba(var.$color-sidebar-handle, 0.2);
 
       & svg {
         width: 2.6rem;
@@ -71,6 +71,6 @@
   & svg {
     width: 2rem;
     height: 2rem;
-    filter: drop-shadow(0 0 0.06rem rgb(0, 0, 0));
+    filter: drop-shadow(0 0 0.06rem var.$color-black);
   }
 }

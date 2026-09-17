@@ -19,7 +19,7 @@
 }
 
 .btn-copy {
-  color: #bdbdbd;
+  color: var.$color-gray;
   font-size: 1.3rem;
   padding: 0.2rem 0.5rem;
   background: none;
@@ -31,22 +31,22 @@
   transition: all 0.3s;
 
   &:hover {
-    color: #7278f0;
-    border-color: #7278f0;
+    color: var.$color-tagset-added;
+    border-color: var.$color-tagset-added;
   }
 
   &:active {
-    color: #49ab6b;
-    border-color: #49ab6b;
+    color: var.$color-text-green;
+    border-color: var.$color-text-green;
     transform: translateY(1px);
   }
 
   &--copied {
-    color: #49ab6b;
-    border-color: #49ab6b;
+    color: var.$color-text-green;
+    border-color: var.$color-text-green;
     &:hover {
-      color: #49ab6b;
-      border-color: #49ab6b;
+      color: var.$color-text-green;
+      border-color: var.$color-text-green;
     }
   }
 

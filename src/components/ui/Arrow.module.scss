@@ -2,7 +2,7 @@
 
 .arrow {
   display: inline-block;
-  background-color: #ffffff;
+  background-color: var.$color-text-light;
   height: 1.2rem;
   width: 1.2rem;
   &--up {

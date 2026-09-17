@@ -61,7 +61,7 @@
 .mode-switch {
   font-size: 1.4rem;
   border-radius: var.$border-radius;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(var.$color-white, 0.3);
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -73,7 +73,7 @@
   padding: 0.6rem 0.8rem;
   border: none;
   transition: all 0.3s;
-  color: #fff;
+  color: var.$color-white;
   cursor: pointer;
 
   &--active {

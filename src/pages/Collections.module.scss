@@ -15,7 +15,7 @@
   cursor: pointer;
 
   &--active {
-    color: #025ec2;
+    color: var.$color-collection-link;
   }
 }
 
@@ -26,12 +26,12 @@
   margin: 0.6rem 0;
 
   &--border:not(:last-child) {
-    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    border-right: 1px solid rgba(var.$color-white, 0.3);
     // border-right: 1px solid #9e9e9e;
   }
 
   &--active {
-    color: #00ffff;
+    color: var.$color-aqua;
   }
 }
 

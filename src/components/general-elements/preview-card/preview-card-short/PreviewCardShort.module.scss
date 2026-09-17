@@ -9,7 +9,7 @@
   color: var.$color-text-white;
   padding: 1rem 1rem;
   font-size: 1.4rem;
-  background: linear-gradient(transparent, #000);
+  background: linear-gradient(transparent, var.$color-black);
 }
 
 .title {
@@ -37,7 +37,7 @@
   &__item {
     display: inline-flex;
     color: var.$color-text-gray;
-    background-color: #323148;
+    background-color: var.$color-background-control;
     padding: 0.2rem 0.8rem;
     border-radius: 10px;
   }

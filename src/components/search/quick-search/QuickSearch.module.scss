@@ -34,7 +34,7 @@
     margin-left: auto;
     width: 1.4rem;
     height: 1.4rem;
-    background-color: rgb(168, 168, 168);
+    background-color: var.$color-icon;
     clip-path: polygon(
       10% 0,
       0 10%,
@@ -144,8 +144,8 @@
 
 .models {
   font-size: 1rem;
-  color: #acacac;
-  background-color: #323148;
+  color: var.$color-text-gray;
+  background-color: var.$color-background-control;
   padding: 0.4rem 0.8rem;
   border-radius: 10px;
   margin-left: 0.6rem;

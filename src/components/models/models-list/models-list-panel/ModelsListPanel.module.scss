@@ -1,3 +1,5 @@
+@use "../../../../variables/colors.scss" as var;
+
 .panel {
   display: flex;
   align-items: center;
@@ -28,7 +30,7 @@
     height: 2.6rem;
 
     &--active {
-      background-color: #5f3d62;
+      background-color: var.$color-background-panel-hover;
     }
   }
 

@@ -10,7 +10,7 @@
   width: 100%;
   padding-left: 1rem;
   background-color: var.$color-input-bg;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(var.$color-white, 0.3);
   box-shadow: var.$box-shadow-inset;
   color: var.$color-text-white;
   color: var.$color-text-gray;
@@ -32,9 +32,9 @@
     left: 0.5rem;
     transform: translateY(-50%);
     width: 2.5rem;
-    stroke: blueviolet;
+    stroke: var.$color-violet-dark;
     &--box {
-      fill: rgba(137, 43, 226, 0.5);
+      fill: rgba(var.$color-accent-violet, 0.5);
       stroke-width: 0.1px;
     }
   }
@@ -124,11 +124,11 @@
   display: inline-block;
   flex-shrink: 0;
   color: var.$color-green;
-  color: #18bd51;
+  color: var.$color-create;
   // color: var.$color-yellow;
   // background-color: #2e8b4f;
   border: 1px solid var.$color-green;
-  border: 1px solid #18bd51;
+  border: 1px solid var.$color-create;
   border-radius: 10px;
   padding: 0.2rem 0.6rem;
   height: 100%;

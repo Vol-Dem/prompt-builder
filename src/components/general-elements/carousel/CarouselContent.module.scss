@@ -40,7 +40,7 @@
   height: 39rem;
   width: 100%;
   border-radius: 1rem;
-  box-shadow: 0rem 0rem 0.6rem 0.7rem rgba(0, 0, 0, 0.2);
+  box-shadow: 0rem 0rem 0.6rem 0.7rem rgba(var.$color-black, 0.2);
   transition: all 0.3s;
   z-index: 2;
   animation: open 0.2s ease-in forwards;
@@ -64,10 +64,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #636363;
+  color: var.$color-input-arrow;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(var.$color-white, 0.6);
   padding: 0.4rem;
   height: 4rem;
   width: 4rem;
@@ -78,7 +78,7 @@
   cursor: pointer;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(var.$color-white, 0.8);
   }
 
   &:active {
@@ -123,7 +123,7 @@
   bottom: 2.4rem;
   right: 50%;
   transform: translateX(50%);
-  background-color: rgba(56, 56, 56, 0.3);
+  background-color: rgba(var.$color-background-placeholder, 0.3);
   border-radius: 10px;
   color: var.$color-text-white;
   border: 1px solid rgba(var.$color-text-white, 0.6);
@@ -146,7 +146,7 @@
   right: 2rem;
   bottom: 2rem;
   z-index: 5;
-  background-color: rgba(55, 42, 199, 0.6);
+  background-color: rgba(var.$color-carousel-action, 0.6);
   border-radius: 1rem;
   padding: 0.2rem 0.4rem;
   cursor: pointer;

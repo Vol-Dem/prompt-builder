@@ -42,16 +42,16 @@
   cursor: pointer;
 
   &:hover {
-    border-color: blueviolet;
+    border-color: var.$color-violet-dark;
     background-color: transparent;
   }
 
   &--active {
-    border-color: blueviolet;
-    background-color: rgb(34, 34, 34);
+    border-color: var.$color-violet-dark;
+    background-color: var.$color-background-image-controls;
   }
   &--downloaded {
-    color: blueviolet;
+    color: var.$color-violet-dark;
   }
 }
 
@@ -92,11 +92,11 @@
 .btn-examples {
   font-size: 2.6rem;
   cursor: pointer;
-  background-color: rgb(82, 87, 87);
+  background-color: var.$color-border-image-controls;
   border-radius: 1rem;
   padding: 0.2rem 0.6rem;
   &--active {
-    color: blueviolet;
+    color: var.$color-violet-dark;
   }
 }
 
@@ -140,7 +140,7 @@
 .select {
   border-radius: 1rem;
   padding: 0.8rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(var.$color-white, 0.3);
   color: var.$color-text-white;
   background-color: var.$color-background-tertiary;
 }

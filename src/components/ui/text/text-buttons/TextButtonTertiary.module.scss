@@ -7,8 +7,8 @@
   gap: 0.4rem;
   font-family: "Nunito", sans-serif;
   color: var.$color-text-white;
-  background-color: #323148;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background-color: var.$color-background-control;
+  border: 1px solid rgba(var.$color-white, 0.15);
   border-radius: 1rem;
   padding: 0.2rem 0.6rem;
   box-shadow: 0 0.2rem 0.5rem rgba(var.$color-black, 0.2);

@@ -25,11 +25,11 @@
 
     & a:hover,
     & a:active {
-      color: #af59ff;
+      color: var.$color-nav-link-hover;
     }
 
     & a.active {
-      color: #af59ff;
+      color: var.$color-nav-link-hover;
       padding-bottom: 0.5rem;
       border-bottom: 1px solid var.$color-primary;
       font-weight: 700;

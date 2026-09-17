@@ -46,7 +46,7 @@ body {
   font-family: "Nunito", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  @include var.custom-scroll(#443d62);
+  @include var.custom-scroll(var.$color-selection);
 }
 
 main {

@@ -67,9 +67,9 @@
 }
 
 .saved {
-  border: 1px solid #5c5c5c;
+  border: 1px solid var.$color-gray-dark;
   border-radius: 10px 0 0 10px;
-  color: #fff;
+  color: var.$color-white;
   display: inline-flex;
   flex-shrink: 0;
   font-size: 1.5rem;
@@ -128,7 +128,7 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  color: #e8e8e8;
+  color: var.$color-text-white;
   font-size: 1.4rem;
   width: 18rem;
   background-color: var.$color-primary;
@@ -139,7 +139,7 @@
 .btn-type {
   display: inline-flex;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(var.$color-white, 0.3);
   overflow: hidden;
   text-align: center;
 
@@ -152,7 +152,7 @@
   &__tags {
     width: 5rem;
     font-size: 1.2rem;
-    background-color: #6526a0;
+    background-color: var.$color-primary;
     padding: 0.4rem 0.6rem;
   }
 }

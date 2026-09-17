@@ -1,8 +1,10 @@
+@use "../../../variables/colors.scss" as var;
+
 .subcategories {
   display: flex;
 
   gap: 2rem;
   list-style: none;
-  border-left: 1px solid #fff;
+  border-left: 1px solid var.$color-white;
   padding-left: 1rem;
 }

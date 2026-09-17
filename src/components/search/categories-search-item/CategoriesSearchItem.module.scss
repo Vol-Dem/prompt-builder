@@ -7,7 +7,7 @@
 
 .type {
   text-transform: capitalize;
-  border-right: 2px solid rgba(255, 255, 255, 0.3);
+  border-right: 2px solid rgba(var.$color-white, 0.3);
   padding-right: 0.5rem;
 }
 

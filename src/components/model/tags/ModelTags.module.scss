@@ -14,13 +14,13 @@
   }
 }
 .tooltip {
-  color: #898996;
+  color: var.$color-help-icon;
   width: 2.5rem;
   height: 2.5rem;
   transition: all 0.3s ease;
 
   &:hover {
-    color: #aeaebc;
+    color: var.$color-text-tooltip;
   }
 
   & svg {
@@ -93,7 +93,7 @@
     padding: 1rem;
     border-radius: 1rem;
     background-color: var.$color-background-tertiary;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(var.$color-white, 0.2);
     box-shadow: var.$box-shadow;
     height: 100%;
   }
@@ -101,7 +101,7 @@
   &__notification {
     position: relative;
     height: 2.5rem;
-    color: #898996;
+    color: var.$color-help-icon;
     transition: all 0.3s ease;
     cursor: pointer;
 
@@ -110,7 +110,7 @@
       height: 2.5rem;
     }
     &:hover {
-      color: #aeaebc;
+      color: var.$color-text-tooltip;
     }
 
     &:hover &-content {
@@ -191,7 +191,7 @@
   padding: 1rem;
   border-radius: 1rem;
   background-color: var.$color-background-tertiary;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(var.$color-white, 0.2);
   box-shadow: var.$box-shadow;
   &__img {
     width: 14rem;
