@@ -206,6 +206,19 @@ const UpdateModelForm = ({
         )
     : [];
 
+  const selectModelTypeHandler = (value: string | null) => {
+    if (!value) return;
+
+    setModelTypeInput(value);
+    setMainCategoryQuery("");
+    setMainCategorySelected({
+      name: "",
+      id: "",
+      isValid: false,
+    });
+    setSubCatInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
+  };
+
   const selectMainCategoryHandler = (
     value: SelectOption<string> | null,
     isValid: boolean | null,
@@ -520,6 +533,12 @@ const UpdateModelForm = ({
     });
   };
 
+  const showModelHandler = () => {
+    if (savedModel !== curModel?.id) {
+      dispatch(modelActions.resetModelData());
+    }
+  };
+
   let versionStatusHtml = versionsDownloadStatus?.map((version) => {
     return (
       <div className={classes["example-field"]} key={version.id}>
@@ -550,6 +569,12 @@ const UpdateModelForm = ({
   if (savedModel && !!newModelId) {
     submitButton = null;
   }
+
+  const isDefaultGuideActive =
+    !!modelData && guideIsActive && guideStep === GUIDE_STEP_EDIT_DEFAULT;
+  const fieldsClassName = `${classes.fields} ${
+    modelData ? classes["fields--edit"] : ""
+  } ${isDefaultGuideActive ? classes["fields--guide"] : ""}`;
 
   return (
     <form
@@ -620,15 +645,7 @@ const UpdateModelForm = ({
           )}
         </FieldCategory>
       )}
-      <div
-        className={`${classes.fields} ${
-          modelData ? classes["fields--edit"] : ""
-        } ${
-          modelData && guideIsActive && guideStep === GUIDE_STEP_EDIT_DEFAULT
-            ? classes["fields--guide"]
-            : ""
-        }`}
-      >
+      <div className={fieldsClassName}>
         {modelData && <EditDefaultGuide />}
         <FieldCategory>
           <Select
@@ -636,18 +653,7 @@ const UpdateModelForm = ({
             name="type"
             id="type"
             selected={modelTypeInput}
-            onChange={(value) => {
-              if (!value) return;
-
-              setModelTypeInput(value);
-              setMainCategoryQuery("");
-              setMainCategorySelected({
-                name: "",
-                id: "",
-                isValid: false,
-              });
-              setSubCatInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
-            }}
+            onChange={selectModelTypeHandler}
             options={typeSelectOption}
           />
           {!modelData && (
@@ -722,11 +728,7 @@ const UpdateModelForm = ({
                   <Link
                     to={`/models/${savedModel}`}
                     className={classes.link}
-                    onClick={() => {
-                      if (savedModel !== curModel?.id) {
-                        dispatch(modelActions.resetModelData());
-                      }
-                    }}
+                    onClick={showModelHandler}
                   >
                     Show model
                   </Link>
