@@ -62,8 +62,6 @@ export const FILTER_CIV_DUPLICATES = true;
 export const SETTINGS_MODEL_PREVIEW_PER_PAGE = 16;
 export const SETTINGS_COLLECTION_PREVIEW_PER_PAGE = 16;
 export const SETTINGS_STICKY_SWITCH_HEIGHT = 20;
-export const SETTINGS_TIMEOUT_SEC = 10;
-export const SETTINGS_RESULT_NUM = 10;
 export const SETTINGS_REF_IMAGE_AMOUNT = 12;
 export const SETTINGS_REF_IMAGE_ROW_LENGTH = 3;
 export const SETTINGS_IMAGE_PREVIEW_WIDTH_DEF = 450;
@@ -89,7 +87,6 @@ export const SETTINGS_CAROUSEL_IMAGE_WIDTH = 266;
 export const SETTINGS_CAROUSEL_TRANSITION_DURATION = 300;
 export const SETTINGS_CAROUSEL_INTERSECTION_MARGIN = 1000;
 export const SETTINGS_LOAD_MORE_MARGIN = 600;
-export const SETTINGS_LOAD_MORE_MARGIN_MEDIUM = 400;
 export const SETTINGS_LOAD_MORE_MARGIN_SMALL = 200;
 export const SETTINGS_SCROLL_TOP = 600;
 export const SETTINGS_UPLOADING_COMPLETED_AMOUNT = 10;
@@ -102,13 +99,10 @@ export const SETTINGS_NSFW_VALUES_DATA = [
   { name: "XXX", value: "X", nsfwLevelIndex: 3 },
 ];
 export const SETTINGS_SFW_RANGE = ["None", "Soft"];
-export const SETTINGS_NSFW_RANGE = ["Soft", "Mature", "X"];
 export const SETTINGS_PROMPT_DUPLICATE_EXCEPTIONS = ["BREAK", "<BREAK>"];
 export const SETTINGS_PROMPT_BREAK_ALIASES = ["BREAK", "<BREAK>"];
-export const SETTINGS_LOAD_DEFAULT_DATA_FROM_CIV = false;
 export const SETTINGS_SHOW_ALL_DEF_IMAGES = true;
 export const SETTINGS_FORCE_UPDATE_POST_DATA = true; // force overwriting of post data
-export const SETTINGS_FORCE_HIDDEN_PROMPT_FETCH = true; // force overwriting of post data
 export const SETTINGS_SEARCH_CIVITAI = true;
 // export const SETTINGS_SUPPORTED_FILE_EXTENSIONS = [
 //   "safetensors",
@@ -127,10 +121,6 @@ export const URL_CIV_API = "https://civitai.com/api/v1";
 export const URL_CIV_MODELS = `${URL_CIV_API}/models`;
 export const URL_CIV_IMAGES = `${URL_CIV_API}/images`;
 export const URL_CIV_ENUMS = `${URL_CIV_API}/enums`;
-export const URL_CF_UPLOAD_MODEL =
-  "https://uploadmodel-o43alvcema-uc.a.run.app";
-export const URL_CF_UPDATE_MODEL =
-  "https://updatemodel-o43alvcema-uc.a.run.app";
 
 //REGEX
 export const REGEX_SPLIT_TAGS = /,(?![^()]*\)|[^[\]]*\]|[^{}]*\}|[^<>]*>)/;
@@ -144,7 +134,6 @@ export const VALIDATION_NAME_MAX_LENGTH = 300;
 export const VALIDATION_TITLE_MAX_LENGTH = 500;
 export const VALIDATION_DESCRIPTION_MAX_LENGTH = 100000;
 export const VALIDATION_TRIGGER_WORDS_MAX_LENGTH = 5000;
-export const VALIDATION_ID_MAX_LENGTH = 20;
 export const VALIDATION_POST_URL_MAX_LENGTH = 45;
 export const VALIDATION_NUMBER_MAX_LENGTH = 5;
 export const VALIDATION_EMAIL_MAX_LENGTH = 50;
@@ -158,8 +147,6 @@ export const VALIDATION_VALIDATE_PASSWORD_NUMBER_INCLUSION = false;
 //MESSAGES
 export const MESSAGE_AGREEMENT =
   "You have to accept our Terms of Service and Privacy Policy";
-export const MESSAGE_DELETE_MODEL =
-  "Are you sure you want to delete this resource? This action can't be undone";
 export const MESSAGE_DELETE_COLLECTION =
   "Are you sure you want to delete this collection? This action can't be undone";
 
@@ -167,15 +154,10 @@ export const MESSAGE_DELETE_COLLECTION =
 export const SUCCESS_MESSAGE_SAVED = "Saved successfully";
 export const SUCCESS_MESSAGE_UPLOADED = "Upload complete";
 
-//WARNING MESSAGES
-export const WARNING_MESSAGE_LONG_LOADING =
-  "Something went wrong. Loading time is unexpectedly long, try refreshing the page";
-
 //ERROR MESSAGES
 export const ERROR_MESSAGE_DEFAULT =
   "Oops! Something went wrong. Try refreshing!";
 export const ERROR_MESSAGE_INPUT_DEF = "Invalid input data";
-export const ERROR_MESSAGE_UNIQUE = "Name should be unique";
 export const ERROR_MESSAGE_EXISTS = "This resource already exists";
 export const ERROR_MESSAGE_AUTH = "You have to be logged in to view this page";
 export const ERROR_MESSAGE_EMPTY =
@@ -188,9 +170,7 @@ export const ERROR_MESSAGE_INVALID_DATA = "Invalid data";
 export const ERROR_MESSAGE_INVALID_MODEL_ID =
   "Invalid model data. Use only model ID or URL from Civitai";
 export const ERROR_MESSAGE_INVALID_POST_ID = "Invalid post ID";
-export const ERROR_MESSAGE_NO_IMAGE_SELECTED = "Select at least one image";
 export const ERROR_MESSAGE_DB_CONNECTION = "Connection error";
-export const ERROR_MESSAGE_UPLOAD_MODEL = "Failed to load model data";
 export const ERROR_MESSAGE_CIV_CONNECTION =
   "Failed to conect to Civitai API. There may be heavy load or maintenance at the moment. Try again later.";
 export const ERROR_MESSAGE_MODEL_LOAD = "Failed to load model";
@@ -251,28 +231,6 @@ export const ANIMATIONS_FM_FADEIN = { opacity: 1 };
 export const ANIMATIONS_FM_FADEIN_INITIAL = { opacity: 0 };
 export const ANIMATIONS_FM_ZOOM_IN_INITIAL = { opacity: 0, scale: 0.95 };
 export const ANIMATIONS_FM_ZOOM_IN = { opacity: 1, scale: 1 };
-export const ANIMATIONS_FM_HOVER_SCALE = { scale: 1.02 };
-export const ANIMATIONS_FM_TAP_SCALE = { scale: 0.98 };
-
-export const DEFAULT_DATA_TAGSETS_INPUT = [
-  [
-    {
-      type: "text",
-      id: "set-name-def",
-      name: "set-name",
-      placeholder: "Set name",
-      value: "",
-      isValid: true,
-    },
-    {
-      id: "set-value-def",
-      name: "set-value",
-      placeholder: "Triger words",
-      value: "",
-      isValid: true,
-    },
-  ],
-];
 
 export const ABOUT_NAV_DATA = [
   {
