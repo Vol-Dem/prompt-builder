@@ -2,7 +2,9 @@ import {
   useEffect,
   useRef,
   useState,
+  type ChangeEvent,
   type ComponentProps,
+  type FocusEvent,
   type ReactNode,
 } from "react";
 import { motion, type HTMLMotionProps } from "framer-motion";
@@ -97,6 +99,36 @@ const Input = ({
     }
   }, [value, validation]);
 
+  const inputBlurHandler = (e: FocusEvent<HTMLInputElement>) => {
+    if (onBlur) {
+      onBlur(e);
+    }
+    if (validation && !validation?.disableErrorOnBlur) {
+      setShowErrorMessage(true);
+    }
+  };
+
+  const inputChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!onChange) return;
+    if (fitContent && inputRef.current) {
+      inputRef.current.style.width = "0";
+      inputRef.current.style.width = `${
+        inputRef.current.scrollWidth + inputMargin
+      }px`;
+    }
+    if (validation) {
+      const { isValid, errorMessage } = validateInput(
+        validation,
+        e.target.value,
+      );
+
+      onChange(e, isValid, errorMessage);
+      setInputErrorMessage(errorMessage);
+    } else {
+      onChange(e, true);
+    }
+  };
+
   return (
     <div className={classes.container}>
       {label && (
@@ -110,34 +142,8 @@ const Input = ({
         id={id}
         type={type}
         name={name}
-        onBlur={(e) => {
-          if (onBlur) {
-            onBlur(e);
-          }
-          if (validation && !validation?.disableErrorOnBlur) {
-            setShowErrorMessage(true);
-          }
-        }}
-        onChange={(e) => {
-          if (!onChange) return;
-          if (fitContent && inputRef.current) {
-            inputRef.current.style.width = "0";
-            inputRef.current.style.width = `${
-              inputRef.current.scrollWidth + inputMargin
-            }px`;
-          }
-          if (validation) {
-            const { isValid, errorMessage } = validateInput(
-              validation,
-              e.target.value,
-            );
-
-            onChange(e, isValid, errorMessage);
-            setInputErrorMessage(errorMessage);
-          } else {
-            onChange(e, true);
-          }
-        }}
+        onBlur={inputBlurHandler}
+        onChange={inputChangeHandler}
         onClick={onClick}
         onFocus={onFocus}
         placeholder={placeholder}
