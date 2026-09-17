@@ -30,7 +30,7 @@ const CollectionList = () => {
   });
 
   return (
-    <div className={classes["container"]}>
+    <div>
       {!!collectionPreviews?.data?.length && (
         <div className={`${classes["collections"]}`}>{collectionsHtml}</div>
       )}
@@ -40,7 +40,7 @@ const CollectionList = () => {
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
       {isLoading && (
-        <div className={classes["spiner-container"]}>
+        <div>
           <Spinner size="medium" />
         </div>
       )}

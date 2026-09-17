@@ -2,7 +2,6 @@ import { useState, type MouseEvent, type SubmitEvent } from "react";
 import { useEffect } from "react";
 
 import Input from "../../ui/forms/Input";
-import classes from "./ReAuthForm.module.scss";
 import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { authActions, reAuthUser } from "../../../store/auth";
@@ -78,17 +77,14 @@ const ReAuthForm = () => {
   };
 
   return (
-    <section className={classes.auth}>
-      <form onSubmit={authHandlerPass} className={classes["auth__form"]}>
+    <section>
+      <form onSubmit={authHandlerPass}>
         <Input
           label="Password"
           id="password"
           name="password"
           type="password"
           disabled={isLoading}
-          className={`${classes["auth__input"]} ${
-            showErrorMessage && !password.isValid ? classes.invalid : ""
-          }`}
           onChange={(e, isValid) => {
             setPassword({
               value: e.target.value,
@@ -105,12 +101,10 @@ const ReAuthForm = () => {
         />
 
         {errorMessageAuth && (
-          <ErrorMessage className={classes["auth__error"]}>
-            {errorMessageAuth}
-          </ErrorMessage>
+          <ErrorMessage>{errorMessageAuth}</ErrorMessage>
         )}
-        <div className={classes["auth__controls"]}>
-          <Button disabled={isLoading} className={classes["auth__btn--submit"]}>
+        <div>
+          <Button disabled={isLoading}>
             {isLoading && <Spinner size="small" />}
             <span>Submit</span>
           </Button>

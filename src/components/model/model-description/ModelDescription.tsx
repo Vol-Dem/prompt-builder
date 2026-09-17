@@ -36,16 +36,7 @@ const ModelDescription = () => {
   return (
     <>
       <div
-        className={`${classes.description} ${
-          descriptionIsOpen ? classes["description--open"] : ""
-        } ${
-          descHeight &&
-          descHeight > minDescriptionHeight &&
-          !descriptionIsOpen &&
-          descHeight
-            ? classes["description--hidden"]
-            : ""
-        }`}
+        className={classes.description}
         style={{
           maxHeight: `${
             descriptionIsOpen && descHeight
