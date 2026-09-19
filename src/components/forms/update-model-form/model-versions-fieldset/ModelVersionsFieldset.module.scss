@@ -1,0 +1,12 @@
+.example-field {
+  display: flex;
+  gap: 1rem;
+}
+
+fieldset.versions {
+  flex-direction: row;
+  gap: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 20rem);
+  // height: 100%;
+}

@@ -1,0 +1,36 @@
+@use "../../../../variables/colors.scss" as var;
+
+button.btn-secondary {
+  font-size: 1.6rem;
+  color: var.$color-text-form-muted;
+  text-align: right;
+
+  &:hover {
+    color: var.$color-primary;
+  }
+}
+
+.subcategory {
+  display: flex;
+  gap: 0.6rem;
+
+  &__input {
+    width: 100%;
+  }
+}
+
+.subcategory .input__btn-del {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.6rem;
+  width: 2.6rem;
+  padding: 0.2rem;
+  flex-shrink: 0;
+
+  & svg {
+    color: var.$color-gray;
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+}

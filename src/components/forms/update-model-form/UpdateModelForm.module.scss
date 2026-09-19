@@ -40,11 +40,6 @@
   gap: 1rem;
 }
 
-.example-field {
-  display: flex;
-  gap: 1rem;
-}
-
 .tagset {
   display: flex;
   flex-direction: column;
@@ -61,30 +56,12 @@
   }
 }
 
-.btn-secondary {
-  font-size: 1.6rem;
-  color: var.$color-text-form-muted;
-  text-align: right;
-
-  &:hover {
-    color: var.$color-primary;
-  }
-}
-
 .checkbox {
   display: flex;
   font-size: 1.6rem;
   padding: 1rem;
   gap: 1rem;
   align-items: center;
-}
-
-.versions {
-  flex-direction: row;
-  gap: 2rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 20rem);
-  // height: 100%;
 }
 
 .submit-container {
@@ -139,31 +116,6 @@
 
   &__message {
     width: 100%;
-  }
-}
-
-.subcategory {
-  display: flex;
-  gap: 0.6rem;
-
-  &__input {
-    width: 100%;
-  }
-}
-
-.input__btn-del {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 2.6rem;
-  width: 2.6rem;
-  padding: 0.2rem;
-  flex-shrink: 0;
-
-  & svg {
-    color: var.$color-gray;
-    width: 1.8rem;
-    height: 1.8rem;
   }
 }
 

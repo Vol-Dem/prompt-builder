@@ -7,16 +7,15 @@ import {
   type SubmitEvent,
 } from "react";
 import { Link } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
 
 import classes from "./UpdateModelForm.module.scss";
+import ModelSubcategoriesFieldset from "./model-subcategories-fieldset/ModelSubcategoriesFieldset";
+import ModelVersionsFieldset from "./model-versions-fieldset/ModelVersionsFieldset";
 import Input from "../../ui/forms/Input";
 import Button from "../../ui/buttons/Button";
 import Textarea from "../../ui/forms/Textarea";
-import ButtonSecondary from "../../ui/buttons/ButtonSecondary";
 import Checkbox from "../../ui/forms/Checkbox";
 import Select from "../../ui/forms/Select";
-import Fieldset from "../../ui/forms/Fieldset";
 import FieldCategory from "../../ui/forms/FieldCategory";
 import {
   AppError,
@@ -37,9 +36,6 @@ import {
   VALIDATION_TITLE_MAX_LENGTH,
   VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
   MODEL_TYPES,
-  ANIMATIONS_FM_SLIDEOUT_INITIAL,
-  ANIMATIONS_FM_SLIDEOUT,
-  ANIMATIONS_FM_FADEOUT_EXIT,
   SETTINGS_MODEL_TYPE_UNKNOWN,
   SETTINGS_MODEL_TYPE_DEF,
   ERROR_MESSAGE_INVALID_MODEL_ID,
@@ -49,7 +45,6 @@ import {
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { tabActions } from "../../../store/tabs";
-import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import { modelActions } from "../../../store/model";
 import EditDefaultGuide from "../../general-elements/guide/edit/EditDefaultGuide";
 import { createTagSetsInputData } from "../../../utils/promptUtils";
@@ -69,7 +64,6 @@ import type {
 } from "../../../types/forms.types";
 import type { TagSetInputData } from "../../../types/prompt.types";
 import type { ModelPreviewDoc } from "../../../../shared/types/firestore";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 
 type UpdateModelFormProps = {
   modelData?: ModelData;
@@ -483,43 +477,6 @@ const UpdateModelForm = ({
     });
   };
 
-  const subCatHtml = subCatInputs.map((sub, i) => {
-    return (
-      <motion.div
-        layout
-        key={sub.id}
-        initial={i ? ANIMATIONS_FM_SLIDEOUT_INITIAL : false}
-        animate={ANIMATIONS_FM_SLIDEOUT}
-        exit={ANIMATIONS_FM_FADEOUT_EXIT}
-        className={classes["subcategory"]}
-      >
-        <ComboSelect
-          id={sub.id}
-          optionsData={subCategoryOptions || []}
-          query={subCategoryQuery}
-          setQuery={setSubCategoryQuery}
-          setSelected={subCatSelectHandler}
-          selected={sub.selected ? { ...sub.selected } : null}
-          placeholder="Subcategory"
-          validation={{
-            required: true,
-            maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-          }}
-          showError={showErrorMessage}
-        />
-        {i !== 0 && (
-          <ButtonTertiary
-            type="button"
-            className={classes["input__btn-del"]}
-            onClick={deleteSubcategoryInputHandler.bind(null, i)}
-          >
-            <XMarkIcon />
-          </ButtonTertiary>
-        )}
-      </motion.div>
-    );
-  });
-
   const versionStatusChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setVersionsDownloadStatus((prevState) => {
       const newState = [...prevState];
@@ -538,20 +495,6 @@ const UpdateModelForm = ({
       dispatch(modelActions.resetModelData());
     }
   };
-
-  let versionStatusHtml = versionsDownloadStatus?.map((version) => {
-    return (
-      <div className={classes["example-field"]} key={version.id}>
-        <Checkbox
-          id={version.id}
-          name={version.name}
-          checked={version.value}
-          label={version.label}
-          onChange={versionStatusChangeHandler}
-        />
-      </div>
-    );
-  });
 
   let typeSelectOption = MODEL_TYPES?.map((version) => {
     return {
@@ -639,9 +582,10 @@ const UpdateModelForm = ({
             }}
           />
           {modelData && (
-            <Fieldset legend="Model versions" className={classes.versions}>
-              {versionStatusHtml}
-            </Fieldset>
+            <ModelVersionsFieldset
+              versions={versionsDownloadStatus}
+              onChange={versionStatusChangeHandler}
+            />
           )}
         </FieldCategory>
       )}
@@ -693,19 +637,16 @@ const UpdateModelForm = ({
             showError={showErrorMessage}
           />
         </FieldCategory>
-        <Fieldset legend="Subcategories">
-          <AnimatePresence>{subCatHtml}</AnimatePresence>
-          {subCatInputs?.length < SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT && (
-            <ButtonSecondary
-              type="button"
-              id="sub"
-              onClick={addSubHandler}
-              className={classes["btn-secondary"]}
-            >
-              + add subcategory
-            </ButtonSecondary>
-          )}
-        </Fieldset>
+        <ModelSubcategoriesFieldset
+          subcategories={subCatInputs}
+          options={subCategoryOptions || []}
+          query={subCategoryQuery}
+          showError={showErrorMessage}
+          onQueryChange={setSubCategoryQuery}
+          onSelect={subCatSelectHandler}
+          onAdd={addSubHandler}
+          onDelete={deleteSubcategoryInputHandler}
+        />
       </div>
       <div className={classes["submit-container"]}>
         {(errorMessage || successMessage) && (
