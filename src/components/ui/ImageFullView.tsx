@@ -131,24 +131,33 @@ const ImageFullView = ({
               </video>
             )}
           </div>
-          <div className={classes["modal__close"]} onClick={onClose}>
+          <button
+            type="button"
+            aria-label="Close full view"
+            className={classes["modal__close"]}
+            onClick={onClose}
+          >
             <XMarkIcon />
-          </div>
+          </button>
           {prevSlide && controls && (
-            <div
+            <button
+              type="button"
+              aria-label="Previous media"
               className={`${classes["btn-slide"]} ${classes["btn-slide--next"]}`}
               onClick={prevSlide}
             >
               <ChevronLeftIcon />
-            </div>
+            </button>
           )}
           {nextSlide && controls && (
-            <div
+            <button
+              type="button"
+              aria-label="Next media"
               onClick={nextSlide}
               className={`${classes["btn-slide"]} ${classes["btn-slide--prev"]}`}
             >
               <ChevronRightIcon />
-            </div>
+            </button>
           )}
         </div>,
         document.body,

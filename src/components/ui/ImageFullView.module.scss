@@ -1,6 +1,16 @@
 @use "./../../variables/variables.scss" as var;
 @use "sass:color";
 
+.modal__close,
+.btn-slide {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+}
+
 .modal {
   position: fixed;
   animation: show 0.3s ease;
