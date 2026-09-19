@@ -1,0 +1,22 @@
+@use "../../../../variables/colors.scss" as var;
+
+.filter__field {
+  list-style: none;
+}
+
+.filter__name {
+  display: inline-block;
+  font-size: 1.6rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var.$color-primary;
+  margin-bottom: 1rem;
+}
+
+.filter__checked {
+  font-size: 1.4rem;
+  color: var.$color-text-gray;
+}
+
+.filter__limit {
+  color: var.$color-text-yellow;
+}

@@ -12,6 +12,7 @@ import { ENUMS_CIVITAI } from "../../../variables/enums";
 import type { SearchSrcType } from "../../../types/search.types";
 import Select from "../../ui/forms/Select";
 import Tooltip from "../../ui/Tooltip";
+import SearchFilterCheckboxGroup from "./search-filter-checkbox-group/SearchFilterCheckboxGroup";
 
 type ModelTypeCheckboxStatusInput = {
   type: string;
@@ -427,36 +428,6 @@ const SearchFilter = () => {
     });
   };
 
-  const modelTypesHtml = modelTypeCheckboxStatus.map((type) => {
-    return (
-      <li key={type.id}>
-        <Checkbox
-          id={type.id}
-          name={type.name}
-          checked={type.value}
-          label={type.label}
-          onChange={typeChangeHandler}
-          disabled={type.disabled}
-        />
-      </li>
-    );
-  });
-
-  const baseModelsHtml = baseModelCheckboxStatus.map((type) => {
-    return (
-      <li key={type.id}>
-        <Checkbox
-          id={type.id}
-          name={type.name}
-          checked={type.value}
-          label={type.label}
-          onChange={baseModelsChangeHandler}
-          disabled={type.disabled}
-        />
-      </li>
-    );
-  });
-
   const searchSrcHandler = (value: string | null) => {
     if (!value) return;
 
@@ -497,7 +468,7 @@ const SearchFilter = () => {
             />
           </Tooltip>
         )}
-        {!!modelTypesHtml?.length && (
+        {!!modelTypeCheckboxStatus.length && (
           <div>
             <Checkbox
               id={hashtagCheckboxStatus.id}
@@ -508,7 +479,7 @@ const SearchFilter = () => {
             />
           </div>
         )}
-        {!!modelTypesHtml?.length && (
+        {!!modelTypeCheckboxStatus.length && (
           <div>
             <Checkbox
               id={creatorCheckboxStatus.id}
@@ -519,43 +490,25 @@ const SearchFilter = () => {
             />
           </div>
         )}
-        {!!modelTypesHtml?.length && (
-          <div>
-            <div className={classes["filter__name"]}>
-              Type{" "}
-              {searchSrc === "aitools" && (
-                <span
-                  className={`${classes["filter__checked"]} ${
-                    modelTypesChecked === maxModelTypesAllowed
-                      ? classes["filter__limit"]
-                      : ""
-                  }`}
-                >
-                  ({modelTypesChecked} / {maxModelTypesAllowed})
-                </span>
-              )}
-            </div>
-            <ul className={classes["filter__field"]}>{modelTypesHtml}</ul>
-          </div>
+        {!!modelTypeCheckboxStatus.length && (
+          <SearchFilterCheckboxGroup
+            title="Type"
+            options={modelTypeCheckboxStatus}
+            checkedCount={modelTypesChecked}
+            maxAllowed={maxModelTypesAllowed}
+            showSelectionCount={searchSrc === "aitools"}
+            onChange={typeChangeHandler}
+          />
         )}
-        {!!baseModelsHtml?.length && (
-          <div>
-            <div className={classes["filter__name"]}>
-              Base model{" "}
-              {searchSrc === "aitools" && (
-                <span
-                  className={`${classes["filter__checked"]} ${
-                    baseModelsChecked === maxBaseModelsAllowed
-                      ? classes["filter__limit"]
-                      : ""
-                  }`}
-                >
-                  ({baseModelsChecked} / {maxBaseModelsAllowed})
-                </span>
-              )}
-            </div>
-            <ul className={classes["filter__field"]}>{baseModelsHtml}</ul>
-          </div>
+        {!!baseModelCheckboxStatus.length && (
+          <SearchFilterCheckboxGroup
+            title="Base model"
+            options={baseModelCheckboxStatus}
+            checkedCount={baseModelsChecked}
+            maxAllowed={maxBaseModelsAllowed}
+            showSelectionCount={searchSrc === "aitools"}
+            onChange={baseModelsChangeHandler}
+          />
         )}
       </div>
     </>
