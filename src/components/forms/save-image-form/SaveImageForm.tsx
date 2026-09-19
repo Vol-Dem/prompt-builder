@@ -281,13 +281,11 @@ const SaveImageForm = ({
           id="post-id"
           name="post-id"
           type="text"
-          label={
-            <>
-              Post ID or URL{" "}
-              <ButtonInfo className={classes["btn-info"]}>
-                <InfoPostId />
-              </ButtonInfo>
-            </>
+          label="Post ID or URL"
+          labelAction={
+            <ButtonInfo className={classes["btn-info"]}>
+              <InfoPostId />
+            </ButtonInfo>
           }
           autoFocus
           placeholder="post id or url"

@@ -5,20 +5,22 @@ import { AnimatePresence } from "framer-motion";
 import Modal from "../Modal";
 import classes from "./ButtonInfo.module.scss";
 
-type ButtonInfoProps = ComponentProps<"span">;
+type ButtonInfoProps = ComponentProps<"button">;
 
 const ButtonInfo = ({ children, className }: ButtonInfoProps) => {
   const [showInfo, setShowInfo] = useState(false);
   return (
     <>
-      <span
+      <button
+        type="button"
+        aria-label="More information"
         className={`${classes.btn} ${className || ""}`}
         onClick={() => {
           setShowInfo((prevState) => !prevState);
         }}
       >
         <QuestionMarkCircleIcon />
-      </span>
+      </button>
 
       <AnimatePresence>
         {showInfo && (

@@ -1,6 +1,12 @@
 @use "./../../../variables/variables.scss" as var;
 
 .btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
   width: 2.6rem;
   height: 2.6rem;
   cursor: pointer;

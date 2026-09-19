@@ -25,6 +25,7 @@ type InputProps = OverrideFields<
   HTMLMotionProps<"input"> & ComponentProps<"input">,
   {
     label?: string | ReactNode;
+    labelAction?: ReactNode;
     validation?: ValidationTypes;
     showError?: boolean;
     fitContent?: boolean;
@@ -43,6 +44,7 @@ type InputProps = OverrideFields<
  * @param props.type - Input type (text, password, email, etc.).
  * @param props.name - Input name.
  * @param props.label - Optional label text.
+ * @param props.labelAction - Optional control displayed beside the label.
  * @param props.input - Native input props spread to element.
  * @param props.className - Optional custom class.
  * @param props.onBlur - Blur event handler.
@@ -66,6 +68,7 @@ const Input = ({
   type,
   name,
   label,
+  labelAction,
   className,
   onBlur,
   onChange,
@@ -132,9 +135,16 @@ const Input = ({
   return (
     <div className={classes.container}>
       {label && (
-        <label htmlFor={id} className={classes.label}>
-          {label || ""}
-        </label>
+        labelAction ? (
+          <div className={classes.label}>
+            <label htmlFor={id}>{label}</label>
+            {labelAction}
+          </div>
+        ) : (
+          <label htmlFor={id} className={classes.label}>
+            {label || ""}
+          </label>
+        )
       )}
       <motion.input
         animate={ANIMATIONS_FM_SLIDEOUT}
