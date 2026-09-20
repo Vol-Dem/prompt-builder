@@ -24,7 +24,7 @@ import {
   normalizeError,
 } from "../../../utils/generalUtils";
 import TagSetsInputFieldset from "../../ui/forms/TagSetsInputFieldset";
-import { createTagSetsInputData } from "../../../utils/promptUtils";
+import { buildTagSets, createTagSetsInputData } from "../../../utils/promptUtils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import type { TagSetInputData } from "../../../types/prompt.types";
 import { FORMS_DEF_TAGS_INPUT } from "../../../variables/structures";
@@ -118,22 +118,11 @@ const TagSetsForm = ({ modelId, onClose }: TagSetsFormProps) => {
       const formdata = new FormData(e.target);
       const tagSetsValues = formdata.getAll("set-value");
       const tagSetNames = formdata.getAll("set-name");
-      const tagSetsInputData = tagSetNames.flatMap((setName, i) => {
-        if (!setName && !tagSetsValues[i]) return [];
-        return [{ name: setName, value: tagSetsValues[i] }];
-      });
-
-      let tagSetsData;
-      if (!versionData?.tagSetsData?.length) {
-        tagSetsData = tagSetsInputData;
-      } else {
-        tagSetsData = tagSetsInputData.map((tagSet, i) => {
-          return {
-            ...versionData.tagSetsData![i],
-            ...tagSet,
-          };
-        });
-      }
+      const tagSetsData = buildTagSets(
+        tagSetNames,
+        tagSetsValues,
+        versionData.tagSetsData,
+      );
 
       const updatedVersionData = {
         ...versionData,

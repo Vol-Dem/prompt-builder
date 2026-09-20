@@ -26,7 +26,11 @@ import {
   VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
 import Spinner from "../../ui/Spinner";
-import { createTagSetsInputData, splitTags } from "../../../utils/promptUtils";
+import {
+  buildTagSets,
+  createTagSetsInputData,
+  splitTags,
+} from "../../../utils/promptUtils";
 import { clearFileExtension } from "../../../../shared/utils";
 import { FORMS_DEF_TAGS_INPUT } from "../../../variables/structures";
 import type {
@@ -314,23 +318,11 @@ const VersionForm = ({
       const steps = stepsInput.value.trim() || "";
       const trainedWords = splitTags(trigerInput.value);
       const tagSetNames = tagSetsInputs.map((set) => set[0].value);
-      const tagSetsInputData = tagSetNames.flatMap((setName, i) => {
-        if (!setName && !tagSetsValues[i]) return [];
-        return [{ name: setName, value: tagSetsValues[i] }];
-      });
-
-      let tagSetsData;
-
-      if (!versionData?.tagSetsData?.length) {
-        tagSetsData = tagSetsInputData;
-      } else {
-        tagSetsData = tagSetsInputData.map((tagSet, i) => {
-          return {
-            ...(versionData?.tagSetsData && versionData.tagSetsData[i]),
-            ...tagSet,
-          };
-        });
-      }
+      const tagSetsData = buildTagSets(
+        tagSetNames,
+        tagSetsValues,
+        versionData?.tagSetsData,
+      );
 
       const helperTags = splitTags(helperTagsInput.value);
       const negativeTags = splitTags(negativeTagsInput.value);

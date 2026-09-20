@@ -146,6 +146,28 @@ export const createTagSetsInputData = (
 };
 
 /**
+ * Builds submitted tag sets without normalizing input values.
+ * Existing metadata is merged by position after fully empty rows are removed.
+ */
+export const buildTagSets = <T extends FormDataEntryValue>(
+  names: readonly T[],
+  values: readonly T[],
+  existingTagSets?: readonly TagSet[],
+) => {
+  const tagSets = names.flatMap((name, i) => {
+    if (!name && !values[i]) return [];
+    return [{ name, value: values[i] }];
+  });
+
+  if (!existingTagSets?.length) return tagSets;
+
+  return tagSets.map((tagSet, i) => ({
+    ...existingTagSets[i],
+    ...tagSet,
+  }));
+};
+
+/**
  * Adds "," after all "BREAK" in promt for proper structure
  * @param prompt - prompt
  * @returns promt for proper structure
