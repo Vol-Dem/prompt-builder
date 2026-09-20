@@ -284,14 +284,11 @@ const SearchFilter = () => {
   ]);
 
   const typeChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    const newModelTypeCheckboxStatus = [...modelTypeCheckboxStatus];
-    setModelTypeCheckboxStatus((prevState) => {
-      const newState = [...prevState];
-      const curIndex = newState.findIndex((type) => type.id === e.target.id);
-      newState[curIndex].value = e.target.checked;
-
-      return newState;
-    });
+    const { id, checked: isChecked } = e.target;
+    const newModelTypeCheckboxStatus = modelTypeCheckboxStatus.map((type) =>
+      type.id === id ? { ...type, value: isChecked } : type,
+    );
+    setModelTypeCheckboxStatus(newModelTypeCheckboxStatus);
 
     const checked = newModelTypeCheckboxStatus.filter(
       (item) => item.value,
