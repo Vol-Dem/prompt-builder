@@ -1,6 +1,6 @@
 import type { Image } from "../../../../shared/types/image";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
-import { filterDuplicates, sortArrayBy } from "../../../utils/generalUtils";
+import { getSuggestedCollections } from "./suggestedCollectionsUtils";
 import classes from "./SuggestedCollections.module.scss";
 import { ArrowsUpDownIcon } from "@heroicons/react/24/outline";
 import type {
@@ -16,8 +16,6 @@ type SuggestedCollectionsProps = {
   onSelect: (suggestedCollectionData: SuggestedCollection) => void;
 };
 
-const SUGGESTED_FILTER_LIST = ["in", "and", "or", "for", "on"];
-
 const SuggestedCollections = ({
   images,
   selectedCategoryId,
@@ -28,97 +26,12 @@ const SuggestedCollections = ({
     (state) => state.general.suggestedCollectionsSortBy,
   );
   const dispatch = useAppDispatch();
-  // const [filterType, setFilterType] = useState<"loose" | "balanced" | "strict">(
-  //   "balanced",
-  // );
-  const filterType = "balanced";
   const categories = useAppSelector((state) => state.images.categories);
-
-  const allPrompt = images.reduce((prev, curr) => {
-    if (curr.meta?.prompt) {
-      return prev + " " + curr.meta.prompt;
-    }
-    return prev;
-  }, "");
-
-  const createNameWords = (nameString: string) => {
-    const regex = /[!"`'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+/g;
-
-    return nameString
-      .toLocaleLowerCase()
-      .replace(regex, "")
-      .split(" ")
-      .filter((word) => !SUGGESTED_FILTER_LIST.includes(word));
-  };
-
-  const suggestedCollections = filterDuplicates(
-    categories.flatMap((category) => {
-      const collNames = category.collectionNames
-        ?.filter((collection) => {
-          const nameWords = createNameWords(collection.name);
-
-          // if (filterType === "loose") {
-          //   return nameWords.some((nameWord) =>
-          //     allPrompt
-          //       ?.toLocaleLowerCase()
-          //       .includes(nameWord.trim().toLocaleLowerCase()),
-          //   );
-          // }
-
-          if (filterType === "balanced") {
-            return nameWords.every((nameWord) =>
-              allPrompt
-                ?.toLocaleLowerCase()
-                .includes(nameWord.trim().toLocaleLowerCase()),
-            );
-          }
-
-          // if (filterType === "strict") {
-          //   return allPrompt
-          //     ?.toLocaleLowerCase()
-          //     .includes(collection.name.toLocaleLowerCase());
-          // }
-        })
-        .map((collection) => {
-          const subcategoryNames = collection.subcategories?.flatMap(
-            (subcategoryId) => {
-              const subcategoryName = category?.subcategories?.find(
-                (subcategory) => subcategory.id === subcategoryId,
-              )?.name;
-              return subcategoryName || [];
-            },
-          );
-
-          return {
-            categoryId: category.id,
-            categoryName: category.name,
-            collectionId: collection.id,
-            collectionName: collection.name,
-            collectionSubcategories: subcategoryNames,
-          };
-        });
-      if (collNames?.length) {
-        return collNames;
-      }
-      return [];
-    }),
-
-    "collectionId",
-  ).toSorted((a, b) =>
-    a.categoryName.toUpperCase().localeCompare(b.categoryName.toUpperCase()),
+  const suggestedCollectionsSorted = getSuggestedCollections(
+    images,
+    categories,
+    sortBy,
   );
-
-  let suggestedCollectionsSorted = sortArrayBy(
-    suggestedCollections,
-    "collectionName",
-  );
-
-  if (sortBy === "category") {
-    suggestedCollectionsSorted = sortArrayBy(
-      suggestedCollectionsSorted,
-      "categoryName",
-    );
-  }
 
   const suggestedHtml = suggestedCollectionsSorted.map(
     (suggestedCollection) => {
