@@ -11,7 +11,8 @@ import {
 import {
   moveElementToPosition,
   createPromptItem,
-  getTagWeight,
+  appendPromptTag,
+  appendPromptTags,
   markDuplicateTags,
 } from "../utils/promptUtils";
 import { splitTags } from "../utils/promptUtils";
@@ -152,46 +153,17 @@ const promptSlice = createSlice({
      * Marks duplicate tags.
      */
     addTagToPrompt(state, action) {
-      const allIds = [
-        ...state.curPromptArr.map((tag) => tag.id),
-        ...state.curNegPromptArr.map((tag) => tag.id),
-      ].sort((a, b) => a - b);
-      const promptPosPositions = state.curPromptArr
-        .map((tag) => tag.position)
-        .sort((a, b) => a - b);
-      const promptPNegPositions = state.curNegPromptArr
-        .map((tag) => tag.position)
-        .sort((a, b) => a - b);
-
       const isPositive = action.payload.type === "positive";
-
-      const curPrompt = isPositive ? state.curPromptArr : state.curNegPromptArr;
-      const curPromptPositions = isPositive
-        ? promptPosPositions
-        : promptPNegPositions;
-
-      const newId = !allIds.length ? 0 : allIds[allIds.length - 1] + 1;
-
-      const tagweight = getTagWeight(action.payload.value);
-
-      const newPromptArr = [
-        ...curPrompt,
-        {
-          id: action.payload?.id ?? newId,
-          tag: action.payload.value,
-          weight: tagweight,
-          position: !curPromptPositions.length
-            ? 0
-            : curPromptPositions[curPromptPositions.length - 1] + 1,
-        },
-      ];
-
-      const newPromptArrDuplicates = markDuplicateTags(newPromptArr);
+      const newPromptArr = appendPromptTag(
+        isPositive ? state.curPromptArr : state.curNegPromptArr,
+        isPositive ? state.curNegPromptArr : state.curPromptArr,
+        action.payload,
+      );
 
       if (isPositive) {
-        state.curPromptArr = newPromptArrDuplicates;
+        state.curPromptArr = newPromptArr;
       } else {
-        state.curNegPromptArr = newPromptArrDuplicates;
+        state.curNegPromptArr = newPromptArr;
       }
     },
     /**
@@ -246,64 +218,17 @@ const promptSlice = createSlice({
       state,
       action: PayloadAction<{ type: string; value: string[] }>,
     ) {
-      const allIds = [
-        ...state.curPromptArr.map((tag) => tag.id),
-        ...state.curNegPromptArr.map((tag) => tag.id),
-      ].sort((a, b) => a - b);
-      const promptPosPositions = state.curPromptArr
-        .map((tag) => tag.position)
-        .sort((a, b) => a - b);
-      const promptPNegPositions = state.curNegPromptArr
-        .map((tag) => tag.position)
-        .sort((a, b) => a - b);
-
       const isPositive = action.payload.type === "positive";
+      const newPromptArr = appendPromptTags(
+        isPositive ? state.curPromptArr : state.curNegPromptArr,
+        isPositive ? state.curNegPromptArr : state.curPromptArr,
+        action.payload,
+      );
 
-      const curPromptArr = isPositive
-        ? state.curPromptArr
-        : state.curNegPromptArr;
-
-      const curPromptPositions = isPositive
-        ? promptPosPositions
-        : promptPNegPositions;
-
-      const newTags = action.payload?.value?.filter((newWord) => {
-        const isInPrompt = curPromptArr.find(
-          (promptWord) => promptWord.tag === newWord,
-        );
-        return !isInPrompt;
-      });
-
-      if (newTags.length) {
-        let newPromptArr = [...curPromptArr];
-
-        newTags.forEach((newTag) => {
-          const newId = allIds[allIds.length - 1] + 1 || 0;
-          const newPosition =
-            curPromptPositions[curPromptPositions.length - 1] + 1 || 0;
-          allIds.push(newId);
-          curPromptPositions.push(newPosition);
-          const tagweight = getTagWeight(newTag);
-
-          newPromptArr = moveElementToPosition({
-            item: {
-              id: newId,
-              tag: newTag,
-              weight: tagweight,
-              position: newPosition,
-            },
-            type: action.payload.type,
-            curPromptArr: newPromptArr,
-          });
-        });
-
-        const newPromptArrDuplicates = markDuplicateTags(newPromptArr);
-
-        if (isPositive) {
-          state.curPromptArr = newPromptArrDuplicates;
-        } else {
-          state.curNegPromptArr = newPromptArrDuplicates;
-        }
+      if (isPositive) {
+        state.curPromptArr = newPromptArr;
+      } else {
+        state.curNegPromptArr = newPromptArr;
       }
     },
     /**

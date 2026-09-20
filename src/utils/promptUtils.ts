@@ -237,6 +237,60 @@ export const moveElementToPosition = ({
   });
 };
 
+/** Appends one tag, including duplicates, with an ID shared across both prompts. */
+export const appendPromptTag = (
+  currentTags: readonly PromptItem[],
+  otherTags: readonly PromptItem[],
+  payload: { value: string; id?: number | null },
+): PromptItem[] => {
+  const allIds = [...currentTags, ...otherTags]
+    .map((tag) => tag.id)
+    .sort((a, b) => a - b);
+  const positions = currentTags.map((tag) => tag.position).sort((a, b) => a - b);
+  const newId = !allIds.length ? 0 : allIds[allIds.length - 1] + 1;
+  const newPosition = !positions.length ? 0 : positions[positions.length - 1] + 1;
+
+  return markDuplicateTags([
+    ...currentTags,
+    createPromptItem(payload.value, payload.id ?? newId, newPosition),
+  ]);
+};
+
+/**
+ * Skips tags already in the target prompt, but retains repeats within the batch.
+ * Returns the original array when there is nothing to insert.
+ */
+export const appendPromptTags = (
+  currentTags: PromptItem[],
+  otherTags: readonly PromptItem[],
+  payload: { type: string; value: readonly string[] },
+): PromptItem[] => {
+  const allIds = [...currentTags, ...otherTags]
+    .map((tag) => tag.id)
+    .sort((a, b) => a - b);
+  const positions = currentTags.map((tag) => tag.position).sort((a, b) => a - b);
+  const newTags = payload.value.filter(
+    (value) => !currentTags.some((tag) => tag.tag === value),
+  );
+
+  if (!newTags.length) return currentTags;
+
+  let result = [...currentTags];
+  newTags.forEach((value) => {
+    const newId = allIds[allIds.length - 1] + 1 || 0;
+    const newPosition = positions[positions.length - 1] + 1 || 0;
+    allIds.push(newId);
+    positions.push(newPosition);
+    result = moveElementToPosition({
+      item: createPromptItem(value, newId, newPosition),
+      type: payload.type,
+      curPromptArr: result,
+    });
+  });
+
+  return markDuplicateTags(result);
+};
+
 /**
  * Updates the tag weight
  * @param newTag - Current tag
