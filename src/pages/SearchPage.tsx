@@ -7,6 +7,7 @@ import { civitaiSearch, liveSearch, searchActions } from "../store/search";
 import { useOnlineStatus } from "../hooks/use-online-status";
 import useIntersection from "../hooks/use-intersection";
 import { checkObjectsIsEqual } from "../utils/generalUtils";
+import { parseSearchFilterParams } from "../utils/searchUtils";
 import {
   ERROR_MESSAGE_OFFLINE,
   SETTINGS_LOAD_MORE_MARGIN_SMALL,
@@ -83,21 +84,10 @@ const SearchPage = ({ title }: SearchPageProps) => {
     [nsfwMode, nsfwLevel],
   );
 
-  const searchFilter = useMemo(() => {
-    const modelType = searchParams.get("modelType");
-    const baseModel = searchParams.get("baseModel");
-    const sort = searchParams.get("sort");
-    const hashtag = searchParams.get("hashtag") === "true";
-    const creator = searchParams.get("creator") === "true";
-    return {
-      modelType: modelType?.split(",").filter(Boolean) || [],
-      baseModel: baseModel?.split(",").filter(Boolean) || [],
-      hashtag,
-      creator,
-      src: searchSrc,
-      sort,
-    };
-  }, [searchParams, searchSrc]);
+  const searchFilter = useMemo(
+    () => ({ ...parseSearchFilterParams(searchParams), src: searchSrc }),
+    [searchParams, searchSrc],
+  );
 
   const queryStringIsChanged = searchResult?.query !== searchQueryParam;
   const filterIsChanged =

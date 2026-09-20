@@ -6,6 +6,22 @@ import type {
 import { URL_CIV_MODELS } from "../variables/constants";
 import { createParamString } from "./generalUtils";
 
+/** Parses URL-backed filters; the caller supplies the search source. */
+export const parseSearchFilterParams = (
+  searchParams: URLSearchParams,
+): Omit<SearchFilter, "src"> => {
+  const modelType = searchParams.get("modelType");
+  const baseModel = searchParams.get("baseModel");
+
+  return {
+    modelType: modelType?.split(",").filter(Boolean) || [],
+    baseModel: baseModel?.split(",").filter(Boolean) || [],
+    hashtag: searchParams.get("hashtag") === "true",
+    creator: searchParams.get("creator") === "true",
+    sort: searchParams.get("sort"),
+  };
+};
+
 /**
  * Searches for subcategories
  * @param query - search query

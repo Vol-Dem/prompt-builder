@@ -7,6 +7,7 @@ import classes from "./SearchFilter.module.scss";
 import { searchActions } from "../../../store/search";
 import { MODEL_TYPES } from "../../../variables/constants";
 import { updateSearchParams } from "../../../utils/generalUtils";
+import { parseSearchFilterParams } from "../../../utils/searchUtils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import { ENUMS_CIVITAI } from "../../../variables/enums";
 import type { SearchSrcType } from "../../../types/search.types";
@@ -110,21 +111,10 @@ const SearchFilter = () => {
   const tester = useAppSelector((state) => state.auth.tester);
   const dispatch = useAppDispatch();
   const searchParamSrc = searchParams.get("searchSrc") as SearchSrcType;
-  const searchFilter = useMemo(() => {
-    const modelType = searchParams.get("modelType");
-    const baseModel = searchParams.get("baseModel");
-    const sort = searchParams.get("sort");
-    const hashtag = searchParams.get("hashtag") === "true";
-    const creator = searchParams.get("creator") === "true";
-    return {
-      modelType: modelType?.split(",").filter(Boolean) || [],
-      baseModel: baseModel?.split(",").filter(Boolean) || [],
-      hashtag,
-      creator,
-      searchSrc,
-      sort,
-    };
-  }, [searchParams, searchParamSrc]);
+  const searchFilter = useMemo(
+    () => ({ ...parseSearchFilterParams(searchParams), searchSrc }),
+    [searchParams, searchParamSrc],
+  );
 
   useEffect(() => {
     if (searchParamSrc !== searchSrc)
