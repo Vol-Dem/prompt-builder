@@ -18,12 +18,12 @@ import {
   ERROR_MESSAGE_INVALID_DATA,
   SETTINGS_FORCE_UPDATE_POST_DATA,
   SETTINGS_SFW_RANGE,
-  URL_CIV_IMAGES,
 } from "../../variables/constants";
 import { fetchData, makeBatchRequest } from "./fetchUtils";
 import { AppError, mergeByField, normalizeError } from "../generalUtils";
 import { parseModelIds } from "../modelUtils";
 import { combineImagesData, getUniqImageResources } from "../imageUtils";
+import { buildCivitaiPostImagesUrl } from "../civitaiUrls";
 import {
   clearFileExtension,
   fixCivImagesMeta,
@@ -284,11 +284,11 @@ export const updateImagePostData = async (
         !imagesData[0].modelVersionIds?.length) &&
       isTester
     ) {
-      let postUrl = `${URL_CIV_IMAGES}?postId=${postId}&nsfw=X&withMeta=true`;
-
-      if (modelId) {
-        postUrl = `${URL_CIV_IMAGES}?postId=${postId}&modelId=${modelId}&nsfw=X&withMeta=true`;
-      }
+      const postUrl = buildCivitaiPostImagesUrl({
+        postId,
+        modelId,
+        nsfwLevel: "X",
+      });
 
       const imgExampleResponse = await fetch(postUrl);
       const data = (await imgExampleResponse.json()) as { items: Image[] };

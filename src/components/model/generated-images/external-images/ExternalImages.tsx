@@ -13,13 +13,13 @@ import {
   EXAMPLE_MODEL_ID,
   SETTINGS_IMAGES_NUMBER_PER_REQUEST,
   SETTINGS_LOAD_MORE_MARGIN_SMALL,
-  URL_CIV_IMAGES,
 } from "../../../../variables/constants";
 import useIntersection from "../../../../hooks/use-intersection";
 import Spinner from "../../../ui/Spinner";
 import ErrorMessage from "../../../ui/ErrorMessage";
 import Button from "../../../ui/buttons/Button";
 import useFetchCivitai from "../../../../hooks/use-fetch-civitai";
+import { buildCivitaiImageFeedUrl } from "../../../../utils/civitaiUrls";
 import {
   filterNsfwImages,
   groupAndSortByField,
@@ -77,19 +77,14 @@ const ExternalImages = memo(
       `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`,
     );
 
-    let url = `${URL_CIV_IMAGES}?modelId=${modelId}${`&modelVersionId=${versionId}`}${
-      SETTINGS_IMAGES_NUMBER_PER_REQUEST
-        ? `&limit=${SETTINGS_IMAGES_NUMBER_PER_REQUEST}`
-        : ""
-    }${sortBy ? `&sort=${sortBy}` : ""}${`&nsfw=${nsfwLevel}`}&withMeta=true`;
-
-    if (username) {
-      url = `${URL_CIV_IMAGES}?username=${username}${
-        SETTINGS_IMAGES_NUMBER_PER_REQUEST
-          ? `&limit=${SETTINGS_IMAGES_NUMBER_PER_REQUEST}`
-          : ""
-      }${sortBy ? `&sort=${sortBy}` : ""}${`&nsfw=${nsfwLevel}`}&withMeta=true`;
-    }
+    const url = buildCivitaiImageFeedUrl({
+      modelId,
+      versionId,
+      username,
+      limit: SETTINGS_IMAGES_NUMBER_PER_REQUEST,
+      sortBy,
+      nsfwLevel,
+    });
 
     const {
       fetchedData: fetchedImages,
