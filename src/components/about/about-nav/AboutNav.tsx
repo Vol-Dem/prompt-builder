@@ -1,19 +1,17 @@
 import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ListBulletIcon } from "@heroicons/react/24/outline";
 
 import List from "../../ui/text/List";
 import { ABOUT_NAV_DATA } from "../../../variables/constants";
-import { smoothScroll } from "../../../utils/generalUtils";
 import LeftSidebar from "../../layout/left-sidebar/LeftSidebar";
 import AboutNavItem from "./about-nav-item/AboutNavItem";
 
 /**
  * Navigation component for the About section.
  *
- * Handles opening and closing the sidebar navigation, smooth scrolling to
- * hash-based sections, and rendering nested navigation items from the
- * ABOUT_NAV_DATA structure.
+ * Handles opening and closing the sidebar navigation and rendering nested
+ * navigation items from the ABOUT_NAV_DATA structure.
  *
  * @component
  *
@@ -22,15 +20,6 @@ import AboutNavItem from "./about-nav-item/AboutNavItem";
 const AboutNav = () => {
   const [navIsOpen, setNavIsOpen] = useState(false);
   const location = useLocation();
-
-  useEffect(() => {
-    const hash = location.hash;
-
-    //Smooth-scrolls to target sections when URL hash changes
-    if (hash) {
-      smoothScroll(hash);
-    }
-  }, [location]);
 
   const openNavHandler = () => {
     setNavIsOpen(true);

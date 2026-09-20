@@ -1,13 +1,26 @@
-import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Suspense, useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 
 import classes from "./About.module.scss";
 import { DEFAULT_PAGE_TITLE } from "../variables/constants";
 import AboutNav from "../components/about/about-nav/AboutNav";
+import Spinner from "../components/ui/Spinner";
+import { smoothScroll } from "../utils/generalUtils";
 
 interface AboutProps {
   title: string;
 }
+
+// Commit the scroll effect with the content, after any lazy page has loaded.
+const AboutOutlet = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) smoothScroll(location.hash);
+  }, [location]);
+
+  return <Outlet />;
+};
 
 /**
  * About page.
@@ -47,7 +60,9 @@ const About = ({ title }: AboutProps) => {
     <div className={classes.about}>
       <AboutNav />
       <div className={classes["about__content"]}>
-        <Outlet />
+        <Suspense fallback={<Spinner />}>
+          <AboutOutlet />
+        </Suspense>
       </div>
     </div>
   );

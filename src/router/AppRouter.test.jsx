@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import {
@@ -15,6 +15,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "../App";
 import { initAuth } from "../store/auth";
+import { smoothScroll } from "../utils/generalUtils";
 
 const checks = vi.hoisted(() => ({
   layoutMounted: vi.fn(),
@@ -31,7 +32,10 @@ vi.mock("../store/auth", () => ({
 vi.mock("../store/general", () => ({
   generalActions: { setIsMobile: (value) => ({ type: "general/mobile", payload: value }) },
 }));
-vi.mock("../utils/generalUtils", () => ({ checkIsMobile: () => false }));
+vi.mock("../utils/generalUtils", () => ({
+  checkIsMobile: () => false,
+  smoothScroll: vi.fn((hash) => Boolean(document.querySelector(hash))),
+}));
 vi.mock("../components/layout/layout/Layout", () => ({
   default: () => {
     useEffect(() => { checks.layoutMounted(); }, []);
@@ -51,8 +55,11 @@ vi.mock("../pages/ErrorPage", () => ({
     return <div role="alert">{error.status || error.message}</div>;
   },
 }));
-vi.mock("../pages/About", () => ({
-  default: () => <div data-testid="about"><Outlet /></div>,
+vi.mock("../components/about/about-nav/AboutNav", () => ({
+  default: () => <nav aria-label="About navigation">About navigation</nav>,
+}));
+vi.mock("../components/ui/Spinner", () => ({
+  default: () => <div data-testid="about-spinner">Loading</div>,
 }));
 vi.mock("../pages/ToS", () => ({
   default: (props) => <Page name="ToS" {...props} />,
@@ -148,9 +155,11 @@ const expectPage = async (name) => {
 };
 
 beforeEach(async () => {
+  vi.spyOn(window, "scrollTo").mockImplementation(() => {});
   checks.failingPage = null;
   checks.layoutMounted.mockClear();
   vi.mocked(initAuth).mockClear();
+  vi.mocked(smoothScroll).mockClear();
   await browserRouter.navigate("/", { replace: true });
 });
 afterEach(() => {
@@ -238,7 +247,9 @@ describe("application router", () => {
       expect(screen.getByRole("heading").textContent).toBe(title);
       expect(JSON.parse(screen.getByTestId("params").textContent)).toEqual(params);
       if (id) expect(router.state.matches.some(match => match.route.id === id)).toBe(true);
-      if (url.startsWith("/about")) expect(screen.getByTestId("about")).toBeTruthy();
+      if (url.startsWith("/about")) {
+        expect(screen.getByRole("navigation", { name: "About navigation" })).toBeTruthy();
+      }
     } finally {
       cleanup();
       router.dispose();
@@ -252,7 +263,7 @@ describe("application router", () => {
     mountApp();
     await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("Page failed"));
     expect(screen.getByTestId("layout")).toBeTruthy();
-    expect(screen.getByTestId("about")).toBeTruthy();
+    expect(screen.getByRole("navigation", { name: "About navigation" })).toBeTruthy();
     checks.failingPage = null;
     await act(async () => { await browserRouter.navigate("/about"); });
     await expectPage("AboutMain");
@@ -264,5 +275,82 @@ describe("application router", () => {
     mountApp();
     await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("404"));
     expect(screen.queryByTestId("layout")).toBeNull();
+  });
+
+  // Inject a controlled import into the real route tree to exercise the About
+  // loading/error boundaries without relying on network or module-cache timing.
+  const aboutRouterWith = (element, url = "/about/sidebar") => createMemoryRouter(
+    browserRouter.routes.map((root) => ({
+      ...root,
+      children: root.children.map((route) => route.path === "/about" ? {
+        ...route,
+        children: route.children.map((child) => child.path === "sidebar"
+          ? { ...child, element }
+          : child),
+      } : route),
+    })),
+    { initialEntries: [url] },
+  );
+
+  it("keeps About navigation visible while a child page loads", async () => {
+    let resolvePage;
+    const pendingPage = new Promise((resolve) => { resolvePage = resolve; });
+    const DelayedPage = lazy(() => pendingPage);
+    const router = aboutRouterWith(<DelayedPage />, "/about/sidebar#sidebar-section");
+    try {
+      render(<Provider store={makeStore()}><RouterProvider router={router} /></Provider>);
+      await screen.findByTestId("about-spinner");
+      const navigation = screen.getByRole("navigation", { name: "About navigation" });
+      expect(screen.queryByRole("status")).toBeNull();
+      expect(smoothScroll).not.toHaveBeenCalled();
+      fireEvent.change(screen.getByLabelText("Layout note"), { target: { value: "keep me" } });
+
+      await act(async () => {
+        resolvePage({ default: () => (
+          <>
+            <Page name="Loaded sidebar" title="Sidebar" />
+            <h2 id="sidebar-section">Sidebar section</h2>
+            <h2 id="other-section">Other section</h2>
+          </>
+        ) });
+        await pendingPage;
+      });
+      await expectPage("Loaded sidebar");
+      expect(screen.queryByTestId("about-spinner")).toBeNull();
+      expect(screen.getByRole("navigation", { name: "About navigation" })).toBe(navigation);
+      expect(screen.getByLabelText("Layout note").value).toBe("keep me");
+      expect(smoothScroll).toHaveBeenLastCalledWith("#sidebar-section");
+      expect(smoothScroll).toHaveLastReturnedWith(true);
+
+      await act(async () => { await router.navigate("/about/sidebar#other-section"); });
+      expect(smoothScroll).toHaveBeenLastCalledWith("#other-section");
+      expect(smoothScroll).toHaveLastReturnedWith(true);
+
+      await act(async () => { await router.navigate("/about/top-panel"); });
+      await expectPage("AboutTopPanel");
+      expect(screen.getByRole("navigation", { name: "About navigation" })).toBe(navigation);
+    } finally {
+      cleanup();
+      router.dispose();
+    }
+  });
+
+  it("contains a rejected child import and allows navigation to another About page", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const FailedPage = lazy(() => Promise.reject(new Error("Page download failed")));
+    const router = aboutRouterWith(<FailedPage />);
+    try {
+      render(<Provider store={makeStore()}><RouterProvider router={router} /></Provider>);
+      await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("Page download failed"));
+      expect(screen.getByRole("navigation", { name: "About navigation" })).toBeTruthy();
+      expect(screen.getByTestId("layout")).toBeTruthy();
+
+      await act(async () => { await router.navigate("/about"); });
+      await expectPage("AboutMain");
+      expect(screen.queryByRole("alert")).toBeNull();
+    } finally {
+      cleanup();
+      router.dispose();
+    }
   });
 });

@@ -3,19 +3,25 @@ import { lazy } from "react";
 
 import Layout from "../components/layout/layout/Layout";
 import ErrorPage from "../pages/ErrorPage";
-import AboutMain from "../pages/about/AboutMain";
-import AboutStartAddingModels from "../pages/about/AboutStartAddingModels";
-import AboutCategoryEdit from "../pages/about/AboutCategoryEdit";
-import AboutWorkingWithPrompts from "../pages/about/AboutWorkingWithPrompts";
-import AboutModelPage from "../pages/about/AboutModelPage";
-import AboutModelSettings from "../pages/about/AboutModelSettings";
-import AboutImageCollections from "../pages/about/AboutImageCollections";
-import AboutTopPanel from "../pages/about/AboutTopPanel";
-import AboutSidebar from "../pages/about/AboutSidebar";
 import HomeRoute from "./HomeRoute";
-import Author from "../pages/Author";
 
 const About = lazy(() => import("../pages/About"));
+const AboutMain = lazy(() => import("../pages/about/AboutMain"));
+const AboutStartAddingModels = lazy(
+  () => import("../pages/about/AboutStartAddingModels"),
+);
+const AboutCategoryEdit = lazy(() => import("../pages/about/AboutCategoryEdit"));
+const AboutWorkingWithPrompts = lazy(
+  () => import("../pages/about/AboutWorkingWithPrompts"),
+);
+const AboutModelPage = lazy(() => import("../pages/about/AboutModelPage"));
+const AboutModelSettings = lazy(() => import("../pages/about/AboutModelSettings"));
+const AboutImageCollections = lazy(
+  () => import("../pages/about/AboutImageCollections"),
+);
+const AboutTopPanel = lazy(() => import("../pages/about/AboutTopPanel"));
+const AboutSidebar = lazy(() => import("../pages/about/AboutSidebar"));
+const Author = lazy(() => import("../pages/Author"));
 const ToS = lazy(() => import("../pages/ToS"));
 const PrivacyPolicy = lazy(() => import("../pages/PrivacyPolicy"));
 const Model = lazy(() => import("../pages/Model"));
