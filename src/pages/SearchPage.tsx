@@ -3,7 +3,8 @@ import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 import { useSearchParams } from "react-router-dom";
 
 import classes from "./SearchPage.module.scss";
-import { civitaiSearch, liveSearch, searchActions } from "../store/search";
+import { searchActions } from "../store/search";
+import { civitaiSearch, liveSearch } from "../store/searchThunks";
 import { useOnlineStatus } from "../hooks/use-online-status";
 import useIntersection from "../hooks/use-intersection";
 import { checkObjectsIsEqual } from "../utils/generalUtils";

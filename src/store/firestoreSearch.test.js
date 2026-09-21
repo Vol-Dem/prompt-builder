@@ -1,7 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { getDocs, query } from "firebase/firestore";
-import searchSlice, { liveSearch, searchActions } from "./search";
+import searchSlice, { searchActions } from "./search";
+import { liveSearch } from "./searchThunks";
 import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 
 vi.mock("../firebase-config", () => ({ default: {} }));

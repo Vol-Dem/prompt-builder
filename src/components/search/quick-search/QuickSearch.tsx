@@ -17,11 +17,8 @@ import {
 } from "../../../variables/constants";
 import classes from "./QuickSearch.module.scss";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
-import {
-  civitaiSearch,
-  liveSearch,
-  searchActions,
-} from "../../../store/search";
+import { searchActions } from "../../../store/search";
+import { civitaiSearch, liveSearch } from "../../../store/searchThunks";
 import Spinner from "../../ui/Spinner";
 import CategoriesSearch from "../categories-search/CategoriesSearch";
 import ErrorMessage from "../../ui/ErrorMessage";

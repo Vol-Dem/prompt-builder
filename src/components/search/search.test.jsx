@@ -5,7 +5,8 @@ import { MemoryRouter, useLocation } from "react-router-dom";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
-import searchSlice, { civitaiSearch, searchActions } from "../../store/search";
+import searchSlice, { searchActions } from "../../store/search";
+import { civitaiSearch } from "../../store/searchThunks";
 import SearchField from "./SearchField";
 import SearchFilter from "./search-filter/SearchFilter";
 import { fetchData } from "../../utils/fetch/fetchUtils";
