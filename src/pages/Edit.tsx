@@ -1,17 +1,13 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {
-  doc,
-  getFirestore,
-  onSnapshot,
-  type Unsubscribe,
-} from "firebase/firestore";
 import { AnimatePresence } from "framer-motion";
 
 import { modelActions } from "../store/model";
 import { guideActions } from "../store/guide";
-import firebaseApp from "../firebase-config";
-import { fetchDataFromFirestore } from "../utils/fetch/fetchUtils";
+import {
+  fetchPublicModel,
+  subscribeToUserModel,
+} from "../utils/fetch/fetchModelReads";
 import {
   DEFAULT_PAGE_TITLE,
   ERROR_MESSAGE_DEFAULT,
@@ -23,10 +19,7 @@ import ErrorMessage from "../components/ui/ErrorMessage";
 import Modal from "../components/ui/Modal";
 import OutroGuide from "../components/general-elements/guide/OutroGuide";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
-import type { ModelData } from "../types/models.types";
 import type { CivitaiModelDoc } from "../../shared/types/firestore";
-
-const firestore = getFirestore(firebaseApp);
 
 interface ModelEditProps {
   title: string;
@@ -87,36 +80,29 @@ const ModelEdit = ({ title }: ModelEditProps) => {
   useEffect(() => {
     if (!isAuth || !modelId) return;
 
-    let unsub: Unsubscribe;
+    let unsub: () => void;
 
     const getModelData = async () => {
       try {
         setIsLoading(true);
-        unsub = onSnapshot(
-          doc(firestore, "users", uid, "models", modelId),
-          (doc) => {
-            setErrorMessage("");
-            const data = doc.data() as ModelData;
+        unsub = subscribeToUserModel(uid, modelId, (data) => {
+          setErrorMessage("");
 
-            if (!data) {
-              setErrorMessage("Failed to load model");
-              setIsLoading(false);
-              unsub();
-              return;
-            }
-
-            dispatch(modelActions.setModelData(data));
-            dispatch(modelActions.setModelPreview([]));
+          if (!data) {
+            setErrorMessage("Failed to load model");
             setIsLoading(false);
-          },
-        );
+            unsub();
+            return;
+          }
+
+          dispatch(modelActions.setModelData(data));
+          dispatch(modelActions.setModelPreview([]));
+          setIsLoading(false);
+        });
 
         if (!modelId) return;
 
-        const defModelData = (await fetchDataFromFirestore(
-          "models",
-          modelId,
-        )) as CivitaiModelDoc;
+        const defModelData = (await fetchPublicModel(modelId)) as CivitaiModelDoc;
 
         dispatch(
           modelActions.updateModelDataField({
