@@ -5,31 +5,17 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react";
-import {
-  collection,
-  getDocs,
-  getFirestore,
-  limit,
-  orderBy,
-  query,
-  QueryDocumentSnapshot,
-  startAfter,
-  where,
-} from "firebase/firestore";
-
-import {
-  ERROR_MESSAGE_DEFAULT,
-  SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE,
-} from "../variables/constants";
+import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 import {
   checkIsInCurrentNsfwRange,
   filterDuplicates,
 } from "../utils/generalUtils";
-import firebaseApp from "../firebase-config";
+import {
+  fetchSavedImagePosts,
+  type SavedImagePostsCursor,
+} from "../utils/fetch/fetchFirestoreImages";
 import { useAppSelector } from "../store/hooks/hooks";
-import type { Image, SavedPostDoc } from "../../shared/types/image";
-
-const firestore = getFirestore(firebaseApp);
+import type { Image } from "../../shared/types/image";
 
 interface useFetchFirestoreImagesReturn {
   fetchedData: Image[][];
@@ -74,9 +60,7 @@ const useFetchFirestoreImages = (
 ): useFetchFirestoreImagesReturn => {
   const [isFetching, setIsFetching] = useState(false);
   const [isLastPage, setIsLastPage] = useState(false);
-  const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot | {}>(
-    {},
-  );
+  const [lastVisible, setLastVisible] = useState<SavedImagePostsCursor>({});
   const [fetchedData, setFetchedData] = useState<Image[][]>([]);
   const [errorMessage, setErrorMessage] = useState("");
   const savedImagesData = useAppSelector((state) => state.model.savedImages);
@@ -104,35 +88,15 @@ const useFetchFirestoreImages = (
 
       setErrorMessage("");
 
-      let q;
-
-      if (nsfwMode) {
-        q = query(
-          collection(firestore, "users", uid, "images"),
-          where("versionsId", "array-contains", curImagesModelVersionId),
-          orderBy("createdAt", "desc"),
-          startAfter(lastVisible),
-          limit(SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE),
-        );
-      } else {
-        q = query(
-          collection(firestore, "users", uid, "images"),
-          where("versionsId", "array-contains", curImagesModelVersionId),
-          where("hasSfw", "==", true),
-          orderBy("createdAt", "desc"),
-          startAfter(lastVisible),
-          limit(SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE),
-        );
-      }
-
-      const modelImagesSnap = await getDocs(q);
-
-      const isLast =
-        !modelImagesSnap.docs.length ||
-        modelImagesSnap.docs.length < SETTINGS_IMAGES_SAVED_POSTS_PER_PAGE;
-
-      const data = modelImagesSnap.docs.flatMap((doc) => {
-        return doc.data() as SavedPostDoc;
+      const {
+        posts: data,
+        isLastPage: isLast,
+        cursor,
+      } = await fetchSavedImagePosts({
+        uid,
+        versionId: curImagesModelVersionId,
+        nsfwMode,
+        cursor: lastVisible,
       });
 
       const images = data
@@ -162,10 +126,8 @@ const useFetchFirestoreImages = (
 
       setFetchedData((prevState) => [...prevState, ...images]);
 
-      const lastVisiblePost =
-        modelImagesSnap.docs[modelImagesSnap.docs.length - 1];
       if (!isLast) {
-        setLastVisible(lastVisiblePost);
+        setLastVisible(cursor);
       }
       setIsLastPage(isLast);
       setIsFetching(false);

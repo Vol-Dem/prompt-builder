@@ -2,17 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   arrayRemove,
   arrayUnion,
-  collection,
   deleteDoc,
   doc,
   getDoc,
-  getDocs,
   getFirestore,
-  limit,
-  orderBy,
-  query,
   setDoc,
-  where,
   writeBatch,
 } from "firebase/firestore";
 
@@ -33,6 +27,7 @@ import {
   SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE,
 } from "../variables/constants";
 import { getCollectionData } from "../utils/fetch/fetchCollection";
+import { fetchImagePostsByIds } from "../utils/fetch/fetchFirestoreImages";
 import {
   fetchCollectionPreviewPage,
   type CollectionPreviewCursor,
@@ -48,7 +43,6 @@ import type {
 } from "../types/upload.types";
 import type { PostSavedData } from "../types/collections.types";
 import type { UserDoc } from "../../shared/types/firestore";
-import type { SavedPostDoc } from "../../shared/types/image";
 import type {
   CollectionCategory,
   CollectionSubcategory,
@@ -448,25 +442,12 @@ export const getColectionImagesByIds = (
         to = lastVisibleIndex + SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE + 1;
       }
 
-      const nsfwFilter = !nsfwMode ? [true] : [true, false];
       const curPosts = fileteredPosts.slice(from, to);
       const ids = curPosts?.map((post) => post.postId);
 
-      const q = query(
-        collection(firestore, "users", uid, "images"),
-        where("id", "in", ids),
-        where("hasSfw", "in", nsfwFilter),
-        orderBy("createdAt", "desc"),
-        limit(SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE + 1),
-      );
-
-      const modelImagesSnap = await getDocs(q);
+      const data = await fetchImagePostsByIds(uid, ids, nsfwMode);
 
       const isLast = ids.length <= SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE;
-
-      const data = modelImagesSnap.docs.flatMap((doc) => {
-        return doc.data() as SavedPostDoc;
-      });
 
       const examples = data
         .map((post) => {

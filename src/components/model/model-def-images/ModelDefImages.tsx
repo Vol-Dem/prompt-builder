@@ -1,13 +1,12 @@
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { PhotoIcon } from "@heroicons/react/24/outline";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
 
 import Carousel from "../../general-elements/carousel/Carousel";
 import classes from "./ModelDefImages.module.scss";
 import Spinner from "../../ui/Spinner";
 import CarouselGuide from "../../general-elements/guide/model/CarouselGuide";
-import firebaseApp from "../../../firebase-config";
+import { fetchDefaultModelImages } from "../../../utils/fetch/fetchFirestoreImages";
 import {
   GUIDE_STEP_OPEN_IMAGE,
   SETTINGS_SHOW_ALL_DEF_IMAGES,
@@ -17,8 +16,6 @@ import { getVersionImagesFromCiv } from "../../../utils/fetch/fetchImages";
 import { handleErrors, normalizeError } from "../../../utils/generalUtils";
 import { useAppSelector } from "../../../store/hooks/hooks";
 import type { Image } from "../../../../shared/types/image";
-
-const firestore = getFirestore(firebaseApp);
 
 /**
  * Displays preview images belonging to the active model version.
@@ -53,15 +50,10 @@ const ModelDefImages = () => {
     const getCurVersionImages = async () => {
       try {
         setCurVersionImagesIsLoading(true);
-        const modelDefImagesRef = doc(
-          firestore,
-          "models",
-          model?.id + "",
-          "defaultImages",
-          curVersion?.id + "",
+        const defaultImages = await fetchDefaultModelImages(
+          model?.id,
+          curVersion?.id,
         );
-
-        const defImagesSnap = await getDoc(modelDefImagesRef);
 
         let curImages: Image[] | null = null;
 
@@ -69,8 +61,8 @@ const ModelDefImages = () => {
           (version) => version?.id === curVersion?.id,
         )?.images;
 
-        if (defImagesSnap.exists()) {
-          const versionImages = defImagesSnap.data()?.items as Image[];
+        if (defaultImages) {
+          const versionImages = defaultImages.items;
           if (!versionImages?.length) {
             curImages = defImagesWithoutPrompt || null;
           } else {
