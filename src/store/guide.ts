@@ -1,16 +1,11 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { getAuth } from "firebase/auth";
 
-import firebaseApp from "../firebase-config";
-import { saveGuideData } from "../utils/fetch/fetchUtils";
 import type {
   GuideState,
   SetGuideIsActivePayload,
   SetStepPayload,
   SwitchStepPayload,
 } from "../types/guide.types";
-
-const auth = getAuth(firebaseApp);
 
 /**
  * Guide settings state.
@@ -98,27 +93,6 @@ const guideSlice = createSlice({
         state.edit = action.payload.edit;
       }
     },
-  },
-  extraReducers: (builder) => {
-    /**
-     * Automatically persists guide state changes to the database.
-     *
-     * Listens to all actions from this slice (guide/*),
-     * except `setGuideInitialState`, and saves the current
-     * guide state for the authenticated user.
-     */
-    builder.addMatcher(
-      (action) =>
-        action.type.startsWith("guide/") &&
-        !action.type.startsWith("guide/setGuideInitialState"),
-      (state) => {
-        const uid = auth?.currentUser?.uid;
-        if (uid) {
-          // Persist updated guide state
-          saveGuideData(state, uid);
-        }
-      },
-    );
   },
 });
 

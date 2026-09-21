@@ -12,6 +12,7 @@ import guideSlice from "./guide";
 import generalSlice from "./general";
 import imagesSlice from "./images";
 import { authListener } from "./authListener";
+import { guideListener } from "./guideListener";
 import { sessionPersistenceMiddleware } from "./sessionPersistence";
 
 const store = configureStore({
@@ -29,7 +30,9 @@ const store = configureStore({
     images: imagesSlice.reducer,
   },
   middleware: (getDefault) =>
-    getDefault().prepend(authListener.middleware).concat(sessionPersistenceMiddleware),
+    getDefault()
+      .prepend(authListener.middleware, guideListener.middleware)
+      .concat(sessionPersistenceMiddleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
