@@ -16,7 +16,8 @@ import {
 
 import classes from "./CarouselContent.module.scss";
 import { uploadActions } from "../../../store/upload";
-import { deleteImgPost, modelActions } from "../../../store/model";
+import { modelActions } from "../../../store/model";
+import { deleteImgPost } from "../../../store/modelThunks";
 import Modal from "../../ui/Modal";
 import ChooseImageForm from "../../forms/choose-image-form/ChooseImageForm";
 import ImageFullView from "../../ui/ImageFullView";

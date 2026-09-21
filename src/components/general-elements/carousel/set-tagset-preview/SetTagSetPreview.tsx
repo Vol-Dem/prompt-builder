@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 import classes from "./SetTagSetPreview.module.scss";
-import { setTagSetPreviewImg } from "../../../../store/model";
+import { setTagSetPreviewImg } from "../../../../store/modelThunks";
 import ButttonTertiary from "../../../ui/buttons/ButtonTertiary";
 import Image from "../../../ui/image/Image";
 import {

@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 import classes from "./CarouselImage.module.scss";
-import { setPreviewImg } from "../../../../store/model";
+import { setPreviewImg } from "../../../../store/modelThunks";
 import ButttonTertiary from "../../../ui/buttons/ButtonTertiary";
 import Modal from "../../../ui/Modal";
 import ButtonAdd from "../../button-square-add/ButtonSquareAdd";
