@@ -1,13 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
-  arrayRemove,
-  arrayUnion,
   deleteDoc,
   doc,
   getDoc,
   getFirestore,
   setDoc,
-  writeBatch,
 } from "firebase/firestore";
 
 import firebaseApp from "../firebase-config";
@@ -26,7 +23,12 @@ import {
   ERROR_MESSAGE_DEFAULT,
   SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE,
 } from "../variables/constants";
-import { getCollectionData } from "../utils/fetch/fetchCollection";
+import {
+  getCollectionData,
+  saveCollectionMetadata,
+  saveCollectionPost,
+  saveCollectionPosts,
+} from "../utils/fetch/fetchCollection";
 import { fetchImagePostsByIds } from "../utils/fetch/fetchFirestoreImages";
 import {
   fetchCollectionPreviewPage,
@@ -219,46 +221,19 @@ export const savePostToCollections = ({
         throw new AppError("Invalid post ID");
       }
 
-      const batch = writeBatch(firestore);
-
       const uid = getState().auth.user.uid;
       const curCollectionData = getState().images.collectionData;
 
       const newSubcategoryIds =
         subcategoriesData?.map((subcategory) => subcategory.id) || [];
 
-      const collectionsRef = doc(
-        firestore,
-        "users",
-        uid,
-        "collections",
-        collectionData.id + "",
-      );
-      const collectionsPreviewRef = doc(
-        firestore,
-        "users",
-        uid,
-        "collectionPreviews",
-        collectionData.id + "",
-      );
-
-      if (postData?.postId) {
-        batch.update(collectionsRef, {
-          posts: arrayRemove(postData),
-        });
-      }
-
       const newPost = { postId, imageIds, createdAt: Date.now() };
 
-      batch.update(collectionsRef, {
-        subcategories: arrayUnion(...newSubcategoryIds),
-        posts: arrayUnion(newPost),
+      await saveCollectionPost(uid, collectionData.id, {
+        subcategoryIds: newSubcategoryIds,
+        post: newPost,
+        previousPost: postData,
       });
-      batch.update(collectionsPreviewRef, {
-        subcategories: arrayUnion(...newSubcategoryIds),
-      });
-
-      await batch.commit();
 
       const collectionImagesData = getState().images.collectionImages;
 
@@ -527,7 +502,6 @@ export const editCollectionData = ({
 
       dispatch(imagesActions.setCollectionDataIsSaving(true));
 
-      const batch = writeBatch(firestore);
       const uid = getState().auth.user.uid;
       const curCollectionData = getState().images.collectionData;
 
@@ -547,21 +521,6 @@ export const editCollectionData = ({
 
       const newSubcategoryIds = updatedSubcategoriesData?.map(
         (subcategory) => subcategory.id,
-      );
-
-      const collectionsRef = doc(
-        firestore,
-        "users",
-        uid,
-        "collections",
-        updatedCollectionData.id + "",
-      );
-      const collectionsPreviewRef = doc(
-        firestore,
-        "users",
-        uid,
-        "collectionPreviews",
-        updatedCollectionData.id + "",
       );
 
       const preview = {
@@ -584,10 +543,7 @@ export const editCollectionData = ({
         }),
       );
 
-      batch.update(collectionsPreviewRef, preview);
-      batch.update(collectionsRef, collection);
-
-      await batch.commit();
+      await saveCollectionMetadata(uid, updatedCollectionData.id, preview, collection);
     } catch (error) {
       throw normalizeError(error);
     } finally {
@@ -643,21 +599,7 @@ export const updateCollectionPostsData = (
         });
       }
 
-      const collectionsRef = doc(
-        firestore,
-        "users",
-        uid,
-        "collections",
-        collectionData.id + "",
-      );
-
-      const batch = writeBatch(firestore);
-
-      batch.update(collectionsRef, {
-        posts: updatedPosts,
-      });
-
-      await batch.commit();
+      await saveCollectionPosts(uid, collectionData.id, updatedPosts);
       dispatch(
         imagesActions.setCollectionData({
           ...collectionData,
