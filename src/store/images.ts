@@ -11,12 +11,9 @@ import {
   limit,
   orderBy,
   query,
-  QueryDocumentSnapshot,
   setDoc,
-  startAfter,
   where,
   writeBatch,
-  type DocumentData,
 } from "firebase/firestore";
 
 import firebaseApp from "../firebase-config";
@@ -33,10 +30,13 @@ import {
 import {
   ERROR_MESSAGE_DB_CONNECTION,
   ERROR_MESSAGE_DEFAULT,
-  SETTINGS_COLLECTION_PREVIEW_PER_PAGE,
   SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE,
 } from "../variables/constants";
 import { getCollectionData } from "../utils/fetch/fetchCollection";
+import {
+  fetchCollectionPreviewPage,
+  type CollectionPreviewCursor,
+} from "../utils/fetch/fetchPreviews";
 import type {
   CollectionsState,
   EditCollectionData,
@@ -47,10 +47,7 @@ import type {
   UploadingCollectionData,
 } from "../types/upload.types";
 import type { PostSavedData } from "../types/collections.types";
-import type {
-  CollectionPreviewDoc,
-  UserDoc,
-} from "../../shared/types/firestore";
+import type { UserDoc } from "../../shared/types/firestore";
 import type { SavedPostDoc } from "../../shared/types/image";
 import type {
   CollectionCategory,
@@ -60,10 +57,7 @@ import type { CollectionSavedPost } from "../../shared/types/collection";
 
 const firestore = getFirestore(firebaseApp);
 
-let lastVisiblePreview: QueryDocumentSnapshot<
-  DocumentData,
-  DocumentData
-> | null = null;
+let lastVisiblePreview: CollectionPreviewCursor = null;
 
 /**
  * Image collections settings state.
@@ -369,50 +363,25 @@ export const getCollectionPreviews = (
       }
       const uid = getState().auth.user.uid;
       const isLastPreviewsPage = getState().images.isLastPreviewsPage;
-      const sortBy = "name";
       const collectionPreviews = getState().images.collectionPreviews;
 
       if (isLastPreviewsPage || !activeCategory) return;
 
       dispatch(imagesActions.setPreviewsIsLoading(true));
-      const direction = sortBy === "name" ? "asc" : "desc";
-      const order = orderBy(sortBy, direction);
-
-      const nsfwFilter = !nsfwMode ? [false] : [true, false];
-
-      const optionalWhere = [];
-
-      if (activeCategory && activeCategory !== "all") {
-        optionalWhere.push(where("category", "==", activeCategory));
-      }
-      if (activeSubcategory && activeSubcategory !== "all") {
-        optionalWhere.push(
-          where("subcategories", "array-contains", activeSubcategory),
-        );
-      }
-
-      const q = query(
-        collection(firestore, "users", uid, `collectionPreviews`),
-        ...optionalWhere,
-        where("nsfw", "in", nsfwFilter),
-        order,
-        startAfter(lastVisiblePreview),
-        limit(SETTINGS_COLLECTION_PREVIEW_PER_PAGE),
-      );
-
-      const querySnapshot = await getDocs(q);
-
-      const collectionsData = querySnapshot.docs.map((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        return { type: "collection", ...(doc.data() as CollectionPreviewDoc) };
+      const {
+        items: collectionsData,
+        isLastPage: isLast,
+        cursor,
+      } = await fetchCollectionPreviewPage({
+        uid,
+        activeCategory,
+        activeSubcategory,
+        nsfwMode,
+        cursor: lastVisiblePreview,
       });
 
-      const isLast =
-        !querySnapshot.docs.length ||
-        querySnapshot.docs.length < SETTINGS_COLLECTION_PREVIEW_PER_PAGE;
-
       if (!isLast) {
-        lastVisiblePreview = querySnapshot.docs[querySnapshot.docs.length - 1];
+        lastVisiblePreview = cursor;
       }
 
       if (collectionsData)

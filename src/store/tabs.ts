@@ -1,18 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import {
-  collection,
-  doc,
-  getDocs,
-  getFirestore,
-  limit,
-  orderBy,
-  query,
-  QueryDocumentSnapshot,
-  startAfter,
-  updateDoc,
-  where,
-  type DocumentData,
-} from "firebase/firestore";
+import { doc, getFirestore, updateDoc } from "firebase/firestore";
 
 import firebaseApp from "../firebase-config";
 import {
@@ -21,15 +8,17 @@ import {
   normalizeError,
 } from "../utils/generalUtils";
 import type { ModelCategories } from "../../shared/types/user";
-import type { ModelPreviewDoc } from "../../shared/types/firestore";
 import type { AppThunk } from "./store";
 import type { TabsModelsData, TabsState } from "../types/tabs.types";
-import { SETTINGS_MODEL_PREVIEW_PER_PAGE } from "../variables/constants";
+import {
+  fetchModelPreviewPage,
+  type ModelPreviewCursor,
+} from "../utils/fetch/fetchPreviews";
 import { TABS_INITIAL_MODELS_DATA } from "../variables/structures";
 
 const firestore = getFirestore(firebaseApp);
 
-let lastVisible: QueryDocumentSnapshot<DocumentData, DocumentData> | "" = "";
+let lastVisible: ModelPreviewCursor = "";
 
 /**
  * Model tabs state.
@@ -195,48 +184,23 @@ export const getModelsPreview = (
       const curModelsData = getState().tabs.modelsData.previews;
       if (isLastPage) return;
 
-      const direction = sortBy === "name" ? "asc" : "desc";
-      const order = orderBy(sortBy, direction);
-
-      const nsfwFilter = !nsfwMode ? [false] : [true, false];
-
-      const optionalWhere = [];
-
-      if (activeTab && activeTab !== "all") {
-        optionalWhere.push(where("modelType", "==", activeTab));
-      }
-      if (activeCategory && activeCategory !== "all") {
-        optionalWhere.push(where("main", "==", activeCategory));
-      }
-      if (activeSubcategory && activeSubcategory !== "all") {
-        optionalWhere.push(where("sub", "array-contains", activeSubcategory));
-      }
-      if (baseModel && baseModel !== "-") {
-        optionalWhere.push(where("baseModel", "==", baseModel));
-      }
-
-      const q = query(
-        collection(firestore, "users", uid, `preview`),
-        ...optionalWhere,
-        where("nsfw", "in", nsfwFilter),
-        order,
-        startAfter(lastVisible),
-        limit(SETTINGS_MODEL_PREVIEW_PER_PAGE),
-      );
-
-      const querySnapshot = await getDocs(q);
-
-      const modelsData = querySnapshot.docs.map((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        return doc.data() as ModelPreviewDoc;
+      const {
+        items: modelsData,
+        isLastPage: isLast,
+        cursor,
+      } = await fetchModelPreviewPage({
+        uid,
+        activeTab,
+        activeCategory,
+        activeSubcategory,
+        baseModel,
+        sortBy,
+        nsfwMode,
+        cursor: lastVisible,
       });
 
-      const isLast =
-        !querySnapshot.docs.length ||
-        querySnapshot.docs.length < SETTINGS_MODEL_PREVIEW_PER_PAGE;
-
       if (!isLast) {
-        lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        lastVisible = cursor;
       }
 
       if (modelsData)
