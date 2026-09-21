@@ -1,7 +1,6 @@
 import { useEffect, useState, type SubmitEvent } from "react";
-import { doc, getFirestore, updateDoc } from "firebase/firestore";
 
-import firebaseApp from "../../../firebase-config";
+import { saveModelTagSets } from "../../../utils/fetch/fetchModelEdits";
 import classes from "./TagSetsForm.module.scss";
 import Button from "../../ui/buttons/Button";
 import ErrorMessage from "../../ui/ErrorMessage";
@@ -28,8 +27,6 @@ import { buildTagSets, createTagSetsInputData } from "../../../utils/promptUtils
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import type { TagSetInputData } from "../../../types/prompt.types";
 import { FORMS_DEF_TAGS_INPUT } from "../../../variables/structures";
-
-const firestore = getFirestore(firebaseApp);
 
 type TagSetsFormProps = { modelId: number; onClose: () => void };
 
@@ -129,13 +126,12 @@ const TagSetsForm = ({ modelId, onClose }: TagSetsFormProps) => {
         tagSetsData,
       };
 
-      const modelsRef = doc(firestore, "users", uid, "models", modelId + "");
-
-      const versionPath = `modelVersionsCustomData.${versionData.versionId}`;
-
-      await updateDoc(modelsRef, {
-        [versionPath]: updatedVersionData,
-      });
+      await saveModelTagSets(
+        uid,
+        modelId,
+        versionData.versionId,
+        updatedVersionData,
+      );
 
       const updatedCustomData = {
         ...model.modelVersionsCustomData,

@@ -1,7 +1,6 @@
 import { useEffect, useState, type SubmitEvent } from "react";
-import { doc, getFirestore, updateDoc } from "firebase/firestore";
 
-import firebaseApp from "../../../firebase-config";
+import { saveModelVersionChanges } from "../../../utils/fetch/fetchModelEdits";
 import classes from "./TagsForm.module.scss";
 import Textarea from "../../ui/forms/Textarea";
 import Button from "../../ui/buttons/Button";
@@ -32,8 +31,6 @@ import type {
 } from "../../../../shared/types/model";
 import { FORMS_DEF_TAGS_INPUT } from "../../../variables/structures";
 import type { TagSetInputData } from "../../../types/prompt.types";
-
-const firestore = getFirestore(firebaseApp);
 
 type TagsFormProps = {
   versionData: ModelVersionCustomData;
@@ -176,23 +173,12 @@ const TagsForm = ({
         trainedWords,
       };
 
-      const modelsRef = doc(firestore, "users", uid, "models", modelId + "");
-      const modelsPrevRef = doc(
-        firestore,
-        "users",
+      await saveModelVersionChanges(
         uid,
-        "preview",
-        modelId + "",
+        modelId,
+        versionData.versionId,
+        updatedVersionData,
       );
-
-      const versionPath = `modelVersionsCustomData.${versionData.versionId}`;
-
-      await updateDoc(modelsRef, {
-        [versionPath]: updatedVersionData,
-      });
-      await updateDoc(modelsPrevRef, {
-        [versionPath]: updatedVersionData,
-      });
 
       const updatedCustomData = {
         ...model?.modelVersionsCustomData,

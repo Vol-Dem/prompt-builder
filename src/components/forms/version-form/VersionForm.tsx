@@ -1,10 +1,9 @@
 import { useEffect, useState, type ChangeEvent, type SubmitEvent } from "react";
-import { doc, getFirestore, updateDoc } from "firebase/firestore";
 
 import classes from "./VersionForm.module.scss";
 import VersionTagSetsFieldset from "./version-tag-sets-fieldset/VersionTagSetsFieldset";
 import VersionWeightFields from "./version-weight-fields/VersionWeightFields";
-import firebaseApp from "../../../firebase-config";
+import { saveModelVersionChanges } from "../../../utils/fetch/fetchModelEdits";
 import Textarea from "../../ui/forms/Textarea";
 import Button from "../../ui/buttons/Button";
 import Input from "../../ui/forms/Input";
@@ -41,8 +40,6 @@ import type {
 import { useAppSelector } from "../../../store/hooks/hooks";
 import type { TagSetInputData } from "../../../types/prompt.types";
 
-const firestore = getFirestore(firebaseApp);
-
 type VersionFormProps = {
   versionData?: ModelVersionCustomData | UserModelDefaultCustomData | null;
   defaultData?: UserModelDefaultCustomData | ModelVersion | null;
@@ -76,7 +73,7 @@ type VersionFormProps = {
  * - Displays backend and client-side error messages.
  *
  * Side effects:
- * - Calls updateDoc to persist version or default model data.
+ * - Persists version or default model data.
  *
  * @component
  *
@@ -379,26 +376,13 @@ const VersionForm = ({
         })
         .filter(Boolean);
 
-      const modelsRef = doc(firestore, "users", uid, "models", modelId + "");
-      const modelsPrevRef = doc(
-        firestore,
-        "users",
+      await saveModelVersionChanges(
         uid,
-        "preview",
-        modelId + "",
+        modelId,
+        versionId === "def" ? "default" : versionId,
+        updatedVersionData,
+        { mainTags, customFileNames },
       );
-
-      const versionPath = isDefault
-        ? "defaultCustomData"
-        : `modelVersionsCustomData.${versionData?.versionId}`;
-      await updateDoc(modelsRef, {
-        [versionPath]: updatedVersionData,
-      });
-      await updateDoc(modelsPrevRef, {
-        [versionPath]: updatedVersionData,
-        mainTags: mainTags,
-        customFileNames: customFileNames,
-      });
       seteSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
       setIsSaving(false);
     } catch (err) {

@@ -1,12 +1,11 @@
 import { useEffect, useState, type ChangeEvent, type SubmitEvent } from "react";
-import { doc, getFirestore, updateDoc } from "firebase/firestore";
 
 import Button from "../../ui/buttons/Button";
 import FieldCategory from "../../ui/forms/FieldCategory";
 import Fieldset from "../../ui/forms/Fieldset";
 import classes from "./VersionStatusForm.module.scss";
 import Checkbox from "../../ui/forms/Checkbox";
-import firebaseApp from "../../../firebase-config";
+import { saveModelVersionStatuses } from "../../../utils/fetch/fetchModelEdits";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import {
@@ -17,8 +16,6 @@ import Spinner from "../../ui/Spinner";
 import { handleErrors, normalizeError } from "../../../utils/generalUtils";
 import type { ModelData } from "../../../types/models.types";
 import { useAppSelector } from "../../../store/hooks/hooks";
-
-const firestore = getFirestore(firebaseApp);
 
 type VersionStatusFormProps = { modelData: ModelData };
 
@@ -39,7 +36,7 @@ type StatusCheckbox = {
  * - Displays error messages.
  *
  * Side effects:
- * - Calls updateDoc to persist version status.
+ * - Persists version status.
  *
  * @component
  *
@@ -119,29 +116,12 @@ const VersionStatusForm = ({ modelData }: VersionStatusFormProps) => {
 
       const previewImg = activePreviewImg || previewImgDefault;
 
-      const modelsRef = doc(
-        firestore,
-        "users",
+      await saveModelVersionStatuses(
         uid,
-        "models",
-        modelData.id + "",
+        modelData.id,
+        updatedVersionData,
+        previewImg,
       );
-      const modelsPrevRef = doc(
-        firestore,
-        "users",
-        uid,
-        "preview",
-        modelData.id + "",
-      );
-
-      await updateDoc(modelsRef, {
-        modelVersionsCustomData: updatedVersionData,
-      });
-
-      await updateDoc(modelsPrevRef, {
-        imgUrl: previewImg,
-        modelVersionsCustomData: updatedVersionData,
-      });
       seteSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
       setIsSaving(false);
     } catch (err) {
