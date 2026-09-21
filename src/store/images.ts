@@ -1,14 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
-  deleteDoc,
-  doc,
-  getDoc,
-  getFirestore,
-  setDoc,
-} from "firebase/firestore";
-
-import firebaseApp from "../firebase-config";
-import {
   AppError,
   checkArraysIsEqual,
   checkIsInCurrentNsfwRange,
@@ -24,7 +15,11 @@ import {
   SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE,
 } from "../variables/constants";
 import {
+  createCollectionDocuments,
+  deleteCollectionDocuments,
+  fetchCollectionCategories,
   getCollectionData,
+  saveCollectionCategories,
   saveCollectionMetadata,
   saveCollectionPost,
   saveCollectionPosts,
@@ -44,14 +39,11 @@ import type {
   UploadingCollectionData,
 } from "../types/upload.types";
 import type { PostSavedData } from "../types/collections.types";
-import type { UserDoc } from "../../shared/types/firestore";
 import type {
   CollectionCategory,
   CollectionSubcategory,
 } from "../../shared/types/user";
 import type { CollectionSavedPost } from "../../shared/types/collection";
-
-const firestore = getFirestore(firebaseApp);
 
 let lastVisiblePreview: CollectionPreviewCursor = null;
 
@@ -651,15 +643,7 @@ export const updateCollectionCategories = (
   return async (dispatch, getState) => {
     try {
       const uid = getState().auth.user.uid;
-      const userRef = doc(firestore, "users", uid);
-
-      await setDoc(
-        userRef,
-        {
-          imageCategories: categories,
-        },
-        { merge: true },
-      );
+      await saveCollectionCategories(uid, categories);
 
       dispatch(imagesActions.setImageCategories(categories));
     } catch (error) {
@@ -709,16 +693,8 @@ export const addNewCollectionCategories = ({
           (collData) => collData.id === collectionData?.id,
         )?.subcategories;
 
-      const userRef = doc(firestore, "users", uid);
-
-      const userDataDoc = await getDoc(userRef);
-
-      let latestCategories: CollectionCategory[] = [];
-
-      if (userDataDoc.exists()) {
-        const userData = userDataDoc.data() as UserDoc;
-        latestCategories = userData?.imageCategories || [];
-      } else {
+      const latestCategories = await fetchCollectionCategories(uid);
+      if (latestCategories === null) {
         throw new AppError(ERROR_MESSAGE_DB_CONNECTION);
       }
 
@@ -853,21 +829,6 @@ export const addNewCollectionCategories = ({
       }
 
       if (!collectionData?.id && collectionId) {
-        const collectionsRef = doc(
-          firestore,
-          "users",
-          uid,
-          "collections",
-          collectionId + "",
-        );
-        const collectionsPreviewRef = doc(
-          firestore,
-          "users",
-          uid,
-          "collectionPreviews",
-          collectionId + "",
-        );
-
         const savedImagesToCatPrev = {
           id: collectionId,
           name: collectionData.name,
@@ -884,10 +845,7 @@ export const addNewCollectionCategories = ({
           posts: [],
         };
 
-        await setDoc(collectionsRef, savedImagesToCat, { merge: true });
-        await setDoc(collectionsPreviewRef, savedImagesToCatPrev, {
-          merge: true,
-        });
+        await createCollectionDocuments(uid, collectionId, savedImagesToCat, savedImagesToCatPrev);
       }
 
       await dispatch(updateCollectionCategories(updatedCategories));
@@ -924,22 +882,6 @@ export const deleteCollection = (
     try {
       const uid = getState().auth.user.uid;
       const categories = getState().images.categories;
-      const userRef = doc(firestore, "users", uid);
-      const collectionsRef = doc(
-        firestore,
-        "users",
-        uid,
-        "collections",
-        collectionId + "",
-      );
-      const collectionsPreviewRef = doc(
-        firestore,
-        "users",
-        uid,
-        "collectionPreviews",
-        collectionId + "",
-      );
-
       const curCategoryIndex = categories.findIndex(
         (category) => category.id === categoryId,
       );
@@ -953,16 +895,7 @@ export const deleteCollection = (
         collectionNames: updatedCollectionNames,
       });
 
-      await setDoc(
-        userRef,
-        {
-          imageCategories: updatedCategories,
-        },
-        { merge: true },
-      );
-
-      await deleteDoc(collectionsRef);
-      await deleteDoc(collectionsPreviewRef);
+      await deleteCollectionDocuments(uid, collectionId, updatedCategories);
     } catch (error) {
       throw normalizeError(error);
     }

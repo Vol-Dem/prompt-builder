@@ -1,8 +1,18 @@
-import { arrayRemove, arrayUnion, doc, getFirestore, writeBatch } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  deleteDoc,
+  doc,
+  getDoc,
+  getFirestore,
+  setDoc,
+  writeBatch,
+} from "firebase/firestore";
 
 import firebaseApp from "../../firebase-config";
 import type { CollectionSavedPost } from "../../../shared/types/collection";
-import type { CollectionDoc } from "../../../shared/types/firestore";
+import type { CollectionDoc, CollectionPreviewDoc, UserDoc } from "../../../shared/types/firestore";
+import type { CollectionCategory } from "../../../shared/types/user";
 import type { PostSavedData } from "../../types/collections.types";
 import { fetchUserDataFromFirestore } from "./fetchUtils";
 
@@ -82,4 +92,48 @@ export const saveCollectionPosts = (
   const batch = writeBatch(firestore);
   batch.update(collectionRef, { posts });
   return batch.commit();
+};
+
+export const fetchCollectionCategories = async (
+  uid: string,
+): Promise<CollectionCategory[] | null> => {
+  const snapshot = await getDoc(doc(firestore, "users", uid));
+  if (!snapshot.exists()) return null;
+  const user = snapshot.data() as UserDoc;
+  return user?.imageCategories || [];
+};
+
+export const saveCollectionCategories = (
+  uid: string,
+  categories: CollectionCategory[],
+): Promise<void> =>
+  setDoc(doc(firestore, "users", uid), { imageCategories: categories }, { merge: true });
+
+export const createCollectionDocuments = async (
+  uid: string,
+  collectionId: number,
+  collection: CollectionDoc,
+  preview: CollectionPreviewDoc,
+): Promise<void> => {
+  const collectionRef = doc(firestore, "users", uid, "collections", collectionId + "");
+  const previewRef = doc(firestore, "users", uid, "collectionPreviews", collectionId + "");
+
+  // Preserve sequential merges and partial-failure behavior.
+  await setDoc(collectionRef, collection, { merge: true });
+  await setDoc(previewRef, preview, { merge: true });
+};
+
+export const deleteCollectionDocuments = async (
+  uid: string,
+  collectionId: number | string,
+  categories: CollectionCategory[],
+): Promise<void> => {
+  const userRef = doc(firestore, "users", uid);
+  const collectionRef = doc(firestore, "users", uid, "collections", collectionId + "");
+  const previewRef = doc(firestore, "users", uid, "collectionPreviews", collectionId + "");
+
+  // Category persistence must finish before either document is deleted.
+  await setDoc(userRef, { imageCategories: categories }, { merge: true });
+  await deleteDoc(collectionRef);
+  await deleteDoc(previewRef);
 };
