@@ -3,7 +3,7 @@ import { useState, type SubmitEvent } from "react";
 import classes from "./ResetPasswordForm.module.scss";
 import Input from "../../ui/forms/Input";
 import ErrorMessage from "../../ui/ErrorMessage";
-import { resetUserPassword } from "../../../store/auth";
+import { resetUserPassword } from "../../../store/authThunks";
 import Button from "../../ui/buttons/Button";
 import { VALIDATION_EMAIL_MAX_LENGTH } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";

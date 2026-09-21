@@ -5,7 +5,7 @@ import { getDoc, onSnapshot, setDoc } from "firebase/firestore";
 import guideSlice, { guideActions } from "./guide";
 import { guideListener } from "./guideListener";
 import appStore from "./store";
-import { getUserData } from "./auth";
+import { getUserData } from "./authThunks";
 
 const { auth } = vi.hoisted(() => ({ auth: { currentUser: null } }));
 vi.mock("../firebase-config", () => ({ default: {} }));

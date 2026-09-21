@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 
 import classes from "./Profile.module.scss";
+import { authActions } from "../store/auth";
 import {
-  authActions,
   changeUserEmail,
   changeUserName,
   changeUserPassword,
-} from "../store/auth";
+} from "../store/authThunks";
 import {
   ERROR_MESSAGE_AUTH,
   ERROR_MESSAGE_INPUT_DEF,

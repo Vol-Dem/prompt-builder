@@ -14,7 +14,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-libra
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "../App";
-import { initAuth } from "../store/auth";
+import { initAuth } from "../store/authThunks";
 import { smoothScroll } from "../utils/generalUtils";
 
 const checks = vi.hoisted(() => ({
@@ -26,7 +26,7 @@ vi.mock("react-router-dom", async (importOriginal) => {
   const actual = await importOriginal();
   return { ...actual, createBrowserRouter: vi.fn(actual.createBrowserRouter) };
 });
-vi.mock("../store/auth", () => ({
+vi.mock("../store/authThunks", () => ({
   initAuth: vi.fn(() => ({ type: "auth/initialize" })),
 }));
 vi.mock("../store/general", () => ({

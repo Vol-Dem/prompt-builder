@@ -7,7 +7,8 @@ import Input from "../../ui/forms/Input";
 import classes from "./AuthForm.module.scss";
 import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
-import { authActions, authRequest, authWithGoogle } from "../../../store/auth";
+import { authActions } from "../../../store/auth";
+import { authRequest, authWithGoogle } from "../../../store/authThunks";
 import Button from "../../ui/buttons/Button";
 import ButtonSecondary from "../../ui/buttons/ButtonSecondary";
 import {

@@ -2,7 +2,7 @@ import { createListenerMiddleware } from "@reduxjs/toolkit";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { getAuth, signOut } from "firebase/auth";
 
-import { unsubUserData } from "./auth";
+import { unsubUserData } from "./authThunks";
 import { imagesActions } from "./images";
 import { modelActions } from "./model";
 import { promptActions } from "./prompt";

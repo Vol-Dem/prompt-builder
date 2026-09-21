@@ -4,7 +4,8 @@ import { useEffect } from "react";
 import Input from "../../ui/forms/Input";
 import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
-import { authActions, reAuthUser } from "../../../store/auth";
+import { authActions } from "../../../store/auth";
+import { reAuthUser } from "../../../store/authThunks";
 import Button from "../../ui/buttons/Button";
 import {
   ERROR_MESSAGE_INPUT_DEF,

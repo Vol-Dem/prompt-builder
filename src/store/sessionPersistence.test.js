@@ -8,7 +8,8 @@ import promptSlice, { promptActions, uploadPromptFromStorage } from "./prompt";
 import usedModelsSlice, { usedModelsActions, uploadPanelStateFromStorage } from "./usedModels";
 import { sessionPersistenceMiddleware } from "./sessionPersistence";
 import appStore from "./store";
-import { authActions, getUserData } from "./auth";
+import { authActions } from "./auth";
+import { getUserData } from "./authThunks";
 
 const { auth, unsubscribe } = vi.hoisted(() => ({
   auth: { currentUser: null },

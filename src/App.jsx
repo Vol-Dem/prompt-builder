@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 
 import AppRouter from "./router/AppRouter";
-import { initAuth } from "./store/auth";
+import { initAuth } from "./store/authThunks";
 import { generalActions } from "./store/general";
 import { checkIsMobile } from "./utils/generalUtils";
 
