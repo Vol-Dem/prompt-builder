@@ -2,12 +2,12 @@ import { configureStore } from "@reduxjs/toolkit";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { deleteDoc, getDoc, setDoc } from "firebase/firestore";
 
-import imagesSlice, {
+import imagesSlice, { imagesActions } from "./images";
+import {
   addNewCollectionCategories,
   deleteCollection,
-  imagesActions,
   updateCollectionCategories,
-} from "./images";
+} from "./imagesThunks";
 import { ERROR_MESSAGE_DB_CONNECTION } from "../variables/constants";
 
 vi.mock("../firebase-config", () => ({ default: {} }));

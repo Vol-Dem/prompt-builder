@@ -2,11 +2,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import classes from "./CollectionEdit.module.scss";
-import {
-  deleteCollection,
-  getCollection,
-  imagesActions,
-} from "../store/images";
+import { imagesActions } from "../store/images";
+import { deleteCollection, getCollection } from "../store/imagesThunks";
 import {
   DEFAULT_PAGE_TITLE,
   MESSAGE_DELETE_COLLECTION,

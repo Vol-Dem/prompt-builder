@@ -5,7 +5,8 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { getDoc, getDocs } from "firebase/firestore";
 import useFetchFirestoreImages from "./use-fetch-firestore-images";
 import ModelDefImages from "../components/model/model-def-images/ModelDefImages";
-import imagesSlice, { getColectionImagesByIds, imagesActions } from "../store/images";
+import imagesSlice, { imagesActions } from "../store/images";
+import { getColectionImagesByIds } from "../store/imagesThunks";
 import { getVersionImagesFromCiv } from "../utils/fetch/fetchImages";
 import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 

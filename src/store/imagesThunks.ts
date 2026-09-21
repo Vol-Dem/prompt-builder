@@ -1,0 +1,766 @@
+import {
+  AppError,
+  checkArraysIsEqual,
+  checkIsInCurrentNsfwRange,
+  createCategoryId,
+  createCollectionId,
+  filterDuplicates,
+  handleErrors,
+  normalizeError,
+} from "../utils/generalUtils";
+import {
+  ERROR_MESSAGE_DB_CONNECTION,
+  ERROR_MESSAGE_DEFAULT,
+  SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE,
+} from "../variables/constants";
+import {
+  createCollectionDocuments,
+  deleteCollectionDocuments,
+  fetchCollectionCategories,
+  getCollectionData,
+  saveCollectionCategories,
+  saveCollectionMetadata,
+  saveCollectionPost,
+  saveCollectionPosts,
+} from "../utils/fetch/fetchCollection";
+import { fetchImagePostsByIds } from "../utils/fetch/fetchFirestoreImages";
+import {
+  fetchCollectionPreviewPage,
+  type CollectionPreviewCursor,
+} from "../utils/fetch/fetchPreviews";
+import type { EditCollectionData } from "../types/collections.types";
+import type { AppThunk } from "./store";
+import type {
+  SavePostData,
+  UploadingCollectionData,
+} from "../types/upload.types";
+import type { PostSavedData } from "../types/collections.types";
+import type {
+  CollectionCategory,
+  CollectionSubcategory,
+} from "../../shared/types/user";
+import type { CollectionSavedPost } from "../../shared/types/collection";
+
+import { imagesActions } from "./images";
+
+let lastVisiblePreview: CollectionPreviewCursor = null;
+
+/**
+ * Saves post images to a collection.
+ *
+ * Side effects:
+ * - Adds or updates a post in the collection
+ * - Updates collection and preview data in Firestore
+ * - Updates collection and images state in Redux
+ *
+ * @param params
+ * @param params.collectionData - Target collection.
+ * @param params.subcategoriesData - Selected subcategories.
+ * @param params.postId - Post ID.
+ * @param params.imageIds - IDs of images to save.
+ * @param params.postData - Existing post data (if editing).
+ * @param params.images - Image objects to add.
+ * @returns Redux thunk.
+ */
+export const savePostToCollections = ({
+  collectionData,
+  subcategoriesData,
+  postId,
+  imageIds,
+  postData,
+  images,
+}: SavePostData): AppThunk => {
+  return async (dispatch, getState) => {
+    try {
+      if (!postId) {
+        throw new AppError("Invalid post ID");
+      }
+
+      const uid = getState().auth.user.uid;
+      const curCollectionData = getState().images.collectionData;
+
+      const newSubcategoryIds =
+        subcategoriesData?.map((subcategory) => subcategory.id) || [];
+
+      const newPost = { postId, imageIds, createdAt: Date.now() };
+
+      await saveCollectionPost(uid, collectionData.id, {
+        subcategoryIds: newSubcategoryIds,
+        post: newPost,
+        previousPost: postData,
+      });
+
+      const collectionImagesData = getState().images.collectionImages;
+
+      if (
+        (collectionImagesData?.collectionId &&
+          curCollectionData?.id === collectionImagesData.collectionId) ||
+        !curCollectionData?.posts?.length
+      ) {
+        const updatedPosts = [
+          ...(curCollectionData?.posts?.filter(
+            (post) => post.postId !== newPost.postId,
+          ) || []),
+          newPost,
+        ];
+
+        dispatch(
+          imagesActions.setCollectionData({
+            ...curCollectionData,
+            posts: updatedPosts,
+          }),
+        );
+
+        if (
+          !collectionImagesData?.collectionId ||
+          collectionData.id === collectionImagesData.collectionId
+        ) {
+          dispatch(
+            imagesActions.setCollectionImages({
+              collectionId: collectionData.id,
+              ...collectionImagesData,
+              isLastPage: !curCollectionData?.posts?.length,
+              images: [
+                images.sort((a, b) => {
+                  return Date.parse(a.createdAt) - Date.parse(b.createdAt);
+                }),
+                ...(collectionImagesData?.images?.filter(
+                  (image) => image[0].postId !== postId,
+                ) || []),
+              ],
+            }),
+          );
+        }
+      }
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  };
+};
+
+/**
+ * Fetches collection data.
+ *
+ * Side effects:
+ * - Loads collection data from Firestore.
+ *
+ * @param collectionId - Collection ID.
+ * @returns Redux thunk.
+ */
+export const getCollection = (collectionId: number | string): AppThunk => {
+  return async (dispatch) => {
+    try {
+      const collectionData = await getCollectionData(collectionId);
+
+      dispatch(imagesActions.setCollectionData(collectionData));
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  };
+};
+
+/**
+ * Fetches collection previews.
+ *
+ * Side effects:
+ * - Fetches collection previews from Firestore
+ * - Optionally merges with already loaded previews
+ *
+ * @param activeCategory - Category ID.
+ * @param activeSubcategory - Subcategory ID.
+ * @param loadMore - Whether to append to existing previews.
+ * @param nsfwMode - Whether to include NSFW collections.
+ * @returns Redux thunk.
+ */
+export const getCollectionPreviews = (
+  activeCategory: string,
+  activeSubcategory: string,
+  loadMore: boolean = false,
+  nsfwMode: boolean,
+): AppThunk => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(imagesActions.setPreviewsErrorMessage(""));
+      if (!loadMore) {
+        lastVisiblePreview = null;
+        dispatch(imagesActions.setIsLastPreviewsPage(false));
+      }
+      const uid = getState().auth.user.uid;
+      const isLastPreviewsPage = getState().images.isLastPreviewsPage;
+      const collectionPreviews = getState().images.collectionPreviews;
+
+      if (isLastPreviewsPage || !activeCategory) return;
+
+      dispatch(imagesActions.setPreviewsIsLoading(true));
+      const {
+        items: collectionsData,
+        isLastPage: isLast,
+        cursor,
+      } = await fetchCollectionPreviewPage({
+        uid,
+        activeCategory,
+        activeSubcategory,
+        nsfwMode,
+        cursor: lastVisiblePreview,
+      });
+
+      if (!isLast) {
+        lastVisiblePreview = cursor;
+      }
+
+      if (collectionsData)
+        dispatch(
+          imagesActions.setCollectionPreviews({
+            category: activeCategory,
+            subcategory: activeSubcategory,
+            nsfw: nsfwMode,
+            data: loadMore
+              ? [...(collectionPreviews?.data || []), ...collectionsData]
+              : collectionsData,
+          }),
+        );
+
+      dispatch(imagesActions.setIsLastPreviewsPage(isLast));
+      dispatch(imagesActions.setPreviewsIsLoading(false));
+    } catch (error) {
+      const errorMeassage = handleErrors(normalizeError(error));
+      dispatch(imagesActions.setPreviewsIsLoading(false));
+      dispatch(imagesActions.setPreviewsErrorMessage(errorMeassage));
+    }
+  };
+};
+
+/**
+ * Fetches images for a collection by post IDs.
+ *
+ * Side effects:
+ * - Loads collection images from Firestore
+ * - Merges with already loaded images
+ *
+ * @param posts - Collection posts.
+ * @param collectionId - Collection ID.
+ * @returns Redux thunk.
+ */
+export const getColectionImagesByIds = (
+  posts: PostSavedData[],
+  collectionId: number,
+): AppThunk => {
+  return async (dispatch, getState) => {
+    try {
+      const uid = getState().auth.user.uid;
+      const collectionImages = getState().images.collectionImages;
+      const fileteredPosts = posts.filter((post) => post?.postId);
+
+      if (collectionImages?.isLastPage) return;
+      const savedImagesData = getState().images.collectionData?.posts?.toSorted(
+        (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt),
+      );
+      const nsfwMode = getState().general.nsfwMode;
+      const nsfwLevel = getState().general.nsfwLevel;
+      const lastVisibleId = collectionImages?.lastVisibleId;
+      const lastVisibleIndex = fileteredPosts.findIndex(
+        (post) => post.postId === lastVisibleId,
+      );
+      let from;
+      let to;
+
+      if (lastVisibleIndex < 0 && !lastVisibleId) {
+        from = 0;
+        to = SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE + 1;
+      } else {
+        from = lastVisibleIndex;
+        to = lastVisibleIndex + SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE + 1;
+      }
+
+      const curPosts = fileteredPosts.slice(from, to);
+      const ids = curPosts?.map((post) => post.postId);
+
+      const data = await fetchImagePostsByIds(uid, ids, nsfwMode);
+
+      const isLast = ids.length <= SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE;
+
+      const examples = data
+        .map((post) => {
+          const savedPostImages = post.items.filter((image) => {
+            const saved =
+              savedImagesData?.length &&
+              savedImagesData
+                ?.find((postData) => postData.postId === image.postId)
+                ?.imageIds?.includes(image.id);
+
+            const isInCurrentNsfwRange =
+              typeof image?.nsfwLevel === "string" &&
+              checkIsInCurrentNsfwRange(nsfwLevel, image.nsfwLevel);
+
+            return saved && isInCurrentNsfwRange;
+          });
+
+          return filterDuplicates(savedPostImages, "id").toSorted((a, b) => {
+            return Date.parse(a.createdAt) - Date.parse(b.createdAt);
+          });
+        })
+        .filter((item) => !!item.length)
+        .toSorted((a, b) => {
+          const curPostDataA = curPosts.find(
+            (post) => post.postId === a[0].postId,
+          );
+          const curPostDataB = curPosts.find(
+            (post) => post.postId === b[0].postId,
+          );
+          if (curPostDataB?.createdAt && curPostDataA?.createdAt) {
+            return +curPostDataB.createdAt - +curPostDataA.createdAt;
+          }
+          return 0;
+        })
+        .slice(0, SETTINGS_COLLECTION_SAVED_POSTS_PER_PAGE);
+
+      dispatch(
+        imagesActions.setCollectionImages({
+          collectionId,
+          lastVisibleId: ids?.length ? ids[ids.length - 1] : null,
+          images: [...(collectionImages.images || []), ...examples],
+          isLastPage: isLast,
+        }),
+      );
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  };
+};
+
+/**
+ * Edits collection data.
+ *
+ * Side effects:
+ * - Saves collection metadata to Firestore
+ * - Creates new category and subcategories if needed
+ * - Updates Redux collection state
+ *
+ * @param params
+ * @param params.collectionData - Collection data.
+ * @param params.categoryData - Category data.
+ * @param params.subcategoriesData - Subcategories.
+ * @param params.description - Collection description.
+ * @param params.nsfw - Whether the collection is NSFW.
+ * @returns Redux thunk.
+ */
+export const editCollectionData = ({
+  collectionData,
+  categoryData,
+  subcategoriesData,
+  description,
+  nsfw,
+}: EditCollectionData): AppThunk => {
+  return async (dispatch, getState) => {
+    try {
+      if (!collectionData?.name || !categoryData?.name) return;
+
+      dispatch(imagesActions.setCollectionDataIsSaving(true));
+
+      const uid = getState().auth.user.uid;
+      const curCollectionData = getState().images.collectionData;
+
+      const {
+        collectionData: updatedCollectionData,
+        categoryData: updatedCategoryData,
+        subcategoriesData: updatedSubcategoriesData,
+      } = await dispatch(
+        addNewCollectionCategories({
+          collectionData,
+          categoryData,
+          subcategoriesData: subcategoriesData || [],
+          curCollectionSabcategories:
+            subcategoriesData?.map((sub) => sub.id)?.filter(Boolean) || [],
+        }),
+      );
+
+      const newSubcategoryIds = updatedSubcategoriesData?.map(
+        (subcategory) => subcategory.id,
+      );
+
+      const preview = {
+        name: updatedCollectionData.name,
+        nameArr: updatedCollectionData.name.toLowerCase().split(" "),
+        category: updatedCategoryData?.id || null,
+        subcategories: newSubcategoryIds || [],
+        nsfw,
+      };
+
+      const collection = {
+        ...preview,
+        description,
+      };
+
+      dispatch(
+        imagesActions.setCollectionData({
+          ...curCollectionData,
+          ...collection,
+        }),
+      );
+
+      await saveCollectionMetadata(uid, updatedCollectionData.id, preview, collection);
+    } catch (error) {
+      throw normalizeError(error);
+    } finally {
+      dispatch(imagesActions.setCollectionDataIsSaving(false));
+    }
+  };
+};
+
+/**
+ * Updates collection post images.
+ *
+ * Side effects:
+ * - Removes images or posts from a collection in Firestore
+ * - Updates collection and images state in Redux
+ *
+ * @param ids - Image IDs to remove.
+ * @param postData - Post data.
+ * @returns Redux thunk.
+ */
+export const updateCollectionPostsData = (
+  ids: number[] | null,
+  postData: PostSavedData,
+): AppThunk => {
+  return async (dispatch, getState) => {
+    try {
+      const uid = getState().auth.user.uid;
+      const collectionData = getState().images.collectionData;
+
+      const imageIds = ids?.length
+        ? postData?.imageIds?.filter((imageId) => !ids.includes(imageId))
+        : [];
+
+      if (!collectionData) {
+        throw new AppError(ERROR_MESSAGE_DEFAULT);
+      }
+
+      let updatedPosts: CollectionSavedPost[];
+
+      if (!imageIds?.length) {
+        updatedPosts = collectionData.posts.filter(
+          (post) => post.postId !== postData.postId,
+        );
+      } else {
+        updatedPosts = collectionData.posts.map((post) => {
+          if (post.postId === postData.postId) {
+            return {
+              ...post,
+              imageIds,
+            };
+          }
+
+          return post;
+        });
+      }
+
+      await saveCollectionPosts(uid, collectionData.id, updatedPosts);
+      dispatch(
+        imagesActions.setCollectionData({
+          ...collectionData,
+          posts: updatedPosts,
+        }),
+      );
+      const collectionImagesData = getState().images.collectionImages;
+      if (collectionImagesData?.collectionId) {
+        let updatedImages;
+        if (!imageIds?.length) {
+          updatedImages = collectionImagesData.images.filter(
+            (post) => post[0].postId !== postData.postId,
+          );
+        } else {
+          updatedImages = collectionImagesData.images.map((post) => {
+            if (post[0].postId === postData.postId) {
+              return post.filter((image) => imageIds.includes(image.id));
+            }
+            return post;
+          });
+        }
+
+        dispatch(
+          imagesActions.setCollectionImages({
+            ...collectionImagesData,
+            images: updatedImages,
+          }),
+        );
+      }
+    } catch (error) {
+      handleErrors(normalizeError(error));
+    }
+  };
+};
+
+/**
+ * Updates collection categories.
+ *
+ * Side effects:
+ * - Saves collection categories to Firestore
+ * - Updates categories in Redux
+ *
+ * @param categories - Collection categories.
+ * @returns Redux thunk.
+ */
+export const updateCollectionCategories = (
+  categories: CollectionCategory[],
+): AppThunk => {
+  return async (dispatch, getState) => {
+    try {
+      const uid = getState().auth.user.uid;
+      await saveCollectionCategories(uid, categories);
+
+      dispatch(imagesActions.setImageCategories(categories));
+    } catch (error) {
+      handleErrors(normalizeError(error));
+    }
+  };
+};
+
+/**
+ * Creates new collection categories and subcategories if needed.
+ *
+ * Side effects:
+ * - Creates new categories, subcategories, and collections in Firestore
+ * - Updates category list in Redux
+ *
+ * @param params
+ * @param params.collectionData - Input collection data.
+ * @param params.categoryData - Input category data.
+ * @param params.subcategoriesData - Input subcategories data.
+ * @param params.curCollectionSabcategories - All collection subcategory IDs.
+ * @returns Redux thunk
+ */
+export const addNewCollectionCategories = ({
+  collectionData,
+  categoryData,
+  subcategoriesData,
+  curCollectionSabcategories,
+}: UploadingCollectionData): AppThunk<Promise<UploadingCollectionData>> => {
+  return async (dispatch, getState) => {
+    try {
+      if (!categoryData?.name) {
+        return {
+          collectionData,
+          categoryData,
+          subcategoriesData,
+          curCollectionSabcategories,
+        };
+      }
+
+      const uid = getState().auth.user.uid;
+      const existedCategoriesData = getState().images.categories;
+      const existedCategory = existedCategoriesData.find(
+        (catData) => catData.id === categoryData?.id,
+      );
+      const existedCurCollectionSubcategoryIds =
+        existedCategory?.collectionNames?.find(
+          (collData) => collData.id === collectionData?.id,
+        )?.subcategories;
+
+      const latestCategories = await fetchCollectionCategories(uid);
+      if (latestCategories === null) {
+        throw new AppError(ERROR_MESSAGE_DB_CONNECTION);
+      }
+
+      const curCategoryData = latestCategories?.find(
+        (category) => category.name === categoryData.name,
+      );
+
+      const categoryId =
+        categoryData?.id ||
+        createCategoryId(categoryData.name, latestCategories);
+      const collectionId =
+        collectionData?.id || createCollectionId(latestCategories);
+
+      let newSubcategories: CollectionSubcategory[] = [];
+      let newSubcategoryIds: string[] = [];
+
+      const subcategories = subcategoriesData?.flatMap((subcategory) => {
+        if (!subcategory.name) {
+          return [];
+        }
+        if (!subcategory.id) {
+          const newId = createCategoryId(
+            subcategory.name,
+            curCategoryData?.subcategories,
+          );
+          const subData = {
+            id: newId,
+            name: subcategory.name,
+          };
+          newSubcategories.push(subData);
+          newSubcategoryIds.push(newId);
+          return subData;
+        }
+        newSubcategoryIds.push(subcategory.id);
+        return subcategory;
+      });
+
+      const newCollectionSubcategoryIds = filterDuplicates([
+        ...newSubcategoryIds,
+        ...(curCollectionSabcategories || []),
+      ]);
+
+      const hasNewSubcategories = subcategoriesData?.find(
+        (subcategory) => !subcategory?.id,
+      );
+
+      const existedCollectionData = curCategoryData?.collectionNames?.find(
+        (collectionName) => collectionName.id === collectionData.id,
+      );
+
+      //Check for new categories data
+      if (
+        !hasNewSubcategories &&
+        existedCurCollectionSubcategoryIds &&
+        categoryData?.id &&
+        collectionData?.id &&
+        checkArraysIsEqual(
+          newCollectionSubcategoryIds,
+          existedCurCollectionSubcategoryIds,
+        ) &&
+        existedCollectionData?.name === collectionData.name
+      ) {
+        return {
+          collectionData,
+          categoryData,
+          subcategoriesData,
+          curCollectionSabcategories,
+        };
+      }
+
+      let updatedCategories: CollectionCategory[] = [];
+
+      if (!latestCategories?.length || !categoryData.id) {
+        updatedCategories = [
+          ...latestCategories,
+          {
+            id: categoryId,
+            name: categoryData.name,
+            subcategories: newSubcategories,
+            collectionNames: [
+              {
+                id: collectionId,
+                name: collectionData.name,
+                subcategories: newCollectionSubcategoryIds,
+              },
+            ],
+          },
+        ];
+      } else {
+        updatedCategories = latestCategories.map((category) => {
+          if (
+            categoryData.id &&
+            categoryId === category.id &&
+            category.collectionNames
+          ) {
+            let collectionNames;
+            if (!collectionData.id) {
+              collectionNames = [
+                ...category.collectionNames,
+                {
+                  id: collectionId,
+                  name: collectionData.name,
+                  subcategories: newCollectionSubcategoryIds,
+                },
+              ];
+            } else {
+              collectionNames = category.collectionNames.map(
+                (collectionName) => {
+                  if (collectionName.id === collectionData.id) {
+                    return {
+                      ...collectionName,
+                      name: collectionData.name,
+                      subcategories: newCollectionSubcategoryIds,
+                    };
+                  }
+                  return collectionName;
+                },
+              );
+            }
+
+            return {
+              ...category,
+              subcategories: [
+                ...(category.subcategories || []),
+                ...newSubcategories,
+              ],
+              collectionNames,
+            };
+          }
+          return category;
+        });
+      }
+
+      if (!collectionData?.id && collectionId) {
+        const savedImagesToCatPrev = {
+          id: collectionId,
+          name: collectionData.name,
+          nameArr: collectionData.name.toLowerCase().split(" "),
+          category: categoryId,
+          nsfw: false,
+          subcategories: newCollectionSubcategoryIds,
+          createdAt: Date.now(),
+        };
+
+        const savedImagesToCat = {
+          ...savedImagesToCatPrev,
+          description: "",
+          posts: [],
+        };
+
+        await createCollectionDocuments(uid, collectionId, savedImagesToCat, savedImagesToCatPrev);
+      }
+
+      await dispatch(updateCollectionCategories(updatedCategories));
+      dispatch(imagesActions.setImageCategories(updatedCategories));
+
+      return {
+        collectionData: { name: collectionData.name, id: collectionId },
+        categoryData: { name: categoryData.name, id: categoryId },
+        subcategoriesData: subcategories || [],
+        curCollectionSabcategories,
+      };
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  };
+};
+
+/**
+ * Deletes a collection.
+ *
+ * Side effects:
+ * - Removes collection and its preview from Firestore
+ * - Updates user category data
+ *
+ * @param collectionId - Collection ID.
+ * @param categoryId - Category ID.
+ * @returns Redux thunk.
+ */
+export const deleteCollection = (
+  collectionId: number | string,
+  categoryId: string,
+): AppThunk => {
+  return async (_, getState) => {
+    try {
+      const uid = getState().auth.user.uid;
+      const categories = getState().images.categories;
+      const curCategoryIndex = categories.findIndex(
+        (category) => category.id === categoryId,
+      );
+
+      const updatedCollectionNames = categories[
+        curCategoryIndex
+      ].collectionNames?.filter((collection) => collection.id !== collectionId);
+
+      const updatedCategories = categories.toSpliced(curCategoryIndex, 1, {
+        ...categories[curCategoryIndex],
+        collectionNames: updatedCollectionNames,
+      });
+
+      await deleteCollectionDocuments(uid, collectionId, updatedCategories);
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  };
+};

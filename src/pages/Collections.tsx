@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
-import { getCollectionPreviews, imagesActions } from "../store/images";
+import { imagesActions } from "../store/images";
+import { getCollectionPreviews } from "../store/imagesThunks";
 import { useOnlineStatus } from "../hooks/use-online-status";
 import useIntersection from "../hooks/use-intersection";
 import { sortArrayBy } from "../utils/generalUtils";

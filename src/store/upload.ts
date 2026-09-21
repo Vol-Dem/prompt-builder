@@ -6,7 +6,7 @@ import {
   normalizeError,
 } from "../utils/generalUtils";
 import { modelActions } from "./model";
-import { savePostToCollections } from "./images";
+import { savePostToCollections } from "./imagesThunks";
 import {
   ERROR_MESSAGE_INVALID_POST_ID,
   SETTINGS_UPLOADING_COMPLETED_AMOUNT,

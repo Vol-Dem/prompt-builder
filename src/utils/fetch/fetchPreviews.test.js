@@ -3,7 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getDocs } from "firebase/firestore";
 import { fetchCollectionPreviewPage, fetchModelPreviewPage } from "./fetchPreviews";
 import tabsSlice, { getModelsPreview, tabActions } from "../../store/tabs";
-import imagesSlice, { getCollectionPreviews } from "../../store/images";
+import imagesSlice from "../../store/images";
+import { getCollectionPreviews } from "../../store/imagesThunks";
 import { ERROR_MESSAGE_DEFAULT } from "../../variables/constants";
 
 vi.mock("../../firebase-config", () => ({ default: {} }));

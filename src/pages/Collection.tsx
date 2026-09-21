@@ -3,7 +3,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 
 import classes from "./Collection.module.scss";
-import { getCollection, imagesActions } from "../store/images";
+import { imagesActions } from "../store/images";
+import { getCollection } from "../store/imagesThunks";
 import { DEFAULT_PAGE_TITLE } from "../variables/constants";
 import CollectionImages from "../components/collection/collection-images/CollectionImages";
 import NavigationPanel from "../components/layout/navigation-panel/NavigationPanel";

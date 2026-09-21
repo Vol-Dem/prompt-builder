@@ -22,7 +22,7 @@ import {
   handleErrors,
   normalizeError,
 } from "../../../utils/generalUtils";
-import { updateCollectionCategories } from "../../../store/images";
+import { updateCollectionCategories } from "../../../store/imagesThunks";
 import type {
   CollectionCategory,
   ModelCategory,

@@ -12,7 +12,7 @@ import {
   SETTINGS_LOAD_MORE_MARGIN_SMALL,
 } from "../../../variables/constants";
 import useIntersection from "../../../hooks/use-intersection";
-import { getColectionImagesByIds } from "../../../store/images";
+import { getColectionImagesByIds } from "../../../store/imagesThunks";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import { handleErrors, normalizeError } from "../../../utils/generalUtils";
 import {

@@ -25,7 +25,7 @@ import {
   SETTINGS_CAROUSEL_TRANSITION_DURATION,
 } from "../../../variables/constants";
 import SaveToCollectionForm from "../../forms/save-to-collection-form/SaveToCollectionForm";
-import { updateCollectionPostsData } from "../../../store/images";
+import { updateCollectionPostsData } from "../../../store/imagesThunks";
 import CarouselPagination from "./carousel-pagination/CarouselPagination";
 import CarouselSave from "./carousel-save/CarouselSave";
 import CarouselImages from "./carousel-images/CarouselImages";

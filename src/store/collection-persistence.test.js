@@ -2,12 +2,12 @@ import { configureStore } from "@reduxjs/toolkit";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getDoc, setDoc, writeBatch } from "firebase/firestore";
 
-import imagesSlice, {
+import imagesSlice, { imagesActions } from "./images";
+import {
   editCollectionData,
-  imagesActions,
   savePostToCollections,
   updateCollectionPostsData,
-} from "./images";
+} from "./imagesThunks";
 
 vi.mock("../firebase-config", () => ({ default: {} }));
 vi.mock("firebase/auth", () => ({ getAuth: () => ({ currentUser: null }) }));

@@ -2,11 +2,11 @@ import { configureStore } from "@reduxjs/toolkit";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import uploadSlice, { savePost, uploadActions } from "./upload";
 import { updateImagePostData } from "../utils/fetch/fetchImages";
-import { savePostToCollections } from "./images";
+import { savePostToCollections } from "./imagesThunks";
 import { modelActions } from "./model";
 
 vi.mock("../utils/fetch/fetchImages", () => ({ updateImagePostData: vi.fn() }));
-vi.mock("./images", () => ({ savePostToCollections: vi.fn(() => async () => {}) }));
+vi.mock("./imagesThunks", () => ({ savePostToCollections: vi.fn(() => async () => {}) }));
 vi.mock("./model", () => ({ modelActions: {
   updateSavedImages: vi.fn((payload) => ({ type: "model/updateSavedImages", payload })),
 } }));

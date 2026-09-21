@@ -28,7 +28,7 @@ import {
 import Button from "../../ui/buttons/Button";
 import Textarea from "../../ui/forms/Textarea";
 import Checkbox from "../../ui/forms/Checkbox";
-import { editCollectionData } from "../../../store/images";
+import { editCollectionData } from "../../../store/imagesThunks";
 import Spinner from "../../ui/Spinner";
 import Input from "../../ui/forms/Input";
 import ErrorMessage from "../../ui/ErrorMessage";

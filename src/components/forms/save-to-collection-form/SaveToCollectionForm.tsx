@@ -28,7 +28,7 @@ import {
   normalizeError,
   sortArrayBy,
 } from "../../../utils/generalUtils";
-import { addNewCollectionCategories } from "../../../store/images";
+import { addNewCollectionCategories } from "../../../store/imagesThunks";
 import SuccessMessage from "../../ui/SuccessMessage";
 import { getCollectionData } from "../../../utils/fetch/fetchCollection";
 import SuggestedCollections from "./SuggestedCollections";
