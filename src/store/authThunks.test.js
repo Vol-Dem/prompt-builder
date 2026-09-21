@@ -186,7 +186,59 @@ it("updates the password when no old password is supplied", async () => {
   const store = makeStore();
   await store.dispatch(changeUserPassword("new-password", ""));
   expect(updatePassword).toHaveBeenCalledExactlyOnceWith(auth.currentUser, "new-password");
+  expect(reauthenticateWithCredential).not.toHaveBeenCalled();
+  expect(reauthenticateWithPopup).not.toHaveBeenCalled();
   expect(store.getState().auth.successMessage).toBe("Password changed successfully");
+});
+
+it("waits for reauthentication before updating the password and reports success after the update", async () => {
+  const store = makeStore();
+  const user = auth.currentUser;
+  const credential = { providerId: "password" };
+  vi.spyOn(EmailAuthProvider, "credential").mockReturnValue(credential);
+  let finishReauth;
+  let finishUpdate;
+  reauthenticateWithCredential.mockReturnValue(new Promise((resolve) => { finishReauth = resolve; }));
+  updatePassword.mockReturnValue(new Promise((resolve) => { finishUpdate = resolve; }));
+
+  const pending = store.dispatch(changeUserPassword("new-password", "old-password"));
+  await vi.waitFor(() => expect(reauthenticateWithCredential).toHaveBeenCalledExactlyOnceWith(user, credential));
+  expect(EmailAuthProvider.credential).toHaveBeenCalledExactlyOnceWith(user.email, "old-password");
+  expect(updatePassword).not.toHaveBeenCalled();
+  expect(store.getState().auth.successMessage).toBe("");
+
+  finishReauth();
+  await vi.waitFor(() => expect(updatePassword).toHaveBeenCalledExactlyOnceWith(user, "new-password"));
+  expect(store.getState().auth.successMessage).toBe("");
+  finishUpdate();
+  await pending;
+  expect(store.getState().auth).toMatchObject({ successMessage: "Password changed successfully", errorMessage: "" });
+});
+
+it.each(["auth/invalid-login-credentials", "auth/too-many-requests"])("prevents a password update when reauthentication fails with %s", async (code) => {
+  vi.spyOn(console, "error").mockImplementation(() => {});
+  const store = makeStore();
+  reauthenticateWithCredential.mockRejectedValue(new FirebaseError(code, "Reauthentication failed"));
+
+  await expect(store.dispatch(changeUserPassword("new-password", "wrong-password"))).resolves.toBeUndefined();
+  expect(reauthenticateWithCredential).toHaveBeenCalledOnce();
+  expect(updatePassword).not.toHaveBeenCalled();
+  expect(store.getState().auth).toMatchObject({ successMessage: "", errorMessage: ERROR_MESSAGE_DEFAULT });
+  expect(console.error).toHaveBeenCalledOnce();
+});
+
+it("handles an update failure after successful reauthentication without reporting success", async () => {
+  vi.spyOn(console, "error").mockImplementation(() => {});
+  const store = makeStore();
+  const error = new FirebaseError("auth/weak-password", "Password is too weak");
+  reauthenticateWithCredential.mockResolvedValue({ user: auth.currentUser });
+  updatePassword.mockRejectedValue(error);
+
+  await store.dispatch(changeUserPassword("new-password", "old-password"));
+  expect(reauthenticateWithCredential).toHaveBeenCalledOnce();
+  expect(updatePassword).toHaveBeenCalledExactlyOnceWith(auth.currentUser, "new-password");
+  expect(store.getState().auth).toMatchObject({ successMessage: "", errorMessage: ERROR_MESSAGE_DEFAULT });
+  expect(console.error).toHaveBeenCalledWith(expect.objectContaining({ original: error }));
 });
 
 it("finishes initial authentication when the observer reports a signed-out user", async () => {

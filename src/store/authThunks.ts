@@ -126,7 +126,7 @@ export const changeUserEmail = (email: string): AppThunk => {
   };
 };
 
-export const reAuthUser = (type: ReAuthType, password: string): AppThunk => {
+export const reAuthUser = (type: ReAuthType, password: string): AppThunk<Promise<void>> => {
   return async () => {
     await reauthenticateUser(type, password);
   };
@@ -150,7 +150,7 @@ export const changeUserPassword = (
       if (!oldPassword) {
         await updateAuthPassword(user, password);
       } else {
-        await reAuthUser("pass", oldPassword);
+        await dispatch(reAuthUser("pass", oldPassword));
         await updateAuthPassword(user, password);
       }
 
