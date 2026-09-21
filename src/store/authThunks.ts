@@ -1,32 +1,11 @@
-import {
-  createUserWithEmailAndPassword,
-  getAuth,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  updatePassword,
-  updateProfile,
-  signInWithPopup,
-  GoogleAuthProvider,
-  sendPasswordResetEmail,
-  sendEmailVerification,
-  reauthenticateWithCredential,
-  updateEmail,
-  reauthenticateWithPopup,
-  EmailAuthProvider,
-  type Unsubscribe,
-  type UserCredential,
-  AuthCredential,
-} from "firebase/auth";
+import type { Unsubscribe } from "firebase/auth";
 import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
 
 import firebaseApp from "../firebase-config";
 import { uploadPanelStateFromStorage, usedModelsActions } from "./usedModels";
 import { promptActions, uploadPromptFromStorage } from "./prompt";
 import { tabActions } from "./tabs";
-import {
-  ERROR_MESSAGE_DEFAULT,
-  ERROR_MESSAGE_USER_DATA_LOAD,
-} from "../variables/constants";
+import { ERROR_MESSAGE_USER_DATA_LOAD } from "../variables/constants";
 import { guideActions } from "./guide";
 import { generalActions } from "./general";
 import { imagesActions } from "./images";
@@ -35,12 +14,27 @@ import { handleErrors, normalizeError } from "../utils/generalUtils";
 import { authActions } from "./auth";
 import type { AppThunk } from "./store";
 import type { UserDoc } from "../../shared/types/firestore";
+import { mapFirebaseUser } from "../utils/transformUtils";
+import {
+  getAuthRequestErrorMessage,
+  getChangeEmailErrorMessage,
+  getResetPasswordErrorMessage,
+} from "../utils/authErrors";
+import {
+  observeAuthState,
+  reauthenticateUser,
+  registerWithPassword,
+  requireAuthUser,
+  sendAuthPasswordResetEmail,
+  signInWithGoogle,
+  signInWithPassword,
+  updateAuthEmail,
+  updateAuthName,
+  updateAuthPassword,
+  type ReAuthType,
+} from "../utils/fetch/fetchAuth";
 
-type ReAuthType = "pass" | "popup";
-
-const auth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
-const provider = new GoogleAuthProvider();
 export let unsubUserData: Unsubscribe | null = null;
 
 /**
@@ -54,18 +48,9 @@ export let unsubUserData: Unsubscribe | null = null;
  */
 export const initAuth = (): AppThunk => {
   return (dispatch) => {
-    onAuthStateChanged(auth, async (user) => {
+    observeAuthState(async (user) => {
       if (user) {
-        dispatch(
-          authActions.login({
-            accessToken: await user.getIdToken(),
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            emailVerified: user.emailVerified,
-            refreshToken: user.refreshToken,
-          }),
-        );
+        dispatch(authActions.login(await mapFirebaseUser(user)));
         dispatch(getAppInfo());
         dispatch(uploadPanelStateFromStorage());
         dispatch(uploadPromptFromStorage());
@@ -91,70 +76,16 @@ export const authRequest = (
   return async (dispatch) => {
     dispatch(authActions.setIsLoading(true));
     try {
-      let userCredential: UserCredential;
-
-      if (isLogin) {
-        userCredential = await signInWithEmailAndPassword(
-          auth,
-          email,
-          password,
-        );
-      } else {
-        userCredential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password,
-        );
-        if (auth.currentUser) await sendEmailVerification(auth.currentUser);
-      }
-
-      const user = userCredential.user;
-
-      dispatch(
-        authActions.login({
-          accessToken: await user.getIdToken(),
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          emailVerified: user.emailVerified,
-          refreshToken: user.refreshToken,
-        }),
-      );
+      const user = isLogin
+        ? await signInWithPassword(email, password)
+        : await registerWithPassword(email, password);
+      dispatch(authActions.login(user));
 
       if (user.emailVerified) {
         dispatch(authActions.closeAuthForm());
       }
     } catch (error) {
-      const err = normalizeError(error);
-      let errMessage;
-      switch (err.code) {
-        case "auth/invalid-login-credentials":
-          errMessage = "Invalid login credentials";
-          break;
-        case "auth/invalid-credential":
-          errMessage = "Invalid login credentials";
-          break;
-        case "auth/invalid-email":
-          errMessage = "Invalid email";
-          break;
-        case "auth/wrong-password":
-          errMessage = "Wrong password";
-          break;
-        case "auth/missing-password":
-          errMessage = "Missing password";
-          break;
-        case "auth/user-not-found":
-          errMessage = "User not found";
-          break;
-        case "auth/too-many-requests":
-          errMessage =
-            "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later";
-          break;
-        default:
-          errMessage = err.message;
-      }
-
-      dispatch(authActions.setErrorMessage(errMessage));
+      dispatch(authActions.setErrorMessage(getAuthRequestErrorMessage(error)));
     } finally {
       dispatch(authActions.setIsLoading(false));
     }
@@ -168,20 +99,7 @@ export const authRequest = (
 export const authWithGoogle = (): AppThunk => {
   return async (dispatch) => {
     try {
-      const userCredential = await signInWithPopup(auth, provider);
-
-      const user = userCredential.user;
-
-      dispatch(
-        authActions.login({
-          accessToken: await user.getIdToken(),
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          emailVerified: user.emailVerified,
-          refreshToken: user.refreshToken,
-        }),
-      );
+      dispatch(authActions.login(await signInWithGoogle()));
       dispatch(authActions.closeAuthForm());
     } catch (error) {
       const errorMeassage = handleErrors(normalizeError(error));
@@ -200,101 +118,23 @@ export const authWithGoogle = (): AppThunk => {
 export const changeUserEmail = (email: string): AppThunk => {
   return async (dispatch) => {
     try {
-      const user = auth.currentUser;
-
-      if (!user) throw new Error(ERROR_MESSAGE_DEFAULT);
-
-      await updateEmail(user, email);
-
-      dispatch(
-        authActions.login({
-          accessToken: await user.getIdToken(),
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          emailVerified: user.emailVerified,
-          refreshToken: user.refreshToken,
-        }),
-      );
+      dispatch(authActions.login(await updateAuthEmail(email)));
       dispatch(authActions.setSuccessMessage("Email changed successfully"));
     } catch (error) {
       const err = normalizeError(error);
 
       if (err.code === "auth/requires-recent-login") {
         dispatch(authActions.setReauthFormIsOpen(true));
-      } else if (err.code === "auth/operation-not-allowed") {
-        dispatch(
-          authActions.setErrorMessage(
-            "Please verify the new email before changing email",
-          ),
-        );
       } else {
-        dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
+        dispatch(authActions.setErrorMessage(getChangeEmailErrorMessage(err)));
       }
     }
   };
 };
 
-export const promptForCredentials = async (
-  password: string,
-): Promise<AuthCredential> => {
-  try {
-    if (!auth.currentUser?.email) throw new Error(ERROR_MESSAGE_DEFAULT);
-
-    const credential = EmailAuthProvider.credential(
-      auth.currentUser.email,
-      password,
-    );
-
-    return credential;
-  } catch (error) {
-    const err = normalizeError(error);
-    if (err.code === "auth/invalid-login-credentials") {
-      throw new Error(
-        "The current password you entered did not match our records",
-      );
-    } else if (err.code === "auth/too-many-requests") {
-      throw new Error(
-        "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later",
-      );
-    } else {
-      throw new Error(err.message);
-    }
-  }
-};
-
 export const reAuthUser = (type: ReAuthType, password: string): AppThunk => {
   return async () => {
-    try {
-      const user = auth.currentUser;
-
-      if (!user) throw new Error(ERROR_MESSAGE_DEFAULT);
-
-      if (type === "pass") {
-        const credential = await promptForCredentials(password);
-
-        if (!credential) throw new Error(ERROR_MESSAGE_DEFAULT);
-
-        await reauthenticateWithCredential(user, credential);
-      }
-      if (type === "popup") {
-        await reauthenticateWithPopup(user, provider);
-      }
-    } catch (error) {
-      const err = normalizeError(error);
-
-      if (err.code === "auth/invalid-login-credentials") {
-        throw new Error(
-          "The current password you entered did not match our records",
-        );
-      } else if (err.code === "auth/too-many-requests") {
-        throw new Error(
-          "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later",
-        );
-      } else {
-        throw new Error(err.message);
-      }
-    }
+    await reauthenticateUser(type, password);
   };
 };
 
@@ -311,15 +151,13 @@ export const changeUserPassword = (
 ): AppThunk => {
   return async (dispatch) => {
     try {
-      const user = auth.currentUser;
-
-      if (!user) throw new Error(ERROR_MESSAGE_DEFAULT);
+      const user = requireAuthUser();
 
       if (!oldPassword) {
-        await updatePassword(user, password);
+        await updateAuthPassword(user, password);
       } else {
         await reAuthUser("pass", oldPassword);
-        await updatePassword(user, password);
+        await updateAuthPassword(user, password);
       }
 
       dispatch(authActions.setSuccessMessage("Password changed successfully"));
@@ -339,17 +177,11 @@ export const changeUserPassword = (
 export const resetUserPassword = (email: string): AppThunk => {
   return async (dispatch) => {
     try {
-      await sendPasswordResetEmail(auth, email);
+      await sendAuthPasswordResetEmail(email);
 
       dispatch(authActions.setSuccessMessage("Password reset email sent!"));
     } catch (error) {
-      const err = normalizeError(error);
-
-      if (err.code === "auth/invalid-email") {
-        dispatch(authActions.setErrorMessage("Invalid email"));
-      } else {
-        dispatch(authActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
-      }
+      dispatch(authActions.setErrorMessage(getResetPasswordErrorMessage(error)));
     }
   };
 };
@@ -364,22 +196,7 @@ export const resetUserPassword = (email: string): AppThunk => {
 export const changeUserName = (name: string): AppThunk => {
   return async (dispatch) => {
     try {
-      const user = auth.currentUser;
-
-      if (!user) throw new Error(ERROR_MESSAGE_DEFAULT);
-
-      await updateProfile(user, { displayName: name });
-
-      dispatch(
-        authActions.login({
-          accessToken: await user.getIdToken(),
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          emailVerified: user.emailVerified,
-          refreshToken: user.refreshToken,
-        }),
-      );
+      dispatch(authActions.login(await updateAuthName(name)));
       dispatch(authActions.setSuccessMessage("Name changed successfully"));
     } catch (error) {
       const errorMeassage = handleErrors(normalizeError(error));

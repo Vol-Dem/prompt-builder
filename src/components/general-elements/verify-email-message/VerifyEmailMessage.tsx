@@ -1,20 +1,15 @@
-import { getAuth, sendEmailVerification } from "firebase/auth";
 import { useState } from "react";
 
-import firebaseApp from "../../../firebase-config";
+import { sendAuthVerificationEmail } from "../../../utils/fetch/fetchAuth";
 import WarningMessage from "../../ui/WarningMessage";
 import classes from "./VerifyEmailMessage.module.scss";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
 import Spinner from "../../ui/Spinner";
 import {
-  AppError,
   handleErrors,
   normalizeError,
 } from "../../../utils/generalUtils";
-import { ERROR_MESSAGE_AUTH } from "../../../variables/constants";
-
-const auth = getAuth(firebaseApp);
 
 const VerifyEmailMessage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,11 +22,7 @@ const VerifyEmailMessage = () => {
       setErrorMessage("");
       setIsLoading(true);
 
-      if (!auth.currentUser) {
-        throw new AppError(ERROR_MESSAGE_AUTH);
-      }
-
-      await sendEmailVerification(auth.currentUser);
+      await sendAuthVerificationEmail();
 
       setIsLoading(false);
       setSuccessMessage("Request sent, check your email");
