@@ -10,12 +10,14 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signOut,
   updateEmail,
   updatePassword,
   updateProfile,
   type AuthCredential,
   type User,
 } from "firebase/auth";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 import firebaseApp from "../../firebase-config";
 import { getReauthErrorMessage } from "../authErrors";
@@ -30,6 +32,14 @@ const provider = new GoogleAuthProvider();
 
 export const observeAuthState = (onChange: (user: User | null) => void) =>
   onAuthStateChanged(auth, onChange);
+
+export const signOutAuthUser = () => signOut(auth);
+
+export const initializeAuthAppCheck = () =>
+  initializeAppCheck(firebaseApp, {
+    provider: new ReCaptchaV3Provider(import.meta.env.VITE_FIREBASE_REC),
+    isTokenAutoRefreshEnabled: true,
+  });
 
 export const requireAuthUser = (): User => {
   const user = auth.currentUser;

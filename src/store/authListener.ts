@@ -1,16 +1,12 @@
 import { createListenerMiddleware } from "@reduxjs/toolkit";
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
-import { getAuth, signOut } from "firebase/auth";
 
-import { unsubUserData } from "./authThunks";
+import { stopUserDataSubscription } from "./authSession";
+import { initializeAuthAppCheck, signOutAuthUser } from "../utils/fetch/fetchAuth";
 import { imagesActions } from "./images";
 import { modelActions } from "./model";
 import { promptActions } from "./prompt";
 import { tabActions } from "./tabs";
 import { usedModelsActions } from "./usedModels";
-import firebaseApp from "../firebase-config";
-
-const auth = getAuth(firebaseApp);
 
 /**
  * Authentication lifecycle listeners.
@@ -47,11 +43,8 @@ authListener.startListening({
     api.cancelActiveListeners(); // kill pending async listeners
 
     // Firebase auth sign out
-    signOut(auth);
-
-    if (unsubUserData) {
-      unsubUserData();
-    }
+    signOutAuthUser();
+    stopUserDataSubscription();
 
     api.dispatch(imagesActions.resetCollectionListState());
     api.dispatch(imagesActions.setImageCategories([]));
@@ -79,12 +72,6 @@ authListener.startListening({
 authListener.startListening({
   type: "auth/login",
   effect: async () => {
-    initializeAppCheck(firebaseApp, {
-      provider: new ReCaptchaV3Provider(import.meta.env.VITE_FIREBASE_REC),
-
-      // Optional argument. If true, the SDK automatically refreshes App Check
-      // tokens as needed.
-      isTokenAutoRefreshEnabled: true,
-    });
+    initializeAuthAppCheck();
   },
 });

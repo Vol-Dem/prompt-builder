@@ -1,7 +1,3 @@
-import type { Unsubscribe } from "firebase/auth";
-import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore";
-
-import firebaseApp from "../firebase-config";
 import { uploadPanelStateFromStorage, usedModelsActions } from "./usedModels";
 import { promptActions, uploadPromptFromStorage } from "./prompt";
 import { tabActions } from "./tabs";
@@ -13,7 +9,8 @@ import { getAppInfo } from "./notification";
 import { handleErrors, normalizeError } from "../utils/generalUtils";
 import { authActions } from "./auth";
 import type { AppThunk } from "./store";
-import type { UserDoc } from "../../shared/types/firestore";
+import { fetchUserData } from "../utils/fetch/fetchUser";
+import { startUserDataSubscription } from "./authSession";
 import { mapFirebaseUser } from "../utils/transformUtils";
 import {
   getAuthRequestErrorMessage,
@@ -33,9 +30,6 @@ import {
   updateAuthPassword,
   type ReAuthType,
 } from "../utils/fetch/fetchAuth";
-
-const firestore = getFirestore(firebaseApp);
-export let unsubUserData: Unsubscribe | null = null;
 
 /**
  * Initializes initial user authentication state by listening to the authentication status.
@@ -218,8 +212,7 @@ export const getUserData = (uid: string): AppThunk => {
       dispatch(authActions.setUserDataLoadError(""));
       dispatch(authActions.setUserDataIsLoading(true));
 
-      unsubUserData = onSnapshot(doc(firestore, "users", uid), (doc) => {
-        const data = doc.data() as UserDoc;
+      startUserDataSubscription(uid, (data) => {
         if (data?.categoriesById) {
           dispatch(tabActions.setCategories(data.categoriesById));
         }
@@ -230,12 +223,8 @@ export const getUserData = (uid: string): AppThunk => {
           dispatch(tabActions.setBaseModels(data.baseModels));
       });
 
-      const userRef = doc(firestore, "users", uid);
-
-      const userDataDoc = await getDoc(userRef);
-      if (userDataDoc.exists()) {
-        const userData = userDataDoc.data();
-
+      const userData = await fetchUserData(uid);
+      if (userData) {
         if (userData?.sfwValue)
           dispatch(generalActions.setSfwValue(userData.sfwValue));
         if (userData?.nsfwValue)
