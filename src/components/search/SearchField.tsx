@@ -11,6 +11,7 @@ import { AnimatePresence } from "framer-motion";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 import { searchActions } from "../../store/search";
+import { selectSearchQuery, selectSearchSrc } from "../../store/searchSelectors";
 import classes from "./SearchField.module.scss";
 import { updateSearchParams } from "../../utils/generalUtils";
 import QuickSearch from "./quick-search/QuickSearch";
@@ -43,8 +44,8 @@ type SearchSrcSelectValue = { name: ReactNode; value: SearchSrcType };
  */
 const SearchField = ({ className }: SearchFieldProps) => {
   const [searchResultIsOpen, setSearchResultIsOpen] = useState(false);
-  const searchInput = useAppSelector((state) => state.search.searchQuery);
-  const searchSrc = useAppSelector((state) => state.search.src);
+  const searchInput = useAppSelector(selectSearchQuery);
+  const searchSrc = useAppSelector(selectSearchSrc);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const location = useLocation();

@@ -2,6 +2,7 @@ import QuickSearchItem from "../quick-search-item/QuickSearchItem";
 import classes from "./QuickSearchResultList.module.scss";
 import { SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE } from "../../../variables/constants";
 import { useAppSelector } from "../../../store/hooks/hooks";
+import { selectQuickSearchResult } from "../../../store/searchSelectors";
 
 /**
  * QuickSearchResultList
@@ -25,9 +26,7 @@ import { useAppSelector } from "../../../store/hooks/hooks";
  * @returns Quick search result list.
  */
 const QuickSearchResultList = () => {
-  const searchResult = useAppSelector(
-    (state) => state.search.quickSearchResult,
-  );
+  const searchResult = useAppSelector(selectQuickSearchResult);
 
   const searchResultHtml = searchResult?.result
     ?.slice(0, SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE)

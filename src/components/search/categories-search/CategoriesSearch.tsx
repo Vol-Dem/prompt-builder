@@ -7,6 +7,7 @@ import { subcategoriesSearch } from "../../../utils/searchUtils";
 import CategoriesSearchItem from "../categories-search-item/CategoriesSearchItem";
 import { SETTINGS_SEARCH_MIN_QUERY_LENGTH } from "../../../variables/constants";
 import { useAppSelector } from "../../../store/hooks/hooks";
+import { selectSearchQuery } from "../../../store/searchSelectors";
 import type { CategorySearchItem } from "../../../types/search.types";
 
 /**
@@ -30,7 +31,7 @@ const CategoriesSearch = () => {
   const [subcategoriesSearchResult, setSubcategoriesSearchResult] = useState<
     CategorySearchItem[]
   >([]);
-  const searchInput = useAppSelector((state) => state.search.searchQuery);
+  const searchInput = useAppSelector(selectSearchQuery);
   const categories = useAppSelector((state) => state.tabs.categoriesData);
   const collectionCategories = useAppSelector(
     (state) => state.images.categories,

@@ -5,6 +5,12 @@ import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import Checkbox from "../../ui/forms/Checkbox";
 import classes from "./SearchFilter.module.scss";
 import { searchActions } from "../../../store/search";
+import {
+  selectSearchCreator,
+  selectSearchHashtag,
+  selectSearchQuery,
+  selectSearchSrc,
+} from "../../../store/searchSelectors";
 import { MODEL_TYPES } from "../../../variables/constants";
 import { updateSearchParams } from "../../../utils/generalUtils";
 import { parseSearchFilterParams } from "../../../utils/searchUtils";
@@ -104,10 +110,10 @@ const SearchFilter = () => {
   });
   const userBaseModels = useAppSelector((state) => state.tabs.baseModels);
   const categories = useAppSelector((state) => state.tabs.categoriesData);
-  const searchSrc = useAppSelector((state) => state.search.src);
-  const searchQuery = useAppSelector((state) => state.search.searchQuery);
-  const hashtag = useAppSelector((state) => state.search.searchFilter.hashtag);
-  const creator = useAppSelector((state) => state.search.searchFilter.creator);
+  const searchSrc = useAppSelector(selectSearchSrc);
+  const searchQuery = useAppSelector(selectSearchQuery);
+  const hashtag = useAppSelector(selectSearchHashtag);
+  const creator = useAppSelector(selectSearchCreator);
   const tester = useAppSelector((state) => state.auth.tester);
   const dispatch = useAppDispatch();
   const searchParamSrc = searchParams.get("searchSrc") as SearchSrcType;

@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import {
   useEffect,
-  useMemo,
   useRef,
   type MouseEvent,
   type SubmitEvent,
@@ -19,6 +18,14 @@ import classes from "./QuickSearch.module.scss";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import { searchActions } from "../../../store/search";
 import { civitaiSearch, liveSearch } from "../../../store/searchThunks";
+import {
+  selectQuickSearchResult,
+  selectSearchErrorMessage,
+  selectSearchIsLoading,
+  selectSearchNsfw,
+  selectSearchQuery,
+  selectSearchSrc,
+} from "../../../store/searchSelectors";
 import Spinner from "../../ui/Spinner";
 import CategoriesSearch from "../categories-search/CategoriesSearch";
 import ErrorMessage from "../../ui/ErrorMessage";
@@ -55,24 +62,17 @@ type QuickSearchProps = {
  * @returns Live-search dropdown.
  */
 const QuickSearch = ({ onSubmit, onOpen }: QuickSearchProps) => {
-  const searchIsLoading = useAppSelector((state) => state.search.isLoading);
-  const errorMessage = useAppSelector((state) => state.search.errorMessage);
-  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
-  const nsfwLevel = useAppSelector((state) => state.general.nsfwLevel);
-  const searchSrc = useAppSelector((state) => state.search.src);
-  const searchResult = useAppSelector(
-    (state) => state.search.quickSearchResult,
-  );
-  const searchInput = useAppSelector((state) => state.search.searchQuery);
+  const searchIsLoading = useAppSelector(selectSearchIsLoading);
+  const errorMessage = useAppSelector(selectSearchErrorMessage);
+  const nsfwData = useAppSelector(selectSearchNsfw);
+  const nsfwMode = nsfwData.nsfwValue;
+  const searchSrc = useAppSelector(selectSearchSrc);
+  const searchResult = useAppSelector(selectQuickSearchResult);
+  const searchInput = useAppSelector(selectSearchQuery);
   const isOnline = useOnlineStatus();
   const location = useLocation();
   const dispatch = useAppDispatch();
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
-
-  const nsfwData = useMemo(
-    () => ({ nsfwValue: nsfwMode, nsfwLevel }),
-    [nsfwMode, nsfwLevel],
-  );
 
   useEffect(() => {
     let curQuery = searchInput.trim();

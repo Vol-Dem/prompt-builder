@@ -5,6 +5,17 @@ import { useSearchParams } from "react-router-dom";
 import classes from "./SearchPage.module.scss";
 import { searchActions } from "../store/search";
 import { civitaiSearch, liveSearch } from "../store/searchThunks";
+import {
+  selectSearchErrorMessage,
+  selectSearchIsLastCollectionsPage,
+  selectSearchIsLastPage,
+  selectSearchIsLastSubPage,
+  selectSearchIsLoading,
+  selectSearchNsfw,
+  selectSearchQuery,
+  selectSearchResult,
+  selectSearchSrc,
+} from "../store/searchSelectors";
 import { useOnlineStatus } from "../hooks/use-online-status";
 import useIntersection from "../hooks/use-intersection";
 import { checkObjectsIsEqual } from "../utils/generalUtils";
@@ -55,18 +66,16 @@ const SearchPage = ({ title }: SearchPageProps) => {
   const [isIntersecting, setIsIntersecting] = useState(true);
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
   const [searchParams] = useSearchParams();
-  const searchQuery = useAppSelector((state) => state.search.searchQuery);
-  const searchResult = useAppSelector((state) => state.search.searchResult);
-  const searchIsLoading = useAppSelector((state) => state.search.isLoading);
-  const isLastPage = useAppSelector((state) => state.search.isLastPage);
-  const isLastSubPage = useAppSelector((state) => state.search.isLastSubPage);
-  const isLastCollectionsPage = useAppSelector(
-    (state) => state.search.isLastCollectionsPage,
-  );
-  const errorMessage = useAppSelector((state) => state.search.errorMessage);
-  const searchSrc = useAppSelector((state) => state.search.src);
-  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
-  const nsfwLevel = useAppSelector((state) => state.general.nsfwLevel);
+  const searchQuery = useAppSelector(selectSearchQuery);
+  const searchResult = useAppSelector(selectSearchResult);
+  const searchIsLoading = useAppSelector(selectSearchIsLoading);
+  const isLastPage = useAppSelector(selectSearchIsLastPage);
+  const isLastSubPage = useAppSelector(selectSearchIsLastSubPage);
+  const isLastCollectionsPage = useAppSelector(selectSearchIsLastCollectionsPage);
+  const errorMessage = useAppSelector(selectSearchErrorMessage);
+  const searchSrc = useAppSelector(selectSearchSrc);
+  const nsfwData = useAppSelector(selectSearchNsfw);
+  const { nsfwValue: nsfwMode, nsfwLevel } = nsfwData;
   const isOnline = useOnlineStatus();
   const dispatch = useAppDispatch();
   const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
@@ -79,11 +88,6 @@ const SearchPage = ({ title }: SearchPageProps) => {
     `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`,
   );
   const searchQueryParam = searchParams.get("searchQuery");
-
-  const nsfwData = useMemo(
-    () => ({ nsfwValue: nsfwMode, nsfwLevel }),
-    [nsfwMode, nsfwLevel],
-  );
 
   const searchFilter = useMemo(
     () => ({ ...parseSearchFilterParams(searchParams), src: searchSrc }),
