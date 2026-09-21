@@ -1,28 +1,6 @@
 import { createSlice, type Draft, type PayloadAction } from "@reduxjs/toolkit";
-import {
-  and,
-  collection,
-  FieldPath,
-  getDocs,
-  getFirestore,
-  limit,
-  or,
-  orderBy,
-  query,
-  QueryCompositeFilterConstraint,
-  QueryDocumentSnapshot,
-  QueryFieldFilterConstraint,
-  QuerySnapshot,
-  startAfter,
-  where,
-  type DocumentData,
-} from "firebase/firestore";
-
-import firebaseApp from "../firebase-config";
-import { clearFileExtension } from "../../shared/utils";
 import type {
   CivitaiModelDoc,
-  CollectionPreviewDoc,
   ModelPreviewDoc,
 } from "../../shared/types/firestore";
 import type { AppThunk } from "./store";
@@ -38,16 +16,19 @@ import type {
   SearchState,
 } from "../types/search.types";
 import { fetchData } from "../utils/fetch/fetchUtils";
+import {
+  createFirestoreSearchRequests,
+  type SearchCursor,
+  type SearchPage,
+} from "../utils/fetch/fetchSearch";
 import type { CivitaiFetchResult } from "../../shared/types/api";
 import { ERROR_MESSAGE_CIV_CONNECTION } from "../variables/constants";
 import { createCivitaiSearchUrl } from "../utils/searchUtils";
 import { createModelPreviewData } from "../utils/modelUtils";
 
-const firestore = getFirestore(firebaseApp);
-
-let lastVisible: QueryDocumentSnapshot | string = "";
-let lastVisibleCollection: QueryDocumentSnapshot | string = "";
-let lastVisibleSub: QueryDocumentSnapshot | string = "";
+let lastVisible: SearchCursor = "";
+let lastVisibleCollection: SearchCursor = "";
+let lastVisibleSub: SearchCursor = "";
 // let currCursor: string | null = "";
 let nextCursor: string | null = "";
 
@@ -190,81 +171,6 @@ const searchSlice = createSlice({
 });
 
 /**
- * Creates firestore query filter.
- * Generates case-insensitive and ID-aware Firestore search rules.
- *
- * @param {string} searchString - Search query.
- * @param {boolean} nsfwFilter - Whether to include NSFW models and collections.
- * @param {Array} optionalWhere - Optional filters.
- * @returns {QueryCompositeFilterConstraint} Firestore query constraint.
- */
-const createNameQuery = (
-  searchString: string,
-  nsfwFilter: boolean[],
-  optionalWhere: QueryFieldFilterConstraint[] = [],
-): QueryCompositeFilterConstraint => {
-  const capitalized = searchString
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-
-  return or(
-    // query as-is:
-    and(
-      ...optionalWhere,
-      where("name", ">=", searchString),
-      where("name", "<=", searchString + "\uf8ff"),
-      where("nsfw", "in", nsfwFilter),
-    ),
-    //by id
-    and(...optionalWhere, where("id", "==", +searchString)),
-    // capitalize first letter:
-    and(
-      ...optionalWhere,
-      where(
-        "name",
-        ">=",
-        searchString.charAt(0).toUpperCase() + searchString.slice(1),
-      ),
-      where(
-        "name",
-        "<=",
-        searchString.charAt(0).toUpperCase() + searchString.slice(1) + "\uf8ff",
-      ),
-      where("nsfw", "in", nsfwFilter),
-    ),
-    // capitalize all:
-    and(
-      ...optionalWhere,
-      where("name", ">=", capitalized),
-      where("name", "<=", capitalized + "\uf8ff"),
-      where("nsfw", "in", nsfwFilter),
-    ),
-    // caps:
-    and(
-      ...optionalWhere,
-      where("name", ">=", searchString.toUpperCase()),
-      where("name", "<=", searchString.toUpperCase() + "\uf8ff"),
-      where("nsfw", "in", nsfwFilter),
-    ),
-    // lowercase:
-    and(
-      ...optionalWhere,
-      where("name", ">=", searchString.toLowerCase()),
-      where("name", "<=", searchString.toLowerCase() + "\uf8ff"),
-      where("nsfw", "in", nsfwFilter),
-    ),
-    and(
-      ...optionalWhere,
-      where("nameArr", "array-contains-any", [
-        clearFileExtension(searchString).toLowerCase(),
-      ]),
-      where("nsfw", "in", nsfwFilter),
-    ),
-  );
-};
-
-/**
  * Searches for model and collection previews.
  *
  * Side effects:
@@ -311,140 +217,31 @@ export const liveSearch = (
 
       dispatch(searchActions.setSearchIsLoading(true));
       const uid = getState().auth.user.uid;
-      const modelPreviewRef = collection(firestore, "users", uid, `preview`);
-      const collectionPreviewRef = collection(
-        firestore,
-        "users",
-        uid,
-        `collectionPreviews`,
-      );
-
-      const nsfwFilter = !nsfw.nsfwValue ? [false] : [true, false];
-
       const onlyCollections =
         filter?.modelType.length === 1 &&
         filter?.modelType.includes("collection");
-
-      const optionalWhere = [];
-
-      if (filter?.modelType?.length && !onlyCollections) {
-        optionalWhere.push(where("modelType", "in", filter.modelType));
-      }
-      if (filter?.baseModel?.length && !onlyCollections) {
-        optionalWhere.push(where("baseModel", "in", filter.baseModel));
-      }
-
-      const modelQueryByNameRule = createNameQuery(
+      const requests = createFirestoreSearchRequests({
+        uid,
         searchString,
-        nsfwFilter,
-        optionalWhere,
-      );
-      const collectionQueryByNameRule = createNameQuery(
-        searchString,
-        nsfwFilter,
-      );
-
-      const queryModelsByName = query(
-        modelPreviewRef,
-        modelQueryByNameRule,
-        orderBy("name", "asc"),
-        startAfter(lastVisible),
-        limit(limitAmount),
-      );
-
-      const queryCollectionsByName = query(
-        collectionPreviewRef,
-        collectionQueryByNameRule,
-        orderBy("name", "asc"),
-        startAfter(lastVisibleCollection),
-        limit(limitAmount),
-      );
-
-      let queryRuleSub: QueryCompositeFilterConstraint;
-
-      const hashlessSearchString =
-        searchString.trim()[0] === "#" ? searchString.slice(1) : searchString;
-
-      if (hashtag) {
-        queryRuleSub = and(
-          ...optionalWhere,
-          where("authorTags", "array-contains-any", [
-            searchString,
-            searchString.toLowerCase(),
-            hashlessSearchString,
-          ]),
-          where("nsfw", "in", nsfwFilter),
-        );
-      } else if (creator) {
-        const creatorUsernamePath = new FieldPath("creator", "username");
-        queryRuleSub = and(
-          ...optionalWhere,
-          where(creatorUsernamePath, "==", searchString),
-          where("nsfw", "in", nsfwFilter),
-        );
-      } else {
-        queryRuleSub = or(
-          and(
-            ...optionalWhere,
-            where("fileNames", "array-contains-any", [
-              clearFileExtension(searchString).toLowerCase(),
-            ]),
-            where("nsfw", "in", nsfwFilter),
-          ),
-          and(
-            ...optionalWhere,
-            where("customFileNames", "array-contains-any", [
-              clearFileExtension(searchString).toLowerCase(),
-            ]),
-            where("nsfw", "in", nsfwFilter),
-          ),
-          and(
-            ...optionalWhere,
-            where("mainTags", "array-contains-any", [
-              clearFileExtension(searchString).toLowerCase(),
-            ]),
-            where("nsfw", "in", nsfwFilter),
-          ),
-          and(
-            ...optionalWhere,
-            where("versionIds", "array-contains-any", [+searchString]),
-            where("nsfw", "in", nsfwFilter),
-          ),
-          and(
-            ...optionalWhere,
-            where("authorTags", "array-contains-any", [
-              searchString,
-              searchString.toLowerCase(),
-              hashlessSearchString,
-            ]),
-            where("nsfw", "in", nsfwFilter),
-          ),
-        );
-      }
-
-      const querySub = query(
-        modelPreviewRef,
-        queryRuleSub,
-        orderBy("name", "asc"),
-        startAfter(lastVisibleSub),
-        limit(limitAmount),
-      );
+        nsfwMode: nsfw.nsfwValue,
+        limitAmount,
+        hashtag,
+        creator,
+        onlyCollections: !!onlyCollections,
+        filter,
+        lastVisible,
+        lastVisibleCollection,
+        lastVisibleSub,
+      });
 
       let modelsDataName: ModelPreviewDoc[] = [];
       let collectionsDataNames: SearchResultCollection[] = [];
-      let querySnapshot: QuerySnapshot<DocumentData, DocumentData> | null =
-        null;
-      let queryCollectionsSnapshot: QuerySnapshot<
-        DocumentData,
-        DocumentData
-      > | null = null;
+      let modelPage: SearchPage<ModelPreviewDoc> | null = null;
+      let collectionPage: SearchPage<SearchResultCollection> | null = null;
 
       if (!isLastPage && !hashtag && !creator && !onlyCollections) {
-        querySnapshot = await getDocs(queryModelsByName);
-        modelsDataName = querySnapshot.docs.map((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          return doc.data() as ModelPreviewDoc;
-        });
+        modelPage = await requests.fetchModelsByName();
+        modelsDataName = modelPage.items;
       }
 
       const includeColections =
@@ -454,57 +251,41 @@ export const liveSearch = (
         (!filter?.modelType?.length ||
           filter?.modelType?.includes("collection"));
       if (!isLastCollectionsPage && includeColections) {
-        queryCollectionsSnapshot = await getDocs(queryCollectionsByName);
-        collectionsDataNames = queryCollectionsSnapshot.docs.map((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          return {
-            type: "collection",
-            ...(doc.data() as CollectionPreviewDoc),
-          };
-        });
+        collectionPage = await requests.fetchCollectionsByName();
+        collectionsDataNames = collectionPage.items;
       }
 
       let modelsDataSub: ModelPreviewDoc[] = [];
-      let querySnapshotSub: QuerySnapshot<DocumentData, DocumentData> | null =
-        null;
+      let secondaryPage: SearchPage<ModelPreviewDoc> | null = null;
 
       const isLast =
-        !querySnapshot?.docs?.length ||
-        querySnapshot?.docs?.length < limitAmount;
+        !modelPage?.items.length || modelPage?.items.length < limitAmount;
       const isLastCollection =
-        !queryCollectionsSnapshot?.docs?.length ||
-        (queryCollectionsSnapshot?.docs?.length < limitAmount &&
-          includeColections);
+        !collectionPage?.items.length ||
+        (collectionPage?.items.length < limitAmount && includeColections);
 
       if (
         (isLast || hashtag || creator) &&
         !isLastSubPage &&
         !onlyCollections
       ) {
-        querySnapshotSub = await getDocs(querySub);
-        modelsDataSub = querySnapshotSub.docs.map((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          return doc.data() as ModelPreviewDoc;
-        });
+        secondaryPage = await requests.fetchModelsBySecondaryFields();
+        modelsDataSub = secondaryPage.items;
       }
 
       const isLastSub =
         isLast &&
-        (!querySnapshotSub?.docs?.length ||
-          querySnapshotSub?.docs?.length < limitAmount);
+        (!secondaryPage?.items.length ||
+          secondaryPage?.items.length < limitAmount);
 
-      if (!isLast && querySnapshot) {
-        lastVisible = querySnapshot?.docs[querySnapshot.docs.length - 1];
+      if (!isLast && modelPage) {
+        lastVisible = modelPage.cursor;
       }
-      if (!isLastCollection && includeColections && queryCollectionsSnapshot) {
-        lastVisibleCollection =
-          queryCollectionsSnapshot.docs[
-            queryCollectionsSnapshot.docs.length - 1
-          ];
+      if (!isLastCollection && includeColections && collectionPage) {
+        lastVisibleCollection = collectionPage.cursor;
       }
-      if (isLast && !isLastSub && querySnapshotSub) {
-        lastVisibleSub =
-          querySnapshotSub.docs[querySnapshotSub.docs.length - 1];
+      if (isLast && !isLastSub && secondaryPage) {
+        lastVisibleSub = secondaryPage.cursor;
       }
 
       const newModelsSearchResults = [...modelsDataName, ...modelsDataSub];
