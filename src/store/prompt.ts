@@ -1,11 +1,8 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { getAuth } from "firebase/auth";
 
-import firebaseApp from "../firebase-config";
 import { fetchUserPresets, saveUserPresets } from "../utils/fetch/fetchUser";
 import {
   normalizeError,
-  saveToStorage,
   uploadStorage,
 } from "../utils/generalUtils";
 import {
@@ -24,8 +21,6 @@ import type {
   TextModeState,
 } from "../types/prompt.types";
 import type { AppThunk } from "./store";
-
-const auth = getAuth(firebaseApp);
 
 /**
  * Prompt state.
@@ -338,28 +333,6 @@ const promptSlice = createSlice({
 
           state.curPromptArr = newPosPromptArrDuplicates;
           state.curNegPromptArr = newNegPromptArrDuplicates;
-        },
-      )
-      /**
-       * Automatically persists prompt state changes to the session storage.
-       *
-       * Listens to all actions from this slice (prompt/*), and saves the current
-       * prompt state for the authenticated user.
-       */
-      .addMatcher(
-        (action) => action.type.startsWith("prompt/"),
-        (state) => {
-          const uid = auth?.currentUser?.uid;
-          if (uid) {
-            saveToStorage(`${uid}-prompt`, state.curPrompt);
-            saveToStorage(`${uid}-neg-prompt`, state.curNegPrompt);
-            saveToStorage(`${uid}-prompt-state`, {
-              promptIsOpen: state.promptIsOpen,
-            });
-            saveToStorage(`${uid}-prompt-text`, {
-              isTextMode: state.isTextMode,
-            });
-          }
         },
       );
   },

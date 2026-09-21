@@ -1,8 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getAuth } from "firebase/auth";
 
-import { saveToStorage, uploadStorage } from "../utils/generalUtils";
-import firebaseApp from "../firebase-config";
+import { uploadStorage } from "../utils/generalUtils";
 import { saveUserSidePanelFullView } from "../utils/fetch/fetchUser";
 import { SETTINGS_REF_IMAGE_AMOUNT } from "../variables/constants";
 import { checkIsMobile } from "../utils/generalUtils";
@@ -14,8 +12,6 @@ import type {
   RightSidebarOpenState,
   RightSidebarState,
 } from "../types/sidebar.types";
-
-const auth = getAuth(firebaseApp);
 
 /**
  * Right sidebar state.
@@ -64,30 +60,6 @@ const usedModelsSlice = createSlice({
     setSidePanelWidth(state, action) {
       state.sidePanelWidth = action.payload;
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      /**
-       * Persists sidebar state to session storage.
-       *
-       * Listens to all actions that start with `used/`
-       * and saves sidebar state to session storage.
-       */
-      .addMatcher(
-        (action) => action.type.startsWith("used/"),
-        (state) => {
-          const uid = auth?.currentUser?.uid;
-          if (!uid) return;
-          saveToStorage(`${uid}-side`, state.models);
-          saveToStorage(`${uid}-side-img`, state.images);
-          saveToStorage(`${uid}-side-state`, {
-            panelIsOpen: state.panelIsOpen,
-          });
-          saveToStorage(`${uid}-side-view`, {
-            fullCardView: state.fullCardView,
-          });
-        },
-      );
   },
 });
 
