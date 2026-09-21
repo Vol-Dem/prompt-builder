@@ -8,7 +8,6 @@ import {
 } from "react";
 
 import {
-  AppError,
   filterDuplicates,
   handleErrors,
   normalizeError,
@@ -17,7 +16,7 @@ import {
   ERROR_MESSAGE_CIV_CONNECTION,
   FILTER_CIV_DUPLICATES,
 } from "../variables/constants";
-import type { CivitaiFetchResult } from "../../shared/types/api";
+import { fetchCivitaiImagePage } from "../utils/fetch/fetchCivitaiImages";
 
 interface useFetchCivitaiReturn {
   fetchCivitai: (
@@ -82,14 +81,7 @@ const useFetchCivitai = (
 
         const curUrl = `${url}${nextCursor ? `&cursor=${nextCursor}` : ""}`;
 
-        const imgExampleResponse = await fetch(curUrl, {
-          signal: newAbortControler.signal,
-        });
-        const data = (await imgExampleResponse.json()) as CivitaiFetchResult;
-
-        if (!data?.items) {
-          throw new AppError(ERROR_MESSAGE_CIV_CONNECTION);
-        }
+        const data = await fetchCivitaiImagePage(curUrl, newAbortControler.signal);
         let dataUniq = data?.items;
 
         // Remove dublicate images (Civitai bug)

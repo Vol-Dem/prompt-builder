@@ -12,6 +12,7 @@ import {
   SETTINGS_UPLOADING_COMPLETED_AMOUNT,
 } from "../variables/constants";
 import { updateImagePostData } from "../utils/fetch/fetchImages";
+import { fetchCivitaiPostImagesForUpload } from "../utils/fetch/fetchCivitaiImages";
 import { transformImageData } from "../../shared/utils";
 import type { UploadingItem, UploadState } from "../types/upload.types";
 import type { AppThunk } from "./store";
@@ -149,12 +150,12 @@ export const savePost = (postInfo: UploadingItem): AppThunk => {
       const isTester = getState().auth.tester;
 
       if (!images?.length) {
-        const imgExampleResponse = await fetch(
-          `https://civitai.com/api/v1/images?postId=${postId}&modelId=${modelId}&modelVersionId=${versionId}${
-            nsfwMode ? `&nsfw=X` : `&nsfw=None`
-          }`,
-        );
-        data = await imgExampleResponse.json();
+        data = await fetchCivitaiPostImagesForUpload({
+          postId,
+          modelId,
+          versionId,
+          nsfwMode,
+        });
       } else {
         data = { items: filterDuplicates(images, "id") };
       }

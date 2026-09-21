@@ -14,7 +14,6 @@ import {
   ERROR_MESSAGE_OFFLINE,
   VALIDATION_POST_URL_MAX_LENGTH,
   ERROR_MESSAGE_INVALID_POST_ID,
-  ERROR_MESSAGE_CIV_CONNECTION,
 } from "../../../variables/constants";
 import ChooseImageForm from "../choose-image-form/ChooseImageForm";
 import { uploadActions } from "../../../store/upload";
@@ -26,7 +25,7 @@ import {
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import InfoPostId from "../../general-elements/info/InfoPostId";
 import { getPostIdFromInput } from "../../../utils/imageUtils";
-import { buildCivitaiPostImagesUrl } from "../../../utils/civitaiUrls";
+import { fetchCivitaiPostImagesForSelection } from "../../../utils/fetch/fetchCivitaiImages";
 import { fixCivImagesMeta } from "../../../../shared/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import type {
@@ -135,18 +134,11 @@ const SaveImageForm = ({
         throw new AppError(ERROR_MESSAGE_INVALID_POST_ID);
       }
 
-      const imgExampleResponse = await fetch(
-        buildCivitaiPostImagesUrl({
-          postId,
-          modelId: filterDisabledInput ? modelData?.id : undefined,
-          nsfwLevel,
-        }),
-      );
-
-      if (imgExampleResponse.status === 500) {
-        throw new AppError(ERROR_MESSAGE_CIV_CONNECTION);
-      }
-      const data = (await imgExampleResponse.json()) as { items: Image[] };
+      const data = await fetchCivitaiPostImagesForSelection({
+        postId,
+        modelId: filterDisabledInput ? modelData?.id : undefined,
+        nsfwLevel,
+      });
 
       setImages(fixCivImagesMeta(data.items));
 
