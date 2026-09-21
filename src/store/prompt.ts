@@ -1,8 +1,8 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { getAuth } from "firebase/auth";
-import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
 
 import firebaseApp from "../firebase-config";
+import { fetchUserPresets, saveUserPresets } from "../utils/fetch/fetchUser";
 import {
   normalizeError,
   saveToStorage,
@@ -25,7 +25,6 @@ import type {
 } from "../types/prompt.types";
 import type { AppThunk } from "./store";
 
-const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
 
 /**
@@ -425,12 +424,7 @@ export const updatePresets = (
     const uid = getState().auth.user.uid;
     const curPreset = getState().prompt.presets;
     if (uid) {
-      const userRef = doc(firestore, "users", uid);
-      const presetField = `presets.${presetType}`;
-
-      await updateDoc(userRef, {
-        [presetField]: updatedPresets,
-      });
+      await saveUserPresets(uid, presetType, updatedPresets);
 
       dispatch(
         promptActions.setPresets({
@@ -454,13 +448,9 @@ export const getUserPresets = (): AppThunk => {
   return async (dispatch, getState) => {
     try {
       const uid = getState().auth.user.uid;
-      const userRef = doc(firestore, "users", uid);
-      const presetsDoc = await getDoc(userRef);
-      if (presetsDoc.exists()) {
-        const presetsData = presetsDoc.data();
-        if (presetsData?.presets) {
-          dispatch(promptActions.setPresets(presetsData.presets));
-        }
+      const presets = await fetchUserPresets(uid);
+      if (presets) {
+        dispatch(promptActions.setPresets(presets));
       }
     } catch (error) {
       throw normalizeError(error);

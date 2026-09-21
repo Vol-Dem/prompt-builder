@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getAuth } from "firebase/auth";
-import { doc, getFirestore, updateDoc } from "firebase/firestore";
 
 import { saveToStorage, uploadStorage } from "../utils/generalUtils";
 import firebaseApp from "../firebase-config";
+import { saveUserSidePanelFullView } from "../utils/fetch/fetchUser";
 import { SETTINGS_REF_IMAGE_AMOUNT } from "../variables/constants";
 import { checkIsMobile } from "../utils/generalUtils";
 import { checkIsVideo, getUrlId } from "../utils/imageUtils";
@@ -14,8 +14,6 @@ import type {
   RightSidebarOpenState,
   RightSidebarState,
 } from "../types/sidebar.types";
-
-const firestore = getFirestore(firebaseApp);
 
 const auth = getAuth(firebaseApp);
 
@@ -228,10 +226,7 @@ export const switchSidePanelfullView = (isFullView: boolean): AppThunk => {
   return async (dispatch, getState) => {
     dispatch(usedModelsActions.cardViewState(isFullView));
     const uid = getState().auth.user.uid;
-    const userRef = doc(firestore, "users", uid);
-    await updateDoc(userRef, {
-      "uiState.sidePanelCardfullView": isFullView,
-    });
+    await saveUserSidePanelFullView(uid, isFullView);
   };
 };
 

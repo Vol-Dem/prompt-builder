@@ -1,7 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { doc, getFirestore, updateDoc } from "firebase/firestore";
 
-import firebaseApp from "../firebase-config";
+import { saveUserPreviewFullView } from "../utils/fetch/fetchUser";
 import {
   cloneObject,
   handleErrors,
@@ -15,8 +14,6 @@ import {
   type ModelPreviewCursor,
 } from "../utils/fetch/fetchPreviews";
 import { TABS_INITIAL_MODELS_DATA } from "../variables/structures";
-
-const firestore = getFirestore(firebaseApp);
 
 let lastVisible: ModelPreviewCursor = "";
 
@@ -238,10 +235,7 @@ export const switchPreviewFullView = (isFullView: boolean): AppThunk => {
   return async (dispatch, getState) => {
     dispatch(tabActions.setPreviewFullView(isFullView));
     const uid = getState().auth.user.uid;
-    const userRef = doc(firestore, "users", uid);
-    await updateDoc(userRef, {
-      "uiState.previewFullView": isFullView,
-    });
+    await saveUserPreviewFullView(uid, isFullView);
   };
 };
 

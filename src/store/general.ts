@@ -1,15 +1,12 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { doc, getFirestore, updateDoc } from "firebase/firestore";
 
-import firebaseApp from "../firebase-config";
+import { saveUserNsfwMode, saveUserNsfwValues } from "../utils/fetch/fetchUser";
 import type { AppThunk } from "./store";
 import type { CivitaiEnums, GeneralState } from "../types/general.types";
 import type { SuggestedCollectionsSortType } from "../types/collections.types";
 import { fetchData } from "../utils/fetch/fetchUtils";
 import { URL_CIV_ENUMS } from "../variables/constants";
 import { normalizeError } from "../utils/generalUtils";
-
-const firestore = getFirestore(firebaseApp);
 
 /**
  * General UI & app-wide settings state.
@@ -128,10 +125,7 @@ export const switchNsfwMode = (nsfw: boolean): AppThunk => {
 
     const uid = getState().auth.user.uid;
 
-    const userRef = doc(firestore, "users", uid);
-    await updateDoc(userRef, {
-      nsfwMode: nsfw,
-    });
+    await saveUserNsfwMode(uid, nsfw);
   };
 };
 
@@ -148,11 +142,7 @@ export const setNsfwValues = (sfw: string, nsfw: string): AppThunk => {
 
     const uid = getState().auth.user.uid;
 
-    const userRef = doc(firestore, "users", uid);
-    await updateDoc(userRef, {
-      sfwValue: sfw,
-      nsfwValue: nsfw,
-    });
+    await saveUserNsfwValues(uid, sfw, nsfw);
   };
 };
 
