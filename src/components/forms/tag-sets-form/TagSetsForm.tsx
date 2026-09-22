@@ -23,9 +23,10 @@ import {
   normalizeError,
 } from "../../../utils/generalUtils";
 import TagSetsInputFieldset from "../../ui/forms/TagSetsInputFieldset";
+import FieldCategory from "../../ui/forms/FieldCategory";
+import useTagSetInputs from "../../../hooks/use-tag-set-inputs";
 import { buildTagSets, createTagSetsInputData } from "../../../utils/promptUtils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
-import type { TagSetInputData } from "../../../types/prompt.types";
 import { FORMS_DEF_TAGS_INPUT } from "../../../variables/structures";
 
 type TagSetsFormProps = { modelId: number; onClose: () => void };
@@ -56,7 +57,8 @@ const TagSetsForm = ({ modelId, onClose }: TagSetsFormProps) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  const [tagSetsInputs, setTagSetsInputs] = useState<TagSetInputData[]>([]);
+  const tagSets = useTagSetInputs();
+  const { fields: tagSetsInputs, reset: resetTagSetsInputs } = tagSets;
 
   const uid = useAppSelector((state) => state.auth.user.uid);
   const model = useAppSelector((state) => state.model.model);
@@ -83,10 +85,10 @@ const TagSetsForm = ({ modelId, onClose }: TagSetsFormProps) => {
   useEffect(() => {
     if (!versionData) return;
 
-    setTagSetsInputs(
+    resetTagSetsInputs(
       createTagSetsInputData(versionData.tagSetsData, FORMS_DEF_TAGS_INPUT),
     );
-  }, [versionData]);
+  }, [versionData, resetTagSetsInputs]);
 
   const saveVersionHandler = async (e: SubmitEvent) => {
     try {
@@ -157,12 +159,13 @@ const TagSetsForm = ({ modelId, onClose }: TagSetsFormProps) => {
     <form onSubmit={saveVersionHandler} className={classes["form"]}>
       <div className={classes.inputs}>
         <div className={classes.fields}>
-          <TagSetsInputFieldset
-            tagSetsInputs={tagSetsInputs}
-            setTagSetsInputs={setTagSetsInputs}
-            showErrorMessage={showErrorMessage}
-            isSaving={isSaving}
-          />
+          <FieldCategory>
+            <TagSetsInputFieldset
+              tagSets={tagSets}
+              showErrorMessage={showErrorMessage}
+              isSaving={isSaving}
+            />
+          </FieldCategory>
         </div>
       </div>
       <Button type="submit" disabled={isSaving} className={classes.submit}>

@@ -1,7 +1,8 @@
-import { useEffect, useState, type ChangeEvent, type SubmitEvent } from "react";
+import { useEffect, useState, type SubmitEvent } from "react";
 
 import classes from "./VersionForm.module.scss";
-import VersionTagSetsFieldset from "./version-tag-sets-fieldset/VersionTagSetsFieldset";
+import TagSetsInputFieldset from "../../ui/forms/TagSetsInputFieldset";
+import useTagSetInputs from "../../../hooks/use-tag-set-inputs";
 import VersionWeightFields from "./version-weight-fields/VersionWeightFields";
 import { saveModelVersionChanges } from "../../../utils/fetch/fetchModelEdits";
 import Textarea from "../../ui/forms/Textarea";
@@ -38,7 +39,6 @@ import type {
   UserModelDefaultCustomData,
 } from "../../../../shared/types/model";
 import { useAppSelector } from "../../../store/hooks/hooks";
-import type { TagSetInputData } from "../../../types/prompt.types";
 
 type VersionFormProps = {
   versionData?: ModelVersionCustomData | UserModelDefaultCustomData | null;
@@ -172,7 +172,8 @@ const VersionForm = ({
     value: "",
     isValid: true,
   });
-  const [tagSetsInputs, setTagSetsInputs] = useState<TagSetInputData[]>([]);
+  const tagSets = useTagSetInputs();
+  const { fields: tagSetsInputs, reset: resetTagSetsInputs } = tagSets;
   const uid = useAppSelector((state) => state.auth.user.uid);
   const model = useAppSelector((state) => state.model.model);
 
@@ -243,10 +244,10 @@ const VersionForm = ({
   }, [versionData, defaultData]);
 
   useEffect(() => {
-    setTagSetsInputs(
+    resetTagSetsInputs(
       createTagSetsInputData(versionData?.tagSetsData, FORMS_DEF_TAGS_INPUT),
     );
-  }, [versionData]);
+  }, [versionData, resetTagSetsInputs]);
 
   const saveVersionHandler = async (e: SubmitEvent) => {
     try {
@@ -392,62 +393,6 @@ const VersionForm = ({
     }
   };
 
-  const addtagSetHandler = () => {
-    const newFields = [...tagSetsInputs];
-    newFields.push([
-      {
-        type: "text",
-        id: `set-name-${Date.now()}`,
-        name: "set-name",
-        placeholder: "Set name",
-        value: "",
-        isValid: true,
-      },
-      {
-        type: "text",
-        id: `set-value-${Date.now()}`,
-        name: "set-value",
-        placeholder: "Trigger words",
-        value: "",
-        isValid: true,
-      },
-    ]);
-
-    setTagSetsInputs(newFields);
-  };
-
-  const tagSetsHandler = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    isValid: boolean,
-  ) => {
-    setTagSetsInputs((prevState) => {
-      const newState = [...prevState];
-      const curSetNameIndex = newState.findIndex((imageId) => {
-        return imageId[0].id + "" === e.target.id;
-      });
-      const curSetTagsIndex = newState.findIndex((imageId) => {
-        return imageId[1].id + "" === e.target.id;
-      });
-
-      if (curSetNameIndex !== -1) {
-        newState[curSetNameIndex][0].value = e.target.value;
-        newState[curSetNameIndex][0].isValid = isValid;
-      }
-      if (curSetTagsIndex !== -1) {
-        newState[curSetTagsIndex][1].value = e.target.value;
-        newState[curSetTagsIndex][1].isValid = isValid;
-      }
-
-      return newState;
-    });
-  };
-
-  const deleteTagsetInputHandler = (index: number) => {
-    setTagSetsInputs((prevState) => {
-      return prevState.toSpliced(index, 1);
-    });
-  };
-
   return (
     <form onSubmit={saveVersionHandler} className={classes["form"]}>
       <div className={classes.subtitle}>
@@ -551,13 +496,10 @@ const VersionForm = ({
             }}
             showError={showErrorMessage}
           ></Textarea>
-          <VersionTagSetsFieldset
-            tagSets={tagSetsInputs}
-            showError={showErrorMessage}
+          <TagSetsInputFieldset
+            tagSets={tagSets}
+            showErrorMessage={showErrorMessage}
             isSaving={isSaving}
-            onAdd={addtagSetHandler}
-            onChange={tagSetsHandler}
-            onDelete={deleteTagsetInputHandler}
           />
         </FieldCategory>
         <FieldCategory title="Info">

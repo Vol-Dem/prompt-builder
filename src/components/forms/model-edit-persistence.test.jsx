@@ -6,7 +6,10 @@ import TagsForm from "./tags-form/TagsForm";
 import TagSetsForm from "./tag-sets-form/TagSetsForm";
 import VersionForm from "./version-form/VersionForm";
 import VersionStatusForm from "./version-status-form/VersionStatusForm";
-import { ERROR_MESSAGE_DEFAULT, SUCCESS_MESSAGE_UPLOADED } from "../../variables/constants";
+import {
+  ERROR_MESSAGE_DEFAULT, ERROR_MESSAGE_INPUT_DEF, SUCCESS_MESSAGE_UPLOADED,
+  VALIDATION_NAME_MAX_LENGTH,
+} from "../../variables/constants";
 
 const { dispatch, state } = vi.hoisted(() => ({ dispatch: vi.fn(), state: {} }));
 vi.mock("../../firebase-config", () => ({ default: {} }));
@@ -57,6 +60,49 @@ const forms = [
   { name: "default", element: () => <VersionForm modelId={42} modelType="lora" versionData={version} isDefault />, writes: 2 },
   { name: "statuses", element: () => <VersionStatusForm modelData={model} />, writes: 2 },
 ];
+
+const tagSetForms = forms.filter(({ name }) => ["tag sets", "version", "default"].includes(name));
+
+it.each(tagSetForms)("edits and adds tag sets in $name while preserving saved image metadata", async ({ name, element }) => {
+  const { container } = render(element(vi.fn()));
+  const fieldset = screen.getByRole("group", { name: "Tag sets" });
+  expect(fieldset.querySelector("textarea").rows).toBe(4);
+  fireEvent.change(screen.getByDisplayValue("Set"), { target: { value: "Updated set" } });
+  fireEvent.change(screen.getByDisplayValue("detail"), { target: { value: "updated detail" } });
+  fireEvent.click(screen.getByRole("button", { name: "+ add new set" }));
+  fireEvent.change(fieldset.querySelectorAll('[name="set-name"]')[1], { target: { value: "Second" } });
+  fireEvent.change(fieldset.querySelectorAll('[name="set-value"]')[1], { target: { value: "extra tags" } });
+  fireEvent.submit(container.querySelector("form"));
+
+  await screen.findByText(SUCCESS_MESSAGE_UPLOADED);
+  const field = name === "default" ? "defaultCustomData" : "modelVersionsCustomData.7";
+  expect(vi.mocked(updateDoc).mock.calls[0][1][field].tagSetsData).toEqual([
+    { name: "Updated set", value: "updated detail", imgUrl: "set.webp" },
+    { name: "Second", value: "extra tags" },
+  ]);
+});
+
+it.each(tagSetForms)("allows deleting the only tag set and saving an empty list in $name", async ({ name, element }) => {
+  const { container } = render(element(vi.fn()));
+  fireEvent.click(screen.getByRole("button", { name: "Delete tag set" }));
+  await waitFor(() => expect(screen.queryByDisplayValue("Set")).toBeNull());
+  fireEvent.submit(container.querySelector("form"));
+
+  await screen.findByText(SUCCESS_MESSAGE_UPLOADED);
+  const field = name === "default" ? "defaultCustomData" : "modelVersionsCustomData.7";
+  expect(vi.mocked(updateDoc).mock.calls[0][1][field].tagSetsData).toEqual([]);
+});
+
+it.each(tagSetForms)("rejects invalid tag-set edits before persisting $name", async ({ element }) => {
+  vi.spyOn(console, "error").mockImplementation(() => {});
+  const { container } = render(element(vi.fn()));
+  fireEvent.change(screen.getByDisplayValue("Set"), {
+    target: { value: "x".repeat(VALIDATION_NAME_MAX_LENGTH + 1) },
+  });
+  fireEvent.submit(container.querySelector("form"));
+  await screen.findByText(ERROR_MESSAGE_INPUT_DEF);
+  expect(updateDoc).not.toHaveBeenCalled();
+});
 
 it.each(forms)("submits $name edits with the existing payload and success behavior", async ({ name, element, writes, closes }) => {
   const onClose = vi.fn();

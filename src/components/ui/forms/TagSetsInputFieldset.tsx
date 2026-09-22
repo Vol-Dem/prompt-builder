@@ -5,7 +5,6 @@ import Textarea from "./Textarea";
 import Input from "./Input";
 import ButtonSecondary from "../buttons/ButtonSecondary";
 import Fieldset from "./Fieldset";
-import FieldCategory from "./FieldCategory";
 import ButtonTertiary from "../buttons/ButtonTertiary";
 import {
   VALIDATION_NAME_MAX_LENGTH,
@@ -14,13 +13,11 @@ import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_FADEOUT_EXIT,
 } from "../../../variables/constants";
-import type { ChangeEvent, Dispatch, SetStateAction } from "react";
-import type { TagSetInputData } from "../../../types/prompt.types";
+import type { TagSetInputsController } from "../../../hooks/use-tag-set-inputs";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 type TagSetsInputFieldsetProps = {
-  tagSetsInputs: TagSetInputData[];
-  setTagSetsInputs: Dispatch<SetStateAction<TagSetInputData[]>>;
+  tagSets: TagSetInputsController;
   showErrorMessage: boolean;
   isSaving: boolean;
 };
@@ -31,84 +28,17 @@ type TagSetsInputFieldsetProps = {
  * Allows adding, editing and removing tag name/value pairs.
  *
  * @param props
- * @param props.tagSetsInputs - Current tag set fields.
- * @param props.setTagSetsInputs - State setter for tag sets.
+ * @param props.tagSets - Current fields and editing actions.
  * @param props.showErrorMessage - Forces validation messages.
  * @param props.isSaving - Disables controls while saving.
  * @returns Rendered tag sets fieldset.
  */
 const TagSetsInputFieldset = ({
-  tagSetsInputs,
-  setTagSetsInputs,
+  tagSets,
   showErrorMessage,
   isSaving,
 }: TagSetsInputFieldsetProps) => {
-  const addtagSetHandler = () => {
-    const newFields = [...tagSetsInputs];
-    newFields.push([
-      {
-        type: "text",
-        id: `set-name-${Date.now()}`,
-        name: "set-name",
-        placeholder: "Set name",
-        value: "",
-        isValid: true,
-        errorMessage: "",
-      },
-      {
-        type: "text",
-        id: `set-value-${Date.now()}`,
-        name: "set-value",
-        placeholder: "Triger words",
-        value: "",
-        isValid: true,
-        errorMessage: "",
-      },
-    ]);
-
-    setTagSetsInputs(newFields);
-  };
-
-  const tagSetsHandler = (
-    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-    isValid: boolean | null,
-  ) => {
-    setTagSetsInputs((prevState) => {
-      const newState = [...prevState];
-      const curSetNameIndex = newState.findIndex((imageId) => {
-        return imageId[0].id + "" === e.target.id;
-      });
-      const curSetTagsIndex = newState.findIndex((imageId) => {
-        return imageId[1].id + "" === e.target.id;
-      });
-
-      if (curSetNameIndex !== -1) {
-        newState[curSetNameIndex][0] = {
-          ...newState[curSetNameIndex][0],
-          value: e.target.value,
-          isValid: isValid,
-        };
-      }
-
-      if (curSetTagsIndex !== -1) {
-        newState[curSetTagsIndex][1] = {
-          ...newState[curSetTagsIndex][1],
-          value: e.target.value,
-          isValid: isValid,
-        };
-      }
-
-      return newState;
-    });
-  };
-
-  const deleteTagsetInputHandler = (index: number) => {
-    setTagSetsInputs((prevState) => {
-      return prevState.toSpliced(index, 1);
-    });
-  };
-
-  const tagSetsHtml = tagSetsInputs.map((tagSet, i) => {
+  const tagSetsHtml = tagSets.fields.map((tagSet, i) => {
     return (
       <motion.div
         key={tagSet[0].id}
@@ -124,7 +54,7 @@ const TagSetsInputFieldset = ({
             type="button"
             title="Delete tag set"
             className={classes["input__btn-del"]}
-            onClick={() => deleteTagsetInputHandler(i)}
+            onClick={() => tagSets.remove(i)}
           >
             <XMarkIcon />
           </ButtonTertiary>
@@ -134,7 +64,7 @@ const TagSetsInputFieldset = ({
           name={tagSet[0].name}
           type={tagSet[0].type}
           placeholder={tagSet[0].placeholder}
-          onChange={tagSetsHandler}
+          onChange={tagSets.change}
           value={tagSet[0].value}
           showError={showErrorMessage}
           validation={{
@@ -146,7 +76,7 @@ const TagSetsInputFieldset = ({
           name={tagSet[1].name}
           rows={4}
           placeholder={tagSet[1].placeholder}
-          onChange={tagSetsHandler}
+          onChange={tagSets.change}
           value={tagSet[1].value}
           showError={showErrorMessage}
           validation={{
@@ -158,19 +88,17 @@ const TagSetsInputFieldset = ({
   });
 
   return (
-    <FieldCategory>
-      <Fieldset legend="Tag sets" className={classes.fieldset}>
-        <AnimatePresence>{tagSetsHtml}</AnimatePresence>
-        <ButtonSecondary
-          type="button"
-          onClick={addtagSetHandler}
-          disabled={isSaving}
-          className={classes["btn-secondary"]}
-        >
-          + add new set
-        </ButtonSecondary>
-      </Fieldset>
-    </FieldCategory>
+    <Fieldset legend="Tag sets" className={classes.fieldset}>
+      <AnimatePresence>{tagSetsHtml}</AnimatePresence>
+      <ButtonSecondary
+        type="button"
+        onClick={tagSets.add}
+        disabled={isSaving}
+        className={classes["btn-secondary"]}
+      >
+        + add new set
+      </ButtonSecondary>
+    </Fieldset>
   );
 };
 
