@@ -1,137 +1,27 @@
 import { motion } from "framer-motion";
-import { useLocation } from "react-router-dom";
-import {
-  useEffect,
-  useRef,
-  type MouseEvent,
-  type SubmitEvent,
-} from "react";
+import type { MouseEvent, SubmitEvent } from "react";
 
 import {
   ANIMATIONS_FM_ZOOM_IN,
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
   ERROR_MESSAGE_OFFLINE,
-  SETTINGS_SEARCH_MIN_QUERY_LENGTH,
-  SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE,
 } from "../../../variables/constants";
 import classes from "./QuickSearch.module.scss";
-import { useOnlineStatus } from "../../../hooks/use-online-status";
-import { searchActions } from "../../../store/search";
-import { civitaiSearch, liveSearch } from "../../../store/searchThunks";
-import {
-  selectQuickSearchResult,
-  selectSearchErrorMessage,
-  selectSearchIsLoading,
-  selectSearchNsfw,
-  selectSearchQuery,
-  selectSearchSrc,
-} from "../../../store/searchSelectors";
+import useQuickSearchController from "../../../hooks/use-quick-search-controller";
 import Spinner from "../../ui/Spinner";
 import CategoriesSearch from "../categories-search/CategoriesSearch";
 import ErrorMessage from "../../ui/ErrorMessage";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import QuickSearchResultList from "../quick-search-list/QuickSearchResultList";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
-
-const searchTimeoutMs = 1000;
 
 type QuickSearchProps = {
   onSubmit: (e: SubmitEvent | MouseEvent<HTMLButtonElement>) => void;
   onOpen: (status: boolean) => void;
 };
 
-/**
- * Lightweight live-search dropdown shown outside the Search page.
- *
- * Responsibilities:
- * - Debounces user input.
- * - Dispatches `liveSearch` with a small limit.
- * - Shows first N results.
- * - Displays "Show more" when more results exist.
- * - Navigates to the full Search page on submit.
- * - Displays matching subcategories via CategoriesSearch.
- *
- * Implementation note:
- * The live search request fetches
- * SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE + 1 items.
- * The extra item is used only to detect whether
- * more results exist (Firestore does not provide
- * a reliable "hasNextPage" flag).
- *
- * @component
- * @returns Live-search dropdown.
- */
+/** Animated quick-search dropdown with category matches and full-search navigation. */
 const QuickSearch = ({ onSubmit, onOpen }: QuickSearchProps) => {
-  const searchIsLoading = useAppSelector(selectSearchIsLoading);
-  const errorMessage = useAppSelector(selectSearchErrorMessage);
-  const nsfwData = useAppSelector(selectSearchNsfw);
-  const nsfwMode = nsfwData.nsfwValue;
-  const searchSrc = useAppSelector(selectSearchSrc);
-  const searchResult = useAppSelector(selectQuickSearchResult);
-  const searchInput = useAppSelector(selectSearchQuery);
-  const isOnline = useOnlineStatus();
-  const location = useLocation();
-  const dispatch = useAppDispatch();
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
-
-  useEffect(() => {
-    let curQuery = searchInput.trim();
-    if (
-      isOnline &&
-      location?.pathname !== "/search" &&
-      curQuery?.length >= SETTINGS_SEARCH_MIN_QUERY_LENGTH
-    ) {
-      dispatch(searchActions.resetQuickSearchData());
-      dispatch(searchActions.setErrorMessage(""));
-
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      const getModelsPreview = async () => {
-        dispatch(searchActions.resetAllLastPageStatus());
-        if (searchSrc === "aitools")
-          dispatch(
-            liveSearch(
-              curQuery,
-              nsfwData,
-              SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE + 1,
-              false,
-              true,
-            ),
-          );
-
-        if (searchSrc === "civitai")
-          dispatch(
-            civitaiSearch(
-              curQuery,
-              nsfwData,
-              SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE,
-              false,
-              true,
-            ),
-          );
-      };
-
-      timeoutRef.current = setTimeout(() => {
-        timeoutRef.current = null;
-        getModelsPreview();
-      }, searchTimeoutMs);
-    }
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [
-    searchInput,
-    nsfwMode,
-    dispatch,
-    location?.pathname,
-    isOnline,
-    searchSrc,
-  ]);
+  const { source, result, status, clearQuery } = useQuickSearchController();
 
   return (
     <motion.div
@@ -145,7 +35,7 @@ const QuickSearch = ({ onSubmit, onOpen }: QuickSearchProps) => {
           title="Close"
           className={classes["search__btn-close"]}
           onClick={() => {
-            dispatch(searchActions.setSearchQuery(""));
+            clearQuery();
             onOpen(false);
           }}
         >
@@ -153,9 +43,9 @@ const QuickSearch = ({ onSubmit, onOpen }: QuickSearchProps) => {
         </button>
       </div>
       <div className={classes["search__result"]}>
-        {searchSrc === "aitools" && <CategoriesSearch />}
+        {source === "aitools" && <CategoriesSearch />}
         <QuickSearchResultList />
-        {!searchResult.isLastPage && (
+        {!result.isLastPage && (
           <ButtonTertiary
             type="submit"
             className={classes["btn-more"]}
@@ -164,20 +54,20 @@ const QuickSearch = ({ onSubmit, onOpen }: QuickSearchProps) => {
             Show more
           </ButtonTertiary>
         )}
-        {searchIsLoading && (
+        {status.isLoading && (
           <div className={classes["spiner-container"]}>
             <Spinner size="small" />
           </div>
         )}
-        {!searchIsLoading && errorMessage && (
-          <ErrorMessage>{errorMessage}</ErrorMessage>
+        {!status.isLoading && status.errorMessage && (
+          <ErrorMessage>{status.errorMessage}</ErrorMessage>
         )}
-        {!searchIsLoading &&
-          !errorMessage &&
-          !searchResult?.result?.length &&
-          !!searchResult?.query &&
-          isOnline && <div className={classes.error}>No resources found</div>}
-        {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
+        {!status.isLoading &&
+          !status.errorMessage &&
+          !result?.result?.length &&
+          !!result?.query &&
+          status.isOnline && <div className={classes.error}>No resources found</div>}
+        {!status.isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
       </div>
     </motion.div>
   );
