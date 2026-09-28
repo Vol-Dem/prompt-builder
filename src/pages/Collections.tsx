@@ -1,15 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
-import { imagesActions } from "../store/images";
-import { getCollectionPreviews } from "../store/imagesThunks";
-import { useOnlineStatus } from "../hooks/use-online-status";
-import useIntersection from "../hooks/use-intersection";
 import { sortArrayBy } from "../utils/generalUtils";
 import {
   DEFAULT_PAGE_TITLE,
   ERROR_MESSAGE_OFFLINE,
-  SETTINGS_LOAD_MORE_MARGIN_SMALL,
 } from "../variables/constants";
 import classes from "./Collections.module.scss";
 import ErrorMessage from "../components/ui/ErrorMessage";
@@ -26,63 +21,17 @@ import TextButton from "../components/ui/text/text-buttons/TextButton";
 import TextButtonCollection from "../components/ui/text/text-buttons/TextButtonCollection";
 import Text from "../components/ui/text/Text";
 import TextButtonCreate from "../components/ui/text/text-buttons/TextButtonCreate";
-import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
+import useCollectionPreviewsController from "../hooks/use-collection-previews-controller";
 
 interface CollectionsProps {
   title: string;
 }
 
-/**
- * Collections page.
- *
- * Top-level route responsible for displaying and managing user collections.
- *
- * Responsibilities:
- * - Displays collection categories and collection previews.
- * - Supports switching between categories and "All models" view.
- * - Loads collection preview data from Firestore.
- * - Handles loading, empty, and error states.
- * - Integrates onboarding and guide flows.
- * - Updates the document title.
- *
- * @component
- *
- * @param props
- * @param props.title - Page title.
- *
- * @returns Collections page.
- */
+/** Displays collection categories, previews, feedback, and category editing. */
 const Collections = ({ title }: CollectionsProps) => {
-  const [isIntersecting, setIsIntersecting] = useState(false);
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [isSubcategory, setIsSubcategory] = useState(false);
-  const categories = useAppSelector((state) => state.images.categories);
-  const collectionPreviews = useAppSelector(
-    (state) => state.images.collectionPreviews,
-  );
-  const isLastPage = useAppSelector((state) => state.images.isLastPreviewsPage);
-  const isLoading = useAppSelector((state) => state.images.previewsIsLoading);
-  const errorMessage = useAppSelector(
-    (state) => state.images.previewsErrorMessage,
-  );
-  const activeCategory = useAppSelector((state) => state.images.activeCategory);
-  const activeSubcategory = useAppSelector(
-    (state) => state.images.activeSubcategory,
-  );
-  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
-  const endPageRef = useRef(null);
-  const isOnline = useOnlineStatus();
-  const dispatch = useAppDispatch();
-  const subcategories = categories?.find(
-    (category) => category.id === activeCategory,
-  )?.subcategories;
-  const intersecting = useIntersection(endPageRef, false, 0);
-  const intersectingSmall = useIntersection(
-    endPageRef,
-    false,
-    0,
-    `${SETTINGS_LOAD_MORE_MARGIN_SMALL}px`,
-  );
+  const { categories, subcategories, status, endPageRef } = useCollectionPreviewsController();
 
   useEffect(() => {
     document.title = title;
@@ -92,34 +41,13 @@ const Collections = ({ title }: CollectionsProps) => {
     };
   }, [title]);
 
-  useEffect(() => {
-    setIsIntersecting(intersecting || intersectingSmall);
-  }, [intersecting, intersectingSmall, activeCategory, activeSubcategory]);
-
-  const openCategoryHandler = (e: React.MouseEvent<HTMLElement>) => {
-    if (!(e.target instanceof HTMLElement)) return;
-    if (activeCategory === e.target.dataset.value) return;
-    dispatch(imagesActions.setActiveCategory(e.target.dataset.value));
-    dispatch(imagesActions.setActiveSubcategory(""));
-    dispatch(imagesActions.setCollectionPreviews([]));
-    dispatch(imagesActions.resetCollectionPreviews());
-  };
-
-  const openSubcategoryHandler = (e: React.MouseEvent<HTMLElement>) => {
-    if (!(e.target instanceof HTMLElement)) return;
-    if (activeSubcategory === e.target.dataset.value) return;
-    dispatch(imagesActions.setActiveSubcategory(e.target.dataset.value));
-    dispatch(imagesActions.setCollectionPreviews([]));
-    dispatch(imagesActions.resetCollectionPreviews());
-  };
-
-  const categoriesHtml = sortArrayBy(categories, "name")?.map((category) => {
+  const categoriesHtml = sortArrayBy(categories.items, "name")?.map((category) => {
     return (
       <CategoryListItem
         key={category.id}
-        onClick={openCategoryHandler}
+        onClick={categories.onSelect}
         dataValue={category.id}
-        active={category.id === activeCategory}
+        active={category.id === categories.activeId}
       >
         {category.name}
       </CategoryListItem>
@@ -127,16 +55,16 @@ const Collections = ({ title }: CollectionsProps) => {
   });
 
   const subcategoriesHtml =
-    subcategories &&
-    sortArrayBy(subcategories, "name")?.map((subcategory) => {
+    subcategories.items &&
+    sortArrayBy(subcategories.items, "name")?.map((subcategory) => {
       return (
         <CategoryListItem
           key={subcategory.id}
-          onClick={openSubcategoryHandler}
+          onClick={subcategories.onSelect}
           dataValue={subcategory.id}
-          active={subcategory.id === activeSubcategory}
+          active={subcategory.id === subcategories.activeId}
           className={`${classes["subcategory"]} ${
-            subcategory.id === activeSubcategory
+            subcategory.id === subcategories.activeId
               ? classes["subcategory--active"]
               : ""
           } ${classes["subcategory--border"]}`}
@@ -146,43 +74,6 @@ const Collections = ({ title }: CollectionsProps) => {
       );
     });
 
-  //Load previews on scroll
-  useEffect(() => {
-    const rule =
-      activeSubcategory || activeCategory === "all" || !subcategories?.length;
-
-    if (
-      !isLastPage &&
-      isIntersecting &&
-      rule &&
-      isOnline &&
-      !isLoading &&
-      activeCategory
-    ) {
-      setIsIntersecting(false);
-
-      dispatch(
-        getCollectionPreviews(
-          activeCategory,
-          activeSubcategory,
-          !!collectionPreviews?.data?.length,
-          nsfwMode,
-        ),
-      );
-    }
-  }, [
-    isIntersecting,
-    dispatch,
-    isLastPage,
-    collectionPreviews,
-    nsfwMode,
-    isOnline,
-    activeCategory,
-    activeSubcategory,
-    isLoading,
-    subcategories,
-  ]);
-
   const editCategoriesHandler = (isSub: boolean) => {
     setIsSubcategory(isSub);
     setEditIsOpen(true);
@@ -191,17 +82,17 @@ const Collections = ({ title }: CollectionsProps) => {
   return (
     <div>
       <div className={classes["categories-container"]}>
-        {!!categories?.length && (
+        {!!categories.items?.length && (
           <CategoryList onEdit={editCategoriesHandler.bind(null, false)}>
             <ButtonCategoryAll
-              onClick={openCategoryHandler}
-              className={`${activeCategory === "all" ? classes.active : ""}`}
-              activeCategory={activeCategory}
+              onClick={categories.onSelect}
+              className={`${categories.activeId === "all" ? classes.active : ""}`}
+              activeCategory={categories.activeId}
             />
             {categoriesHtml}
           </CategoryList>
         )}
-        {!categories?.length && (
+        {!categories.items?.length && (
           <>
             <NotificationMessage className={classes.notification}>
               <Text>You don't have any collections!</Text>
@@ -221,28 +112,28 @@ const Collections = ({ title }: CollectionsProps) => {
             </NotificationMessage>
           </>
         )}
-        {!!activeCategory &&
-          activeCategory !== "all" &&
-          !!subcategories?.length && (
+        {!!categories.activeId &&
+          categories.activeId !== "all" &&
+          !!subcategories.items?.length && (
             <SubcategoryList onEdit={editCategoriesHandler.bind(null, true)}>
               <ButtonCategoryAll
-                onClick={openSubcategoryHandler}
+                onClick={subcategories.onSelect}
                 className={`${
-                  activeSubcategory === "all" ? classes.active : ""
+                  subcategories.activeId === "all" ? classes.active : ""
                 }`}
-                activeCategory={activeSubcategory}
+                activeCategory={subcategories.activeId}
               />
               {subcategoriesHtml}
             </SubcategoryList>
           )}
       </div>
-      {activeCategory && (activeSubcategory || !subcategories?.length) && (
+      {categories.activeId && (subcategories.activeId || !subcategories.items?.length) && (
         <CollectionList />
       )}
-      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-      {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
+      {status.errorMessage && <ErrorMessage>{status.errorMessage}</ErrorMessage>}
+      {!status.isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
       <div ref={endPageRef}></div>
-      {isLoading && (
+      {status.isLoading && (
         <div className={classes["spiner-container"]}>
           <Spinner size="medium" />
         </div>
@@ -257,8 +148,8 @@ const Collections = ({ title }: CollectionsProps) => {
           >
             <CategoriesForm
               modelType="collections"
-              activeCategory={isSubcategory ? activeCategory : null}
-              categories={categories}
+              activeCategory={isSubcategory ? categories.activeId : null}
+              categories={categories.items}
             />
           </Modal>
         )}
