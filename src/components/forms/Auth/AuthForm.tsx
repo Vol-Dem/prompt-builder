@@ -1,5 +1,3 @@
-import { useState, type SubmitEvent } from "react";
-import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -7,15 +5,10 @@ import Input from "../../ui/forms/Input";
 import classes from "./AuthForm.module.scss";
 import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
-import { authActions } from "../../../store/auth";
-import { authRequest, authWithGoogle } from "../../../store/authThunks";
 import Button from "../../ui/buttons/Button";
 import ButtonSecondary from "../../ui/buttons/ButtonSecondary";
 import {
-  MESSAGE_AGREEMENT,
-  ERROR_MESSAGE_INPUT_DEF,
   VALIDATION_EMAIL_MAX_LENGTH,
-  ERROR_MESSAGE_OFFLINE,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   ANIMATIONS_FM_SLIDEIN,
 } from "../../../variables/constants";
@@ -23,121 +16,32 @@ import Checkbox from "../../ui/forms/Checkbox";
 import LinkA from "../../ui/LinkA";
 import GoogleLogo from "../../../assets/google.svg";
 import ResetPasswordForm from "../reset-password-form/ResetPasswordForm";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import useAuthFormController from "../../../hooks/use-auth-form-controller";
 
-/**
- * Authentication form component.
- *
- * Provides login and registration flows with email/password and Google OAuth.
- * Handles form validation, loading and error states, agreement confirmation,
- * password reset flow, and animated transitions between modes.
- *
- * Responsibilities:
- * - Switches between login and sign-up modes.
- * - Validates email and password inputs.
- * - Submits authentication requests via Redux actions.
- * - Displays backend and client-side error messages.
- * - Shows reset-password form when requested.
- * - Prevents submission when offline or when agreement is not accepted.
- *
- * Side effects:
- * - Dispatches authRequest, authWithGoogle and authActions.
- * - Clears auth error/success messages on unmount.
- *
- * @component
- * @returns Authentication form.
- */
+/** Renders login, registration and password reset with mode-specific validation. */
 const AuthForm = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState({
-    value: "",
-    isValid: false,
-  });
-  const [password, setPassword] = useState({
-    value: "",
-    isValid: false,
-  });
-  const [agreement, setAgreement] = useState(false);
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const errorMessageAuth = useAppSelector((state) => state.auth.errorMessage);
-  const isLoading = useAppSelector((state) => state.auth.isLoading);
-  const showResetPassword = useAppSelector(
-    (state) => state.auth.showResetPassword,
-  );
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    return () => {
-      dispatch(authActions.setErrorMessage(""));
-      dispatch(authActions.setSuccessMessage(""));
-      dispatch(authActions.setShowResetPassword(false));
-    };
-  }, [dispatch]);
-
-  const authHandler = async (e: SubmitEvent) => {
-    e.preventDefault();
-    dispatch(authActions.setErrorMessage(""));
-    dispatch(authActions.setSuccessMessage(""));
-    setShowErrorMessage(true);
-    if (!navigator?.onLine) {
-      dispatch(authActions.setErrorMessage(ERROR_MESSAGE_OFFLINE));
-      return;
-    }
-
-    if (!agreement && !isLogin) {
-      dispatch(authActions.setErrorMessage(MESSAGE_AGREEMENT));
-      return;
-    }
-
-    if (email.isValid && password.isValid) {
-      dispatch(authRequest(isLogin, email.value, password.value));
-    } else {
-      dispatch(authActions.setErrorMessage(ERROR_MESSAGE_INPUT_DEF));
-    }
-  };
-
-  const switchSignType = () => {
-    dispatch(authActions.setErrorMessage(""));
-    dispatch(authActions.setSuccessMessage(""));
-    dispatch(authActions.setShowResetPassword(false));
-    setIsLogin((state) => !state);
-    setEmail({
-      value: "",
-      isValid: false,
-    });
-    setPassword({
-      value: "",
-      isValid: false,
-    });
-    setShowErrorMessage(false);
-  };
-
-  const agreementHandler = () => {
-    setAgreement((prevState) => !prevState);
-  };
+  const { fields, mode, status, actions } = useAuthFormController();
 
   return (
     <motion.div
-      key={isLogin + ""}
+      key={mode.isLogin + ""}
       initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
       animate={ANIMATIONS_FM_SLIDEIN}
       exit={ANIMATIONS_FM_SLIDEIN_INITIAL}
       className={classes.auth}
     >
-      {!showResetPassword && (
+      {!mode.showResetPassword && (
         <h3 className={classes["auth__title"]}>
-          {isLogin ? "Log in" : "Sign Up"}
+          {mode.isLogin ? "Log in" : "Sign Up"}
         </h3>
       )}
-      {showResetPassword && <ResetPasswordForm />}
-      {!showResetPassword && (
-        <form onSubmit={authHandler} className={classes["auth__form"]}>
-          {isLogin && (
+      {mode.showResetPassword && <ResetPasswordForm />}
+      {!mode.showResetPassword && (
+        <form onSubmit={actions.submit} className={classes["auth__form"]}>
+          {mode.isLogin && (
             <Button
               type="button"
-              onClick={() => {
-                dispatch(authWithGoogle());
-              }}
+              onClick={actions.signInWithGoogle}
             >
               <img
                 src={GoogleLogo}
@@ -152,55 +56,45 @@ const AuthForm = () => {
             id="email"
             name="email"
             type="email"
-            disabled={isLoading}
+            disabled={status.isLoading}
             className={`${classes["auth__input"]} ${
-              showErrorMessage && !email.isValid ? classes.invalid : ""
+              status.showErrorMessage && !fields.email.isValid ? classes.invalid : ""
             }`}
             autoFocus={true}
-            onChange={(e, isValid) => {
-              setEmail({
-                value: e.target.value,
-                isValid: isValid === null ? true : isValid,
-              });
-            }}
+            onChange={fields.email.onChange}
             validation={{
               required: true,
               email: true,
               maxLength: VALIDATION_EMAIL_MAX_LENGTH,
-              disableErrorOnBlur: !isLogin ? false : true,
+              disableErrorOnBlur: !mode.isLogin ? false : true,
             }}
-            showError={showErrorMessage}
-            value={email.value}
+            showError={status.showErrorMessage}
+            value={fields.email.value}
           />
           <Input
             label="Password"
             id="password"
             name="password"
             type="password"
-            disabled={isLoading}
+            disabled={status.isLoading}
             className={`${classes["auth__input"]} ${
-              showErrorMessage && !password.isValid ? classes.invalid : ""
+              status.showErrorMessage && !fields.password.isValid ? classes.invalid : ""
             }`}
-            onChange={(e, isValid) => {
-              setPassword({
-                value: e.target.value,
-                isValid: isValid === null ? true : isValid,
-              });
-            }}
+            onChange={fields.password.onChange}
             validation={{
               required: true,
-              password: !isLogin,
-              disableErrorOnBlur: !isLogin ? false : true,
+              password: !mode.isLogin,
+              disableErrorOnBlur: !mode.isLogin ? false : true,
             }}
-            showError={showErrorMessage}
-            value={password.value}
+            showError={status.showErrorMessage}
+            value={fields.password.value}
           />
 
-          {!isLogin && (
+          {!mode.isLogin && (
             <Checkbox
               id="agreement"
               name="agreement"
-              checked={agreement}
+              checked={fields.agreement.checked}
               label={
                 <span>
                   I have read and agree to the{" "}
@@ -213,47 +107,43 @@ const AuthForm = () => {
                   </Link>
                 </span>
               }
-              onChange={agreementHandler}
+              onChange={fields.agreement.onChange}
             />
           )}
-          {isLogin && (
+          {mode.isLogin && (
             <div className={classes["reset"]}>
               <LinkA
-                onClick={() => {
-                  dispatch(authActions.setErrorMessage(""));
-                  dispatch(authActions.setSuccessMessage(""));
-                  dispatch(authActions.setShowResetPassword(true));
-                }}
+                onClick={mode.openPasswordReset}
               >
                 Forgot your password?
               </LinkA>
             </div>
           )}
-          {errorMessageAuth && (
+          {status.errorMessage && (
             <ErrorMessage className={classes["auth__error"]}>
-              {errorMessageAuth}
+              {status.errorMessage}
             </ErrorMessage>
           )}
           <div className={classes["auth__controls"]}>
             <ButtonSecondary
               type="button"
-              onClick={switchSignType}
-              disabled={isLoading}
+              onClick={mode.onSwitch}
+              disabled={status.isLoading}
               className={classes["auth__btn--switch"]}
             >
-              {isLogin ? "Create Account" : "Log in"}
+              {mode.isLogin ? "Create Account" : "Log in"}
             </ButtonSecondary>
             <Button
-              disabled={isLoading}
+              disabled={status.isLoading}
               className={classes["auth__btn--submit"]}
             >
-              {isLoading && <Spinner size="small" />}
-              <span>{isLogin ? "Log in" : "Sign up"}</span>
+              {status.isLoading && <Spinner size="small" />}
+              <span>{mode.isLogin ? "Log in" : "Sign up"}</span>
             </Button>
           </div>
         </form>
       )}
-      {isLogin && (
+      {mode.isLogin && (
         <div className={classes["privacy"]}>
           By continuing, you are indicating that you accept our{" "}
           <Link className={classes.link} to="tos" target="blank">
