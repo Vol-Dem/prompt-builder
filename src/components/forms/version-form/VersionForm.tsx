@@ -4,41 +4,27 @@ import classes from "./VersionForm.module.scss";
 import TagSetsInputFieldset from "../../ui/forms/TagSetsInputFieldset";
 import useTagSetInputs from "../../../hooks/use-tag-set-inputs";
 import VersionWeightFields from "./version-weight-fields/VersionWeightFields";
-import { saveModelVersionChanges } from "../../../utils/fetch/fetchModelEdits";
 import Textarea from "../../ui/forms/Textarea";
 import Button from "../../ui/buttons/Button";
 import Input from "../../ui/forms/Input";
 import FieldCategory from "../../ui/forms/FieldCategory";
-import {
-  AppError,
-  handleErrors,
-  normalizeError,
-} from "../../../utils/generalUtils";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
 import {
-  ERROR_MESSAGE_INPUT_DEF,
   VALIDATION_DESCRIPTION_MAX_LENGTH,
   VALIDATION_NAME_MAX_LENGTH,
-  ERROR_MESSAGE_OFFLINE,
-  SUCCESS_MESSAGE_UPLOADED,
   VALIDATION_TITLE_MAX_LENGTH,
   VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
 import Spinner from "../../ui/Spinner";
-import {
-  buildTagSets,
-  createTagSetsInputData,
-  splitTags,
-} from "../../../utils/promptUtils";
-import { clearFileExtension } from "../../../../shared/utils";
+import { createTagSetsInputData } from "../../../utils/promptUtils";
 import { FORMS_DEF_TAGS_INPUT } from "../../../variables/structures";
 import type {
   ModelVersion,
   ModelVersionCustomData,
   UserModelDefaultCustomData,
 } from "../../../../shared/types/model";
-import { useAppSelector } from "../../../store/hooks/hooks";
+import useVersionSave from "../../../hooks/use-version-save";
 
 type VersionFormProps = {
   versionData?: ModelVersionCustomData | UserModelDefaultCustomData | null;
@@ -92,10 +78,6 @@ const VersionForm = ({
   modelType,
   isDefault,
 }: VersionFormProps) => {
-  const [isSaving, setIsSaving] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const [successMessage, seteSuccessMessage] = useState("");
   const [mainTagInput, setMainTagInput] = useState({
     value: "",
     isValid: true,
@@ -174,12 +156,14 @@ const VersionForm = ({
   });
   const tagSets = useTagSetInputs();
   const { fields: tagSetsInputs, reset: resetTagSetsInputs } = tagSets;
-  const uid = useAppSelector((state) => state.auth.user.uid);
-  const model = useAppSelector((state) => state.model.model);
+  const {
+    status: { isSaving, errorMessage, showErrorMessage, successMessage },
+    submit,
+    clearMessages,
+  } = useVersionSave({ versionData, modelId, modelType, isDefault });
 
   useEffect(() => {
-    setErrorMessage("");
-    seteSuccessMessage("");
+    clearMessages();
     setMainTagInput({ value: versionData?.mainTag || "", isValid: true });
     setTitleInput({
       value: versionData?.name || defaultData?.name || "",
@@ -241,7 +225,7 @@ const VersionForm = ({
       value: versionData?.hiresUpscaleSteps || "",
       isValid: true,
     });
-  }, [versionData, defaultData]);
+  }, [versionData, defaultData, clearMessages]);
 
   useEffect(() => {
     resetTagSetsInputs(
@@ -249,148 +233,15 @@ const VersionForm = ({
     );
   }, [versionData, resetTagSetsInputs]);
 
-  const saveVersionHandler = async (e: SubmitEvent) => {
-    try {
-      e.preventDefault();
-      setErrorMessage("");
-      seteSuccessMessage("");
-      setShowErrorMessage(true);
-      const tagsetsIsNotValid = !!tagSetsInputs.find(
-        (input) => input[0].isValid === false || input[1].isValid === false,
-      );
-
-      const baseInputsIsNotValid =
-        !titleInput.isValid ||
-        !descriptionInput.isValid ||
-        !mainTagInput.isValid ||
-        !trigerInput.isValid ||
-        !helperTagsInput.isValid ||
-        !negativeTagsInput.isValid ||
-        tagsetsIsNotValid ||
-        !fileNameInput.isValid ||
-        !weightInput.isValid ||
-        !minWeightInput.isValid ||
-        !maxWeightInput.isValid ||
-        !sizetInput.isValid;
-
-      const aditionalInputsIsNotValid =
-        !vaeInput.isValid ||
-        !denoisingStrengthtInput.isValid ||
-        !hiresUpscaleInput.isValid ||
-        !hiresUpscaleStepsInput.isValid ||
-        !hiresUpscalerInput.isValid ||
-        !cfgScaleInput.isValid ||
-        !samplerInput.isValid ||
-        !stepsInput.isValid;
-
-      if (
-        baseInputsIsNotValid ||
-        (modelType === "checkpoint" && aditionalInputsIsNotValid)
-      ) {
-        throw new AppError(ERROR_MESSAGE_INPUT_DEF);
-      }
-      if (!navigator?.onLine) {
-        throw new AppError(ERROR_MESSAGE_OFFLINE);
-      }
-
-      setIsSaving(true);
-
-      const mainTag = mainTagInput.value.trim();
-      const name = titleInput?.value?.trim();
-      const description = descriptionInput?.value?.trim();
-      const weight = +weightInput.value.trim();
-      const minWeight = +minWeightInput?.value;
-      const maxWeight = +maxWeightInput?.value;
-      const size = sizetInput.value.trim();
-      const fileName = fileNameInput.value.trim();
-      const tagSetsValues = tagSetsInputs.map((set) => set[1].value);
-      const sampler = samplerInput.value.trim().toLowerCase() || "";
-      const cfgScale = cfgScaleInput.value.trim().toLowerCase() || "";
-      const hiresUpscaler = hiresUpscalerInput.value.trim().toLowerCase() || "";
-      const hiresUpscaleBy = hiresUpscaleInput.value.trim().toLowerCase() || "";
-      const hiresUpscaleSteps =
-        hiresUpscaleStepsInput.value.trim().toLowerCase() || "";
-      const denoisingStrength =
-        denoisingStrengthtInput.value.trim().toLowerCase() || "";
-      const vae = vaeInput.value.trim().toLowerCase() || "";
-      const steps = stepsInput.value.trim() || "";
-      const trainedWords = splitTags(trigerInput.value);
-      const tagSetNames = tagSetsInputs.map((set) => set[0].value);
-      const tagSetsData = buildTagSets(
-        tagSetNames,
-        tagSetsValues,
-        versionData?.tagSetsData,
-      );
-
-      const helperTags = splitTags(helperTagsInput.value);
-      const negativeTags = splitTags(negativeTagsInput.value);
-
-      const updatedVersionData = {
-        ...versionData,
-        mainTag,
-        name,
-        description,
-        trainedWords,
-        fileName,
-        tagSetsData,
-        weight,
-        minWeight,
-        maxWeight,
-        size,
-        helperTags,
-        negativeTags,
-        ...(modelType === "checkpoint" && {
-          steps,
-          sampler,
-          cfgScale,
-          hiresUpscaler,
-          hiresUpscaleBy,
-          hiresUpscaleSteps,
-          denoisingStrength,
-          vae,
-        }),
-      };
-      const versionId = isDefault ? "def" : versionData?.versionId;
-
-      if (!versionId) return;
-
-      const allUpdatedVersions = {
-        ...model?.modelVersionsCustomData,
-        [versionId]: updatedVersionData,
-      };
-
-      const mainTags = Object.values(allUpdatedVersions)
-        .map((version) => {
-          const mainTagArr = version?.mainTag?.split(":");
-          if (mainTagArr?.length === 3) {
-            return mainTagArr[1];
-          }
-          return version?.mainTag?.toLowerCase();
-        })
-        .filter(Boolean);
-
-      const customFileNames = Object.values(allUpdatedVersions)
-        ?.map((version) => {
-          return version?.fileName
-            ? clearFileExtension(version?.fileName)?.toLowerCase()
-            : "";
-        })
-        .filter(Boolean);
-
-      await saveModelVersionChanges(
-        uid,
-        modelId,
-        versionId === "def" ? "default" : versionId,
-        updatedVersionData,
-        { mainTags, customFileNames },
-      );
-      seteSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
-      setIsSaving(false);
-    } catch (err) {
-      const errorMessage = handleErrors(normalizeError(err));
-      setErrorMessage(errorMessage);
-      setIsSaving(false);
-    }
+  const saveVersionHandler = (e: SubmitEvent) => {
+    e.preventDefault();
+    return submit({
+      mainTagInput, titleInput, descriptionInput, trigerInput, fileNameInput,
+      weightInput, minWeightInput, maxWeightInput, sizetInput, helperTagsInput,
+      negativeTagsInput, vaeInput, denoisingStrengthtInput, hiresUpscaleInput,
+      hiresUpscaleStepsInput, hiresUpscalerInput, cfgScaleInput, samplerInput,
+      stepsInput, tagSetsInputs,
+    });
   };
 
   return (
