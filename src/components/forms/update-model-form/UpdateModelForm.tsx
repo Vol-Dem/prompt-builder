@@ -17,39 +17,25 @@ import Textarea from "../../ui/forms/Textarea";
 import Checkbox from "../../ui/forms/Checkbox";
 import Select from "../../ui/forms/Select";
 import FieldCategory from "../../ui/forms/FieldCategory";
-import {
-  AppError,
-  cloneObject,
-  handleErrors,
-  normalizeError,
-} from "../../../utils/generalUtils";
+import { cloneObject } from "../../../utils/generalUtils";
 import Spinner from "../../ui/Spinner";
 import ComboSelect from "../../ui/forms/ComboSelect";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-  ERROR_MESSAGE_INPUT_DEF,
   VALIDATION_DESCRIPTION_MAX_LENGTH,
-  ERROR_MESSAGE_EXISTS,
   GUIDE_STEP_EDIT_DEFAULT,
-  ERROR_MESSAGE_OFFLINE,
-  SUCCESS_MESSAGE_UPLOADED,
   VALIDATION_TITLE_MAX_LENGTH,
   VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
   MODEL_TYPES,
   SETTINGS_MODEL_TYPE_UNKNOWN,
   SETTINGS_MODEL_TYPE_DEF,
-  ERROR_MESSAGE_INVALID_MODEL_ID,
   SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT,
-  SETTINGS_FORMS_TAGSETS_MAX_AMOUNT,
 } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
-import { tabActions } from "../../../store/tabs";
 import { modelActions } from "../../../store/model";
 import EditDefaultGuide from "../../general-elements/guide/edit/EditDefaultGuide";
 import { createTagSetsInputData } from "../../../utils/promptUtils";
-import { parseModelIds } from "../../../utils/modelUtils";
-import { saveModelData } from "../../../utils/fetch/fetchModel";
 import {
   FORMS_DEF_SUBCATEGORY_INPUT,
   FORMS_DEF_TAGS_INPUT,
@@ -64,6 +50,8 @@ import type {
 } from "../../../types/forms.types";
 import type { TagSetInputData } from "../../../types/prompt.types";
 import type { ModelPreviewDoc } from "../../../../shared/types/firestore";
+
+import useModelSave from "../../../hooks/use-model-save";
 
 type UpdateModelFormProps = {
   modelData?: ModelData;
@@ -123,10 +111,6 @@ const UpdateModelForm = ({
   onSave,
   className,
 }: UpdateModelFormProps) => {
-  const [modelIsSaving, setModelIsSaving] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
   const [modelTypeInput, setModelTypeInput] = useState(
     modelData?.modelType || SETTINGS_MODEL_TYPE_DEF,
   );
@@ -161,7 +145,6 @@ const UpdateModelForm = ({
   });
   const [subCatInputs, setSubCatInputs] = useState<SubcategoryInput[]>([]);
   const [tagSetsInputs, setTagSetsInputs] = useState<TagSetInputData[]>([]);
-  const [savedModel, setSavedModel] = useState<number | null>(null);
   const [mainCategoryQuery, setMainCategoryQuery] = useState("");
   const [mainCategorySelected, setMainCategorySelected] = useState<
     SelectInput<string>
@@ -172,7 +155,6 @@ const UpdateModelForm = ({
   });
   const [subCategoryQuery, setSubCategoryQuery] = useState("");
   const categories = useAppSelector((state) => state.tabs.categoriesData);
-  const curBaseModels = useAppSelector((state) => state.tabs.baseModels);
   const guideStep = useAppSelector((state) => state.guide.edit.step);
   const guideIsActive = useAppSelector((state) => state.guide.active);
   const curModel = useAppSelector((state) => state.model.model);
@@ -311,123 +293,31 @@ const UpdateModelForm = ({
     }
   }, [modelData, categories, newModelType]);
 
-  const submitFormHandler = async (e: SubmitEvent) => {
+  const resetNewModelFields = () => {
+    setIdInput({
+      value: newModelId ? newModelId + "" : "",
+      isValid: false,
+    });
+    setSubCatInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
+    setMainCategorySelected({
+      name: "",
+      id: "",
+      isValid: false,
+    });
+  };
+
+  const {
+    status: { modelIsSaving, errorMessage, showErrorMessage, successMessage, savedModel },
+    submit,
+  } = useModelSave({ modelData, newModelVersionId, onSave, onReset: resetNewModelFields });
+
+  const submitFormHandler = (e: SubmitEvent) => {
     e.preventDefault();
-    setErrorMessage("");
-    setSuccessMessage("");
-    setShowErrorMessage(true);
-    setModelIsSaving(true);
-
-    let modelId: number | null = null;
-    let modelVersionId: number | null = null;
-
-    try {
-      const tagsetsIsNotValid = !!tagSetsInputs.find(
-        (input) => input[0].isValid === false || input[1].isValid === false,
-      );
-      const subcatsIsValid = !!subCatInputs.find(
-        (input) => input.isValid === true,
-      );
-      const mainInputsIsNotValid =
-        !idInput.isValid || !mainCategorySelected.isValid || !subcatsIsValid;
-      const baseInputsIsNotValid =
-        !srcInput.isValid ||
-        !titleInput.isValid ||
-        !descriptionInput.isValid ||
-        tagsetsIsNotValid ||
-        !hashtagsInput.isValid;
-
-      if (
-        subCatInputs.length > SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT ||
-        tagSetsInputs.length > SETTINGS_FORMS_TAGSETS_MAX_AMOUNT ||
-        mainInputsIsNotValid ||
-        (!!modelData && baseInputsIsNotValid)
-      ) {
-        throw new AppError(ERROR_MESSAGE_INPUT_DEF);
-      }
-      if (!navigator?.onLine) {
-        throw new AppError(ERROR_MESSAGE_OFFLINE);
-      }
-
-      [modelId, modelVersionId] = parseModelIds(idInput.value);
-
-      if (!modelId) {
-        throw new AppError(ERROR_MESSAGE_INVALID_MODEL_ID);
-      }
-
-      if (newModelVersionId) {
-        modelVersionId = newModelVersionId;
-      }
-
-      const modelType = modelTypeInput;
-      const modelName = titleInput.value.trim();
-      const main = mainCategorySelected.name;
-      const hashtags = hashtagsInput.value
-        .split(",")
-        .map((hashtag) => hashtag.trim())
-        .filter(Boolean);
-      const sub = [
-        ...new Set(subCatInputs.map((el) => el?.selected?.name?.trim())),
-      ].filter((el) => el !== undefined);
-
-      const newModelData = {
-        modelId,
-        modelVersionId,
-        modelType,
-        modelName,
-        categories,
-        main,
-        sub,
-        hashtags,
-        versionsDownloadStatus,
-        nsfw: nsfwInput,
-      };
-
-      const {
-        preview,
-        baseModels,
-        modelData: userModelData,
-      } = await saveModelData(
-        newModelData,
-        categories,
-        curBaseModels,
-        modelData,
-      );
-
-      if (baseModels) {
-        dispatch(tabActions.setBaseModels(baseModels));
-      }
-
-      if (onSave) onSave(preview);
-
-      if (!modelData) {
-        setIdInput({
-          value: newModelId ? newModelId + "" : "",
-          isValid: false,
-        });
-        setSubCatInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
-        setMainCategorySelected({
-          name: "",
-          id: "",
-          isValid: false,
-        });
-      }
-
-      if (curModel?.id && modelId === curModel?.id) {
-        dispatch(modelActions.updateModelDataField(userModelData));
-      }
-      setSavedModel(modelId);
-      setSuccessMessage(SUCCESS_MESSAGE_UPLOADED);
-      setShowErrorMessage(false);
-      setModelIsSaving(false);
-    } catch (err) {
-      const errorMessage = handleErrors(normalizeError(err));
-      if (errorMessage === ERROR_MESSAGE_EXISTS) {
-        setSavedModel(modelId);
-      }
-      setErrorMessage(errorMessage);
-      setModelIsSaving(false);
-    }
+    return submit({
+      idInput, srcInput, titleInput, descriptionInput, hashtagsInput,
+      modelTypeInput, mainCategorySelected, subCatInputs, tagSetsInputs,
+      versionsDownloadStatus, nsfwInput,
+    });
   };
 
   const addSubHandler = () => {
