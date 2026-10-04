@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import classes from "./SaveImageForm.module.scss";
 import Input from "../../ui/forms/Input";
 import Select from "../../ui/forms/Select";
@@ -8,38 +6,18 @@ import Button from "../../ui/buttons/Button";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
 import Spinner from "../../ui/Spinner";
-import {
-  ERROR_MESSAGE_INPUT_DEF,
-  ERROR_MESSAGE_EMPTY,
-  ERROR_MESSAGE_OFFLINE,
-  VALIDATION_POST_URL_MAX_LENGTH,
-  ERROR_MESSAGE_INVALID_POST_ID,
-} from "../../../variables/constants";
+import { VALIDATION_POST_URL_MAX_LENGTH } from "../../../variables/constants";
 import ChooseImageForm from "../choose-image-form/ChooseImageForm";
-import { uploadActions } from "../../../store/upload";
-import {
-  AppError,
-  handleErrors,
-  normalizeError,
-} from "../../../utils/generalUtils";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
 import InfoPostId from "../../general-elements/info/InfoPostId";
-import { getPostIdFromInput } from "../../../utils/imageUtils";
-import { fetchCivitaiPostImagesForSelection } from "../../../utils/fetch/fetchCivitaiImages";
-import { fixCivImagesMeta } from "../../../../shared/utils";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import type {
   ModelData,
   ResourceFirestoreCollection,
 } from "../../../types/models.types";
 import type { CollectionSavedPost } from "../../../../shared/types/collection";
 import type { CollectionData } from "../../../types/collections.types";
-import type {
-  ModelSavedImages,
-  ModelSavedPostInfo,
-} from "../../../../shared/types/model";
-import type { Image } from "../../../../shared/types/image";
-import type { UploadingCollectionData } from "../../../types/upload.types";
+import type { ModelSavedImages } from "../../../../shared/types/model";
+import usePostImageImport from "../../../hooks/use-post-image-import";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 
 type SaveImageForm = {
@@ -92,181 +70,35 @@ const SaveImageForm = ({
   savedPosts,
   savedModelPosts,
 }: SaveImageForm) => {
-  const [filterDisabledInput, setFilterDisabledInput] = useState(true);
-  const [imagesListIsOpen, setImagesListIsOpen] = useState(false);
-  const [images, setImages] = useState<Image[]>([]);
-  const [postData, setPostData] = useState<
-    CollectionSavedPost | ModelSavedPostInfo | null
-  >(null);
-  const [savedImageIds, setSavedImageIds] = useState<number[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const [successMessage, seteSuccessMessage] = useState("");
-  const [versionIdInput, setVersionIdInput] = useState<number | null>(
-    curVersion || modelData?.data?.modelVersions[0].id || null,
-  );
-  const [postIdInput, setPostIdInput] = useState({ value: "", isValid: false });
-  const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
-  const nsfwLevel = useAppSelector((state) => state.general.nsfwLevel);
-  const dispatch = useAppDispatch();
-
-  const loadPostImagesHandler = async () => {
-    try {
-      setErrorMessage("");
-      seteSuccessMessage("");
-      setShowErrorMessage(true);
-
-      if (!postIdInput.isValid) {
-        throw new AppError(ERROR_MESSAGE_INPUT_DEF);
-      }
-      if (!navigator?.onLine) {
-        throw new AppError(ERROR_MESSAGE_OFFLINE);
-      }
-
-      if (!postIdInput?.value) return;
-
-      setIsLoading(true);
-
-      const postId = getPostIdFromInput(postIdInput.value);
-
-      if (!postId) {
-        throw new AppError(ERROR_MESSAGE_INVALID_POST_ID);
-      }
-
-      const data = await fetchCivitaiPostImagesForSelection({
-        postId,
-        modelId: filterDisabledInput ? modelData?.id : undefined,
-        nsfwLevel,
-      });
-
-      setImages(fixCivImagesMeta(data.items));
-
-      let curPostData = null;
-      let curImageIds = null;
-
-      if (location === "models" && savedModelPosts && versionIdInput) {
-        curPostData = savedModelPosts[versionIdInput]?.find(
-          (post) => post.postId === postId,
-        );
-        curImageIds = curPostData?.imagesId;
-      }
-      if (location === "collections") {
-        curPostData = savedPosts?.find((post) => post.postId === postId);
-        curImageIds = curPostData?.imageIds;
-      }
-
-      if (curPostData) {
-        setPostData(curPostData);
-        setSavedImageIds(curImageIds || []);
-      }
-
-      if (!data?.items?.length) {
-        throw new AppError(ERROR_MESSAGE_EMPTY);
-      }
-
-      setImagesListIsOpen(true);
-      setIsLoading(false);
-    } catch (err) {
-      const errorMessage = handleErrors(normalizeError(err));
-      setErrorMessage(errorMessage);
-      setIsLoading(false);
-    }
-  };
-
-  let versionSelectOptions = modelData?.data?.modelVersions?.map((version) => {
-    return {
-      name: version.name,
-      value: version.id,
-    };
+  const { fields, selection, status, loadPostImages } = usePostImageImport({
+    modelData, curVersion, location, savedPosts, savedModelPosts,
   });
-
-  const saveExampleHandler = async (
-    location: ResourceFirestoreCollection,
-    ids: number[] | null,
-    collectionData: UploadingCollectionData | null,
-  ) => {
-    const postId = getPostIdFromInput(postIdInput.value);
-
-    if (!postId) {
-      throw new AppError(ERROR_MESSAGE_INVALID_POST_ID);
-    }
-
-    const imagesForSaving = ids?.length
-      ? images.filter((image) => ids.includes(image?.id))
-      : images;
-
-    let curPostData;
-
-    if (
-      location === "models" &&
-      modelData &&
-      versionIdInput &&
-      modelData?.savedImages &&
-      Object.hasOwn(modelData, "savedImages")
-    ) {
-      curPostData = modelData?.savedImages[versionIdInput]?.find(
-        (post) => post.postId === +postId,
-      );
-    }
-
-    if (location === "collections") {
-      curPostData = savedPosts?.find((post) => post.postId === postId);
-    }
-
-    dispatch(
-      uploadActions.addToQueue({
-        postId: postId,
-        modelId: modelData?.id || null,
-        modelName: modelData?.name || null,
-        versionId: versionIdInput ? +versionIdInput : null,
-        nsfwMode,
-        postData: curPostData || null,
-        imgUrl: imagesForSaving[0].url,
-        imgType: imagesForSaving[0].type || "image",
-        ids: ids || [],
-        images: imagesForSaving,
-        location,
-        collectionData,
-      }),
-    );
-    seteSuccessMessage("Added to download queue");
-    setPostIdInput({ value: "", isValid: false });
-    setShowErrorMessage(false);
-    setImagesListIsOpen(false);
-  };
 
   return (
     <>
-      {imagesListIsOpen && (
+      {selection.isOpen && (
         <button
           type="button"
           title="Back"
           className={classes["btn-back"]}
-          onClick={() => {
-            setImagesListIsOpen(false);
-          }}
+          onClick={selection.onBack}
         >
           <ArrowUturnLeftIcon />
         </button>
       )}
       <div
         className={`${classes["form"]} ${
-          imagesListIsOpen ? classes["hidden"] : ""
+          selection.isOpen ? classes["hidden"] : ""
         }`}
       >
-        {location === "models" && versionSelectOptions && (
+        {location === "models" && fields.version.options && (
           <Select
             label="Select version:"
             name="curVersionId"
             id="version-select"
-            selected={versionIdInput || undefined}
-            onChange={(value) => {
-              if (!value) return;
-
-              setVersionIdInput(+value);
-            }}
-            options={versionSelectOptions}
+            selected={fields.version.value || undefined}
+            onChange={fields.version.onChange}
+            options={fields.version.options}
           />
         )}
         <Input
@@ -281,56 +113,50 @@ const SaveImageForm = ({
           }
           autoFocus
           placeholder="post id or url"
-          disabled={isLoading}
-          value={postIdInput.value}
-          onChange={(e, isValid) => {
-            setPostIdInput({ value: e.target.value, isValid });
-          }}
+          disabled={status.isLoading}
+          value={fields.postId.value}
+          onChange={fields.postId.onChange}
           className={`${classes["auth__input"]} ${
-            !postIdInput.isValid ? classes.invalid : ""
+            !fields.postId.isValid ? classes.invalid : ""
           }`}
           validation={{
             required: true,
             maxLength: VALIDATION_POST_URL_MAX_LENGTH,
           }}
-          showError={showErrorMessage}
+          showError={status.showErrorMessage}
         />
         {location === "models" && (
           <div className={classes.filter}>
             <Checkbox
               id="filter"
               label="Show only images related to this model"
-              checked={filterDisabledInput}
+              checked={fields.modelFilter.checked}
               className={classes["checkbox"]}
-              onChange={(e) => {
-                setFilterDisabledInput(e.target.checked);
-              }}
+              onChange={fields.modelFilter.onChange}
             />
           </div>
         )}
         <Button
           type="button"
-          disabled={isLoading}
+          disabled={status.isLoading}
           className={classes.submit}
-          onClick={() => {
-            loadPostImagesHandler();
-          }}
+          onClick={loadPostImages}
         >
-          {!isLoading ? "Select images" : <Spinner size="small" />}
+          {!status.isLoading ? "Select images" : <Spinner size="small" />}
         </Button>
-        {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
-        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+        {status.successMessage && <SuccessMessage>{status.successMessage}</SuccessMessage>}
+        {status.errorMessage && <ErrorMessage>{status.errorMessage}</ErrorMessage>}
       </div>
-      {imagesListIsOpen && (
+      {selection.isOpen && (
         <ChooseImageForm
           type="save"
-          postData={postData}
-          savedImageIds={savedImageIds}
+          postData={selection.postData}
+          savedImageIds={selection.savedImageIds}
           modelId={modelData?.id}
           location={location}
           collectionInfo={collectionInfo}
-          images={images}
-          onSave={saveExampleHandler}
+          images={selection.images}
+          onSave={selection.onSave}
         />
       )}
     </>
