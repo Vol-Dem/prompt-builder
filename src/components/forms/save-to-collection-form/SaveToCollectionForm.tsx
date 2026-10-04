@@ -12,8 +12,6 @@ import {
   ANIMATIONS_FM_SLIDEOUT,
   ANIMATIONS_FM_FADEOUT_EXIT,
   ANIMATIONS_FM_SLIDEOUT_INITIAL,
-  ERROR_MESSAGE_INPUT_DEF,
-  SUCCESS_MESSAGE_SAVED,
   SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT,
 } from "../../../variables/constants";
 import ComboSelect from "../../ui/forms/ComboSelect";
@@ -21,25 +19,19 @@ import Fieldset from "../../ui/forms/Fieldset";
 import ButtonSecondary from "../../ui/buttons/ButtonSecondary";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import {
-  AppError,
   cloneObject,
-  filterDuplicates,
-  handleErrors,
-  normalizeError,
   sortArrayBy,
 } from "../../../utils/generalUtils";
-import { addNewCollectionCategories } from "../../../store/imagesThunks";
 import SuccessMessage from "../../ui/SuccessMessage";
-import { getCollectionData } from "../../../utils/fetch/fetchCollection";
+import useCollectionDestination from "../../../hooks/use-collection-destination";
 import SuggestedCollections from "./SuggestedCollections";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import { useAppSelector } from "../../../store/hooks/hooks";
 import type { Image } from "../../../../shared/types/image";
 import type { SuggestedCollection } from "../../../types/collections.types";
 import type { SubcategoryInput } from "../../../types/forms.types";
 import { FORMS_DEF_SUBCATEGORY_INPUT } from "../../../variables/structures";
 import type { SelectOption } from "../../../types/general.types";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import type { CollectionSavedPost } from "../../../../shared/types/collection";
 import type {
   UploadingCollectionData,
   UploadingPostData,
@@ -114,14 +106,6 @@ const SaveToCollectionForm = ({
   activeImageIndex,
   onSave,
 }: SaveToCollectionFormProps) => {
-  const [chooseImageIsOpen, setChooseImageIsOpen] = useState(false);
-  const [collectionInfoIsLoading, setCollectionInfoIsLoading] = useState(false);
-  const [collectionInfo, setCollectionInfo] =
-    useState<UploadingCollectionData | null>(null);
-  const [savedPostData, setSavedPostData] =
-    useState<CollectionSavedPost | null>(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [mainCategoryQuery, setMainCategoryQuery] = useState("");
   const [mainCategorySelected, setMainCategorySelected] =
     useState<MainCategorySelected>({
@@ -140,10 +124,14 @@ const SaveToCollectionForm = ({
     SubcategoryInput[]
   >([]);
   const [subcategoryQuery, setSubcategoryQuery] = useState("");
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   const categories = useAppSelector((state) => state.images.categories);
-  const dispatch = useAppDispatch();
+  const {
+    stage,
+    destination: { collectionInfo, savedPostData },
+    status: { collectionInfoIsLoading, errorMessage, successMessage, showErrorMessage },
+    prepare,
+  } = useCollectionDestination({ postId, hasImages: !!images?.length });
 
   const selectCollectionFromSuggestedListHandler = (
     suggestedCollectionData: SuggestedCollection,
@@ -342,90 +330,14 @@ const SaveToCollectionForm = ({
     );
   });
 
-  const submitHandler = async (e: SubmitEvent) => {
-    try {
-      e.preventDefault();
-      setErrorMessage("");
-      setSuccessMessage("");
-      const subcategoriesIsInvalid = !!subcategoryInputs.find(
-        (subcategory) => !subcategory.isValid,
-      );
-      if (
-        !collectionNameSelected.isValid ||
-        !mainCategorySelected.isValid ||
-        subcategoriesIsInvalid
-      ) {
-        throw new AppError(ERROR_MESSAGE_INPUT_DEF);
-      }
-      setCollectionInfoIsLoading(true);
-
-      let curCollectionSabcategories: string[] = [];
-      let postData: CollectionSavedPost | null = null;
-
-      if (mainCategorySelected?.id && collectionNameSelected?.id) {
-        const collectionData = await getCollectionData(
-          collectionNameSelected.id,
-        );
-        postData =
-          collectionData?.posts?.find((post) => post.postId === postId) || null;
-
-        curCollectionSabcategories = collectionData.subcategories;
-      }
-
-      const inputSubcatsData = subcategoryInputs.flatMap((subcat) => {
-        if (!subcat?.selected?.name) {
-          return [];
-        }
-        return subcat.selected;
-      });
-      const subcategories = filterDuplicates(inputSubcatsData, "name").map(
-        (subcategory) => {
-          return {
-            ...subcategory,
-            name: subcategory.name.trim(),
-          };
-        },
-      );
-
-      const collectionInputData = {
-        collectionData: {
-          id: collectionNameSelected.id,
-          name: collectionNameSelected.name.trim(),
-        },
-        categoryData: {
-          id: mainCategorySelected.id,
-          name: mainCategorySelected.name.trim(),
-        },
-        subcategoriesData: subcategories,
-        curCollectionSabcategories,
-      };
-
-      const categoriesWithId = await dispatch(
-        addNewCollectionCategories(collectionInputData),
-      );
-
-      setCollectionInfo(categoriesWithId);
-      if (images?.length) {
-        if (postData?.imageIds?.length) {
-          setSavedPostData(postData);
-        }
-
-        setChooseImageIsOpen(true);
-      }
-
-      setSuccessMessage(SUCCESS_MESSAGE_SAVED);
-    } catch (err) {
-      const errorMessage = handleErrors(normalizeError(err));
-      setErrorMessage(errorMessage);
-      setShowErrorMessage(true);
-    } finally {
-      setCollectionInfoIsLoading(false);
-    }
+  const submitHandler = (e: SubmitEvent) => {
+    e.preventDefault();
+    return prepare({ mainCategorySelected, collectionNameSelected, subcategoryInputs });
   };
 
   return (
     <>
-      {!chooseImageIsOpen && (
+      {stage === "destination" && (
         <div className={classes["container"]}>
           <form
             // initial={ANIMATIONS_FM_FADEIN_INITIAL}
@@ -518,7 +430,7 @@ const SaveToCollectionForm = ({
         </div>
       )}
 
-      {chooseImageIsOpen && images && onSave && (
+      {stage === "images" && images && onSave && (
         <ChooseImageForm
           type="save"
           location="collections"
