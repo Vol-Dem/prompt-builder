@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState, type SubmitEvent } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 import Button from "../../ui/buttons/Button";
@@ -9,15 +8,10 @@ import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-  ANIMATIONS_FM_SLIDEOUT,
-  ANIMATIONS_FM_FADEOUT_EXIT,
-  ANIMATIONS_FM_SLIDEOUT_INITIAL,
   SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT,
 } from "../../../variables/constants";
 import ComboSelect from "../../ui/forms/ComboSelect";
-import Fieldset from "../../ui/forms/Fieldset";
-import ButtonSecondary from "../../ui/buttons/ButtonSecondary";
-import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
+import SubcategoriesInputFieldset from "../../ui/forms/SubcategoriesInputFieldset";
 import {
   cloneObject,
   sortArrayBy,
@@ -31,7 +25,6 @@ import type { SuggestedCollection } from "../../../types/collections.types";
 import type { SubcategoryInput } from "../../../types/forms.types";
 import { FORMS_DEF_SUBCATEGORY_INPUT } from "../../../variables/structures";
 import type { SelectOption } from "../../../types/general.types";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import type {
   UploadingCollectionData,
   UploadingPostData,
@@ -293,43 +286,6 @@ const SaveToCollectionForm = ({
     });
   };
 
-  const subCatHtml = subcategoryInputs.map((sub, i) => {
-    return (
-      <motion.div
-        layout
-        key={sub.id}
-        initial={i ? ANIMATIONS_FM_SLIDEOUT_INITIAL : false}
-        animate={ANIMATIONS_FM_SLIDEOUT}
-        exit={ANIMATIONS_FM_FADEOUT_EXIT}
-        className={classes["subcategory"]}
-      >
-        <ComboSelect
-          id={sub.id}
-          optionsData={subCategoryOptions || []}
-          query={subcategoryQuery}
-          setQuery={setSubcategoryQuery}
-          setSelected={subCatSelectHandler}
-          selected={sub.selected ? { ...sub.selected } : { id: null, name: "" }}
-          placeholder="Subcategory"
-          validation={{
-            required: false,
-            maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-          }}
-          showError={showErrorMessage}
-        />
-        {i !== 0 && (
-          <ButtonTertiary
-            type="button"
-            className={classes["input__btn-del"]}
-            onClick={deleteSubcategoryInputHandler.bind(null, i)}
-          >
-            <XMarkIcon />
-          </ButtonTertiary>
-        )}
-      </motion.div>
-    );
-  });
-
   const submitHandler = (e: SubmitEvent) => {
     e.preventDefault();
     return prepare({ mainCategorySelected, collectionNameSelected, subcategoryInputs });
@@ -361,20 +317,18 @@ const SaveToCollectionForm = ({
                 }}
                 showError={showErrorMessage}
               />
-              <Fieldset legend="Subcategories">
-                <AnimatePresence>{subCatHtml}</AnimatePresence>
-                {subcategoryInputs?.length <
-                  SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT && (
-                  <ButtonSecondary
-                    type="button"
-                    id="sub"
-                    onClick={addSubHandler}
-                    className={classes["btn-secondary"]}
-                  >
-                    + add subcategory
-                  </ButtonSecondary>
-                )}
-              </Fieldset>
+              <SubcategoriesInputFieldset
+                subcategories={subcategoryInputs}
+                options={subCategoryOptions}
+                query={subcategoryQuery}
+                required={false}
+                emptySelection={{ id: null, name: "" }}
+                showError={showErrorMessage}
+                onQueryChange={setSubcategoryQuery}
+                onSelect={subCatSelectHandler}
+                onAdd={addSubHandler}
+                onDelete={deleteSubcategoryInputHandler}
+              />
               <ComboSelect
                 id="colname"
                 label="Collection"

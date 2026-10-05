@@ -9,7 +9,7 @@ import {
 import { Link } from "react-router-dom";
 
 import classes from "./UpdateModelForm.module.scss";
-import ModelSubcategoriesFieldset from "./model-subcategories-fieldset/ModelSubcategoriesFieldset";
+import SubcategoriesInputFieldset from "../../ui/forms/SubcategoriesInputFieldset";
 import ModelVersionsFieldset from "./model-versions-fieldset/ModelVersionsFieldset";
 import Input from "../../ui/forms/Input";
 import Button from "../../ui/buttons/Button";
@@ -527,11 +527,12 @@ const UpdateModelForm = ({
             showError={showErrorMessage}
           />
         </FieldCategory>
-        <ModelSubcategoriesFieldset
+        <SubcategoriesInputFieldset
           subcategories={subCatInputs}
           options={subCategoryOptions || []}
           query={subCategoryQuery}
           showError={showErrorMessage}
+          required
           onQueryChange={setSubCategoryQuery}
           onSelect={subCatSelectHandler}
           onAdd={addSubHandler}

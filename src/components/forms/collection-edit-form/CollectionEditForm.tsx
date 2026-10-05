@@ -1,22 +1,15 @@
-import { AnimatePresence } from "framer-motion";
 import { useEffect, useMemo, useState, type SubmitEvent } from "react";
-import { motion } from "framer-motion";
 
 import ComboSelect from "../../ui/forms/ComboSelect";
-import Fieldset from "../../ui/forms/Fieldset";
+import SubcategoriesInputFieldset from "../../ui/forms/SubcategoriesInputFieldset";
 import classes from "./CollectionEditForm.module.scss";
-import ButtonSecondary from "../../ui/buttons/ButtonSecondary";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-  ANIMATIONS_FM_SLIDEOUT,
-  ANIMATIONS_FM_FADEOUT_EXIT,
-  ANIMATIONS_FM_SLIDEOUT_INITIAL,
   ERROR_MESSAGE_INPUT_DEF,
   VALIDATION_DESCRIPTION_MAX_LENGTH,
   SUCCESS_MESSAGE_SAVED,
   SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT,
 } from "../../../variables/constants";
-import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import {
   AppError,
   cloneObject,
@@ -36,7 +29,6 @@ import SuccessMessage from "../../ui/SuccessMessage";
 import type { CollectionDoc } from "../../../../shared/types/firestore";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 import type { SelectOption } from "../../../types/general.types";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { CollectionSubcategory } from "../../../../shared/types/user";
 import type { SelectInput, SubcategoryInput } from "../../../types/forms.types";
 import { FORMS_DEF_SUBCATEGORY_INPUT } from "../../../variables/structures";
@@ -245,43 +237,6 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
     });
   };
 
-  const subCatHtml = subCatInputs.map((sub, i) => {
-    return (
-      <motion.div
-        layout
-        key={sub.id}
-        initial={i ? ANIMATIONS_FM_SLIDEOUT_INITIAL : false}
-        animate={ANIMATIONS_FM_SLIDEOUT}
-        exit={ANIMATIONS_FM_FADEOUT_EXIT}
-        className={classes["subcategory"]}
-      >
-        <ComboSelect
-          id={sub.id + ""}
-          optionsData={subCategoryOptions || []}
-          query={subCategoryQuery}
-          setQuery={setSubCategoryQuery}
-          setSelected={subCatSelectHandler}
-          selected={sub.selected ? { ...sub.selected } : null}
-          placeholder="Subcategory"
-          validation={{
-            required: false,
-            maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-          }}
-          showError={showErrorMessage}
-        />
-        {i !== 0 && (
-          <ButtonTertiary
-            type="button"
-            className={classes["input__btn-del"]}
-            onClick={deleteSubcategoryInputHandler.bind(null, i)}
-          >
-            <XMarkIcon />
-          </ButtonTertiary>
-        )}
-      </motion.div>
-    );
-  });
-
   const submitHandler = async (e: SubmitEvent) => {
     try {
       e.preventDefault();
@@ -403,19 +358,17 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
             }}
             showError={showErrorMessage}
           />
-          <Fieldset legend="Subcategories">
-            <AnimatePresence>{subCatHtml}</AnimatePresence>
-            {subCatInputs?.length < SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT && (
-              <ButtonSecondary
-                type="button"
-                id="sub"
-                onClick={addSubHandler}
-                className={classes["btn-secondary"]}
-              >
-                + add subcategory
-              </ButtonSecondary>
-            )}
-          </Fieldset>
+          <SubcategoriesInputFieldset
+            subcategories={subCatInputs}
+            options={subCategoryOptions}
+            query={subCategoryQuery}
+            required={false}
+            showError={showErrorMessage}
+            onQueryChange={setSubCategoryQuery}
+            onSelect={subCatSelectHandler}
+            onAdd={addSubHandler}
+            onDelete={deleteSubcategoryInputHandler}
+          />
         </div>
       </div>
 
