@@ -4,7 +4,11 @@ import { motion, type HTMLMotionProps } from "framer-motion";
 
 import classes from "./ImageFullView.module.scss";
 import Spinner from "./Spinner";
-import { SETTINGS_IMAGE_PREVIEW_WIDTH_BIG } from "../../variables/constants";
+import {
+  ANIMATIONS_FM_FADE_VARIANTS,
+  ANIMATIONS_FM_SLIDEIN_VARIANTS,
+  SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
+} from "../../variables/constants";
 import { transformSrcPreview } from "../../utils/imageUtils";
 import {
   ChevronLeftIcon,
@@ -75,11 +79,7 @@ const ImageFullView = ({
       {createPortal(
         <div>
           <motion.div
-            variants={{
-              hidden: { opacity: 0 },
-              visible: { opacity: 1 },
-              exit: { opacity: 0 },
-            }}
+            variants={ANIMATIONS_FM_FADE_VARIANTS}
             initial="hidden"
             animate="visible"
             exit="exit"
@@ -96,11 +96,7 @@ const ImageFullView = ({
               <motion.img
                 layout
                 layoutId={src}
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  visible: { opacity: 1, y: 0 },
-                  exit: { opacity: 0, y: 30 },
-                }}
+                variants={ANIMATIONS_FM_SLIDEIN_VARIANTS}
                 initial="hidden"
                 animate="visible"
                 exit="exit"

@@ -6,8 +6,8 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import Card from "./Card";
 import classes from "./Modal.module.scss";
 import {
-  ANIMATIONS_FM_SLIDEIN,
-  ANIMATIONS_FM_SLIDEIN_INITIAL,
+  ANIMATIONS_FM_FADE_VARIANTS,
+  ANIMATIONS_FM_SLIDEIN_VARIANTS,
 } from "../../variables/constants";
 import type { OverrideFields } from "../../../shared/types/general";
 
@@ -56,11 +56,7 @@ const Modal = ({
       {createPortal(
         <div className={`${classes["modal"]} ${disableClass || ""}`}>
           <motion.div
-            variants={{
-              hidden: { opacity: 0 },
-              visible: { opacity: 1 },
-              exit: { opacity: 0 },
-            }}
+            variants={ANIMATIONS_FM_FADE_VARIANTS}
             initial="hidden"
             animate="visible"
             exit="exit"
@@ -69,11 +65,7 @@ const Modal = ({
           ></motion.div>
           <motion.div
             layout
-            variants={{
-              hidden: ANIMATIONS_FM_SLIDEIN_INITIAL,
-              visible: ANIMATIONS_FM_SLIDEIN,
-              exit: ANIMATIONS_FM_SLIDEIN_INITIAL,
-            }}
+            variants={ANIMATIONS_FM_SLIDEIN_VARIANTS}
             initial="hidden"
             animate="visible"
             exit="exit"

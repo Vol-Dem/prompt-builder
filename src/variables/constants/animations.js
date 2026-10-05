@@ -8,3 +8,15 @@ export const ANIMATIONS_FM_FADEIN = { opacity: 1 };
 export const ANIMATIONS_FM_FADEIN_INITIAL = { opacity: 0 };
 export const ANIMATIONS_FM_ZOOM_IN_INITIAL = { opacity: 0, scale: 0.95 };
 export const ANIMATIONS_FM_ZOOM_IN = { opacity: 1, scale: 1 };
+
+export const ANIMATIONS_FM_FADE_VARIANTS = {
+  hidden: ANIMATIONS_FM_FADEIN_INITIAL,
+  visible: ANIMATIONS_FM_FADEIN,
+  exit: ANIMATIONS_FM_FADEIN_INITIAL,
+};
+
+export const ANIMATIONS_FM_SLIDEIN_VARIANTS = {
+  hidden: ANIMATIONS_FM_SLIDEIN_INITIAL,
+  visible: ANIMATIONS_FM_SLIDEIN,
+  exit: ANIMATIONS_FM_SLIDEIN_INITIAL,
+};
