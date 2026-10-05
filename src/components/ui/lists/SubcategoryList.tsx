@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 
 import ButtonTertiary from "../buttons/ButtonTertiary";
 import classes from "./SubcategoryList.module.scss";
+import { ANIMATIONS_FM_CATEGORY_LIST } from "../../../variables/constants";
 import type { ComponentProps } from "react";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
@@ -17,9 +18,7 @@ const SubcategoryList = ({
   return (
     <div className={classes["subcategories-container"]}>
       <motion.ul
-        initial={{ opacity: 0, y: -5 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        {...ANIMATIONS_FM_CATEGORY_LIST}
         className={`${classes["subcategories"]} ${className || ""}`}
       >
         {children}

@@ -1,6 +1,7 @@
 import { motion, type HTMLMotionProps } from "framer-motion";
 
 import classes from "./ButtonCategoryAll.module.scss";
+import { ANIMATIONS_FM_CATEGORY_LIST } from "../../../variables/constants";
 
 type ButtonCategoryAllProps = HTMLMotionProps<"li"> & {
   activeCategory: string;
@@ -14,9 +15,7 @@ const ButtonCategoryAll = ({
 }: ButtonCategoryAllProps) => {
   return (
     <motion.li
-      initial={{ opacity: 0, y: -5 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      {...ANIMATIONS_FM_CATEGORY_LIST}
       data-value="all"
       onClick={onClick}
       className={`${classes[`category__link`]} ${

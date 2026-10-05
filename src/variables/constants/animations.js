@@ -20,3 +20,9 @@ export const ANIMATIONS_FM_SLIDEIN_VARIANTS = {
   visible: ANIMATIONS_FM_SLIDEIN,
   exit: ANIMATIONS_FM_SLIDEIN_INITIAL,
 };
+
+export const ANIMATIONS_FM_CATEGORY_LIST = {
+  initial: { opacity: 0, y: -5 },
+  animate: ANIMATIONS_FM_SLIDEIN,
+  transition: { duration: 0.3 },
+};

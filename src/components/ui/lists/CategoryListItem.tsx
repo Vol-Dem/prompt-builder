@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 
 import classes from "./CategoryListItem.module.scss";
+import { ANIMATIONS_FM_CATEGORY_LIST } from "../../../variables/constants";
 import type { ComponentProps } from "react";
 
 type CategoryListItem = ComponentProps<"li"> & {
@@ -18,9 +19,7 @@ const CategoryListItem = ({
 }: CategoryListItem) => {
   return (
     <motion.li
-      initial={{ opacity: 0, y: -5 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      {...ANIMATIONS_FM_CATEGORY_LIST}
       data-value={dataValue}
       onClick={onClick}
       className={`${classes[`category__link`]} ${
