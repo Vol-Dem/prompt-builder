@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, type TargetAndTransition, type Variants } from "framer-motion";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
   useEffect,
@@ -16,6 +16,22 @@ import type { PromptItem, PromptType } from "../../../../types/prompt.types";
 import { useAppDispatch } from "../../../../store/hooks/hooks";
 
 const inputControlsWidth = 165;
+
+const tagInitial: TargetAndTransition = { opacity: 0, scale: 0.8 };
+const tagVariants: Variants = {
+  hidden: { opacity: 0, scale: 0.5 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { type: "spring" },
+  },
+};
+const tagExit: TargetAndTransition = {
+  y: -30,
+  x: 30,
+  opacity: 0,
+  scale: 0.5,
+};
 
 type TagsTextareaItemProps = {
   item: PromptItem;
@@ -132,17 +148,10 @@ const TagsTextareaItem = ({
         ref={lastTagRef}
         layout
         layoutId={`t-${item.id}`}
-        initial={{ opacity: 0, scale: 0.8 }}
-        variants={{
-          hidden: { opacity: 0, scale: 0.5 },
-          visible: {
-            opacity: 1,
-            scale: 1,
-            transition: { type: "spring" },
-          },
-        }}
+        initial={tagInitial}
+        variants={tagVariants}
         animate="visible"
-        exit={{ y: -30, x: 30, opacity: 0, scale: 0.5 }}
+        exit={tagExit}
         className={`${classes["tag-container"]} ${
           item.dropLeft !== null && item.dropLeft ? classes["drop-left"] : ""
         } ${
