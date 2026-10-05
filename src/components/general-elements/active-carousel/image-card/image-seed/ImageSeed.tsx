@@ -1,10 +1,10 @@
-import { useState } from "react";
 import {
   ClipboardDocumentCheckIcon,
   ClipboardDocumentIcon,
 } from "@heroicons/react/24/outline";
 
 import classes from "./ImageSeed.module.scss";
+import CopyControl from "../../../../ui/CopyControl";
 
 type ImageSeedProps = { value: number };
 
@@ -21,26 +21,17 @@ type ImageSeedProps = { value: number };
  * @returns {JSX.Element} Image seed.
  */
 const ImageSeed = ({ value }: ImageSeedProps) => {
-  const [copied, setCopied] = useState(false);
-
-  const copyHandler = () => {
-    navigator.clipboard.writeText(value + "");
-    setCopied(true);
-
-    setTimeout(() => {
-      setCopied(false);
-    }, 1000);
-  };
-
   return (
-    <span
-      className={`${classes.seed} ${copied ? classes["seed--copied"] : ""}`}
-      onClick={copyHandler}
+    <CopyControl
+      as="span"
+      text={String(value)}
+      className={classes.seed}
+      copiedClassName={classes["seed--copied"]}
+      idleIcon={<ClipboardDocumentIcon />}
+      copiedIcon={<ClipboardDocumentCheckIcon />}
     >
       {value}
-      {!copied && <ClipboardDocumentIcon />}
-      {copied && <ClipboardDocumentCheckIcon />}
-    </span>
+    </CopyControl>
   );
 };
 

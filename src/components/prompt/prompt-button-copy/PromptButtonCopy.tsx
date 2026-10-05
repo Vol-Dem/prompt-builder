@@ -1,10 +1,10 @@
-import { useRef, useState } from "react";
 import {
   DocumentArrowDownIcon,
   DocumentDuplicateIcon,
 } from "@heroicons/react/24/outline";
 
 import classes from "./PromptButtonCopy.module.scss";
+import CopyControl from "../../ui/CopyControl";
 
 type PromptButtonCopyProps = { promptData: string };
 
@@ -26,33 +26,16 @@ type PromptButtonCopyProps = { promptData: string };
  * @returns Copy prompt button.
  */
 const PromptButtonCopy = ({ promptData }: PromptButtonCopyProps) => {
-  const [copied, setCopied] = useState(false);
-  const timeoutCopiedRef = useRef<ReturnType<typeof setTimeout>>(null);
-
-  const copyToClipboardHandler = () => {
-    if (timeoutCopiedRef.current) {
-      clearTimeout(timeoutCopiedRef.current);
-    }
-
-    navigator.clipboard.writeText(promptData);
-    setCopied(true);
-
-    timeoutCopiedRef.current = setTimeout(() => {
-      setCopied(false);
-    }, 1000);
-  };
-
   return (
-    <button
+    <CopyControl
       type="button"
       data-type="negative"
-      onClick={copyToClipboardHandler}
+      text={promptData}
       className={classes["btn-copy"]}
       title="Copy"
-    >
-      {!copied && <DocumentDuplicateIcon />}
-      {copied && <DocumentArrowDownIcon className={classes.copied} />}
-    </button>
+      idleIcon={<DocumentDuplicateIcon />}
+      copiedIcon={<DocumentArrowDownIcon className={classes.copied} />}
+    />
   );
 };
 

@@ -1,10 +1,11 @@
 import { createPortal } from "react-dom";
-import { useState, type ComponentProps } from "react";
+import type { ComponentProps } from "react";
 
 import classes from "./QuickStartGuide.module.scss";
 import LinkA from "../../ui/LinkA";
 import TextButtonCreate from "../../ui/text/text-buttons/TextButtonCreate";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
+import useCopyFeedback from "../../../hooks/use-copy-feedback";
 import {
   ChevronRightIcon,
   ChevronUpIcon,
@@ -36,15 +37,7 @@ const QuickStartGuide = ({
   onClose,
   className,
 }: QuickStartGuideProps) => {
-  const [copied, setCopied] = useState(false);
-
-  const copyHandler = () => {
-    navigator.clipboard.writeText("727427");
-    setCopied(true);
-    setTimeout(() => {
-      setCopied(false);
-    }, 1000);
-  };
+  const { copied, copy } = useCopyFeedback("727427");
 
   return (
     <>
@@ -95,7 +88,7 @@ const QuickStartGuide = ({
                         className={`${classes["btn-copy"]} ${
                           copied ? classes["btn-copy--copied"] : ""
                         }`}
-                        onClick={copyHandler}
+                        onClick={copy}
                         title="Copy"
                       >
                         727427 {!copied && <DocumentDuplicateIcon />}

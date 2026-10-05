@@ -1,10 +1,11 @@
-import { useState, type ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { motion } from "framer-motion";
 
 import Tag from "../tag/Tag";
 import classes from "./TagList.module.scss";
 import { promptActions } from "../../../store/prompt";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
+import CopyControl from "../../ui/CopyControl";
 import type { PromptType } from "../../../types/prompt.types";
 import { useAppDispatch } from "../../../store/hooks/hooks";
 import {
@@ -45,7 +46,6 @@ const TagList = ({
   promptType,
   ref,
 }: TagListProps) => {
-  const [copied, setCopied] = useState(false);
   const dispatch = useAppDispatch();
 
   const addAllPromptHandler = () => {
@@ -64,14 +64,6 @@ const TagList = ({
         value: tags,
       }),
     );
-  };
-
-  const copyHandler = () => {
-    navigator.clipboard.writeText(tags.join(", "));
-    setCopied(true);
-    setTimeout(() => {
-      setCopied(false);
-    }, 1000);
   };
 
   return (
@@ -97,16 +89,15 @@ const TagList = ({
             Remove all
           </button>
         </span>
-        <ButtonTertiary
-          className={`${classes["btn-copy"]} ${
-            copied ? classes["btn-copy--copied"] : ""
-          }`}
-          onClick={copyHandler}
+        <CopyControl
+          as={ButtonTertiary}
+          text={tags.join(", ")}
+          className={classes["btn-copy"]}
+          copiedClassName={classes["btn-copy--copied"]}
           title="Copy"
-        >
-          {!copied && <ClipboardDocumentIcon />}
-          {copied && <ClipboardDocumentCheckIcon />}
-        </ButtonTertiary>
+          idleIcon={<ClipboardDocumentIcon />}
+          copiedIcon={<ClipboardDocumentCheckIcon />}
+        />
       </div>
       <motion.ul className={classes.tags}>
         {!!tags?.length &&
