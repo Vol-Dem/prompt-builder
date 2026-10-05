@@ -1,11 +1,29 @@
 import { ComboboxOption, ComboboxOptions } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
-import { motion } from "framer-motion";
+import { motion, type TargetAndTransition } from "framer-motion";
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 
 import classes from "./ComboSelect.module.scss";
 import useIntersection from "../../../hooks/use-intersection";
+import {
+  ANIMATIONS_FM_ZOOM_IN,
+  ANIMATIONS_FM_ZOOM_IN_INITIAL,
+} from "../../../variables/constants";
 import type { SelectOption } from "../../../types/general.types";
+
+const optionsBatchSize = 50;
+const optionsExit: TargetAndTransition = {
+  opacity: 0,
+  scale: 0.95,
+  zIndex: -1,
+  transition: {
+    duration: 0.2,
+    zIndex: {
+      delay: 0.1,
+      duration: 0.1,
+    },
+  },
+};
 
 type ComboSelectOptionsProps<T extends number | string> =
   ComponentProps<"input"> & {
@@ -31,7 +49,6 @@ const ComboSelectOptions = <T extends number | string>({
     0,
     intersectionRootRef,
   );
-  const optionsBatchSize = 50;
   const visibleOptions = optionsData.slice(
     0,
     optionsBatchSize * visibleOptionsIndex + optionsBatchSize,
@@ -51,20 +68,9 @@ const ComboSelectOptions = <T extends number | string>({
       ref={intersectionRootRef}
       static
       as={motion.div}
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{
-        opacity: 0,
-        scale: 0.95,
-        zIndex: -1,
-        transition: {
-          duration: 0.2,
-          zIndex: {
-            delay: 0.1,
-            duration: 0.1,
-          },
-        },
-      }}
+      initial={ANIMATIONS_FM_ZOOM_IN_INITIAL}
+      animate={ANIMATIONS_FM_ZOOM_IN}
+      exit={optionsExit}
       anchor="bottom"
       transition
       className={`${classes.options} ${

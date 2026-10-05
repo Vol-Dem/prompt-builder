@@ -1,5 +1,5 @@
 import { createPortal } from "react-dom";
-import { motion } from "framer-motion";
+import { motion, type TargetAndTransition } from "framer-motion";
 import {
   ExclamationCircleIcon,
   ExclamationTriangleIcon,
@@ -10,6 +10,17 @@ import Card from "./Card";
 import classes from "./Notification.module.scss";
 import type { ComponentProps } from "react";
 import type { NotificationType } from "../../types/notification.types";
+
+const notificationHidden: TargetAndTransition = {
+  opacity: 0,
+  y: 30,
+  x: "-50%",
+};
+const notificationVisible: TargetAndTransition = {
+  opacity: 1,
+  y: 0,
+  x: "-50%",
+};
 
 type NotificationProps = ComponentProps<"div"> & {
   type: NotificationType;
@@ -37,9 +48,9 @@ const Notification = ({
     <>
       {createPortal(
         <motion.div
-          initial={{ opacity: 0, y: 30, x: "-50%" }}
-          animate={{ opacity: 1, y: 0, x: "-50%" }}
-          exit={{ opacity: 0, y: 30, x: "-50%" }}
+          initial={notificationHidden}
+          animate={notificationVisible}
+          exit={notificationHidden}
           className={classes["notification-container"]}
         >
           <Card className={classes.notification}>
