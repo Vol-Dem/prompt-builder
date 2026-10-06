@@ -1,11 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
 import { sortArrayBy } from "../utils/generalUtils";
-import {
-  DEFAULT_PAGE_TITLE,
-  ERROR_MESSAGE_OFFLINE,
-} from "../variables/constants";
+import { ERROR_MESSAGE_OFFLINE } from "../variables/constants";
 import classes from "./Collections.module.scss";
 import ErrorMessage from "../components/ui/ErrorMessage";
 import Spinner from "../components/ui/Spinner";
@@ -22,6 +19,7 @@ import TextButtonCollection from "../components/ui/text/text-buttons/TextButtonC
 import Text from "../components/ui/text/Text";
 import TextButtonCreate from "../components/ui/text/text-buttons/TextButtonCreate";
 import useCollectionPreviewsController from "../hooks/use-collection-previews-controller";
+import usePageTitle from "../hooks/use-page-title";
 
 interface CollectionsProps {
   title: string;
@@ -33,13 +31,7 @@ const Collections = ({ title }: CollectionsProps) => {
   const [isSubcategory, setIsSubcategory] = useState(false);
   const { categories, subcategories, status, endPageRef } = useCollectionPreviewsController();
 
-  useEffect(() => {
-    document.title = title;
-
-    return () => {
-      document.title = DEFAULT_PAGE_TITLE;
-    };
-  }, [title]);
+  usePageTitle(title);
 
   const categoriesHtml = sortArrayBy(categories.items, "name")?.map((category) => {
     return (

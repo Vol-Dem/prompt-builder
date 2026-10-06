@@ -2,10 +2,10 @@ import { Suspense, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
 import classes from "./About.module.scss";
-import { DEFAULT_PAGE_TITLE } from "../variables/constants";
 import AboutNav from "../components/about/about-nav/AboutNav";
 import Spinner from "../components/ui/Spinner";
 import { smoothScroll } from "../utils/generalUtils";
+import usePageTitle from "../hooks/use-page-title";
 
 interface AboutProps {
   title: string;
@@ -44,13 +44,7 @@ const AboutOutlet = () => {
  * @returns About page layout.
  */
 const About = ({ title }: AboutProps) => {
-  useEffect(() => {
-    document.title = title;
-
-    return () => {
-      document.title = DEFAULT_PAGE_TITLE;
-    };
-  }, [title]);
+  usePageTitle(title);
 
   useEffect(() => {
     window.scrollTo(0, 0);

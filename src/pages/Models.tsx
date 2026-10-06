@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import classes from "./Models.module.scss";
 import { getModelsPreview, tabActions } from "../store/tabs";
 import { guideActions } from "../store/guide";
-import { DEFAULT_PAGE_TITLE, MODEL_TYPES } from "../variables/constants";
+import { MODEL_TYPES } from "../variables/constants";
 import Categories from "../components/models/categories/Categories";
 import Spinner from "../components/ui/Spinner";
 import ErrorMessage from "../components/ui/ErrorMessage";
@@ -21,6 +21,7 @@ import TextHighlight from "../components/ui/text/TextHighlight";
 import NotificationMessage from "../components/ui/NotificationMessage";
 import Text from "../components/ui/text/Text";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
+import usePageTitle from "../hooks/use-page-title";
 
 interface ModelsProps {
   title: string;
@@ -68,13 +69,7 @@ const Models = ({ title }: ModelsProps) => {
   );
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    document.title = title;
-
-    return () => {
-      document.title = DEFAULT_PAGE_TITLE;
-    };
-  }, [title]);
+  usePageTitle(title);
 
   const tabSwitchHandler = (e: React.MouseEvent<HTMLElement>) => {
     if (

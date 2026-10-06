@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 
 import classes from "./Profile.module.scss";
@@ -8,7 +7,6 @@ import {
   VALIDATION_EMAIL_MAX_LENGTH,
   VALIDATION_PASSWORD_MAX_LENGTH,
   VALIDATION_USERNAME_MAX_LENGTH,
-  DEFAULT_PAGE_TITLE,
 } from "../variables/constants";
 import Card from "../components/ui/Card";
 import Input from "../components/ui/forms/Input";
@@ -20,6 +18,7 @@ import Modal from "../components/ui/Modal";
 import VerifyEmailMessage from "../components/general-elements/verify-email-message/VerifyEmailMessage";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
 import useProfileEditingController from "../hooks/use-profile-editing-controller";
+import usePageTitle from "../hooks/use-page-title";
 
 interface ProfileProps {
   title: string;
@@ -35,13 +34,7 @@ const Profile = ({ title }: ProfileProps) => {
   const reAuthIsOpen = useAppSelector((state) => state.auth.reAuthFormIsOpen);
   const uid = useAppSelector((state) => state.auth.user.uid);
 
-  useEffect(() => {
-    document.title = title;
-
-    return () => {
-      document.title = DEFAULT_PAGE_TITLE;
-    };
-  }, [title]);
+  usePageTitle(title);
 
   const closeReAuth = () => {
     dispatch(authActions.setReauthFormIsOpen(false));

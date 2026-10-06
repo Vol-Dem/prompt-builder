@@ -5,7 +5,6 @@ import { AnimatePresence } from "framer-motion";
 import classes from "./Collection.module.scss";
 import { imagesActions } from "../store/images";
 import { getCollection } from "../store/imagesThunks";
-import { DEFAULT_PAGE_TITLE } from "../variables/constants";
 import CollectionImages from "../components/collection/collection-images/CollectionImages";
 import NavigationPanel from "../components/layout/navigation-panel/NavigationPanel";
 import Button from "../components/ui/buttons/Button";
@@ -16,6 +15,7 @@ import ErrorMessage from "../components/ui/ErrorMessage";
 import ButtonSquareAdd from "../components/general-elements/button-square-add/ButtonSquareAdd";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
 import { handleErrors, normalizeError } from "../utils/generalUtils";
+import usePageTitle from "../hooks/use-page-title";
 
 interface CollectionProps {
   title: string;
@@ -61,13 +61,7 @@ const Collection = ({ title }: CollectionProps) => {
     (preview) => preview?.id === collectionData?.id,
   );
 
-  useEffect(() => {
-    document.title = collectionData?.name || title;
-
-    return () => {
-      document.title = DEFAULT_PAGE_TITLE;
-    };
-  }, [title, collectionData?.name]);
+  usePageTitle(collectionData?.name || title);
 
   useEffect(() => {
     if (!isAuth || !collectionId) return;

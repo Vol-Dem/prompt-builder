@@ -11,18 +11,18 @@ import H1 from "../components/ui/text/H1";
 import LinkA from "../components/ui/LinkA";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
 import { modelActions } from "../store/model";
+import usePageTitle from "../hooks/use-page-title";
 
 const Author = () => {
   const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
   const { authorName } = useParams();
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    if (authorName) document.title = authorName;
+  usePageTitle(authorName || DEFAULT_PAGE_TITLE);
 
+  useEffect(() => {
     return () => {
       dispatch(modelActions.setActiveCarouselData(null));
-      document.title = DEFAULT_PAGE_TITLE;
     };
   }, []);
 

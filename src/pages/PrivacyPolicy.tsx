@@ -1,9 +1,8 @@
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
 
 import classes from "./PrivacyPolicy.module.scss";
-import { DEFAULT_PAGE_TITLE } from "../variables/constants";
 import LinkA from "../components/ui/LinkA";
+import usePageTitle from "../hooks/use-page-title";
 
 interface PrivacyPolicyProps {
   title: string;
@@ -22,17 +21,7 @@ interface PrivacyPolicyProps {
  * @returns Privacy policy page.
  */
 const PrivacyPolicy = ({ title }: PrivacyPolicyProps) => {
-  useEffect(() => {
-    document.title = title;
-  }, [title]);
-
-  useEffect(() => {
-    document.title = title;
-
-    return () => {
-      document.title = DEFAULT_PAGE_TITLE;
-    };
-  }, [title]);
+  usePageTitle(title);
 
   return (
     <div className={classes.policy}>

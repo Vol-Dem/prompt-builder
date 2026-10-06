@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 
 import classes from "./SearchPage.module.scss";
@@ -11,6 +11,7 @@ import NotificationMessage from "../components/ui/NotificationMessage";
 import SearchFilter from "../components/search/search-filter/SearchFilter";
 import Button from "../components/ui/buttons/Button";
 import useSearchResultsController from "../hooks/use-search-results-controller";
+import usePageTitle from "../hooks/use-page-title";
 
 interface SearchPageProps {
   title: string;
@@ -21,9 +22,7 @@ const SearchPage = ({ title }: SearchPageProps) => {
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
   const { source, query, results, status, pagination } = useSearchResultsController();
 
-  useEffect(() => {
-    document.title = query.parameter ? `${title} - ${query.parameter}` : title;
-  }, [title, query.parameter]);
+  usePageTitle(query.parameter ? `${title} - ${query.parameter}` : title);
 
   const openSidebarHandler = () => {
     setSidebarIsOpen(true);

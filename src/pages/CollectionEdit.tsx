@@ -4,16 +4,14 @@ import { useEffect, useState } from "react";
 import classes from "./CollectionEdit.module.scss";
 import { imagesActions } from "../store/images";
 import { deleteCollection, getCollection } from "../store/imagesThunks";
-import {
-  DEFAULT_PAGE_TITLE,
-  MESSAGE_DELETE_COLLECTION,
-} from "../variables/constants";
+import { MESSAGE_DELETE_COLLECTION } from "../variables/constants";
 import CollectionEditForm from "../components/forms/collection-edit-form/CollectionEditForm";
 import Spinner from "../components/ui/Spinner";
 import ButtonDelete from "../components/ui/buttons/ButtonDelete";
 import ErrorMessage from "../components/ui/ErrorMessage";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
 import { handleErrors, normalizeError } from "../utils/generalUtils";
+import usePageTitle from "../hooks/use-page-title";
 
 interface CollectionEditProps {
   title: string;
@@ -76,15 +74,7 @@ const CollectionEdit = ({ title }: CollectionEditProps) => {
     };
   }, [collectionId, isAuth, dispatch]);
 
-  useEffect(() => {
-    document.title = collectionData?.name
-      ? `Edit - ${collectionData?.name}`
-      : title;
-
-    return () => {
-      document.title = DEFAULT_PAGE_TITLE;
-    };
-  }, [title, collectionData]);
+  usePageTitle(collectionData?.name ? `Edit - ${collectionData.name}` : title);
 
   const deleteCollectionHandler = async () => {
     try {

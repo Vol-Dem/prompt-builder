@@ -1,9 +1,8 @@
-import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 
 import classes from "./ToS.module.scss";
-import { DEFAULT_PAGE_TITLE } from "../variables/constants";
 import LinkA from "../components/ui/LinkA";
+import usePageTitle from "../hooks/use-page-title";
 
 interface ToSProps {
   title: string;
@@ -22,21 +21,7 @@ interface ToSProps {
  * @returns Terms of Service page.
  */
 const ToS = ({ title }: ToSProps) => {
-  useEffect(() => {
-    document.title = title;
-
-    return () => {
-      document.title = DEFAULT_PAGE_TITLE;
-    };
-  }, [title]);
-
-  useEffect(() => {
-    document.title = title;
-
-    return () => {
-      document.title = DEFAULT_PAGE_TITLE;
-    };
-  }, [title]);
+  usePageTitle(title);
 
   return (
     <div className={classes.tos}>
