@@ -1,5 +1,5 @@
 import { Suspense, useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useMatches } from "react-router-dom";
 
 import classes from "./About.module.scss";
 import AboutNav from "../components/about/about-nav/AboutNav";
@@ -10,6 +10,8 @@ import usePageTitle from "../hooks/use-page-title";
 interface AboutProps {
   title: string;
 }
+
+type AboutRouteHandle = { pageTitle?: string };
 
 // Commit the scroll effect with the content, after any lazy page has loaded.
 const AboutOutlet = () => {
@@ -39,12 +41,17 @@ const AboutOutlet = () => {
  * @component
  *
  * @param props
- * @param props.title - Page title.
+ * @param props.title - Fallback title when child route metadata is absent.
  *
  * @returns About page layout.
  */
 const About = ({ title }: AboutProps) => {
-  usePageTitle(title);
+  const matches = useMatches();
+  const pageTitle = matches.reduce((matchedTitle, match) => {
+    const handle = match.handle as AboutRouteHandle | undefined;
+    return handle?.pageTitle ?? matchedTitle;
+  }, title);
+  usePageTitle(pageTitle);
 
   useEffect(() => {
     window.scrollTo(0, 0);

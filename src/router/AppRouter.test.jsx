@@ -7,6 +7,7 @@ import {
   createMemoryRouter,
   Outlet,
   RouterProvider,
+  useMatches,
   useParams,
   useRouteError,
 } from "react-router-dom";
@@ -16,6 +17,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "../App";
 import { initAuth } from "../store/authThunks";
 import { smoothScroll } from "../utils/generalUtils";
+import { DEFAULT_PAGE_TITLE } from "../variables/constants";
 
 const checks = vi.hoisted(() => ({
   layoutMounted: vi.fn(),
@@ -127,10 +129,12 @@ vi.mock("../pages/about/AboutSidebar", () => ({
 
 const Page = ({ name, title }) => {
   const params = useParams();
+  const matches = useMatches();
+  const routeTitle = matches[matches.length - 1]?.handle?.pageTitle;
   if (checks.failingPage === name) throw new Error("Page failed");
   return (
     <section data-testid="page" data-page={name}>
-      <h1>{title}</h1>
+      <h1>{title ?? routeTitle}</h1>
       <output data-testid="params">{JSON.stringify(params)}</output>
       <input aria-label="Page note" />
     </section>
@@ -155,6 +159,7 @@ const expectPage = async (name) => {
 };
 
 beforeEach(async () => {
+  document.title = DEFAULT_PAGE_TITLE;
   vi.spyOn(window, "scrollTo").mockImplementation(() => {});
   checks.failingPage = null;
   checks.layoutMounted.mockClear();
@@ -248,6 +253,7 @@ describe("application router", () => {
       expect(JSON.parse(screen.getByTestId("params").textContent)).toEqual(params);
       if (id) expect(router.state.matches.some(match => match.route.id === id)).toBe(true);
       if (url.startsWith("/about")) {
+        expect(document.title).toBe(title);
         expect(screen.getByRole("navigation", { name: "About navigation" })).toBeTruthy();
       }
     } finally {
@@ -264,9 +270,11 @@ describe("application router", () => {
     await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("Page failed"));
     expect(screen.getByTestId("layout")).toBeTruthy();
     expect(screen.getByRole("navigation", { name: "About navigation" })).toBeTruthy();
+    expect(document.title).toBe("Sidebar");
     checks.failingPage = null;
     await act(async () => { await browserRouter.navigate("/about"); });
     await expectPage("AboutMain");
+    expect(document.title).toBe("About");
     consoleError.mockRestore();
   });
 
@@ -279,13 +287,13 @@ describe("application router", () => {
 
   // Inject a controlled import into the real route tree to exercise the About
   // loading/error boundaries without relying on network or module-cache timing.
-  const aboutRouterWith = (element, url = "/about/sidebar") => createMemoryRouter(
+  const aboutRouterWith = (element, url = "/about/sidebar", overrides = {}) => createMemoryRouter(
     browserRouter.routes.map((root) => ({
       ...root,
       children: root.children.map((route) => route.path === "/about" ? {
         ...route,
         children: route.children.map((child) => child.path === "sidebar"
-          ? { ...child, element }
+          ? { ...child, ...overrides, element }
           : child),
       } : route),
     })),
@@ -300,6 +308,7 @@ describe("application router", () => {
     try {
       render(<Provider store={makeStore()}><RouterProvider router={router} /></Provider>);
       await screen.findByTestId("about-spinner");
+      expect(document.title).toBe("Sidebar");
       const navigation = screen.getByRole("navigation", { name: "About navigation" });
       expect(screen.queryByRole("status")).toBeNull();
       expect(smoothScroll).not.toHaveBeenCalled();
@@ -316,6 +325,7 @@ describe("application router", () => {
         await pendingPage;
       });
       await expectPage("Loaded sidebar");
+      expect(document.title).toBe("Sidebar");
       expect(screen.queryByTestId("about-spinner")).toBeNull();
       expect(screen.getByRole("navigation", { name: "About navigation" })).toBe(navigation);
       expect(screen.getByLabelText("Layout note").value).toBe("keep me");
@@ -323,11 +333,13 @@ describe("application router", () => {
       expect(smoothScroll).toHaveLastReturnedWith(true);
 
       await act(async () => { await router.navigate("/about/sidebar#other-section"); });
+      expect(document.title).toBe("Sidebar");
       expect(smoothScroll).toHaveBeenLastCalledWith("#other-section");
       expect(smoothScroll).toHaveLastReturnedWith(true);
 
       await act(async () => { await router.navigate("/about/top-panel"); });
       await expectPage("AboutTopPanel");
+      expect(document.title).toBe("Top Panel");
       expect(screen.getByRole("navigation", { name: "About navigation" })).toBe(navigation);
     } finally {
       cleanup();
@@ -342,15 +354,54 @@ describe("application router", () => {
     try {
       render(<Provider store={makeStore()}><RouterProvider router={router} /></Provider>);
       await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("Page download failed"));
+      expect(document.title).toBe("Sidebar");
       expect(screen.getByRole("navigation", { name: "About navigation" })).toBeTruthy();
       expect(screen.getByTestId("layout")).toBeTruthy();
 
       await act(async () => { await router.navigate("/about"); });
       await expectPage("AboutMain");
+      expect(document.title).toBe("About");
       expect(screen.queryByRole("alert")).toBeNull();
     } finally {
       cleanup();
       router.dispose();
     }
+  });
+
+  it("updates About titles through history navigation and restores the default on leaving", async () => {
+    const router = createMemoryRouter(browserRouter.routes, { initialEntries: ["/about/sidebar"] });
+    try {
+      render(<Provider store={makeStore()}><RouterProvider router={router} /></Provider>);
+      await expectPage("AboutSidebar");
+      expect(document.title).toBe("Sidebar");
+      await act(async () => { await router.navigate("/about/top-panel#search"); });
+      await expectPage("AboutTopPanel");
+      expect(document.title).toBe("Top Panel");
+      await act(async () => { await router.navigate(-1); });
+      await expectPage("AboutSidebar");
+      expect(document.title).toBe("Sidebar");
+      await act(async () => { await router.navigate(1); });
+      await expectPage("AboutTopPanel");
+      expect(document.title).toBe("Top Panel");
+      await act(async () => { await router.navigate("/about"); });
+      await expectPage("AboutMain");
+      expect(document.title).toBe("About");
+      await act(async () => { await router.navigate("/profile"); });
+      await expectPage("Profile");
+      expect(document.title).toBe(DEFAULT_PAGE_TITLE);
+    } finally { cleanup(); router.dispose(); }
+  });
+
+  it("uses the About fallback when a child route has no title metadata", async () => {
+    const router = aboutRouterWith(<Page name="No metadata" title="Content heading" />,
+      "/about/sidebar", { handle: undefined });
+    try {
+      render(<Provider store={makeStore()}><RouterProvider router={router} /></Provider>);
+      await expectPage("No metadata");
+      expect(document.title).toBe("About");
+      expect(screen.getByRole("heading").textContent).toBe("Content heading");
+      cleanup();
+      expect(document.title).toBe(DEFAULT_PAGE_TITLE);
+    } finally { cleanup(); router.dispose(); }
   });
 });
