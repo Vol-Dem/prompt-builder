@@ -10,7 +10,6 @@ import {
   getInitialVersionData,
 } from "../utils/modelUtils";
 import {
-  DEFAULT_PAGE_TITLE,
   ERROR_MESSAGE_AUTH,
   ERROR_MESSAGE_MODEL_LOAD,
 } from "../variables/constants";
@@ -30,6 +29,7 @@ import ModelDescription from "../components/model/model-description/ModelDescrip
 import ModelVersionsList from "../components/model/model-versions-list/ModelVersionsList";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
 import { handleErrors, normalizeError } from "../utils/generalUtils";
+import usePageTitle from "../hooks/use-page-title";
 
 interface ModelPageProps {
   title: string;
@@ -62,6 +62,7 @@ interface ModelPageProps {
  * @returns Model page.
  */
 const Model = ({ title }: ModelPageProps) => {
+  const [pageTitle, setPageTitle] = useState(title);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { modelId } = useParams();
@@ -74,6 +75,7 @@ const Model = ({ title }: ModelPageProps) => {
   const guideHomeActive = useAppSelector((state) => state.guide.home.active);
   const guideIsActive = useAppSelector((state) => state.guide.active);
   const dispatch = useAppDispatch();
+  usePageTitle(pageTitle);
   const hashtags = model?.hashtags?.length
     ? model?.hashtags
     : model?.data?.tags;
@@ -101,7 +103,10 @@ const Model = ({ title }: ModelPageProps) => {
   }, [guideIsActive, guideHomeActive, dispatch]);
 
   useEffect(() => {
+    setPageTitle(title);
     if (!isAuth) return;
+
+    let titleIsCurrent = true;
 
     const getModelData = async () => {
       try {
@@ -114,7 +119,9 @@ const Model = ({ title }: ModelPageProps) => {
 
         dispatch(modelActions.setModelData(modelData));
 
-        document.title = modelData?.name || title;
+        if (titleIsCurrent) {
+          setPageTitle(modelData?.name || title);
+        }
         setIsLoading(false);
       } catch (error) {
         setErrorMessage(ERROR_MESSAGE_MODEL_LOAD);
@@ -126,10 +133,10 @@ const Model = ({ title }: ModelPageProps) => {
     getModelData();
 
     return () => {
+      titleIsCurrent = false;
       setErrorMessage("");
       dispatch(modelActions.setActiveCarouselData(null));
       dispatch(modelActions.resetModelData());
-      document.title = DEFAULT_PAGE_TITLE;
     };
   }, [modelId, isAuth, dispatch, title]);
 

@@ -9,7 +9,6 @@ import {
   subscribeToUserModel,
 } from "../utils/fetch/fetchModelReads";
 import {
-  DEFAULT_PAGE_TITLE,
   ERROR_MESSAGE_DEFAULT,
   GUIDE_STEP_MODEL_EDIT,
 } from "../variables/constants";
@@ -20,6 +19,7 @@ import Modal from "../components/ui/Modal";
 import OutroGuide from "../components/general-elements/guide/OutroGuide";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
 import type { CivitaiModelDoc } from "../../shared/types/firestore";
+import usePageTitle from "../hooks/use-page-title";
 
 interface ModelEditProps {
   title: string;
@@ -56,6 +56,7 @@ interface ModelEditProps {
  * @returns Model edit page.
  */
 const ModelEdit = ({ title }: ModelEditProps) => {
+  const [pageTitle, setPageTitle] = useState(title);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const isAuth = useAppSelector((state) => state.auth.user.uid);
@@ -66,6 +67,7 @@ const ModelEdit = ({ title }: ModelEditProps) => {
   );
   const { modelId } = useParams();
   const dispatch = useAppDispatch();
+  usePageTitle(pageTitle);
 
   useEffect(() => {
     if (
@@ -78,8 +80,10 @@ const ModelEdit = ({ title }: ModelEditProps) => {
   }, [modelGuideState, dispatch]);
 
   useEffect(() => {
+    setPageTitle(title);
     if (!isAuth || !modelId) return;
 
+    let titleIsCurrent = true;
     let unsub: () => void;
 
     const getModelData = async () => {
@@ -109,9 +113,9 @@ const ModelEdit = ({ title }: ModelEditProps) => {
             data: defModelData,
           }),
         );
-        document.title = defModelData?.name
-          ? `Edit - ${defModelData?.name}`
-          : title;
+        if (titleIsCurrent) {
+          setPageTitle(defModelData?.name ? `Edit - ${defModelData.name}` : title);
+        }
       } catch (err) {
         setErrorMessage("Failed to load model");
         dispatch(modelActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
@@ -122,6 +126,7 @@ const ModelEdit = ({ title }: ModelEditProps) => {
     getModelData();
 
     return () => {
+      titleIsCurrent = false;
       setErrorMessage("");
       dispatch(modelActions.setCurVersion(null));
       dispatch(modelActions.setModelData(null));
@@ -129,7 +134,6 @@ const ModelEdit = ({ title }: ModelEditProps) => {
       if (unsub) {
         unsub();
       }
-      document.title = DEFAULT_PAGE_TITLE;
     };
   }, [modelId, isAuth, dispatch, uid, title]);
 
