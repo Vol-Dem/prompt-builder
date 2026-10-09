@@ -312,6 +312,7 @@ describe("application router", () => {
       const navigation = screen.getByRole("navigation", { name: "About navigation" });
       expect(screen.queryByRole("status")).toBeNull();
       expect(smoothScroll).not.toHaveBeenCalled();
+      expect(window.scrollTo).not.toHaveBeenCalled();
       fireEvent.change(screen.getByLabelText("Layout note"), { target: { value: "keep me" } });
 
       await act(async () => {
@@ -331,6 +332,7 @@ describe("application router", () => {
       expect(screen.getByLabelText("Layout note").value).toBe("keep me");
       expect(smoothScroll).toHaveBeenLastCalledWith("#sidebar-section");
       expect(smoothScroll).toHaveLastReturnedWith(true);
+      expect(window.scrollTo).not.toHaveBeenCalled();
 
       await act(async () => { await router.navigate("/about/sidebar#other-section"); });
       expect(document.title).toBe("Sidebar");
@@ -341,6 +343,7 @@ describe("application router", () => {
       await expectPage("AboutTopPanel");
       expect(document.title).toBe("Top Panel");
       expect(screen.getByRole("navigation", { name: "About navigation" })).toBe(navigation);
+      expect(window.scrollTo).toHaveBeenCalledExactlyOnceWith(0, 0);
     } finally {
       cleanup();
       router.dispose();

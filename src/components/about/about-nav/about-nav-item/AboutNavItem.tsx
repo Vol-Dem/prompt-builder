@@ -8,7 +8,7 @@ import type { AboutNavigationItem } from "../../../../types/general.types";
 
 type AboutNavItemProps = ComponentProps<"a"> & {
   item: AboutNavigationItem;
-  onClose: (url: string) => void;
+  onClose: () => void;
   url: string;
   sub?: boolean;
 };
@@ -51,7 +51,7 @@ const AboutNavItem = ({
           pathname: `/about/${url}`,
           hash: item.id,
         }}
-        onClick={() => onClose(url)}
+        onClick={onClose}
       >
         {item.name}
       </NavLink>

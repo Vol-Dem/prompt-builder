@@ -23,13 +23,6 @@ const AboutNavBtnContainer = () => {
   const btnLeftData = ABOUT_NAV_DATA[curLocationDataIndex - 1];
   const btnRightData = ABOUT_NAV_DATA[curLocationDataIndex + 1];
 
-  /**
-   * Resets the scroll position to the top.
-   */
-  const resetScrollHandler = () => {
-    window.scrollTo(0, 0);
-  };
-
   return (
     <>
       {curLocationDataIndex >= 0 && (
@@ -41,7 +34,6 @@ const AboutNavBtnContainer = () => {
                 hash: btnLeftData.id,
               }}
               className={`${classes.btn} ${classes["btn--left"]}`}
-              onClick={resetScrollHandler}
             >
               <ChevronLeftIcon /> {btnLeftData.name}
             </NavLink>
@@ -54,7 +46,6 @@ const AboutNavBtnContainer = () => {
                   hash: btnRightData.id,
                 }}
                 className={`${classes.btn} ${classes["btn--right"]}`}
-                onClick={resetScrollHandler}
               >
                 {btnRightData.name} <ChevronRightIcon />{" "}
               </NavLink>

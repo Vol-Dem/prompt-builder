@@ -1,11 +1,11 @@
-import { Suspense, useEffect } from "react";
-import { Outlet, useLocation, useMatches } from "react-router-dom";
+import { Suspense } from "react";
+import { Outlet, useMatches } from "react-router-dom";
 
 import classes from "./About.module.scss";
 import AboutNav from "../components/about/about-nav/AboutNav";
 import Spinner from "../components/ui/Spinner";
-import { smoothScroll } from "../utils/generalUtils";
 import usePageTitle from "../hooks/use-page-title";
+import useAboutPageScroll from "../hooks/use-about-page-scroll";
 
 interface AboutProps {
   title: string;
@@ -15,11 +15,7 @@ type AboutRouteHandle = { pageTitle?: string };
 
 // Commit the scroll effect with the content, after any lazy page has loaded.
 const AboutOutlet = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    if (location.hash) smoothScroll(location.hash);
-  }, [location]);
+  useAboutPageScroll();
 
   return <Outlet />;
 };
@@ -52,10 +48,6 @@ const About = ({ title }: AboutProps) => {
     return handle?.pageTitle ?? matchedTitle;
   }, title);
   usePageTitle(pageTitle);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   return (
     <div className={classes.about}>

@@ -1,4 +1,3 @@
-import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { ListBulletIcon } from "@heroicons/react/24/outline";
 
@@ -19,18 +18,12 @@ import AboutNavItem from "./about-nav-item/AboutNavItem";
  */
 const AboutNav = () => {
   const [navIsOpen, setNavIsOpen] = useState(false);
-  const location = useLocation();
 
   const openNavHandler = () => {
     setNavIsOpen(true);
   };
 
-  const closeNavHandler = (url?: string) => {
-    const curPageUrl = location.pathname.split("/").slice(-1)[0];
-
-    //If navigating to a different page, resets the scroll position to the top.
-    if (curPageUrl !== url) window.scrollTo(0, 0);
-
+  const closeNavHandler = () => {
     setNavIsOpen(false);
   };
 
