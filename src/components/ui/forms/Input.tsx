@@ -85,7 +85,9 @@ const Input = ({
   readOnly,
   ...props
 }: InputProps) => {
-  const [inputErrorMessage, setInputErrorMessage] = useState("");
+  const inputErrorMessage = validation
+    ? validateInput(validation, value + "").errorMessage
+    : "";
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const inputMargin = 5;
@@ -93,14 +95,6 @@ const Input = ({
   useEffect(() => {
     setShowErrorMessage(!!showError);
   }, [showError]);
-
-  useEffect(() => {
-    if (validation) {
-      const { errorMessage } = validateInput(validation, value + "");
-
-      setInputErrorMessage(errorMessage);
-    }
-  }, [value, validation]);
 
   const inputBlurHandler = (e: FocusEvent<HTMLInputElement>) => {
     if (onBlur) {
@@ -126,7 +120,6 @@ const Input = ({
       );
 
       onChange(e, isValid, errorMessage);
-      setInputErrorMessage(errorMessage);
     } else {
       onChange(e, true);
     }

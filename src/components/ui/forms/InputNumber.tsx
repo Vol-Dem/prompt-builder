@@ -68,20 +68,14 @@ const InputNumber = ({
   showError,
   step = 1,
 }: InputNumberProps) => {
-  const [inputErrorMessage, setInputErrorMessage] = useState("");
+  const inputErrorMessage = validation
+    ? validateInput(validation, value + "").errorMessage
+    : "";
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   useEffect(() => {
     setShowErrorMessage(!!showError);
   }, [showError]);
-
-  useEffect(() => {
-    if (validation) {
-      const { errorMessage } = validateInput(validation, value + "");
-
-      setInputErrorMessage(errorMessage);
-    }
-  }, [value, validation]);
 
   const strengthHandler = (e: MouseEvent<HTMLButtonElement>) => {
     const curStrength = parseFloat(value + "") || 0;
@@ -127,7 +121,6 @@ const InputNumber = ({
               );
 
               onChange(e.target.value, isValid, errorMessage);
-              setInputErrorMessage(errorMessage);
             } else {
               onChange(e.target.value, null);
             }

@@ -93,20 +93,14 @@ const ComboSelect = <T extends number | string>({
   onBlur,
   label,
 }: ComboSelectProps<T>) => {
-  const [inputErrorMessage, setInputErrorMessage] = useState("");
+  const inputErrorMessage = validation
+    ? validateInput(validation, selected?.name || "").errorMessage
+    : "";
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   useEffect(() => {
     if (showError !== undefined) setShowErrorMessage(showError);
   }, [showError]);
-
-  useEffect(() => {
-    if (validation) {
-      const { errorMessage } = validateInput(validation, selected?.name || "");
-
-      setInputErrorMessage(errorMessage);
-    }
-  }, [validation, selected]);
 
   const conditionalPlaceholder = !loading ? placeholder : "Loading...";
 
@@ -129,7 +123,6 @@ const ComboSelect = <T extends number | string>({
               value?.name || "",
             );
             setSelected(value, isValid, errorMessage, id);
-            setInputErrorMessage(errorMessage);
           } else {
             setSelected(value, null);
           }
