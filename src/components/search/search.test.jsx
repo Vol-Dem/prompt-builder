@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import { MemoryRouter, useLocation } from "react-router-dom";
+import { MemoryRouter, useLocation, useNavigate } from "react-router-dom";
 import { act, cleanup, fireEvent, render, renderHook, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
@@ -91,6 +91,15 @@ const filterOptions = {
   categoriesData: { checkpoint: [], lora: [], embedding: [] },
 };
 const checkbox = (name) => screen.getByLabelText(name, { selector: 'input[type="checkbox"]' });
+const mountFilterController = (store, url) => renderHook(() => ({
+  filter: useSearchFilterController(), navigate: useNavigate(),
+}), {
+  wrapper: ({ children }) => (
+    <Provider store={store}>
+      <MemoryRouter initialEntries={[url]}>{children}<Location /></MemoryRouter>
+    </Provider>
+  ),
+});
 
 it("hydrates filter controls from the current URL", () => {
   const store = makeStore(filterOptions);
@@ -101,6 +110,73 @@ it("hydrates filter controls from the current URL", () => {
   expect(checkbox("#hashtag").checked).toBe(true);
   expect(checkbox("Creator").checked).toBe(false);
   expect(checkbox("SDXL 1.0").disabled).toBe(true);
+});
+
+it("counts checked controls rather than duplicate or unavailable URL IDs", () => {
+  const store = makeStore(filterOptions);
+  mount(store, <SearchFilter />,
+    "/search?searchSrc=aitools&modelType=checkpoint,checkpoint,unavailable&baseModel=SD+1.5,unknown,unknown");
+  expect(screen.getAllByText("(1 / 3)")).toHaveLength(2);
+  expect(checkbox("Checkpoint").checked).toBe(true);
+  expect(checkbox("SD 1.5").checked).toBe(true);
+  expect(checkbox("LoRa/LoCon/DoRa").disabled).toBe(false);
+  expect(checkbox("SDXL 1.0").disabled).toBe(false);
+  expect(params().get("modelType")).toBe("checkpoint,checkpoint,unavailable");
+  expect(params().get("baseModel")).toBe("SD 1.5,unknown,unknown");
+});
+
+it("recalculates counts and limits when navigating back and forward through filters", () => {
+  const store = makeStore(filterOptions);
+  const first = "/search?searchSrc=aitools&modelType=checkpoint,lora&baseModel=SD+1.5";
+  const second = "/search?searchSrc=aitools&modelType=checkpoint&baseModel=SD+1.5,Pony";
+  const { result } = mountFilterController(store, first);
+  const assertFirst = () => {
+    const { modelTypes, baseModels } = result.current.filter;
+    expect(modelTypes.checkedCount).toBe(2);
+    expect(modelTypes.maxAllowed).toBe(3);
+    expect(baseModels.checkedCount).toBe(1);
+    expect(baseModels.maxAllowed).toBe(1);
+    expect(baseModels.options.find(({ id }) => id === "Pony").disabled).toBe(true);
+    expect(baseModels.options.find(({ id }) => id === "SD 1.5").disabled).toBe(false);
+    expect(params().get("modelType")).toBe("checkpoint,lora");
+  };
+  const assertSecond = () => {
+    const { modelTypes, baseModels } = result.current.filter;
+    expect(modelTypes.checkedCount).toBe(1);
+    expect(modelTypes.maxAllowed).toBe(1);
+    expect(baseModels.checkedCount).toBe(2);
+    expect(baseModels.maxAllowed).toBe(3);
+    expect(modelTypes.options.find(({ id }) => id === "lora").disabled).toBe(true);
+    expect(modelTypes.options.find(({ id }) => id === "checkpoint").disabled).toBe(false);
+    expect(params().get("baseModel")).toBe("SD 1.5,Pony");
+  };
+  assertFirst();
+  act(() => result.current.navigate(second));
+  assertSecond();
+  act(() => result.current.navigate(-1));
+  assertFirst();
+  act(() => result.current.navigate(1));
+  assertSecond();
+});
+
+it("releases both groups' limits when switching from a capped local filter to Civitai", () => {
+  const store = makeStore(filterOptions);
+  const { result } = mountFilterController(store,
+    "/search?searchSrc=aitools&modelType=collection,checkpoint,lora&baseModel=SD+1.5");
+  expect(result.current.filter.modelTypes.checkedCount).toBe(3);
+  expect(result.current.filter.baseModels.maxAllowed).toBe(1);
+  expect(result.current.filter.baseModels.options.find(({ id }) => id === "Pony").disabled).toBe(true);
+  act(() => store.dispatch(searchActions.setSearchSrc("civitai")));
+  act(() => result.current.navigate(
+    "/search?searchSrc=civitai&modelType=Checkpoint,LORA,LoCon,DoRA&baseModel=SD+1.5,SDXL+1.0,Pony"));
+  expect(result.current.filter.modelTypes.checkedCount).toBe(4);
+  expect(result.current.filter.baseModels.checkedCount).toBe(3);
+  expect(result.current.filter.modelTypes.options.every(({ disabled }) => !disabled)).toBe(true);
+  expect(result.current.filter.baseModels.options.every(({ disabled }) => !disabled)).toBe(true);
+  act(() => result.current.filter.reset());
+  expect(result.current.filter.modelTypes.checkedCount).toBe(0);
+  expect(result.current.filter.baseModels.checkedCount).toBe(0);
+  expect(store.getState().search.searchFilter).toMatchObject({ modelType: [], baseModel: [] });
 });
 
 it("applies and releases cross-group selection limits while synchronizing base models", () => {

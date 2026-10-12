@@ -21,7 +21,6 @@ type ModelTypeCheckboxStatusInput = {
   name: string;
   label: string;
   value: boolean;
-  disabled?: boolean;
 };
 
 type BaseModelCheckboxStatusInput = {
@@ -30,7 +29,6 @@ type BaseModelCheckboxStatusInput = {
   name: string;
   label: string;
   value: boolean;
-  disabled?: boolean;
 };
 
 type ModelTypeInputData = { name: string; value: string };
@@ -54,10 +52,6 @@ const useSearchFilterController = () => {
   const [initial, setInitial] = useState(true);
   const [sortBy, setSortBy] = useState(sortOptions[0].value);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [maxModelTypesAllowed, setMaxModelTypesAllowed] = useState(3);
-  const [maxBaseModelsAllowed, setMaxBaseModelsAllowed] = useState(3);
-  const [modelTypesChecked, setModelTypesChecked] = useState(0);
-  const [baseModelsChecked, setBaseModelsChecked] = useState(0);
   const [modelTypeCheckboxStatus, setModelTypeCheckboxStatus] = useState<
     ModelTypeCheckboxStatusInput[]
   >([]);
@@ -91,6 +85,25 @@ const useSearchFilterController = () => {
     () => ({ ...parseSearchFilterParams(searchParams), searchSrc }),
     [searchParams, searchParamSrc],
   );
+  const modelTypesChecked = modelTypeCheckboxStatus.filter(
+    (item) => item.value,
+  ).length;
+  const baseModelsChecked = baseModelCheckboxStatus.filter(
+    (item) => item.value,
+  ).length;
+  const hasSelectionLimits = searchSrc === "aitools";
+  const maxModelTypesAllowed = hasSelectionLimits && baseModelsChecked > 1 ? 1 : 3;
+  const maxBaseModelsAllowed = hasSelectionLimits && modelTypesChecked > 1 ? 1 : 3;
+  const modelTypeOptions = modelTypeCheckboxStatus.map((item) => ({
+    ...item,
+    disabled:
+      hasSelectionLimits && modelTypesChecked === maxModelTypesAllowed && !item.value,
+  }));
+  const baseModelOptions = baseModelCheckboxStatus.map((item) => ({
+    ...item,
+    disabled:
+      hasSelectionLimits && baseModelsChecked === maxBaseModelsAllowed && !item.value,
+  }));
 
   useEffect(() => {
     if (searchParamSrc !== searchSrc)
@@ -123,7 +136,6 @@ const useSearchFilterController = () => {
         name: type.value,
         label: type.name,
         value: searchFilter.modelType.includes(type.value),
-        disabled: false,
       };
     });
 
@@ -135,7 +147,6 @@ const useSearchFilterController = () => {
           name: "collection",
           label: "Image collection",
           value: searchFilter.modelType.includes("collection"),
-          disabled: false,
         },
         ...modelTypeInputs,
       ];
@@ -198,8 +209,6 @@ const useSearchFilterController = () => {
       setSortBy(searchFilter.sort);
     }
 
-    setModelTypesChecked(searchFilter.modelType.length);
-    setBaseModelsChecked(searchFilter.baseModel.length);
     // setInitial(false);
   }, [
     userBaseModels,
@@ -210,56 +219,12 @@ const useSearchFilterController = () => {
     searchSrc,
   ]);
 
-  useEffect(() => {
-    if (searchSrc === "civitai") return;
-    setMaxBaseModelsAllowed(modelTypesChecked > 1 ? 1 : 3);
-    setMaxModelTypesAllowed(baseModelsChecked > 1 ? 1 : 3);
-
-    if (modelTypesChecked === maxModelTypesAllowed) {
-      setModelTypeCheckboxStatus((prevState) => {
-        return prevState.map((item) => {
-          return { ...item, disabled: !item.value };
-        });
-      });
-    } else {
-      setModelTypeCheckboxStatus((prevState) => {
-        return prevState.map((item) => {
-          return { ...item, disabled: false };
-        });
-      });
-    }
-    if (baseModelsChecked === maxBaseModelsAllowed) {
-      setBaseModelCheckboxStatus((prevState) => {
-        return prevState.map((item) => {
-          return { ...item, disabled: !item.value };
-        });
-      });
-    } else {
-      setBaseModelCheckboxStatus((prevState) => {
-        return prevState.map((item) => {
-          return { ...item, disabled: false };
-        });
-      });
-    }
-  }, [
-    modelTypesChecked,
-    baseModelsChecked,
-    maxModelTypesAllowed,
-    maxBaseModelsAllowed,
-    hashtagCheckboxStatus,
-  ]);
-
   const typeChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, checked: isChecked } = e.target;
     const newModelTypeCheckboxStatus = modelTypeCheckboxStatus.map((type) =>
       type.id === id ? { ...type, value: isChecked } : type,
     );
     setModelTypeCheckboxStatus(newModelTypeCheckboxStatus);
-
-    const checked = newModelTypeCheckboxStatus.filter(
-      (item) => item.value,
-    ).length;
-    setModelTypesChecked(checked);
 
     const modelTypes = newModelTypeCheckboxStatus
       .filter((type) => type.value)
@@ -277,17 +242,9 @@ const useSearchFilterController = () => {
   };
 
   const baseModelsChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    const newBaseModelsCheckboxStatus = [...baseModelCheckboxStatus];
-    const curIndex = newBaseModelsCheckboxStatus.findIndex(
-      (type) => type.id === e.target.id,
+    const newBaseModelsCheckboxStatus = baseModelCheckboxStatus.map((model) =>
+      model.id === e.target.id ? { ...model, value: e.target.checked } : model,
     );
-
-    newBaseModelsCheckboxStatus[curIndex].value = e.target.checked;
-
-    const checked = newBaseModelsCheckboxStatus.filter(
-      (item) => item.value,
-    ).length;
-    setBaseModelsChecked(checked);
 
     const baseModelsData = newBaseModelsCheckboxStatus
       .filter((type) => type.value)
@@ -383,8 +340,6 @@ const useSearchFilterController = () => {
     setCreatorCheckboxStatus((prevState) => {
       return { ...prevState, value: false };
     });
-    setModelTypesChecked(0);
-    setBaseModelsChecked(0);
     dispatch(searchActions.resetSearchFilter());
     setSearchParams((prevParams) => {
       return { searchQuery: prevParams.get("searchQuery") || "" };
@@ -416,13 +371,13 @@ const useSearchFilterController = () => {
       onChange: searchSrcHandler,
     },
     modelTypes: {
-      options: modelTypeCheckboxStatus,
+      options: modelTypeOptions,
       checkedCount: modelTypesChecked,
       maxAllowed: maxModelTypesAllowed,
       onChange: typeChangeHandler,
     },
     baseModels: {
-      options: baseModelCheckboxStatus,
+      options: baseModelOptions,
       checkedCount: baseModelsChecked,
       maxAllowed: maxBaseModelsAllowed,
       onChange: baseModelsChangeHandler,
