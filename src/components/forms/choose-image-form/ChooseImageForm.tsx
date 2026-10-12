@@ -9,6 +9,7 @@ import { ERROR_MESSAGE_OFFLINE } from "../../../variables/constants";
 import ImageLabel from "../../ui/forms/ImageLabel";
 import SuccessMessage from "../../ui/SuccessMessage";
 import { useAppSelector } from "../../../store/hooks/hooks";
+import { selectModelSavedImages } from "../../../store/modelSelectors";
 import type { ResourceFirestoreCollection } from "../../../types/models.types";
 import type { Image } from "../../../../shared/types/image";
 import type { ModelSavedPostInfo } from "../../../../shared/types/model";
@@ -101,7 +102,7 @@ const ChooseImageForm = memo(
     );
     const [successMessage, setSuccessMessage] = useState("");
     const uid = useAppSelector((state) => state.auth.user.uid);
-    const savedImages = useAppSelector((state) => state.model.savedImages);
+    const savedImages = useAppSelector(selectModelSavedImages);
     const isOnline = useOnlineStatus();
     const selectedAmount = imagesInputs.filter(
       (input) => input?.value && !input?.saved,

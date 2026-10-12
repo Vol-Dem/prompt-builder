@@ -19,6 +19,7 @@ import InfoGeneratedImages from "../../general-elements/info/InfoGeneratedImages
 import ModelVersionsList from "../model-versions-list/ModelVersionsList";
 import ImageTabs from "./image-tabs/ImageTabs";
 import { useAppSelector } from "../../../store/hooks/hooks";
+import { selectModelSavedImages } from "../../../store/modelSelectors";
 import Tooltip from "../../ui/Tooltip";
 import ModelTooltip from "../model-tooltip/ModelTooltip";
 
@@ -43,9 +44,9 @@ const GeneratedImages = memo(() => {
   const [curTab, setCurTab] = useState("all");
   const [curVersionId, setCurVersionId] = useState<number | null>(null);
   const [addImgModalIsOpen, setAddImgModalIsOpen] = useState(false);
-  const curVersion = useAppSelector((state) => state.model.curVersion);
+  const modelVersionId = useAppSelector((state) => state.model.curVersion?.id);
   const model = useAppSelector((state) => state.model.model);
-  const savedImagesData = useAppSelector((state) => state.model.savedImages);
+  const savedImagesData = useAppSelector(selectModelSavedImages);
   const savedImages =
     model?.id && model.id === savedImagesData?.modelId
       ? savedImagesData.data
@@ -73,8 +74,8 @@ const GeneratedImages = memo(() => {
   }
 
   useEffect(() => {
-    if (curVersion?.id) setCurVersionId(curVersion.id);
-  }, [curVersion]);
+    if (modelVersionId) setCurVersionId(modelVersionId);
+  }, [modelVersionId]);
 
   const openVersionHandler = (e: MouseEvent<HTMLElement>) => {
     if (!(e.target instanceof HTMLElement)) return;

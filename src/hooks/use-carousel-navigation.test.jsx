@@ -11,7 +11,7 @@ const { dispatch, track, picker } = vi.hoisted(() => ({
 vi.mock("../store/hooks/hooks", () => ({
   useAppDispatch: () => dispatch,
   useAppSelector: (selector) => selector({
-    general: { nsfwMode: false }, model: { model: { name: "Model" }, savedImages: null },
+    general: { nsfwMode: false }, model: { model: { name: "Model" } },
   }),
 }));
 vi.mock("../store/upload", () => ({ uploadActions: { addToQueue: (payload) => ({ type: "queue", payload }) } }));

@@ -111,6 +111,13 @@ const UpdateModelForm = ({
   onSave,
   className,
 }: UpdateModelFormProps) => {
+  const hasModelData = !!modelData;
+  const loadedModelId = modelData?.id;
+  const loadedModelType = modelData?.modelType;
+  const loadedMainCategory = modelData?.main;
+  const loadedSubcategories = modelData?.sub;
+  const loadedVersions = modelData?.modelVersionsCustomData;
+  const loadedTagSets = modelData?.defaultCustomData?.tagSetsData;
   const [modelTypeInput, setModelTypeInput] = useState(
     modelData?.modelType || SETTINGS_MODEL_TYPE_DEF,
   );
@@ -211,7 +218,7 @@ const UpdateModelForm = ({
   };
 
   useEffect(() => {
-    if (!modelData) {
+    if (!hasModelData) {
       setSubCatInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
 
       if (newModelType) {
@@ -227,10 +234,10 @@ const UpdateModelForm = ({
       }
     }
 
-    if (modelData) {
+    if (hasModelData) {
       const versionStatusInputData =
-        modelData?.modelVersionsCustomData &&
-        Object.values(modelData?.modelVersionsCustomData)
+        loadedVersions &&
+        Object.values(loadedVersions)
           ?.sort((a, b) => {
             if (typeof a.index === "number" && typeof b.index === "number") {
               return a.index - b.index;
@@ -250,9 +257,9 @@ const UpdateModelForm = ({
 
       setVersionsDownloadStatus(versionStatusInputData || []);
 
-      const subCats = modelData.sub?.flatMap((subId, i) => {
-        const subData = categories[modelData.modelType]
-          ?.find((category) => category.id === modelData.main)
+      const subCats = loadedSubcategories?.flatMap((subId, i) => {
+        const subData = categories[loadedModelType || ""]
+          ?.find((category) => category.id === loadedMainCategory)
           ?.subcategories?.find((sucategory) => sucategory.id === subId);
 
         if (!subData) {
@@ -274,24 +281,27 @@ const UpdateModelForm = ({
 
       if (subCats) setSubCatInputs(subCats);
 
-      const mainCategoryName = categories[modelData?.modelType]?.find(
-        (category) => category.id === modelData?.main,
+      const mainCategoryName = categories[loadedModelType || ""]?.find(
+        (category) => category.id === loadedMainCategory,
       )?.name;
 
       setMainCategorySelected({
         name: mainCategoryName || "",
-        id: mainCategoryName && modelData?.main ? modelData?.main : "",
+        id: mainCategoryName && loadedMainCategory ? loadedMainCategory : "",
         isValid: mainCategoryName ? true : false,
       });
 
       setTagSetsInputs(
         createTagSetsInputData(
-          modelData?.defaultCustomData?.tagSetsData,
+          loadedTagSets,
           FORMS_DEF_TAGS_INPUT,
         ),
       );
     }
-  }, [modelData, categories, newModelType]);
+  }, [
+    hasModelData, loadedModelId, loadedModelType, loadedMainCategory,
+    loadedSubcategories, loadedVersions, loadedTagSets, categories, newModelType,
+  ]);
 
   const resetNewModelFields = () => {
     setIdInput({

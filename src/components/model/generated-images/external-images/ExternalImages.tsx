@@ -26,6 +26,7 @@ import {
 } from "../../../../utils/imageUtils";
 import { fixCivImagesMeta } from "../../../../../shared/utils";
 import { useAppSelector } from "../../../../store/hooks/hooks";
+import { selectModelSavedImages } from "../../../../store/modelSelectors";
 
 type ExternalImagesProps = {
   modelId?: number;
@@ -65,7 +66,7 @@ const ExternalImages = memo(
     modelIsSaved,
   }: ExternalImagesProps) => {
     const [isIntersecting, setIsIntersecting] = useState(false);
-    const savedImages = useAppSelector((state) => state.model.savedImages);
+    const savedImages = useAppSelector(selectModelSavedImages);
     const nsfwLevel = useAppSelector((state) => state.general.nsfwLevel);
     const endPageRef = useRef<HTMLDivElement>(null);
     const isOnline = useOnlineStatus();

@@ -41,7 +41,6 @@ export interface ActiveCarousel {
 
 export interface ModelsState {
   model: ModelData | null;
-  savedImages: ModelSavedImagesData | null;
   modelPreview: ModelPreviewDoc[] | null;
   isLoading: boolean;
   errorMessage: string;

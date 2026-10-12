@@ -18,6 +18,7 @@ import {
 import CarouselImageList from "../carousel/carousel-image-list/CarouselImageList";
 import ActiveCarouselContentWrap from "./ActiveCarouselContentWrap";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import { selectModelSavedImages } from "../../../store/modelSelectors";
 import type { ModelSavedPostInfo } from "../../../../shared/types/model";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -46,7 +47,7 @@ const ActiveCarousel = () => {
   const activeCarouselData = useAppSelector(
     (state) => state.model.activeCarouselData,
   );
-  const savedImagesData = useAppSelector((state) => state.model.savedImages);
+  const savedImagesData = useAppSelector(selectModelSavedImages);
   const guideStep = useAppSelector((state) => state.guide.model.step);
   const guideIsActive = useAppSelector((state) => state.guide.active);
   const dispatch = useAppDispatch();

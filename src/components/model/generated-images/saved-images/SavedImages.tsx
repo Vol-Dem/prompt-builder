@@ -14,6 +14,7 @@ import {
 import useIntersection from "../../../../hooks/use-intersection";
 import useFetchFirestoreImages from "../../../../hooks/use-fetch-firestore-images";
 import { useAppSelector } from "../../../../store/hooks/hooks";
+import { selectModelSavedImages } from "../../../../store/modelSelectors";
 import {
   ExclamationCircleIcon,
   FolderArrowDownIcon,
@@ -42,7 +43,7 @@ type SavedImagesProps = { versionId: number };
  */
 const SavedImages = memo(({ versionId }: SavedImagesProps) => {
   const model = useAppSelector((state) => state.model.model);
-  const savedImagesData = useAppSelector((state) => state.model.savedImages);
+  const savedImagesData = useAppSelector(selectModelSavedImages);
   const endPageRef = useRef<HTMLDivElement>(null);
   const isIntersecting = useIntersection(
     endPageRef,

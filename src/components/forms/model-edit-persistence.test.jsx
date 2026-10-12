@@ -63,6 +63,28 @@ const forms = [
 
 const tagSetForms = forms.filter(({ name }) => ["tag sets", "version", "default"].includes(name));
 
+it("retains unsaved version statuses on saved-ID changes and hydrates actual version-data changes", () => {
+  const { rerender } = render(<VersionStatusForm modelData={model} />);
+  const status = screen.getByRole("checkbox", { name: "Version" });
+  fireEvent.click(status);
+  expect(status.checked).toBe(false);
+  rerender(<VersionStatusForm modelData={{ ...model, savedImages: { 7: [{ postId: 10, imagesId: [1, 2] }] } }} />);
+  expect(status.checked).toBe(false);
+  rerender(<VersionStatusForm modelData={{ ...model,
+    modelVersionsCustomData: { 7: { ...version, downloadStatus: true } },
+  }} />);
+  expect(status.checked).toBe(true);
+});
+
+it.each(tagSetForms)("retains unsaved tag-set edits in $name when saved-image IDs change", ({ element }) => {
+  const onClose = vi.fn();
+  const { rerender } = render(element(onClose));
+  fireEvent.change(screen.getByDisplayValue("Set"), { target: { value: "Unsaved set" } });
+  state.model.model = { ...model, savedImages: { 7: [{ postId: 10, imagesId: [1, 2] }] } };
+  rerender(element(onClose));
+  expect(screen.getByDisplayValue("Unsaved set")).toBeTruthy();
+});
+
 it.each(tagSetForms)("edits and adds tag sets in $name while preserving saved image metadata", async ({ name, element }) => {
   const { container } = render(element(vi.fn()));
   const fieldset = screen.getByRole("group", { name: "Tag sets" });

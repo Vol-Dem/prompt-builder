@@ -47,7 +47,7 @@ const makeStore = () => configureStore({
     general: (state = { nsfwMode: false, nsfwLevel: "None" }, action) =>
       action.type === "test/preferences" ? { ...state, ...action.payload } : state,
     auth: (state = { user: { uid: "user-1" } }) => state,
-    model: (state = { savedImages: null }) => state,
+    model: (state = { model: null }) => state,
   },
 });
 const wrapperFor = (store) => ({ children }) => <Provider store={store}>{children}</Provider>;

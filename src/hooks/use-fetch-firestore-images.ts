@@ -15,6 +15,7 @@ import {
   type SavedImagePostsCursor,
 } from "../utils/fetch/fetchFirestoreImages";
 import { useAppSelector } from "../store/hooks/hooks";
+import { selectModelSavedImages } from "../store/modelSelectors";
 import type { Image } from "../../shared/types/image";
 
 interface useFetchFirestoreImagesReturn {
@@ -63,7 +64,7 @@ const useFetchFirestoreImages = (
   const [lastVisible, setLastVisible] = useState<SavedImagePostsCursor>({});
   const [fetchedData, setFetchedData] = useState<Image[][]>([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const savedImagesData = useAppSelector((state) => state.model.savedImages);
+  const savedImagesData = useAppSelector(selectModelSavedImages);
   const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
   const nsfwLevel = useAppSelector((state) => state.general.nsfwLevel);
   const uid = useAppSelector((state) => state.auth.user.uid);

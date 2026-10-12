@@ -45,6 +45,9 @@ type StatusCheckbox = {
  * @returns Version status form.
  */
 const VersionStatusForm = ({ modelData }: VersionStatusFormProps) => {
+  const hasModelData = !!modelData;
+  const modelId = modelData?.id;
+  const versionsData = modelData?.modelVersionsCustomData;
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, seteErrorMessage] = useState("");
   const [successMessage, seteSuccessMessage] = useState("");
@@ -55,10 +58,10 @@ const VersionStatusForm = ({ modelData }: VersionStatusFormProps) => {
   const uid = useAppSelector((state) => state.auth.user.uid);
 
   useEffect(() => {
-    if (!modelData) return;
+    if (!hasModelData) return;
     const versionStatusInputData =
-      modelData?.modelVersionsCustomData &&
-      Object.values(modelData.modelVersionsCustomData)
+      versionsData &&
+      Object.values(versionsData)
         ?.sort((a, b) => {
           if (a?.index && b?.index) {
             return a?.index - b?.index;
@@ -76,7 +79,7 @@ const VersionStatusForm = ({ modelData }: VersionStatusFormProps) => {
         });
 
     setVersionsDownloadStatus(versionStatusInputData || []);
-  }, [modelData]);
+  }, [hasModelData, modelId, versionsData]);
 
   const saveModelHandler = async (e: SubmitEvent) => {
     try {

@@ -22,6 +22,7 @@ import CarouselImages from "./carousel-images/CarouselImages";
 import { updateImagePostData } from "../../../utils/fetch/fetchImages";
 import type { Image } from "../../../../shared/types/image";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import { selectModelSavedImages } from "../../../store/modelSelectors";
 import type { PostSavedData } from "../../../types/collections.types";
 import type { ResourceFirestoreCollection } from "../../../types/models.types";
 import type {
@@ -149,7 +150,7 @@ const CarouselContent = ({
   });
   const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
   const modelName = useAppSelector((state) => state.model.model?.name);
-  const savedImages = useAppSelector((state) => state.model.savedImages);
+  const savedImages = useAppSelector(selectModelSavedImages);
   const dispatch = useAppDispatch();
 
   let postData = null;

@@ -21,9 +21,8 @@ import type { ModelVersion } from "../../shared/types/model";
  *
  * State:
  * @property {object} model - Model data.
- * @property {{modelId: number | null, data: Object}} savedImages - Saved post/image IDs for the active model.
- * Map of model version → saved posts and image IDs, used to mark which Civitai posts/images
- * are already saved for the active model.
+ * Saved post/image IDs live in model.savedImages. Consumers use the derived
+ * selectModelSavedImages wrapper to mark saved Civitai posts/images.
  * @property {Array<Object>} modelPreview - List of model previews.
  * @property {boolean} isLoading - Model loading state.
  * @property {string} errorMessage - Model error message.
@@ -32,7 +31,6 @@ import type { ModelVersion } from "../../shared/types/model";
  */
 const initialModelState: ModelsState = {
   model: null,
-  savedImages: null,
   modelPreview: [],
   isLoading: true,
   errorMessage: "",
@@ -45,35 +43,22 @@ const modelSlice = createSlice({
   initialState: initialModelState,
   reducers: {
     /**
-     * Sets and merges model data.
-     * Also sets or resets `savedImages` depending on whether the model contains saved images.
+     * Replaces model data, including its canonical saved-image IDs.
      */
     setModelData(state, action: PayloadAction<ModelData | null>) {
       state.model = action.payload;
-
-      if (action?.payload?.savedImages) {
-        state.savedImages = {
-          modelId: action.payload.id || null,
-          data: action?.payload?.savedImages,
-        };
-      } else if (action?.payload?.id && !action?.payload?.savedImages) {
-        state.savedImages = null;
-      }
     },
     updateModelDataField(state, action: PayloadAction<Partial<ModelData>>) {
-      if (state.model) Object.assign(state.model, action.payload);
-
-      if (action?.payload?.savedImages) {
-        state.savedImages = {
-          modelId: action.payload.id || null,
-          data: action?.payload?.savedImages,
-        };
-      } else if (action?.payload?.id && !action?.payload?.savedImages) {
-        state.savedImages = null;
+      if (!state.model) return;
+      if (action.payload.id && action.payload.id !== state.model.id) {
+        delete state.model.savedImages;
       }
+      Object.assign(state.model, action.payload);
     },
     setSavedImages(state, action: PayloadAction<ModelSavedImagesData>) {
-      state.savedImages = action.payload;
+      if (state.model && state.model.id === action.payload.modelId) {
+        state.model.savedImages = action.payload.data;
+      }
     },
     /**
      * Updates or adds saved images for a post.
@@ -86,36 +71,15 @@ const modelSlice = createSlice({
     updateSavedImages(state, action: PayloadAction<UpdateSavedImagesData>) {
       const { versionId, postId, modelId } = action.payload.postInfo;
 
-      if (!modelId || !versionId || state.model?.id !== modelId) return;
+      if (!state.model || !modelId || !versionId || state.model.id !== modelId) return;
 
-      if (
-        state?.savedImages?.data &&
-        Object.hasOwn(state.savedImages.data, `${versionId}`)
-      ) {
-        const existedPostIndex = state.savedImages.data[versionId].findIndex(
-          (post) => post.postId === postId,
-        );
-        if (existedPostIndex !== -1) {
-          const updatedSavedImages = [...state.savedImages.data[versionId]];
-          updatedSavedImages[existedPostIndex] = action.payload.data;
-
-          state.savedImages.data[versionId] = updatedSavedImages;
-        } else {
-          const updatedSavedImages = [
-            ...state.savedImages.data[versionId],
-            action.payload.data,
-          ];
-          state.savedImages.data[versionId] = updatedSavedImages;
-        }
+      const savedImages = (state.model.savedImages ??= {});
+      const posts = (savedImages[versionId] ??= []);
+      const existedPostIndex = posts.findIndex((post) => post.postId === postId);
+      if (existedPostIndex !== -1) {
+        posts[existedPostIndex] = action.payload.data;
       } else {
-        const updatedSavedImages = [action.payload.data];
-        state.savedImages = {
-          modelId: modelId,
-          data: {
-            ...state.savedImages?.data,
-            [`${versionId}`]: updatedSavedImages,
-          },
-        };
+        posts.push(action.payload.data);
       }
     },
     /**
@@ -130,15 +94,13 @@ const modelSlice = createSlice({
 
       if (state.model?.id !== modelId) return;
 
-      if (
-        state?.savedImages?.data &&
-        Object.hasOwn(state.savedImages.data, `${versionId}`)
-      ) {
-        const existedPostIndex = state.savedImages.data[versionId].findIndex(
+      const posts = state.model?.savedImages?.[versionId];
+      if (posts) {
+        const existedPostIndex = posts.findIndex(
           (post) => post.postId === postId,
         );
         if (existedPostIndex !== -1) {
-          state.savedImages.data[versionId].splice(existedPostIndex, 1);
+          posts.splice(existedPostIndex, 1);
         }
       }
     },

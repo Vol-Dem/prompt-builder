@@ -142,7 +142,7 @@ const Model = ({ title }: ModelPageProps) => {
 
   const modelIsChanged = model && model.id !== curVersion?.modelId;
   const versionIsChanged =
-    model && versionIdParam && curVersion?.modelId !== +versionIdParam;
+    model && versionIdParam && curVersion?.id !== +versionIdParam;
 
   useEffect(() => {
     if (modelIsChanged || versionIsChanged) {

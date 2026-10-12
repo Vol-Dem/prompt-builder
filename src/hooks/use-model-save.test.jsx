@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { MemoryRouter } from "react-router-dom";
-import { act, cleanup, fireEvent, render, renderHook, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, renderHook, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import useModelSave from "./use-model-save";
 import UpdateModelForm from "../components/forms/update-model-form/UpdateModelForm";
@@ -246,4 +246,37 @@ it("preserves hydrated edit fields and displays pending and failed save states",
   expect(screen.getByLabelText("Name").value).toBe("Edited name");
   expect(screen.getByLabelText("Category").value).toBe("People");
   expect(screen.getByRole("button", { name: "Save" }).disabled).toBe(false);
+});
+
+it("retains unsaved model fields when saved-image IDs change and passes the latest IDs to persistence", async () => {
+  const modelData = {
+    id: 42, name: "Existing model", modelType: "lora", main: "people", sub: ["portrait"],
+    defaultCustomData: { tagSetsData: [{ name: "Set", value: "detail" }] },
+    modelVersionsCustomData: { 7: { versionId: 7, versionName: "Version", name: "Version", downloadStatus: true } },
+    savedImages: { 7: [{ postId: 10, imagesId: [1] }] },
+  };
+  const store = makeStore(modelData);
+  const EditingForm = () => {
+    const currentModel = useSelector((state) => state.model.model);
+    return <UpdateModelForm modelData={currentModel} />;
+  };
+  const { container } = render(<EditingForm />, { wrapper: wrapperFor(store) });
+  change("Name", "Unsaved name");
+  change("Category", "Unsaved category");
+  await waitFor(() => expect(screen.getAllByLabelText("Subcategory")).toHaveLength(1));
+  change("Subcategory", "Unsaved subcategory");
+  const status = screen.getByRole("checkbox", { name: "Version" });
+  fireEvent.click(status);
+  await act(async () => store.dispatch(modelActions.updateSavedImages({
+    postInfo: { modelId: 42, versionId: 7, postId: 10 },
+    data: { postId: 10, imagesId: [1, 2] },
+  })));
+  expect(screen.getByLabelText("Name").value).toBe("Unsaved name");
+  expect(screen.getByLabelText("Category").value).toBe("Unsaved category");
+  expect(screen.getByLabelText("Subcategory").value).toBe("Unsaved subcategory");
+  expect(status.checked).toBe(false);
+  fireEvent.submit(container.querySelector("form"));
+  await screen.findByText(SUCCESS_MESSAGE_UPLOADED);
+  expect(saveModelData.mock.calls[0][3].savedImages).toEqual({ 7: [{ postId: 10, imagesId: [1, 2] }] });
+  expect(saveModelData.mock.calls[0][0]).toMatchObject({ modelName: "Unsaved name", main: "Unsaved category" });
 });

@@ -44,9 +44,11 @@ beforeEach(() => {
     auth: { user: { uid: "user" } },
     general: { nsfwMode: false, nsfwLevel: "None" },
     model: {
-      savedImages: { data: { 7: [{ postId: 10, imagesId: [1, 2, 3] }] } },
       curVersion: { id: 7 },
-      model: { id: 42, data: { creator: { username: "creator" }, modelVersions: [{ id: 7, images: [image(1), image(2)] }] } },
+      model: {
+        id: 42, savedImages: { 7: [{ postId: 10, imagesId: [1, 2, 3] }] },
+        data: { creator: { username: "creator" }, modelVersions: [{ id: 7, images: [image(1), image(2)] }] },
+      },
     },
     guide: { active: false, model: { active: false } },
   });

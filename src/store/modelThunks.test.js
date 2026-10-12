@@ -153,7 +153,7 @@ describe("saved-post deletion", () => {
     expect(store.getState().model).toBe(before);
     modelWrite.resolve();
     await result;
-    expect(store.getState().model.savedImages.data[9]).toEqual([]);
+    expect(store.getState().model.model.savedImages[9]).toEqual([]);
   });
 
   it.each(["read", "post write", "model write"])("handles %s failure and keeps Redux unchanged", async (stage) => {
