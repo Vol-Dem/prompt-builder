@@ -22,7 +22,7 @@ type SelectProps<T extends SelectOption> = OverrideFields<
   ComponentProps<"input">,
   {
     label?: string;
-    selected?: string | number;
+    selected?: string | number | null;
     options: T[];
     onChange: (value: T["value"] | null) => void;
   }
@@ -37,20 +37,28 @@ type SelectProps<T extends SelectOption> = OverrideFields<
  * @param props.onChange - Callback when value changes.
  * @param props.className - Optional custom class.
  * @param props.label - Optional label text.
- * @param props.selected - Selected value.
+ * @param props.selected - Controlled value; null, undefined, or "" clears it. Omit for uncontrolled selection.
  * @returns  Rendered select component.
  */
-const Select = <T extends SelectOption>({
-  id = "select",
-  options,
-  onChange,
-  className,
-  label,
-  selected,
-  ...props
-}: SelectProps<T>) => {
+const Select = <T extends SelectOption>(selectProps: SelectProps<T>) => {
+  const {
+    id = "select",
+    options,
+    onChange,
+    className,
+    label,
+    selected,
+    ...props
+  } = selectProps;
   const [selectIsOpen, setSelectIsOpen] = useState(false);
-  const [selectedValue, setSelectedValue] = useState<T | null>(null);
+  const [uncontrolledValue, setUncontrolledValue] = useState<T["value"] | null>(null);
+  const isControlled = "selected" in selectProps;
+  const selectedId = isControlled ? selected : uncontrolledValue;
+  const selectedValue =
+    selectedId != null && selectedId !== ""
+      ? options.find((option) => String(option.value) === String(selectedId)) ?? null
+      : null;
+  const showEmptyOption = selected == null || selected === "";
   const [optionsFieldHeight, setOptionsFieldHeight] = useState(15);
   const visibleOptionsAmount = 5;
   const labeldRef = useRef<HTMLLabelElement>(null);
@@ -81,29 +89,17 @@ const Select = <T extends SelectOption>({
     const merginBottom = parseFloat(labelStyle.marginBottom);
     const selectHeight =
       labeldRef.current.clientHeight + merginTop + merginBottom;
-    const optionsAmount = selected ? options.length : options.length + 1;
+    const optionsAmount = options.length + (showEmptyOption ? 1 : 0);
     const fieldHeight =
       optionsAmount <= visibleOptionsAmount
         ? optionsAmount * selectHeight
         : visibleOptionsAmount * selectHeight;
     setOptionsFieldHeight(fieldHeight);
-  }, [visibleOptionsAmount, selectIsOpen, options, selected]);
-
-  useEffect(() => {
-    if (selected) {
-      const selectedData = options.find(
-        (option) => option.value + "" === selected + "",
-      );
-
-      if (selectedData) {
-        setSelectedValue(selectedData);
-      }
-    }
-  }, [options, selected]);
+  }, [visibleOptionsAmount, selectIsOpen, options, showEmptyOption]);
 
   const onSelectValueChange = (value: T | null) => {
-    setSelectedValue(value);
-    onChange(value?.value || null);
+    if (!isControlled) setUncontrolledValue(value?.value ?? null);
+    onChange(value?.value ?? null);
     setSelectIsOpen(false);
   };
 
@@ -184,7 +180,7 @@ const Select = <T extends SelectOption>({
                   }
                 >
                   {[
-                    !selected && (
+                    showEmptyOption && (
                       <div key="def" className={classes["select__item"]}>
                         <input
                           className={classes["select__radio"]}
@@ -194,7 +190,7 @@ const Select = <T extends SelectOption>({
                           value={""}
                           data-name={"-"}
                           onChange={() => onSelectValueChange(null)}
-                          checked={selectedValue?.value === null}
+                          checked={selectedValue === null}
                           {...props}
                         />
                         <label
