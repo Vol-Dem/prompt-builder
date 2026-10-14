@@ -46,7 +46,10 @@ describe("validateInput", () => {
   });
 
   it.each([2, 3, 4])("checks minimum length at %s characters", (length) => {
-    expect(validateInput({ minLength: 3 }, "x".repeat(length)).isValid).toBe(length >= 3);
+    expect(validateInput({ minLength: 3 }, "x".repeat(length))).toEqual({
+      inputValue: "x".repeat(length), isValid: length >= 3,
+      errorMessage: length >= 3 ? "" : "Value must be at least 3 characters",
+    });
   });
 
   it("counts the original string's spaces toward length limits", () => {
@@ -90,13 +93,34 @@ describe("validateInput", () => {
     });
   });
 
-  it.each(["", "0", "-1", "1.5", " 2 ", "1e3", "0x10"])(
+  it.each(["", " \t\n ", "0", "-1", "1.5", " 2 ", "1e3", "0x10"])(
     "accepts optional numeric input %j", (value) => {
       expect(validateInput({ number: true }, value)).toEqual({
         inputValue: value, isValid: true, errorMessage: "",
       });
     },
   );
+
+  it.each(["abc", "NaN", "Infinity", "-Infinity", "1e309", "1.2.3", "12px", "12,34"])(
+    "rejects invalid or nonfinite numeric input %j", (value) => {
+      expect(validateInput({ number: true }, value)).toEqual({
+        inputValue: value, isValid: false, errorMessage: "Value must be a number",
+      });
+    },
+  );
+
+  it("allows optional blanks but still enforces a required numeric field", () => {
+    expect(validateInput({ required: true, number: true }, " ").errorMessage)
+      .toBe("This field is required");
+    expect(validateInput({ number: false }, "abc").isValid).toBe(true);
+  });
+
+  it("retains rule order when a number fails multiple checks", () => {
+    expect(validateInput({ number: true, maxLength: 2 }, "abc").errorMessage)
+      .toBe("Value must be a number");
+    expect(validateInput({ maxLength: 2, number: true }, "abc").errorMessage)
+      .toBe("Value cannot be more than 2 characters");
+  });
 
   it("does not mutate a frozen rule configuration", () => {
     const rules: ValidationTypes = Object.freeze({ required: true, email: true, maxLength: 5 });

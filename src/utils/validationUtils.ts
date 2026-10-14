@@ -80,7 +80,7 @@ export const validateInput = (
           break;
 
         case "number":
-          if (!isNumber(+value) && isFinite(+value)) {
+          if (!isNumber(+value)) {
             errorMessages.push("Value must be a number");
           }
           break;
@@ -96,7 +96,7 @@ export const validateInput = (
         case "minLength":
           if (isNumber(typeValue) && !hasMinLength(value, typeValue)) {
             errorMessages.push(
-              `Value cannot be longer than ${typeValue} characters`,
+              `Value must be at least ${typeValue} characters`,
             );
           }
           break;

@@ -39,6 +39,12 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 describe.each(controls)("$name validation feedback", (variant) => {
+  it("shows minimum-length feedback for a value below the limit", () => {
+    render(control(variant, "ab", { validation: { minLength: 3 }, showError: true }));
+    expect(screen.getByText("Value must be at least 3 characters")).toBeTruthy();
+    expect(field().className).toContain(variant.errorClass);
+  });
+
   it("clears messages from removed rules while retaining external errors", () => {
     const { rerender } = render(control(variant, "", {
       validation: { required: true }, showError: true, error: "Server error",
@@ -140,4 +146,19 @@ it("retains numeric increment/decrement formatting and validity callback argumen
   fireEvent.click(screen.getByRole("button", { name: "up" }));
   fireEvent.click(screen.getByRole("button", { name: "down" }));
   expect(onChange.mock.calls).toEqual([["1.1", true], ["0.9", true]]);
+});
+
+it("reports invalid numeric edits and follows the parent's accepted value", () => {
+  const onChange = vi.fn();
+  const props = { id: "weight", label: "Weight", type: "text", step: 0.1,
+    onChange, validation: { number: true }, showError: true };
+  const { rerender } = render(<InputNumber {...props} value="1.0" />);
+  fireEvent.change(screen.getByLabelText("Weight"), { target: { value: "abc" } });
+  expect(onChange).toHaveBeenCalledExactlyOnceWith("abc", false, "Value must be a number");
+  expect(screen.getByLabelText("Weight").value).toBe("1.0");
+  expect(screen.queryByText("Value must be a number")).toBeNull();
+  rerender(<InputNumber {...props} value="abc" />);
+  expect(screen.getByText("Value must be a number")).toBeTruthy();
+  rerender(<InputNumber {...props} value="-1.5" />);
+  expect(screen.queryByText("Value must be a number")).toBeNull();
 });
