@@ -43,37 +43,29 @@ const TagsTextarea = ({
   placeholder,
   aditionalPlacegholder,
 }: TagsTextareaProps) => {
-  const [curPrompt, setCurrentPrompt] = useState<PromptItem[]>([]);
+  const [editingTagId, setEditingTagId] = useState<number | null>(null);
+  const [dropSides, setDropSides] = useState<Record<number, boolean | null>>({});
   const curPosPromptArr = useAppSelector((state) => state.prompt.curPromptArr);
   const curNegPromptArr = useAppSelector(
     (state) => state.prompt.curNegPromptArr,
   );
   const dispatch = useAppDispatch();
   const fieldRef = useRef<HTMLUListElement>(null);
+  const promptArr = promptType === "positive" ? curPosPromptArr : curNegPromptArr;
+  const curPrompt: PromptItem[] = promptArr.map((item) => ({
+    ...item,
+    edit: editingTagId === null ? item.edit : item.id === editingTagId,
+    dropLeft: dropSides[item.id] ?? null,
+  }));
 
   useEffect(() => {
-    const promptArr =
-      promptType === "positive" ? curPosPromptArr : curNegPromptArr;
-
-    const tagsData = promptArr.map((item) => {
-      return {
-        ...item,
-        dropLeft: null,
-      };
-    });
-
-    setCurrentPrompt(tagsData);
+    // Prompt changes still close inline editing and clear drag indicators.
+    setEditingTagId(null);
+    setDropSides({});
   }, [curPosPromptArr, curNegPromptArr, promptType]);
 
   const dragEndHandler = () => {
-    setCurrentPrompt((prevState) => {
-      return prevState.map((tagItem) => {
-        return {
-          ...tagItem,
-          dropLeft: null,
-        };
-      });
-    });
+    setDropSides({});
   };
 
   const dragOverHandler = (
@@ -87,28 +79,14 @@ const TagsTextarea = ({
 
     if (!curTargetData || curTargetData?.dropLeft === isLeftSide) return;
 
-    setCurrentPrompt((prevState) => {
-      return prevState.map((tagItem) => {
-        if (tagItem.id === curTargetData.id) {
-          return {
-            ...tagItem,
-            dropLeft: isLeftSide,
-          };
-        }
-        return tagItem;
-      });
-    });
+    setDropSides((prevState) => ({
+      ...prevState,
+      [curTargetData.id]: isLeftSide ?? null,
+    }));
   };
 
   const dragLeaveHandler = () => {
-    setCurrentPrompt((prevState) => {
-      return prevState.map((tagItem) => {
-        return {
-          ...tagItem,
-          dropLeft: null,
-        };
-      });
-    });
+    setDropSides({});
   };
 
   const dropHandler = (e: DragEvent<HTMLElement>) => {
@@ -178,14 +156,7 @@ const TagsTextarea = ({
   };
 
   const openEditHandler = (id: number) => {
-    setCurrentPrompt((prevState) => {
-      return prevState.map((item) => {
-        if (item.id === id) {
-          return { ...item, edit: true };
-        }
-        return { ...item, edit: false };
-      });
-    });
+    setEditingTagId(id);
   };
 
   const tagItemsHtml = curPrompt.map((item) => {

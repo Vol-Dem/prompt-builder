@@ -1,4 +1,4 @@
-import { useEffect, useState, type ComponentProps } from "react";
+import type { ComponentProps } from "react";
 
 import { promptActions } from "../../../store/prompt";
 import classes from "./Tag.module.scss";
@@ -32,25 +32,11 @@ type TagProps = ComponentProps<"div"> & {
  * @returns The interactive tag element.
  */
 const Tag = ({ tag, promptType, modelData, ref }: TagProps) => {
-  const [isInPrompt, setIsInPrompt] = useState(false);
-  const curPromt = useAppSelector((state) => state.prompt.curPrompt);
-  const curNegPromt = useAppSelector((state) => state.prompt.curNegPrompt);
+  const curPrompt = useAppSelector((state) =>
+    promptType === "positive" ? state.prompt.curPrompt : state.prompt.curNegPrompt,
+  );
+  const isInPrompt = splitTags(curPrompt).includes(tag);
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    let isActive = false;
-
-    const positiveWordsArr = splitTags(curPromt);
-    const negativeWordsArr = splitTags(curNegPromt);
-
-    if (promptType === "positive") {
-      isActive = positiveWordsArr.some((word) => word === tag);
-    } else if (promptType === "negative") {
-      isActive = negativeWordsArr.some((word) => word === tag);
-    }
-
-    setIsInPrompt(isActive);
-  }, [promptType, curPromt, curNegPromt, tag]);
 
   const addTagHandler = () => {
     if (!isInPrompt) {
