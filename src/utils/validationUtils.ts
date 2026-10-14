@@ -9,6 +9,10 @@ import {
 } from "../variables/constants";
 import { parseModelIds } from "./modelUtils";
 
+type ValidationRuleEntry = {
+  [Type in keyof ValidationTypes]-?: [Type, ValidationTypes[Type]];
+}[keyof ValidationTypes];
+
 /**
  * Validates input data
  * @param validTypes - An object with validation types as keys (email, password, required, number, minLength, maxLength, modelId) and their configurations as values.
@@ -22,10 +26,7 @@ export const validateInput = (
 ): Validated => {
   const errorMessages: string[] = [];
 
-  for (const [type, typeValue] of Object.entries(validTypes) as [
-    keyof ValidationTypes,
-    boolean,
-  ][]) {
+  for (const [type, typeValue] of Object.entries(validTypes) as ValidationRuleEntry[]) {
     if (typeValue) {
       switch (type) {
         case "email":
