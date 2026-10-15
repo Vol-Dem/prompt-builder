@@ -9,6 +9,23 @@ vi.mock("firebase/auth", () => ({ getAuth: () => ({ currentUser: null }) }));
 vi.mock("firebase/firestore", () => ({ getFirestore: () => ({}) }));
 
 describe("validateInput", () => {
+  it("accepts an unchanged loaded value while validating edits against current rules", () => {
+    const rules = { required: true, maxLength: 3, acceptedValue: "Legacy name" };
+    expect(validateInput(rules, "Legacy name")).toEqual({
+      inputValue: "Legacy name", isValid: true, errorMessage: "",
+    });
+    expect(validateInput(rules, "Different name").errorMessage).toBe("Value cannot be more than 3 characters");
+    expect(validateInput(rules, "").errorMessage).toBe("This field is required");
+    expect(validateInput(rules, "New").isValid).toBe(true);
+    expect(validateInput(rules, "Legacy name").isValid).toBe(true);
+  });
+
+  it("distinguishes an accepted empty loaded value from a new empty required field", () => {
+    expect(validateInput({ required: true, acceptedValue: "" }, "").isValid).toBe(true);
+    expect(validateInput({ required: true, acceptedValue: undefined }, "").isValid).toBe(false);
+    expect(validateInput({ required: true, acceptedValue: " " }, "").isValid).toBe(false);
+  });
+
   it("returns the original input without trimming or normalizing it", () => {
     expect(validateInput({ required: true }, "  Portrait  ")).toEqual({
       inputValue: "  Portrait  ", isValid: true, errorMessage: "",

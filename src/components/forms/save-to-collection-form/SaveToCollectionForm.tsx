@@ -7,7 +7,7 @@ import classes from "./SaveToCollectionForm.module.scss";
 import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
 import {
-  VALIDATION_CATEGORY_NAME_MAX_LENGTH,
+  COLLECTION_VALIDATION,
   SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT,
 } from "../../../variables/constants";
 import ComboSelect from "../../ui/forms/ComboSelect";
@@ -242,8 +242,6 @@ const SaveToCollectionForm = ({
     errorMessage?: string,
     id?: string,
   ) => {
-    if (!value) return;
-
     setSubcategoryInputs((prevState) => {
       const newState = [...prevState];
 
@@ -273,7 +271,7 @@ const SaveToCollectionForm = ({
       value: "",
       query: "",
       selected: { id: null, name: "" },
-      isValid: false,
+      isValid: true,
       errorMessage: "",
     });
 
@@ -311,10 +309,7 @@ const SaveToCollectionForm = ({
                 setSelected={selectMainCategoryHandler}
                 selected={mainCategorySelected}
                 placeholder="Main category"
-                validation={{
-                  required: true,
-                  maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-                }}
+                validation={COLLECTION_VALIDATION.name}
                 showError={showErrorMessage}
               />
               <SubcategoriesInputFieldset
@@ -338,10 +333,7 @@ const SaveToCollectionForm = ({
                 setSelected={selectCollectionNameHandler}
                 selected={collectionNameSelected}
                 placeholder="Collection name"
-                validation={{
-                  required: true,
-                  maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
-                }}
+                validation={COLLECTION_VALIDATION.name}
                 showError={showErrorMessage}
               />
             </div>

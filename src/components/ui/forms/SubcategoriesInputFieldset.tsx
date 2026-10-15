@@ -63,6 +63,7 @@ const SubcategoriesInputFieldset = ({
           validation={{
             required,
             maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
+            acceptedValue: sub.acceptedValue,
           }}
           showError={showError}
         />

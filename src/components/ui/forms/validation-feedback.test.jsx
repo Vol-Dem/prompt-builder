@@ -39,6 +39,17 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 describe.each(controls)("$name validation feedback", (variant) => {
+  it("accepts a loaded baseline and shows errors only for invalid changes", () => {
+    const props = { validation: { maxLength: 3, acceptedValue: "Legacy name" }, showError: true };
+    const { rerender } = render(control(variant, "Legacy name", props));
+    expect(screen.queryByText("Value cannot be more than 3 characters")).toBeNull();
+    rerender(control(variant, "Different name", props));
+    expect(screen.getByText("Value cannot be more than 3 characters")).toBeTruthy();
+    rerender(control(variant, "Legacy name", props));
+    expect(screen.queryByText("Value cannot be more than 3 characters")).toBeNull();
+    expect(field().className).not.toContain(variant.errorClass);
+  });
+
   it("shows minimum-length feedback for a value below the limit", () => {
     render(control(variant, "ab", { validation: { minLength: 3 }, showError: true }));
     expect(screen.getByText("Value must be at least 3 characters")).toBeTruthy();

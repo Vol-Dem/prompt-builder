@@ -39,6 +39,8 @@ export interface SidebarPreviewData {
 // }
 
 export type ValidationTypes = {
+  /** A loaded value that remains accepted under its original validation policy. */
+  acceptedValue?: string;
   email?: boolean;
   password?: boolean;
   required?: boolean;

@@ -72,3 +72,21 @@ it("retains new rows and resets them when the main category changes", async () =
   await waitFor(() => expect(screen.getAllByLabelText("Subcategory")).toHaveLength(1));
   expect(screen.getByLabelText("Subcategory").value).toBe("");
 });
+
+it("allows blank optional rows and leaves them out of the saved subcategories", async () => {
+  const { container } = render(<CollectionEditForm collectionData={{ ...collectionData, subcategories: [] }} />);
+  fireEvent.click(screen.getByRole("button", { name: "+ add subcategory" }));
+  fireEvent.submit(container.querySelector("form"));
+  await screen.findByText(SUCCESS_MESSAGE_SAVED);
+  expect(editCollectionData.mock.calls[0][0].subcategoriesData).toEqual([]);
+});
+
+it("allows saving after a category change without filling its optional subcategory", async () => {
+  const { container } = render(<CollectionEditForm collectionData={collectionData} />);
+  change("Category", "Places");
+  fireEvent.submit(container.querySelector("form"));
+  await screen.findByText(SUCCESS_MESSAGE_SAVED);
+  expect(editCollectionData.mock.calls[0][0]).toMatchObject({
+    categoryData: { id: "places", name: "Places" }, subcategoriesData: [],
+  });
+});

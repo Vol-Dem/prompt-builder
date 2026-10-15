@@ -9,6 +9,7 @@ export type SubcategoryInput<T extends string | number = string> = {
   value?: string;
   query?: string;
   selected: SelectOption<T> | null;
+  acceptedValue?: string;
   isValid: boolean;
   errorMessage: string;
 };

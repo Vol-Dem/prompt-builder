@@ -24,6 +24,9 @@ export const validateInput = (
   validTypes: ValidationTypes,
   value: string,
 ): Validated => {
+  if (validTypes.acceptedValue !== undefined && value === validTypes.acceptedValue) {
+    return { inputValue: value, isValid: true, errorMessage: "" };
+  }
   const errorMessages: string[] = [];
 
   for (const [type, typeValue] of Object.entries(validTypes) as ValidationRuleEntry[]) {

@@ -18,12 +18,12 @@ vi.mock("../utils/fetch/fetchCollection", () => ({ getCollectionData: vi.fn() })
 vi.mock("../components/ui/Spinner", () => ({ default: () => <span role="status">Preparing</span> }));
 // Keep the form's filtering and selection handlers, replacing only combobox UI.
 vi.mock("../components/ui/forms/ComboSelect", () => ({
-  default: ({ label, placeholder, query, setQuery, optionsData, selected, setSelected, id }) => {
+  default: ({ label, placeholder, query, setQuery, optionsData, selected, setSelected, id, validation }) => {
     const name = label || placeholder;
     return <div>
       <input aria-label={name} value={selected?.name || ""} onChange={(e) => {
         const value = optionsData.find((option) => option.name === e.target.value) || { id: null, name: e.target.value };
-        setSelected(value, !!value.name, "", id);
+        setSelected(value.name ? value : null, !validation.required || !!value.name, "", id);
       }} />
       <input aria-label={name + " query"} value={query} onChange={(e) => setQuery(e.target.value)} />
       <output data-testid={name + " options"}>{optionsData.map((option) => option.name).join(",")}</output>
@@ -231,6 +231,27 @@ it("keeps creation fields after success and links to the resolved collection", a
   expect(screen.getByLabelText("Collection").value).toBe("New collection");
   expect(getCollectionData).not.toHaveBeenCalled();
   expect(picker.current).toBeNull();
+});
+
+it("allows additional empty subcategory rows without creating empty records", async () => {
+  const { container } = mountForm();
+  change("Category", "New category");
+  change("Collection", "New collection");
+  fireEvent.click(screen.getByRole("button", { name: "+ add subcategory" }));
+  fireEvent.submit(container.querySelector("form"));
+  await screen.findByText(SUCCESS_MESSAGE_SAVED);
+  expect(addNewCollectionCategories.mock.calls[0][0].subcategoriesData).toEqual([]);
+});
+
+it("clears a selected optional subcategory before preparing the collection", async () => {
+  const { container } = mountForm();
+  change("Category", "People");
+  change("Collection", "Portraits");
+  change("Subcategory", "Face");
+  change("Subcategory", "");
+  fireEvent.submit(container.querySelector("form"));
+  await screen.findByText(SUCCESS_MESSAGE_SAVED);
+  expect(addNewCollectionCategories.mock.calls[0][0].subcategoriesData).toEqual([]);
 });
 
 it("shows loading through destination preparation and retains selections after failure", async () => {

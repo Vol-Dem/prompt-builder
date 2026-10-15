@@ -4,9 +4,8 @@ import ComboSelect from "../../ui/forms/ComboSelect";
 import SubcategoriesInputFieldset from "../../ui/forms/SubcategoriesInputFieldset";
 import classes from "./CollectionEditForm.module.scss";
 import {
-  VALIDATION_CATEGORY_NAME_MAX_LENGTH,
+  COLLECTION_VALIDATION,
   ERROR_MESSAGE_INPUT_DEF,
-  VALIDATION_DESCRIPTION_MAX_LENGTH,
   SUCCESS_MESSAGE_SAVED,
   SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT,
 } from "../../../variables/constants";
@@ -89,6 +88,9 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
     (state) => state.images.collectionDataIsSaving,
   );
   const dispatch = useAppDispatch();
+  const loadedCategoryName = categories.find(
+    (category) => category.id === collectionData.category,
+  )?.name;
 
   const mainCategoryOptions = useMemo(() => {
     return sortArrayBy(
@@ -122,11 +124,11 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
       isValid: isValid === null ? true : isValid,
       errorMessage,
     });
-    setSubCatInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
+    setSubCatInputs([cloneObject({ ...FORMS_DEF_SUBCATEGORY_INPUT, isValid: true })]);
   };
 
   useEffect(() => {
-    setSubCatInputs([cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)]);
+    setSubCatInputs([cloneObject({ ...FORMS_DEF_SUBCATEGORY_INPUT, isValid: true })]);
   }, []);
 
   useEffect(() => {
@@ -178,13 +180,14 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
             name: subcategoryData.name,
             placeholder: "Subcategory",
             selected: { id: subcategoryData.id, name: subcategoryData.name },
+            acceptedValue: subcategoryData.name,
             isValid: true,
             errorMessage: "",
           };
         },
       );
     } else {
-      subcategoriesInputData = [cloneObject(FORMS_DEF_SUBCATEGORY_INPUT)];
+      subcategoriesInputData = [cloneObject({ ...FORMS_DEF_SUBCATEGORY_INPUT, isValid: true })];
     }
 
     if (subcategoriesInputData?.length) setSubCatInputs(subcategoriesInputData);
@@ -224,7 +227,7 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
       // value: "",
       // query: "",
       selected: { id: null, name: "" },
-      isValid: false,
+      isValid: true,
       errorMessage: "",
     });
 
@@ -257,7 +260,7 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
 
       const newSubcatsData = subCatInputs.reduce<CollectionSubcategory[]>(
         (prev, cur) => {
-          if (cur.selected !== null) {
+          if (cur.selected && (cur.selected.id !== null || cur.selected.name)) {
             return [...prev, { ...cur.selected, id: cur.selected.id + "" }];
           }
           return prev;
@@ -310,8 +313,8 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
               });
             }}
             validation={{
-              required: true,
-              maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
+              ...COLLECTION_VALIDATION.name,
+              acceptedValue: collectionData.name,
             }}
             showError={showErrorMessage}
           />
@@ -329,7 +332,8 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
               });
             }}
             validation={{
-              maxLength: VALIDATION_DESCRIPTION_MAX_LENGTH,
+              ...COLLECTION_VALIDATION.description,
+              acceptedValue: collectionData.description || "",
             }}
             showError={showErrorMessage}
           ></Textarea>
@@ -353,8 +357,8 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
             selected={mainCategorySelected}
             placeholder="Main category"
             validation={{
-              required: true,
-              maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
+              ...COLLECTION_VALIDATION.name,
+              acceptedValue: loadedCategoryName,
             }}
             showError={showErrorMessage}
           />
