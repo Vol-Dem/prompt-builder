@@ -3,9 +3,9 @@ import { useEffect, useState, type ChangeEvent, type SubmitEvent } from "react";
 import { authActions } from "../store/auth";
 import { authRequest, authWithGoogle } from "../store/authThunks";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
-import { MESSAGE_AGREEMENT, ERROR_MESSAGE_INPUT_DEF, ERROR_MESSAGE_OFFLINE } from "../variables/constants";
+import { AUTH_VALIDATION, MESSAGE_AGREEMENT, ERROR_MESSAGE_INPUT_DEF, ERROR_MESSAGE_OFFLINE } from "../variables/constants";
 
-/** Owns authentication form state and actions; field validation rules stay in the form. */
+/** Owns authentication drafts, workflow validation policies and actions. */
 const useAuthFormController = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState({
@@ -24,6 +24,7 @@ const useAuthFormController = () => {
     (state) => state.auth.showResetPassword,
   );
   const dispatch = useAppDispatch();
+  const validation = isLogin ? AUTH_VALIDATION.login : AUTH_VALIDATION.signup;
 
   useEffect(() => {
     return () => {
@@ -95,8 +96,8 @@ const useAuthFormController = () => {
 
   return {
     fields: {
-      email: { ...email, onChange: changeEmail },
-      password: { ...password, onChange: changePassword },
+      email: { ...email, validation: validation.email, onChange: changeEmail },
+      password: { ...password, validation: validation.password, onChange: changePassword },
       agreement: { checked: agreement, onChange: agreementHandler },
     },
     mode: { isLogin, showResetPassword, onSwitch: switchSignType, openPasswordReset },

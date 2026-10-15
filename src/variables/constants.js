@@ -3,6 +3,7 @@ export * from "./constants/settings.js";
 export * from "./constants/urls.js";
 export * from "./constants/patterns.js";
 export * from "./constants/validation.js";
+export * from "./constants/auth-validation.ts";
 export * from "./constants/messages.js";
 export * from "./constants/guide.js";
 export * from "./constants/animations.js";

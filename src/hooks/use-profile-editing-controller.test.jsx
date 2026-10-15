@@ -201,6 +201,19 @@ it("normalizes null validity for all fields", () => {
   }
 });
 
+it.each([
+  ["name", "input", "New name"], ["email", "input", "reader@example.com"],
+  ["password", "next", "ValidPassword1"],
+])("honors the %s input's reported invalidity", (editor, field, value) => {
+  const { result } = renderHook(useProfileEditingController, { wrapper: wrapperFor(makeStore()) });
+  act(() => result.current[editor][field].onChange({ target: { value } }, false));
+  act(() => { result.current[editor].onSubmit({ preventDefault: vi.fn() }); });
+  expect(result.current.status.errorMessage).toBe(ERROR_MESSAGE_INPUT_DEF);
+  for (const request of [changeUserName, changeUserEmail, changeUserPassword]) {
+    expect(request).not.toHaveBeenCalled();
+  }
+});
+
 it("retains page title, email-name fallback, verification notice and modal ownership", () => {
   const store = makeStore({ displayName: null, emailVerified: false });
   store.dispatch(authActions.setReauthFormIsOpen(true));

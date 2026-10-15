@@ -2,12 +2,7 @@ import { UserCircleIcon } from "@heroicons/react/24/outline";
 
 import classes from "./Profile.module.scss";
 import { authActions } from "../store/auth";
-import {
-  ERROR_MESSAGE_AUTH,
-  VALIDATION_EMAIL_MAX_LENGTH,
-  VALIDATION_PASSWORD_MAX_LENGTH,
-  VALIDATION_USERNAME_MAX_LENGTH,
-} from "../variables/constants";
+import { ERROR_MESSAGE_AUTH } from "../variables/constants";
 import Card from "../components/ui/Card";
 import Input from "../components/ui/forms/Input";
 import ErrorMessage from "../components/ui/ErrorMessage";
@@ -59,11 +54,7 @@ const Profile = ({ title }: ProfileProps) => {
                 status.showErrorMessage && !name.input.isValid ? classes.invalid : ""
               }`}
               onChange={name.input.onChange}
-              validation={{
-                disableErrorOnBlur: true,
-                required: true,
-                maxLength: VALIDATION_USERNAME_MAX_LENGTH,
-              }}
+              validation={name.input.validation}
               showError={status.showErrorMessage}
               value={name.input.value}
               autoFocus={true}
@@ -99,11 +90,7 @@ const Profile = ({ title }: ProfileProps) => {
                 status.showErrorMessage && !email.input.isValid ? classes.invalid : ""
               }`}
               onChange={email.input.onChange}
-              validation={{
-                required: true,
-                email: true,
-                maxLength: VALIDATION_EMAIL_MAX_LENGTH,
-              }}
+              validation={email.input.validation}
               showError={status.showErrorMessage}
               value={email.input.value}
               autoFocus={true}
@@ -117,9 +104,7 @@ const Profile = ({ title }: ProfileProps) => {
                 status.showErrorMessage && !password.next.isValid ? classes.invalid : ""
               }`}
               onChange={password.current.onChange}
-              validation={{
-                disableErrorOnBlur: true,
-              }}
+              validation={password.current.validation}
               showError={status.showErrorMessage}
               value={password.current.value}
               autoFocus={true}
@@ -154,9 +139,7 @@ const Profile = ({ title }: ProfileProps) => {
                 status.showErrorMessage && !password.next.isValid ? classes.invalid : ""
               }`}
               onChange={password.current.onChange}
-              validation={{
-                disableErrorOnBlur: true,
-              }}
+              validation={password.current.validation}
               showError={status.showErrorMessage}
               value={password.current.value}
               autoFocus={true}
@@ -170,12 +153,7 @@ const Profile = ({ title }: ProfileProps) => {
                 status.showErrorMessage && !password.next.isValid ? classes.invalid : ""
               }`}
               onChange={password.next.onChange}
-              validation={{
-                required: true,
-                password: true,
-                maxLength: VALIDATION_PASSWORD_MAX_LENGTH,
-                disableErrorOnBlur: true,
-              }}
+              validation={password.next.validation}
               showError={status.showErrorMessage}
               value={password.next.value}
             />

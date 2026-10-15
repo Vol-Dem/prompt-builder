@@ -6,18 +6,20 @@ import { act, cleanup, fireEvent, render, renderHook, screen } from "@testing-li
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import useAuthFormController from "./use-auth-form-controller";
 import AuthForm from "../components/forms/Auth/AuthForm";
+import ReAuthForm from "../components/forms/ReAuth/ReAuthForm";
+import ResetPasswordForm from "../components/forms/reset-password-form/ResetPasswordForm";
 import authSlice, { authActions } from "../store/auth";
-import { authRequest, authWithGoogle, resetUserPassword } from "../store/authThunks";
-import { ERROR_MESSAGE_INPUT_DEF, ERROR_MESSAGE_OFFLINE, MESSAGE_AGREEMENT, VALIDATION_EMAIL_MAX_LENGTH } from "../variables/constants";
+import { authRequest, authWithGoogle, reAuthUser, resetUserPassword } from "../store/authThunks";
+import { ERROR_MESSAGE_INPUT_DEF, ERROR_MESSAGE_OFFLINE, MESSAGE_AGREEMENT, VALIDATION_EMAIL_MAX_LENGTH, VALIDATION_PASSWORD_MAX_LENGTH } from "../variables/constants";
 
 // Exercise the real reducer, inputs, validation and password-reset form.
-vi.mock("../store/authThunks", () => ({ authRequest: vi.fn(), authWithGoogle: vi.fn(), resetUserPassword: vi.fn() }));
+vi.mock("../store/authThunks", () => ({ authRequest: vi.fn(), authWithGoogle: vi.fn(), reAuthUser: vi.fn(), resetUserPassword: vi.fn() }));
 vi.mock("../components/ui/Spinner", () => ({ default: () => <div role="status">Loading</div> }));
 
 let online;
 beforeEach(() => {
   online = vi.spyOn(navigator, "onLine", "get").mockReturnValue(true);
-  for (const request of [authRequest, authWithGoogle, resetUserPassword]) {
+  for (const request of [authRequest, authWithGoogle, reAuthUser, resetUserPassword]) {
     request.mockReset().mockImplementation(() => (dispatch) => {
       dispatch(authActions.setIsLoading(true));
     });
@@ -166,4 +168,71 @@ it("preserves null-validity normalization and clears reset mode when switching",
   expect(result.current.mode).toMatchObject({ isLogin: false, showResetPassword: false });
   expect(result.current.fields.email).toMatchObject({ value: "", isValid: false });
   expect(result.current.fields.password).toMatchObject({ value: "", isValid: false });
+});
+
+it.each(["email", "password"])("honors the login %s input's reported invalidity", (invalidField) => {
+  const store = makeStore();
+  const { result } = renderHook(useAuthFormController, { wrapper: wrapperFor(store) });
+  act(() => {
+    result.current.fields.email.onChange({ target: { value: "reader@example.com" } }, invalidField !== "email");
+    result.current.fields.password.onChange({ target: { value: "ValidPassword1" } }, invalidField !== "password");
+  });
+  act(() => { result.current.actions.submit({ preventDefault: vi.fn() }); });
+  expect(store.getState().auth.errorMessage).toBe(ERROR_MESSAGE_INPUT_DEF);
+  expect(authRequest).not.toHaveBeenCalled();
+});
+
+it("honors the signup password input's reported invalidity", () => {
+  const store = makeStore();
+  const { result } = renderHook(useAuthFormController, { wrapper: wrapperFor(store) });
+  act(() => result.current.mode.onSwitch());
+  act(() => {
+    result.current.fields.email.onChange({ target: { value: "reader@example.com" } }, true);
+    result.current.fields.password.onChange({ target: { value: "ValidPassword1" } }, false);
+    result.current.fields.agreement.onChange();
+  });
+  act(() => { result.current.actions.submit({ preventDefault: vi.fn() }); });
+  expect(store.getState().auth.errorMessage).toBe(ERROR_MESSAGE_INPUT_DEF);
+  expect(authRequest).not.toHaveBeenCalled();
+});
+
+it.each(["a", "lowercasepassword"])("reauthenticates an existing password %j without strength requirements", (password) => {
+  const { container } = render(<ReAuthForm />, { wrapper: wrapperFor(makeStore()) });
+  change("Password", password);
+  fireEvent.blur(screen.getByLabelText("Password"));
+  expect(screen.queryByText(/Password must be/)).toBeNull();
+  submit(container);
+  expect(reAuthUser).toHaveBeenCalledExactlyOnceWith("pass", password);
+  expect(screen.getByLabelText("Password").disabled).toBe(true);
+});
+
+it.each(["", " ", "x".repeat(VALIDATION_PASSWORD_MAX_LENGTH + 1)])("rejects empty or overlong reauthentication input %j", (password) => {
+  const store = makeStore();
+  const { container } = render(<ReAuthForm />, { wrapper: wrapperFor(store) });
+  change("Password", password);
+  submit(container);
+  expect(store.getState().auth.errorMessage).toBe(ERROR_MESSAGE_INPUT_DEF);
+  expect(reAuthUser).not.toHaveBeenCalled();
+});
+
+it("keeps Google reauthentication independent of the password policy", () => {
+  render(<ReAuthForm />, { wrapper: wrapperFor(makeStore()) });
+  fireEvent.click(screen.getByRole("button", { name: "Google" }));
+  expect(reAuthUser).toHaveBeenCalledExactlyOnceWith("popup", "");
+});
+
+it("reports offline before password validation in reauthentication", () => {
+  const store = makeStore();
+  const { container } = render(<ReAuthForm />, { wrapper: wrapperFor(store) });
+  online.mockReturnValue(false);
+  submit(container);
+  expect(store.getState().auth.errorMessage).toBe(ERROR_MESSAGE_OFFLINE);
+  expect(reAuthUser).not.toHaveBeenCalled();
+});
+
+it.each(["", "missing-at", `${"x".repeat(VALIDATION_EMAIL_MAX_LENGTH)}@example.com`])("rejects invalid reset email %j", (email) => {
+  const { container } = render(<ResetPasswordForm />, { wrapper: wrapperFor(makeStore()) });
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: email } });
+  submit(container);
+  expect(resetUserPassword).not.toHaveBeenCalled();
 });

@@ -8,9 +8,9 @@ import { authActions } from "../../../store/auth";
 import { reAuthUser } from "../../../store/authThunks";
 import Button from "../../ui/buttons/Button";
 import {
+  AUTH_VALIDATION,
   ERROR_MESSAGE_INPUT_DEF,
   ERROR_MESSAGE_OFFLINE,
-  VALIDATION_PASSWORD_MAX_LENGTH,
 } from "../../../variables/constants";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
@@ -92,11 +92,7 @@ const ReAuthForm = () => {
               isValid: isValid === null ? true : isValid,
             });
           }}
-          validation={{
-            required: true,
-            password: true,
-            maxLength: VALIDATION_PASSWORD_MAX_LENGTH,
-          }}
+          validation={AUTH_VALIDATION.reauthentication.password}
           showError={showErrorMessage}
           value={password.value}
         />

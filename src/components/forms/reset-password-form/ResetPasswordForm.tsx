@@ -5,7 +5,7 @@ import Input from "../../ui/forms/Input";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { resetUserPassword } from "../../../store/authThunks";
 import Button from "../../ui/buttons/Button";
-import { VALIDATION_EMAIL_MAX_LENGTH } from "../../../variables/constants";
+import { AUTH_VALIDATION } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
@@ -59,11 +59,7 @@ const ResetPasswordForm = () => {
         onChange={(e, isValid) => {
           setEmail({ value: e.target.value, isValid });
         }}
-        validation={{
-          required: true,
-          email: true,
-          maxLength: VALIDATION_EMAIL_MAX_LENGTH,
-        }}
+        validation={AUTH_VALIDATION.reset.email}
         showError={showErrorMessage}
         value={email.value}
       />

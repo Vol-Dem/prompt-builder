@@ -8,7 +8,6 @@ import ErrorMessage from "../../ui/ErrorMessage";
 import Button from "../../ui/buttons/Button";
 import ButtonSecondary from "../../ui/buttons/ButtonSecondary";
 import {
-  VALIDATION_EMAIL_MAX_LENGTH,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   ANIMATIONS_FM_SLIDEIN,
 } from "../../../variables/constants";
@@ -62,12 +61,7 @@ const AuthForm = () => {
             }`}
             autoFocus={true}
             onChange={fields.email.onChange}
-            validation={{
-              required: true,
-              email: true,
-              maxLength: VALIDATION_EMAIL_MAX_LENGTH,
-              disableErrorOnBlur: !mode.isLogin ? false : true,
-            }}
+            validation={fields.email.validation}
             showError={status.showErrorMessage}
             value={fields.email.value}
           />
@@ -81,11 +75,7 @@ const AuthForm = () => {
               status.showErrorMessage && !fields.password.isValid ? classes.invalid : ""
             }`}
             onChange={fields.password.onChange}
-            validation={{
-              required: true,
-              password: !mode.isLogin,
-              disableErrorOnBlur: !mode.isLogin ? false : true,
-            }}
+            validation={fields.password.validation}
             showError={status.showErrorMessage}
             value={fields.password.value}
           />

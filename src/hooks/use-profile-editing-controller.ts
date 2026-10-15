@@ -3,9 +3,9 @@ import { useState, type ChangeEvent, type SubmitEvent } from "react";
 import { authActions } from "../store/auth";
 import { changeUserEmail, changeUserName, changeUserPassword } from "../store/authThunks";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
-import { ERROR_MESSAGE_INPUT_DEF, ERROR_MESSAGE_OFFLINE } from "../variables/constants";
+import { AUTH_VALIDATION, ERROR_MESSAGE_INPUT_DEF, ERROR_MESSAGE_OFFLINE } from "../variables/constants";
 
-/** Owns profile drafts and editing actions; validation rules and page UI stay in Profile. */
+/** Owns profile drafts and editing actions using shared field validation policies. */
 const useProfileEditingController = () => {
   const [userName, setUserName] = useState({
     value: "",
@@ -154,20 +154,36 @@ const useProfileEditingController = () => {
 
   return {
     name: {
-      input: { ...userName, onChange: changeNameInput },
+      input: {
+        ...userName,
+        validation: AUTH_VALIDATION.profile.name,
+        onChange: changeNameInput,
+      },
       isActive: changeNameIsActive,
       onToggle: changeNameIsActiveHandler,
       onSubmit: changeNameHandler,
     },
     email: {
-      input: { ...email, onChange: changeEmailInput },
+      input: {
+        ...email,
+        validation: AUTH_VALIDATION.profile.email,
+        onChange: changeEmailInput,
+      },
       isActive: changeEmailIsActive,
       onToggle: changeEmailIsActiveHandler,
       onSubmit: changeEmailHandler,
     },
     password: {
-      current: { ...oldPassword, onChange: changeOldPasswordInput },
-      next: { ...password, onChange: changePasswordInput },
+      current: {
+        ...oldPassword,
+        validation: AUTH_VALIDATION.profile.currentPassword,
+        onChange: changeOldPasswordInput,
+      },
+      next: {
+        ...password,
+        validation: AUTH_VALIDATION.profile.newPassword,
+        onChange: changePasswordInput,
+      },
       isActive: changePassIsActive,
       onToggle: changePassIsActiveHandler,
       onSubmit: changePasswordHandler,
