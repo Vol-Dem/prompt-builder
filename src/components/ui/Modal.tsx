@@ -1,4 +1,4 @@
-import { useEffect, type ComponentProps, type ReactNode } from "react";
+import { type ComponentProps, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { XMarkIcon } from "@heroicons/react/24/outline";

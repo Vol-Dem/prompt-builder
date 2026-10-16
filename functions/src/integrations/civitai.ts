@@ -37,7 +37,15 @@ export const fetchImages = async (
   username: string,
 ): Promise<{ items: Image[] }> => {
   const versionImagesRequest = await fetch(
-    `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${versionId}&username=${username}&nsfw=X&limit=200&sort=Oldest`,
+    `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${versionId}&username=${username}&nsfw=X&limit=200&sort=Newest`,
   );
+
+  if (!versionImagesRequest.ok) {
+    throw new HttpsError(
+      "unavailable",
+      `Civitai image request failed (HTTP ${versionImagesRequest.status})`,
+    );
+  }
+
   return await versionImagesRequest.json();
 };
