@@ -12,6 +12,7 @@ import {
   checkIsInCurrentNsfwRange,
   // clearFileExtension,
   filterDuplicates,
+  mergeByField,
 } from "./generalUtils";
 import { parseModelIds } from "./modelUtils";
 
@@ -246,7 +247,8 @@ export const getUniqImageResources = (
     ...comfyResources,
   ];
 
-  return filterDuplicates(allImageResources, "modelVersionId");
+  return mergeByField(allImageResources, "modelVersionId");
+  // return filterDuplicates(allImageResources, "modelVersionId");
 };
 
 /**
