@@ -84,7 +84,7 @@ describe("preview mutations", () => {
     setDoc.mockRejectedValue(error);
     await expect(store.dispatch(setPreviewImg("preview.webp", false, "models", 42)))
       .resolves.toBeUndefined();
-    expect(console.error).toHaveBeenCalledWith(expect.objectContaining({ original: error }));
+    expect(console.error).toHaveBeenCalledWith(error);
     expect(store.getState().model).toBe(before);
   });
 
@@ -165,7 +165,7 @@ describe("saved-post deletion", () => {
     if (stage === "post write") deleteDoc.mockRejectedValue(error);
     if (stage === "model write") updateDoc.mockRejectedValue(error);
     await expect(store.dispatch(deleteImgPost(postInfo, post))).resolves.toBeUndefined();
-    expect(console.error).toHaveBeenCalledWith(expect.objectContaining({ original: error }));
+    expect(console.error).toHaveBeenCalledWith(error);
     expect(store.getState().model).toBe(before);
     if (stage !== "model write") expect(updateDoc).not.toHaveBeenCalled();
   });

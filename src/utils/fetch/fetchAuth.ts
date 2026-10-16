@@ -21,7 +21,7 @@ import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 import firebaseApp from "../../firebase-config";
 import { getReauthErrorMessage } from "../authErrors";
-import { AppError } from "../generalUtils";
+import { AppError, normalizeError } from "../generalUtils";
 import { mapFirebaseUser } from "../transformUtils";
 import { ERROR_MESSAGE_AUTH, ERROR_MESSAGE_DEFAULT } from "../../variables/constants";
 
@@ -88,12 +88,8 @@ export const sendAuthVerificationEmail = async () => {
 };
 
 const promptForCredentials = async (password: string): Promise<AuthCredential> => {
-  try {
-    if (!auth.currentUser?.email) throw new Error(ERROR_MESSAGE_DEFAULT);
-    return EmailAuthProvider.credential(auth.currentUser.email, password);
-  } catch (error) {
-    throw new Error(getReauthErrorMessage(error));
-  }
+  if (!auth.currentUser?.email) throw new Error(ERROR_MESSAGE_DEFAULT);
+  return EmailAuthProvider.credential(auth.currentUser.email, password);
 };
 
 export const reauthenticateUser = async (type: ReAuthType, password: string) => {
@@ -108,6 +104,8 @@ export const reauthenticateUser = async (type: ReAuthType, password: string) => 
       await reauthenticateWithPopup(user, provider);
     }
   } catch (error) {
-    throw new Error(getReauthErrorMessage(error));
+    const err = normalizeError(error);
+    if (err.isCustom) throw err;
+    throw new AppError(getReauthErrorMessage(err), err.code, err.original ?? err);
   }
 };

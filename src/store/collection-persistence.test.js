@@ -255,7 +255,7 @@ describe("removing collection post images", () => {
     batch.commit.mockRejectedValue(error);
 
     await expect(store.dispatch(updateCollectionPostsData([1], posts[0]))).resolves.toBeUndefined();
-    expect(console.error).toHaveBeenCalledWith(expect.objectContaining({ name: "AppError", original: error }));
+    expect(console.error).toHaveBeenCalledWith(error);
     expect(store.getState().images).toBe(before);
   });
 

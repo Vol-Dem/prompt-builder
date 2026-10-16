@@ -53,7 +53,7 @@ it("shows the existing provider failure message and allows retry", async () => {
   render(<VerifyEmailMessage />);
   fireEvent.click(screen.getByText("Resend request"));
   expect(await screen.findByText(ERROR_MESSAGE_DEFAULT)).toBeTruthy();
-  expect(console.error).toHaveBeenCalledWith(expect.objectContaining({ original: error }));
+  expect(console.error).toHaveBeenCalledWith(error);
 
   fireEvent.click(screen.getByText("Resend request"));
   expect(await screen.findByText("Request sent, check your email")).toBeTruthy();

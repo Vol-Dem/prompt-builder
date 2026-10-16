@@ -66,6 +66,11 @@ export const throwCustomError = (message: string): never => {
   throw error;
 };
 
+/** Reports the original failure so its stack is directly visible in the console. */
+export const reportError = (error: AppError): void => {
+  console.error(error.original ?? error);
+};
+
 /**
  * Handles caught errors and returns a custom or default error message
  * @param err - The error object
@@ -77,7 +82,7 @@ export const handleErrors = (err: AppError): string => {
   if (err.isCustom) {
     errorMessage = err.message;
   } else {
-    console.error(err);
+    reportError(err);
   }
 
   //Error message for Civitai connection bug
@@ -461,7 +466,7 @@ export const checkIsNsfw = (
 export class AppError extends Error {
   public readonly code?: string;
   public readonly original?: unknown;
-  public readonly isCustom?: unknown;
+  public readonly isCustom: boolean;
 
   constructor(
     message: string,
@@ -469,7 +474,7 @@ export class AppError extends Error {
     original?: unknown,
     isCustom?: boolean,
   ) {
-    super(message);
+    super(message, { cause: original });
     this.name = "AppError";
     this.code = code;
     this.original = original;

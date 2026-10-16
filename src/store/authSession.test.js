@@ -160,7 +160,7 @@ it.each(["subscription", "read"])("preserves error handling after a %s failure",
 
   await expect(store.dispatch(getUserData("user-1"))).resolves.toBeUndefined();
   expect(store.getState().auth).toMatchObject({ userDataLoadError: ERROR_MESSAGE_USER_DATA_LOAD, userDataIsLoading: false });
-  expect(console.error).toHaveBeenCalledWith(expect.objectContaining({ original: error }));
+  expect(console.error).toHaveBeenCalledWith(error);
   expect(onSnapshot).toHaveBeenCalledOnce();
   if (stage === "subscription") expect(getDoc).not.toHaveBeenCalled();
   else {

@@ -96,8 +96,7 @@ export const authWithGoogle = (): AppThunk => {
       dispatch(authActions.login(await signInWithGoogle()));
       dispatch(authActions.closeAuthForm());
     } catch (error) {
-      const errorMeassage = handleErrors(normalizeError(error));
-      dispatch(authActions.setErrorMessage(errorMeassage));
+      dispatch(authActions.setErrorMessage(getAuthRequestErrorMessage(error)));
     }
   };
 };

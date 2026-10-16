@@ -76,7 +76,7 @@ describe("collection category persistence", () => {
     setDoc.mockRejectedValue(error);
     await expect(store.dispatch(updateCollectionCategories([]))).resolves.toBeUndefined();
     expect(store.getState().images.categories).toEqual(categories);
-    expect(console.error).toHaveBeenCalledWith(expect.objectContaining({ original: error }));
+    expect(console.error).toHaveBeenCalledWith(error);
   });
 });
 

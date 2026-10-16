@@ -63,6 +63,7 @@ const makeUser = (emailVerified = true) => ({
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.spyOn(console, "error").mockImplementation(() => {});
   auth.currentUser = makeUser();
 });
 afterEach(() => vi.restoreAllMocks());
@@ -108,8 +109,10 @@ it.each([
   ["auth/missing-password", "Missing password"],
   ["auth/user-not-found", "User not found"],
   ["auth/too-many-requests", "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later"],
-  ["auth/unknown", "Provider failure"],
-])("preserves the %s message and clears loading after failure", async (code, message) => {
+  ["auth/email-already-in-use", "This email address is already in use"],
+  ["auth/weak-password", "Password is too weak"],
+  ["auth/unknown", ERROR_MESSAGE_DEFAULT],
+])("maps the %s message and clears loading after failure", async (code, message) => {
   const store = makeStore();
   signInWithEmailAndPassword.mockRejectedValue(new FirebaseError(code, "Provider failure"));
   await store.dispatch(authRequest(true, "user@example.test", "password"));
@@ -126,6 +129,21 @@ it("logs in through Google and closes the auth form", async () => {
   expect(signInWithPopup).toHaveBeenCalledWith(auth, expect.objectContaining({ providerId: "google.com" }));
   expect(store.getState().auth).toMatchObject({
     isLoggedIn: true, authFormIsOpen: false, user: { uid: "user-1", idToken: "id-token" },
+  });
+});
+
+it.each([
+  ["auth/popup-blocked", "Sign-in popup was blocked. Allow popups and try again"],
+  ["auth/unknown", ERROR_MESSAGE_DEFAULT],
+])("keeps Google sign-in open and uses a safe message for %s", async (code, message) => {
+  const store = makeStore();
+  store.dispatch(authActions.openAuthForm());
+  signInWithPopup.mockRejectedValue(new FirebaseError(code, "Internal provider details"));
+
+  await store.dispatch(authWithGoogle());
+
+  expect(store.getState().auth).toMatchObject({
+    isLoggedIn: false, authFormIsOpen: true, errorMessage: message,
   });
 });
 
@@ -182,6 +200,22 @@ it("rejects failed reauthentication with the existing password message", async (
     .rejects.toThrow("The current password you entered did not match our records");
 });
 
+it.each([
+  ["pass", "auth/invalid-credential", "The current password you entered did not match our records"],
+  ["popup", "auth/unknown", ERROR_MESSAGE_DEFAULT],
+])("retains the provider code and cause after %s reauthentication fails", async (type, code, message) => {
+  const original = new FirebaseError(code, "Internal provider details");
+  const operation = type === "pass" ? reauthenticateWithCredential : reauthenticateWithPopup;
+  operation.mockRejectedValue(original);
+
+  const error = await makeStore().dispatch(reAuthUser(type, "password")).catch((error) => error);
+
+  expect(error).toMatchObject({ name: "AppError", code, message, isCustom: true });
+  expect(error.original).toBe(original);
+  expect(error.cause).toBe(original);
+  expect(console.error).toHaveBeenCalledTimes(code === "auth/unknown" ? 1 : 0);
+});
+
 it("updates the password when no old password is supplied", async () => {
   const store = makeStore();
   await store.dispatch(changeUserPassword("new-password", ""));
@@ -215,7 +249,10 @@ it("waits for reauthentication before updating the password and reports success 
   expect(store.getState().auth).toMatchObject({ successMessage: "Password changed successfully", errorMessage: "" });
 });
 
-it.each(["auth/invalid-login-credentials", "auth/too-many-requests"])("prevents a password update when reauthentication fails with %s", async (code) => {
+it.each([
+  ["auth/invalid-login-credentials", "The current password you entered did not match our records"],
+  ["auth/too-many-requests", "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later"],
+])("prevents a password update when reauthentication fails with %s", async (code, message) => {
   vi.spyOn(console, "error").mockImplementation(() => {});
   const store = makeStore();
   reauthenticateWithCredential.mockRejectedValue(new FirebaseError(code, "Reauthentication failed"));
@@ -223,8 +260,8 @@ it.each(["auth/invalid-login-credentials", "auth/too-many-requests"])("prevents 
   await expect(store.dispatch(changeUserPassword("new-password", "wrong-password"))).resolves.toBeUndefined();
   expect(reauthenticateWithCredential).toHaveBeenCalledOnce();
   expect(updatePassword).not.toHaveBeenCalled();
-  expect(store.getState().auth).toMatchObject({ successMessage: "", errorMessage: ERROR_MESSAGE_DEFAULT });
-  expect(console.error).toHaveBeenCalledOnce();
+  expect(store.getState().auth).toMatchObject({ successMessage: "", errorMessage: message });
+  expect(console.error).not.toHaveBeenCalled();
 });
 
 it("handles an update failure after successful reauthentication without reporting success", async () => {
@@ -238,7 +275,7 @@ it("handles an update failure after successful reauthentication without reportin
   expect(reauthenticateWithCredential).toHaveBeenCalledOnce();
   expect(updatePassword).toHaveBeenCalledExactlyOnceWith(auth.currentUser, "new-password");
   expect(store.getState().auth).toMatchObject({ successMessage: "", errorMessage: ERROR_MESSAGE_DEFAULT });
-  expect(console.error).toHaveBeenCalledWith(expect.objectContaining({ original: error }));
+  expect(console.error).toHaveBeenCalledWith(error);
 });
 
 it("finishes initial authentication when the observer reports a signed-out user", async () => {
@@ -283,7 +320,7 @@ it("keeps signup logged out when verification fails", async () => {
   await store.dispatch(authRequest(false, auth.currentUser.email, "password"));
   expect(auth.currentUser.getIdToken).not.toHaveBeenCalled();
   expect(store.getState().auth).toMatchObject({
-    isLoggedIn: false, isLoading: false, errorMessage: "Verification failed",
+    isLoggedIn: false, isLoading: false, errorMessage: ERROR_MESSAGE_DEFAULT,
   });
 });
 
@@ -293,7 +330,7 @@ it("keeps login failures from token mapping inside the auth request error flow",
   auth.currentUser.getIdToken.mockRejectedValue(new Error("Token unavailable"));
   await store.dispatch(authRequest(true, auth.currentUser.email, "password"));
   expect(store.getState().auth).toMatchObject({
-    isLoggedIn: false, isLoading: false, errorMessage: "Token unavailable",
+    isLoggedIn: false, isLoading: false, errorMessage: ERROR_MESSAGE_DEFAULT,
   });
 });
 
@@ -321,18 +358,23 @@ it.each([
 
 it.each([
   ["auth/too-many-requests", "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later"],
-  ["auth/invalid-credential", "Provider failure"],
-])("preserves the reauthentication message for %s", async (code, message) => {
+  ["auth/invalid-credential", "The current password you entered did not match our records"],
+  ["auth/unknown", ERROR_MESSAGE_DEFAULT],
+])("maps the reauthentication message for %s", async (code, message) => {
   reauthenticateWithPopup.mockRejectedValue(new FirebaseError(code, "Provider failure"));
   await expect(makeStore().dispatch(reAuthUser("popup", ""))).rejects.toThrow(message);
 });
 
 it("preserves credential-construction errors and skips reauthentication after failure", async () => {
+  const original = new FirebaseError("auth/invalid-login-credentials", "Provider failure");
   vi.spyOn(EmailAuthProvider, "credential").mockImplementation(() => {
-    throw new FirebaseError("auth/invalid-login-credentials", "Provider failure");
+    throw original;
   });
-  await expect(makeStore().dispatch(reAuthUser("pass", "password")))
-    .rejects.toThrow("The current password you entered did not match our records");
+  const error = await makeStore().dispatch(reAuthUser("pass", "password")).catch((error) => error);
+  expect(error.message).toBe("The current password you entered did not match our records");
+  expect(error.code).toBe(original.code);
+  expect(error.original).toBe(original);
+  expect(error.cause).toBe(original);
   expect(reauthenticateWithCredential).not.toHaveBeenCalled();
 });
 

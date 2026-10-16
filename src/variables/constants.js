@@ -4,6 +4,7 @@ export * from "./constants/urls.js";
 export * from "./constants/patterns.js";
 export * from "./constants/validation.js";
 export * from "./constants/auth-validation.ts";
+export * from "./constants/auth-errors.ts";
 export * from "./constants/collection-validation.ts";
 export * from "./constants/messages.js";
 export * from "./constants/guide.js";
