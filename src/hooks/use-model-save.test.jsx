@@ -116,6 +116,21 @@ it("passes existing model data unchanged and skips creation resets", async () =>
   expect(onReset).not.toHaveBeenCalled();
 });
 
+it.each(["create", "edit"])("omits blank optional subcategories when saving in %s mode", async (mode) => {
+  const { result } = mountHook({ modelData: mode === "edit" ? { id: 42 } : undefined });
+  await submit(result, draft({
+    subCatInputs: [
+      { selected: { name: " Portrait " }, isValid: true },
+      { selected: { name: "Portrait" }, isValid: true },
+      { selected: { id: null, name: "" }, isValid: false },
+      { selected: { id: null, name: " \t " }, isValid: false },
+      { selected: null, isValid: false },
+    ],
+  }));
+  expect(saveModelData).toHaveBeenCalledOnce();
+  expect(saveModelData.mock.calls[0][0].sub).toEqual(["Portrait"]);
+});
+
 it("leaves unrelated active models and absent base-model results untouched", async () => {
   const store = makeStore({ id: 99, name: "Other model" });
   const { result } = mountHook({}, store);
@@ -203,10 +218,14 @@ it("resets creation fields after success and leaves the save button available fo
   const { container, store } = mountForm({}, makeStore({ id: 99, name: "Other" }));
   change("Model ID or URL", "42");
   selectCategories();
+  fireEvent.click(screen.getByRole("button", { name: "+ add subcategory" }));
+  expect(screen.getAllByLabelText("Subcategory")).toHaveLength(2);
   fireEvent.submit(container.querySelector("form"));
   await screen.findByText(SUCCESS_MESSAGE_UPLOADED);
+  expect(saveModelData.mock.calls[0][0].sub).toEqual(["Portrait"]);
   expect(screen.getByLabelText("Model ID or URL").value).toBe("");
   expect(screen.getByLabelText("Category").value).toBe("");
+  await waitFor(() => expect(screen.getAllByLabelText("Subcategory")).toHaveLength(1));
   expect(screen.getByLabelText("Subcategory").value).toBe("");
   expect(screen.getByRole("button", { name: "Save" }).disabled).toBe(false);
   const link = screen.getByRole("link", { name: "Show model" });

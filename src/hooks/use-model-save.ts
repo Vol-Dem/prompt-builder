@@ -111,7 +111,7 @@ const useModelSave = ({ modelData, newModelVersionId, onSave, onReset }: ModelSa
         .filter(Boolean);
       const sub = [
         ...new Set(subCatInputs.map((el) => el?.selected?.name?.trim())),
-      ].filter((el) => el !== undefined);
+      ].filter((el): el is string => el !== undefined && el !== "");
 
       const newModelData = {
         modelId,
