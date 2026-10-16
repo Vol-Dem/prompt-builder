@@ -68,10 +68,10 @@ const InputNumber = ({
   showError,
   step = 1,
 }: InputNumberProps) => {
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const inputErrorMessage = validation
     ? validateInput(validation, value + "").errorMessage
     : "";
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   useEffect(() => {
     setShowErrorMessage(!!showError);

@@ -56,10 +56,10 @@ const Textarea = ({
   showError,
   ...props
 }: TextareaProps) => {
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const inputErrorMessage = validation
     ? validateInput(validation, value).errorMessage
     : "";
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   useEffect(() => {
     if (typeof showError === "boolean") setShowErrorMessage(showError);

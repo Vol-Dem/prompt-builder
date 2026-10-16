@@ -40,17 +40,6 @@ const Modal = ({
   title,
   children,
 }: ModalProps) => {
-  useEffect(() => {
-    const scrollTop = document.documentElement.scrollTop;
-    const disableScrollHandler = () => {
-      window.scrollTo(0, scrollTop);
-    };
-    window.addEventListener("scroll", disableScrollHandler);
-    return () => {
-      window.removeEventListener("scroll", disableScrollHandler);
-    };
-  }, []);
-
   return (
     <>
       {createPortal(

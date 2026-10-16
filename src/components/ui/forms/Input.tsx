@@ -85,10 +85,10 @@ const Input = ({
   readOnly,
   ...props
 }: InputProps) => {
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const inputErrorMessage = validation
     ? validateInput(validation, value + "").errorMessage
     : "";
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const inputMargin = 5;
 

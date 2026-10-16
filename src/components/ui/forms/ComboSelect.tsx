@@ -93,10 +93,10 @@ const ComboSelect = <T extends number | string>({
   onBlur,
   label,
 }: ComboSelectProps<T>) => {
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const inputErrorMessage = validation
     ? validateInput(validation, selected?.name || "").errorMessage
     : "";
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   useEffect(() => {
     if (showError !== undefined) setShowErrorMessage(showError);

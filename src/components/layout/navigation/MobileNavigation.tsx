@@ -30,17 +30,17 @@ const MobileNavigation = () => {
     dispatch(modelActions.setActiveCarouselData(null));
   };
 
-  useEffect(() => {
-    if (navIsOpen) {
-      document.body.style.overflowY = "hidden";
-    } else {
-      document.body.style.overflowY = "scroll";
-    }
+  // useEffect(() => {
+  //   if (navIsOpen) {
+  //     document.body.style.overflowY = "hidden";
+  //   } else {
+  //     document.body.style.overflowY = "scroll";
+  //   }
 
-    return () => {
-      document.body.style.overflowY = "scroll";
-    };
-  }, [navIsOpen]);
+  //   return () => {
+  //     document.body.style.overflowY = "scroll";
+  //   };
+  // }, [navIsOpen]);
 
   const navSwitch = () => {
     setNavIsOpen((prevState) => !prevState);

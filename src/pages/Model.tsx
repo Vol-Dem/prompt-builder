@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import classes from "./Model.module.scss";
 import { modelActions } from "../store/model";
@@ -66,7 +66,8 @@ const Model = ({ title }: ModelPageProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { modelId } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate()
   const versionIdParam = searchParams.get("versionId");
   const model = useAppSelector((state) => state.model.model);
   const nsfwLevel = useAppSelector((state) => state.general.nsfwLevel);
@@ -76,6 +77,7 @@ const Model = ({ title }: ModelPageProps) => {
   const guideIsActive = useAppSelector((state) => state.guide.active);
   const dispatch = useAppDispatch();
   usePageTitle(pageTitle);
+  
   const hashtags = model?.hashtags?.length
     ? model?.hashtags
     : model?.data?.tags;
@@ -151,13 +153,8 @@ const Model = ({ title }: ModelPageProps) => {
 
       if (curVersionData && model) {
         if (!versionIdParam) {
-          setSearchParams(() => {
-            return {
-              versionId: curVersionData.id + "",
-            };
-          });
+          navigate(`?versionId=${curVersionData.id}`, { replace: true })
         }
-
         dispatch(
           modelActions.setCurVersion({ ...curVersionData, modelId: model.id }),
         );
