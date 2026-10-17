@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, StrictMode, Suspense, useEffect } from "react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import {
@@ -21,6 +21,7 @@ import { DEFAULT_PAGE_TITLE } from "../variables/constants";
 
 const checks = vi.hoisted(() => ({
   layoutMounted: vi.fn(),
+  stopAuth: vi.fn(),
   failingPage: null,
 }));
 
@@ -29,12 +30,13 @@ vi.mock("react-router-dom", async (importOriginal) => {
   return { ...actual, createBrowserRouter: vi.fn(actual.createBrowserRouter) };
 });
 vi.mock("../store/authThunks", () => ({
-  initAuth: vi.fn(() => ({ type: "auth/initialize" })),
+  initAuth: vi.fn(() => () => checks.stopAuth),
 }));
 vi.mock("../store/general", () => ({
   generalActions: { setIsMobile: (value) => ({ type: "general/mobile", payload: value }) },
 }));
-vi.mock("../utils/generalUtils", () => ({
+vi.mock("../utils/generalUtils", async (importOriginal) => ({
+  ...await importOriginal(),
   checkIsMobile: () => false,
   smoothScroll: vi.fn((hash) => Boolean(document.querySelector(hash))),
 }));
@@ -163,6 +165,7 @@ beforeEach(async () => {
   vi.spyOn(window, "scrollTo").mockImplementation(() => {});
   checks.failingPage = null;
   checks.layoutMounted.mockClear();
+  checks.stopAuth.mockClear();
   vi.mocked(initAuth).mockClear();
   vi.mocked(smoothScroll).mockClear();
   await browserRouter.navigate("/", { replace: true });
@@ -173,6 +176,18 @@ afterEach(() => {
 });
 
 describe("application router", () => {
+  it("cleans up authentication on unmount and between Strict Mode effect runs", () => {
+    const store = makeStore();
+    const { unmount } = render(<StrictMode><Provider store={store}><App /></Provider></StrictMode>);
+
+    expect(initAuth).toHaveBeenCalledTimes(2);
+    expect(checks.stopAuth).toHaveBeenCalledOnce();
+
+    unmount();
+
+    expect(checks.stopAuth).toHaveBeenCalledTimes(2);
+  });
+
   it("switches the home content as auth resolves without replacing the router or layout", async () => {
     const { setAuth, rerender, store } = mountApp();
     expect(screen.getByTestId("layout")).toBeTruthy();

@@ -20,7 +20,7 @@ const App = () => {
   //Authorizes user on application load
   useEffect(() => {
     dispatch(generalActions.setIsMobile(checkIsMobile()));
-    dispatch(initAuth());
+    return dispatch(initAuth());
   }, [dispatch]);
 
   // Preload the model page to reduce the delay on first navigation.

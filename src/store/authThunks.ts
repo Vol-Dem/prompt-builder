@@ -38,20 +38,50 @@ import {
  * - Retrieve and store application settings and state from session storage
  * - Fetch user data from the database
  * Finally, it sets the initial authentication state.
- * @returns Redux thunk.
+ * @returns Redux thunk that returns the authentication observer cleanup.
  */
-export const initAuth = (): AppThunk => {
+export const initAuth = (): AppThunk<() => void> => {
   return (dispatch) => {
-    observeAuthState(async (user) => {
-      if (user) {
-        dispatch(authActions.login(await mapFirebaseUser(user)));
-        dispatch(getAppInfo());
-        dispatch(uploadPanelStateFromStorage());
-        dispatch(uploadPromptFromStorage());
-        dispatch(getUserData(user.uid));
-      }
+    let active = true;
+    let currentRequest = 0;
+    let unsubscribe: (() => void) | undefined;
+
+    try {
+      unsubscribe = observeAuthState(async (user) => {
+        if (!active) return;
+        const request = ++currentRequest;
+        const isCurrent = () => active && request === currentRequest;
+
+        try {
+          if (user) {
+            const userData = await mapFirebaseUser(user);
+            if (!isCurrent()) return;
+
+            dispatch(authActions.login(userData));
+            dispatch(getAppInfo());
+            dispatch(uploadPanelStateFromStorage());
+            dispatch(uploadPromptFromStorage());
+            dispatch(getUserData(user.uid));
+          }
+        } catch (error) {
+          if (isCurrent()) {
+            dispatch(authActions.setErrorMessage(getAuthRequestErrorMessage(error)));
+          }
+        } finally {
+          if (isCurrent()) dispatch(authActions.setInitialAuth(true));
+        }
+      });
+    } catch (error) {
+      active = false;
+      dispatch(authActions.setErrorMessage(getAuthRequestErrorMessage(error)));
       dispatch(authActions.setInitialAuth(true));
-    });
+    }
+
+    return () => {
+      if (!active) return;
+      active = false;
+      unsubscribe?.();
+    };
   };
 };
 

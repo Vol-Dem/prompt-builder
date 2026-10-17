@@ -17,7 +17,12 @@ import {
 } from "firebase/auth";
 
 import authSlice, { authActions } from "./auth";
-import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
+import { AUTH_ERROR_MESSAGES, ERROR_MESSAGE_DEFAULT } from "../variables/constants";
+import { getAppInfo } from "./notification";
+import { uploadPanelStateFromStorage } from "./usedModels";
+import { uploadPromptFromStorage } from "./prompt";
+import { fetchUserData } from "../utils/fetch/fetchUser";
+import { startUserDataSubscription } from "./authSession";
 import {
   authRequest,
   authWithGoogle,
@@ -50,6 +55,23 @@ vi.mock("firebase/firestore", async (importOriginal) => ({
   ...await importOriginal(),
   getFirestore: () => ({}),
 }));
+vi.mock("./notification", async (importOriginal) => ({
+  ...await importOriginal(),
+  getAppInfo: vi.fn(),
+}));
+vi.mock("./usedModels", async (importOriginal) => ({
+  ...await importOriginal(),
+  uploadPanelStateFromStorage: vi.fn(),
+}));
+vi.mock("./prompt", async (importOriginal) => ({
+  ...await importOriginal(),
+  uploadPromptFromStorage: vi.fn(),
+}));
+vi.mock("../utils/fetch/fetchUser", async (importOriginal) => ({
+  ...await importOriginal(),
+  fetchUserData: vi.fn(),
+}));
+vi.mock("./authSession", () => ({ startUserDataSubscription: vi.fn() }));
 
 const makeStore = () => configureStore({ reducer: { auth: authSlice.reducer } });
 const makeUser = (emailVerified = true) => ({
@@ -65,6 +87,11 @@ beforeEach(() => {
   vi.resetAllMocks();
   vi.spyOn(console, "error").mockImplementation(() => {});
   auth.currentUser = makeUser();
+  onAuthStateChanged.mockReturnValue(vi.fn());
+  getAppInfo.mockReturnValue({ type: "test/appInfo" });
+  uploadPanelStateFromStorage.mockReturnValue({ type: "test/sidebarRestored" });
+  uploadPromptFromStorage.mockReturnValue({ type: "test/promptRestored" });
+  fetchUserData.mockResolvedValue(undefined);
 });
 afterEach(() => vi.restoreAllMocks());
 
@@ -285,6 +312,167 @@ it("finishes initial authentication when the observer reports a signed-out user"
   expect(store.getState().auth.initialAuth).toBe(false);
   await onAuthStateChanged.mock.calls[0][1](null);
   expect(store.getState().auth).toMatchObject({ initialAuth: true, isLoggedIn: false });
+});
+
+it("maps the initial user before login, restoration, and loading user data", async () => {
+  const store = makeStore();
+  let finishToken;
+  auth.currentUser.getIdToken.mockReturnValue(new Promise((resolve) => { finishToken = resolve; }));
+  store.dispatch(initAuth());
+  const pending = onAuthStateChanged.mock.calls[0][1](auth.currentUser);
+
+  expect(store.getState().auth).toMatchObject({ initialAuth: false, isLoggedIn: false });
+  expect(getAppInfo).not.toHaveBeenCalled();
+  expect(fetchUserData).not.toHaveBeenCalled();
+  finishToken("initial-token");
+  await pending;
+
+  expect(store.getState().auth).toMatchObject({
+    initialAuth: true, isLoggedIn: true, errorMessage: "",
+    user: { uid: "user-1", idToken: "initial-token", refreshToken: "refresh-token" },
+  });
+  expect(getAppInfo).toHaveBeenCalledOnce();
+  expect(uploadPanelStateFromStorage).toHaveBeenCalledOnce();
+  expect(uploadPromptFromStorage).toHaveBeenCalledOnce();
+  expect(startUserDataSubscription).toHaveBeenCalledExactlyOnceWith("user-1", expect.any(Function));
+  expect(fetchUserData).toHaveBeenCalledExactlyOnceWith("user-1");
+  expect(uploadPanelStateFromStorage.mock.invocationCallOrder[0]).toBeLessThan(uploadPromptFromStorage.mock.invocationCallOrder[0]);
+  expect(uploadPromptFromStorage.mock.invocationCallOrder[0]).toBeLessThan(fetchUserData.mock.invocationCallOrder[0]);
+});
+
+it.each([
+  { code: "auth/network-request-failed", message: AUTH_ERROR_MESSAGES.request["auth/network-request-failed"] },
+  { code: "auth/unknown", message: ERROR_MESSAGE_DEFAULT },
+])("finishes initialization with safe feedback when token mapping fails with $code", async ({ code, message }) => {
+  const store = makeStore();
+  const original = new FirebaseError(code, "Internal provider details");
+  auth.currentUser.getIdToken.mockRejectedValue(original);
+  store.dispatch(initAuth());
+
+  await expect(onAuthStateChanged.mock.calls[0][1](auth.currentUser)).resolves.toBeUndefined();
+
+  expect(store.getState().auth).toMatchObject({ initialAuth: true, isLoggedIn: false, errorMessage: message });
+  expect(getAppInfo).not.toHaveBeenCalled();
+  expect(fetchUserData).not.toHaveBeenCalled();
+  if (code === "auth/unknown") expect(console.error).toHaveBeenCalledExactlyOnceWith(original);
+});
+
+it("handles a later successful auth event through the same observer after an initialization failure", async () => {
+  const store = makeStore();
+  auth.currentUser.getIdToken.mockRejectedValueOnce(new Error("Token unavailable"));
+  store.dispatch(initAuth());
+  const onChange = onAuthStateChanged.mock.calls[0][1];
+  await onChange(auth.currentUser);
+  expect(store.getState().auth).toMatchObject({ initialAuth: true, isLoggedIn: false });
+
+  await onChange(auth.currentUser);
+
+  expect(store.getState().auth).toMatchObject({ initialAuth: true, isLoggedIn: true, user: { uid: "user-1" } });
+  expect(onAuthStateChanged).toHaveBeenCalledOnce();
+  expect(fetchUserData).toHaveBeenCalledExactlyOnceWith("user-1");
+});
+
+it("finishes initialization when synchronous restoration fails after login", async () => {
+  const store = makeStore();
+  const original = new Error("Restoration failed");
+  uploadPanelStateFromStorage.mockImplementationOnce(() => { throw original; });
+  store.dispatch(initAuth());
+
+  await expect(onAuthStateChanged.mock.calls[0][1](auth.currentUser)).resolves.toBeUndefined();
+
+  expect(store.getState().auth).toMatchObject({ initialAuth: true, isLoggedIn: true, errorMessage: ERROR_MESSAGE_DEFAULT });
+  expect(console.error).toHaveBeenCalledExactlyOnceWith(original);
+});
+
+it("settles a synchronous observer registration failure and returns a safe cleanup", () => {
+  const store = makeStore();
+  const original = new Error("Observer registration failed");
+  onAuthStateChanged.mockImplementationOnce(() => { throw original; });
+
+  const stop = store.dispatch(initAuth());
+
+  expect(store.getState().auth).toMatchObject({ initialAuth: true, isLoggedIn: false, errorMessage: ERROR_MESSAGE_DEFAULT });
+  expect(console.error).toHaveBeenCalledExactlyOnceWith(original);
+  expect(stop).toBeTypeOf("function");
+  expect(() => { stop(); stop(); }).not.toThrow();
+});
+
+it("unsubscribes once and ignores callbacks queued after cleanup", async () => {
+  const store = makeStore();
+  const unsubscribe = vi.fn();
+  onAuthStateChanged.mockReturnValue(unsubscribe);
+  const stop = store.dispatch(initAuth());
+  const before = store.getState();
+
+  stop();
+  stop();
+  await onAuthStateChanged.mock.calls[0][1](auth.currentUser);
+
+  expect(unsubscribe).toHaveBeenCalledOnce();
+  expect(auth.currentUser.getIdToken).not.toHaveBeenCalled();
+  expect(store.getState()).toBe(before);
+});
+
+it.each(["success", "failure"])("ignores a token %s that settles after cleanup", async (outcome) => {
+  const store = makeStore();
+  let resolveToken;
+  let rejectToken;
+  auth.currentUser.getIdToken.mockReturnValue(new Promise((resolve, reject) => {
+    resolveToken = resolve;
+    rejectToken = reject;
+  }));
+  const stop = store.dispatch(initAuth());
+  const pending = onAuthStateChanged.mock.calls[0][1](auth.currentUser);
+  const before = store.getState();
+  stop();
+
+  if (outcome === "success") resolveToken("stale-token");
+  else rejectToken(new Error("Stale token failure"));
+  await expect(pending).resolves.toBeUndefined();
+
+  expect(store.getState()).toBe(before);
+  expect(getAppInfo).not.toHaveBeenCalled();
+  expect(fetchUserData).not.toHaveBeenCalled();
+  expect(console.error).not.toHaveBeenCalled();
+});
+
+it("does not log in a pending user after a newer signed-out event", async () => {
+  const store = makeStore();
+  let finishToken;
+  auth.currentUser.getIdToken.mockReturnValue(new Promise((resolve) => { finishToken = resolve; }));
+  store.dispatch(initAuth());
+  const onChange = onAuthStateChanged.mock.calls[0][1];
+  const pending = onChange(auth.currentUser);
+  await onChange(null);
+  finishToken("stale-token");
+  await pending;
+
+  expect(store.getState().auth).toMatchObject({ initialAuth: true, isLoggedIn: false, user: { uid: "" } });
+  expect(fetchUserData).not.toHaveBeenCalled();
+});
+
+it.each(["success", "failure"])("ignores an older user's token %s after a newer user initializes", async (outcome) => {
+  const store = makeStore();
+  let resolveToken;
+  let rejectToken;
+  const oldUser = auth.currentUser;
+  oldUser.getIdToken.mockReturnValue(new Promise((resolve, reject) => {
+    resolveToken = resolve;
+    rejectToken = reject;
+  }));
+  const newUser = { ...makeUser(), uid: "user-2" };
+  store.dispatch(initAuth());
+  const onChange = onAuthStateChanged.mock.calls[0][1];
+  const pending = onChange(oldUser);
+  await onChange(newUser);
+
+  if (outcome === "success") resolveToken("stale-token");
+  else rejectToken(new Error("Stale token failure"));
+  await pending;
+
+  expect(store.getState().auth).toMatchObject({ initialAuth: true, isLoggedIn: true, errorMessage: "", user: { uid: "user-2" } });
+  expect(fetchUserData).toHaveBeenCalledExactlyOnceWith("user-2");
+  expect(console.error).not.toHaveBeenCalled();
 });
 
 it("waits for signup verification before mapping and logging in the user", async () => {
