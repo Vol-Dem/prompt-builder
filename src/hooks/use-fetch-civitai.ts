@@ -44,86 +44,101 @@ const useFetchCivitai = (
   const [isLastPage, setIsLastPage] = useState(false);
   const [fetchedData, setFetchedData] = useState<any[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const [currCursor, setCurrCursor] = useState<string | null>(null);
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const abortControlerRef = useRef<AbortController>(null);
+  const feedRef = useRef<{
+    url: string;
+    currCursor: string | null;
+    nextCursor: string | null;
+    isLastPage: boolean;
+  } | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    const resetExamples = () => {
-      setCurrCursor(null);
-      setNextCursor(null);
-      setFetchedData([]);
-      setIsLastPage(false);
+    // Reset cursors synchronously before a consumer effect starts the new feed.
+    feedRef.current = {
+      url,
+      currCursor: null,
+      nextCursor: null,
+      isLastPage: false,
     };
-    resetExamples();
+    setFetchedData([]);
+    setIsLastPage(false);
+    setIsFetching(false);
+    setErrorMessage("");
 
     return () => {
-      resetExamples();
-      if (abortControlerRef.current) {
-        abortControlerRef.current.abort();
-      }
+      feedRef.current = null;
+      const controller = abortControllerRef.current;
+      abortControllerRef.current = null;
+      controller?.abort();
     };
   }, [url]);
 
   const fetchCivitai = useCallback(
     async (setIsIntersecting?: (isIntersecting: boolean) => void) => {
-      if (!url) return;
-      if (errorMessage) return;
-      if (nextCursor && currCursor === nextCursor) return;
+      const feed = feedRef.current;
+      if (!url || !feed || feed.url !== url || errorMessage) return;
+      if (abortControllerRef.current || feed.isLastPage) return;
+      if (feed.nextCursor && feed.currCursor === feed.nextCursor) return;
+
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+      const isCurrent = () =>
+        feedRef.current === feed && abortControllerRef.current === controller;
 
       try {
         setIsFetching(true);
-
-        const newAbortControler = new AbortController();
-        abortControlerRef.current = newAbortControler;
-
         setErrorMessage("");
 
+        const nextCursor = feed.nextCursor;
         const curUrl = `${url}${nextCursor ? `&cursor=${nextCursor}` : ""}`;
 
-        const data = await fetchCivitaiImagePage(curUrl, newAbortControler.signal);
-        let dataUniq = data?.items;
-
-        // Remove dublicate images (Civitai bug)
-        // if (FILTER_CIV_DUPLICATES) {
-        //   dataUniq = filterDuplicates(dataUniq, "id");
-        // }
+        const data = await fetchCivitaiImagePage(curUrl, controller.signal);
+        if (!isCurrent() || controller.signal.aborted) return;
 
         setFetchedData((prevState) => {
           const newExampleImages = addToStart
-            ? [...dataUniq, ...prevState]
-            : [...prevState, ...dataUniq];
+            ? [...data.items, ...prevState]
+            : [...prevState, ...data.items];
 
-          // Remove dublicate images (Civitai bug)
+          // Remove duplicate images (Civitai bug).
           return FILTER_CIV_DUPLICATES
             ? filterDuplicates(newExampleImages, "id")
             : newExampleImages;
         });
 
-        setCurrCursor(nextCursor);
+        feed.currCursor = nextCursor;
         if (data.metadata?.nextCursor) {
-          setNextCursor(data.metadata.nextCursor);
+          feed.nextCursor = data.metadata.nextCursor;
         } else {
+          feed.isLastPage = true;
           setIsLastPage(true);
         }
 
         if (setIsIntersecting) setIsIntersecting(false);
       } catch (error) {
-        const err = normalizeError(error);
+        if (!isCurrent() || controller.signal.aborted) return;
 
+        const err = normalizeError(error);
+        const original = err.original ?? err;
         if (
-          typeof err.original === "string" &&
-          err?.original?.includes("AbortError")
+          (typeof original === "object" &&
+            original !== null &&
+            "name" in original &&
+            original.name === "AbortError") ||
+          (typeof original === "string" && original.includes("AbortError"))
         )
           return;
 
         handleErrors(err);
         setErrorMessage(ERROR_MESSAGE_CIV_CONNECTION);
       } finally {
-        setIsFetching(false);
+        if (isCurrent()) {
+          abortControllerRef.current = null;
+          setIsFetching(false);
+        }
       }
     },
-    [nextCursor, url, currCursor, errorMessage],
+    [url, errorMessage, addToStart],
   );
 
   return {
