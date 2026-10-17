@@ -10,8 +10,8 @@ beforeEach(() => { fetchMock.mockReset(); vi.stubGlobal("fetch", fetchMock); });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
 it.each([false, true])("retains cursor pagination, deduplication, and prepend=%s", async (prepend) => {
-  fetchMock.mockResolvedValueOnce({ json: async () => ({ items: [{ id: 1 }, { id: 2 }], metadata: { nextCursor: "next/value" } }) })
-    .mockResolvedValueOnce({ json: async () => ({ items: [{ id: 3 }, { id: 3 }] }) });
+  fetchMock.mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ items: [{ id: 1 }, { id: 2 }], metadata: { nextCursor: "next/value" } }) })
+    .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ items: [{ id: 3 }, { id: 3 }] }) });
   const setIntersecting = vi.fn();
   const { result } = renderHook(() => useFetchCivitai(url, prepend));
   await act(async () => result.current.fetchCivitai(setIntersecting));
@@ -28,7 +28,7 @@ it.each([false, true])("retains cursor pagination, deduplication, and prepend=%s
 it("aborts the pending request on URL change and resets pagination", async () => {
   fetchMock.mockImplementationOnce((_, { signal }) => new Promise((_, reject) => {
     signal.addEventListener("abort", () => reject("AbortError"));
-  })).mockResolvedValueOnce({ json: async () => ({ items: [] }) });
+  })).mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ items: [] }) });
   const { result, rerender, unmount } = renderHook(({ url }) => useFetchCivitai(url), { initialProps: { url } });
   let pending;
   act(() => { pending = result.current.fetchCivitai(); });
@@ -46,7 +46,7 @@ it("aborts the pending request on URL change and resets pagination", async () =>
 });
 
 it("keeps the existing error message and stops further requests after missing items", async () => {
-  fetchMock.mockResolvedValue({ json: async () => ({}) });
+  fetchMock.mockResolvedValue({ ok: true, status: 200, json: async () => ({}) });
   const { result } = renderHook(() => useFetchCivitai(url));
   await act(async () => result.current.fetchCivitai());
   expect(result.current).toMatchObject({ isFetching: false, errorMessage: ERROR_MESSAGE_CIV_CONNECTION, fetchedData: [] });

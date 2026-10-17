@@ -16,7 +16,6 @@ import {
 
 import firebaseApp from "../../firebase-config";
 import {
-  ERROR_MESSAGE_CIV_CONNECTION,
   ERROR_MESSAGE_DEFAULT,
   ERROR_MESSAGE_EXISTS,
   ERROR_MESSAGE_INVALID_DATA,
@@ -65,9 +64,7 @@ const updateModel = httpsCallable(functions, "updateModelCallDev");
  */
 export const getModelData = async (modelId: number) => {
   try {
-    const model = (await fetchData(
-      `${URL_CIV_MODELS}/${modelId}`,
-    )) as CivitaiModelDoc;
+    const model = await fetchModelFromCivitai(modelId);
 
     // Clears empty keys and excessive data (too much weight for Firestore) from image metadata
     const updatedModelversions = model?.modelVersions.map((modelVersion) => {
@@ -132,16 +129,12 @@ export const deleteModelDoc = async (uid: string, model: UserModelDoc) => {
  * @param id - The model ID
  * @returns The model data
  */
-export const fetchModelFromCivitai = async (id: number | string) => {
-  const responseCiv = await fetch(`${URL_CIV_MODELS}/${id}`);
-  const responseData = await responseCiv.json();
-
-  if (!responseCiv?.ok) {
-    throw new AppError(ERROR_MESSAGE_CIV_CONNECTION);
-  }
-
-  return responseData;
-};
+export const fetchModelFromCivitai = (id: number | string) =>
+  fetchData<CivitaiModelDoc>(
+    `${URL_CIV_MODELS}/${id}`,
+    undefined,
+    (data) => typeof data.id === "number" && Array.isArray(data.modelVersions),
+  );
 
 /**
  * Fetches user custom model data and default model data
@@ -394,11 +387,7 @@ export const saveModelData = async (
           throw new Error(uploadResponse.data.error);
         }
 
-        const responseCiv = await fetch(
-          `${URL_CIV_MODELS}/${newModelData.modelId}`,
-        );
-
-        data = (await responseCiv.json()) as CivitaiModelDoc;
+        data = await fetchModelFromCivitai(newModelData.modelId);
         modelVersions = data?.modelVersions;
       } else {
         data = modelData.data;

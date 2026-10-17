@@ -30,7 +30,7 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 it("fetches, filters, sorts, and persists images before completing a model upload", async () => {
-  fetchMock.mockResolvedValue({ json: async () => ({ items: [image(1, "2024-01-01"), image(2, "2025-01-01"), image(3, "2026-01-01")] }) });
+  fetchMock.mockResolvedValue({ ok: true, status: 200, json: async () => ({ items: [image(1, "2024-01-01"), image(2, "2025-01-01"), image(3, "2026-01-01")] }) });
   let finish;
   vi.mocked(updateImagePostData).mockImplementationOnce(() => new Promise((resolve) => { finish = resolve; }));
   const store = makeStore(post);
@@ -58,7 +58,7 @@ it("skips fetching when images are supplied and preserves collection orchestrati
 
 it.each(["network", "json", "empty", "missing items"])("moves an upload to rejected after %s failure", async (failure) => {
   if (failure === "network") fetchMock.mockRejectedValue(new Error("Offline"));
-  else fetchMock.mockResolvedValue({ json: async () => {
+  else fetchMock.mockResolvedValue({ ok: true, status: 200, json: async () => {
     if (failure === "json") throw new SyntaxError("Invalid JSON");
     return failure === "empty" ? { items: [] } : {};
   } });

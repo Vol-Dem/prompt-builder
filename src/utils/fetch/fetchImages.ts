@@ -20,6 +20,7 @@ import {
   SETTINGS_SFW_RANGE,
 } from "../../variables/constants";
 import { fetchData, makeBatchRequest } from "./fetchUtils";
+import { fetchCivitaiItems } from "./fetchCivitaiData";
 import { AppError, mergeByField, normalizeError } from "../generalUtils";
 import { parseModelIds } from "../modelUtils";
 import { combineImagesData, getUniqImageResources } from "../imageUtils";
@@ -290,8 +291,7 @@ export const updateImagePostData = async (
         nsfwLevel: "X",
       });
 
-      const imgExampleResponse = await fetch(postUrl);
-      const data = (await imgExampleResponse.json()) as { items: Image[] };
+      const data = await fetchCivitaiItems<Image>(postUrl);
 
       if (data?.items?.length)
         combinedImgData = combineImagesData(
@@ -368,12 +368,9 @@ export const getVersionImagesFromCiv = async (
   version: ModelVersion,
 ): Promise<Image[] | null> => {
   try {
-    const versionImagesRequest = await fetch(
+    const versionImages = await fetchCivitaiItems<Image>(
       `https://civitai.com/api/v1/images?modelId=${modelId}&modelVersionId=${version.id}&username=${username}&nsfw=X&limit=200&sort=Newest&withMeta=true`,
     );
-    const versionImages = (await versionImagesRequest.json()) as {
-      items: Image[];
-    };
     const updatedImages = version?.images?.flatMap((image) => {
       const fullImgData = versionImages?.items?.find(
         (verImg) => verImg.hash === image.hash,

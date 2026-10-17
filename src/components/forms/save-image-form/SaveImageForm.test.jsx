@@ -32,7 +32,7 @@ const loadImages = () => {
 };
 
 it.each([true, false])("keeps model restriction=%s, metadata repair, saved IDs, and queue selection", async (restrictModel) => {
-  fetchMock.mockResolvedValue({ status: 200, json: async () => ({ items: [
+  fetchMock.mockResolvedValue({ ok: true, status: 200, json: async () => ({ items: [
     { id: 1, meta: { meta: { prompt: "portrait" } } }, { id: 2 },
   ] }) });
   const saved = { postId: 7, imagesId: [2] };
@@ -55,7 +55,7 @@ it.each([
   { status: 200, message: ERROR_MESSAGE_EMPTY },
 ])("keeps status $status error feedback and does not open selection", async ({ status, message }) => {
   const json = vi.fn().mockResolvedValue({ items: [] });
-  fetchMock.mockResolvedValue({ status, json });
+  fetchMock.mockResolvedValue({ ok: status === 200, status, json });
   render(<SaveImageForm location="collections" />);
   loadImages();
   await screen.findByText(message);

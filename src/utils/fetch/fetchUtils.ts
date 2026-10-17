@@ -6,6 +6,8 @@ import { addDelayPromise, AppError, normalizeError } from "../generalUtils";
 import type { UserGuideState } from "../../../shared/types/user";
 import { ERROR_MESSAGE_DEFAULT } from "../../variables/constants";
 
+export { fetchCivitaiData as fetchData } from "./fetchCivitaiData";
+
 const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
 
@@ -56,26 +58,6 @@ export const makeBatchRequest = async <T, R>(
   } catch (error) {
     throw normalizeError(error);
   }
-};
-
-/**
- * Fetches data from a given URL
- * @param url - The URL to fetch
- * @param config - The fetch configuration
- * @returns A promise that resolves with the fetched data
- */
-export const fetchData = async <T>(
-  url: string,
-  config?: Record<string, any>,
-): Promise<T> => {
-  const response = await fetch(url, config);
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new AppError(data.message || `Error (${response.status})`);
-  }
-
-  return data;
 };
 
 /**
