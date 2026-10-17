@@ -3,6 +3,7 @@ import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getDoc, onSnapshot } from "firebase/firestore";
+import { FirebaseError } from "firebase/app";
 
 import ModelEdit from "./Edit";
 import { DEFAULT_PAGE_TITLE, ERROR_MESSAGE_DEFAULT } from "../variables/constants";
@@ -67,9 +68,9 @@ beforeEach(() => {
   subscriptions = [];
   state.auth.user.uid = "user-1";
   document.title = DEFAULT_PAGE_TITLE;
-  onSnapshot.mockImplementation((path, callback) => {
+  onSnapshot.mockImplementation((path, callback, onError) => {
     const unsubscribe = vi.fn();
-    subscriptions.push({ path, callback, unsubscribe });
+    subscriptions.push({ path, callback, onError, unsubscribe });
     return unsubscribe;
   });
   getDoc.mockResolvedValue({ exists: () => true, data: () => ({ name: "Public model" }) });
@@ -162,7 +163,7 @@ describe("edit-page model data access", () => {
   });
 
   it("preserves the public-read error presentation and cleans up the subscription", async () => {
-    vi.spyOn(console, "log").mockImplementation(() => {});
+    vi.spyOn(console, "error").mockImplementation(() => {});
     getDoc.mockRejectedValue(new Error("Read failed"));
     const { unmount } = renderEdit();
 
@@ -175,7 +176,7 @@ describe("edit-page model data access", () => {
   });
 
   it("handles subscription setup failures without starting the public read", async () => {
-    vi.spyOn(console, "log").mockImplementation(() => {});
+    vi.spyOn(console, "error").mockImplementation(() => {});
     onSnapshot.mockImplementation(() => { throw new Error("Subscription failed"); });
     const { unmount } = renderEdit();
 
@@ -191,5 +192,91 @@ describe("edit-page model data access", () => {
 
     expect(onSnapshot).not.toHaveBeenCalled();
     expect(getDoc).not.toHaveBeenCalled();
+  });
+
+  it.each(["before", "after"])("handles a subscription failure %s model data arrives", async (timing) => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const original = new FirebaseError("permission-denied", "Internal Firestore details");
+    const { unmount } = renderEdit();
+    if (timing === "after") await emitModel({ id: 42, name: "Model" });
+
+    await act(async () => subscriptions[0].onError(original));
+
+    expect(screen.getByRole("alert").textContent).toBe("Failed to load model");
+    expect(screen.queryByText("Model settings")).toBeNull();
+    expect(screen.queryByRole("status")).toBeNull();
+    expect(dispatch).toHaveBeenCalledWith({ type: "model/setErrorMessage", payload: ERROR_MESSAGE_DEFAULT });
+    expect(console.error).toHaveBeenCalledExactlyOnceWith(original);
+    expect(onSnapshot).toHaveBeenCalledOnce();
+    unmount();
+    expect(subscriptions[0].unsubscribe).toHaveBeenCalledOnce();
+  });
+
+  it("keeps the subscription error visible when the pending public read later succeeds", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    let finishRead;
+    getDoc.mockReturnValue(new Promise((resolve) => { finishRead = resolve; }));
+    renderEdit();
+
+    await act(async () => subscriptions[0].onError(new FirebaseError("unavailable", "Unavailable")));
+    expect(screen.queryByRole("status")).toBeNull();
+    await act(async () => { finishRead({ exists: () => true, data: () => ({ name: "Public model" }) }); });
+
+    expect(screen.getByRole("alert").textContent).toBe("Failed to load model");
+    expect(screen.queryByText("Model settings")).toBeNull();
+  });
+
+  it("ignores errors and model events from the previous route's subscription", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const { router } = renderEdit();
+    await emitModel({ id: 42 });
+    await act(async () => { await router.navigate("/edit/43"); });
+    await emitModel({ id: 43 }, 1);
+    dispatch.mockClear();
+
+    await act(async () => {
+      subscriptions[0].onError(new FirebaseError("permission-denied", "Old listener failed"));
+      subscriptions[0].callback({ data: () => ({ id: 42 }) });
+    });
+
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.getByText("Model settings")).toBeTruthy();
+    expect(console.error).not.toHaveBeenCalled();
+  });
+
+  it("ignores subscription errors after unmount", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const { unmount } = renderEdit();
+    await emitModel({ id: 42 });
+    unmount();
+    dispatch.mockClear();
+
+    subscriptions[0].onError(new FirebaseError("unavailable", "Listener failed after unmount"));
+
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(console.error).not.toHaveBeenCalled();
+  });
+
+  it.each(["success", "failure"])("ignores an older route's public-read %s", async (outcome) => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    let finishRead;
+    let failRead;
+    getDoc.mockImplementationOnce(() => new Promise((resolve, reject) => { finishRead = resolve; failRead = reject; }));
+    const { router } = renderEdit();
+    await act(async () => { await router.navigate("/edit/43"); });
+    await emitModel({ id: 43 }, 1);
+    dispatch.mockClear();
+
+    await act(async () => {
+      if (outcome === "success") finishRead({ exists: () => true, data: () => ({ name: "Old model" }) });
+      else failRead(new Error("Old read failed"));
+    });
+
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.getByText("Model settings")).toBeTruthy();
+    expect(document.title).toBe("Edit - Public model");
+    expect(console.error).not.toHaveBeenCalled();
   });
 });

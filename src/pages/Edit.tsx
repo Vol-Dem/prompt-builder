@@ -10,6 +10,7 @@ import {
 } from "../utils/fetch/fetchModelReads";
 import {
   ERROR_MESSAGE_DEFAULT,
+  ERROR_MESSAGE_MODEL_LOAD,
   GUIDE_STEP_MODEL_EDIT,
 } from "../variables/constants";
 import ModelSettings from "../components/model/model-settings/ModelSettings";
@@ -20,6 +21,7 @@ import OutroGuide from "../components/general-elements/guide/OutroGuide";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
 import type { CivitaiModelDoc } from "../../shared/types/firestore";
 import usePageTitle from "../hooks/use-page-title";
+import { handleErrors, normalizeError } from "../utils/generalUtils";
 
 interface ModelEditProps {
   title: string;
@@ -83,17 +85,26 @@ const ModelEdit = ({ title }: ModelEditProps) => {
     setPageTitle(title);
     if (!isAuth || !modelId) return;
 
-    let titleIsCurrent = true;
+    let isCurrent = true;
     let unsub: () => void;
+
+    const handleModelError = (error: unknown) => {
+      if (!isCurrent) return;
+      handleErrors(normalizeError(error));
+      setErrorMessage(ERROR_MESSAGE_MODEL_LOAD);
+      dispatch(modelActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
+      setIsLoading(false);
+    };
 
     const getModelData = async () => {
       try {
         setIsLoading(true);
         unsub = subscribeToUserModel(uid, modelId, (data) => {
+          if (!isCurrent) return;
           setErrorMessage("");
 
           if (!data) {
-            setErrorMessage("Failed to load model");
+            setErrorMessage(ERROR_MESSAGE_MODEL_LOAD);
             setIsLoading(false);
             unsub();
             return;
@@ -102,31 +113,27 @@ const ModelEdit = ({ title }: ModelEditProps) => {
           dispatch(modelActions.setModelData(data));
           dispatch(modelActions.setModelPreview([]));
           setIsLoading(false);
-        });
+        }, handleModelError);
 
         if (!modelId) return;
 
         const defModelData = (await fetchPublicModel(modelId)) as CivitaiModelDoc;
+        if (!isCurrent) return;
 
         dispatch(
           modelActions.updateModelDataField({
             data: defModelData,
           }),
         );
-        if (titleIsCurrent) {
-          setPageTitle(defModelData?.name ? `Edit - ${defModelData.name}` : title);
-        }
+        setPageTitle(defModelData?.name ? `Edit - ${defModelData.name}` : title);
       } catch (err) {
-        setErrorMessage("Failed to load model");
-        dispatch(modelActions.setErrorMessage(ERROR_MESSAGE_DEFAULT));
-        setIsLoading(false);
-        console.log(err);
+        handleModelError(err);
       }
     };
     getModelData();
 
     return () => {
-      titleIsCurrent = false;
+      isCurrent = false;
       setErrorMessage("");
       dispatch(modelActions.setCurVersion(null));
       dispatch(modelActions.setModelData(null));

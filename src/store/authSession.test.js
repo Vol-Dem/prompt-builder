@@ -3,6 +3,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { getDoc, onSnapshot } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { initializeAppCheck } from "firebase/app-check";
+import { FirebaseError } from "firebase/app";
 
 import authSlice, { authActions } from "./auth";
 import generalSlice, { generalActions } from "./general";
@@ -74,7 +75,7 @@ it("subscribes before the initial read and hydrates live fields while that read 
   const pending = deferred();
   getDoc.mockReturnValue(pending.promise);
   const request = store.dispatch(getUserData("user-1"));
-  expect(onSnapshot).toHaveBeenCalledWith("users/user-1", expect.any(Function));
+  expect(onSnapshot).toHaveBeenCalledWith("users/user-1", expect.any(Function), expect.any(Function));
   expect(getDoc).toHaveBeenCalledExactlyOnceWith("users/user-1");
   expect(onSnapshot.mock.invocationCallOrder[0]).toBeLessThan(getDoc.mock.invocationCallOrder[0]);
   expect(store.getState().auth.userDataIsLoading).toBe(true);
@@ -171,12 +172,56 @@ it.each(["subscription", "read"])("preserves error handling after a %s failure",
   }
 });
 
+it.each(["before", "after"])("shows listener errors %s the initial read finishes without clearing loaded fields", async (timing) => {
+  const store = makeStore();
+  const pending = deferred();
+  getDoc.mockReturnValue(pending.promise);
+  vi.spyOn(console, "error").mockImplementation(() => {});
+  const original = new FirebaseError("permission-denied", "Internal Firestore details");
+  const request = store.dispatch(getUserData("user-1"));
+  const liveData = { categoriesById: { lora: [{ id: "c", name: "Portrait" }] } };
+  onSnapshot.mock.calls[0][1]({ data: () => liveData });
+
+  if (timing === "after") {
+    pending.resolve({ exists: () => false });
+    await request;
+  }
+  onSnapshot.mock.calls[0][2](original);
+
+  expect(store.getState().auth).toMatchObject({ userDataIsLoading: false, userDataLoadError: ERROR_MESSAGE_USER_DATA_LOAD });
+  expect(store.getState().tabs.categoriesData).toEqual(liveData.categoriesById);
+  expect(console.error).toHaveBeenCalledExactlyOnceWith(original);
+
+  if (timing === "before") {
+    pending.resolve({ exists: () => true, data: () => ({ sfwValue: "PG" }) });
+    await request;
+    expect(store.getState().general.sfwValue).toBe("PG");
+    expect(store.getState().auth).toMatchObject({ userDataIsLoading: false, userDataLoadError: ERROR_MESSAGE_USER_DATA_LOAD });
+  }
+  expect(onSnapshot).toHaveBeenCalledOnce();
+});
+
+it("clears a subscription failure when the user-data workflow is explicitly started again", async () => {
+  const store = makeStore();
+  vi.spyOn(console, "error").mockImplementation(() => {});
+  await store.dispatch(getUserData("user-1"));
+  onSnapshot.mock.calls[0][2](new FirebaseError("unavailable", "Subscription unavailable"));
+  expect(store.getState().auth.userDataLoadError).toBe(ERROR_MESSAGE_USER_DATA_LOAD);
+
+  await store.dispatch(getUserData("user-1"));
+
+  expect(onSnapshot).toHaveBeenCalledTimes(2);
+  expect(store.getState().auth).toMatchObject({ userDataIsLoading: false, userDataLoadError: "" });
+  onSnapshot.mock.calls[1][1]({ data: () => ({ baseModels: ["SDXL"] }) });
+  expect(store.getState().tabs.baseModels).toEqual(["SDXL"]);
+});
+
 it("keeps the latest subscription handle without introducing automatic replacement cleanup", () => {
   const first = vi.fn();
   const second = vi.fn();
   onSnapshot.mockReturnValueOnce(first).mockReturnValueOnce(second);
-  startUserDataSubscription("first-user", () => {});
-  startUserDataSubscription("second-user", () => {});
+  startUserDataSubscription("first-user", () => {}, () => {});
+  startUserDataSubscription("second-user", () => {}, () => {});
   expect(first).not.toHaveBeenCalled();
   expect(second).not.toHaveBeenCalled();
   stopUserDataSubscription();

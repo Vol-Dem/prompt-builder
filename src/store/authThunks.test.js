@@ -334,7 +334,7 @@ it("maps the initial user before login, restoration, and loading user data", asy
   expect(getAppInfo).toHaveBeenCalledOnce();
   expect(uploadPanelStateFromStorage).toHaveBeenCalledOnce();
   expect(uploadPromptFromStorage).toHaveBeenCalledOnce();
-  expect(startUserDataSubscription).toHaveBeenCalledExactlyOnceWith("user-1", expect.any(Function));
+  expect(startUserDataSubscription).toHaveBeenCalledExactlyOnceWith("user-1", expect.any(Function), expect.any(Function));
   expect(fetchUserData).toHaveBeenCalledExactlyOnceWith("user-1");
   expect(uploadPanelStateFromStorage.mock.invocationCallOrder[0]).toBeLessThan(uploadPromptFromStorage.mock.invocationCallOrder[0]);
   expect(uploadPromptFromStorage.mock.invocationCallOrder[0]).toBeLessThan(fetchUserData.mock.invocationCallOrder[0]);

@@ -11,10 +11,13 @@ export const subscribeToUserModel = (
   uid: string,
   modelId: string,
   onModelChanged: (model: ModelData | undefined) => void,
+  onError: (error: unknown) => void,
 ): (() => void) =>
-  onSnapshot(doc(firestore, "users", uid, "models", modelId), (snapshot) => {
-    onModelChanged(snapshot.data() as ModelData | undefined);
-  });
+  onSnapshot(
+    doc(firestore, "users", uid, "models", modelId),
+    (snapshot) => onModelChanged(snapshot.data() as ModelData | undefined),
+    onError,
+  );
 
 export const fetchPublicModel = (modelId: string) =>
   fetchDataFromFirestore<CivitaiModelDoc>("models", modelId);

@@ -10,9 +10,12 @@ const firestore = getFirestore(firebaseApp);
 export const subscribeUserData = (
   uid: string,
   onChange: (data: UserDoc | undefined) => void,
-) => onSnapshot(doc(firestore, "users", uid), (snapshot) => {
-  onChange(snapshot.data() as UserDoc | undefined);
-});
+  onError: (error: unknown) => void,
+) => onSnapshot(
+  doc(firestore, "users", uid),
+  (snapshot) => onChange(snapshot.data() as UserDoc | undefined),
+  onError,
+);
 
 export const fetchUserData = async (uid: string) => {
   const snapshot = await getDoc(doc(firestore, "users", uid));

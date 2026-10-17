@@ -237,6 +237,12 @@ export const changeUserName = (name: string): AppThunk => {
  */
 export const getUserData = (uid: string): AppThunk => {
   return async (dispatch) => {
+    const handleUserDataError = (error: unknown) => {
+      handleErrors(normalizeError(error));
+      dispatch(authActions.setUserDataLoadError(ERROR_MESSAGE_USER_DATA_LOAD));
+      dispatch(authActions.setUserDataIsLoading(false));
+    };
+
     try {
       dispatch(authActions.setUserDataLoadError(""));
       dispatch(authActions.setUserDataIsLoading(true));
@@ -250,7 +256,7 @@ export const getUserData = (uid: string): AppThunk => {
         if (data?.presets) dispatch(promptActions.setPresets(data.presets));
         if (data?.baseModels)
           dispatch(tabActions.setBaseModels(data.baseModels));
-      });
+      }, handleUserDataError);
 
       const userData = await fetchUserData(uid);
       if (userData) {
@@ -281,9 +287,7 @@ export const getUserData = (uid: string): AppThunk => {
       }
       dispatch(authActions.setUserDataIsLoading(false));
     } catch (error) {
-      handleErrors(normalizeError(error));
-      dispatch(authActions.setUserDataLoadError(ERROR_MESSAGE_USER_DATA_LOAD));
-      dispatch(authActions.setUserDataIsLoading(false));
+      handleUserDataError(error);
     }
   };
 };
