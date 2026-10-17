@@ -150,13 +150,65 @@ it("keeps direct reducer calls free of persistence", () => {
 it.each([
   { name: "prompt", action: () => promptActions.setCurrentPrompt("portrait"), check: (state) => expect(state.prompt.curPrompt).toBe("portrait") },
   { name: "sidebar", action: () => usedModelsActions.panelState(true), check: (state) => expect(state.used.panelIsOpen).toBe(true) },
-])("propagates $name storage errors synchronously after the Redux update", ({ action, check }) => {
+])("keeps $name dispatch successful when storage writes fail", ({ action, check }) => {
   const store = makeStore();
-  const error = new Error("Storage unavailable");
+  const error = new DOMException("Storage full", "QuotaExceededError");
+  vi.spyOn(console, "error").mockImplementation(() => {});
   setItem.mockImplementation(() => { throw error; });
-  expect(() => store.dispatch(action())).toThrow(error);
+  const dispatched = action();
+  expect(store.dispatch(dispatched)).toBe(dispatched);
   check(store.getState());
-  expect(setItem).toHaveBeenCalledOnce();
+  expect(setItem).toHaveBeenCalledTimes(4);
+  expect(console.error).toHaveBeenCalledTimes(4);
+  expect(console.error).toHaveBeenLastCalledWith(error);
+});
+
+it("persists the remaining keys after one write fails", () => {
+  const store = makeStore();
+  const error = new Error("One write failed");
+  vi.spyOn(console, "error").mockImplementation(() => {});
+  setItem.mockImplementationOnce(() => { throw error; });
+
+  store.dispatch(promptActions.setTextMode(true));
+
+  expect(store.getState().prompt.isTextMode).toBe(true);
+  expect(read("firebase-user-prompt-text")).toEqual({ isTextMode: true });
+  expect(setItem).toHaveBeenCalledTimes(4);
+  expect(console.error).toHaveBeenCalledExactlyOnceWith(error);
+});
+
+it("restores valid prompt and sidebar entries when another entry contains invalid JSON", () => {
+  sessionStorage.setItem("firebase-user-prompt", "{invalid JSON");
+  sessionStorage.setItem("firebase-user-neg-prompt", JSON.stringify("blur"));
+  sessionStorage.setItem("firebase-user-prompt-text", JSON.stringify({ isTextMode: true }));
+  sessionStorage.setItem("firebase-user-side", "[invalid JSON");
+  sessionStorage.setItem("firebase-user-side-img", JSON.stringify([{ id: 7 }]));
+  sessionStorage.setItem("firebase-user-side-state", JSON.stringify({ panelIsOpen: false }));
+  vi.spyOn(console, "error").mockImplementation(() => {});
+  const store = makeStore("firebase-user");
+
+  expect(() => store.dispatch(uploadPromptFromStorage())).not.toThrow();
+  expect(() => store.dispatch(uploadPanelStateFromStorage())).not.toThrow();
+
+  expect(store.getState().prompt).toMatchObject({ curPrompt: "", curNegPrompt: "blur", isTextMode: true });
+  expect(store.getState().used).toMatchObject({ models: [], images: [{ id: 7 }], panelIsOpen: false });
+  expect(console.error).toHaveBeenCalledTimes(2);
+});
+
+it("completes restoration and subsequent actions when session storage access is blocked", () => {
+  const error = new DOMException("Storage disabled", "SecurityError");
+  vi.spyOn(console, "error").mockImplementation(() => {});
+  vi.spyOn(window, "sessionStorage", "get").mockImplementation(() => { throw error; });
+  const store = makeStore("firebase-user");
+
+  expect(() => store.dispatch(uploadPromptFromStorage())).not.toThrow();
+  expect(() => store.dispatch(uploadPanelStateFromStorage())).not.toThrow();
+  expect(() => store.dispatch(promptActions.setCurrentPrompt("portrait"))).not.toThrow();
+  expect(() => store.dispatch(usedModelsActions.addModelsToPanel([{ id: 42 }]))).not.toThrow();
+
+  expect(store.getState().prompt.curPrompt).toBe("portrait");
+  expect(store.getState().used.models).toEqual([{ id: 42 }]);
+  expect(console.error).toHaveBeenCalledWith(error);
 });
 
 it("preserves prompt and sidebar restoration through their existing thunks", () => {

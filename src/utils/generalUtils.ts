@@ -405,30 +405,53 @@ export const timeout = function (s: number): Promise<Error> {
   });
 };
 
+/** Browser persistence is optional; keep the current app state usable on failure. */
+const accessBrowserStorage = <T>(
+  storageName: "sessionStorage" | "localStorage",
+  operation: (storage: Storage) => T,
+): T | null => {
+  try {
+    return operation(window[storageName]);
+  } catch (error) {
+    reportError(normalizeError(error));
+    return null;
+  }
+};
+
 export const saveToStorage = <T>(key: string, data: T): void => {
-  window.sessionStorage.setItem(key, JSON.stringify(data));
+  accessBrowserStorage("sessionStorage", (storage) => {
+    const serialized = JSON.stringify(data);
+    if (serialized !== undefined) storage.setItem(key, serialized);
+  });
 };
 
 export const uploadStorage = <T>(key: string): T | null => {
-  const storageData = window.sessionStorage?.getItem(key);
-  return storageData ? JSON.parse(storageData) : null;
+  return accessBrowserStorage("sessionStorage", (storage) => {
+    const storageData = storage.getItem(key);
+    return storageData ? (JSON.parse(storageData) as T) : null;
+  });
 };
 
 export const removeFromStorage = (key: string): void => {
-  window.sessionStorage.removeItem(key);
+  accessBrowserStorage("sessionStorage", (storage) => storage.removeItem(key));
 };
 
 export const saveToLocalStorage = <T>(key: string, data: T): void => {
-  localStorage.setItem(key, JSON.stringify(data));
+  accessBrowserStorage("localStorage", (storage) => {
+    const serialized = JSON.stringify(data);
+    if (serialized !== undefined) storage.setItem(key, serialized);
+  });
 };
 
 export const uploadLocalStorage = <T>(key: string): T | null => {
-  const storageData = localStorage?.getItem(key);
-  return storageData ? JSON.parse(storageData) : null;
+  return accessBrowserStorage("localStorage", (storage) => {
+    const storageData = storage.getItem(key);
+    return storageData ? (JSON.parse(storageData) as T) : null;
+  });
 };
 
 export const removeFromLocalStorage = (key: string): void => {
-  localStorage.removeItem(key);
+  accessBrowserStorage("localStorage", (storage) => storage.removeItem(key));
 };
 
 export const getUserNotifications = (
