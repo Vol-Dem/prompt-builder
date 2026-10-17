@@ -421,7 +421,7 @@ export const editCollectionData = ({
 export const updateCollectionPostsData = (
   ids: number[] | null,
   postData: PostSavedData,
-): AppThunk => {
+): AppThunk<Promise<void>> => {
   return async (dispatch, getState) => {
     try {
       const uid = getState().auth.user.uid;
@@ -485,7 +485,7 @@ export const updateCollectionPostsData = (
         );
       }
     } catch (error) {
-      handleErrors(normalizeError(error));
+      throw normalizeError(error);
     }
   };
 };

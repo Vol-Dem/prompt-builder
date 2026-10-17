@@ -156,16 +156,14 @@ describe("saved-post deletion", () => {
     expect(store.getState().model.model.savedImages[9]).toEqual([]);
   });
 
-  it.each(["read", "post write", "model write"])("handles %s failure and keeps Redux unchanged", async (stage) => {
+  it.each(["read", "post write", "model write"])("rejects %s failure and keeps Redux unchanged", async (stage) => {
     const store = makeStore();
     const before = store.getState().model;
     const error = new Error("Deletion failed");
-    vi.spyOn(console, "error").mockImplementation(() => {});
     if (stage === "read") getDoc.mockRejectedValue(error);
     if (stage === "post write") deleteDoc.mockRejectedValue(error);
     if (stage === "model write") updateDoc.mockRejectedValue(error);
-    await expect(store.dispatch(deleteImgPost(postInfo, post))).resolves.toBeUndefined();
-    expect(console.error).toHaveBeenCalledWith(error);
+    await expect(store.dispatch(deleteImgPost(postInfo, post))).rejects.toMatchObject({ name: "AppError", original: error });
     expect(store.getState().model).toBe(before);
     if (stage !== "model write") expect(updateDoc).not.toHaveBeenCalled();
   });

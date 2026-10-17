@@ -35,6 +35,7 @@ type ChooseImageFormProps = {
     postData?: UploadingPostData | null,
   ) => void;
   isDeleting?: boolean;
+  errorMessage?: string;
   postData: ModelSavedPostInfo | CollectionSavedPost | null;
   savedImageIds: number[] | null;
 };
@@ -79,6 +80,7 @@ type VersionStatusInputData = {
  * @param props.activeImageIndex - Index of the image active when the form was opened.
  * @param props.onSave - Callback triggered with selected image IDs on submit.
  * @param props.isDeleting - Indicates whether delete operation is in progress.
+ * @param props.errorMessage - Error from the delete request.
  * @param props.postData - Source post data.
  * @param props.savedImageIds - IDs of images already saved.
  * @returns Choose Image form.
@@ -94,6 +96,7 @@ const ChooseImageForm = memo(
     activeImageIndex,
     onSave,
     isDeleting,
+    errorMessage,
     postData,
     savedImageIds,
   }: ChooseImageFormProps) => {
@@ -215,6 +218,7 @@ const ChooseImageForm = memo(
           <ul className={classes["images-list"]}>{imagesListHtml}</ul>
         )}
         {!isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         {!successMessage && (
           <div className={classes["btns"]}>
             <Button

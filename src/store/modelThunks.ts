@@ -161,7 +161,7 @@ export const setTagSetPreviewImg = (
 export const deleteImgPost = (
   postInfo: PostInfo,
   postData: PostSavedData,
-): AppThunk => {
+): AppThunk<Promise<void>> => {
   return async (dispatch, getState) => {
     try {
       const { versionId, postId } = postInfo;
@@ -190,7 +190,7 @@ export const deleteImgPost = (
       });
       dispatch(modelActions.deleteSavedImages({ postInfo, data: postData }));
     } catch (error) {
-      handleErrors(normalizeError(error));
+      throw normalizeError(error);
     }
   };
 };

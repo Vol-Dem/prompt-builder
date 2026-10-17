@@ -137,6 +137,7 @@ const CarouselContent = ({
     useState<CarouselImageFormState | null>(null);
   const [fullViewIsOpen, setFullViewIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteErrorMessage, setDeleteErrorMessage] = useState("");
   const {
     refs: { carouselRef, imagesRef },
     slides: {
@@ -166,6 +167,7 @@ const CarouselContent = ({
   }
 
   const openDeleteListHandler = () => {
+    setDeleteErrorMessage("");
     setImageFormState({
       type: "del",
       location: location || null,
@@ -243,10 +245,13 @@ const CarouselContent = ({
     ids: number[] | null,
     collectionData: UploadingCollectionData | null,
   ) => {
+    if (isDeleting) return;
+    setDeleteErrorMessage("");
     try {
       const curPostId = imagesData[0].postId;
+      const savedPostData = curPostData ?? (location === "models" ? postData : null);
 
-      if (!curPostId) {
+      if (!curPostId || !savedPostData) {
         throw new AppError(ERROR_MESSAGE_DEFAULT);
       }
 
@@ -260,7 +265,7 @@ const CarouselContent = ({
         modelName: modelName,
         versionId,
         nsfwMode,
-        postData: curPostData,
+        postData: savedPostData,
         delete: true,
         imgUrl: imagesData[0].url,
         imgType: imagesData[0].type || "image",
@@ -268,12 +273,12 @@ const CarouselContent = ({
         existedAmount: existedImgsAmount,
       };
 
-      if (location === "collections" && curPostData) {
-        await dispatch(updateCollectionPostsData(ids, curPostData));
+      if (location === "collections") {
+        await dispatch(updateCollectionPostsData(ids, savedPostData));
       }
 
       if (location === "models") {
-        if (!!ids?.length && ids?.length !== curPostData?.imagesId?.length) {
+        if (!!ids?.length && ids?.length !== savedPostData.imagesId?.length) {
           const newImages = imagesData.filter(
             (image) => !ids?.includes(image.id),
           );
@@ -282,23 +287,21 @@ const CarouselContent = ({
             newImages,
           );
 
-          // setImages(newImages);
-
           dispatch(
             modelActions.updateSavedImages({ postInfo, data: updatedPostData }),
           );
         } else {
-          if (curPostData) dispatch(deleteImgPost(postInfo, curPostData));
+          await dispatch(deleteImgPost(postInfo, savedPostData));
         }
 
         if (postInfo.postId && onDelete) onDelete(ids, postInfo.postId);
       }
-      setIsDeleting(false);
       setImageFormState(
         (prevState) => prevState && { ...prevState, isOpen: false },
       );
     } catch (err) {
-      handleErrors(normalizeError(err));
+      setDeleteErrorMessage(handleErrors(normalizeError(err)));
+    } finally {
       setIsDeleting(false);
     }
   };
@@ -438,6 +441,7 @@ const CarouselContent = ({
                     : deleteExampleHandler
                 }
                 isDeleting={isDeleting}
+                errorMessage={imageFormState.type === "del" ? deleteErrorMessage : undefined}
               />
             )}
             {showCollectionSaveForm && (

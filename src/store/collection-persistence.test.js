@@ -247,15 +247,13 @@ describe("removing collection post images", () => {
     expect(store.getState().images.collectionImages.images).toEqual(images);
   });
 
-  it("handles commit failure without rejecting or changing local state", async () => {
+  it("rejects commit failure without changing local state", async () => {
     const store = makeStore();
     const before = store.getState().images;
     const error = new Error("Commit failed");
-    vi.spyOn(console, "error").mockImplementation(() => {});
     batch.commit.mockRejectedValue(error);
 
-    await expect(store.dispatch(updateCollectionPostsData([1], posts[0]))).resolves.toBeUndefined();
-    expect(console.error).toHaveBeenCalledWith(error);
+    await expect(store.dispatch(updateCollectionPostsData([1], posts[0]))).rejects.toMatchObject({ name: "AppError", original: error });
     expect(store.getState().images).toBe(before);
   });
 
@@ -263,7 +261,7 @@ describe("removing collection post images", () => {
     const store = makeStore();
     store.dispatch(imagesActions.setCollectionData(null));
 
-    await expect(store.dispatch(updateCollectionPostsData([1], posts[0]))).resolves.toBeUndefined();
+    await expect(store.dispatch(updateCollectionPostsData([1], posts[0]))).rejects.toMatchObject({ name: "AppError" });
     expect(writeBatch).not.toHaveBeenCalled();
   });
 });
