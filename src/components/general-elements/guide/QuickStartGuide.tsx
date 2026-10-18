@@ -6,6 +6,7 @@ import LinkA from "../../ui/LinkA";
 import TextButtonCreate from "../../ui/text/text-buttons/TextButtonCreate";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import useCopyFeedback from "../../../hooks/use-copy-feedback";
+import Notification from "../../ui/Notification";
 import {
   ChevronRightIcon,
   ChevronUpIcon,
@@ -37,7 +38,8 @@ const QuickStartGuide = ({
   onClose,
   className,
 }: QuickStartGuideProps) => {
-  const { copied, copy } = useCopyFeedback("727427");
+  const { copied, copying, errorMessage, copy, clearError } =
+    useCopyFeedback("727427");
 
   return (
     <>
@@ -89,6 +91,7 @@ const QuickStartGuide = ({
                           copied ? classes["btn-copy--copied"] : ""
                         }`}
                         onClick={copy}
+                        aria-busy={copying}
                         title="Copy"
                       >
                         727427 {!copied && <DocumentDuplicateIcon />}
@@ -142,6 +145,11 @@ const QuickStartGuide = ({
           </div>
         </div>,
         document.body,
+      )}
+      {errorMessage && (
+        <Notification type="warning" title="Copy failed" onClick={clearError}>
+          {errorMessage}
+        </Notification>
       )}
     </>
   );

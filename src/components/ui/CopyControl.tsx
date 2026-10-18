@@ -1,6 +1,7 @@
 import type { ComponentProps, ElementType, ReactNode } from "react";
 
 import useCopyFeedback from "../../hooks/use-copy-feedback";
+import Notification from "./Notification";
 
 type CopyControlProps<T extends ElementType> = {
   as?: T;
@@ -23,17 +24,25 @@ const CopyControl = <T extends ElementType = "button">({
   ...props
 }: CopyControlProps<T>) => {
   const Component: ElementType = as || "button";
-  const { copied, copy } = useCopyFeedback(text);
+  const { copied, copying, errorMessage, copy, clearError } = useCopyFeedback(text);
 
   return (
-    <Component
-      {...props}
-      className={[className, copied && copiedClassName].filter(Boolean).join(" ")}
-      onClick={copy}
-    >
-      {children}
-      {copied ? copiedIcon : idleIcon}
-    </Component>
+    <>
+      <Component
+        {...props}
+        className={[className, copied && copiedClassName].filter(Boolean).join(" ")}
+        onClick={copy}
+        aria-busy={copying}
+      >
+        {children}
+        {copied ? copiedIcon : idleIcon}
+      </Component>
+      {errorMessage && (
+        <Notification type="warning" title="Copy failed" onClick={clearError}>
+          {errorMessage}
+        </Notification>
+      )}
+    </>
   );
 };
 

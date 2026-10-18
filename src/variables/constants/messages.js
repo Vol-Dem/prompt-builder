@@ -43,3 +43,7 @@ export const ERROR_MESSAGE_CATEGORY_RENAME =
   "Couldn't rename the category. Please try again.";
 export const ERROR_MESSAGE_CATEGORY_DELETE =
   "Couldn't delete the category. Please try again.";
+export const ERROR_MESSAGE_CLIPBOARD_COPY =
+  "Couldn't copy to the clipboard. Please try again or copy the text manually.";
+export const ERROR_MESSAGE_CLIPBOARD_UNAVAILABLE =
+  "Copying isn't available in this browser. Please select and copy the text manually.";
