@@ -125,8 +125,10 @@ const uploadSlice = createSlice({
  *
  * @returns {Function} Redux thunk.
  */
-export const savePost = (postInfo: UploadingItem): AppThunk => {
+export const savePost = (postInfo: UploadingItem): AppThunk<Promise<void>> => {
   return async (dispatch, getState) => {
+    if (getState().upload.isUploading) return;
+
     try {
       const {
         modelId,

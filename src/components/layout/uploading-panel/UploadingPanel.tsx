@@ -9,6 +9,7 @@ import UploadingRejected from "./uploading-rejected/UploadingRejected";
 import UploadingCompleted from "./uploading-completed/UploadingCompleted";
 import UploadingButton from "./uploading-button/UploadingButton";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import { normalizeError, reportError } from "../../../utils/generalUtils";
 
 /**
  * Uploading panel controller.
@@ -32,6 +33,7 @@ const UploadingPanel = () => {
   const uid = useAppSelector((state) => state.auth.user.uid);
   const queue = useAppSelector((state) => state.upload.queue);
   const curPostId = useAppSelector((state) => state.upload.curPostId);
+  const isUploading = useAppSelector((state) => state.upload.isUploading);
   const dispatch = useAppDispatch();
 
   const beforeUnloadHandler = useCallback((e: BeforeUnloadEvent) => {
@@ -55,10 +57,12 @@ const UploadingPanel = () => {
   }, []);
 
   useEffect(() => {
-    if (uid && !!queue.length && !curPostId && curPostId !== queue[0].postId) {
-      dispatch(savePost(queue[0]));
+    if (uid && queue.length && !isUploading && !curPostId) {
+      dispatch(savePost(queue[0])).catch((error) => {
+        reportError(normalizeError(error));
+      });
     }
-  }, [dispatch, uid, queue, curPostId]);
+  }, [dispatch, uid, queue, curPostId, isUploading]);
 
   const openUploadingLIstHandler = () => {
     setUploadingLIstIsOpen((prevstate) => !prevstate);

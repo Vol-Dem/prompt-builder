@@ -21,6 +21,11 @@ const makeStore = (item) => {
   store.dispatch(uploadActions.addToQueue(item));
   return store;
 };
+const deferred = () => {
+  let resolve;
+  const promise = new Promise((finish) => { resolve = finish; });
+  return { promise, resolve };
+};
 beforeEach(() => {
   vi.clearAllMocks();
   fetchMock.mockReset();
@@ -66,4 +71,65 @@ it.each(["network", "json", "empty", "missing items"])("moves an upload to rejec
   await expect(store.dispatch(savePost(post))).rejects.toBeInstanceOf(Error);
   expect(updateImagePostData).not.toHaveBeenCalled();
   expect(store.getState().upload).toMatchObject({ queue: [], rejected: [post], completed: [], isUploading: false, curPostId: null });
+});
+
+it.each([7, 8])("does not start post %s while another upload is active", async (postId) => {
+  const item = { ...post, images: [image(1, "2025-01-01")] };
+  const store = makeStore(item);
+  const duplicate = { ...item, postId };
+  if (postId !== item.postId) store.dispatch(uploadActions.addToQueue(duplicate));
+  const write = deferred();
+  updateImagePostData.mockReturnValueOnce(write.promise);
+  const first = store.dispatch(savePost(item));
+  const before = store.getState().upload;
+
+  await store.dispatch(savePost(duplicate));
+
+  expect(store.getState().upload).toBe(before);
+  expect(updateImagePostData).toHaveBeenCalledOnce();
+  expect(modelActions.updateSavedImages).not.toHaveBeenCalled();
+  write.resolve({ postId: 7, imagesId: [1] });
+  await first;
+  expect(store.getState().upload).toMatchObject({
+    queue: postId === 7 ? [] : [duplicate], rejected: [], completed: [item],
+    completedAmount: 1, curPostId: null, isUploading: false,
+  });
+});
+
+it.each(["image", "collection"])("preserves a failed item after %s persistence rejects and releases the next upload", async (failure) => {
+  const item = {
+    ...post, images: [image(1, "2025-01-01")],
+    location: failure === "collection" ? "collections" : "models",
+    collectionData: failure === "collection" ? { collectionData: { id: 8, name: "Collection" } } : null,
+  };
+  const next = { ...item, postId: 8 };
+  const store = makeStore(item);
+  store.dispatch(uploadActions.addToQueue(next));
+  const original = new Error("Persistence failed");
+  if (failure === "image") updateImagePostData.mockRejectedValueOnce(original);
+  else savePostToCollections.mockReturnValueOnce(async () => { throw original; });
+
+  await expect(store.dispatch(savePost(item)))
+    .rejects.toMatchObject({ name: "AppError", original, cause: original });
+
+  expect(store.getState().upload).toMatchObject({
+    queue: [next], rejected: [item], completed: [], completedAmount: 0,
+    curPostId: null, isUploading: false,
+  });
+  expect(modelActions.updateSavedImages).not.toHaveBeenCalled();
+  await store.dispatch(savePost(next));
+  expect(store.getState().upload).toMatchObject({
+    queue: [], rejected: [item], completed: [next], completedAmount: 1,
+  });
+});
+
+it("rejects an invalid post before starting persistence and retains it for manual retry", async () => {
+  const item = { ...post, postId: 0 };
+  const store = makeStore(item);
+  await expect(store.dispatch(savePost(item))).rejects.toMatchObject({ name: "AppError" });
+  expect(updateImagePostData).not.toHaveBeenCalled();
+  expect(store.getState().upload).toMatchObject({
+    queue: [], rejected: [item], completed: [], completedAmount: 0,
+    curPostId: null, isUploading: false,
+  });
 });
