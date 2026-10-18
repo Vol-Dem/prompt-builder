@@ -1,6 +1,7 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ChangeEvent,
   type SubmitEvent,
@@ -12,10 +13,13 @@ import Input from "../../ui/forms/Input";
 import { updateCategories } from "../../../store/modelThunks";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import DeleteRequest from "../../ui/DeleteRequest";
+import Spinner from "../../ui/Spinner";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
   ERROR_MESSAGE_OFFLINE,
   ERROR_MESSAGE_INPUT_DEF,
+  ERROR_MESSAGE_CATEGORY_RENAME,
+  ERROR_MESSAGE_CATEGORY_DELETE,
 } from "../../../variables/constants";
 import {
   AppError,
@@ -90,6 +94,14 @@ const CategoriesForm = ({
   const [categoriesInputs, setCategoriesInputs] = useState<CategoryInput[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [deleteErrorMessage, setDeleteErrorMessage] = useState("");
+  const [pendingAction, setPendingAction] = useState<{
+    type: "rename" | "delete";
+    id: string;
+  } | null>(null);
+  const pendingRef = useRef(false);
+  const inputsContextRef = useRef({ modelType, activeCategory });
+  const isPending = pendingAction !== null;
   const dispatch = useAppDispatch();
 
   const categoriesToUpdate = useMemo(() => {
@@ -126,13 +138,28 @@ const CategoriesForm = ({
         };
       });
 
-    if (categoriesInputData) setCategoriesInputs(categoriesInputData);
-  }, [categoriesToUpdate]);
+    const sameContext =
+      inputsContextRef.current.modelType === modelType &&
+      inputsContextRef.current.activeCategory === activeCategory;
+    inputsContextRef.current = { modelType, activeCategory };
+    // Keep drafts when Firestore emits a local write or its rollback.
+    setCategoriesInputs((previousInputs) =>
+      (categoriesInputData || []).map((input) => {
+        const draft = sameContext && previousInputs.find(
+          (previous) => previous.id === input.id && previous.active,
+        );
+        return draft
+          ? { ...input, value: draft.value, active: true, isValid: draft.isValid }
+          : input;
+      }),
+    );
+  }, [categoriesToUpdate, modelType, activeCategory]);
 
   const subcatChangeHandler = (
     e: ChangeEvent<HTMLInputElement>,
     isValid: boolean | null,
   ) => {
+    if (pendingRef.current) return;
     setErrorMessage("");
     setCategoriesInputs((prevState) => {
       const newState = prevState.map((item) => {
@@ -151,6 +178,7 @@ const CategoriesForm = ({
 
   //Switch visibility of change name form
   const changeNameIsActiveHandler = (categoryId: string) => {
+    if (pendingRef.current) return;
     setErrorMessage("");
 
     setCategoriesInputs((prevState) => {
@@ -169,10 +197,10 @@ const CategoriesForm = ({
     });
   };
 
-  //Retrive data from form and dispatch changeUserName action with new name
-  const changeCategoryNameHandler = (e: SubmitEvent) => {
+  const changeCategoryNameHandler = async (e: SubmitEvent) => {
+    e.preventDefault();
+    if (pendingRef.current) return;
     try {
-      e.preventDefault();
       setShowErrorMessage(true);
       setErrorMessage("");
       const formData = new FormData(e.target);
@@ -190,6 +218,7 @@ const CategoriesForm = ({
 
       if (sameName) {
         changeNameIsActiveHandler(id);
+        return;
       }
 
       const existedName = !!categoriesToUpdate?.find(
@@ -230,70 +259,92 @@ const CategoriesForm = ({
         throw new AppError(ERROR_MESSAGE_INPUT_DEF);
       }
 
+      pendingRef.current = true;
+      setPendingAction({ type: "rename", id });
       if (modelType === "collections") {
-        dispatch(updateCollectionCategories(categoriesData));
+        await dispatch(updateCollectionCategories(categoriesData));
       } else {
-        dispatch(updateCategories(modelType, categoriesData));
+        await dispatch(updateCategories(modelType, categoriesData));
       }
+      setCategoriesInputs((inputs) => inputs.map((input) =>
+        input.id === id
+          ? { ...input, name: categoryName, value: categoryName, active: false }
+          : input,
+      ));
     } catch (err) {
-      const errorMessage = handleErrors(normalizeError(err));
-      setErrorMessage(errorMessage);
+      const error = normalizeError(err);
+      const message = handleErrors(error);
+      setErrorMessage(error.isCustom ? message : ERROR_MESSAGE_CATEGORY_RENAME);
+    } finally {
+      pendingRef.current = false;
+      setPendingAction(null);
     }
   };
 
-  const deleteCategoryHandler = () => {
-    let updatedCategoriesData;
+  const deleteCategoryHandler = async () => {
+    if (pendingRef.current) return;
+    setDeleteErrorMessage("");
+    try {
+      if (!deleteCategoryData || !categoriesToUpdate) {
+        throw new AppError(ERROR_MESSAGE_INPUT_DEF);
+      }
+      if (!navigator?.onLine) throw new AppError(ERROR_MESSAGE_OFFLINE);
 
-    const updatedCategories = categoriesToUpdate?.filter(
-      (category) => category.id !== deleteCategoryData?.id,
-    );
-
-    if (!activeCategory) {
-      updatedCategoriesData = updatedCategories;
-    } else {
-      const mainCategoryIndex = categories.findIndex(
-        (category) => category.id === activeCategory,
+      const updatedCategories = categoriesToUpdate.filter(
+        (category) => category.id !== deleteCategoryData.id,
       );
-      const updatedMainCategory = {
-        ...categories[mainCategoryIndex],
-        subcategories: updatedCategories,
-      };
+      const updatedCategoriesData = !activeCategory
+        ? updatedCategories
+        : categories.map((category) =>
+            category.id === activeCategory
+              ? { ...category, subcategories: updatedCategories }
+              : category,
+          );
 
-      updatedCategoriesData = [
-        ...categories.slice(0, mainCategoryIndex),
-        updatedMainCategory,
-        ...categories.slice(mainCategoryIndex + 1),
-      ];
+      pendingRef.current = true;
+      setPendingAction({ type: "delete", id: deleteCategoryData.id });
+      if (modelType === "collections") {
+        await dispatch(updateCollectionCategories(updatedCategoriesData));
+      } else {
+        await dispatch(updateCategories(modelType, updatedCategoriesData));
+      }
+      setDeleteRequestIsOpen(false);
+      setDeleteCategoryData(null);
+    } catch (err) {
+      const error = normalizeError(err);
+      const message = handleErrors(error);
+      setDeleteErrorMessage(
+        error.isCustom ? message : ERROR_MESSAGE_CATEGORY_DELETE,
+      );
+    } finally {
+      pendingRef.current = false;
+      setPendingAction(null);
     }
-
-    if (!updatedCategoriesData) return;
-
-    if (modelType === "collections") {
-      dispatch(updateCollectionCategories(updatedCategoriesData));
-    } else {
-      dispatch(updateCategories(modelType, updatedCategoriesData));
-    }
-
-    setDeleteRequestIsOpen(false);
   };
 
   const showDeleteReqeustHandler = (categoryId: string) => {
+    if (pendingRef.current) return;
     const categoryName = categoriesToUpdate?.find(
       (category) => category.id === categoryId,
     )?.name;
 
     if (categoryName) {
+      setDeleteErrorMessage("");
       setDeleteCategoryData({ id: categoryId, name: categoryName });
       setDeleteRequestIsOpen(true);
     }
   };
 
   const closeDeleteReqeustHandler = () => {
+    if (pendingRef.current) return;
+    setDeleteErrorMessage("");
     setDeleteCategoryData(null);
     setDeleteRequestIsOpen(false);
   };
 
   const categoriesInputsHtml = categoriesInputs.map((category, i) => {
+    const isRenaming =
+      pendingAction?.type === "rename" && pendingAction.id === category.id;
     return (
       <form key={i} onSubmit={changeCategoryNameHandler}>
         <div className={classes["category__form"]}>
@@ -310,6 +361,8 @@ const CategoriesForm = ({
                 placeholder={category.placeholder}
                 onChange={subcatChangeHandler}
                 value={category.value}
+                disabled={isPending}
+                aria-label="Category name"
                 validation={{
                   required: true,
                   maxLength: VALIDATION_CATEGORY_NAME_MAX_LENGTH,
@@ -317,14 +370,33 @@ const CategoriesForm = ({
                 showError={showErrorMessage}
                 autoFocus
               />
-              <ButtonTertiary type="submit" className={classes["btn"]}>
-                <CheckIcon />
+              <ButtonTertiary
+                type="submit"
+                className={classes["btn"]}
+                disabled={isPending}
+                aria-label="Save category name"
+                aria-busy={isRenaming}
+              >
+                <CheckIcon
+                  className={isRenaming ? classes["btn__icon--hidden"] : ""}
+                />
+                {isRenaming && (
+                  <span
+                    className={classes["btn__spinner"]}
+                    role="status"
+                    aria-label="Saving category name"
+                  >
+                    <Spinner size="small" />
+                  </span>
+                )}
               </ButtonTertiary>
             </>
           )}
           <ButtonTertiary
             type="button"
             className={classes["btn"]}
+            disabled={isPending}
+            aria-label={`${category.active ? "Cancel renaming" : "Rename"} ${category.name}`}
             onClick={() => changeNameIsActiveHandler(category.id)}
           >
             {!category.active ? <PencilSquareIcon /> : <XMarkIcon />}
@@ -333,6 +405,8 @@ const CategoriesForm = ({
             <ButtonTertiary
               type="button"
               className={`${classes["btn"]} ${classes["btn--del"]}`}
+              disabled={isPending}
+              aria-label={`Delete ${category.name}`}
               onClick={() => showDeleteReqeustHandler(category.id)}
             >
               <TrashIcon />
@@ -347,7 +421,7 @@ const CategoriesForm = ({
   });
 
   return (
-    <section className={classes.category}>
+    <section className={classes.category} aria-busy={isPending}>
       <div className={classes["category__container"]}>
         <div>
           <div className={classes["category__info"]}>
@@ -362,6 +436,9 @@ const CategoriesForm = ({
         be undone`}
             onSubmit={deleteCategoryHandler}
             onClose={closeDeleteReqeustHandler}
+            isDeleting={pendingAction?.type === "delete"}
+            errorMessage={deleteErrorMessage}
+            allowRetry
           />
         )}
       </AnimatePresence>

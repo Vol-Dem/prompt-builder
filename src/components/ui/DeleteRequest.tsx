@@ -10,6 +10,7 @@ type DeleteRequestProps = {
   onClose: () => void;
   isDeleting?: boolean;
   errorMessage?: string;
+  allowRetry?: boolean;
 };
 
 /**
@@ -23,6 +24,7 @@ type DeleteRequestProps = {
  * @param props.onClose - Called when modal is closed.
  * @param props.isDeleting - Indicates delete is in progress.
  * @param props.errorMessage - Error message from delete request.
+ * @param props.allowRetry - Keeps confirmation controls available after a failed delete.
  * @returns Rendered delete confirmation modal.
  */
 const DeleteRequest = ({
@@ -31,11 +33,12 @@ const DeleteRequest = ({
   onClose,
   isDeleting,
   errorMessage,
+  allowRetry = false,
 }: DeleteRequestProps) => {
   return (
     <Modal onClose={onClose}>
       <div className={classes["del-request"]}>
-        {!isDeleting && !errorMessage && (
+        {!isDeleting && (!errorMessage || allowRetry) && (
           <div className={classes["del-request__message"]}>{message}</div>
         )}
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
@@ -44,7 +47,7 @@ const DeleteRequest = ({
             Don't close this window until the deletion is complete
           </div>
         )}
-        {!isDeleting && !errorMessage && (
+        {!isDeleting && (!errorMessage || allowRetry) && (
           <div className={classes["del-request__btn-container"]}>
             <Button className={classes["btn-del"]} onClick={onSubmit}>
               Delete

@@ -502,15 +502,16 @@ export const updateCollectionPostsData = (
  */
 export const updateCollectionCategories = (
   categories: CollectionCategory[],
-): AppThunk => {
+): AppThunk<Promise<void>> => {
   return async (dispatch, getState) => {
     try {
       const uid = getState().auth.user.uid;
+      if (!uid) throw new AppError(ERROR_MESSAGE_DEFAULT);
       await saveCollectionCategories(uid, categories);
 
       dispatch(imagesActions.setImageCategories(categories));
     } catch (error) {
-      handleErrors(normalizeError(error));
+      throw normalizeError(error);
     }
   };
 };

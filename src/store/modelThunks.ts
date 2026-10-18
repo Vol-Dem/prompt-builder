@@ -258,16 +258,19 @@ export const deleteModel = (): AppThunk => {
 export const updateCategories = (
   modelType: string,
   updatedCat: ModelCategory[],
-): AppThunk => {
+): AppThunk<Promise<void>> => {
   return async (_, getState) => {
-    const uid = getState().auth.user.uid;
-    if (uid) {
+    try {
+      const uid = getState().auth.user.uid;
+      if (!uid) throw new AppError(ERROR_MESSAGE_DEFAULT);
       const userRef = doc(firestore, "users", uid);
       const categoryField = `categoriesById.${modelType}`;
 
       await updateDoc(userRef, {
         [categoryField]: updatedCat,
       });
+    } catch (error) {
+      throw normalizeError(error);
     }
   };
 };

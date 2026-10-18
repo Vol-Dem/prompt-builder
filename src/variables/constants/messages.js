@@ -39,3 +39,7 @@ export const ERROR_MESSAGE_COLLECTION_PREVIEW_SAVE =
   "Couldn't save the collection preview. Please try again.";
 export const ERROR_MESSAGE_TAG_SET_PREVIEW_SAVE =
   "Couldn't save the tag-set preview. Please try again.";
+export const ERROR_MESSAGE_CATEGORY_RENAME =
+  "Couldn't rename the category. Please try again.";
+export const ERROR_MESSAGE_CATEGORY_DELETE =
+  "Couldn't delete the category. Please try again.";

@@ -8,7 +8,7 @@ import {
   deleteCollection,
   updateCollectionCategories,
 } from "./imagesThunks";
-import { ERROR_MESSAGE_DB_CONNECTION } from "../variables/constants";
+import { ERROR_MESSAGE_DB_CONNECTION, ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 
 vi.mock("../firebase-config", () => ({ default: {} }));
 vi.mock("firebase/auth", () => ({ getAuth: () => ({ currentUser: null }) }));
@@ -34,10 +34,10 @@ const newCollection = {
   subcategoriesData: [{ id: null, name: "Face" }],
   curCollectionSabcategories: ["face", "face"],
 };
-const makeStore = () => {
+const makeStore = (uid = "user-1") => {
   const store = configureStore({ reducer: {
     images: imagesSlice.reducer,
-    auth: () => ({ user: { uid: "user-1" } }),
+    auth: () => ({ user: { uid } }),
   } });
   store.dispatch(imagesActions.setImageCategories(categories));
   return store;
@@ -69,14 +69,21 @@ describe("collection category persistence", () => {
     expect(store.getState().images.categories).toEqual([]);
   });
 
-  it("handles category-write failure without rejecting or updating Redux", async () => {
+  it("rejects category-write failure with its original cause without updating Redux", async () => {
     const store = makeStore();
     const error = new Error("Write failed");
-    vi.spyOn(console, "error").mockImplementation(() => {});
     setDoc.mockRejectedValue(error);
-    await expect(store.dispatch(updateCollectionCategories([]))).resolves.toBeUndefined();
+    await expect(store.dispatch(updateCollectionCategories([])))
+      .rejects.toMatchObject({ name: "AppError", original: error, cause: error });
     expect(store.getState().images.categories).toEqual(categories);
-    expect(console.error).toHaveBeenCalledWith(error);
+  });
+
+  it("rejects without writing or updating Redux when there is no uid", async () => {
+    const store = makeStore("");
+    await expect(store.dispatch(updateCollectionCategories([])))
+      .rejects.toMatchObject({ name: "AppError", message: ERROR_MESSAGE_DEFAULT });
+    expect(setDoc).not.toHaveBeenCalled();
+    expect(store.getState().images.categories).toEqual(categories);
   });
 });
 
@@ -160,16 +167,16 @@ describe("collection creation", () => {
     expect(deleteDoc).not.toHaveBeenCalled();
   });
 
-  it("preserves the outer Redux update when the category write fails after document creation", async () => {
+  it("propagates category-write failure after document creation without publishing unsaved categories", async () => {
     const store = makeStore();
-    vi.spyOn(console, "error").mockImplementation(() => {});
+    const error = new Error("Category write failed");
     setDoc.mockResolvedValueOnce(undefined).mockResolvedValueOnce(undefined)
-      .mockRejectedValueOnce(new Error("Category write failed"));
+      .mockRejectedValueOnce(error);
 
-    await expect(store.dispatch(addNewCollectionCategories(newCollection))).resolves.toMatchObject({
-      collectionData: { id: 44 },
-    });
-    expect(store.getState().images.categories[0].collectionNames.at(-1).id).toBe(44);
+    await expect(store.dispatch(addNewCollectionCategories(newCollection)))
+      .rejects.toMatchObject({ name: "AppError", original: error });
+    expect(store.getState().images.categories).toEqual(categories);
+    expect(setDoc).toHaveBeenCalledTimes(3);
     expect(deleteDoc).not.toHaveBeenCalled();
   });
 

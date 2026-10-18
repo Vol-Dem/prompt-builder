@@ -254,23 +254,33 @@ describe("model deletion", () => {
 });
 
 describe("model category updates", () => {
-  it("writes the selected model-type field without changing Redux", async () => {
+  it("waits for the selected model-type field write without changing Redux", async () => {
     const store = makeStore();
     const before = store.getState().model;
     const categories = [{ id: "portrait", name: "Portrait" }];
-    await store.dispatch(updateCategories("lora", categories));
+    const pending = deferred();
+    updateDoc.mockReturnValueOnce(pending.promise);
+    let completed = false;
+    const result = store.dispatch(updateCategories("lora", categories)).then(() => { completed = true; });
     expect(updateDoc).toHaveBeenCalledExactlyOnceWith("users/user-1", { "categoriesById.lora": categories });
     expect(store.getState().model).toBe(before);
+    await Promise.resolve();
+    expect(completed).toBe(false);
+    pending.resolve();
+    await result;
+    expect(completed).toBe(true);
   });
 
-  it("skips writes without a uid", async () => {
-    await makeStore(model, "").dispatch(updateCategories("lora", []));
+  it("rejects without writing when there is no uid", async () => {
+    await expect(makeStore(model, "").dispatch(updateCategories("lora", [])))
+      .rejects.toMatchObject({ name: "AppError", message: ERROR_MESSAGE_DEFAULT });
     expect(updateDoc).not.toHaveBeenCalled();
   });
 
   it("propagates category write failures", async () => {
     const error = new Error("Write failed");
     updateDoc.mockRejectedValue(error);
-    await expect(makeStore().dispatch(updateCategories("lora", []))).rejects.toBe(error);
+    await expect(makeStore().dispatch(updateCategories("lora", [])))
+      .rejects.toMatchObject({ name: "AppError", original: error, cause: error });
   });
 });
