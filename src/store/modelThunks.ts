@@ -18,7 +18,7 @@ import type {
 } from "../types/models.types";
 import type { AppThunk } from "./store";
 import type { TagSet } from "../types/prompt.types";
-import { AppError, handleErrors, normalizeError } from "../utils/generalUtils";
+import { AppError, normalizeError } from "../utils/generalUtils";
 import type { PostInfo } from "../types/upload.types";
 import type { ModelCategory } from "../../shared/types/user";
 import type { PostSavedData } from "../types/collections.types";
@@ -47,13 +47,13 @@ export const setPreviewImg = (
   location: ResourceFirestoreCollection,
   locationId: number,
   type: SrcType = "image",
-): AppThunk => {
+): AppThunk<Promise<void>> => {
   return async (_, getState) => {
     try {
       const uid = getState().auth.user.uid;
 
-      if (!url || !location || !locationId) {
-        throw new Error(ERROR_MESSAGE_DEFAULT);
+      if (!uid || !url || !location || !locationId) {
+        throw new AppError(ERROR_MESSAGE_DEFAULT);
       }
 
       const urlField = isNsfw ? "nsfwPreviewImgUrl" : "customPreviewImgUrl";
@@ -79,7 +79,7 @@ export const setPreviewImg = (
         { merge: true },
       );
     } catch (error) {
-      handleErrors(normalizeError(error));
+      throw normalizeError(error);
     }
   };
 };
@@ -99,49 +99,56 @@ export const setPreviewImg = (
 export const setTagSetPreviewImg = (
   versionId: string | "tsv-def",
   tagSetData: TagSet[],
-): AppThunk => {
+): AppThunk<Promise<void>> => {
   return async (dispatch, getState) => {
-    const uid = getState().auth.user.uid;
-    const id = getState().model.model?.id;
-    const model = getState().model.model;
+    try {
+      const uid = getState().auth.user.uid;
+      const id = getState().model.model?.id;
 
-    const urlField =
-      versionId === "tsv-def"
-        ? `defaultCustomData.tagSetsData`
-        : `modelVersionsCustomData.${versionId}.tagSetsData`;
+      if (!uid || !id || !versionId) {
+        throw new AppError(ERROR_MESSAGE_DEFAULT);
+      }
 
-    const modelRef = doc(firestore, "users", uid, "models", id + "");
-    await updateDoc(modelRef, {
-      [`${urlField}`]: tagSetData,
-    });
+      const urlField =
+        versionId === "tsv-def"
+          ? `defaultCustomData.tagSetsData`
+          : `modelVersionsCustomData.${versionId}.tagSetsData`;
 
-    if (!model) {
-      throw new AppError(ERROR_MESSAGE_DEFAULT);
-    }
+      const modelRef = doc(firestore, "users", uid, "models", id + "");
+      await updateDoc(modelRef, {
+        [`${urlField}`]: tagSetData,
+      });
 
-    if (versionId === "tsv-def" && model?.defaultCustomData) {
-      const updatedDefaultCustomData = {
-        ...model.defaultCustomData,
-        tagSetsData: tagSetData,
-      };
-      dispatch(
-        modelActions.updateModelDataField({
-          defaultCustomData: updatedDefaultCustomData,
-        }),
-      );
-    } else if (model?.modelVersionsCustomData) {
-      const updatedVersionsCustomData = {
-        ...model?.modelVersionsCustomData,
-        [versionId]: {
-          ...model.modelVersionsCustomData[versionId],
+      const state = getState();
+      const model = state.model.model;
+      if (state.auth.user.uid !== uid || model?.id !== id) return;
+
+      if (versionId === "tsv-def" && model.defaultCustomData) {
+        const updatedDefaultCustomData = {
+          ...model.defaultCustomData,
           tagSetsData: tagSetData,
-        },
-      };
-      dispatch(
-        modelActions.updateModelDataField({
-          modelVersionsCustomData: updatedVersionsCustomData,
-        }),
-      );
+        };
+        dispatch(
+          modelActions.updateModelDataField({
+            defaultCustomData: updatedDefaultCustomData,
+          }),
+        );
+      } else if (model.modelVersionsCustomData) {
+        const updatedVersionsCustomData = {
+          ...model.modelVersionsCustomData,
+          [versionId]: {
+            ...model.modelVersionsCustomData[versionId],
+            tagSetsData: tagSetData,
+          },
+        };
+        dispatch(
+          modelActions.updateModelDataField({
+            modelVersionsCustomData: updatedVersionsCustomData,
+          }),
+        );
+      }
+    } catch (error) {
+      throw normalizeError(error);
     }
   };
 };

@@ -12,6 +12,7 @@ import {
 } from "./modelThunks";
 import { deleteImagePostDocs } from "../utils/fetch/fetchImages";
 import { makeBatchRequest } from "../utils/fetch/fetchUtils";
+import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 
 vi.mock("../firebase-config", () => ({ default: {} }));
 vi.mock("firebase/firestore", () => ({
@@ -76,22 +77,30 @@ describe("preview mutations", () => {
     expect(store.getState().model).toBe(before);
   });
 
-  it("handles a failed preview write without rejecting or changing Redux", async () => {
+  it("rejects a failed preview write with its original cause without changing Redux", async () => {
     const store = makeStore();
     const before = store.getState().model;
     const error = new Error("Write failed");
-    vi.spyOn(console, "error").mockImplementation(() => {});
     setDoc.mockRejectedValue(error);
     await expect(store.dispatch(setPreviewImg("preview.webp", false, "models", 42)))
-      .resolves.toBeUndefined();
-    expect(console.error).toHaveBeenCalledWith(error);
+      .rejects.toMatchObject({ name: "AppError", original: error, cause: error });
     expect(store.getState().model).toBe(before);
   });
 
   it("skips persistence for an invalid preview URL", async () => {
-    vi.spyOn(console, "error").mockImplementation(() => {});
-    await makeStore().dispatch(setPreviewImg("", false, "models", 42));
+    await expect(makeStore().dispatch(setPreviewImg("", false, "models", 42)))
+      .rejects.toMatchObject({ message: ERROR_MESSAGE_DEFAULT });
     expect(setDoc).not.toHaveBeenCalled();
+  });
+
+  it("does not write previews without a signed-in user", async () => {
+    const store = makeStore(model, "");
+    await expect(store.dispatch(setPreviewImg("preview.webp", false, "models", 42)))
+      .rejects.toMatchObject({ message: ERROR_MESSAGE_DEFAULT });
+    await expect(store.dispatch(setTagSetPreviewImg("9", [])))
+      .rejects.toMatchObject({ message: ERROR_MESSAGE_DEFAULT });
+    expect(setDoc).not.toHaveBeenCalled();
+    expect(updateDoc).not.toHaveBeenCalled();
   });
 
   it.each(["tsv-def", "9"])("updates %s tag-set data only after persistence succeeds", async (version) => {
@@ -117,8 +126,48 @@ describe("preview mutations", () => {
     const before = store.getState().model;
     const error = new Error("Write failed");
     updateDoc.mockRejectedValue(error);
-    await expect(store.dispatch(setTagSetPreviewImg("9", []))).rejects.toBe(error);
+    await expect(store.dispatch(setTagSetPreviewImg("9", [])))
+      .rejects.toMatchObject({ name: "AppError", original: error, cause: error });
     expect(store.getState().model).toBe(before);
+  });
+
+  it("does not write tag-set previews without a current model", async () => {
+    await expect(makeStore(null).dispatch(setTagSetPreviewImg("9", [])))
+      .rejects.toMatchObject({ message: ERROR_MESSAGE_DEFAULT });
+    expect(updateDoc).not.toHaveBeenCalled();
+  });
+
+  it.each([null, { ...model, id: 99 }])("does not apply a completed tag-set write to a different model: %j", async (nextModel) => {
+    const store = makeStore();
+    const pending = deferred();
+    updateDoc.mockReturnValue(pending.promise);
+    const result = store.dispatch(setTagSetPreviewImg("9", [{ name: "Tags", imgUrl: "preview.webp" }]));
+    store.dispatch(modelActions.setModelData(nextModel));
+    const before = store.getState().model;
+    pending.resolve();
+    await result;
+    expect(store.getState().model).toBe(before);
+  });
+
+  it.each(["tsv-def", "9"])("preserves other model fields changed during a %s preview write", async (version) => {
+    const store = makeStore();
+    const pending = deferred();
+    const tagSets = [{ name: "Tags", imgUrl: "preview.webp" }];
+    updateDoc.mockReturnValue(pending.promise);
+    const result = store.dispatch(setTagSetPreviewImg(version, tagSets));
+    const nextModel = {
+      ...model,
+      defaultCustomData: { ...model.defaultCustomData, mainTag: "updated default" },
+      modelVersionsCustomData: { 9: { ...model.modelVersionsCustomData[9], mainTag: "updated version" } },
+    };
+    store.dispatch(modelActions.setModelData(nextModel));
+    pending.resolve();
+    await result;
+    const data = store.getState().model.model;
+    expect(data.defaultCustomData.mainTag).toBe("updated default");
+    expect(data.modelVersionsCustomData[9].mainTag).toBe("updated version");
+    expect(version === "tsv-def" ? data.defaultCustomData.tagSetsData : data.modelVersionsCustomData[9].tagSetsData)
+      .toEqual(tagSets);
   });
 });
 

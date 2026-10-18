@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
 import classes from "./SetTagSetPreview.module.scss";
@@ -8,12 +8,16 @@ import Image from "../../../ui/image/Image";
 import {
   ANIMATIONS_FM_SLIDEIN,
   ANIMATIONS_FM_SLIDEIN_INITIAL,
+  ERROR_MESSAGE_TAG_SET_PREVIEW_SAVE,
   SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL,
 } from "../../../../variables/constants";
 import TagSetsForm from "../../../forms/tag-sets-form/TagSetsForm";
 import Button from "../../../ui/buttons/Button";
 import Modal from "../../../ui/Modal";
 import TextHighlight from "../../../ui/text/TextHighlight";
+import ErrorMessage from "../../../ui/ErrorMessage";
+import Spinner from "../../../ui/Spinner";
+import { normalizeError, reportError } from "../../../../utils/generalUtils";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 
@@ -47,6 +51,14 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
   const [tagSetsFormIsOpen, setTagSetsFormIsOpen] = useState(false);
   const [showNsfwPreview, setShowNsfwPreview] = useState(false);
   const [curTagSetVersionId, setCurTagSetVersionId] = useState("tsv-def");
+  const [savingPreview, setSavingPreview] = useState<{
+    versionId: string;
+    tagSetIndex: number;
+    isNsfw: boolean;
+  } | null>(null);
+  const previewIsSaving = savingPreview !== null;
+  const [previewError, setPreviewError] = useState("");
+  const previewPendingRef = useRef(false);
   const model = useAppSelector((state) => state.model.model);
   const curVersion = useAppSelector((state) => state.model.curVersion);
   const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
@@ -66,21 +78,18 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
     }
   }, [model, curVersion]);
 
-  const setTagSetPreviwImgHandler = (id: number, isNsfw: boolean) => {
+  const setTagSetPreviwImgHandler = async (id: number, isNsfw: boolean) => {
+    if (previewPendingRef.current) return;
     let curtagSet;
-
-    // if (!model?.modelVersionsCustomData || !model?.defaultCustomData) return;
 
     if (curTagSetVersionId === "tsv-def" && model?.defaultCustomData) {
       curtagSet = model?.defaultCustomData.tagSetsData;
     } else if (model?.modelVersionsCustomData) {
       curtagSet =
-        model?.modelVersionsCustomData[curTagSetVersionId].tagSetsData;
+        model?.modelVersionsCustomData[curTagSetVersionId]?.tagSetsData;
     }
 
     const imgKey = isNsfw ? "nsfwImgUrl" : "imgUrl";
-
-    setShowNsfwPreview(isNsfw);
 
     const updatedTagSet = curtagSet?.map((tagSet, i) => {
       if (i === id) {
@@ -92,12 +101,27 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
       return tagSet;
     });
 
-    if (updatedTagSet)
-      dispatch(setTagSetPreviewImg(curTagSetVersionId, updatedTagSet));
+    if (!updatedTagSet) return;
+
+    previewPendingRef.current = true;
+    setSavingPreview({ versionId: curTagSetVersionId, tagSetIndex: id, isNsfw });
+    setPreviewError("");
+    try {
+      await dispatch(setTagSetPreviewImg(curTagSetVersionId, updatedTagSet));
+      setShowNsfwPreview(isNsfw);
+    } catch (error) {
+      reportError(normalizeError(error));
+      setPreviewError(ERROR_MESSAGE_TAG_SET_PREVIEW_SAVE);
+    } finally {
+      previewPendingRef.current = false;
+      setSavingPreview(null);
+    }
   };
 
   const openTagSetVersionHandler = (id: string) => {
+    if (previewPendingRef.current) return;
     setCurTagSetVersionId(id);
+    setPreviewError("");
   };
 
   const nsfwSwitchHandler = () => {
@@ -105,10 +129,43 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
   };
 
   const openTagSetsForm = () => {
+    if (previewPendingRef.current) return;
     setTagSetsFormIsOpen(true);
   };
   const closeTagSetsForm = () => {
     setTagSetsFormIsOpen(false);
+  };
+
+  const renderPreviewButton = (versionId: string, id: number, isNsfw: boolean) => {
+    const isSaving =
+      savingPreview?.versionId === versionId &&
+      savingPreview.tagSetIndex === id &&
+      savingPreview.isNsfw === isNsfw;
+    const label = isNsfw ? "Set as NSFW preview" : "Set as preview";
+
+    return (
+      <ButttonTertiary
+        type="button"
+        className={classes["preview-btn"]}
+        disabled={previewIsSaving}
+        aria-label={label}
+        aria-busy={isSaving}
+        onClick={() => setTagSetPreviwImgHandler(id, isNsfw)}
+      >
+        <span className={isSaving ? classes["preview-btn__label--hidden"] : ""}>
+          {label}
+        </span>
+        {isSaving && (
+          <span
+            className={classes["preview-btn__spinner"]}
+            role="status"
+            aria-label="Saving tag-set preview"
+          >
+            <Spinner size="small" />
+          </span>
+        )}
+      </ButttonTertiary>
+    );
   };
 
   const tagSetVersionsHtml =
@@ -132,6 +189,7 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
                 : ""
             }`}
             onClick={() => openTagSetVersionHandler(`${version.versionId}`)}
+            aria-disabled={previewIsSaving}
           >
             {version.name}
           </li>
@@ -161,20 +219,8 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
           <div className={classes["tag-sets__info"]}>
             <h3 className={classes["tag-sets__name"]}>{tagSet.name}</h3>
             <div className={classes["tag-sets__btn-container"]}>
-              <ButttonTertiary
-                type="button"
-                onClick={() => setTagSetPreviwImgHandler(i, false)}
-              >
-                Set as preview
-              </ButttonTertiary>
-              {nsfwMode && (
-                <ButttonTertiary
-                  type="button"
-                  onClick={() => setTagSetPreviwImgHandler(i, true)}
-                >
-                  Set as NSFW preview
-                </ButttonTertiary>
-              )}
+              {renderPreviewButton("tsv-def", i, false)}
+              {nsfwMode && renderPreviewButton("tsv-def", i, true)}
             </div>
           </div>
         </motion.li>
@@ -209,20 +255,8 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
                 {tagSet.name}
               </h3>
               <div className={classes["tag-sets__btn-container"]}>
-                <ButttonTertiary
-                  type="button"
-                  onClick={() => setTagSetPreviwImgHandler(i, false)}
-                >
-                  Set as preview
-                </ButttonTertiary>
-                {nsfwMode && (
-                  <ButttonTertiary
-                    type="button"
-                    onClick={() => setTagSetPreviwImgHandler(i, true)}
-                  >
-                    Set as NSFW preview
-                  </ButttonTertiary>
-                )}
+                {renderPreviewButton(curTagSetVersionId, i, false)}
+                {nsfwMode && renderPreviewButton(curTagSetVersionId, i, true)}
               </div>
             </div>
           </motion.li>
@@ -231,12 +265,14 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
     );
 
   return (
-    <div>
+    <div aria-busy={previewIsSaving}>
       {!tagSetsFormIsOpen && (
         <>
           <div className={classes["tag-sets-head"]}>
             <div className={classes["tag-sets-title"]}>Tag sets</div>
-            <Button onClick={openTagSetsForm}>Add tag set</Button>
+            <Button onClick={openTagSetsForm} disabled={previewIsSaving}>
+              Add tag set
+            </Button>
             {nsfwMode && (
               <div className={classes["mode-switch"]}>
                 <button
@@ -260,6 +296,7 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
               </div>
             )}
           </div>
+          {previewError && <ErrorMessage>{previewError}</ErrorMessage>}
           <ul className={classes["tag-sets-versions"]}>
             {!!model?.defaultCustomData?.tagSetsData?.length && (
               <li
@@ -270,6 +307,7 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
                     : ""
                 }`}
                 onClick={() => openTagSetVersionHandler(`tsv-def`)}
+                aria-disabled={previewIsSaving}
               >
                 Default
               </li>

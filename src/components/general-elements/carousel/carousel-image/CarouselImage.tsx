@@ -12,15 +12,22 @@ import { setPreviewImg } from "../../../../store/modelThunks";
 import ButttonTertiary from "../../../ui/buttons/ButtonTertiary";
 import Modal from "../../../ui/Modal";
 import ButtonAdd from "../../button-square-add/ButtonSquareAdd";
+import ErrorMessage from "../../../ui/ErrorMessage";
+import SuccessMessage from "../../../ui/SuccessMessage";
 import {
   ANIMATIONS_FM_ZOOM_IN,
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
+  ERROR_MESSAGE_COLLECTION_PREVIEW_SAVE,
+  ERROR_MESSAGE_MODEL_PREVIEW_SAVE,
   SETTINGS_AUTOPLAY_VIDEO,
   SETTINGS_CAROUSEL_AUTOPLAY_VIDEO_PREVIEW,
   SETTINGS_IMAGE_PREVIEW_WIDTH_BIG,
+  SUCCESS_MESSAGE_COLLECTION_PREVIEW_SAVED,
+  SUCCESS_MESSAGE_MODEL_PREVIEW_SAVED,
 } from "../../../../variables/constants";
 import SetTagSetPreview from "../set-tagset-preview/SetTagSetPreview";
 import { transformSrcPreview } from "../../../../utils/imageUtils";
+import { normalizeError, reportError } from "../../../../utils/generalUtils";
 import type { ResourceFirestoreCollection } from "../../../../types/models.types";
 import type { Image } from "../../../../../shared/types/image";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
@@ -122,6 +129,12 @@ const CarouselImage = ({
   const [videoSrc, setVideoSrc] = useState({ mp4: "#", webm: "#" });
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [tagSetMenuIsOpen, settagSetMenuIsOpen] = useState(false);
+  const [previewIsSaving, setPreviewIsSaving] = useState(false);
+  const [previewResult, setPreviewResult] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+  const previewPendingRef = useRef(false);
   const curVersion = useAppSelector((state) => state.model.curVersion);
   const nsfwMode = useAppSelector((state) => state.general.nsfwMode);
   const isMobile = useAppSelector((state) => state.general.isMobile);
@@ -158,18 +171,46 @@ const CarouselImage = ({
     setImgIsLoading(false);
   };
 
-  const setPreviwImgHandler = (nsfw: boolean) => {
-    if (!locationId || !location) return;
+  const setPreviwImgHandler = async (nsfw: boolean) => {
+    if (!locationId || !location || previewPendingRef.current) return;
 
-    dispatch(setPreviewImg(imgSrc, nsfw, location, locationId, imageData.type));
+    previewPendingRef.current = true;
+    setPreviewIsSaving(true);
+    setPreviewResult(null);
     setMenuIsOpen(false);
+    try {
+      await dispatch(
+        setPreviewImg(imgSrc, nsfw, location, locationId, imageData.type),
+      );
+      setPreviewResult({
+        type: "success",
+        message:
+          location === "models"
+            ? SUCCESS_MESSAGE_MODEL_PREVIEW_SAVED
+            : SUCCESS_MESSAGE_COLLECTION_PREVIEW_SAVED,
+      });
+    } catch (error) {
+      reportError(normalizeError(error));
+      setPreviewResult({
+        type: "error",
+        message:
+          location === "models"
+            ? ERROR_MESSAGE_MODEL_PREVIEW_SAVE
+            : ERROR_MESSAGE_COLLECTION_PREVIEW_SAVE,
+      });
+    } finally {
+      previewPendingRef.current = false;
+      setPreviewIsSaving(false);
+    }
   };
 
   const openMenuHandler = () => {
+    if (previewPendingRef.current) return;
     setMenuIsOpen((prevState) => !prevState);
   };
 
   const openTagSetMenuHandler = () => {
+    if (previewPendingRef.current) return;
     settagSetMenuIsOpen(true);
     setMenuIsOpen(false);
   };
@@ -179,6 +220,7 @@ const CarouselImage = ({
   };
 
   const showDeleteReqeustHandler = () => {
+    if (previewPendingRef.current) return;
     onDelete();
   };
 
@@ -188,6 +230,7 @@ const CarouselImage = ({
 
   useEffect(() => {
     const closeMenuHandler = (e: PointerEvent) => {
+      if (previewPendingRef.current) return;
       if (!(e.target instanceof HTMLElement)) return;
 
       if (!e.target.closest(`.${classes.menu}`)) setMenuIsOpen(false);
@@ -286,7 +329,7 @@ const CarouselImage = ({
               className={classes["menu-btn"]}
               onClick={openMenuHandler}
               title="Image settings"
-              disabled={!menu}
+              disabled={!menu || previewIsSaving}
             >
               <EllipsisHorizontalIcon />
             </ButttonTertiary>
@@ -298,34 +341,52 @@ const CarouselImage = ({
                   exit={ANIMATIONS_FM_ZOOM_IN_INITIAL}
                   className={classes["menu__list"]}
                 >
-                  <motion.li
-                    className={classes["menu__item"]}
-                    onClick={() => setPreviwImgHandler(false)}
-                  >
-                    Set as preview
+                  <motion.li className={classes["menu__item"]}>
+                    <button
+                      type="button"
+                      className={classes["menu__action"]}
+                      disabled={previewIsSaving}
+                      onClick={() => setPreviwImgHandler(false)}
+                    >
+                      Set as preview
+                    </button>
                   </motion.li>
                   {curVersion?.id && (
-                    <motion.li
-                      className={classes["menu__item"]}
-                      onClick={openTagSetMenuHandler}
-                    >
-                      Set as tag set preview
+                    <motion.li className={classes["menu__item"]}>
+                      <button
+                        type="button"
+                        className={classes["menu__action"]}
+                        disabled={previewIsSaving}
+                        onClick={openTagSetMenuHandler}
+                      >
+                        Set as tag set preview
+                      </button>
                     </motion.li>
                   )}
                   {nsfwMode && (
-                    <motion.li
-                      className={classes["menu__item"]}
-                      onClick={() => setPreviwImgHandler(true)}
-                    >
-                      Set as NSFW preview
+                    <motion.li className={classes["menu__item"]}>
+                      <button
+                        type="button"
+                        className={classes["menu__action"]}
+                        disabled={previewIsSaving}
+                        onClick={() => setPreviwImgHandler(true)}
+                      >
+                        Set as NSFW preview
+                      </button>
                     </motion.li>
                   )}
                   {!!saved && (
                     <motion.li
                       className={`${classes["menu__item"]} ${classes["menu__item--del"]}`}
-                      onClick={showDeleteReqeustHandler}
                     >
-                      Delete
+                      <button
+                        type="button"
+                        className={classes["menu__action"]}
+                        disabled={previewIsSaving}
+                        onClick={showDeleteReqeustHandler}
+                      >
+                        Delete
+                      </button>
                     </motion.li>
                   )}
                 </motion.menu>
@@ -362,6 +423,15 @@ const CarouselImage = ({
         </>
       )}
       <AnimatePresence>
+        {previewResult && (
+          <Modal title="Preview" onClose={() => setPreviewResult(null)}>
+            {previewResult.type === "success" ? (
+              <SuccessMessage>{previewResult.message}</SuccessMessage>
+            ) : (
+              <ErrorMessage>{previewResult.message}</ErrorMessage>
+            )}
+          </Modal>
+        )}
         {tagSetMenuIsOpen && (
           <Modal
             className={classes["tag-sets__modal"]}

@@ -210,6 +210,23 @@
   justify-content: space-between;
 }
 
+.preview-btn {
+  position: relative;
+
+  &__label--hidden {
+    visibility: hidden;
+  }
+
+  &__spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2rem;
+    height: 2rem;
+    transform: translate(-50%, -50%);
+  }
+}
+
 .tag-sets-title {
   font-size: 2.4rem;
   // line-height: 1;

@@ -7,6 +7,10 @@ export const MESSAGE_DELETE_COLLECTION =
 //SUCCESS MESSAGES
 export const SUCCESS_MESSAGE_SAVED = "Saved successfully";
 export const SUCCESS_MESSAGE_UPLOADED = "Upload complete";
+export const SUCCESS_MESSAGE_MODEL_PREVIEW_SAVED =
+  "Model preview saved successfully";
+export const SUCCESS_MESSAGE_COLLECTION_PREVIEW_SAVED =
+  "Collection preview saved successfully";
 
 //ERROR MESSAGES
 export const ERROR_MESSAGE_DEFAULT =
@@ -29,3 +33,9 @@ export const ERROR_MESSAGE_CIV_CONNECTION =
   "Failed to conect to Civitai API. There may be heavy load or maintenance at the moment. Try again later.";
 export const ERROR_MESSAGE_MODEL_LOAD = "Failed to load model";
 export const ERROR_MESSAGE_MODEL_UPDATE = "Failed to load update";
+export const ERROR_MESSAGE_MODEL_PREVIEW_SAVE =
+  "Couldn't save the model preview. Please try again.";
+export const ERROR_MESSAGE_COLLECTION_PREVIEW_SAVE =
+  "Couldn't save the collection preview. Please try again.";
+export const ERROR_MESSAGE_TAG_SET_PREVIEW_SAVE =
+  "Couldn't save the tag-set preview. Please try again.";

@@ -91,15 +91,28 @@
   }
 
   &__item {
-    cursor: pointer;
-    transition: all 0.3s;
-
     &--del {
       color: var.$color-red;
     }
+  }
 
-    &:hover {
+  &__action {
+    border: 0;
+    padding: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: inherit;
+    cursor: pointer;
+    transition: color 0.3s;
+
+    &:hover:not(:disabled) {
       color: var.$color-text-violet;
+    }
+
+    &:disabled {
+      cursor: wait;
+      opacity: 0.6;
     }
   }
 }
