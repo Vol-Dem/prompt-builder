@@ -211,13 +211,13 @@ export const deleteImgPost = (
  *
  * @returns {Function} Redux thunk.
  */
-export const deleteModel = (): AppThunk => {
+export const deleteModel = (): AppThunk<Promise<void>> => {
   return async (_, getState) => {
     const uid = getState().auth.user.uid;
     const model = getState().model.model;
 
     if (model?.savedImages) {
-      Object.values(model.savedImages).forEach(async (versionData) => {
+      for (const versionData of Object.values(model.savedImages)) {
         const postsData = versionData.map((post) => {
           return {
             ...post,
@@ -228,7 +228,7 @@ export const deleteModel = (): AppThunk => {
         });
 
         await makeBatchRequest(postsData, deleteImagePostDocs, 5, false);
-      });
+      }
 
       const modelRef = doc(firestore, "users", uid, "models", model.id + "");
       const modelPreviewRef = doc(

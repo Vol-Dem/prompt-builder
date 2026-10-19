@@ -94,9 +94,12 @@ export const getModelData = async (modelId: number) => {
  * @param uid - The user ID
  * @param model - The model data
  */
-export const deleteModelDoc = async (uid: string, model: UserModelDoc) => {
+export const deleteModelDoc = async (
+  uid: string,
+  model: UserModelDoc,
+): Promise<void> => {
   if (model?.savedImages) {
-    Object.values(model.savedImages).forEach(async (versionData) => {
+    for (const versionData of Object.values(model.savedImages)) {
       const postsData = versionData.map((post) => {
         return {
           ...post,
@@ -108,7 +111,7 @@ export const deleteModelDoc = async (uid: string, model: UserModelDoc) => {
       if (postsData?.length) {
         await makeBatchRequest(postsData, deleteImagePostDocs, 50, false);
       }
-    });
+    }
   }
 
   const modelRef = doc(firestore, "users", uid, "models", model.id + "");

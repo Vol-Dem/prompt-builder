@@ -19,6 +19,7 @@ import {
   ANIMATIONS_FM_SLIDEIN_INITIAL,
   ANIMATIONS_FM_SLIDEIN,
   ERROR_MESSAGE_INVALID_DATA,
+  ERROR_MESSAGE_MODEL_DELETE,
 } from "../../../variables/constants";
 import { modelActions } from "../../../store/model";
 import { tabActions } from "../../../store/tabs";
@@ -70,6 +71,7 @@ const ModelSettings = () => {
   const [mobileMenuIsOpen, setMobileMenuIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteErrorMessage, setDeleteErrorMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, seteSuccessMessage] = useState("");
   const [deleteRequestIsOpen, setDeleteRequestIsOpen] = useState(false);
@@ -160,16 +162,21 @@ const ModelSettings = () => {
   };
 
   const showDeleteReqeustHandler = () => {
+    setDeleteErrorMessage("");
     setDeleteRequestIsOpen(true);
   };
 
   const closeDeleteReqeustHandler = () => {
+    if (isDeleting) return;
+    setDeleteErrorMessage("");
     setDeleteRequestIsOpen(false);
   };
 
   const deleteModelHandler = async () => {
+    if (isDeleting) return;
     try {
       setIsDeleting(true);
+      setDeleteErrorMessage("");
 
       if (!model) {
         throw new AppError(ERROR_MESSAGE_DEFAULT);
@@ -181,8 +188,11 @@ const ModelSettings = () => {
       dispatch(tabActions.resetActiveTabs());
       navigate("/");
     } catch (err) {
-      const errorMessage = handleErrors(normalizeError(err));
-      setErrorMessage(errorMessage);
+      const error = normalizeError(err);
+      const message = handleErrors(error);
+      setDeleteErrorMessage(
+        error.isCustom ? message : ERROR_MESSAGE_MODEL_DELETE,
+      );
     } finally {
       setIsDeleting(false);
     }
@@ -378,6 +388,8 @@ const ModelSettings = () => {
             onSubmit={deleteModelHandler}
             onClose={closeDeleteReqeustHandler}
             isDeleting={isDeleting}
+            errorMessage={deleteErrorMessage}
+            allowRetry
           />
         )}
       </AnimatePresence>

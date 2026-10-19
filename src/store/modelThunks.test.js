@@ -219,7 +219,7 @@ describe("saved-post deletion", () => {
 });
 
 describe("model deletion", () => {
-  it("keeps image cleanup independent and deletes the model before its preview", async () => {
+  it("waits for image cleanup, then deletes the model before its preview", async () => {
     const store = makeStore();
     const before = store.getState().model;
     const cleanup = deferred();
@@ -230,13 +230,50 @@ describe("model deletion", () => {
     expect(makeBatchRequest).toHaveBeenCalledExactlyOnceWith([
       { ...post, uid: "user-1", modelId: 42, type: "defaultImages" },
     ], deleteImagePostDocs, 5, false);
-    expect(deleteDoc).toHaveBeenCalledExactlyOnceWith(modelPath);
+    expect(deleteDoc).not.toHaveBeenCalled();
+    cleanup.resolve([]);
+    await vi.waitFor(() => expect(deleteDoc).toHaveBeenCalledExactlyOnceWith(modelPath));
     deletion.resolve();
     await result;
     expect(deleteDoc.mock.calls).toEqual([[modelPath], ["users/user-1/preview/42"]]);
     expect(store.getState().model).toBe(before);
-    cleanup.resolve([]);
-    await cleanup.promise;
+  });
+
+  it("awaits every version's cleanup before deleting either parent document", async () => {
+    const data = { ...model, savedImages: { 9: [post], 10: [{ postId: 8, imagesId: [3] }] } };
+    const cleanups = [deferred(), deferred()];
+    cleanups.forEach((cleanup) => makeBatchRequest.mockReturnValueOnce(cleanup.promise));
+    const result = makeStore(data).dispatch(deleteModel());
+    expect(makeBatchRequest).toHaveBeenCalledOnce();
+    expect(deleteDoc).not.toHaveBeenCalled();
+    cleanups[0].resolve([]);
+    await vi.waitFor(() => expect(makeBatchRequest).toHaveBeenCalledTimes(2));
+    expect(makeBatchRequest).toHaveBeenLastCalledWith([
+      { postId: 8, imagesId: [3], uid: "user-1", modelId: 42, type: "defaultImages" },
+    ], deleteImagePostDocs, 5, false);
+    expect(deleteDoc).not.toHaveBeenCalled();
+    cleanups[1].resolve([]);
+    await result;
+    expect(deleteDoc.mock.calls).toEqual([[modelPath], ["users/user-1/preview/42"]]);
+  });
+
+  it.each([1, 2])("propagates cleanup failure in version %s without deleting parent documents or changing Redux", async (failedVersion) => {
+    const data = { ...model, savedImages: { 9: [post], 10: [{ postId: 8, imagesId: [3] }] } };
+    const store = makeStore(data);
+    const before = store.getState().model;
+    const error = new Error("Cleanup failed");
+    if (failedVersion === 2) makeBatchRequest.mockResolvedValueOnce([]);
+    makeBatchRequest.mockRejectedValueOnce(error);
+    await expect(store.dispatch(deleteModel())).rejects.toBe(error);
+    expect(makeBatchRequest).toHaveBeenCalledTimes(failedVersion);
+    expect(deleteDoc).not.toHaveBeenCalled();
+    expect(store.getState().model).toBe(before);
+  });
+
+  it("deletes both parent documents when saved-image metadata is empty", async () => {
+    await makeStore({ ...model, savedImages: {} }).dispatch(deleteModel());
+    expect(makeBatchRequest).not.toHaveBeenCalled();
+    expect(deleteDoc.mock.calls).toEqual([[modelPath], ["users/user-1/preview/42"]]);
   });
 
   it.each([null, { id: 42 }])("skips deletion without saved-image data: %j", async (data) => {
