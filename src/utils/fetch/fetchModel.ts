@@ -4,7 +4,6 @@ import {
   doc,
   getDoc,
   getFirestore,
-  updateDoc,
   writeBatch,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
@@ -307,17 +306,18 @@ export const updateUserCustomModelData = async (
   const modelsRef = doc(firestore, "users", uid, "models", model?.id + "");
   const modelsPrevRef = doc(firestore, "users", uid, "preview", model?.id + "");
   const userRef = doc(firestore, "users", uid);
+  const batch = writeBatch(firestore);
 
   if (newBaseModel) {
-    await updateDoc(userRef, {
+    batch.update(userRef, {
       baseModels: arrayUnion(...baseModels),
     });
   }
 
-  await updateDoc(modelsRef, {
+  batch.update(modelsRef, {
     modelVersionsCustomData: modelVersionsCustomData,
   });
-  await updateDoc(modelsPrevRef, {
+  batch.update(modelsPrevRef, {
     modelVersionsCustomData: modelVersionsCustomData,
     fileNames,
     hashes,
@@ -325,6 +325,7 @@ export const updateUserCustomModelData = async (
     tags: newModelData.tags,
     baseModels: arrayUnion(...baseModels),
   });
+  await batch.commit();
 };
 
 /**

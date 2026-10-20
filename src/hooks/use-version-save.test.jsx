@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { act, cleanup, fireEvent, render, renderHook, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { updateDoc } from "firebase/firestore";
+import { updateDoc, writeBatch } from "firebase/firestore";
 import useVersionSave from "./use-version-save";
 import VersionForm from "../components/forms/version-form/VersionForm";
 import modelSlice, { modelActions } from "../store/model";
@@ -17,6 +17,7 @@ import {
 vi.mock("../firebase-config", () => ({ default: {} }));
 vi.mock("firebase/firestore", () => ({
   getFirestore: () => ({}), doc: (_, ...path) => path.join("/"), updateDoc: vi.fn(),
+  writeBatch: vi.fn(),
 }));
 vi.mock("../components/ui/Spinner", () => ({ default: () => <span role="status">Saving</span> }));
 
@@ -34,8 +35,11 @@ const model = {
   },
 };
 let online;
+let batch;
 beforeEach(() => {
   updateDoc.mockReset().mockResolvedValue(undefined);
+  batch = { update: vi.fn(), commit: vi.fn().mockResolvedValue(undefined) };
+  writeBatch.mockReset().mockReturnValue(batch);
   online = vi.spyOn(navigator, "onLine", "get").mockReturnValue(true);
 });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
@@ -85,7 +89,7 @@ it.each([false, true])("persists the existing version/default payload and previe
     helperTags: ["helper", "extra"], negativeTags: ["blur", "noise"],
   };
   const field = isDefault ? "defaultCustomData" : "modelVersionsCustomData.7";
-  expect(updateDoc.mock.calls).toEqual([
+  expect(batch.update.mock.calls).toEqual([
     ["users/user-1/models/42", { [field]: payload }],
     ["users/user-1/preview/42", {
       [field]: payload,
@@ -93,6 +97,9 @@ it.each([false, true])("persists the existing version/default payload and previe
       customFileNames: isDefault ? ["old", "other.ckpt", "model.safetensors"] : ["model.safetensors", "other.ckpt"],
     }],
   ]);
+  expect(writeBatch).toHaveBeenCalledOnce();
+  expect(batch.commit).toHaveBeenCalledOnce();
+  expect(updateDoc).not.toHaveBeenCalled();
   expect(store.getState().model.model).toEqual(model);
   expect(result.current.status).toEqual({
     isSaving: false, errorMessage: "", successMessage: SUCCESS_MESSAGE_UPLOADED, showErrorMessage: true,
@@ -102,7 +109,7 @@ it.each([false, true])("persists the existing version/default payload and previe
 it("normalizes checkpoint settings while retaining untouched version metadata", async () => {
   const { result } = mountHook({ modelType: "checkpoint" });
   await submit(result);
-  expect(updateDoc.mock.calls[0][1]["modelVersionsCustomData.7"]).toMatchObject({
+  expect(batch.update.mock.calls[0][1]["modelVersionsCustomData.7"]).toMatchObject({
     sampler: "euler a", steps: "20", vae: "vae", denoisingStrength: "0.5",
     hiresUpscaleBy: "2", hiresUpscaleSteps: "10", hiresUpscaler: "esrgan", cfgScale: "7",
     versionName: "Original", downloadStatus: true,
@@ -112,7 +119,7 @@ it("normalizes checkpoint settings while retaining untouched version metadata", 
 it("preserves numeric empty-field conversion and allows empty tag sets", async () => {
   const { result } = mountHook();
   await submit(result, draft({ weightInput: valid(), minWeightInput: valid(), maxWeightInput: valid(), tagSetsInputs: [] }));
-  expect(updateDoc.mock.calls[0][1]["modelVersionsCustomData.7"]).toMatchObject({
+  expect(batch.update.mock.calls[0][1]["modelVersionsCustomData.7"]).toMatchObject({
     weight: 0, minWeight: 0, maxWeight: 0, tagSetsData: [],
   });
 });
@@ -126,6 +133,7 @@ it.each([
   await submit(result, draft({ [field]: { value: "", isValid: false } }));
   expect(result.current.status).toMatchObject({ errorMessage: ERROR_MESSAGE_INPUT_DEF, isSaving: false, showErrorMessage: true });
   expect(updateDoc).not.toHaveBeenCalled();
+  expect(writeBatch).not.toHaveBeenCalled();
 });
 
 it.each([0, 1])("rejects invalid tag-set field %s", async (field) => {
@@ -135,6 +143,7 @@ it.each([0, 1])("rejects invalid tag-set field %s", async (field) => {
   await submit(result, draft({ tagSetsInputs: [tagSet] }));
   expect(result.current.status.errorMessage).toBe(ERROR_MESSAGE_INPUT_DEF);
   expect(updateDoc).not.toHaveBeenCalled();
+  expect(writeBatch).not.toHaveBeenCalled();
 });
 
 it.each([
@@ -144,12 +153,14 @@ it.each([
   const { result, rerender } = mountHook();
   const fields = draft({ [field]: { value: "", isValid: false } });
   await submit(result, fields);
-  expect(updateDoc).toHaveBeenCalledTimes(2);
-  updateDoc.mockClear();
+  expect(batch.update).toHaveBeenCalledTimes(2);
+  expect(batch.commit).toHaveBeenCalledOnce();
+  writeBatch.mockClear();
   rerender({ ...options, modelType: "checkpoint" });
   await submit(result, fields);
   expect(result.current.status.errorMessage).toBe(ERROR_MESSAGE_INPUT_DEF);
   expect(updateDoc).not.toHaveBeenCalled();
+  expect(writeBatch).not.toHaveBeenCalled();
 });
 
 it("reports offline without writing and clears that message on retry", async () => {
@@ -158,34 +169,34 @@ it("reports offline without writing and clears that message on retry", async () 
   await submit(result);
   expect(result.current.status).toMatchObject({ errorMessage: ERROR_MESSAGE_OFFLINE, isSaving: false, successMessage: "" });
   expect(updateDoc).not.toHaveBeenCalled();
+  expect(writeBatch).not.toHaveBeenCalled();
   online.mockReturnValue(true);
   await submit(result);
   expect(result.current.status).toMatchObject({ errorMessage: "", successMessage: SUCCESS_MESSAGE_UPLOADED });
 });
 
-it("waits for both writes before reporting success", async () => {
-  let finishModel, finishPreview;
-  updateDoc.mockImplementationOnce(() => new Promise((resolve) => { finishModel = resolve; }))
-    .mockImplementationOnce(() => new Promise((resolve) => { finishPreview = resolve; }));
+it("waits for the model and preview batch commit before reporting success", async () => {
+  let finishCommit;
+  batch.commit.mockImplementationOnce(() => new Promise((resolve) => { finishCommit = resolve; }));
   const { result } = mountHook();
   let pending;
   act(() => { pending = result.current.submit(draft()); });
   expect(result.current.status.isSaving).toBe(true);
-  expect(updateDoc).toHaveBeenCalledTimes(1);
-  await act(async () => finishModel());
-  expect(updateDoc).toHaveBeenCalledTimes(2);
+  expect(batch.update).toHaveBeenCalledTimes(2);
+  expect(batch.commit).toHaveBeenCalledOnce();
+  expect(updateDoc).not.toHaveBeenCalled();
   expect(result.current.status).toMatchObject({ isSaving: true, successMessage: "" });
-  await act(async () => { finishPreview(); await pending; });
+  await act(async () => { finishCommit(); await pending; });
   expect(result.current.status).toMatchObject({ isSaving: false, successMessage: SUCCESS_MESSAGE_UPLOADED });
 });
 
-it.each([1, 2])("handles failure of write %s without reporting success or updating Redux", async (write) => {
+it("handles a failed commit without reporting success or updating Redux", async () => {
   vi.spyOn(console, "error").mockImplementation(() => {});
-  if (write === 2) updateDoc.mockResolvedValueOnce(undefined);
-  updateDoc.mockRejectedValueOnce(new Error("Persistence failed"));
+  batch.commit.mockRejectedValueOnce(new Error("Persistence failed"));
   const { result, store } = mountHook();
   await submit(result);
-  expect(updateDoc).toHaveBeenCalledTimes(write);
+  expect(batch.commit).toHaveBeenCalledOnce();
+  expect(updateDoc).not.toHaveBeenCalled();
   expect(result.current.status).toMatchObject({ errorMessage: ERROR_MESSAGE_DEFAULT, isSaving: false, successMessage: "" });
   expect(store.getState().model.model).toEqual(model);
 });
@@ -194,6 +205,7 @@ it("retains the existing missing-version-ID early return", async () => {
   const { result } = mountHook({ versionData: null });
   await submit(result);
   expect(updateDoc).not.toHaveBeenCalled();
+  expect(writeBatch).not.toHaveBeenCalled();
   expect(result.current.status).toEqual({ isSaving: true, errorMessage: "", successMessage: "", showErrorMessage: true });
 });
 
@@ -221,7 +233,7 @@ it("preserves default-data hydration and clears errors without clearing submitte
   expect(screen.getByLabelText("Version name").value).toBe("Fallback");
   expect(screen.getByLabelText("Version description").value).toBe("Description");
   expect(screen.getByLabelText("Trigger words").value).toBe("trigger");
-  updateDoc.mockRejectedValueOnce(new AppError("Save failed"));
+  batch.commit.mockRejectedValueOnce(new AppError("Save failed"));
   fireEvent.submit(container.querySelector("form"));
   await screen.findByText("Save failed");
   rerender(form({ versionData: data, defaultData: { name: "New fallback" } }));
@@ -233,7 +245,7 @@ it("preserves default-data hydration and clears errors without clearing submitte
 
 it("keeps the existing checkpoint-field visibility and form loading behavior", async () => {
   let finish;
-  updateDoc.mockImplementationOnce(() => new Promise((resolve) => { finish = resolve; }));
+  batch.commit.mockImplementationOnce(() => new Promise((resolve) => { finish = resolve; }));
   const { container } = render(form({ modelType: "checkpoint", isDefault: true }), { wrapper: wrapperFor(makeStore()) });
   expect(screen.queryByLabelText("Version name")).toBeNull();
   expect(screen.queryByLabelText("Sampling method")).toBeNull();

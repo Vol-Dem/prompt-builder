@@ -1,4 +1,4 @@
-import { doc, getFirestore, updateDoc } from "firebase/firestore";
+import { doc, getFirestore, updateDoc, writeBatch } from "firebase/firestore";
 import firebaseApp from "../../firebase-config";
 import type { ModelVersionsCustomData } from "../../../shared/types/model";
 
@@ -21,9 +21,10 @@ export const saveModelVersionChanges = async (
     ? "defaultCustomData"
     : `modelVersionsCustomData.${version}`;
 
-  // Keep the existing model-first sequence and partial-failure behavior.
-  await updateDoc(modelRef, { [versionPath]: data });
-  await updateDoc(previewRef, { [versionPath]: data, ...previewFields });
+  const batch = writeBatch(firestore);
+  batch.update(modelRef, { [versionPath]: data });
+  batch.update(previewRef, { [versionPath]: data, ...previewFields });
+  await batch.commit();
 };
 
 /** Tag-set edits replace version data only in the model document. */
@@ -46,9 +47,11 @@ export const saveModelVersionStatuses = async (
   const modelRef = doc(firestore, "users", uid, "models", modelId + "");
   const previewRef = doc(firestore, "users", uid, "preview", modelId + "");
 
-  await updateDoc(modelRef, { modelVersionsCustomData: versions });
-  await updateDoc(previewRef, {
+  const batch = writeBatch(firestore);
+  batch.update(modelRef, { modelVersionsCustomData: versions });
+  batch.update(previewRef, {
     imgUrl: previewImg,
     modelVersionsCustomData: versions,
   });
+  await batch.commit();
 };

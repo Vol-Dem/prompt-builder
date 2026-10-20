@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, writeBatch, type WriteBatch } from "firebase/firestore";
 import {
   saveModelTagSets,
   saveModelVersionChanges,
@@ -11,21 +11,25 @@ vi.mock("firebase/firestore", () => ({
   getFirestore: () => ({}),
   doc: vi.fn((_: unknown, ...path: string[]) => path.join("/")),
   updateDoc: vi.fn(),
+  writeBatch: vi.fn(),
 }));
 
 const modelPath = "users/user-1/models/42";
 const previewPath = "users/user-1/preview/42";
 const data = { versionId: 7, mainTag: "<lora:portrait:1>", size: "123", tagSetsData: [] };
+let batch: { update: ReturnType<typeof vi.fn>; commit: ReturnType<typeof vi.fn> };
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(updateDoc).mockReset().mockResolvedValue(undefined);
+  batch = { update: vi.fn(), commit: vi.fn().mockResolvedValue(undefined) };
+  vi.mocked(writeBatch).mockReturnValue(batch as unknown as WriteBatch);
 });
 
 it.each([7, "default"] as const)("saves %s data and search fields to the correct documents", async (version) => {
   const preview = { mainTags: ["portrait"], customFileNames: ["model"] };
   await saveModelVersionChanges("user-1", 42, version, data, preview);
   const field = version === "default" ? "defaultCustomData" : "modelVersionsCustomData.7";
-  expect(vi.mocked(updateDoc).mock.calls).toEqual([
+  expect(batch.update.mock.calls).toEqual([
     [modelPath, { [field]: data }],
     [previewPath, { [field]: data, ...preview }],
   ]);
@@ -33,7 +37,7 @@ it.each([7, "default"] as const)("saves %s data and search fields to the correct
 
 it("does not add search fields when saving tags", async () => {
   await saveModelVersionChanges("user-1", 42, 7, data);
-  expect(vi.mocked(updateDoc).mock.calls).toEqual([
+  expect(batch.update.mock.calls).toEqual([
     [modelPath, { "modelVersionsCustomData.7": data }],
     [previewPath, { "modelVersionsCustomData.7": data }],
   ]);
@@ -48,12 +52,13 @@ it("writes tag sets only to the model, preserving the whole version payload", as
   expect(vi.mocked(updateDoc).mock.calls).toEqual([
     [modelPath, { "modelVersionsCustomData.7": version }],
   ]);
+  expect(writeBatch).not.toHaveBeenCalled();
 });
 
 it.each(["preview.webp", ""])("saves statuses with preview image %j", async (imgUrl) => {
   const versions = { 7: { versionId: 7, downloadStatus: false, name: "Version" } };
   await saveModelVersionStatuses("user-1", 42, versions, imgUrl);
-  expect(vi.mocked(updateDoc).mock.calls).toEqual([
+  expect(batch.update.mock.calls).toEqual([
     [modelPath, { modelVersionsCustomData: versions }],
     [previewPath, { modelVersionsCustomData: versions, imgUrl }],
   ]);
@@ -62,25 +67,39 @@ it.each(["preview.webp", ""])("saves statuses with preview image %j", async (img
 describe.each([
   { name: "version", save: () => saveModelVersionChanges("user-1", 42, 7, data) },
   { name: "statuses", save: () => saveModelVersionStatuses("user-1", 42, {}, "") },
-])("$name write sequence", ({ save }) => {
-  it("waits for the model write before starting the preview write", async () => {
-    let finishModel!: () => void;
-    vi.mocked(updateDoc).mockImplementationOnce(() => new Promise<void>((resolve) => {
-      finishModel = resolve;
+])("$name batch", ({ save }) => {
+  it("queues both updates in one batch and waits for its commit", async () => {
+    let finishCommit!: () => void;
+    batch.commit.mockImplementationOnce(() => new Promise<void>((resolve) => {
+      finishCommit = resolve;
     }));
-    const saving = save();
-    expect(updateDoc).toHaveBeenCalledTimes(1);
-    finishModel();
+    let completed = false;
+    const saving = save().then(() => { completed = true; });
+    expect(writeBatch).toHaveBeenCalledOnce();
+    expect(batch.update).toHaveBeenCalledTimes(2);
+    expect(batch.commit).toHaveBeenCalledOnce();
+    expect(updateDoc).not.toHaveBeenCalled();
+    await Promise.resolve();
+    expect(completed).toBe(false);
+    finishCommit();
     await saving;
-    expect(updateDoc).toHaveBeenCalledTimes(2);
+    expect(completed).toBe(true);
   });
 
-  it.each([1, 2])("propagates failure of write %i without further writes", async (failedWrite) => {
+  it("propagates a rejected commit without independent writes", async () => {
     const error = new Error("Write failed");
-    if (failedWrite === 2) vi.mocked(updateDoc).mockResolvedValueOnce(undefined);
-    vi.mocked(updateDoc).mockRejectedValueOnce(error);
+    batch.commit.mockRejectedValueOnce(error);
     await expect(save()).rejects.toBe(error);
-    expect(updateDoc).toHaveBeenCalledTimes(failedWrite);
+    expect(batch.commit).toHaveBeenCalledOnce();
+    expect(updateDoc).not.toHaveBeenCalled();
+  });
+
+  it("does not commit if the preview update cannot be queued", async () => {
+    const error = new Error("Invalid preview data");
+    batch.update.mockImplementationOnce(() => {}).mockImplementationOnce(() => { throw error; });
+    await expect(save()).rejects.toBe(error);
+    expect(batch.commit).not.toHaveBeenCalled();
+    expect(updateDoc).not.toHaveBeenCalled();
   });
 });
 
