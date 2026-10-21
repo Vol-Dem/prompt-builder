@@ -1,7 +1,6 @@
 import {
   arrayRemove,
   arrayUnion,
-  deleteDoc,
   doc,
   getDoc,
   getFirestore,
@@ -114,13 +113,17 @@ export const createCollectionDocuments = async (
   collectionId: number,
   collection: CollectionDoc,
   preview: CollectionPreviewDoc,
+  categories: CollectionCategory[],
 ): Promise<void> => {
+  const batch = writeBatch(firestore);
   const collectionRef = doc(firestore, "users", uid, "collections", collectionId + "");
   const previewRef = doc(firestore, "users", uid, "collectionPreviews", collectionId + "");
+  const userRef = doc(firestore, "users", uid);
 
-  // Preserve sequential merges and partial-failure behavior.
-  await setDoc(collectionRef, collection, { merge: true });
-  await setDoc(previewRef, preview, { merge: true });
+  batch.set(collectionRef, collection, { merge: true });
+  batch.set(previewRef, preview, { merge: true });
+  batch.set(userRef, { imageCategories: categories }, { merge: true });
+  await batch.commit();
 };
 
 export const deleteCollectionDocuments = async (
@@ -128,12 +131,13 @@ export const deleteCollectionDocuments = async (
   collectionId: number | string,
   categories: CollectionCategory[],
 ): Promise<void> => {
+  const batch = writeBatch(firestore);
   const userRef = doc(firestore, "users", uid);
   const collectionRef = doc(firestore, "users", uid, "collections", collectionId + "");
   const previewRef = doc(firestore, "users", uid, "collectionPreviews", collectionId + "");
 
-  // Category persistence must finish before either document is deleted.
-  await setDoc(userRef, { imageCategories: categories }, { merge: true });
-  await deleteDoc(collectionRef);
-  await deleteDoc(previewRef);
+  batch.set(userRef, { imageCategories: categories }, { merge: true });
+  batch.delete(collectionRef);
+  batch.delete(previewRef);
+  await batch.commit();
 };

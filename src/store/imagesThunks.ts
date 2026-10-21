@@ -548,6 +548,7 @@ export const addNewCollectionCategories = ({
       }
 
       const uid = getState().auth.user.uid;
+      if (!uid) throw new AppError(ERROR_MESSAGE_DEFAULT);
       const existedCategoriesData = getState().images.categories;
       const existedCategory = existedCategoriesData.find(
         (catData) => catData.id === categoryData?.id,
@@ -709,11 +710,13 @@ export const addNewCollectionCategories = ({
           posts: [],
         };
 
-        await createCollectionDocuments(uid, collectionId, savedImagesToCat, savedImagesToCatPrev);
+        await createCollectionDocuments(
+          uid, collectionId, savedImagesToCat, savedImagesToCatPrev, updatedCategories,
+        );
+        dispatch(imagesActions.setImageCategories(updatedCategories));
+      } else {
+        await dispatch(updateCollectionCategories(updatedCategories));
       }
-
-      await dispatch(updateCollectionCategories(updatedCategories));
-      dispatch(imagesActions.setImageCategories(updatedCategories));
 
       return {
         collectionData: { name: collectionData.name, id: collectionId },
