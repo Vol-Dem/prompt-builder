@@ -1,13 +1,15 @@
 import { isRouteErrorResponse, NavLink, useRouteError } from "react-router-dom";
+import { useEffect } from "react";
 
 import classes from "./ErrorPage.module.scss";
 import { authActions } from "../store/auth";
-import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/buttons/Button";
 import Modal from "../components/ui/Modal";
 import AuthForm from "../components/forms/Auth/AuthForm";
+import ErrorFallback from "../components/ui/ErrorFallback";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
+import { normalizeError, reportError } from "../utils/generalUtils";
 
 /**
  * Error page.
@@ -30,12 +32,16 @@ const ErrorPage = () => {
   const isAuth = useAppSelector((state) => state.auth.isLoggedIn);
   const authIsOpen = useAppSelector((state) => state.auth.authFormIsOpen);
   const dispatch = useAppDispatch();
-  const error = useRouteError() as Error;
+  const error = useRouteError();
   let errorStatus: number | null = null;
 
   if (isRouteErrorResponse(error)) {
     errorStatus = error.status;
   }
+
+  useEffect(() => {
+    if (errorStatus !== 404) reportError(normalizeError(error));
+  }, [error, errorStatus]);
 
   const openAuth = () => {
     dispatch(authActions.openAuthForm());
@@ -44,6 +50,10 @@ const ErrorPage = () => {
   const closeAuth = () => {
     dispatch(authActions.closeAuthForm());
   };
+
+  if (errorStatus !== 404) {
+    return <ErrorFallback status={errorStatus ?? undefined} />;
+  }
 
   return (
     <section className={classes["error-page"]}>
@@ -55,7 +65,6 @@ const ErrorPage = () => {
           Sorry, an unexpected error has occurred.
         </p>
         <p className={classes["error-page__message"]}>
-          {errorStatus !== 404 && <i>{ERROR_MESSAGE_DEFAULT}</i>}
           {errorStatus === 404 && <i>Page not found</i>}
         </p>
         {!isAuth && errorStatus === 404 && (

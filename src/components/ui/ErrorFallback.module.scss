@@ -1,0 +1,34 @@
+.fallback {
+  min-height: 100vh;
+  padding: 2.8rem;
+  margin: auto;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.4rem;
+}
+
+.status {
+  font-size: 12rem;
+}
+
+.subtitle {
+  font-size: 2.8rem;
+  font-weight: inherit;
+}
+
+.message {
+  font-size: 1.8rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem;
+  font-size: 1.8rem;
+}
