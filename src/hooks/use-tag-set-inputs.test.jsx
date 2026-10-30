@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, renderHook } from "@testing-library/react";
 import { afterEach, expect, it } from "vitest";
+
 import useTagSetInputs from "./use-tag-set-inputs";
 import { createTagSetsInputData } from "../utils/promptUtils";
 import { FORMS_DEF_TAGS_INPUT } from "../variables/structures";

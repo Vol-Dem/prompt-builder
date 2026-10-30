@@ -3,6 +3,7 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { act, cleanup, fireEvent, render, renderHook, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+
 import useCollectionPreviewsController from "./use-collection-previews-controller";
 import Collections from "../pages/Collections";
 import imagesSlice, { imagesActions } from "../store/images";

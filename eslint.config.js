@@ -9,7 +9,7 @@ import { globalIgnores } from "eslint/config";
 
 export default [
   js.configs.recommended,
-  globalIgnores(["node_modules", "dist"]),
+  globalIgnores(["**/node_modules/**", "dist/**", "functions/lib/**"]),
   {
     files: ["**/*.{js,jsx}"],
     languageOptions: {

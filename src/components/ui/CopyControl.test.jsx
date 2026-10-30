@@ -2,6 +2,7 @@
 import { createRef, StrictMode } from "react";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+
 import CopyControl from "./CopyControl";
 import PromptButtonCopy from "../prompt/prompt-button-copy/PromptButtonCopy";
 import ImageSeed from "../general-elements/active-carousel/image-card/image-seed/ImageSeed";

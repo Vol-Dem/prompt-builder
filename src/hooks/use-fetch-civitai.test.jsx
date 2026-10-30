@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { act, cleanup, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+
 import useFetchCivitai from "./use-fetch-civitai";
 import { ERROR_MESSAGE_CIV_CONNECTION } from "../variables/constants";
 
@@ -239,7 +240,8 @@ it("starts a new URL without the old cursor when a consumer effect fetches immed
     .mockResolvedValueOnce(page([{ id: 2 }]));
   const { result, rerender } = renderHook(({ url }) => {
     const feed = useFetchCivitai(url);
-    useEffect(() => { void feed.fetchCivitai(); }, [feed.fetchCivitai]);
+    const { fetchCivitai } = feed;
+    useEffect(() => { void fetchCivitai(); }, [fetchCivitai]);
     return feed;
   }, { initialProps: { url } });
   await act(async () => {});

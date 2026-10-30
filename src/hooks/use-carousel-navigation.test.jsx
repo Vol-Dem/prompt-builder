@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+
 import useCarouselNavigation from "./use-carousel-navigation";
 import CarouselContent from "../components/general-elements/carousel/CarouselContent";
 import { SETTINGS_CAROUSEL_TRANSITION_DURATION } from "../variables/constants";

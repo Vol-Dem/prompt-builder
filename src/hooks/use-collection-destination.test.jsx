@@ -4,6 +4,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { MemoryRouter } from "react-router-dom";
 import { act, cleanup, fireEvent, render, renderHook, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+
 import useCollectionDestination from "./use-collection-destination";
 import SaveToCollectionForm from "../components/forms/save-to-collection-form/SaveToCollectionForm";
 import imagesSlice, { imagesActions } from "../store/images";

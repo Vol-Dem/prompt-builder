@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+
 import uploadSlice, { savePost, uploadActions } from "./upload";
 import { updateImagePostData } from "../utils/fetch/fetchImages";
 import { savePostToCollections } from "./imagesThunks";

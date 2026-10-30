@@ -3,6 +3,7 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { act, cleanup, render, renderHook, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+
 import useModelPreviewLoading from "./use-model-preview-loading";
 import ModelsList from "../components/models/models-list/ModelsList";
 import tabsSlice, { getModelsPreview, tabActions } from "../store/tabs";

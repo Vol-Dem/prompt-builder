@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { getDocs, query } from "firebase/firestore";
+
 import searchSlice, { searchActions } from "./search";
 import { liveSearch } from "./searchThunks";
 import { ERROR_MESSAGE_DEFAULT } from "../variables/constants";

@@ -3,6 +3,7 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { act, cleanup, fireEvent, render, renderHook, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+
 import useProfileEditingController from "./use-profile-editing-controller";
 import Profile from "../pages/Profile";
 import authSlice, { authActions } from "../store/auth";

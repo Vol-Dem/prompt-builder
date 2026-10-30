@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getDocs } from "firebase/firestore";
+
 import { fetchCollectionPreviewPage, fetchModelPreviewPage } from "./fetchPreviews";
 import tabsSlice, { getModelsPreview, tabActions } from "../../store/tabs";
 import imagesSlice from "../../store/images";

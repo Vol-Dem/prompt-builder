@@ -4,6 +4,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { MemoryRouter, useNavigate } from "react-router-dom";
 import { act, cleanup, fireEvent, render, renderHook, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+
 import useSearchResultsController from "./use-search-results-controller";
 import SearchPage from "../pages/SearchPage";
 import searchSlice, { searchActions } from "../store/search";

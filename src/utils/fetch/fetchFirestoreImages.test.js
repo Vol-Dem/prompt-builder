@@ -1,5 +1,6 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import { getDoc, getDocs } from "firebase/firestore";
+
 import { fetchDefaultModelImages, fetchImagePostsByIds, fetchSavedImagePosts } from "./fetchFirestoreImages";
 
 vi.mock("../../firebase-config", () => ({ default: {} }));

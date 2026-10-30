@@ -41,7 +41,7 @@ vi.mock("../utils/generalUtils", async (importOriginal) => ({
   smoothScroll: vi.fn((hash) => Boolean(document.querySelector(hash))),
 }));
 vi.mock("../components/layout/layout/Layout", () => ({
-  default: () => {
+  default: function MockLayout() {
     useEffect(() => { checks.layoutMounted(); }, []);
     return (
       <div data-testid="layout">
@@ -54,7 +54,7 @@ vi.mock("../components/layout/layout/Layout", () => ({
   },
 }));
 vi.mock("../pages/ErrorPage", () => ({
-  default: () => {
+  default: function MockErrorPage() {
     const error = useRouteError();
     return <div role="alert">{error.status || error.message}</div>;
   },

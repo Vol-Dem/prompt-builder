@@ -35,7 +35,7 @@ vi.mock("../components/general-elements/preview-card/PreviewCard", () => ({ defa
 vi.mock("../components/search/search-filter/SearchFilter", () => ({ default: () => null }));
 vi.mock("../components/layout/left-sidebar/LeftSidebar", () => ({ default: () => null }));
 vi.mock("./use-search-results-controller", () => ({
-  default: () => {
+  default: function useMockSearchResultsController() {
     const [params] = useSearchParams();
     const parameter = params.get("searchQuery") || "";
     return {

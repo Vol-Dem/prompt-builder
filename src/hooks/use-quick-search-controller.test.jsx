@@ -4,6 +4,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { MemoryRouter, useNavigate } from "react-router-dom";
 import { act, cleanup, fireEvent, render, renderHook, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+
 import useQuickSearchController from "./use-quick-search-controller";
 import QuickSearch from "../components/search/quick-search/QuickSearch";
 import searchSlice, { searchActions } from "../store/search";

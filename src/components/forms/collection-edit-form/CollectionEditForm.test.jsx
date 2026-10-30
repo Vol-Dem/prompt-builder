@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+
 import CollectionEditForm from "./CollectionEditForm";
 import { editCollectionData } from "../../../store/imagesThunks";
 import { SUCCESS_MESSAGE_SAVED } from "../../../variables/constants";

@@ -2,6 +2,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+
 import SubcategoriesInputFieldset from "./SubcategoriesInputFieldset";
 import {
   SETTINGS_FORMS_SUBCATEGORIES_MAX_AMOUNT,
