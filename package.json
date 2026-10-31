@@ -26,6 +26,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "lint": "eslint .",
+    "lint:functions": "eslint functions/src",
     "sync-shared": "cd functions && npm install ../shared --no-save"
   },
   "browserslist": {
