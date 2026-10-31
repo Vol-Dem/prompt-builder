@@ -156,7 +156,13 @@ const mountApp = () => {
   const setAuth = (payload) => act(() => { store.dispatch({ type: "test/auth", payload }); });
   return { ...view, store, setAuth };
 };
+const settleRouteImports = async () => {
+  await act(async () => {
+    await vi.dynamicImportSettled();
+  });
+};
 const expectPage = async (name) => {
+  await settleRouteImports();
   await waitFor(() => expect(screen.getByTestId("page").getAttribute("data-page")).toBe(name));
 };
 
@@ -282,6 +288,7 @@ describe("application router", () => {
     checks.failingPage = "AboutSidebar";
     await browserRouter.navigate("/about/sidebar");
     mountApp();
+    await settleRouteImports();
     await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("Page failed"));
     expect(screen.getByTestId("layout")).toBeTruthy();
     expect(screen.getByRole("navigation", { name: "About navigation" })).toBeTruthy();
@@ -322,6 +329,7 @@ describe("application router", () => {
     const router = aboutRouterWith(<DelayedPage />, "/about/sidebar#sidebar-section");
     try {
       render(<Provider store={makeStore()}><RouterProvider router={router} /></Provider>);
+      await settleRouteImports();
       await screen.findByTestId("about-spinner");
       expect(document.title).toBe("Sidebar");
       const navigation = screen.getByRole("navigation", { name: "About navigation" });
@@ -371,6 +379,7 @@ describe("application router", () => {
     const router = aboutRouterWith(<FailedPage />);
     try {
       render(<Provider store={makeStore()}><RouterProvider router={router} /></Provider>);
+      await settleRouteImports();
       await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("Page download failed"));
       expect(document.title).toBe("Sidebar");
       expect(screen.getByRole("navigation", { name: "About navigation" })).toBeTruthy();
