@@ -96,14 +96,14 @@ const TagsForm = ({
       setMainTagInput({ value: versionData?.mainTag || "", isValid: true });
     }
 
-    if (!!defaultData?.trainedWords?.length) {
+    if (defaultData?.trainedWords?.length) {
       setTrigerInput({
         value: defaultData?.trainedWords?.join(", "),
         isValid: true,
       });
     }
 
-    if (!!versionData?.trainedWords?.length) {
+    if (versionData?.trainedWords?.length) {
       setTrigerInput({
         value: versionData?.trainedWords?.join(", "),
         isValid: true,

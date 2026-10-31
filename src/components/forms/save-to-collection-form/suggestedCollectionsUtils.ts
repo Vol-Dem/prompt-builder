@@ -9,7 +9,7 @@ import { filterDuplicates, sortArrayBy } from "../../../utils/generalUtils";
 const SUGGESTED_FILTER_LIST = ["in", "and", "or", "for", "on"];
 
 const createNameWords = (nameString: string) => {
-  const regex = /[!"`'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+/g;
+  const regex = /[!"`'#%&,:;<>=@{}~$()*+/\\?[\]^|]+/g;
 
   return nameString
     .toLocaleLowerCase()

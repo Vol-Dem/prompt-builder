@@ -193,7 +193,7 @@ export const fetchModelUpdates = async (
     id: modelId,
   })) as HttpsCallableResult<UpdateModelResponse>;
 
-  if ("error" in updateModelResData?.data) {
+  if ("error" in updateModelResData.data) {
     console.error(updateModelResData.data.error);
     throw new AppError(ERROR_MESSAGE_MODEL_UPDATE);
   }

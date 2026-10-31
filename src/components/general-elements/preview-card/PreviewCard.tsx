@@ -47,8 +47,9 @@ type PreviewCardProps = {
  * @returns Wrapper that renders animated and static sidebar cards.
  */
 const PreviewCard = ({ item, fullView, animate = true }: PreviewCardProps) => {
-  // @ts-ignore:next-line no-unused-vars
-  const sidebarModels = useAppSelector((state) => state.used.models); //Fixes a delay in the animation of adding the first item to the sidebar in production.
+  // Keep this subscription to prevent an animation delay when adding the first
+  // item to the sidebar in production.
+  useAppSelector((state) => state.used.models);
 
   return (
     <AddToPanelAnimContainer>

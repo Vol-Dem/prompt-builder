@@ -7,7 +7,7 @@ import type { AppError } from "../utils/generalUtils";
  * @returns
  */
 export const useThrowAsyncError = () => {
-  const setErrorState = useState()[1]; // eslint-disable-line
+  const setErrorState = useState()[1];
 
   return useCallback((error: AppError) => {
     setErrorState(() => {

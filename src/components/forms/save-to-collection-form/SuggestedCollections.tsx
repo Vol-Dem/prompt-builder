@@ -43,7 +43,7 @@ const SuggestedCollections = ({
 
       const collectionSubcategoriesHtml =
         suggestedCollection?.collectionSubcategories?.map((sub, i) => {
-          const subcategoryText = `${!!i ? " | " : ""}${sub}`;
+          const subcategoryText = `${i ? " | " : ""}${sub}`;
           categoriesTitle += subcategoryText;
           return (
             <span
