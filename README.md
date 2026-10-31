@@ -153,6 +153,28 @@ External
 - Civitai API
 - Discord Webhooks
 
+## Development checks
+
+After installing dependencies in both the repository root and `functions`, run
+`npm run check` from the root. It runs lint, scoped formatting checks, frontend
+and Functions type checks, tests, and the production build in sequence. It stops
+at the first failure. Lint warnings are reported without failing the check.
+
+Individual commands are also available:
+
+| Command | Purpose |
+| --- | --- |
+| `npm run test:run` | Run the test suite once with one worker. |
+| `npm run typecheck` | Check frontend and Vite configuration types. |
+| `npm run typecheck:functions` | Check Functions types without emitting JavaScript. |
+| `npm run lint` | Lint client, shared, Functions, and tooling source. |
+| `npm run format:check` | Check formatting in the adopted scope. |
+| `npm run format` | Format files in the adopted scope. |
+| `npm run build` | Type-check and build the production frontend. |
+
+Formatting currently covers root JavaScript, TypeScript, and JSON tooling files
+plus `AppErrorBoundary.tsx` and `ErrorFallback.tsx`.
+
 ## Status
 
 AIDE-TOOLS is actively evolving.
