@@ -12,13 +12,19 @@ const ErrorFallback = ({ status }: ErrorFallbackProps) => {
   return (
     <section role="alert" className={classes.fallback}>
       <Card className={classes.card}>
-        <h1 className={status === undefined ? classes.subtitle : classes.status}>
+        <h1
+          className={status === undefined ? classes.subtitle : classes.status}
+        >
           {status ?? title}
         </h1>
         {status !== undefined && <p className={classes.subtitle}>{title}</p>}
-        <p className={classes.message}><i>{ERROR_MESSAGE_DEFAULT}</i></p>
+        <p className={classes.message}>
+          <i>{ERROR_MESSAGE_DEFAULT}</i>
+        </p>
         <div className={classes.actions}>
-          <Button type="button" onClick={() => location.reload()}>Reload</Button>
+          <Button type="button" onClick={() => location.reload()}>
+            Reload
+          </Button>
           <a href="/">Home</a>
         </div>
       </Card>

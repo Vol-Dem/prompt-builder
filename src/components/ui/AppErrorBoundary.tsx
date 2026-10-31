@@ -6,7 +6,10 @@ import { normalizeError, reportError } from "../../utils/generalUtils";
 type AppErrorBoundaryProps = { children: ReactNode };
 type AppErrorBoundaryState = { hasError: boolean };
 
-class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundaryState> {
+class AppErrorBoundary extends Component<
+  AppErrorBoundaryProps,
+  AppErrorBoundaryState
+> {
   state: AppErrorBoundaryState = { hasError: false };
 
   static getDerivedStateFromError(): AppErrorBoundaryState {

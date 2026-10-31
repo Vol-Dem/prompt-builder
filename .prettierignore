@@ -1,0 +1,8 @@
+# Generated output and dependencies
+**/node_modules/**
+/dist/
+/functions/lib/
+/shared/types/image.js
+
+# npm manages lockfile formatting
+/package-lock.json
