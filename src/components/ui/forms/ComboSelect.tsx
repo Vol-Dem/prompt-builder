@@ -14,6 +14,28 @@ import type {
   ValidationTypes,
 } from "../../../types/general.types";
 import ComboSelectOptions from "./ComboSelectOptions";
+import useFieldAccessibility from "../../../hooks/use-field-accessibility";
+
+type ComboSelectInputProps = ComponentProps<"input"> & {
+  fieldDescription?: string;
+  fieldLabelledBy?: string;
+};
+
+// Headless UI owns these ARIA props, so preserve field associations at its input boundary.
+const ComboSelectInput = ({
+  fieldDescription,
+  fieldLabelledBy,
+  ...props
+}: ComboSelectInputProps) => (
+  <input
+    {...props}
+    aria-describedby={
+      [props["aria-describedby"], fieldDescription].filter(Boolean).join(" ") ||
+      undefined
+    }
+    aria-labelledby={fieldLabelledBy ?? props["aria-labelledby"]}
+  />
+);
 
 type ComboSelectProps<T extends number | string> = ComponentProps<"input"> & {
   optionsData: SelectOption<T>[];
@@ -92,11 +114,23 @@ const ComboSelect = <T extends number | string>({
   showError,
   onBlur,
   label,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  "aria-describedby": describedBy,
+  "aria-invalid": invalid,
 }: ComboSelectProps<T>) => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const inputErrorMessage = validation
     ? validateInput(validation, selected?.name || "").errorMessage
     : "";
+  const { fieldId, externalErrorId, validationErrorId, ariaProps } =
+    useFieldAccessibility({
+      id,
+      describedBy,
+      invalid,
+      externalErrorVisible: showErrorMessage && !!error,
+      validationErrorVisible: showErrorMessage && !!inputErrorMessage,
+    });
 
   useEffect(() => {
     if (showError !== undefined) setShowErrorMessage(showError);
@@ -107,7 +141,7 @@ const ComboSelect = <T extends number | string>({
   return (
     <div className={classes["container"]}>
       {label && (
-        <label htmlFor={id} className={classes.label}>
+        <label htmlFor={fieldId} className={classes.label}>
           {label || ""}
         </label>
       )}
@@ -134,6 +168,12 @@ const ComboSelect = <T extends number | string>({
           <>
             <div className={classes.relative}>
               <ComboboxInput
+                as={ComboSelectInput}
+                id={fieldId}
+                aria-label={ariaLabel}
+                fieldLabelledBy={ariaLabelledBy}
+                fieldDescription={ariaProps["aria-describedby"]}
+                aria-invalid={ariaProps["aria-invalid"]}
                 disabled={loading || disabled}
                 autoComplete="off"
                 placeholder={
@@ -183,6 +223,7 @@ const ComboSelect = <T extends number | string>({
       </Combobox>
       {showErrorMessage && error && (
         <motion.div
+          id={externalErrorId}
           initial={ANIMATIONS_FM_SLIDEOUT_INITIAL}
           animate={ANIMATIONS_FM_SLIDEOUT}
           className={classes.error}
@@ -192,6 +233,7 @@ const ComboSelect = <T extends number | string>({
       )}
       {showErrorMessage && inputErrorMessage && (
         <motion.div
+          id={validationErrorId}
           initial={ANIMATIONS_FM_SLIDEOUT_INITIAL}
           animate={ANIMATIONS_FM_SLIDEOUT}
           className={classes.error}

@@ -7,6 +7,7 @@ import type {
   ValidationTypes,
 } from "../../../types/general.types";
 import type { OverrideFields } from "../../../../shared/types/general";
+import useFieldAccessibility from "../../../hooks/use-field-accessibility";
 
 type TextareaProps = OverrideFields<
   ComponentProps<"textarea">,
@@ -60,6 +61,16 @@ const Textarea = ({
   const inputErrorMessage = validation
     ? validateInput(validation, value).errorMessage
     : "";
+  const { fieldId, externalErrorId, validationErrorId, ariaProps } =
+    useFieldAccessibility({
+      id,
+      describedBy: props["aria-describedby"],
+      invalid:
+        props["aria-invalid"] ??
+        (showErrorMessage && !!inputErrorMessage ? true : undefined),
+      externalErrorVisible: !!showError && !!error,
+      validationErrorVisible: !!showError && !!inputErrorMessage,
+    });
 
   useEffect(() => {
     if (typeof showError === "boolean") setShowErrorMessage(showError);
@@ -74,13 +85,13 @@ const Textarea = ({
   return (
     <div>
       {label && (
-        <label htmlFor={id} className={classes.label}>
+        <label htmlFor={fieldId} className={classes.label}>
           {label || ""}
         </label>
       )}
 
       <textarea
-        id={id}
+        id={fieldId}
         name={name}
         cols={cols}
         rows={rows}
@@ -111,10 +122,17 @@ const Textarea = ({
             : ""
         }`}
         {...props}
+        {...ariaProps}
       ></textarea>
-      {showError && error && <div className={classes.error}>{error}</div>}
+      {showError && error && (
+        <div id={externalErrorId} className={classes.error}>
+          {error}
+        </div>
+      )}
       {showError && inputErrorMessage && (
-        <div className={classes.error}>{inputErrorMessage}</div>
+        <div id={validationErrorId} className={classes.error}>
+          {inputErrorMessage}
+        </div>
       )}
     </div>
   );

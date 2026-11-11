@@ -20,6 +20,7 @@ import type {
   ValidationTypes,
 } from "../../../types/general.types";
 import type { OverrideFields } from "../../../../shared/types/general";
+import useFieldAccessibility from "../../../hooks/use-field-accessibility";
 
 type InputProps = OverrideFields<
   HTMLMotionProps<"input"> & ComponentProps<"input">,
@@ -91,6 +92,14 @@ const Input = ({
     : "";
   const inputRef = useRef<HTMLInputElement>(null);
   const inputMargin = 5;
+  const { fieldId, externalErrorId, validationErrorId, ariaProps } =
+    useFieldAccessibility({
+      id,
+      describedBy: props["aria-describedby"],
+      invalid: props["aria-invalid"],
+      externalErrorVisible: showErrorMessage && !!error,
+      validationErrorVisible: showErrorMessage && !!inputErrorMessage,
+    });
 
   useEffect(() => {
     setShowErrorMessage(!!showError);
@@ -130,11 +139,11 @@ const Input = ({
       {label && (
         labelAction ? (
           <div className={classes.label}>
-            <label htmlFor={id}>{label}</label>
+            <label htmlFor={fieldId}>{label}</label>
             {labelAction}
           </div>
         ) : (
-          <label htmlFor={id} className={classes.label}>
+          <label htmlFor={fieldId} className={classes.label}>
             {label || ""}
           </label>
         )
@@ -142,7 +151,7 @@ const Input = ({
       <motion.input
         animate={ANIMATIONS_FM_SLIDEOUT}
         ref={inputRef}
-        id={id}
+        id={fieldId}
         type={type}
         name={name}
         onBlur={inputBlurHandler}
@@ -158,9 +167,11 @@ const Input = ({
         autoComplete={autoComplete}
         value={value}
         {...props}
+        {...ariaProps}
       />
       {showErrorMessage && error && (
         <motion.div
+          id={externalErrorId}
           initial={ANIMATIONS_FM_SLIDEOUT_INITIAL}
           animate={ANIMATIONS_FM_SLIDEOUT}
           className={classes.error}
@@ -170,6 +181,7 @@ const Input = ({
       )}
       {showErrorMessage && inputErrorMessage && (
         <motion.div
+          id={validationErrorId}
           initial={ANIMATIONS_FM_SLIDEOUT_INITIAL}
           animate={ANIMATIONS_FM_SLIDEOUT}
           className={classes.error}

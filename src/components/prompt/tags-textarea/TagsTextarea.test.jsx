@@ -79,6 +79,8 @@ it("edits one tag at a time, including ID zero, and submits its weight", () => {
   const store = makeStore("portrait, portrait");
   const { row } = mount(store);
   fireEvent.click(within(row(0)).getByText("portrait"));
+  expect(within(row(0)).getByRole("textbox", { name: "Positive prompt tag" }).value).toBe("portrait");
+  expect(within(row(0)).getByRole("textbox", { name: "Positive prompt tag weight" }).value).toBe("1");
   expect(within(row(0)).getAllByRole("textbox").map((input) => input.value)).toEqual(["portrait", "1"]);
   expect(store.getState().prompt.curPromptArr[0].edit).toBeUndefined();
   fireEvent.click(within(row(1)).getByText("portrait"));

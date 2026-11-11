@@ -9,6 +9,7 @@ import classes from "./InputNumber.module.scss";
 import { validateInput } from "../../../utils/validationUtils";
 import type { ValidationTypes } from "../../../types/general.types";
 import type { OverrideFields } from "../../../../shared/types/general";
+import useFieldAccessibility from "../../../hooks/use-field-accessibility";
 
 type InputNumberProps = OverrideFields<
   ComponentProps<"input">,
@@ -67,11 +68,23 @@ const InputNumber = ({
   validation,
   showError,
   step = 1,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  "aria-describedby": describedBy,
+  "aria-invalid": invalid,
 }: InputNumberProps) => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const inputErrorMessage = validation
     ? validateInput(validation, value + "").errorMessage
     : "";
+  const { fieldId, externalErrorId, validationErrorId, ariaProps } =
+    useFieldAccessibility({
+      id,
+      describedBy,
+      invalid,
+      externalErrorVisible: showErrorMessage && !!error,
+      validationErrorVisible: showErrorMessage && !!inputErrorMessage,
+    });
 
   useEffect(() => {
     setShowErrorMessage(!!showError);
@@ -96,13 +109,16 @@ const InputNumber = ({
   return (
     <div>
       {label && (
-        <label htmlFor={id} className={classes.label}>
+        <label htmlFor={fieldId} className={classes.label}>
           {label || ""}
         </label>
       )}
       <div className={classes["input-number"]}>
         <input
-          id={id}
+          id={fieldId}
+          aria-label={ariaLabel}
+          aria-labelledby={ariaLabelledBy}
+          {...ariaProps}
           type={type}
           name={name}
           onBlur={(e) => {
@@ -164,10 +180,14 @@ const InputNumber = ({
         </div>
       </div>
       {showErrorMessage && error && (
-        <div className={classes.error}>{error}</div>
+        <div id={externalErrorId} className={classes.error}>
+          {error}
+        </div>
       )}
       {showErrorMessage && inputErrorMessage && (
-        <div className={classes.error}>{inputErrorMessage}</div>
+        <div id={validationErrorId} className={classes.error}>
+          {inputErrorMessage}
+        </div>
       )}
     </div>
   );

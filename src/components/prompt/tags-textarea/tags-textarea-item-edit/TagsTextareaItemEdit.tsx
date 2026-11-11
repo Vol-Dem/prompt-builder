@@ -96,6 +96,7 @@ const TagsTextareaItemEdit = ({
   return (
     <form onSubmit={submitEditHandler} className={classes["tag__content"]}>
       <Input
+        aria-label={`${promptType === "positive" ? "Positive" : "Negative"} prompt tag`}
         autoFocus={true}
         autoComplete="off"
         fitContent={true}
@@ -111,6 +112,7 @@ const TagsTextareaItemEdit = ({
         }}
       />
       <Input
+        aria-label={`${promptType === "positive" ? "Positive" : "Negative"} prompt tag weight`}
         type="text"
         name="weight"
         value={editWeightInput.value}

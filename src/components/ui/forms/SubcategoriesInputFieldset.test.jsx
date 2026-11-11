@@ -41,6 +41,12 @@ it.each([true, false])("preserves required=%s validation for an empty selection"
   expect(!!screen.queryByText("This field is required")).toBe(required);
 });
 
+it("names repeated subcategory inputs and preserves their row IDs", () => {
+  mount({ subcategories: [row("first"), row("second")] });
+  expect(screen.getByRole("combobox", { name: "Subcategory 1" }).id).toBe("first");
+  expect(screen.getByRole("combobox", { name: "Subcategory 2" }).id).toBe("second");
+});
+
 it.each([true, false])("retains the category length limit with required=%s", (required) => {
   mount({ required, showError: true, subcategories: [row("first", {
     id: null, name: "x".repeat(VALIDATION_CATEGORY_NAME_MAX_LENGTH + 1),

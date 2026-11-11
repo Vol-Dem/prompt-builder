@@ -2,6 +2,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import "@testing-library/jest-dom/vitest";
 
 import Input from "./Input";
 import InputNumber from "./InputNumber";
@@ -43,17 +44,21 @@ describe.each(controls)("$name validation feedback", (variant) => {
     const props = { validation: { maxLength: 3, acceptedValue: "Legacy name" }, showError: true };
     const { rerender } = render(control(variant, "Legacy name", props));
     expect(screen.queryByText("Value cannot be more than 3 characters")).toBeNull();
+    expect(field()).not.toHaveAttribute("aria-invalid");
     rerender(control(variant, "Different name", props));
     expect(screen.getByText("Value cannot be more than 3 characters")).toBeTruthy();
+    expect(field()).toHaveAttribute("aria-invalid", "true");
     rerender(control(variant, "Legacy name", props));
     expect(screen.queryByText("Value cannot be more than 3 characters")).toBeNull();
     expect(field().className).not.toContain(variant.errorClass);
+    expect(field()).not.toHaveAttribute("aria-invalid");
   });
 
   it("shows minimum-length feedback for a value below the limit", () => {
     render(control(variant, "ab", { validation: { minLength: 3 }, showError: true }));
     expect(screen.getByText("Value must be at least 3 characters")).toBeTruthy();
     expect(field().className).toContain(variant.errorClass);
+    expect(field()).toHaveAccessibleDescription("Value must be at least 3 characters");
   });
 
   it("clears messages from removed rules while retaining external errors", () => {
@@ -85,15 +90,21 @@ describe.each(controls)("$name validation feedback", (variant) => {
     const validation = { required: true };
     const { rerender } = render(control(variant, "", { validation, showError: false }));
     expect(screen.queryByText("This field is required")).toBeNull();
+    expect(field()).not.toHaveAttribute("aria-invalid");
+    expect(field()).not.toHaveAttribute("aria-describedby");
     fireEvent.blur(field());
     expect(field().className).toContain(variant.errorClass);
+    expect(field()).toHaveAttribute("aria-invalid", "true");
     // Textarea currently reveals its border on blur, with messages driven by showError.
     expect(!!screen.queryByText("This field is required")).toBe(variant.name !== "Textarea");
+    expect(field()).toHaveAccessibleDescription(variant.name === "Textarea" ? "" : "This field is required");
     rerender(control(variant, "", { validation, showError: true }));
     expect(screen.getByText("This field is required")).toBeTruthy();
     rerender(control(variant, "", { validation, showError: false }));
     expect(screen.queryByText("This field is required")).toBeNull();
     expect(field().className).not.toContain(variant.errorClass);
+    expect(field()).not.toHaveAttribute("aria-invalid");
+    expect(field()).not.toHaveAttribute("aria-describedby");
   });
 
   it("retains each control's disableErrorOnBlur behavior", () => {
@@ -101,6 +112,76 @@ describe.each(controls)("$name validation feedback", (variant) => {
     fireEvent.blur(field());
     // InputNumber currently reveals errors on blur whenever validation is present.
     expect(!!screen.queryByText("This field is required")).toBe(variant.name === "InputNumber");
+  });
+});
+
+describe.each(controls)("$name accessible field associations", (variant) => {
+  const role = variant.name === "ComboSelect" ? "combobox" : "textbox";
+
+  it("connects its visible label to the supplied field ID", () => {
+    render(control(variant, "ok", { id: "custom-field" }));
+    const element = screen.getByRole(role, { name: "Field" });
+    expect(element).toBe(screen.getByLabelText("Field"));
+    expect(element.id).toBe("custom-field");
+  });
+
+  it("keeps generated field and error IDs unique and stable across renders", () => {
+    const fields = (firstValue) => <>
+      {control(variant, firstValue, { id: undefined, label: "First", validation: { required: true }, showError: true })}
+      {control(variant, "", { id: undefined, label: "Second", validation: { required: true }, showError: true })}
+    </>;
+    const { rerender } = render(fields(""));
+    const first = screen.getByRole(role, { name: "First" });
+    const second = screen.getByRole(role, { name: "Second" });
+    const firstId = first.id;
+    const firstErrorId = first.getAttribute("aria-describedby");
+    expect(firstId).not.toBe("");
+    expect(firstId).not.toBe(second.id);
+    expect(firstErrorId).not.toBe(second.getAttribute("aria-describedby"));
+    expect(document.getElementById(firstErrorId)).toHaveTextContent("This field is required");
+    expect(first).toHaveAccessibleDescription("This field is required");
+    expect(second).toHaveAccessibleDescription("This field is required");
+
+    rerender(fields("ok"));
+    expect(screen.getByRole(role, { name: "First" }).id).toBe(firstId);
+    expect(screen.getByRole(role, { name: "First" })).not.toHaveAttribute("aria-describedby");
+    expect(second).toHaveAccessibleDescription("This field is required");
+    rerender(fields(""));
+    expect(screen.getByRole(role, { name: "First" }).getAttribute("aria-describedby")).toBe(firstErrorId);
+  });
+
+  it("accepts an accessible name without adding a visible label", () => {
+    const { container } = render(control(variant, "ok", { label: undefined, "aria-label": "Custom field" }));
+    expect(screen.getByRole(role, { name: "Custom field" })).toBeTruthy();
+    expect(container.querySelector("label")).toBeNull();
+  });
+
+  it("preserves caller descriptions while adding and clearing rendered errors", () => {
+    const fields = (showError, value = "", error = "Server error") => <>
+      <p id="hint">Field hint</p>
+      {control(variant, value, { "aria-describedby": "hint", validation: { required: true }, showError, error })}
+    </>;
+    const { rerender } = render(fields(false));
+    expect(field()).toHaveAccessibleDescription("Field hint");
+    expect(field()).not.toHaveAttribute("aria-invalid");
+    rerender(fields(true));
+    expect(field()).toHaveAccessibleDescription("Field hint Server error This field is required");
+    expect(field()).toHaveAttribute("aria-invalid", "true");
+    rerender(fields(true, "ok", ""));
+    expect(field()).toHaveAccessibleDescription("Field hint");
+    expect(field()).not.toHaveAttribute("aria-invalid");
+    expect(field().getAttribute("aria-describedby")).toBe("hint");
+    rerender(fields(false));
+    expect(field()).toHaveAccessibleDescription("Field hint");
+    expect(field()).not.toHaveAttribute("aria-invalid");
+  });
+
+  it("preserves an external label and explicit ARIA invalid state", () => {
+    render(<>
+      <span id="external-label">External label</span>
+      {control(variant, "ok", { label: undefined, "aria-labelledby": "external-label", "aria-invalid": "grammar" })}
+    </>);
+    expect(screen.getByRole(role, { name: "External label" })).toHaveAttribute("aria-invalid", "grammar");
   });
 });
 
@@ -148,6 +229,16 @@ it("forwards combobox selection metadata without caching a rejected selection's 
   expect(screen.getByRole("combobox").value).toBe("ok");
   expect(screen.queryByText("Value cannot be more than 3 characters")).toBeNull();
   expect(setQuery).toHaveBeenCalledWith("");
+});
+
+it("keeps the combobox callback ID omitted when its DOM ID is generated", async () => {
+  const setSelected = vi.fn();
+  render(<ComboSelect label="Choice" selected={choices[0]} optionsData={choices}
+    query="" setQuery={vi.fn()} setSelected={setSelected} validation={{ maxLength: 10 }} />);
+  const user = userEvent.setup();
+  await user.click(screen.getByRole("combobox", { name: "Choice" }));
+  await user.click(await screen.findByRole("option", { name: "lengthy" }));
+  expect(setSelected).toHaveBeenCalledExactlyOnceWith(choices[1], true, "", undefined);
 });
 
 it("retains numeric increment/decrement formatting and validity callback arguments", () => {

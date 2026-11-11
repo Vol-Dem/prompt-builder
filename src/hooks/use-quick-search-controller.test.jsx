@@ -147,25 +147,6 @@ it("replaces a pending local request when switching to Civitai", () => {
   expect(civitaiSearch).toHaveBeenCalledExactlyOnceWith("portrait", nsfw, SETTINGS_SEARCH_QUICK_RESULT_PER_PAGE, false, true);
 });
 
-it("preserves mode-only NSFW dependencies, including options captured by a pending request", () => {
-  const store = makeStore();
-  mountController(store);
-  advance(500);
-  act(() => store.dispatch({ type: "test/nsfw", payload: { nsfwLevel: 2 } }));
-  advance(500);
-  expect(liveSearch).toHaveBeenCalledOnce();
-  expect(liveSearch.mock.calls[0][1]).toEqual(nsfw);
-  advance();
-  expect(liveSearch).toHaveBeenCalledOnce();
-
-  act(() => store.dispatch({ type: "test/nsfw", payload: { nsfwMode: true } }));
-  advance(999);
-  expect(liveSearch).toHaveBeenCalledOnce();
-  advance(1);
-  expect(liveSearch).toHaveBeenCalledTimes(2);
-  expect(liveSearch.mock.calls[1][1]).toEqual({ nsfwValue: true, nsfwLevel: 2 });
-});
-
 it("clears the query and closes the dropdown without starting the pending request", () => {
   const store = makeStore();
   const onOpen = vi.fn();

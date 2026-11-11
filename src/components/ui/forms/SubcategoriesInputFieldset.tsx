@@ -54,6 +54,7 @@ const SubcategoriesInputFieldset = ({
       >
         <ComboSelect
           id={sub.id}
+          aria-label={`Subcategory ${i + 1}`}
           optionsData={options}
           query={query}
           setQuery={onQueryChange}

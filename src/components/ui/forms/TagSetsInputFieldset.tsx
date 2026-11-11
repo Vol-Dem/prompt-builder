@@ -61,6 +61,7 @@ const TagSetsInputFieldset = ({
         </div>
         <Input
           id={tagSet[0].id}
+          aria-label={`Tag set ${i + 1} name`}
           name={tagSet[0].name}
           type={tagSet[0].type}
           placeholder={tagSet[0].placeholder}
@@ -73,6 +74,7 @@ const TagSetsInputFieldset = ({
         />
         <Textarea
           id={tagSet[1].id}
+          aria-label={`Tag set ${i + 1} tags`}
           name={tagSet[1].name}
           rows={4}
           placeholder={tagSet[1].placeholder}

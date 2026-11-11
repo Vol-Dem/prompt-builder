@@ -95,11 +95,11 @@ it.each(tagSetForms)("edits and adds tag sets in $name while preserving saved im
   const { container } = render(element(vi.fn()));
   const fieldset = screen.getByRole("group", { name: "Tag sets" });
   expect(fieldset.querySelector("textarea").rows).toBe(4);
-  fireEvent.change(screen.getByDisplayValue("Set"), { target: { value: "Updated set" } });
-  fireEvent.change(screen.getByDisplayValue("detail"), { target: { value: "updated detail" } });
+  fireEvent.change(screen.getByRole("textbox", { name: "Tag set 1 name" }), { target: { value: "Updated set" } });
+  fireEvent.change(screen.getByRole("textbox", { name: "Tag set 1 tags" }), { target: { value: "updated detail" } });
   fireEvent.click(screen.getByRole("button", { name: "+ add new set" }));
-  fireEvent.change(fieldset.querySelectorAll('[name="set-name"]')[1], { target: { value: "Second" } });
-  fireEvent.change(fieldset.querySelectorAll('[name="set-value"]')[1], { target: { value: "extra tags" } });
+  fireEvent.change(screen.getByRole("textbox", { name: "Tag set 2 name" }), { target: { value: "Second" } });
+  fireEvent.change(screen.getByRole("textbox", { name: "Tag set 2 tags" }), { target: { value: "extra tags" } });
   fireEvent.submit(container.querySelector("form"));
 
   await screen.findByText(SUCCESS_MESSAGE_UPLOADED);
