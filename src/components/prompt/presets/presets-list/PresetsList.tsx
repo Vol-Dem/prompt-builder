@@ -88,12 +88,14 @@ const PresetsList = ({
           <ButtonTertiary
             className={classes["btn"]}
             onClick={() => onEdit(type, preset)}
+            aria-label={`Edit ${type} preset ${preset.name}`}
           >
             <PencilSquareIcon />
           </ButtonTertiary>
           <ButtonTertiary
             className={`${classes["btn"]} ${classes["btn--del"]}`}
             onClick={() => onDelete(type, preset)}
+            aria-label={`Delete ${type} preset ${preset.name}`}
           >
             <TrashIcon />
           </ButtonTertiary>

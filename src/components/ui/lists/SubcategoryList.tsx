@@ -28,6 +28,7 @@ const SubcategoryList = ({
           className={classes["subcategories__edit"]}
           type="button"
           onClick={onEdit}
+          aria-label="Edit subcategories"
         >
           <PencilSquareIcon />
         </ButtonTertiary>

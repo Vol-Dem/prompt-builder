@@ -18,6 +18,7 @@ const CategoryList = ({ onEdit, children, className }: CategoryListProps) => {
           className={classes["category__edit"]}
           type="button"
           onClick={onEdit}
+          aria-label="Edit categories"
         >
           <PencilSquareIcon />
         </ButtonTertiary>
