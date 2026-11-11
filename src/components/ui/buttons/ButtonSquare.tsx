@@ -18,6 +18,7 @@ const ButtonSquare = ({
       } ${className || ""}`}
       onClick={onClick}
       title={title || ""}
+      disabled={disabled}
       {...props}
     >
       {children}
