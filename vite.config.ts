@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
+import babel from "@rolldown/plugin-babel";
 // import svgr from "vite-plugin-svgr";
 
 export default defineConfig({
@@ -12,6 +13,10 @@ export default defineConfig({
     //   exclude: "**/*.svg?raw", // prevent collision
     // }),
     react(),
+    babel({
+      exclude: [/[\\/]node_modules[\\/]/, /\.(test|spec)\.[jt]sx?$/],
+      presets: [reactCompilerPreset()],
+    }),
   ],
   server: {
     open: true,

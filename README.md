@@ -153,6 +153,19 @@ External
 - Civitai API
 - Discord Webhooks
 
+## React Compiler
+
+Client development and production builds use React Compiler through
+`reactCompilerPreset` in `vite.config.ts`, following the
+[official Vite integration](https://react.dev/learn/react-compiler/installation#vite).
+React 19 supplies the compiler runtime. The Babel bridge is pinned to `0.1.7` to
+stay compatible with the project's existing Babel 7 tooling.
+
+In React DevTools, compiled components show a `Memo ✨` badge. The compiler can
+skip components or hooks it cannot safely optimize. The jsdom tests use Vite's
+client pipeline and exercise compiled application code. Test files are excluded
+from compilation so their fixtures and mocks remain as authored.
+
 ## Development checks
 
 After installing dependencies in both the repository root and `functions`, run

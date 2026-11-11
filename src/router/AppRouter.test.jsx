@@ -181,7 +181,8 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("application router", () => {
+// Leave time for compiler transforms when a test first loads a lazy route.
+describe("application router", { timeout: 15_000 }, () => {
   it("cleans up authentication on unmount and between Strict Mode effect runs", () => {
     const store = makeStore();
     const { unmount } = render(<StrictMode><Provider store={store}><App /></Provider></StrictMode>);
