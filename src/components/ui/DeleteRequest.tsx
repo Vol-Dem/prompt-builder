@@ -57,7 +57,10 @@ const DeleteRequest = ({
         )}
         {isDeleting && (
           <div className={classes["spinner-container"]}>
-            <Spinner size="medium" />
+            <Spinner
+              size="medium"
+              label="Deleting. Don't close this window until the deletion is complete"
+            />
           </div>
         )}
       </div>

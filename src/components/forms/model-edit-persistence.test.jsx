@@ -181,10 +181,18 @@ it.each(forms)("waits for persistence before completing $name edits", async ({ e
   const { container } = render(element(onClose));
   fireEvent.submit(container.querySelector("form"));
   await waitFor(() => expect(persistence).toHaveBeenCalledOnce());
+  const save = screen.getByRole("button", { name: "Save" });
+  expect(save.getAttribute("aria-busy")).toBe("true");
+  expect(save.disabled).toBe(true);
+  const loading = screen.getByRole("status");
+  expect(loading.textContent).toMatch(/^Saving /);
+  expect(loading.closest('[aria-busy="true"]')).toBeNull();
   expect(dispatch).not.toHaveBeenCalled();
   expect(onClose).not.toHaveBeenCalled();
   expect(screen.queryByText(SUCCESS_MESSAGE_UPLOADED)).toBeNull();
   await act(async () => finishSave());
+  expect(save.getAttribute("aria-busy")).toBe("false");
+  expect(loading.textContent).toBe("");
   expect(screen.getByText(SUCCESS_MESSAGE_UPLOADED)).toBeTruthy();
   expect(onClose).toHaveBeenCalledTimes(closes ? 1 : 0);
 });

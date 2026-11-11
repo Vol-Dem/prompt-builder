@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import Button from "../../ui/buttons/Button";
 import ChooseImageForm from "../choose-image-form/ChooseImageForm";
 import classes from "./SaveToCollectionForm.module.scss";
-import Spinner from "../../ui/Spinner";
 import ErrorMessage from "../../ui/ErrorMessage";
 import {
   COLLECTION_VALIDATION,
@@ -355,14 +354,13 @@ const SaveToCollectionForm = ({
               )}
             </div>
 
-            <Button type="submit" className={classes.submit}>
-              {collectionInfoIsLoading ? (
-                <Spinner size="small" />
-              ) : images?.length ? (
-                "Choose images"
-              ) : (
-                "Create"
-              )}
+            <Button
+              type="submit"
+              className={classes.submit}
+              loading={collectionInfoIsLoading}
+              loadingMessage="Loading collection"
+            >
+              {images?.length ? "Choose images" : "Create"}
             </Button>
           </form>
           {images && (

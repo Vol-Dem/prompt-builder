@@ -17,6 +17,7 @@ import Modal from "../../../ui/Modal";
 import TextHighlight from "../../../ui/text/TextHighlight";
 import ErrorMessage from "../../../ui/ErrorMessage";
 import Spinner from "../../../ui/Spinner";
+import LiveStatus from "../../../ui/LiveStatus";
 import { normalizeError, reportError } from "../../../../utils/generalUtils";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks/hooks";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
@@ -156,12 +157,8 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
           {label}
         </span>
         {isSaving && (
-          <span
-            className={classes["preview-btn__spinner"]}
-            role="status"
-            aria-label="Saving tag-set preview"
-          >
-            <Spinner size="small" />
+          <span className={classes["preview-btn__spinner"]} aria-hidden="true">
+            <Spinner size="small" decorative />
           </span>
         )}
       </ButttonTertiary>
@@ -265,91 +262,96 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
     );
 
   return (
-    <div aria-busy={previewIsSaving}>
-      {!tagSetsFormIsOpen && (
-        <>
-          <div className={classes["tag-sets-head"]}>
-            <div className={classes["tag-sets-title"]}>Tag sets</div>
-            <Button onClick={openTagSetsForm} disabled={previewIsSaving}>
-              Add tag set
-            </Button>
-            {nsfwMode && (
-              <div className={classes["mode-switch"]}>
-                <button
-                  type="button"
-                  onClick={nsfwSwitchHandler}
-                  className={`${classes["btn-mode"]} ${
-                    !showNsfwPreview ? classes["btn-mode--active"] : ""
+    <>
+      <div aria-busy={previewIsSaving}>
+        {!tagSetsFormIsOpen && (
+          <>
+            <div className={classes["tag-sets-head"]}>
+              <div className={classes["tag-sets-title"]}>Tag sets</div>
+              <Button onClick={openTagSetsForm} disabled={previewIsSaving}>
+                Add tag set
+              </Button>
+              {nsfwMode && (
+                <div className={classes["mode-switch"]}>
+                  <button
+                    type="button"
+                    onClick={nsfwSwitchHandler}
+                    className={`${classes["btn-mode"]} ${
+                      !showNsfwPreview ? classes["btn-mode--active"] : ""
+                    }`}
+                  >
+                    SFW
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nsfwSwitchHandler}
+                    className={`${classes["btn-mode"]} ${
+                      showNsfwPreview ? classes["btn-mode--active"] : ""
+                    }`}
+                  >
+                    NSFW
+                  </button>
+                </div>
+              )}
+            </div>
+            {previewError && <ErrorMessage>{previewError}</ErrorMessage>}
+            <ul className={classes["tag-sets-versions"]}>
+              {!!model?.defaultCustomData?.tagSetsData?.length && (
+                <li
+                  id={`tsv-def`}
+                  className={`${classes["tag-sets-versions__item"]} ${
+                    curTagSetVersionId === "tsv-def"
+                      ? classes["tag-sets-versions__item--active"]
+                      : ""
                   }`}
+                  onClick={() => openTagSetVersionHandler(`tsv-def`)}
+                  aria-disabled={previewIsSaving}
                 >
-                  SFW
-                </button>
-                <button
-                  type="button"
-                  onClick={nsfwSwitchHandler}
-                  className={`${classes["btn-mode"]} ${
-                    showNsfwPreview ? classes["btn-mode--active"] : ""
-                  }`}
-                >
-                  NSFW
-                </button>
-              </div>
-            )}
-          </div>
-          {previewError && <ErrorMessage>{previewError}</ErrorMessage>}
-          <ul className={classes["tag-sets-versions"]}>
-            {!!model?.defaultCustomData?.tagSetsData?.length && (
-              <li
-                id={`tsv-def`}
-                className={`${classes["tag-sets-versions__item"]} ${
-                  curTagSetVersionId === "tsv-def"
-                    ? classes["tag-sets-versions__item--active"]
-                    : ""
-                }`}
-                onClick={() => openTagSetVersionHandler(`tsv-def`)}
-                aria-disabled={previewIsSaving}
-              >
-                Default
-              </li>
-            )}
-            {tagSetVersionsHtml}
-          </ul>
-          {!model?.defaultCustomData?.tagSetsData?.length &&
-            !tagSetVersionsHtml?.length && (
+                  Default
+                </li>
+              )}
+              {tagSetVersionsHtml}
+            </ul>
+            {!model?.defaultCustomData?.tagSetsData?.length &&
+              !tagSetVersionsHtml?.length && (
+                <div className={classes["notification"]}>
+                  <ExclamationCircleIcon
+                    className={classes["notification__svg"]}
+                  />
+                  <p className={classes["notification__text"]}>
+                    You don't have any tag sets. <br /> Press "Add tag set" to
+                    add new tag set!
+                  </p>
+                </div>
+              )}
+            {!!tagSetVersionsHtml?.length && !versionTagsetsHtml && (
               <div className={classes["notification"]}>
                 <ExclamationCircleIcon
                   className={classes["notification__svg"]}
                 />
                 <p className={classes["notification__text"]}>
-                  You don't have any tag sets. <br /> Press "Add tag set" to add
-                  new tag set!
+                  You don't have tag sets for this{" "}
+                  <TextHighlight>version</TextHighlight>. <br /> Press "Add tag
+                  set" to add new tag set!
                 </p>
               </div>
             )}
-          {!!tagSetVersionsHtml?.length && !versionTagsetsHtml && (
-            <div className={classes["notification"]}>
-              <ExclamationCircleIcon className={classes["notification__svg"]} />
-              <p className={classes["notification__text"]}>
-                You don't have tag sets for this{" "}
-                <TextHighlight>version</TextHighlight>. <br /> Press "Add tag
-                set" to add new tag set!
-              </p>
-            </div>
-          )}
-          {curTagSetVersionId === "tsv-def" && (
-            <ul className={classes["tag-sets"]}>{defTagSetsHtml}</ul>
-          )}
-          {curTagSetVersionId !== "tsv-def" && (
-            <ul className={classes["tag-sets"]}>{versionTagsetsHtml}</ul>
-          )}
-        </>
-      )}
-      {tagSetsFormIsOpen && model?.id && (
-        <Modal onClose={closeTagSetsForm}>
-          <TagSetsForm modelId={model.id} onClose={closeTagSetsForm} />
-        </Modal>
-      )}
-    </div>
+            {curTagSetVersionId === "tsv-def" && (
+              <ul className={classes["tag-sets"]}>{defTagSetsHtml}</ul>
+            )}
+            {curTagSetVersionId !== "tsv-def" && (
+              <ul className={classes["tag-sets"]}>{versionTagsetsHtml}</ul>
+            )}
+          </>
+        )}
+        {tagSetsFormIsOpen && model?.id && (
+          <Modal onClose={closeTagSetsForm}>
+            <TagSetsForm modelId={model.id} onClose={closeTagSetsForm} />
+          </Modal>
+        )}
+      </div>
+      <LiveStatus>{previewIsSaving ? "Saving tag-set preview" : ""}</LiveStatus>
+    </>
   );
 };
 

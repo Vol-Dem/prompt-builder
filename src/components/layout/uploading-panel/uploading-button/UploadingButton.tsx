@@ -2,6 +2,7 @@ import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 
 import classes from "./UploadingButton.module.scss";
 import { useAppSelector } from "../../../../store/hooks/hooks";
+import LiveStatus from "../../../ui/LiveStatus";
 
 type UploadingButtonProps = { isOpen?: boolean; onClick: () => void };
 
@@ -27,43 +28,50 @@ const UploadingButton = ({ isOpen, onClick }: UploadingButtonProps) => {
   );
 
   return (
-    <button
-      className={`${classes["uploading__btn"]} ${
-        isOpen ? classes["uploading__btn--open"] : ""
-      }`}
-      onClick={onClick}
-      title="Uploading queue"
-    >
-      <div
-        className={`${classes["uploading__btn-content"]} ${
-          queue?.length ? classes["uploading__btn-content--loading"] : ""
+    <>
+      <button
+        className={`${classes["uploading__btn"]} ${
+          isOpen ? classes["uploading__btn--open"] : ""
         }`}
+        onClick={onClick}
+        title="Uploading queue"
+        aria-label="Uploading queue"
       >
-        <ArrowDownTrayIcon />
-      </div>
+        <div
+          className={`${classes["uploading__btn-content"]} ${
+            queue?.length ? classes["uploading__btn-content--loading"] : ""
+          }`}
+        >
+          <ArrowDownTrayIcon />
+        </div>
 
-      {!!queue.length && (
-        <span
-          className={`${classes["uploading__amount"]} ${classes["uploading__amount--queue"]}`}
-        >
-          {queue.length}
-        </span>
-      )}
-      {!!completedAmount && !rejected.length && (
-        <span
-          className={`${classes["uploading__amount"]} ${classes["uploading__amount--completed"]}`}
-        >
-          {completedAmount}
-        </span>
-      )}
-      {!!rejected.length && (
-        <span
-          className={`${classes["uploading__amount"]} ${classes["uploading__amount--rejected"]}`}
-        >
-          {rejected.length}
-        </span>
-      )}
-    </button>
+        {!!queue.length && (
+          <span
+            className={`${classes["uploading__amount"]} ${classes["uploading__amount--queue"]}`}
+          >
+            {queue.length}
+          </span>
+        )}
+        {!!completedAmount && !rejected.length && (
+          <span
+            className={`${classes["uploading__amount"]} ${classes["uploading__amount--completed"]}`}
+          >
+            {completedAmount}
+          </span>
+        )}
+        {!!rejected.length && (
+          <span
+            className={`${classes["uploading__amount"]} ${classes["uploading__amount--rejected"]}`}
+          >
+            {rejected.length}
+          </span>
+        )}
+      </button>
+      <LiveStatus>
+        {(queue.length > 0 || completedAmount > 0 || rejected.length > 0) &&
+          `Uploads: ${queue.length} pending, ${completedAmount} completed, ${rejected.length} failed`}
+      </LiveStatus>
+    </>
   );
 };
 

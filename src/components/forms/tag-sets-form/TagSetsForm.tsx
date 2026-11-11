@@ -13,7 +13,6 @@ import {
   SUCCESS_MESSAGE_UPLOADED,
   ERROR_MESSAGE_DEFAULT,
 } from "../../../variables/constants";
-import Spinner from "../../ui/Spinner";
 import { modelActions } from "../../../store/model";
 import ModelTagsFormGuide from "../../general-elements/guide/model/ModelTagsEditGuide";
 import { guideActions } from "../../../store/guide";
@@ -168,8 +167,14 @@ const TagSetsForm = ({ modelId, onClose }: TagSetsFormProps) => {
           </FieldCategory>
         </div>
       </div>
-      <Button type="submit" disabled={isSaving} className={classes.submit}>
-        {!isSaving ? "Save" : <Spinner size="small" />}
+      <Button
+        type="submit"
+        disabled={isSaving}
+        className={classes.submit}
+        loading={isSaving}
+        loadingMessage="Saving tag sets"
+      >
+        Save
       </Button>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}

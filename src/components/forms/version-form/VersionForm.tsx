@@ -16,7 +16,6 @@ import {
   VALIDATION_TITLE_MAX_LENGTH,
   VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
-import Spinner from "../../ui/Spinner";
 import { createTagSetsInputData } from "../../../utils/promptUtils";
 import { FORMS_DEF_TAGS_INPUT } from "../../../variables/structures";
 import type {
@@ -538,8 +537,14 @@ const VersionForm = ({
       <div className={classes["submit-container"]}>
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
-        <Button type="submit" disabled={isSaving} className={classes.submit}>
-          {!isSaving ? "Save" : <Spinner size="small" />}
+        <Button
+          type="submit"
+          disabled={isSaving}
+          className={classes.submit}
+          loading={isSaving}
+          loadingMessage="Saving version"
+        >
+          Save
         </Button>
       </div>
     </form>

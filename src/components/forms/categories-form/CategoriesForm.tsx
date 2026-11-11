@@ -14,6 +14,7 @@ import { updateCategories } from "../../../store/modelThunks";
 import ButtonTertiary from "../../ui/buttons/ButtonTertiary";
 import DeleteRequest from "../../ui/DeleteRequest";
 import Spinner from "../../ui/Spinner";
+import LiveStatus from "../../ui/LiveStatus";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
   ERROR_MESSAGE_OFFLINE,
@@ -381,12 +382,8 @@ const CategoriesForm = ({
                   className={isRenaming ? classes["btn__icon--hidden"] : ""}
                 />
                 {isRenaming && (
-                  <span
-                    className={classes["btn__spinner"]}
-                    role="status"
-                    aria-label="Saving category name"
-                  >
-                    <Spinner size="small" />
+                  <span className={classes["btn__spinner"]} aria-hidden="true">
+                    <Spinner size="small" decorative />
                   </span>
                 )}
               </ButtonTertiary>
@@ -421,28 +418,33 @@ const CategoriesForm = ({
   });
 
   return (
-    <section className={classes.category} aria-busy={isPending}>
-      <div className={classes["category__container"]}>
-        <div>
-          <div className={classes["category__info"]}>
-            {categoriesInputsHtml}
+    <>
+      <section className={classes.category} aria-busy={isPending}>
+        <div className={classes["category__container"]}>
+          <div>
+            <div className={classes["category__info"]}>
+              {categoriesInputsHtml}
+            </div>
           </div>
         </div>
-      </div>
-      <AnimatePresence>
-        {deleteRequestIsOpen && (
-          <DeleteRequest
-            message={`Are you sure you want to delete "${deleteCategoryData?.name}" category? This action can't
+        <AnimatePresence>
+          {deleteRequestIsOpen && (
+            <DeleteRequest
+              message={`Are you sure you want to delete "${deleteCategoryData?.name}" category? This action can't
         be undone`}
-            onSubmit={deleteCategoryHandler}
-            onClose={closeDeleteReqeustHandler}
-            isDeleting={pendingAction?.type === "delete"}
-            errorMessage={deleteErrorMessage}
-            allowRetry
-          />
-        )}
-      </AnimatePresence>
-    </section>
+              onSubmit={deleteCategoryHandler}
+              onClose={closeDeleteReqeustHandler}
+              isDeleting={pendingAction?.type === "delete"}
+              errorMessage={deleteErrorMessage}
+              allowRetry
+            />
+          )}
+        </AnimatePresence>
+      </section>
+      <LiveStatus>
+        {pendingAction?.type === "rename" ? "Saving category name" : ""}
+      </LiveStatus>
+    </>
   );
 };
 

@@ -54,12 +54,16 @@ const Notification = ({
           className={classes["notification-container"]}
         >
           <Card className={classes.notification}>
-            <div className={classes["notification__icon"]}>
+            <div className={classes["notification__icon"]} aria-hidden="true">
               {type === "notification" && <ExclamationCircleIcon />}
               {type === "warning" && <ExclamationTriangleIcon />}
             </div>
 
-            <div className={classes["notification__message"]}>
+            <div
+              className={classes["notification__message"]}
+              role={type === "warning" ? "alert" : "status"}
+              aria-atomic="true"
+            >
               {title && (
                 <h4 className={classes["notification__title"]}>{title}</h4>
               )}

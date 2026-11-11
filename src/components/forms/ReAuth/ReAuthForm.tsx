@@ -3,6 +3,7 @@ import { useEffect } from "react";
 
 import Input from "../../ui/forms/Input";
 import Spinner from "../../ui/Spinner";
+import LiveStatus from "../../ui/LiveStatus";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { authActions } from "../../../store/auth";
 import { reAuthUser } from "../../../store/authThunks";
@@ -101,10 +102,11 @@ const ReAuthForm = () => {
           <ErrorMessage>{errorMessageAuth}</ErrorMessage>
         )}
         <div>
-          <Button disabled={isLoading}>
-            {isLoading && <Spinner size="small" />}
+          <Button disabled={isLoading} aria-busy={isLoading}>
+            {isLoading && <Spinner size="small" decorative />}
             <span>Submit</span>
           </Button>
+          <LiveStatus>{isLoading ? "Verifying credentials" : ""}</LiveStatus>
         </div>
       </form>
       <Button onClick={authHandlerPopup}>Google</Button>

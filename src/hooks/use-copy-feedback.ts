@@ -69,7 +69,13 @@ const useCopyFeedback = (text: string) => {
 
   const clearError = () => setErrorMessage("");
 
-  return { copied, copying, errorMessage, copy, clearError };
+  const statusMessage = copying
+    ? "Copying to clipboard"
+    : copied
+      ? "Copied to clipboard"
+      : "";
+
+  return { copied, copying, statusMessage, errorMessage, copy, clearError };
 };
 
 export default useCopyFeedback;

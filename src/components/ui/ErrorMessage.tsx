@@ -16,9 +16,11 @@ const ErrorMessage = ({ className, children }: ErrorMessageProps) => {
       initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
       animate={ANIMATIONS_FM_SLIDEIN}
       data-testid="error-message"
+      role="alert"
+      aria-atomic="true"
       className={`${classes.error} ${className || ""}`}
     >
-      <ExclamationTriangleIcon />
+      <ExclamationTriangleIcon aria-hidden="true" />
       {children}
     </motion.div>
   );

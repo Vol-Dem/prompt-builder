@@ -18,7 +18,6 @@ import Checkbox from "../../ui/forms/Checkbox";
 import Select from "../../ui/forms/Select";
 import FieldCategory from "../../ui/forms/FieldCategory";
 import { cloneObject } from "../../../utils/generalUtils";
-import Spinner from "../../ui/Spinner";
 import ComboSelect from "../../ui/forms/ComboSelect";
 import {
   VALIDATION_CATEGORY_NAME_MAX_LENGTH,
@@ -404,8 +403,14 @@ const UpdateModelForm = ({
   });
 
   let submitButton: ReactElement | null = (
-    <Button type="submit" disabled={modelIsSaving} className={classes.submit}>
-      {!modelIsSaving ? "Save" : <Spinner size="small" />}
+    <Button
+      type="submit"
+      disabled={modelIsSaving}
+      className={classes.submit}
+      loading={modelIsSaving}
+      loadingMessage="Saving model"
+    >
+      Save
     </Button>
   );
 

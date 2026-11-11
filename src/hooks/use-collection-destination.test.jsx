@@ -16,7 +16,6 @@ import { ERROR_MESSAGE_DEFAULT, ERROR_MESSAGE_INPUT_DEF, SUCCESS_MESSAGE_SAVED }
 const { picker } = vi.hoisted(() => ({ picker: { current: null } }));
 vi.mock("../store/imagesThunks", () => ({ addNewCollectionCategories: vi.fn() }));
 vi.mock("../utils/fetch/fetchCollection", () => ({ getCollectionData: vi.fn() }));
-vi.mock("../components/ui/Spinner", () => ({ default: () => <span role="status">Preparing</span> }));
 // Keep the form's filtering and selection handlers, replacing only combobox UI.
 vi.mock("../components/ui/forms/ComboSelect", () => ({
   default: ({ label, placeholder, query, setQuery, optionsData, selected, setSelected, id, validation }) => {
@@ -262,7 +261,9 @@ it("shows loading through destination preparation and retains selections after f
   change("Category", "New category");
   change("Collection", "New collection");
   fireEvent.submit(container.querySelector("form"));
-  expect(screen.getByRole("button", { name: "Preparing" }).disabled).toBe(false);
+  expect(screen.getByRole("button", { name: "Create" }).disabled).toBe(false);
+  expect(screen.getByRole("button", { name: "Create" }).getAttribute("aria-busy")).toBe("true");
+  expect(screen.getByText("Loading collection").getAttribute("role")).toBe("status");
   await act(async () => pending.reject(new AppError("Try again")));
   expect(screen.getByText("Try again")).toBeTruthy();
   expect(screen.getByLabelText("Collection").value).toBe("New collection");

@@ -15,7 +15,6 @@ import {
   SUCCESS_MESSAGE_UPLOADED,
   VALIDATION_TRIGGER_WORDS_MAX_LENGTH,
 } from "../../../variables/constants";
-import Spinner from "../../ui/Spinner";
 import { modelActions } from "../../../store/model";
 import {
   AppError,
@@ -268,8 +267,14 @@ const TagsForm = ({
           </FieldCategory>
         </div>
       </div>
-      <Button type="submit" disabled={isSaving} className={classes.submit}>
-        {!isSaving ? "Save" : <Spinner size="small" />}
+      <Button
+        type="submit"
+        disabled={isSaving}
+        className={classes.submit}
+        loading={isSaving}
+        loadingMessage="Saving tags"
+      >
+        Save
       </Button>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}

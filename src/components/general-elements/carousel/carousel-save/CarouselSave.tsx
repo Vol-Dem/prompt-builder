@@ -114,8 +114,14 @@ const CarouselSave = ({
                 existedImgsAmount >= images?.length)
             }
             title="Save"
+            aria-label="Save"
+            aria-busy={isUploading}
           >
-            {!isUploading ? <FolderArrowDownIcon /> : <Spinner size="small" />}
+            {!isUploading ? (
+              <FolderArrowDownIcon />
+            ) : (
+              <Spinner size="small" decorative />
+            )}
           </button>
         </div>
       )}
@@ -132,8 +138,14 @@ const CarouselSave = ({
                 existedImgsAmount >= images?.length)
             }
             title="Save to model"
+            aria-label="Save to model"
+            aria-busy={isUploading}
           >
-            {!isUploading ? <FolderArrowDownIcon /> : <Spinner size="small" />}
+            {!isUploading ? (
+              <FolderArrowDownIcon />
+            ) : (
+              <Spinner size="small" decorative />
+            )}
           </button>
           <span className={classes["save__btn-text"]}>Save to model</span>
         </div>

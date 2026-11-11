@@ -21,7 +21,6 @@ vi.mock("../utils/fetch/fetchModel", () => ({ saveModelData: vi.fn() }));
 vi.mock("../utils/fetch/fetchUser", () => ({ saveUserPreviewFullView: vi.fn() }));
 vi.mock("../utils/fetch/fetchPreviews", () => ({ fetchModelPreviewPage: vi.fn() }));
 vi.mock("../components/general-elements/guide/edit/EditDefaultGuide", () => ({ default: () => null }));
-vi.mock("../components/ui/Spinner", () => ({ default: () => <span role="status">Saving</span> }));
 // Exercise field selection and form resets without the combobox's menu/positioning behavior.
 vi.mock("../components/ui/forms/ComboSelect", () => ({
   default: ({ label, placeholder, selected, setSelected, id }) => (
@@ -260,7 +259,9 @@ it("preserves hydrated edit fields and displays pending and failed save states",
   let fail;
   saveModelData.mockImplementation(() => new Promise((_, reject) => { fail = reject; }));
   fireEvent.submit(container.querySelector("form"));
-  expect(screen.getByRole("button", { name: "Saving" }).disabled).toBe(true);
+  expect(screen.getByRole("button", { name: "Save" }).disabled).toBe(true);
+  expect(screen.getByRole("button", { name: "Save" }).getAttribute("aria-busy")).toBe("true");
+  expect(screen.getByRole("status").textContent).toBe("Saving model");
   await act(async () => fail(new AppError("Retry save")));
   expect(screen.getByText("Retry save")).toBeTruthy();
   expect(screen.getByLabelText("Name").value).toBe("Edited name");

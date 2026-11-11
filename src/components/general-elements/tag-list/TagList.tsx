@@ -95,6 +95,7 @@ const TagList = ({
           className={classes["btn-copy"]}
           copiedClassName={classes["btn-copy--copied"]}
           title="Copy"
+          aria-label={`Copy ${name}`}
           idleIcon={<ClipboardDocumentIcon />}
           copiedIcon={<ClipboardDocumentCheckIcon />}
         />

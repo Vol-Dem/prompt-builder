@@ -66,7 +66,9 @@ const QuickSearch = ({ onSubmit, onOpen }: QuickSearchProps) => {
           !status.errorMessage &&
           !result?.result?.length &&
           !!result?.query &&
-          status.isOnline && <div className={classes.error}>No resources found</div>}
+          status.isOnline && (
+            <div className={classes.error} role="status">No resources found</div>
+          )}
         {!status.isOnline && <ErrorMessage>{ERROR_MESSAGE_OFFLINE}</ErrorMessage>}
       </div>
     </motion.div>

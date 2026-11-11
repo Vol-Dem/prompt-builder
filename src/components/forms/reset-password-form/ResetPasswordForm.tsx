@@ -7,6 +7,7 @@ import { resetUserPassword } from "../../../store/authThunks";
 import Button from "../../ui/buttons/Button";
 import { AUTH_VALIDATION } from "../../../variables/constants";
 import SuccessMessage from "../../ui/SuccessMessage";
+import LiveStatus from "../../ui/LiveStatus";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
 
 /**
@@ -73,7 +74,8 @@ const ResetPasswordForm = () => {
           {successMessage}
         </SuccessMessage>
       )}
-      <Button>Reset password</Button>
+      <Button aria-busy={isLoading}>Reset password</Button>
+      <LiveStatus>{isLoading ? "Requesting password reset" : ""}</LiveStatus>
     </form>
   );
 };

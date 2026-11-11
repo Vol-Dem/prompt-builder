@@ -15,7 +15,6 @@ import { ERROR_MESSAGE_INPUT_DEF, ERROR_MESSAGE_OFFLINE, MESSAGE_AGREEMENT, VALI
 
 // Exercise the real reducer, inputs, validation and password-reset form.
 vi.mock("../store/authThunks", () => ({ authRequest: vi.fn(), authWithGoogle: vi.fn(), reAuthUser: vi.fn(), resetUserPassword: vi.fn() }));
-vi.mock("../components/ui/Spinner", () => ({ default: () => <div role="status">Loading</div> }));
 
 let online;
 beforeEach(() => {
@@ -47,7 +46,9 @@ it("allows an existing short password at login and exposes loading state", () =>
   expect(screen.getByLabelText("Password").disabled).toBe(true);
   expect(screen.getByRole("button", { name: "Create Account" }).disabled).toBe(true);
   expect(screen.getByRole("button", { name: /Log in/ }).disabled).toBe(true);
-  expect(screen.getByRole("status").textContent).toBe("Loading");
+  expect(screen.getByRole("button", { name: "Log in" }).getAttribute("aria-busy")).toBe("true");
+  expect(screen.getByRole("status").textContent).toBe("Logging in");
+  expect(screen.getByRole("status").closest('[aria-busy="true"]')).toBeNull();
 });
 
 it.each(["", "short", "lowercasepassword"])("rejects invalid registration password %j after agreement", (password) => {

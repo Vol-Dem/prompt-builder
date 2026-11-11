@@ -5,7 +5,6 @@ import Checkbox from "../../ui/forms/Checkbox";
 import Button from "../../ui/buttons/Button";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
-import Spinner from "../../ui/Spinner";
 import { VALIDATION_POST_URL_MAX_LENGTH } from "../../../variables/constants";
 import ChooseImageForm from "../choose-image-form/ChooseImageForm";
 import ButtonInfo from "../../ui/buttons/ButtonInfo";
@@ -141,8 +140,10 @@ const SaveImageForm = ({
           disabled={status.isLoading}
           className={classes.submit}
           onClick={loadPostImages}
+          loading={status.isLoading}
+          loadingMessage="Loading post images"
         >
-          {!status.isLoading ? "Select images" : <Spinner size="small" />}
+          Select images
         </Button>
         {status.successMessage && <SuccessMessage>{status.successMessage}</SuccessMessage>}
         {status.errorMessage && <ErrorMessage>{status.errorMessage}</ErrorMessage>}

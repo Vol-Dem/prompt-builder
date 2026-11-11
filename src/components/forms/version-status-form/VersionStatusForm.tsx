@@ -12,7 +12,6 @@ import {
   ERROR_MESSAGE_OFFLINE,
   SUCCESS_MESSAGE_UPLOADED,
 } from "../../../variables/constants";
-import Spinner from "../../ui/Spinner";
 import { handleErrors, normalizeError } from "../../../utils/generalUtils";
 import type { ModelData } from "../../../types/models.types";
 import { useAppSelector } from "../../../store/hooks/hooks";
@@ -171,8 +170,14 @@ const VersionStatusForm = ({ modelData }: VersionStatusFormProps) => {
           )}
         </FieldCategory>
       </div>
-      <Button type="submit" disabled={isSaving} className={classes.submit}>
-        {!isSaving ? "Save" : <Spinner size="small" />}
+      <Button
+        type="submit"
+        disabled={isSaving}
+        className={classes.submit}
+        loading={isSaving}
+        loadingMessage="Saving version statuses"
+      >
+        Save
       </Button>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}

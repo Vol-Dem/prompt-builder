@@ -175,7 +175,7 @@ const ImageResources = ({ imageData }: ImageResourcesProps) => {
     <>
       {isLoading && (
         <div className={classes["spiner-container"]}>
-          <Spinner size="medium" />
+          <Spinner size="medium" label="Loading image resources" />
         </div>
       )}
       {!isLoading && !!resourcesHtml?.length && (

@@ -56,6 +56,9 @@ it("saves once in Strict Mode and keeps the upload active when the panel opens o
   const { store } = mount([first], { strict: true });
   expect(updateImagePostData).toHaveBeenCalledOnce();
   expect(store.getState().upload).toMatchObject({ curPostId: 7, isUploading: true, queue: [first] });
+  const status = screen.getByRole("status");
+  expect(status.textContent).toBe("Uploads: 1 pending, 0 completed, 0 failed");
+  expect(screen.getByRole("button", { name: "Uploading queue" })).toBeTruthy();
   fireEvent.click(screen.getByTitle("Uploading queue"));
   fireEvent.click(screen.getByTitle("Close"));
   expect(updateImagePostData).toHaveBeenCalledOnce();
@@ -66,6 +69,8 @@ it("saves once in Strict Mode and keeps the upload active when the panel opens o
     curPostId: null, isUploading: false,
   });
   expect(console.error).not.toHaveBeenCalled();
+  expect(screen.getByRole("status")).toBe(status);
+  expect(status.textContent).toBe("Uploads: 0 pending, 1 completed, 0 failed");
 });
 
 it.each(["models", "collections"])("catches a failed %s save, continues the queue, and retries only when requested", async (location) => {

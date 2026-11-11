@@ -30,7 +30,6 @@ vi.mock("./carousel-save/CarouselSave", () => ({ default: () => null }));
 vi.mock("./carousel-pagination/CarouselPagination", () => ({ default: () => null }));
 vi.mock("../../ui/Modal", () => ({ default: ({ children }) => <div role="dialog">{children}</div> }));
 vi.mock("../../ui/ImageFullView", () => ({ default: () => null }));
-vi.mock("../../ui/Spinner", () => ({ default: () => <span role="status">Deleting</span> }));
 vi.mock("../../ui/forms/ImageLabel", () => ({ default: ({ children }) => <label>{children}</label> }));
 vi.mock("../../forms/save-to-collection-form/SaveToCollectionForm", () => ({ default: () => null }));
 vi.mock("framer-motion", async (importOriginal) => ({
@@ -137,7 +136,7 @@ it.each(["whole model post", "partial model post", "collection post"])("keeps se
   expect(screen.getByTitle("1").checked).toBe(true);
   expect(screen.getByTitle("2").checked).toBe(false);
   expect(screen.getByRole("button", { name: "Delete all" }).disabled).toBe(false);
-  expect(screen.queryByRole("status")).toBeNull();
+  expect(screen.getByRole("status").textContent).toBe("");
   expect(onDelete).not.toHaveBeenCalled();
   expect(dispatch).not.toHaveBeenCalledWith(expect.objectContaining({ type: "model/updateSavedImages" }));
   expect(console.error).toHaveBeenCalledExactlyOnceWith(original);

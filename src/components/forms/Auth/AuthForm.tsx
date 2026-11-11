@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Input from "../../ui/forms/Input";
 import classes from "./AuthForm.module.scss";
 import Spinner from "../../ui/Spinner";
+import LiveStatus from "../../ui/LiveStatus";
 import ErrorMessage from "../../ui/ErrorMessage";
 import Button from "../../ui/buttons/Button";
 import ButtonSecondary from "../../ui/buttons/ButtonSecondary";
@@ -125,11 +126,15 @@ const AuthForm = () => {
             </ButtonSecondary>
             <Button
               disabled={status.isLoading}
+              aria-busy={status.isLoading}
               className={classes["auth__btn--submit"]}
             >
-              {status.isLoading && <Spinner size="small" />}
+              {status.isLoading && <Spinner size="small" decorative />}
               <span>{mode.isLogin ? "Log in" : "Sign up"}</span>
             </Button>
+            <LiveStatus>
+              {status.isLoading ? (mode.isLogin ? "Logging in" : "Signing up") : ""}
+            </LiveStatus>
           </div>
         </form>
       )}

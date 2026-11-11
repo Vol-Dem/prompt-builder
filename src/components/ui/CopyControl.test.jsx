@@ -48,10 +48,11 @@ const icons = { idleIcon: <span>Copy icon</span>, copiedIcon: <span>Copied icon<
 it("forwards native attributes, labels and refs while owning the copy action", async () => {
   const ref = createRef();
   render(<CopyControl {...icons} text="clipboard value" type="button" title="Copy"
+    aria-label="Copy visible label"
     data-type="negative" ref={ref} className="base" copiedClassName="copied">
     Visible label{" "}
   </CopyControl>);
-  const button = screen.getByRole("button", { name: "Visible label Copy icon" });
+  const button = screen.getByRole("button", { name: "Copy visible label" });
   expect(ref.current).toBe(button);
   expect(button.type).toBe("button");
   expect(button.getAttribute("data-type")).toBe("negative");
@@ -60,27 +61,35 @@ it("forwards native attributes, labels and refs while owning the copy action", a
   await click(button);
   expect(writeText).toHaveBeenCalledExactlyOnceWith("clipboard value");
   expect(button.className).toBe("base copied");
-  expect(screen.getByRole("button", { name: "Visible label Copied icon" })).toBe(button);
+  expect(screen.getByRole("button", { name: "Copy visible label" })).toBe(button);
+  expect(screen.getByRole("status").textContent).toBe("Copied to clipboard");
 });
 
 it("starts its one-second feedback only after the clipboard write succeeds", async () => {
   const pending = deferred();
   writeText.mockReturnValue(pending.promise);
   render(<CopyControl {...icons} text="pending" />);
+  const status = screen.getByRole("status");
+  expect(status.textContent).toBe("");
   await click(screen.getByRole("button"));
   expect(screen.getByText("Copy icon")).toBeTruthy();
   expect(screen.queryByText("Copied icon")).toBeNull();
   expect(screen.getByRole("button").getAttribute("aria-busy")).toBe("true");
+  expect(status.textContent).toBe("Copying to clipboard");
+  expect(status.closest('[aria-busy="true"]')).toBeNull();
   expect(vi.getTimerCount()).toBe(0);
   advance(5000);
   expect(screen.getByText("Copy icon")).toBeTruthy();
   await act(async () => { pending.resolve(); });
   expect(screen.getByText("Copied icon")).toBeTruthy();
   expect(screen.getByRole("button").getAttribute("aria-busy")).toBe("false");
+  expect(screen.getByRole("status")).toBe(status);
+  expect(status.textContent).toBe("Copied to clipboard");
   advance(999);
   expect(screen.getByText("Copied icon")).toBeTruthy();
   advance(1);
   expect(screen.getByText("Copy icon")).toBeTruthy();
+  expect(status.textContent).toBe("");
 });
 
 it("keeps existing feedback on text changes and copies the latest text on the next click", async () => {

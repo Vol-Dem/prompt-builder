@@ -20,7 +20,6 @@ vi.mock("firebase/firestore", () => ({
   getFirestore: () => ({}), doc: (_, ...path) => path.join("/"), updateDoc: vi.fn(),
   writeBatch: vi.fn(),
 }));
-vi.mock("../components/ui/Spinner", () => ({ default: () => <span role="status">Saving</span> }));
 
 const version = {
   versionId: 7, name: "Old version", versionName: "Original", downloadStatus: true,
@@ -251,7 +250,9 @@ it("keeps the existing checkpoint-field visibility and form loading behavior", a
   expect(screen.queryByLabelText("Version name")).toBeNull();
   expect(screen.queryByLabelText("Sampling method")).toBeNull();
   fireEvent.submit(container.querySelector("form"));
-  expect(screen.getByRole("button", { name: "Saving" }).disabled).toBe(true);
+  expect(screen.getByRole("button", { name: "Save" }).disabled).toBe(true);
+  expect(screen.getByRole("button", { name: "Save" }).getAttribute("aria-busy")).toBe("true");
+  expect(screen.getByRole("status").textContent).toBe("Saving version");
   await act(async () => finish());
   await screen.findByText(SUCCESS_MESSAGE_UPLOADED);
   expect(screen.getByRole("button", { name: "Save" }).disabled).toBe(false);

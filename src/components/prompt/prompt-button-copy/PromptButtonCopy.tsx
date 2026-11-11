@@ -33,6 +33,7 @@ const PromptButtonCopy = ({ promptData }: PromptButtonCopyProps) => {
       text={promptData}
       className={classes["btn-copy"]}
       title="Copy"
+      aria-label="Copy prompt"
       idleIcon={<DocumentDuplicateIcon />}
       copiedIcon={<DocumentArrowDownIcon className={classes.copied} />}
     />

@@ -21,7 +21,6 @@ import Button from "../../ui/buttons/Button";
 import Textarea from "../../ui/forms/Textarea";
 import Checkbox from "../../ui/forms/Checkbox";
 import { editCollectionData } from "../../../store/imagesThunks";
-import Spinner from "../../ui/Spinner";
 import Input from "../../ui/forms/Input";
 import ErrorMessage from "../../ui/ErrorMessage";
 import SuccessMessage from "../../ui/SuccessMessage";
@@ -394,8 +393,10 @@ const CollectionEditForm = ({ collectionData }: CollectionEditFormProps) => {
         type="submit"
         disabled={collectionDataIsSaving}
         className={classes.submit}
+        loading={collectionDataIsSaving}
+        loadingMessage="Saving collection"
       >
-        {!collectionDataIsSaving ? "Save" : <Spinner size="small" />}
+        Save
       </Button>
     </form>
   );

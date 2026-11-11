@@ -95,7 +95,10 @@ describe.each([
     fireEvent.click(save);
     expectWrite(update("rename"));
     expect(input.disabled).toBe(true);
-    expect(save.contains(screen.getByRole("status", { name: "Saving category name" }))).toBe(true);
+    const status = screen.getByRole("status");
+    expect(status.textContent).toBe("Saving category name");
+    expect(status.closest('[aria-busy="true"]')).toBeNull();
+    expect(save.querySelector('[aria-hidden="true"]')).not.toBeNull();
     for (const button of screen.getAllByRole("button")) expect(button.disabled).toBe(true);
     fireEvent.submit(input.closest("form"));
     expect(dispatch).toHaveBeenCalledOnce();
@@ -104,7 +107,8 @@ describe.each([
     expect(screen.getByDisplayValue("New name")).toBeTruthy();
     await act(async () => { pending.resolve(); });
     expect(screen.queryByRole("textbox")).toBeNull();
-    expect(screen.queryByRole("status")).toBeNull();
+    expect(screen.getByRole("status")).toBe(status);
+    expect(status.textContent).toBe("");
     expect(screen.getByRole("button", { name: "Rename New name" }).disabled).toBe(false);
   });
 
@@ -120,7 +124,7 @@ describe.each([
     expect(screen.getByDisplayValue("New name").disabled).toBe(false);
     expect(screen.getByText(ERROR_MESSAGE_CATEGORY_RENAME)).toBeTruthy();
     expect(console.error).toHaveBeenCalledExactlyOnceWith(original);
-    expect(screen.queryByRole("status")).toBeNull();
+    expect(screen.getByRole("status").textContent).toBe("");
 
     pending = deferred();
     fireEvent.click(screen.getByRole("button", { name: "Save category name" }));

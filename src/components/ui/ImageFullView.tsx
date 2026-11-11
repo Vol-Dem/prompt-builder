@@ -89,7 +89,7 @@ const ImageFullView = ({
           <div className={`${classes.modal} ${classes["modal--content"]}`}>
             {imgIsLoading && (
               <div className={classes["spiner-container"]}>
-                <Spinner size="medium" />
+                <Spinner size="medium" decorative />
               </div>
             )}
             {type !== "video" && (

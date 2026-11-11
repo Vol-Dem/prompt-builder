@@ -14,9 +14,12 @@ const SuccessMessage = ({ className, children }: SuccessMessageProps) => {
     <motion.div
       initial={ANIMATIONS_FM_SLIDEIN_INITIAL}
       animate={ANIMATIONS_FM_SLIDEIN}
+      role="status"
+      aria-atomic="true"
       className={`${classes["success"]} ${className || ""}`}
     >
       <svg
+        aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"

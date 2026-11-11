@@ -2,7 +2,6 @@ import { memo, useEffect, useState, type ChangeEvent } from "react";
 
 import Button from "../../ui/buttons/Button";
 import classes from "./ChooseImageForm.module.scss";
-import Spinner from "../../ui/Spinner";
 import { useOnlineStatus } from "../../../hooks/use-online-status";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { ERROR_MESSAGE_OFFLINE } from "../../../variables/constants";
@@ -226,6 +225,7 @@ const ChooseImageForm = memo(
               type="button"
               onClick={submitHandler.bind(null, true)}
               disabled={!!isDeleting || !isOnline}
+              aria-busy={!!isDeleting}
             >
               {type === "save" ? "Save all" : "Delete all"}
             </Button>
@@ -234,10 +234,12 @@ const ChooseImageForm = memo(
               type="button"
               disabled={!!isDeleting || !isOnline || !selectedAmount}
               onClick={submitHandler.bind(null, false)}
+              loading={!!isDeleting}
+              loadingMessage="Deleting images"
             >
-              {type === "save" ? `Save (${selectedAmount}) selected` : ""}
-              {type === "del" && !isDeleting ? "Delete selected" : ""}
-              {!!isDeleting && <Spinner size="small" />}
+              {type === "save"
+                ? `Save (${selectedAmount}) selected`
+                : "Delete selected"}
             </Button>
           </div>
         )}

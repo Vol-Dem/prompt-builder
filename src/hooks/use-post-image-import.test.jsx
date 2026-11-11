@@ -17,7 +17,6 @@ vi.mock("../utils/fetch/fetchCivitaiImages", () => ({ fetchCivitaiPostImagesForS
 vi.mock("../utils/fetch/fetchImages", () => ({ updateImagePostData: vi.fn() }));
 vi.mock("../store/imagesThunks", () => ({ savePostToCollections: vi.fn() }));
 vi.mock("../components/ui/buttons/ButtonInfo", () => ({ default: () => null }));
-vi.mock("../components/ui/Spinner", () => ({ default: () => <span role="status">Loading</span> }));
 vi.mock("../components/ui/forms/ImageLabel", () => ({
   default: ({ children }) => <label>{children}</label>,
 }));
@@ -238,7 +237,9 @@ it("disables lookup controls until the request finishes", async () => {
   fireEvent.change(screen.getByLabelText("Post ID or URL"), { target: { value: "7" } });
   fireEvent.click(screen.getByRole("button", { name: "Select images" }));
   expect(screen.getByLabelText("Post ID or URL").disabled).toBe(true);
-  expect(screen.getByRole("button", { name: "Loading" }).disabled).toBe(true);
+  expect(screen.getByRole("button", { name: "Select images" }).disabled).toBe(true);
+  expect(screen.getByRole("button", { name: "Select images" }).getAttribute("aria-busy")).toBe("true");
+  expect(screen.getByRole("status").textContent).toBe("Loading post images");
   await act(async () => finish({ items: [] }));
   expect(screen.getByText(ERROR_MESSAGE_EMPTY)).toBeTruthy();
   expect(screen.getByLabelText("Post ID or URL").disabled).toBe(false);

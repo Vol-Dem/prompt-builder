@@ -11,7 +11,6 @@ import VersionStatusForm from "../../forms/version-status-form/VersionStatusForm
 import DeleteRequest from "../../ui/DeleteRequest";
 import SuccessMessage from "../../ui/SuccessMessage";
 import ErrorMessage from "../../ui/ErrorMessage";
-import Spinner from "../../ui/Spinner";
 import {
   ERROR_MESSAGE_DEFAULT,
   GUIDE_STEP_EDIT_UPD_DEL,
@@ -322,8 +321,10 @@ const ModelSettings = () => {
             onClick={updateModelHandler}
             className={classes["btn-update"]}
             disabled={isLoading}
+            loading={isLoading}
+            loadingMessage="Checking for model updates"
           >
-            {!isLoading ? "Check for updates" : <Spinner size="small" />}
+            Check for updates
           </Button>
 
           <Button

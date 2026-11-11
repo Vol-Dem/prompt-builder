@@ -102,7 +102,8 @@ describe("model and collection previews", () => {
 
     await act(async () => { pending.resolve(); });
     expect(screen.queryByRole("button", { name: label })).toBeNull();
-    expect(screen.queryByRole("status")).toBeNull();
+    expect(screen.getByRole("status").textContent).toBe(location === "models"
+      ? SUCCESS_MESSAGE_MODEL_PREVIEW_SAVED : SUCCESS_MESSAGE_COLLECTION_PREVIEW_SAVED);
     expect(screen.getByRole("button", { name: "Image settings" }).disabled).toBe(false);
     const dialog = screen.getByRole("dialog", { name: "Preview" });
     expect(within(dialog).getByText(location === "models"
@@ -157,10 +158,10 @@ describe("tag-set previews", () => {
     expect(setTagSetPreviewImg).toHaveBeenCalledExactlyOnceWith(version, [
       tagSets[0], { ...tagSets[1], [nsfw ? "nsfwImgUrl" : "imgUrl"]: src },
     ]);
-    const spinner = screen.getByRole("status", { name: "Saving tag-set preview" });
-    expect(clickedButton.contains(spinner)).toBe(true);
-    expect(spinner.textContent).toBe("");
-    expect(spinner.querySelector("div")).not.toBeNull();
+    const status = screen.getByRole("status");
+    expect(status.textContent).toBe("Saving tag-set preview");
+    expect(status.closest('[aria-busy="true"]')).toBeNull();
+    expect(clickedButton.querySelector('[aria-hidden="true"] div')).not.toBeNull();
     expect(screen.queryByText("Saving preview…")).toBeNull();
     for (const button of screen.getAllByRole("button", { name: /Set as .*preview/ })) {
       expect(button.disabled).toBe(true);
@@ -176,7 +177,8 @@ describe("tag-set previews", () => {
     expect(screen.getAllByAltText("Tag-set preview")[1].getAttribute("src")).not.toBe(src);
 
     await act(async () => { pending.resolve(); });
-    expect(screen.queryByRole("status")).toBeNull();
+    expect(screen.getByRole("status")).toBe(status);
+    expect(status.textContent).toBe("");
     expect(screen.getAllByRole("button", { name: label })[1].disabled).toBe(false);
     expect(screen.getByText("Tag sets")).toBeTruthy();
     expect(screen.queryByTestId("error-message")).toBeNull();
@@ -192,7 +194,7 @@ describe("tag-set previews", () => {
     expect(screen.getByTestId("error-message").textContent).toBe(ERROR_MESSAGE_TAG_SET_PREVIEW_SAVE);
     expect(console.error).toHaveBeenCalledExactlyOnceWith(original);
     expect(button.disabled).toBe(false);
-    expect(screen.queryByRole("status")).toBeNull();
+    expect(screen.getByRole("status").textContent).toBe("");
     expect(screen.getAllByAltText("Tag-set preview")[0].getAttribute("src")).toBe("old-nsfw.webp");
 
     pending = deferred();
