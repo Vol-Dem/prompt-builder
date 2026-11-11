@@ -8,7 +8,12 @@
 }
 
 .select {
+  display: block;
   position: relative;
+  background-color: transparent;
+  font-family: inherit;
+  line-height: inherit;
+  text-align: left;
   font-size: 1.5rem;
   border-radius: 10px 0 0 10px;
   border-radius: 10px;
@@ -43,6 +48,7 @@
   }
 
   &__input {
+    display: block;
     position: relative;
   }
 
@@ -62,14 +68,6 @@
       fill: rgba(var.$color-violet-dark, 0.5);
       stroke-width: 0.1px;
     }
-  }
-
-  &__radio {
-    display: none;
-  }
-
-  &__radio:checked ~ &__label {
-    background-color: rgb(var.$color-primary, 0.4);
   }
 
   &__label {
@@ -92,6 +90,11 @@
     transition: all 0.3s ease;
     cursor: pointer;
 
+    &[data-selected] {
+      background-color: rgb(var.$color-primary, 0.4);
+    }
+
+    &[data-focus],
     &:hover {
       background-color: var.$color-primary !important;
     }
@@ -99,6 +102,7 @@
 
   &__field {
     position: absolute;
+    top: 100%;
     background-color: var.$color-input-bg;
     width: 94%;
     width: 100%;
@@ -113,13 +117,6 @@
     border: 1px solid rgba(var.$color-gray, 0.3);
     left: 0;
     @include var.custom-scroll;
-
-    &--hide {
-      background-color: transparent;
-      border-color: transparent;
-      padding: 0;
-      height: 0;
-    }
 
     &-container {
       height: 100%;

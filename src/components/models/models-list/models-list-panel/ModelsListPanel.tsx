@@ -45,6 +45,7 @@ const ModelsListPanel = () => {
       <span className={classes["panel__title"]}>Sort by:</span>
       <Select
         id="sort"
+        aria-label="Sort models"
         name="sort"
         selected={sortBy}
         onChange={(value) => {
@@ -69,6 +70,7 @@ const ModelsListPanel = () => {
       />
       <Select
         id="model"
+        aria-label="Filter by base model"
         name="model"
         onChange={(value) => {
           dispatch(tabActions.setBaseModel(value || ""));

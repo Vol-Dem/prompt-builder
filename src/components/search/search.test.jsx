@@ -49,8 +49,15 @@ const mount = (store, element, url = "/") => render(
   </Provider>,
 );
 const params = () => new URL(screen.getByTestId("location").textContent, "https://example.test").searchParams;
-beforeEach(() => vi.mocked(fetchData).mockReset());
-afterEach(cleanup);
+beforeEach(() => {
+  vi.mocked(fetchData).mockReset();
+  vi.stubGlobal("ResizeObserver", class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  });
+});
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 it("opens quick search and submits the typed query to the search route", () => {
   const store = makeStore();
@@ -263,11 +270,11 @@ it.each([false, true])("keeps Civitai sorting gated by tester=%s", (tester) => {
   mount(store, <SearchFilter />, "/search?searchSrc=civitai&sort=Newest");
   fireEvent.click(screen.getByText("Newest"));
   if (!tester) {
-    expect(screen.queryByRole("radio", { name: "Most Liked" })).toBeNull();
+    expect(screen.queryByRole("option", { name: "Most Liked" })).toBeNull();
     expect(params().get("sort")).toBe("Newest");
     return;
   }
-  fireEvent.click(screen.getByRole("radio", { name: "Most Liked" }));
+  fireEvent.click(screen.getByRole("option", { name: "Most Liked" }));
   expect(store.getState().search.searchFilter.sort).toBe("Most Liked");
   expect(params().get("sort")).toBe("Most Liked");
   fireEvent.click(screen.getByRole("button", { name: "Reset filter" }));

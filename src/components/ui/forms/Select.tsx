@@ -1,22 +1,34 @@
 import {
-  useCallback,
-  useEffect,
+  useId,
+  useLayoutEffect,
   useRef,
   useState,
   type ComponentProps,
   type ReactNode,
 } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import {
+  Listbox,
+  ListboxButton,
+  ListboxLabel,
+  ListboxOption,
+  ListboxOptions,
+} from "@headlessui/react";
+import { AnimatePresence, motion, useIsPresent } from "framer-motion";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 import classes from "./Select.module.scss";
+import accessibilityClasses from "../LiveStatus.module.scss";
 import {
   ANIMATIONS_FM_ZOOM_IN,
   ANIMATIONS_FM_ZOOM_IN_INITIAL,
 } from "../../../variables/constants";
 import type { OverrideFields } from "../../../../shared/types/general";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
-type SelectOption = { name: ReactNode; value: string | number };
+type SelectOption = {
+  name: ReactNode;
+  value: string | number;
+  textValue?: string;
+};
 
 type SelectProps<T extends SelectOption> = OverrideFields<
   ComponentProps<"input">,
@@ -28,191 +40,222 @@ type SelectProps<T extends SelectOption> = OverrideFields<
   }
 >;
 
+type SelectButtonProps = ComponentProps<"button"> & {
+  fieldLabelledBy?: string;
+  fieldDescription?: string;
+};
+
+// Preserve caller associations after Headless UI sets its own ARIA props.
+const SelectButton = ({
+  fieldLabelledBy,
+  fieldDescription,
+  ...props
+}: SelectButtonProps) => (
+  <button
+    {...props}
+    onKeyDown={(event) => {
+      if (event.defaultPrevented) return;
+      if (event.key === "Enter") {
+        event.preventDefault();
+        event.currentTarget.click();
+      } else {
+        props.onKeyDown?.(event);
+      }
+    }}
+    aria-labelledby={
+      fieldLabelledBy ??
+      (props["aria-label"] ? undefined : props["aria-labelledby"])
+    }
+    aria-describedby={fieldDescription ?? props["aria-describedby"]}
+  />
+);
+
+const visibleOptionsAmount = 5;
+
+const SelectOptions = <T extends SelectOption>({
+  options,
+  showEmptyOption,
+}: {
+  options: T[];
+  showEmptyOption: boolean;
+}) => {
+  const [optionsFieldHeight, setOptionsFieldHeight] = useState(15);
+  const optionRef = useRef<HTMLDivElement>(null);
+  const isPresent = useIsPresent();
+  const optionsAmount = options.length + (showEmptyOption ? 1 : 0);
+
+  useLayoutEffect(() => {
+    if (!optionRef.current) return;
+    const optionStyle = window.getComputedStyle(optionRef.current);
+    const rowHeight =
+      optionRef.current.clientHeight +
+      (parseFloat(optionStyle.marginTop) || 0) +
+      (parseFloat(optionStyle.marginBottom) || 0);
+    setOptionsFieldHeight(
+      Math.min(optionsAmount, visibleOptionsAmount) * rowHeight,
+    );
+  }, [options, optionsAmount]);
+
+  return (
+    <ListboxOptions
+      static
+      as={motion.div}
+      initial={ANIMATIONS_FM_ZOOM_IN_INITIAL}
+      animate={ANIMATIONS_FM_ZOOM_IN}
+      exit={ANIMATIONS_FM_ZOOM_IN_INITIAL}
+      modal={false}
+      aria-hidden={!isPresent || undefined}
+      inert={!isPresent}
+      style={
+        optionsFieldHeight > 0 ? { height: optionsFieldHeight } : undefined
+      }
+      className={classes["select__field"]}
+    >
+      <div
+        className={classes["select__field-container"]}
+        style={
+          optionsAmount <= visibleOptionsAmount
+            ? { overflowY: "unset" }
+            : undefined
+        }
+      >
+        {showEmptyOption && (
+          <ListboxOption
+            ref={options.length === 0 ? optionRef : undefined}
+            value={null}
+            className={classes["select__label"]}
+          >
+            <div className={classes["select__title"]}>
+              <span>-</span>
+            </div>
+          </ListboxOption>
+        )}
+        {options.map((item, i) => (
+          <ListboxOption
+            ref={i === options.length - 1 ? optionRef : undefined}
+            key={i}
+            value={item.value}
+            aria-label={item.textValue}
+            className={classes["select__label"]}
+          >
+            <div className={classes["select__title"]}>
+              <span>{item.name}</span>
+              {item.textValue && (
+                <span className={accessibilityClasses.status}>
+                  {item.textValue}
+                </span>
+              )}
+            </div>
+          </ListboxOption>
+        ))}
+      </div>
+    </ListboxOptions>
+  );
+};
+
 /**
- * Custom animated select dropdown with radio options.
- *
- * @param props - Native input props for radio inputs.
- * @param props.id - Base id for select.
- * @param props.options - Select options.
- * @param props.onChange - Callback when value changes.
- * @param props.className - Optional custom class.
- * @param props.label - Optional label text.
- * @param props.selected - Controlled value; null, undefined, or "" clears it. Omit for uncontrolled selection.
- * @returns  Rendered select component.
+ * Accessible animated select with native input props on its hidden form value.
+ * Explicit null, undefined, or empty-string selected values clear the selection.
+ * Omit selected for uncontrolled selection. Callbacks receive raw option values.
  */
 const Select = <T extends SelectOption>(selectProps: SelectProps<T>) => {
   const {
-    id = "select",
+    id,
     options,
     onChange,
     className,
     label,
     selected,
-    ...props
+    disabled,
+    name,
+    form,
+    autoFocus,
+    tabIndex,
+    title,
+    "aria-label": ariaLabel,
+    "aria-labelledby": labelledBy,
+    "aria-describedby": describedBy,
+    "aria-invalid": invalid,
+    ...inputProps
   } = selectProps;
-  const [selectIsOpen, setSelectIsOpen] = useState(false);
-  const [uncontrolledValue, setUncontrolledValue] = useState<T["value"] | null>(null);
+  const generatedId = useId();
+  const fieldId = id || generatedId;
+  const [uncontrolledValue, setUncontrolledValue] = useState<T["value"] | null>(
+    null,
+  );
   const isControlled = "selected" in selectProps;
   const selectedId = isControlled ? selected : uncontrolledValue;
   const selectedValue =
     selectedId != null && selectedId !== ""
-      ? options.find((option) => String(option.value) === String(selectedId)) ?? null
+      ? (options.find(
+          (option) => String(option.value) === String(selectedId),
+        ) ?? null)
       : null;
   const showEmptyOption = selected == null || selected === "";
-  const [optionsFieldHeight, setOptionsFieldHeight] = useState(15);
-  const visibleOptionsAmount = 5;
-  const labeldRef = useRef<HTMLLabelElement>(null);
-  const inputRef = useRef<HTMLDivElement>(null);
 
-  const closeSelectHandler = useCallback((e: PointerEvent) => {
-    if (!(e.target as HTMLElement)?.closest(`.${classes["select"]}`))
-      setSelectIsOpen(false);
-  }, []);
-
-  useEffect(() => {
-    if (selectIsOpen) {
-      document.removeEventListener("click", closeSelectHandler);
-      document.addEventListener("click", closeSelectHandler);
-    } else {
-      document.removeEventListener("click", closeSelectHandler);
-    }
-
-    return () => {
-      document.removeEventListener("click", closeSelectHandler);
-    };
-  }, [selectIsOpen, closeSelectHandler]);
-
-  useEffect(() => {
-    if (!labeldRef?.current) return;
-    const labelStyle = window.getComputedStyle(labeldRef.current);
-    const merginTop = parseFloat(labelStyle.marginTop);
-    const merginBottom = parseFloat(labelStyle.marginBottom);
-    const selectHeight =
-      labeldRef.current.clientHeight + merginTop + merginBottom;
-    const optionsAmount = options.length + (showEmptyOption ? 1 : 0);
-    const fieldHeight =
-      optionsAmount <= visibleOptionsAmount
-        ? optionsAmount * selectHeight
-        : visibleOptionsAmount * selectHeight;
-    setOptionsFieldHeight(fieldHeight);
-  }, [visibleOptionsAmount, selectIsOpen, options, showEmptyOption]);
-
-  const onSelectValueChange = (value: T | null) => {
-    if (!isControlled) setUncontrolledValue(value?.value ?? null);
-    onChange(value?.value ?? null);
-    setSelectIsOpen(false);
+  const onSelectValueChange = (value: T["value"] | null) => {
+    if (value === (selectedValue?.value ?? null)) return;
+    if (!isControlled) setUncontrolledValue(value);
+    onChange(value);
   };
-
-  const onShowSelect = () => {
-    setSelectIsOpen((curState) => !curState);
-  };
-
-  const selectOptions = options.map((item, i) => {
-    return (
-      <div ref={inputRef} key={i} className={classes["select__item"]}>
-        <input
-          className={classes["select__radio"]}
-          type="radio"
-          id={`select-${id}-${i}`}
-          name="option"
-          value={item.value}
-          data-name={item.name}
-          onChange={() => onSelectValueChange(item)}
-          checked={item.value === selectedValue?.value}
-          {...props}
-        />
-        <label
-          ref={labeldRef}
-          className={classes["select__label"]}
-          htmlFor={`select-${id}-${i}`}
-        >
-          <div className={classes["select__title"]}>
-            <span>{item.name}</span>
-          </div>
-        </label>
-      </div>
-    );
-  });
 
   return (
-    <div>
-      {label && (
-        <label htmlFor={id} className={classes.label}>
-          {label}
-        </label>
-      )}
-      <div className={`${classes["container"]} `}>
-        <div
-          onClick={!props.disabled ? onShowSelect : undefined}
-          className={`${classes["select"]} ${className || ""} ${props.disabled ? classes["select--disabled"] : ""}`}
-        >
-          <ChevronDownIcon
-            className={`${classes["select__arrow"]} ${
-              selectIsOpen ? classes["select__arrow--open"] : ""
-            }`}
-          />
-          <div className={classes["select__input"]}>
-            <span className={classes["select__input-field"]}>
-              {selectedValue?.name || "-"}
-            </span>
+    <Listbox
+      as="div"
+      value={selectedValue?.value ?? null}
+      onChange={onSelectValueChange}
+      disabled={disabled}
+    >
+      {({ open }) => (
+        <>
+          {label && (
+            <ListboxLabel htmlFor={fieldId} className={classes.label}>
+              {label}
+            </ListboxLabel>
+          )}
+          <div className={classes.container}>
+            <ListboxButton
+              as={SelectButton}
+              id={fieldId}
+              type="button"
+              autoFocus={autoFocus}
+              tabIndex={tabIndex}
+              title={title}
+              aria-label={ariaLabel}
+              fieldLabelledBy={labelledBy}
+              fieldDescription={describedBy}
+              aria-invalid={invalid}
+              className={`${classes.select} ${className || ""} ${disabled ? classes["select--disabled"] : ""}`}
+            >
+              <ChevronDownIcon
+                className={`${classes["select__arrow"]} ${open ? classes["select__arrow--open"] : ""}`}
+              />
+              <span className={classes["select__input"]}>
+                <span className={classes["select__input-field"]}>
+                  {selectedValue?.name || "-"}
+                </span>
+              </span>
+            </ListboxButton>
+            <AnimatePresence>
+              {open && !disabled && (
+                <SelectOptions
+                  options={options}
+                  showEmptyOption={showEmptyOption}
+                />
+              )}
+            </AnimatePresence>
           </div>
-          <AnimatePresence>
-            {!!selectIsOpen && (
-              <motion.div
-                initial={ANIMATIONS_FM_ZOOM_IN_INITIAL}
-                animate={ANIMATIONS_FM_ZOOM_IN}
-                exit={ANIMATIONS_FM_ZOOM_IN_INITIAL}
-                style={
-                  optionsFieldHeight && selectIsOpen
-                    ? { height: `${optionsFieldHeight}px` }
-                    : {}
-                }
-                className={`${classes["select__field"]} ${
-                  !selectIsOpen ? classes["select__field--hide"] : ""
-                }`}
-              >
-                <div
-                  className={classes["select__field-container"]}
-                  style={
-                    options.length <= visibleOptionsAmount
-                      ? { overflowY: `unset` }
-                      : {}
-                  }
-                >
-                  {[
-                    showEmptyOption && (
-                      <div key="def" className={classes["select__item"]}>
-                        <input
-                          className={classes["select__radio"]}
-                          type="radio"
-                          id={`select-def`}
-                          name="option"
-                          value={""}
-                          data-name={"-"}
-                          onChange={() => onSelectValueChange(null)}
-                          checked={selectedValue === null}
-                          {...props}
-                        />
-                        <label
-                          ref={labeldRef}
-                          className={classes["select__label"]}
-                          htmlFor={`select-def`}
-                        >
-                          <div className={classes["select__title"]}>
-                            <span>-</span>
-                          </div>
-                        </label>
-                      </div>
-                    ),
-                    ...selectOptions,
-                  ]}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    </div>
+          <input
+            {...inputProps}
+            type="hidden"
+            name={name}
+            form={form}
+            disabled={disabled}
+            value={selectedValue?.value ?? ""}
+          />
+        </>
+      )}
+    </Listbox>
   );
 };
 

@@ -27,7 +27,11 @@ import logoCiv from "../../assets/logo-civ-80.png";
 
 type SearchFieldProps = ComponentProps<"div">;
 
-type SearchSrcSelectValue = { name: ReactNode; value: SearchSrcType };
+type SearchSrcSelectValue = {
+  name: ReactNode;
+  value: SearchSrcType;
+  textValue: string;
+};
 
 /**
  * Global search input displayed in the app header.
@@ -93,13 +97,13 @@ const SearchField = ({ className }: SearchFieldProps) => {
   );
   const civitaiLogo = (
     <span className={classes["select-logo"]}>
-      <img src={logoCiv} alt="AITOOLS" />
+      <img src={logoCiv} alt="Civitai" />
     </span>
   );
 
   const searchSrcOptions: SearchSrcSelectValue[] = [
-    { name: aiToolsLogo, value: "aitools" },
-    { name: civitaiLogo, value: "civitai" },
+    { name: aiToolsLogo, value: "aitools", textValue: "AITOOLS" },
+    { name: civitaiLogo, value: "civitai", textValue: "Civitai" },
   ];
 
   const searchSrcHandler = (value: SearchSrcType | null) => {
@@ -126,6 +130,7 @@ const SearchField = ({ className }: SearchFieldProps) => {
         >
           {SETTINGS_SEARCH_CIVITAI && (
             <Select
+              aria-label="Search source"
               className={classes["select"]}
               options={searchSrcOptions}
               selected={searchSrc}

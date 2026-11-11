@@ -28,6 +28,7 @@ const SearchFilter = () => {
             defSide="center"
           >
             <Select
+              aria-label="Sort search results"
               disabled={sort.disabled}
               options={sort.options}
               selected={sort.value}
