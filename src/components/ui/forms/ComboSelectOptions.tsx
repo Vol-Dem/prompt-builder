@@ -61,7 +61,7 @@ const ComboSelectOptions = <T extends number | string>({
     if (isIntersecting && visibleOptions.length < optionsData.length) {
       setVisibleOptionsIndex((prevIndex) => prevIndex + 1);
     }
-  }, [isIntersecting]);
+  }, [isIntersecting, visibleOptions, optionsData]);
 
   return (
     <ComboboxOptions

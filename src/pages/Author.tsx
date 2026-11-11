@@ -24,7 +24,7 @@ const Author = () => {
     return () => {
       dispatch(modelActions.setActiveCarouselData(null));
     };
-  }, []);
+  }, [dispatch]);
 
   return (
     <div>

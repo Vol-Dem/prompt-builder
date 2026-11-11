@@ -148,7 +148,7 @@ const useCarouselNavigation = ({
     curVisibleAmount,
     visibleImages,
     imagesData,
-    dimensions?.imgWidthWithGap,
+    dimensions,
     transitionStartHandler,
   ]);
 

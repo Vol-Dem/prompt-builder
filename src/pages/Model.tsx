@@ -96,7 +96,7 @@ const Model = ({ title }: ModelPageProps) => {
       curCustomVersionData,
       nsfwLevel,
     );
-  }, [model, curVersion, curCustomVersionData]);
+  }, [model, curVersion, curCustomVersionData, nsfwLevel]);
 
   useEffect(() => {
     if (guideIsActive && guideHomeActive) {
@@ -160,7 +160,7 @@ const Model = ({ title }: ModelPageProps) => {
         );
       }
     }
-  }, [model, dispatch, modelIsChanged, versionIsChanged, versionIdParam]);
+  }, [model, dispatch, modelIsChanged, versionIsChanged, versionIdParam, navigate]);
 
   const openVersionHandler = (e: React.MouseEvent<HTMLElement>) => {
     const id = +(e.target as HTMLElement).id;

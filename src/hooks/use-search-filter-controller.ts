@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ChangeEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { searchActions } from "../store/search";
@@ -83,7 +83,7 @@ const useSearchFilterController = () => {
   const searchParamSrc = searchParams.get("searchSrc") as SearchSrcType;
   const searchFilter = useMemo(
     () => ({ ...parseSearchFilterParams(searchParams), searchSrc }),
-    [searchParams, searchParamSrc],
+    [searchParams, searchSrc],
   );
   const modelTypesChecked = modelTypeCheckboxStatus.filter(
     (item) => item.value,
@@ -116,7 +116,7 @@ const useSearchFilterController = () => {
           ...(searchQuery && { searchQuery: searchQuery || "" }),
         };
       });
-  }, [searchSrc, searchQuery, hashtag, creator]);
+  }, [searchSrc, searchQuery, hashtag, creator, searchParamSrc, setSearchParams]);
 
   useEffect(() => {
     if (searchParamSrc && initial) {
@@ -124,9 +124,9 @@ const useSearchFilterController = () => {
     }
 
     setInitial(false);
-  }, [searchSrc, initial]);
+  }, [searchSrc, initial, searchParamSrc, dispatch]);
 
-  const createModelTypesInputData = (
+  const createModelTypesInputData = useCallback( (
     modelTypes: ModelTypeInputData[],
   ): ModelTypeCheckboxStatusInput[] => {
     const modelTypeInputs = modelTypes.map((type) => {
@@ -153,7 +153,7 @@ const useSearchFilterController = () => {
     }
 
     return modelTypeInputs;
-  };
+  },[searchFilter,searchSrc] );
 
   useEffect(() => {
     // if (!MODEL_TYPES || !initial) return;
@@ -217,6 +217,7 @@ const useSearchFilterController = () => {
     searchFilter,
     // initial,
     searchSrc,
+    createModelTypesInputData
   ]);
 
   const typeChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {

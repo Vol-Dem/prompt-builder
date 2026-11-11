@@ -52,7 +52,7 @@ const LayoutContentWrap = ({
 
   useEffect(() => {
     if (paddingMain) dispatch(generalActions.setPromptPanelHeight(paddingMain));
-  }, [paddingMain]);
+  }, [paddingMain, dispatch]);
 
   return (
     <main ref={mainRef} style={{ paddingTop: paddingMain }}>

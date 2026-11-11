@@ -97,7 +97,7 @@ const CollectionImages = memo(() => {
       !errorMessage &&
       isOnline &&
       !imagesIsLoading &&
-      collectionData &&
+      collectionData?.id &&
       savedImagesData?.length
     ) {
       getImagesFromFirestore(savedImagesData, collectionData.id);

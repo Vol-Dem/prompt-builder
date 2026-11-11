@@ -25,15 +25,17 @@ const usePageEnd = (containerRef: RefObject<HTMLElement | null>): boolean => {
   }, [isPageEnd]);
 
   useEffect(() => {
-    if (containerRef.current)
-      containerRef.current.addEventListener("scroll", handleScroll);
+    const container = containerRef.current
+    
+    if (container)
+      container.addEventListener("scroll", handleScroll);
     // window.addEventListener("scroll", handleScroll);
     return () => {
-      if (containerRef.current)
-        containerRef.current.removeEventListener("scroll", handleScroll);
+      if (container)
+        container.removeEventListener("scroll", handleScroll);
       // window.removeEventListener("scroll", handleScroll);
     };
-  }, [handleScroll, containerRef.current]);
+  }, [handleScroll, containerRef]);
 
   return isPageEnd;
 };

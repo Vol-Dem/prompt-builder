@@ -95,6 +95,7 @@ const useQuickSearchController = () => {
     location?.pathname,
     isOnline,
     searchSrc,
+    nsfwData
   ]);
 
   const clearQuery = () => {

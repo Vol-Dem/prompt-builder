@@ -137,6 +137,7 @@ const ExternalImages = memo(
       modelId,
       isOnline,
       fetchCivitai,
+      username
     ]);
 
     const retryImageLoadingHandler = () => {

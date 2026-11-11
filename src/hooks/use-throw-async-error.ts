@@ -13,5 +13,5 @@ export const useThrowAsyncError = () => {
     setErrorState(() => {
       throw error;
     });
-  }, []);
+  }, [setErrorState]);
 };
