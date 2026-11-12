@@ -23,6 +23,7 @@ type ImageProps = ComponentProps<"img"> & {
   imgType?: SrcType;
   preloader?: boolean;
   imageWidth?: number;
+  actionLabel?: string;
   src?: string;
   onClick?: (e: React.MouseEvent<HTMLElement>) => void;
 };
@@ -73,6 +74,7 @@ const Image = ({
   srcSet,
   alt,
   onClick,
+  actionLabel,
   className,
   type = "image/webp",
   imgType = "image",
@@ -205,7 +207,6 @@ const Image = ({
     <>
       <div
         className={`${classes["image-container"]} ${className || ""}`}
-        onClick={clickHandler}
         ref={imageRef}
         id={id}
       >
@@ -226,11 +227,26 @@ const Image = ({
           </picture>
         )}
         {content}
+        {(fullView || onClick) && (
+          <button
+            type="button"
+            className={classes["image-action"]}
+            aria-label={
+              actionLabel ||
+              (fullView
+                ? `Open full view${alt ? `: ${alt}` : ""}`
+                : `Open ${alt || "image"}`)
+            }
+            aria-haspopup={fullView ? "dialog" : undefined}
+            onClick={clickHandler}
+          />
+        )}
       </div>
       <AnimatePresence>
         {fullViewIsOpen && src && (
           <ImageFullView
             src={src}
+            alt={alt}
             onClose={() => {
               setFullViewIsOpen(false);
             }}

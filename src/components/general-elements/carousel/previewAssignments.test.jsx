@@ -171,7 +171,7 @@ describe("tag-set previews", () => {
     }
     expect(screen.getByRole("button", { name: "Add tag set" }).disabled).toBe(true);
     fireEvent.click(screen.getByText(version === "9" ? "Default" : "Version"));
-    expect(screen.getByText(version === "9" ? "Default" : "Version").getAttribute("aria-disabled")).toBe("true");
+    expect(screen.getByRole("button", { name: version === "9" ? "Default" : "Version" }).disabled).toBe(true);
     expect(screen.getByText(version === "9" ? "Version" : "Default").className).toContain("--active");
     expect(setTagSetPreviewImg).toHaveBeenCalledOnce();
     expect(screen.getAllByAltText("Tag-set preview")[1].getAttribute("src")).not.toBe(src);

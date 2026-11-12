@@ -177,18 +177,21 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
       .flatMap((version, i) => {
         if (!version?.tagSetsData?.length) return [];
         return (
-          <li
-            key={i}
-            id={`${version.versionId}`}
-            className={`${classes["tag-sets-versions__item"]} ${
-              curTagSetVersionId === `${version.versionId}`
-                ? classes["tag-sets-versions__item--active"]
-                : ""
-            }`}
-            onClick={() => openTagSetVersionHandler(`${version.versionId}`)}
-            aria-disabled={previewIsSaving}
-          >
-            {version.name}
+          <li key={i}>
+            <button
+              type="button"
+              id={`${version.versionId}`}
+              className={`${classes["tag-sets-versions__item"]} ${
+                curTagSetVersionId === `${version.versionId}`
+                  ? classes["tag-sets-versions__item--active"]
+                  : ""
+              }`}
+              onClick={() => openTagSetVersionHandler(`${version.versionId}`)}
+              disabled={previewIsSaving}
+              aria-pressed={curTagSetVersionId === `${version.versionId}`}
+            >
+              {version.name}
+            </button>
           </li>
         );
       });
@@ -276,6 +279,7 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
                   <button
                     type="button"
                     onClick={nsfwSwitchHandler}
+                    aria-pressed={!showNsfwPreview}
                     className={`${classes["btn-mode"]} ${
                       !showNsfwPreview ? classes["btn-mode--active"] : ""
                     }`}
@@ -285,6 +289,7 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
                   <button
                     type="button"
                     onClick={nsfwSwitchHandler}
+                    aria-pressed={showNsfwPreview}
                     className={`${classes["btn-mode"]} ${
                       showNsfwPreview ? classes["btn-mode--active"] : ""
                     }`}
@@ -297,17 +302,21 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
             {previewError && <ErrorMessage>{previewError}</ErrorMessage>}
             <ul className={classes["tag-sets-versions"]}>
               {!!model?.defaultCustomData?.tagSetsData?.length && (
-                <li
-                  id={`tsv-def`}
-                  className={`${classes["tag-sets-versions__item"]} ${
-                    curTagSetVersionId === "tsv-def"
-                      ? classes["tag-sets-versions__item--active"]
-                      : ""
-                  }`}
-                  onClick={() => openTagSetVersionHandler(`tsv-def`)}
-                  aria-disabled={previewIsSaving}
-                >
-                  Default
+                <li>
+                  <button
+                    type="button"
+                    id={`tsv-def`}
+                    className={`${classes["tag-sets-versions__item"]} ${
+                      curTagSetVersionId === "tsv-def"
+                        ? classes["tag-sets-versions__item--active"]
+                        : ""
+                    }`}
+                    onClick={() => openTagSetVersionHandler(`tsv-def`)}
+                    disabled={previewIsSaving}
+                    aria-pressed={curTagSetVersionId === "tsv-def"}
+                  >
+                    Default
+                  </button>
                 </li>
               )}
               {tagSetVersionsHtml}

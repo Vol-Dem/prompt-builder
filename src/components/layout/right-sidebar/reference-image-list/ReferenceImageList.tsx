@@ -115,14 +115,17 @@ const ReferenceImageList = ({ usedImages }: ReferenceImageListProps) => {
                       <Image
                         src={usedImages[i].url}
                         imgType={usedImages[i].type}
-                        alt={`Reference image ${i}`}
+                        alt={`Reference image ${i + 1}`}
+                        actionLabel={`Open reference image ${i + 1}`}
                         onClick={openImageHandler}
                         className={`${classes["ref-images__image"]} ${
                           !nsfwMode && nsfw ? classes["ref-images__nsfw"] : ""
                         }`}
                         imageWidth={SETTINGS_IMAGE_PREVIEW_WIDTH_SMALL}
                       />
-                      <span
+                      <button
+                        type="button"
+                        aria-label={`Remove reference image ${i + 1}`}
                         className={classes.close}
                         onClick={() =>
                           removeImageHandler(
@@ -132,7 +135,7 @@ const ReferenceImageList = ({ usedImages }: ReferenceImageListProps) => {
                         }
                       >
                         <XMarkIcon />
-                      </span>
+                      </button>
                     </motion.li>
                   );
                 } else {

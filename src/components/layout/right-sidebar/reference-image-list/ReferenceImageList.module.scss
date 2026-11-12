@@ -58,6 +58,13 @@
 }
 
 .close {
+  z-index: 3;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
   position: absolute;
   top: 0rem;
   right: 0rem;

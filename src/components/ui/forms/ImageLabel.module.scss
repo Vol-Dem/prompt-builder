@@ -2,6 +2,10 @@
 
 .images-list__label {
   display: block;
+  &:has(input:focus-visible) {
+    outline: 2px solid var.$color-text-white;
+    outline-offset: 2px;
+  }
   // height: 14rem;
 }
 

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { useState } from "react";
 import { configureStore } from "@reduxjs/toolkit";
-import { Provider } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { AnimatePresence } from "framer-motion";
 import {
   act,
@@ -50,7 +50,24 @@ vi.mock("./image-card/ImageCard", () => ({
   default: () => <p>Image details content</p>,
 }));
 vi.mock("../carousel/carousel-image-list/CarouselImageList", () => ({
-  default: () => <p>Post image grid</p>,
+  default: function ImageGrid() {
+    const dispatch = useDispatch();
+    const data = useSelector((state) => state.model.activeCarouselData);
+    return (
+      <>
+        <p>Post image grid</p>
+        <button
+          onClick={() =>
+            dispatch(
+              modelActions.setActiveCarouselData({ ...data, currImgNum: 0 }),
+            )
+          }
+        >
+          Open grid image
+        </button>
+      </>
+    );
+  },
 }));
 vi.mock("../guide/model/ImageCardCarouselGuide", () => ({
   default: () => null,
@@ -144,6 +161,19 @@ it("names the existing all-images mode without changing its content", async () =
   expect(screen.getByRole("dialog", { name: "Post images" })).toBe(dialog);
   expect(within(dialog).getByText("Post image grid")).toBeTruthy();
   expect(within(dialog).queryByText("Image details content")).toBeNull();
+});
+
+it("moves focus into image details when the activating grid thumbnail is removed", async () => {
+  const { user, opener, dialog } = await openCarousel({ currImgNum: null });
+  await user.tab();
+  expect(document.activeElement).toBe(
+    screen.getByRole("button", { name: "Open grid image" }),
+  );
+  await user.keyboard("{Enter}");
+  expect(screen.getByRole("dialog", { name: "Image details" })).toBe(dialog);
+  expect(document.activeElement).toBe(dialog);
+  await user.keyboard("{Escape}");
+  await waitFor(() => expect(document.activeElement).toBe(opener));
 });
 
 it.each(["Escape", "Close"])(

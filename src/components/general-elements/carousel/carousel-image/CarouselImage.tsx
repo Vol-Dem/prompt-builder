@@ -263,7 +263,6 @@ const CarouselImage = ({
           imgIsLoading && !imgIsLoaded ? classes["image--hidden"] : ""
         } ${!nsfwMode && nsfw ? classes["image--nsfw"] : ""}`}
         draggable={false}
-        onClick={() => onClick(position)}
         onLoad={imgLoadHandler}
         onError={imgErrorHandler}
         data-position={position}
@@ -285,7 +284,6 @@ const CarouselImage = ({
         preload="none"
         muted
         poster={imgSrc}
-        onClick={() => onClick(position)}
         onLoad={imgLoadHandler}
         onError={imgErrorHandler}
         className={`${classes.image} ${
@@ -299,6 +297,9 @@ const CarouselImage = ({
       </video>
     );
   }
+
+  const canOpenFullView =
+    active && !imgIsLoading && !imgError && imgSrc !== "#";
 
   return (
     <motion.div
@@ -316,13 +317,9 @@ const CarouselImage = ({
         <div className={classes.loading}></div>
       )}
       {imgError && (
-        <div
-          className={classes.placeholder}
-          onClick={() => onClick(position)}
-          data-position={position}
-        ></div>
+        <div className={classes.placeholder} data-position={position}></div>
       )}
-      <div className={classes["image-svg"]} onClick={() => onClick(position)}>
+      <div className={classes["image-svg"]}>
         <PhotoIcon />
       </div>
       {!imgIsLoading && !side && imgSrc !== "#" && (
@@ -404,20 +401,29 @@ const CarouselImage = ({
           />
         </>
       )}
-      {active && !imgIsLoading && !imgError && imgSrc !== "#" && (
-        <span className={classes["btn-full"]} onClick={openFullViewHandler}>
-          <MagnifyingGlassPlusIcon />
-        </span>
-      )}
+      <button
+        type="button"
+        className={
+          canOpenFullView ? classes["btn-full"] : classes["image-action"]
+        }
+        aria-label={
+          canOpenFullView
+            ? "Open full view"
+            : `Open ${imageData.type === "video" ? "video" : "image"} ${imageData.id || id}`
+        }
+        aria-haspopup="dialog"
+        data-position={position}
+        onClick={
+          canOpenFullView ? openFullViewHandler : () => onClick(position)
+        }
+      >
+        {canOpenFullView && <MagnifyingGlassPlusIcon />}
+      </button>
       {!imgError && imgSrc !== "#" && (
         <>
           {carouselElement}
           {imageData.type === "video" && !active && (
-            <div
-              className={classes["play-icon"]}
-              onClick={() => onClick(position)}
-              data-position={position}
-            >
+            <div className={classes["play-icon"]} data-position={position}>
               <PlayIcon
                 className={classes["play-icon__svg"]}
                 data-position={position}

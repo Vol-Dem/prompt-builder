@@ -178,12 +178,13 @@ const ChooseImageForm = memo(
             <input
               title={image.id + ""}
               type="checkbox"
+              aria-label={`Select image ${i + 1}`}
               className={classes["checkbox"]}
               id={image.id + ""}
               name={image.name + ""}
               checked={image.value}
               onChange={imageStatusChangeHandler}
-              readOnly={!!image?.saved}
+              disabled={!!image?.saved}
             />
           </ImageLabel>
         </li>

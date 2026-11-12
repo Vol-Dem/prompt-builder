@@ -39,8 +39,15 @@ const CarouselPagination = ({
         className={`${classes["pagination__item"]} ${
           isActive ? classes["pagination__item--active"] : ""
         }`}
-        onClick={() => onClick(i)}
-      ></li>
+      >
+        <button
+          type="button"
+          className={classes["pagination__button"]}
+          aria-label={`Show image ${i + 1}`}
+          aria-pressed={isActive}
+          onClick={() => onClick(i)}
+        />
+      </li>
     );
   });
   return <ul className={classes.pagination}>{paginationHtml}</ul>;

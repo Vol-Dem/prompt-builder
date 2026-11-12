@@ -21,8 +21,16 @@ type ImageTabsProps = {
  */
 const ImageTabs = ({ curTab, onClick, saved }: ImageTabsProps) => {
   return (
-    <div className={classes["mode-switch"]}>
-      <span
+    <div
+      className={classes["mode-switch"]}
+      role="group"
+      aria-label="Image source"
+    >
+      <button
+        type="button"
+        disabled={!saved}
+        aria-label="Saved"
+        aria-pressed={curTab === "saved"}
         className={`${classes["btn-mode"]} ${classes["btn-mode--left"]} ${
           curTab === "saved" ? classes["btn-mode--active"] : ""
         }`}
@@ -34,15 +42,17 @@ const ImageTabs = ({ curTab, onClick, saved }: ImageTabsProps) => {
         >
           Saved
         </Tooltip>
-      </span>
-      <span
+      </button>
+      <button
+        type="button"
+        aria-pressed={curTab === "all"}
         className={`${classes["btn-mode"]} ${classes["btn-mode--right"]} ${
           curTab === "all" ? classes["btn-mode--active"] : ""
         }`}
         onClick={() => onClick("all")}
       >
         All
-      </span>
+      </button>
     </div>
   );
 };

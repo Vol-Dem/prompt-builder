@@ -226,7 +226,7 @@ it("connects arrows and pagination to the image track and active-carousel openin
   expect(track.current.visibleImages).toEqual([2]);
   expect(track.current.translate).toBe(-220);
   end();
-  fireEvent.click(container.querySelectorAll("li")[2]);
+  fireEvent.click(screen.getByRole("button", { name: "Show image 3" }));
   expect(track.current.visibleImages).toEqual([3]);
   expect(onActiveNumChange).toHaveBeenLastCalledWith(2);
   fireEvent.click(screen.getByRole("button", { name: "Open image" }));

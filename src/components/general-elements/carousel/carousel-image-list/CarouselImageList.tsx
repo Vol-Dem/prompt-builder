@@ -55,6 +55,8 @@ const CarouselImageList = ({ images }: CarouselImageListProps) => {
         className={classes["image-container"]}
       >
         <Image
+          actionLabel={`Open image ${i + 1}`}
+          alt={`Image ${i + 1}`}
           onClick={() => openImageHandler(i)}
           className={classes.image}
           src={image?.url}

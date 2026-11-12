@@ -2,6 +2,7 @@
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { act, cleanup, fireEvent, render, renderHook, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
 import usePostImageImport from "./use-post-image-import";
@@ -203,11 +204,12 @@ const loadFromForm = async () => {
   await screen.findByTitle("1");
 };
 
-it("connects real selection to queueing and keeps saved-image checkboxes read-only", async () => {
+it("connects real selection to queueing and keeps already-saved images selected and disabled", async () => {
+  const user = userEvent.setup();
   const { store } = mountForm();
   await loadFromForm();
-  expect(screen.getByTitle("1").readOnly).toBe(true);
-  fireEvent.click(screen.getByTitle("1"));
+  expect(screen.getByTitle("1").disabled).toBe(true);
+  await user.click(screen.getByTitle("1"));
   expect(screen.getByTitle("1").checked).toBe(true);
   fireEvent.click(screen.getByTitle("2"));
   fireEvent.click(screen.getByRole("button", { name: "Save (1) selected" }));

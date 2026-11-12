@@ -44,6 +44,14 @@ const ActiveCarouselContentWrap = ({
     };
   }, []);
 
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    // A grid thumbnail is removed when it opens the details view.
+    if (dialog && dialog.ownerDocument.activeElement === dialog.ownerDocument.body) {
+      dialog.focus({ preventScroll: true });
+    }
+  }, [label]);
+
   return (
     <motion.div
       ref={dialogRef}
