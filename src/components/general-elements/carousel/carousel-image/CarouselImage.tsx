@@ -41,6 +41,7 @@ type CarouselImageProps = {
   saved: boolean;
   active: boolean;
   side: boolean;
+  isVisible?: boolean;
   menu?: boolean;
   imageData: Image;
   imageWidth?: number;
@@ -113,6 +114,7 @@ const CarouselImage = ({
   saved,
   active,
   side,
+  isVisible = true,
   imageData,
   imageWidth,
   location,
@@ -300,6 +302,8 @@ const CarouselImage = ({
 
   return (
     <motion.div
+      inert={!isVisible}
+      aria-hidden={!isVisible || undefined}
       // layoutId={id}
       className={`${classes.container} ${
         active && !imgIsLoading && !imgError && imgSrc !== "#"

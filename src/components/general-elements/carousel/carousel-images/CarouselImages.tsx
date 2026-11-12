@@ -88,6 +88,7 @@ const CarouselImages = ({
   let imagesHtml: ReactNode[] = [];
 
   if (!!images?.length || !!visibleImages?.length || !!visibleAmount) {
+    // Preload paired copies, but only the visible track positions are interactive.
     const imagesHtmlCenter = images.map((image, i) => {
       const src =
         (visibleImages.includes(i + visibleAmount) ||
@@ -108,6 +109,7 @@ const CarouselImages = ({
           onOpen={onOpen}
           id={image?.hash || image?.id + ""}
           position={i + visibleAmount}
+          isVisible={caruselIsVisible && visibleImages.includes(i + visibleAmount)}
           src={src}
           alt="example image"
           side={side}
@@ -142,6 +144,10 @@ const CarouselImages = ({
             onOpen={onOpen}
             id={image?.hash || image?.id + ""}
             position={i + visibleAmount}
+            isVisible={
+              caruselIsVisible &&
+              visibleImages.includes(i + images.length + visibleAmount)
+            }
             src={src}
             alt="example image"
             side={side}
@@ -172,6 +178,7 @@ const CarouselImages = ({
             onOpen={onOpen}
             id={image?.hash || image?.id + ""}
             position={i}
+            isVisible={caruselIsVisible && visibleImages.includes(i)}
             src={src}
             alt="example image"
             side={side}
