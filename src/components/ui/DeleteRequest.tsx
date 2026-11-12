@@ -36,7 +36,7 @@ const DeleteRequest = ({
   allowRetry = false,
 }: DeleteRequestProps) => {
   return (
-    <Modal onClose={onClose}>
+    <Modal onClose={onClose} aria-label="Confirm deletion">
       <div className={classes["del-request"]}>
         {!isDeleting && (!errorMessage || allowRetry) && (
           <div className={classes["del-request__message"]}>{message}</div>

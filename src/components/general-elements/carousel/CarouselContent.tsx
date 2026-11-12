@@ -410,6 +410,13 @@ const CarouselContent = ({
         )}
         {imageFormState?.isOpen && (
           <Modal
+            aria-label={
+              imageFormState.location !== "collections"
+                ? imageFormState.type === "del"
+                  ? "Delete images"
+                  : "Save images"
+                : undefined
+            }
             title={
               imageFormState?.location === "collections"
                 ? "Save to collection"

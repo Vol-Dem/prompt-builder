@@ -70,6 +70,7 @@ const PromptSettings = () => {
       <AnimatePresence>
         {presetsIsOpen && (
           <Modal
+            aria-label="Presets"
             title={
               <>
                 Presets{" "}

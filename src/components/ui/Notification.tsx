@@ -1,4 +1,4 @@
-import { createPortal } from "react-dom";
+import { Portal } from "@headlessui/react";
 import { motion, type TargetAndTransition } from "framer-motion";
 import {
   ExclamationCircleIcon,
@@ -45,38 +45,35 @@ const Notification = ({
   children,
 }: NotificationProps) => {
   return (
-    <>
-      {createPortal(
-        <motion.div
-          initial={notificationHidden}
-          animate={notificationVisible}
-          exit={notificationHidden}
-          className={classes["notification-container"]}
-        >
-          <Card className={classes.notification}>
-            <div className={classes["notification__icon"]} aria-hidden="true">
-              {type === "notification" && <ExclamationCircleIcon />}
-              {type === "warning" && <ExclamationTriangleIcon />}
-            </div>
+    <Portal>
+      <motion.div
+        initial={notificationHidden}
+        animate={notificationVisible}
+        exit={notificationHidden}
+        className={classes["notification-container"]}
+      >
+        <Card className={classes.notification}>
+          <div className={classes["notification__icon"]} aria-hidden="true">
+            {type === "notification" && <ExclamationCircleIcon />}
+            {type === "warning" && <ExclamationTriangleIcon />}
+          </div>
 
-            <div
-              className={classes["notification__message"]}
-              role={type === "warning" ? "alert" : "status"}
-              aria-atomic="true"
-            >
-              {title && (
-                <h4 className={classes["notification__title"]}>{title}</h4>
-              )}
-              <p className={classes["notification__text"]}>{children}</p>
-            </div>
-            <Button className={classes["notification__btn"]} onClick={onClick}>
-              Got it!
-            </Button>
-          </Card>
-        </motion.div>,
-        document.body,
-      )}
-    </>
+          <div
+            className={classes["notification__message"]}
+            role={type === "warning" ? "alert" : "status"}
+            aria-atomic="true"
+          >
+            {title && (
+              <h4 className={classes["notification__title"]}>{title}</h4>
+            )}
+            <p className={classes["notification__text"]}>{children}</p>
+          </div>
+          <Button className={classes["notification__btn"]} onClick={onClick}>
+            Got it!
+          </Button>
+        </Card>
+      </motion.div>
+    </Portal>
   );
 };
 

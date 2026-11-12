@@ -204,7 +204,7 @@ const Profile = ({ title }: ProfileProps) => {
               </SuccessMessage>
             )}
             {reAuthIsOpen && (
-              <Modal onClose={closeReAuth}>
+              <Modal onClose={closeReAuth} aria-label="Confirm your credentials">
                 <ReAuthForm />
               </Modal>
             )}

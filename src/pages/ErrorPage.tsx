@@ -79,7 +79,7 @@ const ErrorPage = () => {
         )}
       </Card>
       {authIsOpen && (
-        <Modal onClose={closeAuth}>
+        <Modal onClose={closeAuth} aria-label="Account access">
           <AuthForm />
         </Modal>
       )}

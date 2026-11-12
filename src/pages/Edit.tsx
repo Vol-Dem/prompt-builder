@@ -154,6 +154,7 @@ const ModelEdit = ({ title }: ModelEditProps) => {
       <AnimatePresence>
         {guideOutroIsActive && (
           <Modal
+            aria-label="Tutorial complete"
             onClose={() => {
               dispatch(guideActions.setOutroIsActive(false));
             }}

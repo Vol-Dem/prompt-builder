@@ -434,6 +434,7 @@ const CarouselImage = ({
         )}
         {tagSetMenuIsOpen && (
           <Modal
+            aria-label="Choose tag-set preview"
             className={classes["tag-sets__modal"]}
             onClose={closeTagSetMenuHandler}
           >

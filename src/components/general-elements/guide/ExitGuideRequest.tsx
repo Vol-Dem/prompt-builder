@@ -28,7 +28,7 @@ const ExitGuideRequest = ({
   children,
 }: ExitGuideRequestProps) => {
   return (
-    <Modal onClose={onClose}>
+    <Modal onClose={onClose} aria-label="Exit tutorial">
       <div className={classes["exit-request"]}>
         <div className={classes["exit-request__message"]}>{children}</div>
         <div className={classes["exit-request__btn-container"]}>

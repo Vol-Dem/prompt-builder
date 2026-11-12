@@ -214,7 +214,7 @@ const TagSets = ({ customData, defaultData }: TagSetsProps) => {
       <TagSetGuide />
       <AnimatePresence>
         {tagSetsFormIsOpen && model && (
-          <Modal onClose={closeTagSetsForm}>
+          <Modal onClose={closeTagSetsForm} aria-label="Edit tag sets">
             <TagSetsForm modelId={model.id} onClose={closeTagSetsForm} />
           </Modal>
         )}

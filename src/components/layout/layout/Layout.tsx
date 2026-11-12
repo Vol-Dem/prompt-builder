@@ -114,7 +114,10 @@ const Layout = () => {
         </LayoutContentWrap>
         <AnimatePresence>
           {authIsOpen && (
-            <Modal onClose={closeAuth}>
+            <Modal
+              onClose={closeAuth}
+              aria-label={!isAuth ? "Account access" : "Verify email"}
+            >
               {!isAuth && <AuthForm />}
               {isAuth && !emailVerified && <VerifyEmailMessage />}
             </Modal>

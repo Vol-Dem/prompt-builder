@@ -193,6 +193,7 @@ const ModelTags = ({ customData, modelPreview }: ModelTagsProps) => {
         <AnimatePresence>
           {modalIsOpen && model && customData && (
             <Modal
+              aria-label="Trigger words"
               title={
                 <>
                   Trigger words{" "}

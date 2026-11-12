@@ -345,7 +345,7 @@ const SetTagSetPreview = ({ src }: SetTagSetPreviewProps) => {
           </>
         )}
         {tagSetsFormIsOpen && model?.id && (
-          <Modal onClose={closeTagSetsForm}>
+          <Modal onClose={closeTagSetsForm} aria-label="Edit tag sets">
             <TagSetsForm modelId={model.id} onClose={closeTagSetsForm} />
           </Modal>
         )}

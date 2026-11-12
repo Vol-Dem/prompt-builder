@@ -25,6 +25,7 @@ const ButtonInfo = ({ children, className }: ButtonInfoProps) => {
       <AnimatePresence>
         {showInfo && (
           <Modal
+            aria-label="More information"
             onClose={() => {
               setShowInfo(false);
             }}

@@ -444,6 +444,7 @@ const Landing = () => {
       </section>
       {showVideo && (
         <Modal
+          aria-label="Introduction video"
           onClose={() => {
             setShowVideo(false);
           }}

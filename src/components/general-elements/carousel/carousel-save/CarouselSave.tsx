@@ -174,6 +174,7 @@ const CarouselSave = ({
       )}
       {chooseSaveLocationIsOpen && (
         <Modal
+          aria-label="Choose save destination"
           onClose={() => {
             setChooseSaveLocationIsOpen(false);
           }}

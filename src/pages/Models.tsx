@@ -191,6 +191,7 @@ const Models = ({ title }: ModelsProps) => {
             !guideIsActive &&
             !!modelTypesHtml?.length && (
               <Modal
+                aria-label="Welcome tutorial"
                 onClose={() => {
                   dispatch(guideActions.setIntroDisabled(true));
                 }}
