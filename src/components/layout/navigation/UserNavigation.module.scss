@@ -18,6 +18,13 @@
   z-index: 60;
 
   &__user {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    line-height: inherit;
+    text-align: inherit;
+    cursor: pointer;
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -47,6 +54,7 @@
   }
 
   &__menu {
+    visibility: hidden;
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -89,22 +97,23 @@
     }
   }
 
-  &:hover &__menu {
+  &--open &__menu {
+    visibility: visible;
     height: 7rem;
     background-color: var.$color-background-light;
   }
 
-  &:hover &__user {
+  &--open &__user {
     color: var.$color-text-primary;
   }
-  &:hover &__user svg {
+  &--open &__user svg {
     color: var.$color-text-primary;
   }
-  &:hover &__name {
+  &--open &__name {
     display: block;
   }
 
-  &:hover {
+  &--open {
     background-color: var.$color-background-light;
     color: var.$color-text-primary;
   }

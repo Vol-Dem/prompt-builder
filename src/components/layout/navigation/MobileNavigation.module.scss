@@ -39,6 +39,10 @@
   }
 
   &__button {
+    padding: 0;
+    border: 0;
+    color: inherit;
+    font: inherit;
     position: relative;
     height: 3.2rem;
     width: 3.2rem;

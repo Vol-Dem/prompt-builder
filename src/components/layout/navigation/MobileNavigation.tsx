@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { createPortal } from "react-dom";
 
@@ -7,6 +6,7 @@ import classes from "./MobileNavigation.module.scss";
 import { imagesActions } from "../../../store/images";
 import { modelActions } from "../../../store/model";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import useNavigationDisclosure from "../../../hooks/use-navigation-disclosure";
 
 /**
  * Application main navigation bar for mobile devices.
@@ -20,7 +20,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
  * @returns The main navigation element for mobile devices.
  */
 const MobileNavigation = () => {
-  const [navIsOpen, setNavIsOpen] = useState(false);
+  const disclosure = useNavigationDisclosure();
   const isAuth = useAppSelector((state) => state.auth.isLoggedIn);
   const dispatch = useAppDispatch();
 
@@ -30,36 +30,37 @@ const MobileNavigation = () => {
     dispatch(modelActions.setActiveCarouselData(null));
   };
 
-  // useEffect(() => {
-  //   if (navIsOpen) {
-  //     document.body.style.overflowY = "hidden";
-  //   } else {
-  //     document.body.style.overflowY = "scroll";
-  //   }
-
-  //   return () => {
-  //     document.body.style.overflowY = "scroll";
-  //   };
-  // }, [navIsOpen]);
-
-  const navSwitch = () => {
-    setNavIsOpen((prevState) => !prevState);
-  };
-
   return (
     <>
       {createPortal(
         <div
+          {...disclosure.containerProps}
           className={`${classes["mobile-nav"]} ${
-            navIsOpen ? classes["mobile-nav--open"] : ""
+            disclosure.isOpen ? classes["mobile-nav--open"] : ""
           }`}
         >
-          <div className={classes["mobile-nav__button"]} onClick={navSwitch}>
-            <span className={classes["mobile-nav__icon"]}></span>
-          </div>
+          <button
+            {...disclosure.triggerProps}
+            className={classes["mobile-nav__button"]}
+            aria-label={
+              disclosure.isOpen ? "Close navigation" : "Open navigation"
+            }
+          >
+            <span
+              className={classes["mobile-nav__icon"]}
+              aria-hidden="true"
+            ></span>
+          </button>
           <div className={classes["mobile-nav__background"]}></div>
-          <nav className={classes["mobile-nav__nav"]}>
-            <ul className={classes["mobile-nav__links"]} onClick={navSwitch}>
+          <nav
+            {...disclosure.panelProps}
+            aria-label="Mobile"
+            className={classes["mobile-nav__nav"]}
+          >
+            <ul
+              className={classes["mobile-nav__links"]}
+              onClick={() => disclosure.close(true)}
+            >
               <li>
                 <NavLink to="/" onClick={resetTabsHandler}>
                   {isAuth ? "Models" : "Home"}

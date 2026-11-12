@@ -8,6 +8,7 @@ import { tabActions } from "../../../store/tabs";
 import { imagesActions } from "../../../store/images";
 import { modelActions } from "../../../store/model";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks/hooks";
+import useNavigationDisclosure from "../../../hooks/use-navigation-disclosure";
 
 /**
  * Application user navigation bar.
@@ -27,29 +28,45 @@ const UserNavigation = () => {
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const disclosure = useNavigationDisclosure({ openOnHover: true });
 
   const logout = () => {
+    disclosure.close();
     dispatch(authActions.logout());
     navigate("/", { replace: true });
   };
 
   const resetTabsHandler = () => {
+    disclosure.close(true);
     dispatch(tabActions.resetActiveTabs());
     dispatch(imagesActions.resetCollectionListState());
     dispatch(modelActions.setActiveCarouselData(null));
   };
 
   return (
-    <div className={classes["nav-profile-container"]}>
-      <div className={classes["nav-profile"]}>
-        <div className={classes["nav-profile__user"]}>
+    <div
+      {...disclosure.containerProps}
+      className={classes["nav-profile-container"]}
+    >
+      <div
+        className={`${classes["nav-profile"]} ${disclosure.isOpen ? classes["nav-profile--open"] : ""}`}
+      >
+        <button
+          {...disclosure.triggerProps}
+          aria-label={`Account menu${userName ? `: ${userName}` : ""}`}
+          className={classes["nav-profile__user"]}
+        >
           <span className={classes["nav-profile__name"]}>
             {" "}
             <span>{userName}</span>{" "}
           </span>
           <UserCircleIcon />
-        </div>
-        <div className={classes["nav-profile__menu"]}>
+        </button>
+        <nav
+          {...disclosure.panelProps}
+          aria-label="Account"
+          className={classes["nav-profile__menu"]}
+        >
           <ul className={classes["nav-profile__links"]}>
             <li className={classes["nav-profile__link"]}>
               <NavLink to="profile" onClick={resetTabsHandler}>
@@ -58,12 +75,13 @@ const UserNavigation = () => {
             </li>
           </ul>
           <ButtonSecondary
+            type="button"
             onClick={logout}
             className={classes["nav-btn-auth"]}
           >
             Logout
           </ButtonSecondary>
-        </div>
+        </nav>
       </div>
     </div>
   );
