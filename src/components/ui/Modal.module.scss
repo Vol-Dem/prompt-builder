@@ -1,12 +1,6 @@
 @use "./../../variables/variables.scss" as var;
 @use "sass:color";
 
-// Headless UI's inline scroll lock changes the scroll container for sticky sidebars.
-:global(html):has(.modal) {
-  overflow: visible !important;
-  padding-right: 0 !important;
-}
-
 .modal {
   position: fixed;
   display: flex;

@@ -1,19 +1,10 @@
-import {
-  useEffect,
-  useState,
-  type ComponentProps,
-  type ReactNode,
-} from "react";
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-  DialogTitle,
-} from "@headlessui/react";
-import { motion, useIsPresent } from "framer-motion";
+import { type ComponentProps, type ReactNode } from "react";
+import { DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
+import { motion } from "framer-motion";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 import Card from "./Card";
+import DialogContainer from "./DialogContainer";
 import classes from "./Modal.module.scss";
 import {
   ANIMATIONS_FM_FADE_VARIANTS,
@@ -30,27 +21,6 @@ type ModalProps = OverrideFields<
     role?: "dialog" | "alertdialog";
   }
 >;
-
-type ModalRootProps = ComponentProps<"div"> & {
-  dialogLabelledBy?: string;
-  dialogDescription?: string;
-};
-
-// Headless UI supplies title/description IDs; explicit caller associations take precedence.
-const ModalRoot = ({
-  dialogLabelledBy,
-  dialogDescription,
-  ...props
-}: ModalRootProps) => (
-  <div
-    {...props}
-    aria-labelledby={
-      dialogLabelledBy ??
-      (props["aria-label"] ? undefined : props["aria-labelledby"])
-    }
-    aria-describedby={dialogDescription ?? props["aria-describedby"]}
-  />
-);
 
 /**
  * Portal-based modal with animated backdrop and content.
@@ -76,27 +46,13 @@ const Modal = ({
   "aria-describedby": describedBy,
   ...props
 }: ModalProps) => {
-  const isPresent = useIsPresent();
-  const [ready, setReady] = useState(false);
-
-  // Register the page tree before Headless UI enables isolation and focus trapping.
-  useEffect(() => {
-    setReady(true);
-  }, []);
-
   return (
-    <Dialog
+    <DialogContainer
       {...props}
-      as={ModalRoot}
-      open={ready}
-      onClose={() => {
-        if (isPresent) onClose();
-      }}
+      onClose={onClose}
       aria-label={ariaLabel ?? (!title && !labelledBy ? "Dialog" : undefined)}
-      dialogLabelledBy={labelledBy}
-      dialogDescription={describedBy}
-      aria-hidden={!isPresent || props["aria-hidden"]}
-      inert={!isPresent || props.inert}
+      aria-labelledby={labelledBy}
+      aria-describedby={describedBy}
       className={`${classes["modal"]} ${disableClass || ""}`}
     >
       <DialogBackdrop
@@ -132,7 +88,7 @@ const Modal = ({
           </button>
         </Card>
       </DialogPanel>
-    </Dialog>
+    </DialogContainer>
   );
 };
 

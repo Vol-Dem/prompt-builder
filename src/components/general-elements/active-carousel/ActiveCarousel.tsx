@@ -125,6 +125,12 @@ const ActiveCarousel = () => {
     <AnimatePresence>
       {isOpen && (
         <ActiveCarouselContentWrap
+          aria-label={
+            activeCarouselData?.currImgNum === null
+              ? "Post images"
+              : "Image details"
+          }
+          onClose={closeActiveCarouselHandler}
           className={`${classes.container} ${
             isOpen ? classes["container--open"] : ""
           }`}
@@ -170,12 +176,14 @@ const ActiveCarousel = () => {
             {activeCarouselData?.currImgNum === null && (
               <CarouselImageList images={activeCarouselData.images} />
             )}
-            <div
+            <button
+              type="button"
+              aria-label="Close image details"
               className={classes["btn__close"]}
               onClick={closeActiveCarouselHandler}
             >
               {isOpen && <XMarkIcon />}
-            </div>
+            </button>
           </div>
           {isOpen && guideIsActive && <CloseImageGuide />}
         </ActiveCarouselContentWrap>

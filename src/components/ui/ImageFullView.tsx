@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import { DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { motion, type HTMLMotionProps } from "framer-motion";
 
 import classes from "./ImageFullView.module.scss";
 import Spinner from "./Spinner";
+import DialogContainer from "./DialogContainer";
 import {
   ANIMATIONS_FM_FADE_VARIANTS,
   ANIMATIONS_FM_SLIDEIN_VARIANTS,
@@ -37,7 +38,7 @@ type ImageFullViewProps = HTMLMotionProps<"img"> & {
  * - Shows loading spinner for images.
  * - Renders HTML5 video with multiple sources.
  * - Supports previous/next navigation.
- * - Closes when backdrop or close button is clicked.
+ * - Closes through Escape, the backdrop, or the close button.
  *
  * @component
  *
@@ -75,90 +76,97 @@ const ImageFullView = ({
   };
 
   return (
-    <>
-      {createPortal(
-        <div>
-          <motion.div
-            variants={ANIMATIONS_FM_FADE_VARIANTS}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className={`${classes.modal} ${classes["modal--backdrop"]}`}
-            onClick={onClose}
-          ></motion.div>
-          <div className={`${classes.modal} ${classes["modal--content"]}`}>
-            {imgIsLoading && (
-              <div className={classes["spiner-container"]}>
-                <Spinner size="medium" decorative />
-              </div>
-            )}
-            {type !== "video" && (
-              <motion.img
-                layout
-                layoutId={src}
-                variants={ANIMATIONS_FM_SLIDEIN_VARIANTS}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                src={src}
-                alt={alt || "image-full"}
-                className={`${classes.img} ${
-                  imgIsLoading ? classes["img--hidden"] : ""
-                }`}
-                onLoad={imgLoadHandler}
-              />
-            )}
-            {type === "video" && (
-              <video
-                key={originalVideoWebmSrc}
-                playsInline
-                autoPlay
-                // autostart={1}
-                loop
-                disablePictureInPicture
-                preload="none"
-                muted
-                controls
-                poster={previewSrc}
-                className={`${classes.img}`}
-              >
-                <source src={originalVideoWebmSrc} type="video/webm" />
-                <source src={originalVideoMp4Src} type="video/mp4" />
-              </video>
-            )}
-          </div>
+    <DialogContainer
+      className={classes.viewer}
+      onClose={() => onClose?.()}
+      aria-label={
+        alt
+          ? `Full view: ${alt}`
+          : type === "video"
+            ? "Video full view"
+            : "Image full view"
+      }
+    >
+      <DialogBackdrop
+        as={motion.div}
+        variants={ANIMATIONS_FM_FADE_VARIANTS}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        className={`${classes.modal} ${classes["modal--backdrop"]}`}
+      />
+      <DialogPanel>
+        <div className={`${classes.modal} ${classes["modal--content"]}`}>
+          {imgIsLoading && (
+            <div className={classes["spiner-container"]}>
+              <Spinner size="medium" decorative />
+            </div>
+          )}
+          {type !== "video" && (
+            <motion.img
+              layout
+              layoutId={src}
+              variants={ANIMATIONS_FM_SLIDEIN_VARIANTS}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              src={src}
+              alt={alt || "image-full"}
+              className={`${classes.img} ${
+                imgIsLoading ? classes["img--hidden"] : ""
+              }`}
+              onLoad={imgLoadHandler}
+            />
+          )}
+          {type === "video" && (
+            <video
+              key={originalVideoWebmSrc}
+              playsInline
+              autoPlay
+              // autostart={1}
+              loop
+              disablePictureInPicture
+              preload="none"
+              muted
+              controls
+              poster={previewSrc}
+              className={`${classes.img}`}
+            >
+              <source src={originalVideoWebmSrc} type="video/webm" />
+              <source src={originalVideoMp4Src} type="video/mp4" />
+            </video>
+          )}
+        </div>
+        <button
+          type="button"
+          aria-label="Close full view"
+          className={classes["modal__close"]}
+          onClick={() => onClose?.()}
+        >
+          <XMarkIcon />
+        </button>
+        {prevSlide && controls && (
           <button
             type="button"
-            aria-label="Close full view"
-            className={classes["modal__close"]}
-            onClick={onClose}
+            aria-label="Previous media"
+            className={`${classes["btn-slide"]} ${classes["btn-slide--next"]}`}
+            onClick={prevSlide}
           >
-            <XMarkIcon />
+            <ChevronLeftIcon />
           </button>
-          {prevSlide && controls && (
-            <button
-              type="button"
-              aria-label="Previous media"
-              className={`${classes["btn-slide"]} ${classes["btn-slide--next"]}`}
-              onClick={prevSlide}
-            >
-              <ChevronLeftIcon />
-            </button>
-          )}
-          {nextSlide && controls && (
-            <button
-              type="button"
-              aria-label="Next media"
-              onClick={nextSlide}
-              className={`${classes["btn-slide"]} ${classes["btn-slide--prev"]}`}
-            >
-              <ChevronRightIcon />
-            </button>
-          )}
-        </div>,
-        document.body,
-      )}
-    </>
+        )}
+        {nextSlide && controls && (
+          <button
+            type="button"
+            aria-label="Next media"
+            onClick={nextSlide}
+            className={`${classes["btn-slide"]} ${classes["btn-slide--prev"]}`}
+          >
+            <ChevronRightIcon />
+          </button>
+        )}
+      </DialogPanel>
+    </DialogContainer>
   );
 };
 

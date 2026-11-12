@@ -1,0 +1,5 @@
+// Headless UI's inline scroll lock changes the scroll container for sticky sidebars.
+:global(html):has(.dialog) {
+  overflow: visible !important;
+  padding-right: 0 !important;
+}
