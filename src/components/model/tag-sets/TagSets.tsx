@@ -157,17 +157,19 @@ const TagSets = ({ customData, defaultData }: TagSetsProps) => {
           </ButtonInfo>
         </div>
 
-        <Button
-          onClick={openTagSetsForm}
-          disabled={!model?.modelVersionsCustomData}
+        <Tooltip
+          asChild
+          label="Add tag set availability"
+          className={classes["tags__btn-edit-tooltip"]}
+          content={!model?.modelVersionsCustomData ? <ModelTooltip /> : ""}
         >
-          <Tooltip
-            className={classes["tags__btn-edit-tooltip"]}
-            content={!model?.modelVersionsCustomData ? <ModelTooltip /> : ""}
+          <Button
+            onClick={openTagSetsForm}
+            disabled={!model?.modelVersionsCustomData}
           >
             Add tag set
-          </Tooltip>
-        </Button>
+          </Button>
+        </Tooltip>
       </div>
       {!tagSets?.length && (
         <NotificationMessage>

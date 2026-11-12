@@ -146,6 +146,7 @@ const ImageResourcesItem = ({
             )}
             {civConnectionError && (
               <Tooltip
+                label="Civitai source status"
                 className={classes["tooltip--align-left"]}
                 defSide="left"
                 content={civitaiConnectionErrorHtml}

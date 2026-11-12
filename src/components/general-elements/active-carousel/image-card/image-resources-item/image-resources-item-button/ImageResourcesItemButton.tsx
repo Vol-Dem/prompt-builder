@@ -72,17 +72,20 @@ const ImageResourcesItemButton = ({
             <ButtonSquareSave className={classes["btn"]} onClick={onOpen} />
           )}
         {errorMessage && (
-          <ButtonSquare
-            className={`${classes["btn"]} ${classes["unavailable"]}`}
+          <Tooltip
+            asChild
+            className={`${classes["btn"]} ${classes["tooltip"]} ${classes["tooltip--centered"]}`}
+            defSide="left"
+            content={errorMessage}
           >
-            <Tooltip
-              className={`${classes["tooltip"]} ${classes["tooltip--centered"]}`}
-              defSide="left"
-              content={errorMessage}
+            <ButtonSquare
+              type="button"
+              aria-label="Resource unavailable"
+              className={classes["unavailable"]}
             >
               <ExclamationTriangleIcon />{" "}
-            </Tooltip>
-          </ButtonSquare>
+            </ButtonSquare>
+          </Tooltip>
         )}
       </>
     );

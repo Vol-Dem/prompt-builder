@@ -4,10 +4,14 @@
   position: relative;
   transition: all 0.3s ease;
 
-  &:hover &-content {
+  &--open &-content {
     display: block;
     z-index: 5;
     animation: show 0.2s ease-in;
+  }
+
+  & :disabled {
+    pointer-events: none;
   }
 
   &-content {

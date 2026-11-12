@@ -231,6 +231,11 @@ it("switches image sources with native buttons and keeps Saved disabled for unsa
   expect(saved.disabled).toBe(true);
   await user.tab();
   expect(document.activeElement).toBe(
+    screen.getByRole("group", { name: "Saved images availability" }),
+  );
+  expect(screen.getByRole("tooltip")).toBeTruthy();
+  await user.tab();
+  expect(document.activeElement).toBe(
     screen.getByRole("button", { name: "All" }),
   );
   rerender(<ImageTabs curTab="all" saved onClick={onClick} />);

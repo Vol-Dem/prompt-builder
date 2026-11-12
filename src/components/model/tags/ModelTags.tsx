@@ -89,6 +89,7 @@ const ModelTags = ({ customData, modelPreview }: ModelTagsProps) => {
                     !model?.mainTag ||
                     customData?.defActTag) && (
                     <Tooltip
+                      label="Activation tag information"
                       content={
                         <div className={classes["tooltip__content"]}>
                           <p className={classes["tags__notification-text"]}>
@@ -111,22 +112,26 @@ const ModelTags = ({ customData, modelPreview }: ModelTagsProps) => {
                 </div>
               </div>
             )}
-            <button
-              type="button"
-              className={classes["tags__btn-edit"]}
-              onClick={openEditHandler}
-              disabled={!model?.modelVersionsCustomData}
+            <Tooltip
+              asChild
+              label="Trigger word editing availability"
+              className={classes["tags__edit-tooltip"]}
+              content={!model?.modelVersionsCustomData ? <ModelTooltip /> : ""}
             >
-              <Tooltip
-                className={classes["tags__btn-edit-tooltip"]}
-                content={
-                  !model?.modelVersionsCustomData ? <ModelTooltip /> : ""
-                }
+              <button
+                type="button"
+                className={classes["tags__btn-edit"]}
+                onClick={openEditHandler}
+                disabled={!model?.modelVersionsCustomData}
               >
-                <span className={classes["tags__btn-edit-name"]}>Edit...</span>
-                <PencilSquareIcon />
-              </Tooltip>
-            </button>
+                <span className={classes["tags__btn-edit-tooltip"]}>
+                  <span className={classes["tags__btn-edit-name"]}>
+                    Edit...
+                  </span>
+                  <PencilSquareIcon />
+                </span>
+              </button>
+            </Tooltip>
           </div>
           {(!!curVersion?.trainedWords?.length ||
             !!customData?.trainedWords?.length) && (

@@ -68,15 +68,23 @@
     & svg {
       width: 2rem;
     }
-
-    &:first-child {
-      width: 100%;
-      justify-content: flex-end;
-    }
   }
 
   &__btn-edit-name {
     display: block;
+  }
+
+  &__edit-tooltip {
+    margin-left: auto;
+
+    &:first-child {
+      width: 100%;
+
+      .tags__btn-edit {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
   }
 
   &__btn-edit-tooltip {

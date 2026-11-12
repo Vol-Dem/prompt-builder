@@ -14,16 +14,15 @@ const SearchFilter = () => {
   return (
     <>
       <div>
-        <ButtonTertiary
-          className={classes["filter__reset"]}
-          onClick={reset}
-        >
+        <ButtonTertiary className={classes["filter__reset"]} onClick={reset}>
           Reset filter
         </ButtonTertiary>
       </div>
       <div className={classes.filter}>
         {source === "civitai" && (
           <Tooltip
+            asChild
+            label="Search sort availability"
             content={sort.disabled ? "Disabled due to a Civitai API bug" : ""}
             defSide="center"
           >

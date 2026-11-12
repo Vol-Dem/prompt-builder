@@ -55,6 +55,7 @@ const ImageResourcesItemVersion = ({
 
   return (
     <Tooltip
+      label={`${versionName || resource?.versionName || "Model version"} download status`}
       className={classes["tooltip--align-left"]}
       defSide="left"
       content={<div className={classes["version-tooltip"]}>{tooltip}</div>}

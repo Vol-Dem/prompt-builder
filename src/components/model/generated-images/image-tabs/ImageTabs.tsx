@@ -26,23 +26,25 @@ const ImageTabs = ({ curTab, onClick, saved }: ImageTabsProps) => {
       role="group"
       aria-label="Image source"
     >
-      <button
-        type="button"
-        disabled={!saved}
-        aria-label="Saved"
-        aria-pressed={curTab === "saved"}
-        className={`${classes["btn-mode"]} ${classes["btn-mode--left"]} ${
-          curTab === "saved" ? classes["btn-mode--active"] : ""
-        }`}
-        onClick={() => saved && onClick("saved")}
+      <Tooltip
+        asChild
+        label="Saved images availability"
+        className={classes["tags__btn-edit-tooltip"]}
+        content={!saved ? <ModelTooltip /> : ""}
       >
-        <Tooltip
-          className={classes["tags__btn-edit-tooltip"]}
-          content={!saved ? <ModelTooltip /> : ""}
+        <button
+          type="button"
+          disabled={!saved}
+          aria-label="Saved"
+          aria-pressed={curTab === "saved"}
+          className={`${classes["btn-mode"]} ${classes["btn-mode--left"]} ${
+            curTab === "saved" ? classes["btn-mode--active"] : ""
+          }`}
+          onClick={() => saved && onClick("saved")}
         >
           Saved
-        </Tooltip>
-      </button>
+        </button>
+      </Tooltip>
       <button
         type="button"
         aria-pressed={curTab === "all"}

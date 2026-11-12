@@ -123,18 +123,20 @@ const GeneratedImages = memo(() => {
           onClick={switchCurTab}
           saved={!!model?.modelVersionsCustomData}
         />
-        <Button
-          className={classes["button-add"]}
-          onClick={addImgByIdHandler}
-          disabled={!model?.modelVersionsCustomData}
+        <Tooltip
+          asChild
+          label="Add Image by ID availability"
+          className={classes["tags__btn-edit-tooltip"]}
+          content={!model?.modelVersionsCustomData ? <ModelTooltip /> : ""}
         >
-          <Tooltip
-            className={classes["tags__btn-edit-tooltip"]}
-            content={!model?.modelVersionsCustomData ? <ModelTooltip /> : ""}
+          <Button
+            className={classes["button-add"]}
+            onClick={addImgByIdHandler}
+            disabled={!model?.modelVersionsCustomData}
           >
             Add Image by ID
-          </Tooltip>
-        </Button>
+          </Button>
+        </Tooltip>
         <ButtonInfo>
           <InfoGeneratedImages />
         </ButtonInfo>
